@@ -21,7 +21,9 @@ export type PaymentLifecycleStatus = SharedPaymentStatus;
 export type PaymentMetadata = Record<string, unknown>;
 export type PaymentWebhookHeaders = Record<string, string | string[] | undefined>;
 export type PaymentProviderMode = 'sandbox' | 'live';
-export type V1PaymentSessionProvider = Extract<PaymentProviderName, 'razorpay' | 'cashfree' | 'upi' | 'cod'>;
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+// money-in rails; 'cashfree' is a retired non-canonical aggregator.
+export type V1PaymentSessionProvider = Extract<PaymentProviderName, 'razorpay' | 'upi' | 'cod'>;
 export type V1PaymentSessionStatus = 'pending' | 'requires_action' | 'authorized' | 'captured' | 'failed' | 'voided' | 'refunded';
 export type PaymentProviderReference = {
   providerOrderId?: string;
@@ -284,7 +286,7 @@ export function resolvePaymentProviderMode(
 
 export function normalizeV1PaymentSessionProvider(value: string): V1PaymentSessionProvider {
   const normalized = value.trim().toLowerCase();
-  if (normalized === 'razorpay' || normalized === 'cashfree' || normalized === 'upi' || normalized === 'cod') {
+  if (normalized === 'razorpay' || normalized === 'upi' || normalized === 'cod') {
     return normalized;
   }
   throw new Error('Unsupported V1 payment session provider');

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
-export const V1PaymentProviderSchema = z.enum(['razorpay', 'cashfree', 'upi', 'cod']);
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+// money-in rails; 'cashfree' is a retired non-canonical aggregator.
+export const V1PaymentProviderSchema = z.enum(['razorpay', 'upi', 'cod']);
 export const V1PaymentModeSchema = z.enum(['sandbox', 'live']).optional();
 export const PaymentSessionMetadataSchema = z.record(z.string(), z.unknown()).default({});
 

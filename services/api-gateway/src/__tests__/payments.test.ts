@@ -92,23 +92,31 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     assert.match(webhookSource, /await markWebhookEvent\(c\.env,\s*"razorpay",\s*providerEventId,\s*"processed"\)/);
 });
 
-test('provider webhooks are centralized in webhook-service', () => {
+test('the razorpay webhook is centralized in webhook-service; retired provider webhooks are gone (Phase M1, DOC 03 row 11)', () => {
     const webhookSource = repositorySource('services/webhook-service/src/index.ts');
     const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
     const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
     const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
 
     assert.match(webhookSource, /app\.post\("\/razorpay"/);
-    assert.match(webhookSource, /app\.post\("\/stripe"/);
-    assert.match(webhookSource, /app\.post\("\/paypal"/);
-    assert.match(webhookSource, /app\.post\("\/cashfree"/);
-    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"stripe"/);
-    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"paypal"/);
-    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"cashfree"/);
+    // Phase M1 retired the Stripe/PayPal/Cashfree webhook ingress: after the
+    // live routes that could create those sessions were cut, nothing could
+    // ever generate a legitimate event for these endpoints, so the ingress
+    // itself was pure attack surface. See
+    // services/webhook-service/test/payment-webhook-retirement.test.mjs.
+    assert.doesNotMatch(webhookSource, /app\.post\("\/stripe"/);
+    assert.doesNotMatch(webhookSource, /app\.post\("\/paypal"/);
+    assert.doesNotMatch(webhookSource, /app\.post\("\/cashfree"/);
+    assert.doesNotMatch(webhookSource, /webhookVerify\(\{\s*provider:\s*"stripe"/);
+    assert.doesNotMatch(webhookSource, /webhookVerify\(\{\s*provider:\s*"paypal"/);
+    assert.doesNotMatch(webhookSource, /webhookVerify\(\{\s*provider:\s*"cashfree"/);
     assert.match(webhookSource, /emitPaymentDomainEvent/);
     assert.match(webhookSource, /emitGatewayDomainEvent/);
     assert.doesNotMatch(webhookSource, /["']outbox_events["']/);
 
+    // The adapters themselves are untouched this phase (deleting them is a
+    // separate SAFE_DELETE gated on zero importers); only the live routes
+    // that could reach them were retired.
     assert.doesNotMatch(stripeAdapter, /constructWebhookEvent/);
     assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
     assert.match(cashfreeAdapter, /x-webhook-timestamp/);

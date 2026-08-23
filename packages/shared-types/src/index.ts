@@ -4,6 +4,18 @@ export * from './brand';
 export * from './contact';
 export * from './app-platform';
 export * from './foundation-execution-contracts';
+// Canonical, exhaustive, React-free status presentation per domain.
+export * from './status-presentation';
+import {
+  SITE_STATUS_VALUES,
+  ORDER_STATUS_VALUES,
+  SUBSCRIPTION_STATUS_VALUES,
+  GIFT_CARD_STATUS_VALUES,
+  PAYOUT_STATUS_VALUES,
+  PAGE_STATUS_VALUES,
+  REVIEW_MODERATION_STATUS_VALUES,
+  CUSTOM_DOMAIN_STATUS_VALUES,
+} from './status-presentation';
 export {
   AiChatSchema,
   CheckCreditsSchema,
@@ -602,8 +614,14 @@ export const AuditedEntitySchema = TimestampedEntitySchema.extend({
 });
 
 export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing']);
-export const StoreStatusSchema = z.enum(['draft', 'published', 'frozen', 'suspended']);
-export const CustomDomainStatusSchema = z.enum(['none', 'pending', 'review', 'verifying', 'active', 'error']);
+// ── Status vocabularies are DERIVED, not restated ──────────────────────────
+// Each of these schemas is built from the canonical value tuple in
+// ./status-presentation, which mirrors the live CHECK constraint. Restating the
+// values here is how they drifted: five schemas disagreed with the database,
+// including payouts, where only 2 of 5 values overlapped. Deriving makes the
+// schema, the TS union and the presentation map one source by construction.
+export const StoreStatusSchema = z.enum(SITE_STATUS_VALUES);
+export const CustomDomainStatusSchema = z.enum(CUSTOM_DOMAIN_STATUS_VALUES);
 export const StoreAccessModeSchema = z.enum(['public', 'password', 'preview_only', 'offline']);
 export const StoreHealthPillarStatusSchema = z.enum(['ready', 'attention', 'blocked', 'unknown']);
 export const ProductStatusSchema = z.enum(['draft', 'active', 'archived']);
@@ -621,20 +639,11 @@ export const InventoryAdjustmentReasonSchema = z.enum([
   'recount',
 ]);
 export const CollectionStatusSchema = z.enum(['draft', 'active', 'archived']);
-export const GiftCardStatusSchema = z.enum(['active', 'redeemed', 'expired', 'disabled']);
-export const ReviewModerationStatusSchema = z.enum(['pending', 'approved', 'rejected']);
+export const GiftCardStatusSchema = z.enum(GIFT_CARD_STATUS_VALUES);
+export const ReviewModerationStatusSchema = z.enum(REVIEW_MODERATION_STATUS_VALUES);
 export const CustomerStatusSchema = z.enum(['active', 'disabled', 'invited']);
 export const CartStatusSchema = z.enum(['active', 'converted', 'abandoned', 'expired']);
-export const OrderStatusSchema = z.enum([
-  'pending',
-  'pending_cod',
-  'confirmed',
-  'processing',
-  'shipped',
-  'delivered',
-  'cancelled',
-  'refunded',
-]);
+export const OrderStatusSchema = z.enum(ORDER_STATUS_VALUES);
 export const DraftOrderStatusSchema = z.enum(['draft', 'converted', 'discarded']);
 export const PaymentStatusSchema = z.enum([
   'pending',
@@ -653,13 +662,14 @@ export const FulfillmentStatusSchema = z.enum([
   'returned',
   'cancelled',
 ]);
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+// money-in rails; 'upi'/'card'/'netbanking'/'wallet' are Razorpay
+// instruments, not separate aggregators, and 'manual' is offline
+// reconciliation, not a third-party provider -- both are kept.
 export const PaymentProviderSchema = z.enum([
   'razorpay',
-  'cashfree',
   'upi',
   'cod',
-  'stripe',
-  'paypal',
   'manual',
 ]);
 export const PaymentMethodSchema = z.enum([
@@ -668,13 +678,12 @@ export const PaymentMethodSchema = z.enum([
   'netbanking',
   'wallet',
   'cod',
-  'paypal',
   'manual',
 ]);
 export const SubscriptionBillingPeriodSchema = z.enum(['monthly', 'yearly']);
-export const SubscriptionStatusSchema = z.enum(['trialing', 'active', 'past_due', 'cancelled', 'expired']);
+export const SubscriptionStatusSchema = z.enum(SUBSCRIPTION_STATUS_VALUES);
 export const DiscountTypeSchema = z.enum(['percentage', 'fixed', 'free_shipping']);
-export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
+export const PageStatusSchema = z.enum(PAGE_STATUS_VALUES);
 export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
 export const BlogPostStatusSchema = z.enum(['draft', 'published', 'scheduled', 'archived']);
 export const BlogCommentStatusSchema = z.enum(['pending', 'approved', 'spam', 'rejected']);
@@ -709,7 +718,7 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
-export const MerchantPayoutStatusSchema = z.enum(['pending', 'processing', 'released', 'failed']);
+export const MerchantPayoutStatusSchema = z.enum(PAYOUT_STATUS_VALUES);
 export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
 export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);

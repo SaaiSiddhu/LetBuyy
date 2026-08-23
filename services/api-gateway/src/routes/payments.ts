@@ -188,7 +188,7 @@ router.post('/sessions', validate('json', CreatePaymentSessionSchema), async (c)
 
         const payment = insertedPayment as PaymentSessionRow;
 
-        if (provider === 'razorpay' || provider === 'cashfree') {
+        if (provider === 'razorpay') {
             await new PaymentExecutionAdapter(db).attachPaymentReference({
                 orderId: body.order_id,
                 provider,
