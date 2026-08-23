@@ -310,7 +310,16 @@ router.get('/', async (c) => {
             // type === 'menu' (exhaustive: zod already validated the enum)
             results = await searchMenus(db, store_id, q, limit);
         }
-    } catch {
+    } catch (err) {
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'themes.resource-search',
+            status_code: 500,
+            reason: 'resource_search_failed',
+            resource_type: type,
+            error: err instanceof Error ? err.message : 'Search failed',
+        }));
         return c.json(
             { error: { code: 'SEARCH_ERROR', message: 'Search operation failed' } },
             500,
