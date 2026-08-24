@@ -368,6 +368,20 @@ function normalizeDraftOrderRecord(
     };
 }
 
+// Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
+// money-in rails. draft_orders_payment_method_check (migration 116) still
+// permits 'stripe'/'cashfree' at the storage layer and was never narrowed
+// alongside CreateDraftOrderSchema (narrowed to razorpay/cod, M1), so a
+// pre-M1 draft can still carry a retired rail today. Coercing it to 'cod'
+// would silently convert a merchant's prepaid draft into cash-on-delivery
+// -- changing how the customer pays without anyone being told, which is
+// exactly the "stub reads as success" failure the honesty law forbids.
+// Reject instead: the merchant recreates the draft with a live rail.
+export function normalizeDraftOrderPaymentMethod(value: string | null | undefined): 'razorpay' | 'cod' | null {
+    if (value === 'razorpay' || value === 'cod') return value;
+    return null;
+}
+
 async function loadDraftOrder(
     db: ReturnType<typeof getSupabaseAdmin>,
     draftId: string,
@@ -787,6 +801,10 @@ router.post('/drafts/:id/convert', validate('json', ConvertDraftOrderSchema), as
     if (loaded.lines.length === 0) {
         return c.json({ success: false, error: { code: 'EMPTY_DRAFT', message: 'Draft order has no items.' } }, 409);
     }
+    const draftPaymentMethod = normalizeDraftOrderPaymentMethod(loaded.draft.payment_method);
+    if (!draftPaymentMethod) {
+        return c.json({ success: false, error: { code: 'DRAFT_PAYMENT_METHOD_RETIRED', message: 'This draft order uses a retired payment method and must be recreated.' } }, 409);
+    }
 
     const tenant = await resolveTenantContextForOwnedSite(c, loaded.draft.site_id);
     const idempotency = new IdempotencyExecutionAdapter(db);
@@ -816,7 +834,7 @@ router.post('/drafts/:id/convert', validate('json', ConvertDraftOrderSchema), as
                     variant_id: line.variant_id || null,
                     quantity: Math.max(1, Math.trunc(numberValue(line.quantity) || 1)),
                 })),
-                payment_method: loaded.draft.payment_method || 'cod',
+                payment_method: draftPaymentMethod,
                 shipping_method: loaded.draft.shipping_method === 'express' ? 'express' : 'standard',
                 notes: loaded.draft.notes || undefined,
                 coupon_code: loaded.draft.coupon_code || undefined,
