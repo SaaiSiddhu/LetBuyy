@@ -283,6 +283,7 @@ for (const file of [
   'services/api-gateway/src/routes/employee.ts',
   'services/api-gateway/src/routes/admin.ts',
 ]) {
+  assertNotIncludes(file, 'SKIP-CAP-TRANSACTIONAL-EMAILS', `${file} must not retain the CAP-C14 delivery seam after its invite path was retired`);
   assertNotIncludes(file, 'TODO: Send', `${file} must not carry loose transactional email TODOs`);
 }
 const transactionalEmail = readFile('services/api-gateway/src/lib/transactional-email.ts');
