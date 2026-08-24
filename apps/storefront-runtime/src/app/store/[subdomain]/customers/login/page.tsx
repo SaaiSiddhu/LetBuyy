@@ -19,7 +19,18 @@ export const revalidate = 60;
 
 type Props = {
     params: Promise<{ subdomain: string }>;
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+// T1/W2 — see customers/register/page.tsx's identical helper for why array values take their first entry.
+function flattenSearchParams(params: Record<string, string | string[] | undefined> | undefined): Record<string, string> {
+    const flat: Record<string, string> = {};
+    for (const [key, value] of Object.entries(params || {})) {
+        if (typeof value === 'string') flat[key] = value;
+        else if (Array.isArray(value) && typeof value[0] === 'string') flat[key] = value[0];
+    }
+    return flat;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { subdomain } = await params;
@@ -32,8 +43,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 }
 
-export default async function CustomerLoginPage({ params }: Props) {
+export default async function CustomerLoginPage({ params, searchParams }: Props) {
     const { subdomain } = await params;
+    const query = flattenSearchParams(await searchParams);
     const store = await StoreService.getStoreBySubdomain(subdomain);
     if (!store) return notFound();
 
@@ -42,6 +54,7 @@ export default async function CustomerLoginPage({ params }: Props) {
         path: `/store/${subdomain}/customers/login`,
         subdomain,
         templateKey: 'customers/login',
+        searchParams: query,
     });
 
     const sectionData = new Map<string, SectionRenderData>();

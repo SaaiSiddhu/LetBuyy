@@ -1,7 +1,22 @@
-<header class="lb-header" data-section-id="{{ section.id }}">
-  <a class="lb-header__brand" href="/">{{ section.settings.storeName }}</a>
-  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>
-  <div class="lb-header__actions">{% if section.settings.showSearch %}<lb-search data-lb-island="search" data-search-url="/search"></lb-search>{% endif %}{% if section.settings.showCart %}<a href="/cart">{{ "general.cart" | t }} ({{ cart.item_count }})</a>{% endif %}</div>
+<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == 'sticky' %}true{% else %}false{% endif %}">
+  <div class="lb-header__inner">
+    <lb-mobile-nav class="lb-mobile-nav" data-lb-island="mobile-nav">
+      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-label="Menu">
+        <span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span>
+      </button>
+      <nav class="lb-header__nav" data-lb-nav-panel aria-label="Primary">
+        {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}
+        {% if section.settings.showSearch %}<a class="lb-header__nav-search" href="{{ routes.search_url }}">Search</a>{% endif %}
+        <a href="{{ routes.account_url }}">Account</a>
+      </nav>
+      <div class="lb-header__scrim" data-lb-nav-scrim></div>
+    </lb-mobile-nav>
+    <a class="lb-header__brand" href="{{ routes.root_url }}">{{ section.settings.storeName | default: shop.name }}</a>
+    <div class="lb-header__actions">
+      {% if section.settings.showSearch %}<lb-search class="lb-header__search-island" data-lb-island="search" data-search-url="{{ routes.search_url }}"></lb-search>{% endif %}
+      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}">{{ "general.cart" | t }} (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}
+    </div>
+  </div>
 </header>
 {% schema %}
 {
@@ -10,8 +25,7 @@
     {
       "id": "storeName",
       "type": "text",
-      "label": "Store name",
-      "default": "{{ shop.name }}"
+      "label": "Store name"
     },
     {
       "id": "showSearch",
@@ -24,6 +38,16 @@
       "type": "toggle",
       "label": "Show cart",
       "default": true
+    },
+    {
+      "id": "behavior",
+      "type": "select",
+      "label": "Header behavior",
+      "default": "sticky",
+      "options": [
+        "static",
+        "sticky"
+      ]
     }
   ],
   "blocks": [

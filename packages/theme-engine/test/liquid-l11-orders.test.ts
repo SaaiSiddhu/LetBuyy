@@ -37,7 +37,7 @@ test('L11: order history lists the customer orders', async () => {
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /#1001/);
   assert.match(html, /#1002/);
-  assert.match(html, /href="\/account\/orders\/o1"/);
+  assert.match(html, /href="\/store\/local-kicks\/account\/orders\/o1"/);
 });
 
 test('L11: order detail binds line items, status, and the already-ledgered total', async () => {

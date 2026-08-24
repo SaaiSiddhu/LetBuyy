@@ -1,6 +1,37 @@
 <footer class="lb-footer" data-section-id="{{ section.id }}">
-  <div><strong>{{ section.settings.storeName }}</strong>{% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}</div>
-  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>
+  <div class="lb-footer__grid">
+    <div class="lb-footer__brand">
+      <h3>{{ section.settings.storeName | default: shop.name }}</h3>
+      {% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}
+      {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}
+      <div class="lb-footer__social">
+        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>{% endif %}
+        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">FB</a>{% endif %}
+        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter">X</a>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}
+    <div class="lb-footer__col">
+      <h4>Policies</h4>
+      <nav>
+        <a href="{{ routes.root_url }}/privacy">Privacy policy</a>
+        <a href="{{ routes.root_url }}/terms">Terms of service</a>
+        <a href="{{ routes.root_url }}/shipping">Shipping policy</a>
+        <a href="{{ routes.root_url }}/returns">Returns policy</a>
+      </nav>
+    </div>
+    <div class="lb-footer__col">
+      <h4>Contact</h4>
+      {% if section.settings.contactEmail != blank %}<p><a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a></p>{% endif %}
+      {% if section.settings.contactPhone != blank %}<p><a href="tel:{{ section.settings.contactPhone }}">{{ section.settings.contactPhone }}</a></p>{% endif %}
+      <a href="{{ routes.contact_url }}">Contact us</a>
+    </div>
+  </div>
+  <div class="lb-footer__bottom">
+    <p>&copy; {{ shop.name }}. All rights reserved.</p>
+    <a class="lb-footer__watermark" href="https://letbuyy.com" target="_blank" rel="noopener noreferrer">Powered by LetBuyy</a>
+  </div>
 </footer>
 {% schema %}
 {
@@ -9,13 +40,37 @@
     {
       "id": "storeName",
       "type": "text",
-      "label": "Store name",
-      "default": "{{ shop.name }}"
+      "label": "Store name"
     },
     {
       "id": "tagline",
       "type": "text",
       "label": "Tagline"
+    },
+    {
+      "id": "contactEmail",
+      "type": "text",
+      "label": "Contact email"
+    },
+    {
+      "id": "contactPhone",
+      "type": "text",
+      "label": "Contact phone"
+    },
+    {
+      "id": "instagramUrl",
+      "type": "url",
+      "label": "Instagram URL"
+    },
+    {
+      "id": "facebookUrl",
+      "type": "url",
+      "label": "Facebook URL"
+    },
+    {
+      "id": "twitterUrl",
+      "type": "url",
+      "label": "Twitter/X URL"
     }
   ],
   "blocks": [

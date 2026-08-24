@@ -38,6 +38,27 @@ import type {
   StorefrontTemplateConfig,
 } from './index';
 
+// S7/W2 — env-gated span profiling used for the cold-path investigation
+// (docs/evidence/liquid-load/S7-cold-path-profile.md). Off by default (LB_S7_PROFILE unset):
+// zero behavioural or performance change on the hot path — the flag check is the only cost paid
+// when disabled. Deliberately kept (not stripped after use): the investigation closed with one
+// confirmed, fixed cause and one NOT_ROOT_CAUSED residual finding (see that document) — these spans
+// are exactly what a future re-investigation of either would need, and reproducing them from
+// scratch cost real effort this phase. Remove only if a future phase judges it dead weight.
+const S7_PROFILE_ENABLED = process.env.LB_S7_PROFILE === '1';
+let s7ProfileSanitizeCallCount = 0;
+
+function s7ProfileMark(label: string, startedAtMs: number, extra: Record<string, unknown> = {}): void {
+  if (!S7_PROFILE_ENABLED) return;
+  console.log(JSON.stringify({
+    event: 'lb:s7:profile',
+    label,
+    ms: Number((Date.now() - startedAtMs).toFixed(2)),
+    processUptimeMs: Math.round(process.uptime() * 1000),
+    ...extra,
+  }));
+}
+
 export type ThemeRendererEngine = 'json-contract' | 'liquid';
 // 'rendered' = success; 'unsupported' = no bundle/template; 'error' = tried Liquid but all sections failed
 // or the layout template itself threw. Callers that check `status !== 'rendered'` already handle 'error'
@@ -165,6 +186,11 @@ const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
   // Must be in ADD_TAGS and tagNameCheck so DOMPurify does not strip the element.
   // LANE-B (liquid-hydration-islands.tsx) registers LbLogoutElement via defineLiquidIsland.
   'lb-logout',
+  // T1/W2: lb-turnstile island — invisible Cloudflare Turnstile challenge for the no-JS-first
+  // customer register/login <form>s; writes its token into a sibling hidden input on solve.
+  'lb-turnstile',
+  // T2a/W3a: lb-mobile-nav island — hamburger drawer wrapping the header's nav-links panel.
+  'lb-mobile-nav',
 ] as const;
 
 export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
@@ -222,7 +248,7 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
   ],
   CUSTOM_ELEMENT_HANDLING: {
     // F7-Lane-A: lb-logout added. Keep in sync with LIQUID_HYDRATION_CUSTOM_ELEMENTS above.
-    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout)$/,
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout|turnstile|mobile-nav)$/,
     attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
     allowCustomizedBuiltInElements: false,
   },
@@ -240,41 +266,139 @@ const LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG: DOMPurifyConfig = {
 // Injected inline as a sanitizer-safe `<style>` (DOMPurify allows <style>; no <link>/asset-route, so no
 // forbid-list relaxation). Class-based only (DOMPurify forbids inline `style` attrs). A cacheable external
 // stylesheet is a deferred perf follow-up.
+// T2a — Design Foundation. Premium-minimal, Shopify-Dawn class: generous whitespace, a fluid type
+// scale, restrained colour, large product imagery. Mobile-first from ~360px (UI-R rules): every rule
+// below is written for the small screen first, then widened at the 48em/64em breakpoints — there is
+// no separate "mobile" stylesheet to keep in sync. Organized top-to-bottom: tokens, reset/base,
+// accessibility (focus/motion), container, header (+ hamburger drawer), announcement bar (full-bleed),
+// footer, hero, about, category/featured/product grids, product card, misc content sections.
 export const LIQUID_THEME_BASE_CSS = [
-  '.lb-theme{min-height:100vh;background:var(--background);color:var(--foreground);font-family:var(--font-body);}',
+  // ---- Design tokens --------------------------------------------------------------------------
+  // Per-store colour/font tokens (--primary/--accent/--surface/--foreground/--background/
+  // --font-display/--border-color) are injected separately by buildLiquidRootTokenBlock — these are
+  // the theme-wide constants every store shares regardless of preset: spacing scale, fluid type
+  // scale (clamp() so headings/body scale smoothly between the ~360px floor and desktop, no separate
+  // breakpoint-jump rules needed for typography), radii, layout, motion.
+  ':root{--lb-space-3xs:0.25rem;--lb-space-2xs:0.5rem;--lb-space-xs:0.75rem;--lb-space-sm:1rem;--lb-space-md:1.5rem;--lb-space-lg:2rem;--lb-space-xl:3rem;--lb-space-2xl:4rem;--lb-space-3xl:6rem;--lb-text-xs:clamp(0.75rem,0.72rem + 0.15vw,0.8125rem);--lb-text-sm:clamp(0.875rem,0.84rem + 0.15vw,0.9375rem);--lb-text-base:clamp(1rem,0.97rem + 0.15vw,1.0625rem);--lb-text-lg:clamp(1.125rem,1.06rem + 0.3vw,1.25rem);--lb-text-xl:clamp(1.25rem,1.15rem + 0.5vw,1.5rem);--lb-text-2xl:clamp(1.5rem,1.3rem + 1vw,2rem);--lb-text-3xl:clamp(1.875rem,1.55rem + 1.5vw,2.5rem);--lb-text-4xl:clamp(2.25rem,1.7rem + 2.5vw,3.5rem);--lb-text-5xl:clamp(2.75rem,1.9rem + 4vw,5rem);--lb-radius-sm:0.375rem;--lb-radius-md:0.625rem;--lb-radius-lg:1rem;--lb-radius-pill:999px;--lb-container-max:80rem;--lb-container-gutter:1.25rem;--lb-header-h:4.25rem;--lb-transition:200ms cubic-bezier(.4,0,.2,1);--lb-focus-ring:2px solid var(--accent,#2563eb);}',
+  // ---- Reset / base ----------------------------------------------------------------------------
+  '.lb-theme{min-height:100vh;background:var(--background);color:var(--foreground);font-family:var(--font-body);font-size:var(--lb-text-base);line-height:1.6;-webkit-font-smoothing:antialiased;}',
+  '.lb-theme *{box-sizing:border-box;}',
   '.lb-theme :where(a){color:inherit;text-decoration:none;}',
-  '.lb-header,.lb-footer,.lb-announcement-bar,.lb-hero-banner,.lb-category-grid,.lb-featured-products,.lb-product-grid,.lb-product-detail,.lb-newsletter-signup,.lb-first-party-spotlight,.lb-spotlight,.lb-about-section,.lb-banner-carousel,.lb-brand-marquee,.lb-contact-form,.lb-cta-section,.lb-experience-timeline,.lb-marquee,.lb-portfolio-grid,.lb-rich-content,.lb-services-grid,.lb-skills-section,.lb-testimonials,.lb-trust-badges,.lb-app-block-slot{margin-inline:auto;max-width:min(72rem,calc(100vw - 2rem));padding-block:clamp(1.5rem,4vw,4rem);}',
-  '.lb-header,.lb-footer,.lb-announcement-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:1rem;}',
-  '.lb-header nav,.lb-footer nav,.lb-header__actions{display:flex;flex-wrap:wrap;gap:0.75rem;}',
-  '.lb-header__brand,.lb-hero-banner h1,.lb-featured-products h2,.lb-product-grid h2,.lb-category-grid h2,.lb-product-detail h1{font-family:var(--font-display);letter-spacing:0;}',
-  '.lb-hero-banner{position:relative;display:grid;gap:1rem;min-height:28rem;align-content:center;overflow:hidden;}',
-  '.lb-hero-banner h1{max-width:14ch;font-size:clamp(2.5rem,7vw,5rem);line-height:0.95;}',
-  '.lb-hero-banner a,.lb-featured-products > a,.lb-newsletter-signup button,.lb-contact-form button,.lb-cta-section a{display:inline-flex;width:fit-content;border-radius:0.5rem;background:var(--primary);color:#fff;font-weight:700;padding:0.75rem 1rem;}',
+  '.lb-theme :where(button,input,select,textarea){font:inherit;color:inherit;}',
+  '.lb-theme :where(img,svg,video){display:block;max-width:100%;}',
+  '.lb-theme h1,.lb-theme h2,.lb-theme h3{font-family:var(--font-display);letter-spacing:-0.01em;line-height:1.1;margin:0;}',
+  '.lb-theme h2{font-size:var(--lb-text-2xl);}',
+  '.lb-theme h3{font-size:var(--lb-text-lg);}',
+  // ---- Accessibility: focus-visible + reduced-motion (WCAG 2.4.7 / 2.3.3) ------------------------
+  '.lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring);outline-offset:2px;border-radius:var(--lb-radius-sm);}',
+  '@media (prefers-reduced-motion:reduce){.lb-theme *{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important;}}',
+  // ---- Container --------------------------------------------------------------------------------
+  '.lb-header__inner,.lb-footer,.lb-announcement-bar__inner,.lb-hero-banner,.lb-category-grid,.lb-featured-products,.lb-product-grid,.lb-product-detail,.lb-newsletter-signup,.lb-first-party-spotlight,.lb-spotlight,.lb-about-section,.lb-banner-carousel,.lb-brand-marquee,.lb-contact-form,.lb-cta-section,.lb-experience-timeline,.lb-marquee,.lb-portfolio-grid,.lb-rich-content,.lb-services-grid,.lb-skills-section,.lb-testimonials,.lb-trust-badges,.lb-app-block-slot{margin-inline:auto;max-width:var(--lb-container-max);padding-inline:var(--lb-container-gutter);}',
+  '.lb-hero-banner,.lb-category-grid,.lb-featured-products,.lb-product-grid,.lb-product-detail,.lb-newsletter-signup,.lb-first-party-spotlight,.lb-spotlight,.lb-about-section,.lb-banner-carousel,.lb-brand-marquee,.lb-contact-form,.lb-cta-section,.lb-experience-timeline,.lb-marquee,.lb-portfolio-grid,.lb-rich-content,.lb-services-grid,.lb-skills-section,.lb-testimonials,.lb-trust-badges,.lb-app-block-slot{padding-block:clamp(var(--lb-space-lg),5vw,var(--lb-space-2xl));}',
+  // ---- Header (+ mobile hamburger drawer) ------------------------------------------------------
+  // Mobile-first: single row, brand + hamburger + cart. The nav panel (desktop: inline row; mobile:
+  // off-canvas drawer) lives inside <lb-mobile-nav> — same markup both widths, CSS repositions it,
+  // so there is exactly one nav-links list to keep in sync (no server/client duplication).
+  '.lb-header{position:relative;z-index:40;background:var(--background);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-header[data-sticky="true"]{position:sticky;top:0;}',
+  '.lb-header__inner{display:flex;align-items:center;justify-content:space-between;gap:var(--lb-space-sm);min-height:var(--lb-header-h);}',
+  '.lb-header__brand{font-family:var(--font-display);font-weight:700;font-size:var(--lb-text-lg);letter-spacing:-0.01em;}',
+  '.lb-header__actions{display:flex;align-items:center;gap:var(--lb-space-xs);}',
+  '.lb-header__cart{display:inline-flex;align-items:center;gap:0.375rem;min-height:44px;padding-inline:0.25rem;font-weight:600;font-size:var(--lb-text-sm);}',
+  '.lb-mobile-nav{display:contents;}',
+  '.lb-header__toggle{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:44px;height:44px;padding:10px;border:0;background:none;cursor:pointer;order:-1;}',
+  '.lb-header__toggle-bar{display:block;height:2px;width:100%;background:currentColor;border-radius:2px;transition:transform var(--lb-transition),opacity var(--lb-transition);}',
+  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(1){transform:translateY(6px) rotate(45deg);}',
+  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(2){opacity:0;}',
+  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(3){transform:translateY(-6px) rotate(-45deg);}',
+  '.lb-header__nav{position:fixed;inset:0 0 0 auto;z-index:50;width:min(88vw,22rem);display:flex;flex-direction:column;gap:var(--lb-space-2xs);padding:calc(var(--lb-header-h) + var(--lb-space-md)) var(--lb-space-md) var(--lb-space-md);background:var(--background);box-shadow:-16px 0 40px rgba(15,23,42,.16);transform:translateX(100%);transition:transform var(--lb-transition);overflow-y:auto;}',
+  '.lb-mobile-nav[data-open="true"] .lb-header__nav{transform:translateX(0);}',
+  '.lb-header__nav a{padding-block:var(--lb-space-2xs);font-size:var(--lb-text-lg);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-header__scrim{position:fixed;inset:0;z-index:45;background:rgba(15,23,42,.35);opacity:0;pointer-events:none;transition:opacity var(--lb-transition);}',
+  '.lb-mobile-nav[data-open="true"] .lb-header__scrim{opacity:1;pointer-events:auto;}',
+  '@media (min-width:48em){.lb-header__toggle{display:none;}.lb-header__nav{position:static;inset:auto;width:auto;flex-direction:row;align-items:center;gap:var(--lb-space-md);padding:0;background:none;box-shadow:none;transform:none;overflow:visible;order:0;}.lb-header__nav a{padding-block:0.25rem;font-size:var(--lb-text-sm);font-weight:600;border-bottom:0;}.lb-header__scrim{display:none;}}',
+  // ---- Announcement bar (full-bleed, positioned above the header by template order — see
+  // theme-bundle.ts's `header` template composition, which places announcement-default first) ----
+  '.lb-announcement-bar{background:var(--foreground);color:var(--background);}',
+  '.lb-announcement-bar__inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--lb-space-2xs);padding-block:var(--lb-space-2xs);font-size:var(--lb-text-sm);text-align:center;}',
+  '.lb-announcement-bar__inner a{font-weight:700;text-decoration:underline;text-underline-offset:2px;}',
+  // ---- Footer: multi-column, LetBuyy watermark -------------------------------------------------
+  '.lb-footer{padding-block:var(--lb-space-xl) var(--lb-space-lg);border-top:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-footer__grid{display:grid;gap:var(--lb-space-lg);grid-template-columns:1fr;}',
+  '.lb-footer__brand h3{font-family:var(--font-display);font-size:var(--lb-text-xl);}',
+  '.lb-footer__brand p{margin:var(--lb-space-2xs) 0 0;color:var(--foreground);opacity:.7;max-width:32ch;}',
+  '.lb-footer__col h4{margin:0 0 var(--lb-space-2xs);font-size:var(--lb-text-sm);text-transform:uppercase;letter-spacing:.06em;opacity:.6;}',
+  '.lb-footer__col nav{display:flex;flex-direction:column;gap:var(--lb-space-3xs);}',
+  '.lb-footer__col nav a,.lb-footer__col p{font-size:var(--lb-text-sm);opacity:.85;}',
+  '.lb-footer__social{display:flex;gap:var(--lb-space-2xs);margin-top:var(--lb-space-2xs);}',
+  '.lb-footer__social a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--lb-radius-pill);border:1px solid var(--border-color,rgba(0,0,0,.12));}',
+  '.lb-footer__bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--lb-space-2xs);margin-top:var(--lb-space-lg);padding-top:var(--lb-space-md);border-top:1px solid var(--border-color,rgba(0,0,0,.08));font-size:var(--lb-text-xs);opacity:.7;}',
+  '.lb-footer__watermark{display:inline-flex;align-items:center;gap:0.375rem;font-weight:600;}',
+  '@media (min-width:48em){.lb-footer__grid{grid-template-columns:1.4fr repeat(3,1fr);}}',
+  // ---- Hero banner ------------------------------------------------------------------------------
+  '.lb-hero-banner{position:relative;display:grid;gap:var(--lb-space-sm);min-height:26rem;align-content:center;overflow:hidden;}',
+  '.lb-hero-banner h1{max-width:16ch;font-size:var(--lb-text-5xl);line-height:0.98;}',
+  '.lb-hero-banner p{max-width:48ch;font-size:var(--lb-text-lg);opacity:.85;}',
+  '.lb-hero-banner a,.lb-featured-products > a,.lb-newsletter-signup button,.lb-contact-form button,.lb-cta-section a{display:inline-flex;align-items:center;min-height:44px;width:fit-content;border-radius:var(--lb-radius-md);background:var(--primary);color:#fff;font-weight:700;padding-inline:1.25rem;transition:transform var(--lb-transition),opacity var(--lb-transition);}',
+  '.lb-hero-banner a:hover,.lb-featured-products > a:hover,.lb-cta-section a:hover{opacity:.88;}',
   // A1/B1/B2: the hero background image sits behind the text (z-index -1, absolutely filled); the
   // height/align modifier classes are driven by the section's own `height`/`textAlign` settings.
   '.lb-hero-banner__bg-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;}',
-  '.lb-hero-banner--height-large{min-height:24rem;}',
-  '.lb-hero-banner--height-medium{min-height:20rem;}',
-  '.lb-hero-banner--height-small{min-height:16rem;}',
+  '.lb-hero-banner--height-large{min-height:22rem;}',
+  '.lb-hero-banner--height-medium{min-height:18rem;}',
+  '.lb-hero-banner--height-small{min-height:14rem;}',
   '.lb-hero-banner--align-left{text-align:left;justify-items:start;}',
   '.lb-hero-banner--align-center{text-align:center;justify-items:center;}',
   '.lb-hero-banner--align-right{text-align:right;justify-items:end;}',
+  '@media (min-width:48em){.lb-hero-banner{min-height:34rem;}.lb-hero-banner--height-large{min-height:28rem;}.lb-hero-banner--height-medium{min-height:24rem;}.lb-hero-banner--height-small{min-height:18rem;}}',
   // B3: about-section layout — side-by-side (left/right) vs centered, mirroring about-section.tsx.
-  '.lb-about-section{display:grid;gap:2rem;align-items:center;}',
-  '.lb-about-section--layout-left,.lb-about-section--layout-right{grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));}',
+  '.lb-about-section{display:grid;gap:var(--lb-space-lg);align-items:center;}',
+  '.lb-about-section--layout-left,.lb-about-section--layout-right{grid-template-columns:1fr;}',
   '.lb-about-section--layout-right .lb-about-section__image{order:-1;}',
   '.lb-about-section--layout-center{grid-template-columns:1fr;text-align:center;}',
   '.lb-about-section--layout-center .lb-about-section__image{margin-inline:auto;}',
-  '.lb-category-grid__items,.lb-featured-products__items,.lb-product-grid__items,.lb-first-party-spotlight__blocks,.lb-spotlight__blocks,.lb-banner-carousel__slides{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}',
-  '.lb-product-grid__items[data-columns="4"]{grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));}',
-  '.lb-category-card,.lb-product-card,.lb-trust-badges article,.lb-testimonials blockquote,.lb-services-grid article,.lb-portfolio-grid article{border:1px solid var(--border-color,rgb(226 232 240));border-radius:0.5rem;background:var(--surface,rgb(255 255 255));padding:1rem;}',
-  '.lb-featured-products__empty,.lb-product-grid__empty{padding-block:2rem;text-align:center;color:var(--foreground);opacity:0.7;}',
-  '.lb-product-detail{display:grid;gap:1rem;}',
-  '.lb-product-detail__gallery{display:grid;gap:0.75rem;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));}',
-  '.lb-product-detail__gallery img,.lb-banner-carousel img{aspect-ratio:1;border-radius:0.5rem;object-fit:cover;width:100%;}',
-  '.lb-newsletter-signup form,.lb-contact-form form{display:flex;flex-wrap:wrap;gap:0.75rem;}',
-  '.lb-newsletter-signup input,.lb-contact-form input{min-width:min(100%,16rem);border:1px solid var(--border-color,rgb(226 232 240));border-radius:0.5rem;padding:0.75rem 1rem;}',
-  '.lb-badge{display:inline-flex;align-items:center;gap:0.375rem;border-radius:999px;background:var(--surface,rgb(241 245 249));padding:0.25rem 0.625rem;font-size:0.8125rem;font-weight:600;}',
+  '@media (min-width:48em){.lb-about-section--layout-left,.lb-about-section--layout-right{grid-template-columns:repeat(2,1fr);}}',
+  // ---- Category / featured / product grids -------------------------------------------------------
+  // Mobile: 2-up (matches Dawn-class density on a 360px floor); more columns from tablet up.
+  '.lb-category-grid__items,.lb-featured-products__items,.lb-product-grid__items,.lb-first-party-spotlight__blocks,.lb-spotlight__blocks,.lb-banner-carousel__slides{display:grid;gap:var(--lb-space-sm);grid-template-columns:repeat(2,1fr);}',
+  '@media (min-width:48em){.lb-category-grid__items,.lb-featured-products__items,.lb-first-party-spotlight__blocks,.lb-spotlight__blocks,.lb-banner-carousel__slides{grid-template-columns:repeat(3,1fr);}.lb-product-grid__items{grid-template-columns:repeat(3,1fr);}}',
+  '@media (min-width:64em){.lb-product-grid__items[data-columns="4"]{grid-template-columns:repeat(4,1fr);}}',
+  '.lb-category-card{position:relative;display:flex;flex-direction:column;gap:0.25rem;border-radius:var(--lb-radius-lg);background:var(--surface,rgb(255 255 255));padding:var(--lb-space-sm);border:1px solid var(--border-color,rgb(226 232 240));transition:transform var(--lb-transition),box-shadow var(--lb-transition);}',
+  '.lb-category-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(15,23,42,.08);}',
+  '.lb-trust-badges article,.lb-testimonials blockquote,.lb-services-grid article,.lb-portfolio-grid article{border:1px solid var(--border-color,rgb(226 232 240));border-radius:var(--lb-radius-lg);background:var(--surface,rgb(255 255 255));padding:var(--lb-space-sm);}',
+  '.lb-featured-products__empty,.lb-product-grid__empty,.lb-category-grid__empty,.lb-testimonials__empty{padding-block:var(--lb-space-xl);text-align:center;color:var(--foreground);opacity:0.65;}',
+  '.lb-featured-products__items + a{margin-top:var(--lb-space-md);}',
+  // ---- Product card: image, badge, price, hover/focus, keyboard-safe nested-interactive layout --
+  // The image link is the "whole card" click target; the add-to-cart/wishlist controls are separate
+  // focusable buttons OUTSIDE that anchor (not nested inside it) so no control is unreachable/invalid
+  // HTML (an interactive element inside an <a> is itself an accessibility bug this avoids entirely).
+  '.lb-product-card{position:relative;display:flex;flex-direction:column;border-radius:var(--lb-radius-lg);background:var(--surface,rgb(255 255 255));border:1px solid var(--border-color,rgb(226 232 240));overflow:hidden;transition:transform var(--lb-transition),box-shadow var(--lb-transition);}',
+  '.lb-product-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(15,23,42,.1);}',
+  '.lb-product-card__media{position:relative;aspect-ratio:1;background:var(--border-color,rgb(226 232 240));overflow:hidden;}',
+  '.lb-product-card__media img{width:100%;height:100%;object-fit:cover;transition:transform 400ms ease;}',
+  '.lb-product-card:hover .lb-product-card__media img{transform:scale(1.04);}',
+  '.lb-product-card__placeholder{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--foreground);opacity:.35;font-size:var(--lb-text-xs);text-align:center;padding:var(--lb-space-2xs);}',
+  '.lb-product-card__badges{position:absolute;top:0.625rem;left:0.625rem;display:flex;flex-direction:column;gap:0.25rem;z-index:1;}',
+  '.lb-product-card__badge{display:inline-flex;align-items:center;border-radius:var(--lb-radius-pill);padding:0.1875rem 0.625rem;font-size:var(--lb-text-xs);font-weight:700;background:var(--background);}',
+  '.lb-product-card__badge--sale{background:#dc2626;color:#fff;}',
+  '.lb-product-card__badge--sold-out{background:var(--foreground);color:var(--background);}',
+  '.lb-product-card__badge--new{background:var(--accent,#2563eb);color:#fff;}',
+  '.lb-product-card__body{display:flex;flex-direction:column;gap:0.25rem;padding:var(--lb-space-xs);flex:1;}',
+  '.lb-product-card__title{font-size:var(--lb-text-sm);font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}',
+  '.lb-product-card__price{display:flex;align-items:baseline;gap:0.375rem;font-weight:700;}',
+  '.lb-product-card__price s{font-weight:400;opacity:.55;}',
+  '.lb-product-card__actions{display:flex;gap:0.5rem;padding:0 var(--lb-space-xs) var(--lb-space-xs);margin-top:auto;}',
+  '.lb-product-card__cta{flex:1;display:inline-flex;align-items:center;justify-content:center;min-height:40px;border-radius:var(--lb-radius-md);background:var(--primary);color:#fff;font-weight:600;font-size:var(--lb-text-sm);border:0;cursor:pointer;}',
+  '.lb-product-card__cta:disabled{opacity:.5;cursor:not-allowed;}',
+  // ---- Product detail -----------------------------------------------------------------------------
+  '.lb-product-detail{display:grid;gap:var(--lb-space-lg);}',
+  '.lb-product-detail__gallery{display:grid;gap:0.75rem;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));}',
+  '.lb-product-detail__gallery img,.lb-banner-carousel img{aspect-ratio:1;border-radius:var(--lb-radius-md);object-fit:cover;width:100%;}',
+  '@media (min-width:64em){.lb-product-detail{grid-template-columns:1.1fr 1fr;align-items:start;}}',
+  // ---- Misc content sections ------------------------------------------------------------------
+  '.lb-newsletter-signup form,.lb-contact-form form{display:flex;flex-wrap:wrap;gap:var(--lb-space-2xs);}',
+  '.lb-newsletter-signup input,.lb-contact-form input{min-width:min(100%,16rem);min-height:44px;border:1px solid var(--border-color,rgb(226 232 240));border-radius:var(--lb-radius-md);padding-inline:1rem;}',
+  '.lb-badge{display:inline-flex;align-items:center;gap:0.375rem;border-radius:var(--lb-radius-pill);background:var(--surface,rgb(241 245 249));padding:0.25rem 0.625rem;font-size:var(--lb-text-xs);font-weight:600;}',
 ].join('');
 
 // Per-store theme tokens (settings_data.current) -> the CSS custom properties the lb-* stylesheet reads.
@@ -560,6 +684,8 @@ export class LiquidRenderer implements ThemeRenderer {
   readonly interfaceVersion = THEME_RENDERER_INTERFACE_VERSION;
 
   async render(input: ThemeRendererInput): Promise<ThemeRendererResult> {
+    const s7RenderStart = Date.now();
+    if (S7_PROFILE_ENABLED) s7ProfileSanitizeCallCount = 0;
     if (!input.liquidBundle) {
       return {
         engine: this.engine,
@@ -573,8 +699,10 @@ export class LiquidRenderer implements ThemeRenderer {
     // G4: an unsupported (e.g. future) bundle schema_version must NOT crash the render — it degrades to
     // 'unsupported' so the caller falls back to React, same as a missing/invalid bundle.
     let bundle: LiquidThemePackageBundle;
+    const s7ParseStart = Date.now();
     try {
       bundle = parseLiquidThemePackageBundle(input.liquidBundle);
+      s7ProfileMark('parseLiquidThemePackageBundle', s7ParseStart);
     } catch (parseErr: unknown) {
       if (parseErr instanceof UnsupportedLiquidBundleSchemaVersionError) {
         return {
@@ -606,6 +734,7 @@ export class LiquidRenderer implements ThemeRenderer {
       contentForHeader,
       contentForFooter,
       locale: input.context.locale || 'en',
+      basePath: `/store/${input.context.subdomain}`,
     });
 
     // C1: wrap each region's renderLiquidTemplateSections in its own try/catch.
@@ -695,6 +824,7 @@ export class LiquidRenderer implements ThemeRenderer {
       footer: footerHtml,
     };
     const composition = composeLiquidStorefrontTheme(input, bundle, templateKey);
+    s7ProfileMark('LiquidRenderer.render:total', s7RenderStart, { path: input.context.path, sanitizeCalls: s7ProfileSanitizeCallCount });
 
     return {
       engine: this.engine,
@@ -740,11 +870,12 @@ const liquidRenderOptions = {
 
 function createLiquidEngine(
   bundle: LiquidThemePackageBundle,
-  globals: { contentForHeader?: string; contentForFooter?: string; locale?: string } = {},
+  globals: { contentForHeader?: string; contentForFooter?: string; locale?: string; basePath?: string } = {},
 ): Liquid {
   const contentForHeader = globals.contentForHeader || '';
   const contentForFooter = globals.contentForFooter || '';
   const locale = globals.locale || 'en';
+  const basePath = globals.basePath || '';
   // F1 — Template Parse Cache: cache:true enables LiquidJS v10.27.0 built-in LRU keyed on template
   // source strings. Content-addressed by construction → different tenants with different source text
   // get different LRU entries; there is no cross-tenant risk. The LRU is engine-instance-local
@@ -786,7 +917,7 @@ function createLiquidEngine(
     },
   });
 
-  registerLetbuyyLiquidFilters(engine, bundle, locale);
+  registerLetbuyyLiquidFilters(engine, bundle, locale, basePath);
   return engine;
 }
 
@@ -980,6 +1111,12 @@ function buildLiquidScope(
       locale: input.context.locale || 'en',
       preview: input.context.previewMode,
       request_id: input.context.requestId,
+      // T1/W2 — page-request query values (e.g. ?error=bot_verification after a failed Turnstile
+      // challenge), so a form section can render a real message instead of a silent redirect.
+      // Escaped like any other Liquid output ({{ }}, never `| raw`) — safe to display even though
+      // it is caller-supplied, and never used for anything but display text.
+      query: filterBlockedSettingsKeys(input.context.searchParams || {}),
+      error: (input.context.searchParams || {}).error || null,
       ...(asRecord(input.liquidContext?.request)),
     },
     // D2: settings drop resolves both flat and grouped key paths.
@@ -1005,23 +1142,48 @@ function buildLiquidScope(
       }
       return { ...grouped, ...flat, ...filterBlockedSettingsKeys(asRecord(input.liquidContext?.settings)) };
     })(),
-    routes: {
-      root_url: '/',
-      cart_url: '/cart',
-      search_url: '/search',
-      // E6: Shopify-convention account routes backed by existing storefront-runtime pages/routes.
-      // account_url: /store/[subdomain]/account/page.tsx
-      // account_login_url: /store/[subdomain]/customers/login/page.tsx (created in E8/LANE-B)
-      // account_register_url: /store/[subdomain]/customers/register (existing)
-      // account_logout_url: POST /api/customer/logout — NOTE: POST endpoint only; use inside a form,
-      //   not a plain anchor href, to avoid CSRF and accidental GET logout.
-      // all_products_collection_url: /store/[subdomain]/products/page.tsx (existing)
-      account_url: '/account',
-      account_login_url: '/customers/login',
-      account_register_url: '/customers/register',
-      account_logout_url: '/api/customer/logout',
-      all_products_collection_url: '/products',
-    },
+    // T1/W1 — the routes drop, now base-path-aware. Every real storefront page under Liquid lives at
+    // /store/{subdomain}/... (see apps/storefront-runtime/src/app/store/[subdomain]/**) — that path
+    // is directly, unconditionally reachable on ANY host, confirmed by reading proxy.ts: /store/<sub>
+    // is the internal rewrite TARGET (`rewriteToStore`), and proxy.ts explicitly skips its access
+    // gate for requests that already start with /store/ ("reached as a URL instead of as a rewrite...
+    // it is only ever legitimate host-routed" — proxy.ts:186-189), so it falls straight through to
+    // Next.js's own router either way. This is also EXACTLY the pattern the React path already uses
+    // unconditionally (composition-engine.tsx's `basePath = \`/store/${plan.route.subdomain}\``) —
+    // proven correct in production today, not a new scheme invented for Liquid. Mirroring it exactly
+    // means routes.* work identically under localhost:9000/store/snaz/... (local dev + theme-editor
+    // preview) and under a production subdomain host, with no mode-branching needed inside the
+    // renderer at all.
+    routes: (() => {
+      const basePath = `/store/${input.context.subdomain}`;
+      const customerLoginUrl = `${basePath}/customers/login`;
+      const customerRegisterUrl = `${basePath}/customers/register`;
+      // POST-only — use inside a form, not a plain anchor href, to avoid CSRF and accidental GET logout.
+      const customerLogoutUrl = '/api/customer/logout';
+      return {
+        root_url: basePath,
+        cart_url: `${basePath}/cart`,
+        search_url: `${basePath}/search`,
+        all_products_collection_url: `${basePath}/products`,
+        collections_url: `${basePath}/collections`,
+        contact_url: `${basePath}/contact`,
+        blog_url: `${basePath}/blog`,
+        account_url: `${basePath}/account`,
+        account_orders_url: `${basePath}/account/orders`,
+        account_addresses_url: `${basePath}/account/addresses`,
+        account_settings_url: `${basePath}/account/settings`,
+        account_wishlist_url: `${basePath}/account/wishlist`,
+        // Shopify-convention names (the phase's own requested vocabulary) ...
+        customer_login_url: customerLoginUrl,
+        customer_register_url: customerRegisterUrl,
+        customer_logout_url: customerLogoutUrl,
+        // ... kept as aliases too: nothing in this bundle currently reads the account_* forms, but
+        // they were the pre-existing names and removing them outright is an unforced breaking change.
+        account_login_url: customerLoginUrl,
+        account_register_url: customerRegisterUrl,
+        account_logout_url: customerLogoutUrl,
+      };
+    })(),
     product: commerceDrops.product,
     collection: commerceDrops.collection,
     collections: commerceDrops.collections,
@@ -1146,7 +1308,7 @@ async function renderLiquidEmbedRegion(
   return sanitizedEmbeds.join('\n');
 }
 
-function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackageBundle, locale: string): void {
+function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackageBundle, locale: string, basePath = ''): void {
   engine.registerFilter('money', (value: unknown) => formatLiquidMoney(value));
   engine.registerFilter('money_with_currency', (value: unknown, currency?: unknown) => formatLiquidMoney(value, currency));
   engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null).replace(/</g, '\\u003c'));
@@ -1157,6 +1319,22 @@ function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackage
   // javascript:/data: scheme) becomes ''. A distinct filter NAME for readability at the call site
   // only — safeLiquidUrl itself is not duplicated or reimplemented.
   engine.registerFilter('video_url', (value: unknown) => safeLiquidUrl(value));
+  // T1/W1 — merchant-typed relative paths (nav link block settings, etc.) are stored as portable
+  // fragments like "/products" so the SAME default composition works for every merchant's own
+  // subdomain — they are not resolved at authoring time. This filter resolves one at RENDER time:
+  // a root-relative path (starts with "/", not "//") gets the current store's base path prefixed
+  // (unless it is already prefixed, so a merchant who once saves an already-resolved value is not
+  // double-prefixed); anything else — an absolute http(s)/protocol-relative URL, mailto:, tel:, a
+  // bare #anchor, or an empty value — passes through unchanged, since a merchant nav link
+  // legitimately can point off-site. Mirrors composition-engine.tsx's own
+  // `basePath = /store/${subdomain}` — the same, already-production-proven scheme, not a new one.
+  engine.registerFilter('store_url', (value: unknown) => {
+    const raw = String(value ?? '').trim();
+    if (!raw) return raw;
+    if (!raw.startsWith('/') || raw.startsWith('//')) return raw;
+    if (basePath && (raw === basePath || raw.startsWith(`${basePath}/`))) return raw;
+    return `${basePath}${raw}`;
+  });
   engine.registerFilter('t', (value: unknown, replacements?: unknown) => translateLiquidKey(bundle, locale, value, replacements));
 }
 
@@ -1356,15 +1534,23 @@ interface ThemeDomPurifyRuntime {
 let domPurifyPromise: Promise<ThemeDomPurifyRuntime> | undefined;
 
 async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
+  const s7WasAlreadyInitialized = domPurifyPromise !== undefined;
+  const s7InitStart = Date.now();
   domPurifyPromise ||= (async () => {
+    const s7ImportStart = Date.now();
     const [{ default: createDOMPurify }, { JSDOM }] = await Promise.all([
       import('dompurify'),
       // jsdom is server-only (this runs during SSR sanitization). webpackIgnore keeps it
       // a runtime require so bundlers never pull jsdom's node:* deps into a client build.
       import(/* webpackIgnore: true */ 'jsdom'),
     ]);
+    s7ProfileMark('getThemeDomPurify:dynamic import(dompurify)+import(jsdom)', s7ImportStart);
+    const s7WindowStart = Date.now();
     const { window } = new JSDOM('<!doctype html><html><body></body></html>');
+    s7ProfileMark('getThemeDomPurify:new JSDOM(singleton window)', s7WindowStart);
+    const s7CreatePurifyStart = Date.now();
     const purify = createDOMPurify(window as unknown as WindowLike);
+    s7ProfileMark('getThemeDomPurify:createDOMPurify(window)', s7CreatePurifyStart);
     purify.addHook('uponSanitizeAttribute', (_node, data) => {
       const attrName = data.attrName.toLowerCase();
       const attrValue = data.attrValue.trim();
@@ -1381,33 +1567,68 @@ async function getThemeDomPurify(): Promise<ThemeDomPurifyRuntime> {
     });
     return {
       purify,
-      createDocument: (html: string) => new JSDOM(html).window.document,
+      createDocument: (html: string) => {
+        const s7DocStart = Date.now();
+        const doc = new JSDOM(html).window.document;
+        s7ProfileMark('createDocument:new JSDOM', s7DocStart);
+        return doc;
+      },
     };
   })();
+  const s7WasPending = !s7WasAlreadyInitialized;
+  const resolved = await domPurifyPromise;
+  if (s7WasPending) s7ProfileMark('getThemeDomPurify:first-init:total(await until resolved)', s7InitStart);
+  else s7ProfileMark('getThemeDomPurify:already-resolved(await cost only)', s7InitStart);
 
-  return domPurifyPromise;
+  return resolved;
+}
+
+// S7/W2 — profile-justified fix for the cold-path finding in
+// docs/evidence/liquid-load/S7-cold-path-profile.md: getThemeDomPurify()'s dynamic
+// import('dompurify')+import('jsdom') plus the singleton JSDOM window construction measured
+// ~490ms (454ms imports + 38ms window) the FIRST time any request reaches it in a process's
+// lifetime — never again afterward (confirmed: singleton, module-level, persists correctly).
+// This does not touch WHAT gets sanitized, the allowlist, the FORBID lists, or
+// outputEscape:'escape' — only WHEN the already-existing lazy singleton gets constructed.
+// Call this once from a server startup hook (e.g. Next.js instrumentation.ts's register(),
+// Node.js runtime only — jsdom/dompurify are server-only) so the cost lands on server boot,
+// which nobody is timing, instead of on whichever request happens to arrive first. Errors are
+// swallowed deliberately: a failed warmup must never crash server startup — sanitizeRenderedHtml
+// still lazily retries via the exact same getThemeDomPurify() call on the next real request.
+export function warmupThemeDomPurify(): void {
+  void getThemeDomPurify().catch(() => {});
 }
 
 export async function sanitizeRenderedHtml(
   html: string,
   options: RenderedHtmlSanitizerOptions = {},
 ): Promise<string> {
+  const s7SanitizeStart = Date.now();
+  if (S7_PROFILE_ENABLED) s7ProfileSanitizeCallCount += 1;
   const { purify, createDocument } = await getThemeDomPurify();
 
   if (options.allowHeadMetadata) {
+    const s7PurifyStart = Date.now();
     const sanitizedDocument = purify.sanitize(
       `<!doctype html><html><head>${html}</head><body></body></html>`,
       LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG,
     );
-    return createDocument(sanitizedDocument).head.innerHTML.trim();
+    s7ProfileMark('sanitizeRenderedHtml:purify.sanitize(allowHeadMetadata)', s7PurifyStart, { htmlLength: html.length });
+    const result = createDocument(sanitizedDocument).head.innerHTML.trim();
+    s7ProfileMark('sanitizeRenderedHtml:total(allowHeadMetadata)', s7SanitizeStart, { htmlLength: html.length });
+    return result;
   }
 
-  return purify.sanitize(
+  const s7PurifyStart = Date.now();
+  const result = purify.sanitize(
     html,
     options.wholeDocument
       ? LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG
       : LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG,
   );
+  s7ProfileMark('sanitizeRenderedHtml:purify.sanitize', s7PurifyStart, { htmlLength: html.length, wholeDocument: Boolean(options.wholeDocument) });
+  s7ProfileMark('sanitizeRenderedHtml:total', s7SanitizeStart, { htmlLength: html.length, wholeDocument: Boolean(options.wholeDocument) });
+  return result;
 }
 
 function escapeHtmlAttribute(value: string): string {

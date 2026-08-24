@@ -32,7 +32,7 @@ test('L10: logged-in account renders the customer greeting + nav', async () => {
   assert.equal(result.status, 'rendered');
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /Signed in as Ravi K/);
-  assert.match(html, /href="\/account\/orders"/);
+  assert.match(html, /href="\/store\/local-kicks\/account\/orders"/);
   // F7: logout is now a POST form (lb-logout island + no-JS fallback), not a GET anchor.
   // Verify the form POSTs to the correct endpoint rather than an anchor href.
   assert.match(html, /method="post"/);
@@ -45,7 +45,7 @@ test('L10: logged-out account renders the sign-in prompt (auth-gated)', async ()
   const result = await renderAccount(null);
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /lb-account__guest/);
-  assert.match(html, /href="\/customers\/login"/);
+  assert.match(html, /href="\/store\/local-kicks\/customers\/login"/);
   assert.doesNotMatch(html, /Signed in as/);
 });
 

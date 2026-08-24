@@ -118,3 +118,60 @@ a flip, not after. See `S6-load-summary.md` §9 for the full recommendation (pro
 steady-rate anomaly, then re-run this same harness — it needs no code changes to re-run — before
 revisiting the flip decision). `letbuyy-core` remains DARK; no migration, seed, or committed config
 enables Liquid anywhere in this repository as of this addendum.
+
+---
+
+## S7 ADDENDUM (2026-08-24) — corrects S6's steady-rate reading AND root-causes (partially) the
+## underlying finding. Everything above (S1's original evidence, the S6 addendum) is preserved
+## unmodified — this section supersedes only the steady-rate classification and adds root-cause work.
+
+**Part 1 — S6's "RED, 10–14×" steady-rate verdict was a sample-size artifact, corrected.**
+`docs/evidence/liquid-load/S7-verdict-correction.md` re-derives the same S6 JSON data directly: the
+steady-rate trial sampled n=5 per scenario with only ONE warmup request per scenario. At n=5, p95
+is mathematically identical to the max (verified: `ceil(5×0.95)-1 = 4`, the last index) — S6's "p95"
+figure carried no statistical meaning beyond "the single largest sample." The steady-rate minimums
+(35–39ms) match Liquid's WARM peak-rate p50s (34–46ms) elsewhere in the same evidence set — the
+same code, warm, is consistently fast even at low request rates. **Corrected classification:**
+concurrent load at peak rate stays GREEN (unchanged); the low-rate/steady dimension moves from RED
+to **NOT_PROVEN** — never adequately sampled, not measured-and-bad. The REAL, reproducible
+phenomenon S6 observed did not vanish; it was mischaracterized as a throughput/rate characteristic
+when it is a request-history-dependent cold-path cost — moved to Part 2 as its own finding.
+
+**Part 2 — the cold-path cost, profiled.** `docs/evidence/liquid-load/S7-cold-path-profile.md`
+instrumented `theme-renderer.ts` directly (env-gated spans, `LB_S7_PROFILE=1`) and found ONE
+confirmed, fixed cause and one residual, NOT_ROOT_CAUSED finding:
+
+- **CONFIRMED + FIXED:** `getThemeDomPurify()`'s lazy singleton — dynamic `import('dompurify')` +
+  `import('jsdom')` (194–454ms, directly timed) plus `new JSDOM(...)` singleton-window construction
+  (34–38ms) — pays ~230–493ms exactly ONCE per process lifetime, on whichever request happens to
+  arrive first. Verified NOT a recurring cost (5 sequential warm requests, 3s apart, all fast) and
+  NOT render cost (every `sanitizeRenderedHtml`/`LiquidRenderer.render` span after first-init is
+  0–51ms). **Fixed** by warming this singleton at server boot instead of first request: new
+  `warmupThemeDomPurify()` export (`theme-renderer.ts`), called from a new
+  `apps/storefront-runtime/src/instrumentation.ts` (Next.js's documented server-startup hook,
+  Node.js runtime only). Verified directly: the warmup spans now fire during boot before any HTTP
+  request is sent; the first real Liquid request afterward is fast (57ms in an isolation test).
+  Sanitizer allowlist/FORBID lists/`outputEscape` untouched — confirmed by re-running
+  `liquid-s1-w5-adversarial-security.test.ts` (10/10, unchanged).
+- **RESIDUAL, NOT_ROOT_CAUSED:** even after the fix and a corrected re-measurement (request-count
+  warmup — 5/scenario, confirmed complete; n=30/scenario; 3 trials —
+  `docs/evidence/liquid-load/S7-load-results-steady.json`), Liquid's p95 stayed elevated
+  (~542–555ms) on every low-rate trial. Critically, in one trial REACT showed the same magnitude
+  spike too (536–546ms on all three surfaces), correlating with a sharp, drop-then-recover swing in
+  system free memory (2340MB → 719MB → 666MB → 2226MB across the 3 trials) — consistent with another
+  process on this shared, ~90-competing-process development machine, not this repository's code.
+  Host pressure does not fully explain it either (Liquid was elevated in trials where React stayed
+  fast and memory was ample). **Classified NOT_ROOT_CAUSED, not fixed** — applying a change here
+  without a clean attribution would be tuning against noise, exactly what this phase's own rules
+  forbid. Recommended follow-up: re-run the corrected harness on an idle/dedicated machine to fully
+  separate host confound from any remaining Liquid-specific low-rate cost.
+
+**Updated gate verdict (supersedes the S6 addendum above):** render-parity and security/SSTI/XSS
+remain GREEN. Concurrent load: peak rate GREEN (unchanged); low-rate is **NOT_PROVEN** (not RED —
+corrected from the S6 addendum). One real performance defect was found, profiled, and fixed (the
+DOMPurify/JSDOM cold-start). One residual finding remains open and honestly unresolved (the
+low-rate anomaly, likely host-confounded but not conclusively so). **Still NO-GO for the flip** —
+now on the residual NOT_ROOT_CAUSED low-rate finding and the unratified latency-SLO seam
+(`SKIP-CAP-STOREFRONT-LATENCY-SLO`), not on render-parity or a confirmed-red load result.
+`letbuyy-core` remains DARK; no migration, seed, or committed config enables Liquid anywhere in
+this repository as of this addendum.

@@ -2,9 +2,9 @@
   {% if customer %}
   <h1>{{ section.settings.heading }}</h1>
   <p class="lb-account__hello">Signed in as {{ customer.name | default: customer.email }}</p>
-  <nav class="lb-account__nav"><a href="/account/orders">Orders</a><a href="/account/addresses">Addresses</a><a href="/account/settings">Settings</a><lb-logout data-logout-url="{{ routes.account_logout_url }}"><form method="post" action="{{ routes.account_logout_url }}"><button type="submit" class="lb-account__nav-link">Sign out</button></form></lb-logout></nav>
+  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_settings_url }}">Settings</a><lb-logout data-logout-url="{{ routes.account_logout_url }}"><form method="post" action="{{ routes.account_logout_url }}"><button type="submit" class="lb-account__nav-link">Sign out</button></form></lb-logout></nav>
   {% else %}
-  <p class="lb-account__guest">Please <a href="/customers/login">sign in</a> to view your account.</p>
+  <p class="lb-account__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to view your account.</p>
   {% endif %}
 </section>
 {% schema %}

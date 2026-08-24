@@ -22,7 +22,12 @@ const DATA_URL_PAYLOAD = 'data:text/html,<script>window.__S3_PWNED__=1</script>'
 // Renders one real section from the ACTUAL letbuyy-core Liquid bundle fixture (the same fixture the
 // parity harness and the DB-seed generator use) — not a synthetic bundle — so this proves the fixes
 // that actually ship, not a stand-in.
-async function renderCoreSection(sectionType: string, settings: Record<string, unknown>, blocks: Record<string, { type: string; settings: Record<string, unknown> }> = {}) {
+async function renderCoreSection(
+  sectionType: string,
+  settings: Record<string, unknown>,
+  blocks: Record<string, { type: string; settings: Record<string, unknown> }> = {},
+  liquidContext: Record<string, unknown> = {},
+) {
   const bundle = createLetbuyyCoreLiquidThemeBundleFixture();
   const sectionKey = 'target';
   bundle.templates['__s3_test__'] = {
@@ -46,7 +51,7 @@ async function renderCoreSection(sectionType: string, settings: Record<string, u
     storeTemplate: { storeId: STORE_ID, themeId: 'letbuyy-core-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
     routeTemplate: { id: '__s3_test__', type: 'page', layoutKey: 'theme', sections: [] },
     liquidTemplateKey: '__s3_test__',
-    liquidContext: {},
+    liquidContext,
     liquidBundle: bundle,
   });
 
@@ -154,6 +159,10 @@ test('A2: trust-badges renders each badge label as a heading element, matching T
 });
 
 // ─── A3: featured-products empty state ─────────────────────────────────────────────────────────
+// T1/W3: featured-products/product-grid no longer take per-item settings via merchant-configured
+// blocks (that data was always fabricated — a merchant TYPING a fake title/price/url, never a real
+// product). Both now bind the real, tenant-scoped `collection.products` drop, so these tests now
+// exercise the 0-products / N-real-products cases via liquidContext rather than block settings.
 
 test('A3 (S3-FIX item 1): featured-products shows the merchant\'s OWN title/subtitle ALWAYS, plus "No featured products" as an additive empty state — not a substitute for the heading', async () => {
   const html = await renderCoreSection('featured-products', {
@@ -161,9 +170,7 @@ test('A3 (S3-FIX item 1): featured-products shows the merchant\'s OWN title/subt
     subtitle: 'New arrivals weekly',
     viewAllLabel: 'View collection',
     viewAllHref: '/collections/new-arrivals',
-  }, {
-    b0: { type: 'product-card', settings: {} }, // unconfigured placeholder block, no title
-  });
+  }, {}, { collection: { products: [] } }); // 0 real products
   assert.match(html, /No featured products/);
   assert.match(html, /Drop-ready collection/, 'the merchant\'s own heading must survive an empty catalog — S3-FIX item 1 regression guard');
   assert.match(html, /New arrivals weekly/, 'subtitle must also survive an empty catalog, matching product-grid.liquid\'s shape');
@@ -174,16 +181,14 @@ test('A3 (S3-FIX item 1): featured-products suppresses the "View collection" lin
     title: 'Drop-ready collection',
     viewAllLabel: 'View collection',
     viewAllHref: '/collections/new-arrivals',
-  }, {
-    b0: { type: 'product-card', settings: {} },
-  });
+  }, {}, { collection: { products: [] } });
   assert.match(html, /Drop-ready collection/);
   assert.doesNotMatch(html, /View collection/, 'the view-all link has nothing to point at on an empty catalog — suppressing only this link is the defensible half of the fix');
 });
 
-test('A3: featured-products shows the real product card and title when a block has real content', async () => {
-  const html = await renderCoreSection('featured-products', { title: 'Drop-ready collection' }, {
-    b0: { type: 'product-card', settings: { title: 'Canvas Tote', price: '₹999', url: '/product/1' } },
+test('A3: featured-products shows the real product card and title when the collection has real products', async () => {
+  const html = await renderCoreSection('featured-products', { title: 'Drop-ready collection', productLimit: 3 }, {}, {
+    collection: { products: [{ id: 'p1', title: 'Canvas Tote', price: 99900, currency: 'INR', url: '/product/1' }] },
   });
   assert.match(html, /Drop-ready collection/);
   assert.match(html, /Canvas Tote/);
@@ -192,11 +197,18 @@ test('A3: featured-products shows the real product card and title when a block h
 // ─── A4: product-grid empty state (title always shown, unlike featured-products) ───────────────
 
 test('A4: product-grid shows "No products found" while still showing its title, matching product-grid.tsx', async () => {
-  const html = await renderCoreSection('product-grid', { title: 'Featured Products' }, {
-    b0: { type: 'product-card', settings: {} },
-  });
+  const html = await renderCoreSection('product-grid', { title: 'Featured Products' }, {}, { collection: { products: [] } });
   assert.match(html, /No products found/);
   assert.match(html, /Featured Products/, 'unlike featured-products, product-grid always shows its title (product-grid.tsx has no early return)');
+});
+
+test('A4: product-grid shows real product cards when the collection has real products', async () => {
+  const html = await renderCoreSection('product-grid', { title: 'Featured Products', productLimit: 8 }, {}, {
+    collection: { products: [{ id: 'p2', title: 'Court Sneaker', price: 349900, currency: 'INR', url: '/product/2' }] },
+  });
+  assert.match(html, /Featured Products/);
+  assert.match(html, /Court Sneaker/);
+  assert.doesNotMatch(html, /No products found/);
 });
 
 // ─── A5: app-block-slot "Installed app" placeholder ────────────────────────────────────────────

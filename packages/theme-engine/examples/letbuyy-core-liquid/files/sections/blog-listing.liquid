@@ -4,7 +4,7 @@
   <div class="lb-blog-listing__articles">
     {% for article in blog.articles %}
     <article class="lb-blog-article-card">
-      <h2 class="lb-blog-article-card__title"><a href="/blog/{{ article.slug }}">{{ article.title }}</a></h2>
+      <h2 class="lb-blog-article-card__title"><a href="{{ routes.blog_url }}/{{ article.slug }}">{{ article.title }}</a></h2>
       {% if article.excerpt %}<p class="lb-blog-article-card__excerpt">{{ article.excerpt }}</p>{% endif %}
       {% if article.published_at %}<time class="lb-blog-article-card__date" datetime="{{ article.published_at }}">{{ article.published_at | date: "%B %-d, %Y" }}</time>{% endif %}
     </article>
@@ -12,9 +12,9 @@
   </div>
   {% if blog.pages_count and blog.pages_count > 1 %}
   <nav class="lb-blog-listing__pagination" aria-label="Blog pagination">
-    {% if blog.current_page and blog.current_page > 1 %}<a class="lb-blog-listing__prev" href="/blog?page={{ blog.current_page | minus: 1 }}" rel="prev">Previous</a>{% endif %}
+    {% if blog.current_page and blog.current_page > 1 %}<a class="lb-blog-listing__prev" href="{{ routes.blog_url }}?page={{ blog.current_page | minus: 1 }}" rel="prev">Previous</a>{% endif %}
     {% assign next_page = blog.current_page | plus: 1 %}
-    {% if next_page <= blog.pages_count %}<a class="lb-blog-listing__next" href="/blog?page={{ next_page }}" rel="next">Next</a>{% endif %}
+    {% if next_page <= blog.pages_count %}<a class="lb-blog-listing__next" href="{{ routes.blog_url }}?page={{ next_page }}" rel="next">Next</a>{% endif %}
   </nav>
   {% endif %}
   {% else %}

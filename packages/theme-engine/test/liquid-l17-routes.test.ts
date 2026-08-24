@@ -1,4 +1,4 @@
-// L17 — Routes Drop Parity (Phase E, LANE-A, E6).
+// L17 — Routes Drop Parity (Phase E, LANE-A, E6; base-path-prefixed as of T1/W1).
 // Extends buildLiquidScope() routes object with Shopify-convention account URLs.
 // All new URLs are backed by existing storefront-runtime pages or API routes:
 //   account_url: /store/[subdomain]/account/page.tsx (existing)
@@ -6,7 +6,12 @@
 //   account_register_url: /store/[subdomain]/customers/register (existing)
 //   account_logout_url: POST /api/customer/logout (existing — POST only; must be used in a form, not a GET href)
 //   all_products_collection_url: /store/[subdomain]/products/page.tsx (existing)
-// Existing routes root_url, cart_url, search_url are preserved unchanged.
+// T1/W1: every route except account_logout_url (an /api/* route, excluded from proxy.ts's
+// middleware matcher and reached unprefixed regardless of host mode) is now prefixed with
+// `/store/<subdomain>` — mirroring composition-engine.tsx's ALREADY-proven React basePath
+// pattern, since `/store/<subdomain>/...` is unconditionally reachable on any host
+// (proxy.ts's rewriteToStore/isInternalStorePath) while a bare `/account` etc. is not
+// guaranteed to resolve to this store's own tree.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
@@ -110,23 +115,23 @@ async function renderRoutesTemplate(routeKey: string) {
   });
 }
 
-test('L17(a): routes.account_url renders /account', async () => {
+test('L17(a): routes.account_url renders /store/<subdomain>/account', async () => {
   const result = await renderRoutesTemplate('index');
   assert.equal(result.status, 'rendered', `render failed: ${result.warnings.join(', ')}`);
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /account:\/account/, 'account_url must be /account');
+  assert.match(html, /account:\/store\/local-kicks\/account/, 'account_url must be /store/local-kicks/account');
 });
 
-test('L17(b): routes.account_login_url renders /customers/login', async () => {
+test('L17(b): routes.account_login_url renders /store/<subdomain>/customers/login', async () => {
   const result = await renderRoutesTemplate('index');
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /login:\/customers\/login/, 'account_login_url must be /customers/login');
+  assert.match(html, /login:\/store\/local-kicks\/customers\/login/, 'account_login_url must be /store/local-kicks/customers/login');
 });
 
-test('L17(c): routes.account_register_url renders /customers/register', async () => {
+test('L17(c): routes.account_register_url renders /store/<subdomain>/customers/register', async () => {
   const result = await renderRoutesTemplate('index');
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /register:\/customers\/register/, 'account_register_url must be /customers/register');
+  assert.match(html, /register:\/store\/local-kicks\/customers\/register/, 'account_register_url must be /store/local-kicks/customers/register');
 });
 
 test('L17(d): routes.account_logout_url renders /api/customer/logout', async () => {
@@ -135,16 +140,16 @@ test('L17(d): routes.account_logout_url renders /api/customer/logout', async () 
   assert.match(html, /logout:\/api\/customer\/logout/, 'account_logout_url must be /api/customer/logout');
 });
 
-test('L17(e): routes.all_products_collection_url renders /products', async () => {
+test('L17(e): routes.all_products_collection_url renders /store/<subdomain>/products', async () => {
   const result = await renderRoutesTemplate('index');
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /products:\/products/, 'all_products_collection_url must be /products');
+  assert.match(html, /products:\/store\/local-kicks\/products/, 'all_products_collection_url must be /store/local-kicks/products');
 });
 
-test('L17(f): existing routes root_url, cart_url, search_url are still present and correct', async () => {
+test('L17(f): existing routes root_url, cart_url, search_url are store-prefixed', async () => {
   const result = await renderRoutesTemplate('index');
   const html = result.liquid?.layoutHtml ?? '';
-  assert.match(html, /root:\//,   'root_url must be /');
-  assert.match(html, /cart:\/cart/, 'cart_url must be /cart');
-  assert.match(html, /search:\/search/, 'search_url must be /search');
+  assert.match(html, /root:\/store\/local-kicks(\n|$)/,   'root_url must be /store/local-kicks');
+  assert.match(html, /cart:\/store\/local-kicks\/cart/, 'cart_url must be /store/local-kicks/cart');
+  assert.match(html, /search:\/store\/local-kicks\/search/, 'search_url must be /store/local-kicks/search');
 });

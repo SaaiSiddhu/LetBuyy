@@ -14,7 +14,7 @@
     data-authenticated="true"
   ></lb-address-manager>
   {% else %}
-  <p class="lb-addresses__guest">Please <a href="/customers/login">sign in</a> to manage your addresses.</p>
+  <p class="lb-addresses__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to manage your addresses.</p>
   {% endif %}
 </section>
 {% schema %}

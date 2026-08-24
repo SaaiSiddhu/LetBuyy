@@ -948,7 +948,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-announcement-bar" data-section-id="{{ section.id }}">',
         '  <span>{{ section.settings.text }}</span>',
-        '  {% if section.settings.linkLabel %}<a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>{% endif %}',
+        '  {% if section.settings.linkLabel %}<a href="{{ section.settings.linkHref | store_url }}">{{ section.settings.linkLabel }}</a>{% endif %}',
         '</section>',
       ],
     }),
@@ -1018,7 +1018,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-banner-carousel" data-section-id="{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}">',
         '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
         '  <div class="lb-banner-carousel__slides">',
-        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}',
+        '    {% for block in section.blocks %}<a href="{{ block.settings.link | store_url }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -1052,7 +1052,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  <h2>{{ section.settings.title }}</h2>',
         '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
         '  <div class="lb-category-grid__items">',
-        '    {% for block in section.blocks %}<a class="lb-category-card" href="/collections/{{ block.settings.slug }}"><strong>{{ block.settings.name }}</strong><span>{{ block.settings.tagline }}</span></a>{% endfor %}',
+        '    {% for block in section.blocks %}<a class="lb-category-card" href="{{ routes.collections_url }}/{{ block.settings.slug }}"><strong>{{ block.settings.name }}</strong><span>{{ block.settings.tagline }}</span></a>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -1101,7 +1101,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '    {% for vendor in collection.vendors %}<a class="lb-collection-filter__vendor-link" href="{{ vendor.url }}"{% if vendor.active %} aria-current="true"{% endif %}>{{ vendor.label }}</a>{% endfor %}',
         '  </nav>',
         '  {% endif %}',
-        '  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="/collections/{{ collection.handle }}">Clear</a>{% endif %}</p>',
+        '  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="{{ routes.collections_url }}/{{ collection.handle }}">Clear</a>{% endif %}</p>',
         '  {% elsif collection.products.size > 0 %}<p class="lb-collection-filter__count" role="status">{{ collection.products.size }} products</p>',
         '  {% else %}<p class="lb-collection-filter__empty" role="status">No products to filter yet.</p>{% endif %}',
         '</section>',
@@ -1136,7 +1136,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '<section class="lb-cta-section" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.heading }}</h2>',
         '  <p>{{ section.settings.subheading }}</p>',
-        '  <a href="{{ section.settings.ctaLink }}">{{ section.settings.ctaText }}</a>',
+        '  <a href="{{ section.settings.ctaLink | store_url }}">{{ section.settings.ctaText }}</a>',
         '</section>',
       ],
     }),
@@ -1160,7 +1160,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  <div class="lb-featured-products__items">',
         '    {% for block in section.blocks %}<article class="lb-product-card"><a href="{{ block.settings.url }}"><strong>{{ block.settings.title }}</strong><span>{{ block.settings.price }}</span></a></article>{% endfor %}',
         '  </div>',
-        '  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>',
+        '  <a href="{{ section.settings.viewAllHref | store_url }}">{{ section.settings.viewAllLabel }}</a>',
         '</section>',
       ],
     }),
@@ -1213,17 +1213,60 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       type: 'footer',
       name: 'Footer',
       settings: [
-        liquidSetting('storeName', 'text', 'Store name', { default: '{{ shop.name }}' }),
+        liquidSetting('storeName', 'text', 'Store name'),
         liquidSetting('tagline', 'text', 'Tagline'),
+        liquidSetting('contactEmail', 'text', 'Contact email'),
+        liquidSetting('contactPhone', 'text', 'Contact phone'),
+        liquidSetting('instagramUrl', 'url', 'Instagram URL'),
+        liquidSetting('facebookUrl', 'url', 'Facebook URL'),
+        liquidSetting('twitterUrl', 'url', 'Twitter/X URL'),
       ],
       blocks: [liquidInlineBlock('link', 'Link', [
         liquidSetting('label', 'text', 'Label'),
         liquidSetting('href', 'url', 'URL'),
       ])],
       body: [
+        // T2a/W3c — was brand + tagline + two bare links, single column at every width. Real
+        // multi-column footer: brand/social, merchant quick links (real `link` blocks — unchanged
+        // data source, T1 already routed them through `store_url`), the store's own real policy
+        // pages (routes.root_url + the actual /privacy /terms /shipping /returns routes — not
+        // invented paths, all four exist under /store/[subdomain]/), contact, and a LetBuyy
+        // watermark. Social links render only when the merchant has actually set one — never a
+        // placeholder icon linking nowhere.
         '<footer class="lb-footer" data-section-id="{{ section.id }}">',
-        '  <div><strong>{{ section.settings.storeName }}</strong>{% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}</div>',
-        '  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>',
+        '  <div class="lb-footer__grid">',
+        '    <div class="lb-footer__brand">',
+        '      <h3>{{ section.settings.storeName | default: shop.name }}</h3>',
+        '      {% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}',
+        '      {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}',
+        '      <div class="lb-footer__social">',
+        '        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>{% endif %}',
+        '        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">FB</a>{% endif %}',
+        '        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter">X</a>{% endif %}',
+        '      </div>',
+        '      {% endif %}',
+        '    </div>',
+        '    {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}',
+        '    <div class="lb-footer__col">',
+        '      <h4>Policies</h4>',
+        '      <nav>',
+        '        <a href="{{ routes.root_url }}/privacy">Privacy policy</a>',
+        '        <a href="{{ routes.root_url }}/terms">Terms of service</a>',
+        '        <a href="{{ routes.root_url }}/shipping">Shipping policy</a>',
+        '        <a href="{{ routes.root_url }}/returns">Returns policy</a>',
+        '      </nav>',
+        '    </div>',
+        '    <div class="lb-footer__col">',
+        '      <h4>Contact</h4>',
+        '      {% if section.settings.contactEmail != blank %}<p><a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a></p>{% endif %}',
+        '      {% if section.settings.contactPhone != blank %}<p><a href="tel:{{ section.settings.contactPhone }}">{{ section.settings.contactPhone }}</a></p>{% endif %}',
+        '      <a href="{{ routes.contact_url }}">Contact us</a>',
+        '    </div>',
+        '  </div>',
+        '  <div class="lb-footer__bottom">',
+        '    <p>&copy; {{ shop.name }}. All rights reserved.</p>',
+        '    <a class="lb-footer__watermark" href="https://letbuyy.com" target="_blank" rel="noopener noreferrer">Powered by LetBuyy</a>',
+        '  </div>',
         '</footer>',
       ],
     }),
@@ -1231,19 +1274,53 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       type: 'header',
       name: 'Header',
       settings: [
-        liquidSetting('storeName', 'text', 'Store name', { default: '{{ shop.name }}' }),
+        liquidSetting('storeName', 'text', 'Store name'),
         liquidSetting('showSearch', 'toggle', 'Show search', { default: true }),
         liquidSetting('showCart', 'toggle', 'Show cart', { default: true }),
+        // T2a/W3a — mirrors the React header's own `behavior` setting (template_config.sections.
+        // header.settings.behavior). Was declared nowhere on the Liquid side, so "Sticky" never had
+        // anything to actually turn on; header.liquid's data-sticky attribute now reads it directly.
+        liquidSetting('behavior', 'select', 'Header behavior', { default: 'sticky', options: ['static', 'sticky'] }),
       ],
       blocks: [liquidInlineBlock('link', 'Link', [
         liquidSetting('label', 'text', 'Label'),
         liquidSetting('href', 'url', 'URL'),
       ])],
       body: [
-        '<header class="lb-header" data-section-id="{{ section.id }}">',
-        '  <a class="lb-header__brand" href="/">{{ section.settings.storeName }}</a>',
-        '  <nav>{% for block in section.blocks %}<a href="{{ block.settings.href }}">{{ block.settings.label }}</a>{% endfor %}</nav>',
-        '  <div class="lb-header__actions">{% if section.settings.showSearch %}<lb-search data-lb-island="search" data-search-url="/search"></lb-search>{% endif %}{% if section.settings.showCart %}<a href="/cart">{{ "general.cart" | t }} ({{ cart.item_count }})</a>{% endif %}</div>',
+        '<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == \'sticky\' %}true{% else %}false{% endif %}">',
+        '  <div class="lb-header__inner">',
+        // T2a/W3a — <lb-mobile-nav> wraps the toggle button + the ONE nav-links list; CSS
+        // repositions the SAME markup between the mobile off-canvas drawer and the desktop inline
+        // row (see LIQUID_THEME_BASE_CSS), so there is exactly one list to keep in sync — no
+        // separate mobile/desktop nav content to duplicate or drift.
+        '    <lb-mobile-nav class="lb-mobile-nav" data-lb-island="mobile-nav">',
+        '      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-label="Menu">',
+        '        <span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span>',
+        '      </button>',
+        '      <nav class="lb-header__nav" data-lb-nav-panel aria-label="Primary">',
+        '        {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}',
+        // T2a/W3a — search lives in the drawer's own link list at mobile widths (the phase's own
+        // spec: "hamburger → drawer/panel with nav, search, account") so it never has to compete for
+        // width in the compact header row; `.lb-header__nav-search` hides this duplicate entry once
+        // the desktop breakpoint gives the inline <lb-search> island room of its own (see CSS).
+        '        {% if section.settings.showSearch %}<a class="lb-header__nav-search" href="{{ routes.search_url }}">Search</a>{% endif %}',
+        '        <a href="{{ routes.account_url }}">Account</a>',
+        '      </nav>',
+        '      <div class="lb-header__scrim" data-lb-nav-scrim></div>',
+        '    </lb-mobile-nav>',
+        '    <a class="lb-header__brand" href="{{ routes.root_url }}">{{ section.settings.storeName | default: shop.name }}</a>',
+        '    <div class="lb-header__actions">',
+        '      {% if section.settings.showSearch %}<lb-search class="lb-header__search-island" data-lb-island="search" data-search-url="{{ routes.search_url }}"></lb-search>{% endif %}',
+        // T2a/W3a — cart.item_count is null at SSR (no cart token exists server-side; T1's own
+        // comment on collectLiquidCart documents this as deliberately honest, not a bug). The bare
+        // count previously rendered as "Cart ()". `default: 0` gives an honest, standard placeholder
+        // (every storefront shows 0 before its cart hydrates) and the count is real the moment the
+        // client-side lb-mobile-nav/cart islands report the true localStorage/gateway cart state —
+        // the SAME CART_CHANGED_EVENT the existing cart-drawer/cart-page islands already dispatch,
+        // not a new mechanism (see liquid-hydration-islands.tsx LiquidHydrationIslands' cart-count sync).
+        '      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}">{{ "general.cart" | t }} (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}',
+        '    </div>',
+        '  </div>',
         '</header>',
       ],
     }),
@@ -1270,7 +1347,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}',
         '  <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>',
         '  {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}',
-        '  <a href="{{ section.settings.ctaLink }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>',
+        '  <a href="{{ section.settings.ctaLink | store_url }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>',
         '</section>',
       ],
     }),
@@ -1296,7 +1373,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-portfolio-grid" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
-        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href="{{ block.settings.link }}">View</a></article>{% endfor %}',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href="{{ block.settings.link | store_url }}">View</a></article>{% endfor %}',
         '</section>',
       ],
     }),
@@ -1313,7 +1390,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  <h1>{{ product.title }}</h1>',
         '  {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}',
         '  {% if section.settings.showGallery %}<div class="lb-product-detail__gallery">{% for image in product.images %}<img src="{{ image | image_url }}" alt="{{ product.title }}">{% endfor %}</div>{% endif %}',
-        '  <p>{{ product.price | money_with_currency: product.currency }}</p>',
+        '  <p>{{ product.price | times: 100 | money_with_currency: product.currency }}</p>',
         '  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}',
         '  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" class="lb-product-detail__variants">{% for option in product.options %}<span class="lb-variant-option__name">{{ option.name }}</span>{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}{% endfor %}</lb-variant-picker>{% endif %}',
         '  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live="polite"></span></lb-add-to-cart>',
@@ -1344,7 +1421,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  <h2>{{ section.settings.title }}</h2>',
         '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
         '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
-        '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}',
+        '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -1375,7 +1452,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-services-grid" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
-        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href="{{ block.settings.link }}">Learn more</a></article>{% endfor %}',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href="{{ block.settings.link | store_url }}">Learn more</a></article>{% endfor %}',
         '</section>',
       ],
     }),
@@ -1411,7 +1488,8 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-testimonials" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
-        '  {% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}',
+        '  {% if section.blocks.size > 0 %}<div class="lb-testimonials__items">{% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}</div>',
+        '  {% else %}<p class="lb-testimonials__empty">Add customer reviews to build trust.</p>{% endif %}',
         '</section>',
       ],
     }),
@@ -2204,7 +2282,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
             type: 'textarea',
             label: 'Meta description',
             info: 'Falls back to the shop description. Truncated to 160 characters on output.',
-            default: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
+            default: '',
             maxLength: 160,
           },
           socialImageUrl: {
@@ -2245,7 +2323,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           // Compute the title and the description ONCE so <title>, og:* and twitter:* can never drift
           // apart. Both are plain escaped outputs — never `| raw` — so merchant-authored copy can never
           // inject markup into <head> (THEME-R4 / SEC-R11).
-          '  {% assign lb_page_title = shop.name | append: " - Urban Kicks" %}',
+          // T1: the page <title> is the merchant's own shop name — it must never carry the theme's
+          // own brand suffix (this used to literally append " - Urban Kicks", so every storefront's
+          // browser tab and search-result title advertised the THEME, not the merchant).
+          '  {% assign lb_page_title = shop.name %}',
           '  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}',
           '  <title>{{ lb_page_title }}</title>',
           '  {% if lb_meta_description != blank %}<meta name="description" content="{{ lb_meta_description }}">{% endif %}',
@@ -2300,7 +2381,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <header class="lb-layout__header">',
           '    <a class="lb-layout__brand" href="{{ routes.root_url }}">{{ shop.name }}</a>',
           '    <nav class="lb-layout__nav" aria-label="Primary">',
-          '      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href="{{ link.url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}',
+          '      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href="{{ link.url | store_url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}',
           '      {% else %}<a href="{{ routes.all_products_collection_url }}">Products</a><a href="{{ routes.search_url }}">Search</a><a href="{{ routes.cart_url }}">Cart</a><a href="{{ routes.account_url }}">Account</a>{% endif %}',
           '    </nav>',
           '  </header>',
@@ -2308,7 +2389,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    {{ content_for_layout | raw }}',
           '  </main>',
           '  <footer class="lb-layout__footer">',
-          '    {% if linklists.footer.links.size > 0 %}<nav class="lb-layout__nav" aria-label="Footer">{% for link in linklists.footer.links %}<a href="{{ link.url }}">{{ link.title }}</a>{% endfor %}</nav>{% endif %}',
+          '    {% if linklists.footer.links.size > 0 %}<nav class="lb-layout__nav" aria-label="Footer">{% for link in linklists.footer.links %}<a href="{{ link.url | store_url }}">{{ link.title }}</a>{% endfor %}</nav>{% endif %}',
           '    <p class="lb-layout__legal">&copy; {{ shop.name }}</p>',
           '  </footer>',
           // content_for_footer carries app-embed <script>/markup, not page chrome, so it stays OUTSIDE
@@ -2332,7 +2413,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           headingFontFamily: 'Inter',
           bodyFontFamily: 'Inter',
           borderRadius: 12,
-          metaDescription: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
+          // Empty, not fabricated marketing copy: the layout falls back to the real shop.description
+          // ({% assign lb_meta_description = settings.metaDescription | default: shop.description ... %}),
+          // so a blank default here is what lets that fallback actually engage for every merchant.
+          metaDescription: '',
           // Empty, not a fabricated URL: an unset asset must render no tag at all, and the layout
           // guards both with `!= blank` so nothing broken is emitted before a merchant uploads one.
           socialImageUrl: '',
@@ -2356,12 +2440,29 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         name: 'Urban Kicks header',
         layout: 'theme',
         sections: {
+          // T2a/W3b — moved from the `index` template. `header`, `contentForLayout` and `footer` are
+          // three SEPARATE rendered fragments concatenated by composition-engine.tsx's renderLiquidPlan
+          // (`${header}${contentForLayout}${footer}`) — an announcement bar living inside `index`'s own
+          // sections is part of `contentForLayout`, which is concatenated AFTER `header`, so it always
+          // rendered below the header chrome and only on the home page. `header` renders on every
+          // route, so placing it first here makes it appear above the header on EVERY page, which is
+          // what an announcement bar is for. LIQUID_THEME_BASE_CSS gives `.lb-announcement-bar` its own
+          // full-bleed background (removed from the shared max-width container selector) with an inner
+          // `.lb-announcement-bar__inner` that stays readably centered.
+          'announcement-default': {
+            type: 'announcement-bar',
+            settings: {
+              text: 'Free shipping on fresh drops this week.',
+              linkLabel: 'Shop now',
+              linkHref: '/products',
+            },
+          },
           'header-default': {
             type: 'header',
             settings: {
-              storeName: 'Urban Kicks',
               showSearch: true,
               showCart: true,
+              behavior: 'sticky',
             },
             blocks: {
               'header-products': {
@@ -2382,7 +2483,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
             block_order: ['header-products', 'header-collections'],
           },
         },
-        order: ['header-default'],
+        order: ['announcement-default', 'header-default'],
       },
       footer: {
         name: 'Urban Kicks footer',
@@ -2390,10 +2491,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         sections: {
           'footer-default': {
             type: 'footer',
-            settings: {
-              storeName: 'Urban Kicks',
-              tagline: 'First-party Liquid commerce storefront.',
-            },
+            settings: {},
             blocks: {
               'footer-contact': {
                 type: 'link',
@@ -2419,14 +2517,6 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         name: 'Urban Kicks home page',
         layout: 'theme',
         sections: {
-          'announcement-default': {
-            type: 'announcement-bar',
-            settings: {
-              text: 'Free shipping on fresh drops this week.',
-              linkLabel: 'Shop now',
-              linkHref: '/products',
-            },
-          },
           // S5/W1 — banner-carousel existed as sections/banner-carousel.liquid but was never composed
           // into a template. Two slides so the real carousel path renders (its React counterpart,
           // banner-carousel.tsx, only engages above one slide — it is a sub-component of hero.tsx, not
@@ -2438,7 +2528,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           'banner-carousel-default': {
             type: 'banner-carousel',
             settings: {
-              title: 'This week on LetBuyy Core',
+              title: 'This week',
               autoplay: true,
             },
             blocks: {
@@ -2473,40 +2563,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               overlay: 0.4,
             },
           },
+          // T2a/W1b — no more fabricated category cards (Sneakers/Apparel/Accessories never existed
+          // as real collections on any merchant's store). Binds the real `collections` drop directly.
           'category-grid-default': {
             type: 'category-grid',
             settings: {
               title: 'Shop by style',
               subtitle: 'Launch-ready groupings for daily buyers.',
             },
-            blocks: {
-              'category-sneakers': {
-                type: 'category',
-                settings: {
-                  name: 'Sneakers',
-                  slug: 'sneakers',
-                  tagline: 'Fresh pairs',
-                },
-              },
-              'category-apparel': {
-                type: 'category',
-                settings: {
-                  name: 'Apparel',
-                  slug: 'apparel',
-                  tagline: 'Daily fits',
-                },
-              },
-              'category-accessories': {
-                type: 'category',
-                settings: {
-                  name: 'Accessories',
-                  slug: 'accessories',
-                  tagline: 'Finish the look',
-                },
-              },
-            },
-            block_order: ['category-sneakers', 'category-apparel', 'category-accessories'],
           },
+          // T1/W3 — no more fabricated product-card blocks (Velocity Runner/Everyday Hoodie/Street
+          // Cap never existed in any merchant's catalog). Both sections now bind the real, tenant-
+          // scoped `collection.products` drop directly; productLimit replaces per-block curation.
           'featured-collection-default': {
             type: 'featured-products',
             settings: {
@@ -2514,34 +2582,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               subtitle: 'Curated items for the first storefront launch.',
               viewAllLabel: 'View collection',
               viewAllHref: '/collections/new-arrivals',
+              productLimit: 3,
             },
-            blocks: {
-              'product-sneaker': {
-                type: 'product-card',
-                settings: {
-                  title: 'Velocity Runner',
-                  price: 'Rs 4,999',
-                  url: '/products/velocity-runner',
-                },
-              },
-              'product-hoodie': {
-                type: 'product-card',
-                settings: {
-                  title: 'Everyday Hoodie',
-                  price: 'Rs 2,499',
-                  url: '/products/everyday-hoodie',
-                },
-              },
-              'product-cap': {
-                type: 'product-card',
-                settings: {
-                  title: 'Street Cap',
-                  price: 'Rs 899',
-                  url: '/products/street-cap',
-                },
-              },
-            },
-            block_order: ['product-sneaker', 'product-hoodie', 'product-cap'],
           },
           'product-grid-default': {
             type: 'product-grid',
@@ -2549,26 +2591,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               title: 'Featured Products',
               subtitle: 'Products selected from your catalog.',
               columns: 4,
+              productLimit: 8,
             },
-            blocks: {
-              'grid-sneaker': {
-                type: 'product-card',
-                settings: {
-                  title: 'Court Sneaker',
-                  price: 'Rs 3,499',
-                  url: '/products/court-sneaker',
-                },
-              },
-              'grid-backpack': {
-                type: 'product-card',
-                settings: {
-                  title: 'Transit Backpack',
-                  price: 'Rs 1,999',
-                  url: '/products/transit-backpack',
-                },
-              },
-            },
-            block_order: ['grid-sneaker', 'grid-backpack'],
           },
           // S5/W2 — video-hero (new Liquid-only section; see its definition comment above for the
           // full sanitizer/type-system reasoning). videoUrl is deliberately OMITTED (not an empty
@@ -2582,17 +2606,21 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               subheading: 'A quick look at how each drop moves, from the box to your feet.',
             },
           },
+          // T1/W4 — was developer/proof-of-concept copy describing the section's own implementation
+          // ("Added as sections/spotlight.liquid without changing the storefront React registry.",
+          // "Zero storefront code change") — text about the codebase, not the merchant's store.
+          // Replaced with generic, brand-neutral merchant marketing copy a real storefront could ship.
           'spotlight-default': {
             type: 'spotlight',
             settings: {
-              heading: 'A brand-new Liquid section',
-              subheading: 'Added as sections/spotlight.liquid without changing the storefront React registry.',
+              heading: 'Made for daily buyers',
+              subheading: 'A little extra with every order.',
             },
             blocks: {
               'spotlight-badge': {
                 type: 'badge',
                 settings: {
-                  label: 'Zero storefront code change',
+                  label: 'New',
                 },
               },
               'spotlight-app': {
@@ -2613,28 +2641,16 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           // which LetBuyy Core is not: this is a single merchant's own storefront). Placed right
           // before the newsletter signup: reinforcing trust immediately before asking for an email
           // is a deliberate ordering choice, not incidental.
+          // T2a/W1 — was two invented reviewers (Ananya R./Rohan K.), real Indian cities, reviewing a
+          // product that never existed, shipped as a THEME DEFAULT so every merchant using this theme
+          // unknowingly published fabricated customer reviews on their own storefront (a real
+          // compliance exposure under India's fabricated-review guidance, not just untidy seed data).
+          // Ships with zero blocks; testimonials.liquid renders a merchant-facing empty state instead.
           'testimonials-default': {
             type: 'testimonials',
             settings: {
               title: 'What our buyers say',
             },
-            blocks: {
-              'testimonial-ananya': {
-                type: 'testimonial',
-                settings: {
-                  quote: 'The sizing guide was spot on and my Velocity Runners showed up in two days.',
-                  author: 'Ananya R., Bengaluru',
-                },
-              },
-              'testimonial-rohan': {
-                type: 'testimonial',
-                settings: {
-                  quote: 'Easy returns and honest photos — the hoodie fit exactly like the size chart said.',
-                  author: 'Rohan K., Pune',
-                },
-              },
-            },
-            block_order: ['testimonial-ananya', 'testimonial-rohan'],
           },
           'newsletter-default': {
             type: 'newsletter-signup',
@@ -2646,7 +2662,6 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           },
         },
         order: [
-          'announcement-default',
           'banner-carousel-default',
           'hero-default',
           'category-grid-default',
@@ -2834,7 +2849,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '<section class="lb-orders" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
           '  {% if customer.orders and customer.orders.size > 0 %}',
-          '  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="/account/orders/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
+          '  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="{{ routes.account_orders_url }}/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
           '  {% else %}<p class="lb-orders__empty">No orders yet.</p>{% endif %}',
           '</section>',
         ],
@@ -2876,9 +2891,9 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           // inline styles from sanitized HTML. The form remains functional without it.
           // LANE-B (liquid-hydration-islands.tsx) registers LbLogoutElement to intercept the click
           // and do fetch(logoutUrl, {method:'POST'}) + redirect; falls back to native form.submit().
-          '  <nav class="lb-account__nav"><a href="/account/orders">Orders</a><a href="/account/addresses">Addresses</a><a href="/account/settings">Settings</a><lb-logout data-logout-url="{{ routes.account_logout_url }}"><form method="post" action="{{ routes.account_logout_url }}"><button type="submit" class="lb-account__nav-link">Sign out</button></form></lb-logout></nav>',
+          '  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_settings_url }}">Settings</a><lb-logout data-logout-url="{{ routes.account_logout_url }}"><form method="post" action="{{ routes.account_logout_url }}"><button type="submit" class="lb-account__nav-link">Sign out</button></form></lb-logout></nav>',
           '  {% else %}',
-          '  <p class="lb-account__guest">Please <a href="/customers/login">sign in</a> to view your account.</p>',
+          '  <p class="lb-account__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to view your account.</p>',
           '  {% endif %}',
           '</section>',
         ],
@@ -2890,15 +2905,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-auth lb-auth--login" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
+          '  {% if request.error %}<p class="lb-auth__error" role="alert">{% case request.error %}{% when "missing_fields" %}Please fill in all required fields.{% when "invalid_credentials" %}Incorrect email or password.{% when "account_exists" %}An account with this email already exists. Please sign in.{% when "rate_limited" %}Too many attempts. Please try again shortly.{% when "bot_verification" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}',
           '  <form class="lb-auth__form" method="post" action="/api/customer/login">',
           // E8 (LANE-A): hidden storeId field — mirrors D10 pattern from customer-register.
           // Enables no-JS form submission to the D10 dual-content-type login route.
           '    <input type="hidden" name="storeId" value="{{ shop.id }}">',
+          '    <input type="hidden" name="turnstileToken" value="">',
+          '    <lb-turnstile data-lb-island="turnstile"></lb-turnstile>',
           '    <label>Email<input type="email" name="email" autocomplete="email" required></label>',
           '    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>',
           '    <button type="submit">Sign in</button>',
           '  </form>',
-          '  <a href="/customers/register">Create an account</a>',
+          '  <a href="{{ routes.customer_register_url }}">Create an account</a>',
           '</section>',
         ],
       }),
@@ -2909,8 +2927,11 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-auth lb-auth--register" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
+          '  {% if request.error %}<p class="lb-auth__error" role="alert">{% case request.error %}{% when "missing_fields" %}Please fill in all required fields.{% when "invalid_credentials" %}Incorrect email or password.{% when "account_exists" %}An account with this email already exists. Please sign in.{% when "rate_limited" %}Too many attempts. Please try again shortly.{% when "bot_verification" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}',
           '  <form class="lb-auth__form" method="post" action="/api/customer/register">',
           '    <input type="hidden" name="storeId" value="{{ shop.id }}">',
+          '    <input type="hidden" name="turnstileToken" value="">',
+          '    <lb-turnstile data-lb-island="turnstile"></lb-turnstile>',
           // Field is named "fullName" (not "name"): DOMPurify 3.x DOM-clobbering protection strips
           // name="name" from an <input> because the value "name" collides with the HTMLInputElement.name
           // property, which would silently drop the customer name from a no-JS POST. The register route
@@ -2920,7 +2941,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    <label>Password<input type="password" name="password" autocomplete="new-password" required></label>',
           '    <button type="submit">Create account</button>',
           '  </form>',
-          '  <a href="/customers/login">Already have an account?</a>',
+          '  <a href="{{ routes.customer_login_url }}">Already have an account?</a>',
           '</section>',
         ],
       }),
@@ -2946,7 +2967,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    data-authenticated="true"',
           '  ></lb-customer-settings>',
           '  {% else %}',
-          '  <p class="lb-settings__guest">Please <a href="/customers/login">sign in</a> to manage your settings.</p>',
+          '  <p class="lb-settings__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to manage your settings.</p>',
           '  {% endif %}',
           '</section>',
         ],
@@ -2960,12 +2981,12 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class="lb-wishlist__count">({{ customer.wishlist_products.size }})</span>{% endif %}</h1>',
           '  {% if customer.wishlist_products and customer.wishlist_products.size > 0 %}',
           '  <div class="lb-product-grid__items">',
-          '    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}',
+          '    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}',
           '  </div>',
           '  {% elsif customer %}',
-          '  <p class="lb-wishlist__empty">Your wishlist is empty. <a href="/store/{{ shop.subdomain }}/shop">Browse products</a></p>',
+          '  <p class="lb-wishlist__empty">Your wishlist is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>',
           '  {% else %}',
-          '  <p class="lb-wishlist__guest">Please <a href="/customers/login">sign in</a> to view your wishlist.</p>',
+          '  <p class="lb-wishlist__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to view your wishlist.</p>',
           '  {% endif %}',
           '</section>',
         ],
@@ -2991,7 +3012,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    data-authenticated="true"',
           '  ></lb-address-manager>',
           '  {% else %}',
-          '  <p class="lb-addresses__guest">Please <a href="/customers/login">sign in</a> to manage your addresses.</p>',
+          '  <p class="lb-addresses__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to manage your addresses.</p>',
           '  {% endif %}',
           '</section>',
         ],
@@ -3029,7 +3050,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    </div>',
           '    <p class="lb-cart__total">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>',
           '    <a class="lb-cart__checkout" href="{{ cart.checkout_url }}">Checkout</a>',
-          '    {% else %}<p class="lb-cart__empty">Your cart is empty. <a href="/store/{{ shop.subdomain }}/shop">Browse products</a></p>{% endif %}',
+          '    {% else %}<p class="lb-cart__empty">Your cart is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>{% endif %}',
           '  </lb-cart>',
           '</section>',
         ],
@@ -3040,7 +3061,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         settings: [liquidSetting('placeholder', 'text', 'Placeholder', { default: 'Search products' })],
         body: [
           '<section class="lb-search" data-section-id="{{ section.id }}">',
-          '  <lb-search data-lb-island="search" data-search-url="/search"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>',
+          '  <lb-search data-lb-island="search" data-search-url="{{ routes.search_url }}"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>',
           '  {% if search.terms %}<p class="lb-search__terms">Results for "{{ search.terms }}"</p>{% endif %}',
           '</section>',
         ],
@@ -3070,9 +3091,13 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
           '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
+          '  {% if collection.products.size > 0 %}',
           '  <div class="lb-product-grid__items">',
-          '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}',
+          '    {% for item in collection.products %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}',
           '  </div>',
+          '  {% else %}',
+          '  <div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>',
+          '  {% endif %}',
           '</section>',
         ],
       }),
@@ -3092,7 +3117,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <div class="lb-blog-listing__articles">',
           '    {% for article in blog.articles %}',
           '    <article class="lb-blog-article-card">',
-          '      <h2 class="lb-blog-article-card__title"><a href="/blog/{{ article.slug }}">{{ article.title }}</a></h2>',
+          '      <h2 class="lb-blog-article-card__title"><a href="{{ routes.blog_url }}/{{ article.slug }}">{{ article.title }}</a></h2>',
           '      {% if article.excerpt %}<p class="lb-blog-article-card__excerpt">{{ article.excerpt }}</p>{% endif %}',
           '      {% if article.published_at %}<time class="lb-blog-article-card__date" datetime="{{ article.published_at }}">{{ article.published_at | date: "%B %-d, %Y" }}</time>{% endif %}',
           '    </article>',
@@ -3100,9 +3125,9 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  </div>',
           '  {% if blog.pages_count and blog.pages_count > 1 %}',
           '  <nav class="lb-blog-listing__pagination" aria-label="Blog pagination">',
-          '    {% if blog.current_page and blog.current_page > 1 %}<a class="lb-blog-listing__prev" href="/blog?page={{ blog.current_page | minus: 1 }}" rel="prev">Previous</a>{% endif %}',
+          '    {% if blog.current_page and blog.current_page > 1 %}<a class="lb-blog-listing__prev" href="{{ routes.blog_url }}?page={{ blog.current_page | minus: 1 }}" rel="prev">Previous</a>{% endif %}',
           '    {% assign next_page = blog.current_page | plus: 1 %}',
-          '    {% if next_page <= blog.pages_count %}<a class="lb-blog-listing__next" href="/blog?page={{ next_page }}" rel="next">Next</a>{% endif %}',
+          '    {% if next_page <= blog.pages_count %}<a class="lb-blog-listing__next" href="{{ routes.blog_url }}?page={{ next_page }}" rel="next">Next</a>{% endif %}',
           '  </nav>',
           '  {% endif %}',
           '  {% else %}',
@@ -3200,8 +3225,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         path: 'sections/announcement-bar.liquid',
         source: [
           '<section class="lb-announcement-bar" data-section-id="{{ section.id }}">',
-          '  <span>{{ section.settings.text }}</span>',
-          '  <a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>',
+          '  <div class="lb-announcement-bar__inner">',
+          '    <span>{{ section.settings.text }}</span>',
+          '    {% if section.settings.linkLabel %}<a href="{{ section.settings.linkHref | store_url }}">{{ section.settings.linkLabel }}</a>{% endif %}',
+          '  </div>',
           '</section>',
           '{% schema %}',
           '{',
@@ -3257,7 +3284,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}',
           '  <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>',
           '  {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}',
-          '  <a href="{{ section.settings.ctaLink }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>',
+          '  <a href="{{ section.settings.ctaLink | store_url }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>',
           '</section>',
           '{% schema %}',
           '{',
@@ -3350,14 +3377,26 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'category-grid': {
         path: 'sections/category-grid.liquid',
         source: [
+          // T2a/W1b — was block-driven (3 merchant-typed category cards — Sneakers/Apparel/
+          // Accessories — pointing to collection slugs that do not exist on a fresh store).
+          // Rewritten to bind the real `collections` drop (composition-engine.tsx). Known scope
+          // limit, not fixed here (out of this phase's reach — a real "list all of this store's
+          // collections" fetch does not exist anywhere in the platform today; `collections/page.tsx`'s
+          // own comment confirms this is a deliberate, pre-existing gap, not something this section
+          // introduced): `collections` is currently a 0-or-1-item wrapper around whatever `collection`
+          // is already in scope for the CURRENT page (composition-engine.tsx `collections: collection
+          // ? [collection] : []`), not a genuine multi-collection listing. On a store with 0 real
+          // collections (e.g. `snaz`) this correctly renders the empty state below — real, not
+          // fabricated, even though it is not yet the full "browse all our collections" experience a
+          // merchant with collections would expect. Never re-introduce hardcoded category cards here.
           '<section class="lb-category-grid" data-section-id="{{ section.id }}">',
           '  <h2>{{ section.settings.title }}</h2>',
           '  <p>{{ section.settings.subtitle }}</p>',
-          '  <div class="lb-category-grid__items">',
-          '    {% for block in section.blocks %}',
-          '      {{ block.content | raw }}',
-          '    {% endfor %}',
-          '  </div>',
+          '  {% if collections.size > 0 %}',
+          '  <div class="lb-category-grid__items">{% for item in collections %}<a class="lb-category-card" href="{{ routes.collections_url }}/{{ item.handle }}"><strong>{{ item.title }}</strong>{% if item.description %}<span>{{ item.description | strip_html | truncate: 60 }}</span>{% endif %}</a>{% endfor %}</div>',
+          '  {% else %}',
+          '  <div class="lb-category-grid__empty"><h2>No collections yet</h2><p>Collections added to this store will appear here.</p></div>',
+          '  {% endif %}',
           '</section>',
           '{% schema %}',
           '{',
@@ -3366,7 +3405,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    { "id": "title", "type": "text", "label": "Heading", "default": "Shop by style" },',
           '    { "id": "subtitle", "type": "text", "label": "Subheading" }',
           '  ],',
-          '  "blocks": [{ "type": "category", "name": "Category" }],',
+          '  "blocks": [],',
           '  "presets": [{ "name": "Category Grid" }]',
           '}',
           '{% endschema %}',
@@ -3386,12 +3425,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               label: 'Subheading',
             },
           ],
-          blocks: [
-            {
-              type: 'category',
-              name: 'Category',
-            },
-          ],
+          blocks: [],
           presets: [
             {
               name: 'Category Grid',
@@ -3402,26 +3436,28 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'featured-products': {
         path: 'sections/featured-products.liquid',
         source: [
-          // S3-FIX item 1: the S3 "A3" fix wrapped title/subtitle/viewAll INSIDE the has_content
-          // guard, so an empty catalog dropped the merchant's own heading too — closing a parity
-          // diff by REMOVING Liquid capability, exactly what S3 was told not to do. Corrected to
-          // product-grid.liquid's shape: heading/subtitle always render; the empty state is
-          // APPENDED, not substituted. "Real content" is judged by each product-card block's own
-          // `title` setting (blocks/product-card.liquid renders from block.settings, not a live
-          // catalog drop — an unconfigured block still emits a structural <article>, so checking
-          // block.content for blankness would never fire). viewAllLabel/viewAllHref stay suppressed
-          // on an empty catalog — unlike the heading, a "View collection" link genuinely has nothing
-          // to point at when there is no collection to view; that is a defensible, additive omission,
-          // not a capability regression.
-          '{% assign has_content = false %}',
-          '{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}',
+          // T1/W3 — was block-driven (each product-card block held merchant-TYPED title/price/url
+          // literals — fabricated data, never a real product). Rewritten to bind the same real,
+          // already tenant-scoped `collection.products` drop collection-product-list.liquid uses
+          // (composition-engine.tsx's buildLiquidCommerceContext / data-binding-engine.ts's
+          // buildSectionDataPlan — the PROVEN product-fetching pipeline, not a new query). `collection`
+          // is a single PAGE-LEVEL scope shared by every product-bearing section on this page (see
+          // theme-renderer.ts buildLiquidScope) — there is no per-section "pick a different collection"
+          // fetch today, so featured-products and product-grid intentionally show the SAME underlying
+          // list, differentiated only by `productLimit` via the `limit:` filter. This is a documented
+          // scope simplification (T1 final report), not silent under-delivery: 0 real products renders
+          // 0 cards + the empty state below; N real products renders N real cards, never fabricated ones.
           '<section class="lb-featured-products" data-section-id="{{ section.id }}">',
           '  <div>',
           '    <h2>{{ section.settings.title }}</h2>',
           '    <p>{{ section.settings.subtitle }}</p>',
           '  </div>',
-          '  <div class="lb-featured-products__items">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>',
-          '  {% if has_content %}<a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>{% else %}<div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>{% endif %}',
+          '  {% if collection.products.size > 0 %}',
+          '  <div class="lb-featured-products__items">{% for item in collection.products limit: section.settings.productLimit %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>',
+          '  <a href="{{ section.settings.viewAllHref | store_url }}">{{ section.settings.viewAllLabel }}</a>',
+          '  {% else %}',
+          '  <div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>',
+          '  {% endif %}',
           '</section>',
           '{% schema %}',
           '{',
@@ -3430,9 +3466,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    { "id": "title", "type": "text", "label": "Heading", "default": "Drop-ready collection" },',
           '    { "id": "subtitle", "type": "text", "label": "Subheading" },',
           '    { "id": "viewAllLabel", "type": "text", "label": "View all label", "default": "View collection" },',
-          '    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" }',
+          '    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" },',
+          '    { "id": "productLimit", "type": "range", "label": "Products to show", "min": 1, "max": 12, "step": 1, "default": 3 }',
           '  ],',
-          '  "blocks": [{ "type": "product-card", "name": "Product card" }],',
+          '  "blocks": [],',
           '  "presets": [{ "name": "Featured Products" }]',
           '}',
           '{% endschema %}',
@@ -3463,13 +3500,17 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               label: 'View all URL',
               default: '/collections/new-arrivals',
             },
-          ],
-          blocks: [
             {
-              type: 'product-card',
-              name: 'Product card',
+              id: 'productLimit',
+              type: 'range',
+              label: 'Products to show',
+              min: 1,
+              max: 12,
+              step: 1,
+              default: 3,
             },
           ],
+          blocks: [],
           presets: [
             {
               name: 'Featured Products',
@@ -3480,18 +3521,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'product-grid': {
         path: 'sections/product-grid.liquid',
         source: [
-          // A4: React always shows the title/header, and additionally shows "No products found"
-          // below the (empty) grid when there is no product content — it does NOT early-return
-          // like featured-products. Mirror that exactly: title stays unconditional here.
-          // Same reasoning as A3 above: "real content" is judged by each product-card block's own
-          // `title` setting, not block.content (which always emits a structural <article>).
-          '{% assign has_content = false %}',
-          '{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}',
+          // T1/W3 — was block-driven (fabricated per-block title/price/url literals). Rewritten to
+          // bind the same real, tenant-scoped `collection.products` drop as featured-products.liquid
+          // (see that section's comment for the full "shared page-level collection, per-section
+          // productLimit" reasoning — the documented scope simplification, not silent under-delivery).
           '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
           '  <h2>{{ section.settings.title }}</h2>',
           '  <p>{{ section.settings.subtitle }}</p>',
-          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>',
-          '  {% unless has_content %}<div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>{% endunless %}',
+          '  {% if collection.products.size > 0 %}',
+          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for item in collection.products limit: section.settings.productLimit %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>',
+          '  {% else %}',
+          '  <div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>',
+          '  {% endif %}',
           '</section>',
           '{% schema %}',
           '{',
@@ -3499,9 +3540,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  "settings": [',
           '    { "id": "title", "type": "text", "label": "Heading", "default": "Featured Products" },',
           '    { "id": "subtitle", "type": "text", "label": "Subheading" },',
-          '    { "id": "columns", "type": "range", "label": "Columns", "min": 2, "max": 4, "step": 1, "default": 4 }',
+          '    { "id": "columns", "type": "range", "label": "Columns", "min": 2, "max": 4, "step": 1, "default": 4 },',
+          '    { "id": "productLimit", "type": "range", "label": "Products to show", "min": 1, "max": 24, "step": 1, "default": 8 }',
           '  ],',
-          '  "blocks": [{ "type": "product-card", "name": "Product card" }],',
+          '  "blocks": [],',
           '  "presets": [{ "name": "Product Grid" }]',
           '}',
           '{% endschema %}',
@@ -3529,13 +3571,17 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               step: 1,
               default: 4,
             },
-          ],
-          blocks: [
             {
-              type: 'product-card',
-              name: 'Product card',
+              id: 'productLimit',
+              type: 'range',
+              label: 'Products to show',
+              min: 1,
+              max: 24,
+              step: 1,
+              default: 8,
             },
           ],
+          blocks: [],
           presets: [
             {
               name: 'Product Grid',
@@ -3559,7 +3605,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '{',
           '  "name": "Spotlight",',
           '  "settings": [',
-          '    { "id": "heading", "type": "text", "label": "Heading", "default": "A brand-new Liquid section" },',
+          '    { "id": "heading", "type": "text", "label": "Heading", "default": "Made for daily buyers" },',
           '    { "id": "subheading", "type": "text", "label": "Subheading" }',
           '  ],',
           '  "blocks": [',
@@ -3577,7 +3623,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               id: 'heading',
               type: 'text',
               label: 'Heading',
-              default: 'A brand-new Liquid section',
+              default: 'Made for daily buyers',
             },
             {
               id: 'subheading',
@@ -3702,66 +3748,6 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       },
     },
     blocks: {
-      category: {
-        path: 'blocks/category.liquid',
-        source: [
-          '<a class="lb-category-card" href="/collections/{{ block.settings.slug }}" data-block-id="{{ block.id }}">',
-          '  <strong>{{ block.settings.name }}</strong>',
-          '  <span>{{ block.settings.tagline }}</span>',
-          '</a>',
-        ].join('\n'),
-        schema: {
-          name: 'Category',
-          settings: [
-            {
-              id: 'name',
-              type: 'text',
-              label: 'Name',
-            },
-            {
-              id: 'slug',
-              type: 'text',
-              label: 'Slug',
-            },
-            {
-              id: 'tagline',
-              type: 'text',
-              label: 'Tagline',
-            },
-          ],
-        },
-      },
-      'product-card': {
-        path: 'blocks/product-card.liquid',
-        source: [
-          '<article class="lb-product-card" data-block-id="{{ block.id }}">',
-          '  <a href="{{ block.settings.url }}">',
-          '    <strong>{{ block.settings.title }}</strong>',
-          '    <span>{{ block.settings.price }}</span>',
-          '  </a>',
-          '</article>',
-        ].join('\n'),
-        schema: {
-          name: 'Product card',
-          settings: [
-            {
-              id: 'title',
-              type: 'text',
-              label: 'Title',
-            },
-            {
-              id: 'price',
-              type: 'text',
-              label: 'Price',
-            },
-            {
-              id: 'url',
-              type: 'url',
-              label: 'Product URL',
-            },
-          ],
-        },
-      },
       badge: {
         path: 'blocks/badge.liquid',
         source: '<span class="lb-badge" data-block-id="{{ block.id }}">{{ block.settings.label }}</span>',
@@ -3772,7 +3758,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               id: 'label',
               type: 'text',
               label: 'Label',
-              default: 'Zero storefront code change',
+              default: 'New',
             },
           ],
         },

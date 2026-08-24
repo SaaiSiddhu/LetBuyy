@@ -94,7 +94,7 @@ function buildBlocksFromSchemaBlocks(blockDefs) {
 //    through the real LiquidRenderer, and read the per-section fragment from result.liquid.sections —
 //    no HTML-scraping/regex extraction needed, the renderer already segments per-section output.
 // ---------------------------------------------------------------------------------------------
-async function renderLiquidSide(liquidSectionType, settings, blocks) {
+async function renderLiquidSide(liquidSectionType, settings, blocks, liquidContext = {}) {
   const bundle = createLetbuyyCoreLiquidThemeBundleFixture();
   const sectionSchema = bundle.sections[liquidSectionType]?.schema;
   if (!sectionSchema) {
@@ -132,7 +132,7 @@ async function renderLiquidSide(liquidSectionType, settings, blocks) {
       storeTemplate: { storeId: STORE_ID, themeId: 'letbuyy-core-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
       routeTemplate: { id: '__parity_test__', type: 'page', layoutKey: 'theme', sections: [] },
       liquidTemplateKey: '__parity_test__',
-      liquidContext: {},
+      liquidContext,
       liquidBundle: bundle,
     });
   } catch (err) {
@@ -443,14 +443,20 @@ async function verifyBannerCarouselSurvivesBannerCounts() {
 // engines (the regression: an earlier fix wrapped them inside the empty-state guard instead of
 // appending the empty state alongside them).
 async function verifyFeaturedProductsHeaderSurvivesEmptyState() {
-  const settings = { title: 'Header Check', subtitle: 'Subtitle check' };
+  const settings = { title: 'Header Check', subtitle: 'Subtitle check', productLimit: 3 };
+  // T2a/W3 — featured-products.liquid no longer takes per-item product-card BLOCKS (that data was
+  // always fabricated, a merchant literally typing a fake title/price/url — see theme-bundle.ts's
+  // featured-products section comment); it binds the real, tenant-scoped `collection.products` drop
+  // directly. The React side is unchanged (still block/props-driven), so only the Liquid calls below
+  // moved from `blocks` to `liquidContext.collection.products`.
   const emptyBlock = [{ id: 'b0', type: 'product-card', settings: {} }];
   const realBlock = [{ id: 'b0', type: 'product-card', settings: { title: 'Real Product', price: '₹100', url: '/product/1' } }];
   const realProducts = [{ id: 'p1', name: 'Real Product', price: 100, images: [], stock: 5, isActive: true, currency: 'INR' }];
+  const liquidRealProducts = [{ id: 'p1', title: 'Real Product', price: 100, currency: 'INR', url: '/product/1', featured_image: null }];
 
   const [liquidEmpty, liquidFilled, reactEmpty, reactFilled] = await Promise.all([
-    renderLiquidSide('featured-products', settings, emptyBlock),
-    renderLiquidSide('featured-products', settings, realBlock),
+    renderLiquidSide('featured-products', settings, [], { collection: { products: [] } }),
+    renderLiquidSide('featured-products', settings, [], { collection: { products: liquidRealProducts } }),
     renderReactSide('featured-products.tsx', settings, emptyBlock, []),
     renderReactSide('featured-products.tsx', settings, realBlock, realProducts),
   ]);

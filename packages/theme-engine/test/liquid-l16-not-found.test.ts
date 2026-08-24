@@ -38,7 +38,7 @@ test('L16(b): not_found template renders 404 code and home link', async () => {
   assert.equal(result.status, 'rendered', `render failed: ${result.warnings.join(', ')}`);
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /404/, '404 code must appear in output');
-  assert.match(html, /href="\/"/i, 'home link must point to / (routes.root_url)');
+  assert.match(html, /href="\/store\/local-kicks"/i, 'home link must point to routes.root_url (/store/local-kicks)');
 });
 
 test('L16(c): not_found template output contains no script tags', async () => {

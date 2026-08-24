@@ -18,12 +18,22 @@
 // last response before sending the next"); no mean-only reporting (full p50/p90/p95/p99/max
 // distribution + throughput + status-code histogram, per scenario, per trial).
 //
+// S7/W2 METHOD FIX — warmup is sized in REQUESTS PER SCENARIO now, not wall-clock seconds. S6's
+// original --warmup=<seconds> design (see git history) round-robinned scenarios inside a fixed time
+// window and moved on regardless of whether a given scenario's warmup request had actually
+// completed — at a low aggregate rate across many scenarios this could yield as little as ONE
+// warmup request per scenario, and if that one request happened to be genuinely slow (a real cold
+// start, not noise), it could straddle the warmup/measurement boundary unpredictably. This version
+// runs WARMUP_REQUESTS_PER_SCENARIO requests per scenario and explicitly AWAITS EVERY ONE completing
+// before the measured window starts — see docs/evidence/liquid-load/S7-cold-path-profile.md for the
+// investigation that found this gap.
+//
 // Run (server must already be up — see docs/evidence/liquid-load/S6-load-summary.md for the exact
 // command used to start it):
 //   node apps/storefront-runtime/scripts/liquid-load-harness.mjs \
-//     --base-url=http://localhost:3939 --rps=10 --duration=15 --warmup=3 --trials=3 \
+//     --base-url=http://localhost:3939 --rps=10 --duration=15 --warmup-requests=5 --trials=3 \
 //     --surfaces=index,product,collection \
-//     --out=docs/evidence/liquid-load/S6-load-results.json
+//     --out=docs/evidence/liquid-load/S7-load-results.json
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -49,7 +59,8 @@ const args = parseArgs(process.argv.slice(2));
 const BASE_URL = args['base-url'] || 'http://localhost:3939';
 const TARGET_RPS = Number(args.rps || 10);
 const DURATION_S = Number(args.duration || 15);
-const WARMUP_S = Number(args.warmup || 3);
+// S7/W2: request-count warmup (per scenario), replacing S6's time-boxed warmup entirely.
+const WARMUP_REQUESTS_PER_SCENARIO = Number(args['warmup-requests'] || 5);
 const TRIALS = Number(args.trials || 3);
 const CONCURRENCY_CAP = Number(args.concurrency || 8);
 const SURFACES = (args.surfaces || 'index,product,collection').split(',').map((s) => s.trim()).filter(Boolean);
@@ -180,6 +191,32 @@ async function runWindow(scenarios, windowSeconds, collectInto) {
   await Promise.all(pending);
 }
 
+// S7/W2 — request-count warmup: fires WARMUP_REQUESTS_PER_SCENARIO requests to EVERY scenario and
+// awaits ALL of them completing before returning. Unlike a time-boxed warmup, this cannot leave a
+// scenario under-warmed just because the clock ran out on it, and it cannot let a genuinely slow
+// warmup request spill across the warmup/measurement boundary — every one is drained here, none
+// counted, before main() proceeds to the measured window.
+async function runRequestCountWarmup(scenarios) {
+  const perScenarioCounts = new Map(scenarios.map((s) => [s.label, 0]));
+  const inFlight = [];
+  let round = 0;
+  while ([...perScenarioCounts.values()].some((n) => n < WARMUP_REQUESTS_PER_SCENARIO)) {
+    for (const scenario of scenarios) {
+      if (perScenarioCounts.get(scenario.label) >= WARMUP_REQUESTS_PER_SCENARIO) continue;
+      perScenarioCounts.set(scenario.label, perScenarioCounts.get(scenario.label) + 1);
+      inFlight.push(timedFetch(scenario.url, REQUEST_TIMEOUT_MS));
+      if (inFlight.length >= CONCURRENCY_CAP) {
+        await Promise.all(inFlight.splice(0, inFlight.length));
+      }
+    }
+    round += 1;
+    if (round > WARMUP_REQUESTS_PER_SCENARIO + 2) break; // safety valve, should never trip
+  }
+  await Promise.all(inFlight);
+  const total = [...perScenarioCounts.values()].reduce((a, b) => a + b, 0);
+  return { totalWarmupRequests: total, perScenarioWarmupCounts: Object.fromEntries(perScenarioCounts) };
+}
+
 function hostLoadSnapshot() {
   const load = os.loadavg();
   return {
@@ -193,17 +230,16 @@ function hostLoadSnapshot() {
 
 async function main() {
   const scenarios = buildScenarios();
-  console.log(`[liquid-load-harness] base=${BASE_URL} rps=${TARGET_RPS} duration=${DURATION_S}s warmup=${WARMUP_S}s trials=${TRIALS} concurrency=${CONCURRENCY_CAP}`);
+  console.log(`[liquid-load-harness] base=${BASE_URL} rps=${TARGET_RPS} duration=${DURATION_S}s warmupRequestsPerScenario=${WARMUP_REQUESTS_PER_SCENARIO} trials=${TRIALS} concurrency=${CONCURRENCY_CAP}`);
   console.log(`[liquid-load-harness] scenarios (deterministic round-robin order): ${scenarios.map((s) => s.label).join(', ')}`);
   console.log(`[liquid-load-harness] host load before run: ${JSON.stringify(hostLoadSnapshot())}`);
 
   const trialResults = [];
 
   for (let trial = 1; trial <= TRIALS; trial++) {
-    console.log(`\n[liquid-load-harness] trial ${trial}/${TRIALS} — warmup ${WARMUP_S}s (discarded)`);
-    const warmupSamples = [];
-    await runWindow(scenarios, WARMUP_S, warmupSamples);
-    console.log(`[liquid-load-harness] trial ${trial}: warmup discarded ${warmupSamples.length} requests`);
+    console.log(`\n[liquid-load-harness] trial ${trial}/${TRIALS} — warmup: ${WARMUP_REQUESTS_PER_SCENARIO} requests per scenario, all awaited to completion (discarded)`);
+    const warmup = await runRequestCountWarmup(scenarios);
+    console.log(`[liquid-load-harness] trial ${trial}: warmup discarded ${warmup.totalWarmupRequests} requests (${JSON.stringify(warmup.perScenarioWarmupCounts)})`);
 
     const loadBefore = hostLoadSnapshot();
     console.log(`[liquid-load-harness] trial ${trial}: measuring for ${DURATION_S}s (host load ${JSON.stringify(loadBefore)})`);
@@ -226,7 +262,8 @@ async function main() {
 
     trialResults.push({
       trial,
-      warmupRequestsDiscarded: warmupSamples.length,
+      warmupRequestsDiscarded: warmup.totalWarmupRequests,
+      warmupRequestsPerScenario: warmup.perScenarioWarmupCounts,
       measuredWallSeconds: Number(measuredWallSeconds.toFixed(2)),
       hostLoadBefore: loadBefore,
       hostLoadAfter: loadAfter,
@@ -256,7 +293,7 @@ async function main() {
   const report = {
     tool: 'liquid-load-harness.mjs',
     generatedAt: args['stamp'] || null, // caller-supplied; this script never calls Date.now() itself
-    config: { baseUrl: BASE_URL, targetRps: TARGET_RPS, durationSeconds: DURATION_S, warmupSeconds: WARMUP_S, trials: TRIALS, concurrencyCap: CONCURRENCY_CAP, surfaces: SURFACES, requestTimeoutMs: REQUEST_TIMEOUT_MS },
+    config: { baseUrl: BASE_URL, targetRps: TARGET_RPS, durationSeconds: DURATION_S, warmupRequestsPerScenario: WARMUP_REQUESTS_PER_SCENARIO, trials: TRIALS, concurrencyCap: CONCURRENCY_CAP, surfaces: SURFACES, requestTimeoutMs: REQUEST_TIMEOUT_MS },
     scenarios: scenarios.map((s) => ({ label: s.label, surface: s.surface, engine: s.engine, url: s.url })),
     trials: trialResults,
     aggregate,

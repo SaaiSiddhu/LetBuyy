@@ -6,7 +6,7 @@
   {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}
   <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>
   {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}
-  <a href="{{ section.settings.ctaLink }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>
+  <a href="{{ section.settings.ctaLink | store_url }}" class="lb-hero-banner__cta">{{ section.settings.ctaText }}</a>
 </section>
 {% schema %}
 {

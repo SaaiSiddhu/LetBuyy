@@ -32,6 +32,25 @@ function formRedirect(request: NextRequest, params: Record<string, string>): Nex
     return NextResponse.redirect(url, 303);
 }
 
+// T1/W2: a bare `/account` target 404s once the register form is reached through the store-prefixed
+// Liquid path (/store/<subdomain>/customers/register — see proxy.ts's rewriteToStore/isInternalStorePath,
+// which make /store/<subdomain>/... the only path unconditionally reachable regardless of host mode).
+// Same same-origin-only referer check as formRedirect above; falls back to bare /account only when
+// there is no usable referer (e.g. a direct API call), matching formRedirect's own fallback discipline.
+function accountRedirectUrl(request: NextRequest): URL {
+    const referer = request.headers.get('referer');
+    if (referer) {
+        try {
+            const refererUrl = new URL(referer);
+            if (refererUrl.origin === new URL(request.url).origin) {
+                const storeMatch = refererUrl.pathname.match(/^\/store\/[^/]+/);
+                if (storeMatch) return new URL(`${storeMatch[0]}/account`, request.url);
+            }
+        } catch { /* fall through to the bare default below */ }
+    }
+    return new URL('/account', request.url);
+}
+
 export async function POST(request: NextRequest) {
     const formPost = isFormPost(request);
     try {
@@ -96,7 +115,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (formPost) {
-            return NextResponse.redirect(new URL('/account', request.url), 303);
+            return NextResponse.redirect(accountRedirectUrl(request), 303);
         }
 
         return NextResponse.json({

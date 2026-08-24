@@ -1,11 +1,11 @@
 <section class="lb-category-grid" data-section-id="{{ section.id }}">
   <h2>{{ section.settings.title }}</h2>
   <p>{{ section.settings.subtitle }}</p>
-  <div class="lb-category-grid__items">
-    {% for block in section.blocks %}
-      {{ block.content | raw }}
-    {% endfor %}
-  </div>
+  {% if collections.size > 0 %}
+  <div class="lb-category-grid__items">{% for item in collections %}<a class="lb-category-card" href="{{ routes.collections_url }}/{{ item.handle }}"><strong>{{ item.title }}</strong>{% if item.description %}<span>{{ item.description | strip_html | truncate: 60 }}</span>{% endif %}</a>{% endfor %}</div>
+  {% else %}
+  <div class="lb-category-grid__empty"><h2>No collections yet</h2><p>Collections added to this store will appear here.</p></div>
+  {% endif %}
 </section>
 {% schema %}
 {
@@ -14,7 +14,7 @@
     { "id": "title", "type": "text", "label": "Heading", "default": "Shop by style" },
     { "id": "subtitle", "type": "text", "label": "Subheading" }
   ],
-  "blocks": [{ "type": "category", "name": "Category" }],
+  "blocks": [],
   "presets": [{ "name": "Category Grid" }]
 }
 {% endschema %}

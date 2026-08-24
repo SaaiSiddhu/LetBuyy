@@ -21,7 +21,7 @@
     {% for vendor in collection.vendors %}<a class="lb-collection-filter__vendor-link" href="{{ vendor.url }}"{% if vendor.active %} aria-current="true"{% endif %}>{{ vendor.label }}</a>{% endfor %}
   </nav>
   {% endif %}
-  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="/collections/{{ collection.handle }}">Clear</a>{% endif %}</p>
+  {% if search.terms != blank %}<p class="lb-collection-filter__active" role="status">Showing results for "{{ search.terms }}"{% if collection.handle != blank %} <a class="lb-collection-filter__clear" href="{{ routes.collections_url }}/{{ collection.handle }}">Clear</a>{% endif %}</p>
   {% elsif collection.products.size > 0 %}<p class="lb-collection-filter__count" role="status">{{ collection.products.size }} products</p>
   {% else %}<p class="lb-collection-filter__empty" role="status">No products to filter yet.</p>{% endif %}
 </section>

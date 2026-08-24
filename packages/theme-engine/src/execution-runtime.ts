@@ -15,6 +15,11 @@ export interface ThemeEngineRenderContext {
   previewMode: boolean;
   requestId?: string;
   locale?: string;
+  // T1/W2 — optional query-string values from the page request (e.g. ?error=bot_verification
+  // after a failed Turnstile challenge), exposed to Liquid templates as request.query so a form
+  // can render a real, human error message instead of a silent redirect. Never trust these for
+  // anything beyond display text — they are merchant/shopper-visible page state, not auth input.
+  searchParams?: Record<string, string>;
 }
 
 export interface SectionRuntimeDefinition<TSettings extends Record<string, unknown> = Record<string, unknown>> {

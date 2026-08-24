@@ -15,6 +15,10 @@ test('L5: fixture ships a product template referencing product-detail', () => {
 
 test('L5: product-detail section binds product drop + server add-to-cart island', () => {
   assert.match(bundle, /\{\{ product\.title \}\}/);
-  assert.match(bundle, /product\.price \| money_with_currency/);
+  // T2a — product.price is MAJOR units (rupees); money_with_currency expects MINOR units
+  // (matches order/cart ledger data), so the display call site converts with `times: 100`
+  // rather than changing the drop's own price field (see composition-engine.tsx's
+  // productToLiquidDrop, whose price is also the add-to-cart island's major-unit contract).
+  assert.match(bundle, /product\.price \| times: 100 \| money_with_currency/);
   assert.match(bundle, /lb-add-to-cart/);
 });

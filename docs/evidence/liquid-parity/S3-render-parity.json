@@ -175,13 +175,7 @@
         "title": "Shop by style",
         "subtitle": "Parity value for subtitle"
       },
-      "blocksUsed": [
-        {
-          "id": "parity-block-category-0",
-          "type": "category",
-          "settings": {}
-        }
-      ],
+      "blocksUsed": [],
       "liquid": {
         "ok": true
       },
@@ -192,7 +186,7 @@
       "reasons": [
         "setting \"title\" present in Liquid output only (value: Shop by style)",
         "setting \"subtitle\" present in Liquid output only (value: Parity value for subtitle)",
-        "heading text only in Liquid: [\"Shop by style\"]"
+        "heading text only in Liquid: [\"Shop by style\",\"No collections yet\"]"
       ],
       "stats": {
         "checked": 2,
@@ -203,8 +197,8 @@
           "imageCount": 0
         },
         "liquid": {
-          "headingCount": 1,
-          "linkCount": 1,
+          "headingCount": 2,
+          "linkCount": 0,
           "imageCount": 0
         }
       }
@@ -327,15 +321,10 @@
         "title": "Drop-ready collection",
         "subtitle": "Parity value for subtitle",
         "viewAllLabel": "View collection",
-        "viewAllHref": "/collections/new-arrivals"
+        "viewAllHref": "/collections/new-arrivals",
+        "productLimit": 3
       },
-      "blocksUsed": [
-        {
-          "id": "parity-block-product-card-0",
-          "type": "product-card",
-          "settings": {}
-        }
-      ],
+      "blocksUsed": [],
       "liquid": {
         "ok": true
       },
@@ -358,7 +347,7 @@
         },
         "liquid": {
           "headingCount": 2,
-          "linkCount": 1,
+          "linkCount": 0,
           "imageCount": 0
         }
       }
@@ -557,15 +546,10 @@
       "settingsUsed": {
         "title": "Featured Products",
         "subtitle": "Parity value for subtitle",
-        "columns": 4
+        "columns": 4,
+        "productLimit": 8
       },
-      "blocksUsed": [
-        {
-          "id": "parity-block-product-card-0",
-          "type": "product-card",
-          "settings": {}
-        }
-      ],
+      "blocksUsed": [],
       "liquid": {
         "ok": true
       },
@@ -586,7 +570,7 @@
         },
         "liquid": {
           "headingCount": 2,
-          "linkCount": 1,
+          "linkCount": 0,
           "imageCount": 0
         }
       }

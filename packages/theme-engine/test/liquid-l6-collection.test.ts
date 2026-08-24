@@ -43,8 +43,8 @@ test('L6: collection page binds real title/description + the product loop', asyn
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /<h1>New Arrivals<\/h1>/);                  // {{ collection.title }} (was discarded before)
   assert.match(html, /freshest drops this week/i);                // {{ collection.description }}
-  assert.match(html, /<strong>Apex Runner<\/strong>/);            // {% for item in collection.products %}
-  assert.match(html, /<strong>Street Glide<\/strong>/);
+  assert.match(html, /<h3 class="lb-product-card__title">Apex Runner<\/h3>/);            // {% for item in collection.products %}
+  assert.match(html, /<h3 class="lb-product-card__title">Street Glide<\/h3>/);
 });
 
 test('L6: empty collection renders the banner without product cards (empty state)', async () => {

@@ -15,6 +15,10 @@ async function render() {
     context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en' },
     storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
     routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
+    // T1: header/footer storeName no longer hardcodes the theme's own brand — it falls back to the
+    // real merchant shop.name when the merchant hasn't set a custom section storeName. Pass a real
+    // shop name here so this test exercises that fallback rather than a fabricated theme brand string.
+    liquidContext: { shop: { name: 'Local Kicks Test Store' } },
     liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
   });
 }
@@ -24,7 +28,7 @@ test('L4: renderer emits Liquid header chrome with the store name + nav links', 
   assert.equal(result.status, 'rendered');
   const header = result.liquid?.header ?? '';
   assert.match(header, /class="lb-header"/);
-  assert.match(header, /Urban Kicks/);     // header storeName setting
+  assert.match(header, /Local Kicks Test Store/);     // header storeName falls back to shop.name
   assert.match(header, /Products/);        // nav link block
   assert.match(header, /Collections/);     // nav link block
 });
@@ -61,4 +65,23 @@ test('L4: nav link URLs are validated (no javascript: scheme survives)', async (
   });
   const header = result.liquid?.header ?? '';
   assert.doesNotMatch(header, /href="javascript:/i);
+});
+
+test('T1: header/footer brand text is the merchant shop name, never the theme brand', async () => {
+  // Regression guard: the default composition used to hardcode storeName: 'Urban Kicks' on both
+  // header-default and footer-default, so every merchant's storefront literally displayed the
+  // theme's own name instead of their own — confirmed live on the `snaz` test store, whose header
+  // showed "LetBuyy Core" (the neutral-branded theme alias) rather than "Snaz". storeName now has
+  // no composed default at all; the section body falls back to the real shop.name drop.
+  const result = await new LiquidRenderer().render({
+    context: { storeId: STORE_ID, subdomain: 'snaz', path: '/', previewMode: true, locale: 'en' },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
+    liquidContext: { shop: { name: 'Snaz' } },
+    liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
+  });
+  const chrome = `${result.liquid?.header ?? ''}${result.liquid?.footer ?? ''}`;
+  assert.match(chrome, /Snaz/, 'the merchant shop name must appear in header/footer chrome');
+  assert.doesNotMatch(chrome, /Urban Kicks/, 'the theme brand name must never leak into merchant-facing chrome');
+  assert.doesNotMatch(chrome, /LetBuyy Core/, 'the neutral theme alias must never leak into merchant-facing chrome either');
 });

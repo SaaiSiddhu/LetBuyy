@@ -1319,6 +1319,162 @@ class LbLogoutElement extends LiquidIslandBase {
     }
 }
 
+const FORM_TURNSTILE_CALLBACK = 'onLbFormTurnstileLoad';
+
+type FormTurnstileApi = {
+    render: (container: string | HTMLElement, options: Record<string, unknown>) => string;
+    reset: (widgetId: string) => void;
+    remove: (widgetId: string) => void;
+};
+
+function getFormTurnstile(): FormTurnstileApi | undefined {
+    return (window as unknown as { turnstile?: FormTurnstileApi }).turnstile;
+}
+
+function canUseFormTurnstileDevBypass(): boolean {
+    return process.env.NODE_ENV === 'development'
+        && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
+}
+
+// T1/W2 — generic Turnstile-for-a-plain-<form> island. The customer register/login forms are
+// no-JS-first <form method="post"> submissions (D10 pattern) that POST directly to
+// /api/customer/register|login; there is no client-side submit handler to attach a token to.
+// This island fills the SAME role TurnstileWidget.tsx plays for React forms: render an invisible
+// challenge and, on solve, write the token straight into the sibling hidden
+// <input name="turnstileToken"> that the Liquid section already renders — so the native form
+// submission (JS or no-JS) carries a real token with zero extra wiring in the section markup.
+// If the challenge hasn't solved yet when the shopper submits, the hidden input stays empty and
+// the server-side verifyTurnstileToken correctly rejects with TURNSTILE_REQUIRED — this is a
+// race, never a bypass; the check itself is untouched.
+class LbTurnstileElement extends LiquidIslandBase {
+    private widgetId: string | null = null;
+
+    connectedCallback() {
+        if (canUseFormTurnstileDevBypass()) {
+            this.writeToken('dev-bypass-token');
+            return;
+        }
+
+        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+        if (!siteKey) return;
+
+        const render = () => this.renderWidget(siteKey);
+        if (getFormTurnstile()) {
+            render();
+            return;
+        }
+
+        if (!document.querySelector('script[src*="turnstile"]')) {
+            (window as unknown as Record<string, unknown>)[FORM_TURNSTILE_CALLBACK] = render;
+            const script = document.createElement('script');
+            script.src = `https://challenges.cloudflare.com/turnstile/v0/api.js?onload=${FORM_TURNSTILE_CALLBACK}`;
+            script.async = true;
+            document.head.appendChild(script);
+            return;
+        }
+
+        let attempts = 0;
+        const timer = window.setInterval(() => {
+            attempts += 1;
+            if (getFormTurnstile()) {
+                window.clearInterval(timer);
+                render();
+            } else if (attempts > 50) {
+                window.clearInterval(timer);
+            }
+        }, 200);
+    }
+
+    disconnectedCallback() {
+        const turnstile = getFormTurnstile();
+        if (this.widgetId && turnstile) {
+            try {
+                turnstile.remove(this.widgetId);
+            } catch {
+                // Ignore stale widget handles after navigation.
+            }
+        }
+    }
+
+    private renderWidget(siteKey: string) {
+        const turnstile = getFormTurnstile();
+        if (!turnstile) return;
+
+        if (this.widgetId) {
+            try {
+                turnstile.remove(this.widgetId);
+            } catch {
+                // Ignore stale widget handles.
+            }
+            this.widgetId = null;
+        }
+
+        this.widgetId = turnstile.render(this, {
+            sitekey: siteKey,
+            size: 'invisible',
+            callback: (token: string) => this.writeToken(token),
+            'expired-callback': () => this.writeToken(''),
+            'error-callback': () => this.writeToken(''),
+        });
+    }
+
+    private writeToken(token: string) {
+        const form = this.closest('form');
+        const input = form?.querySelector<HTMLInputElement>('input[name="turnstileToken"]') || this.querySelector<HTMLInputElement>('input[name="turnstileToken"]');
+        if (input) input.value = token;
+    }
+}
+
+// T2a/W3a — mobile hamburger drawer. Same markup serves both widths (see LIQUID_THEME_BASE_CSS):
+// CSS repositions the ONE nav-links list between an off-canvas mobile drawer and a static desktop
+// row, so this island only needs to own open/close state and a11y attributes, never nav content.
+class LbMobileNavElement extends LiquidIslandBase {
+    private readonly handleClick = (event: Event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target) return;
+
+        if (target.closest('[data-lb-nav-toggle]')) {
+            this.setOpen(this.dataset.open !== 'true');
+            return;
+        }
+        if (target.closest('[data-lb-nav-scrim]') || target.closest('[data-lb-nav-panel] a')) {
+            this.setOpen(false);
+        }
+    };
+
+    private readonly handleKeydown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && this.dataset.open === 'true') this.setOpen(false);
+    };
+
+    connectedCallback() {
+        this.dataset.open = 'false';
+        this.addEventListener('click', this.handleClick);
+        this.addEventListener('keydown', this.handleKeydown);
+    }
+
+    disconnectedCallback() {
+        this.removeEventListener('click', this.handleClick);
+        this.removeEventListener('keydown', this.handleKeydown);
+        document.body.style.overflow = '';
+    }
+
+    private setOpen(open: boolean) {
+        this.dataset.open = open ? 'true' : 'false';
+        const toggle = this.querySelector<HTMLButtonElement>('[data-lb-nav-toggle]');
+        toggle?.setAttribute('aria-expanded', open ? 'true' : 'false');
+        // Body scroll lock while the drawer is open — a fixed-position off-canvas panel over a
+        // scrollable page is otherwise disorienting on touch devices (the page keeps scrolling
+        // behind the drawer). Reverts on close/disconnect.
+        document.body.style.overflow = open ? 'hidden' : '';
+        if (open) {
+            const firstLink = this.querySelector<HTMLElement>('[data-lb-nav-panel] a');
+            firstLink?.focus();
+        } else {
+            toggle?.focus();
+        }
+    }
+}
+
 function defineLiquidIsland(name: string, constructor: CustomElementConstructor) {
     if (!window.customElements.get(name)) {
         window.customElements.define(name, constructor);
@@ -1339,6 +1495,10 @@ export function registerLiquidHydrationIslands() {
     // F7-Lane-B: lb-logout island — progressive-enhancement POST logout.
     // LANE-A must land first (DOMPurify ADD_TAGS + tagNameCheck in theme-renderer.ts).
     defineLiquidIsland('lb-logout', LbLogoutElement);
+    // T1/W2: lb-turnstile island — see class doc above.
+    defineLiquidIsland('lb-turnstile', LbTurnstileElement);
+    // T2a/W3a: lb-mobile-nav island — hamburger drawer.
+    defineLiquidIsland('lb-mobile-nav', LbMobileNavElement);
 }
 
 function ensureLiquidCartDrawer(root: ParentNode, basePath: string) {
@@ -1352,6 +1512,20 @@ function ensureLiquidCartDrawer(root: ParentNode, basePath: string) {
     root.appendChild(drawer);
 }
 
+// T2a/W3a — header cart-count sync. The header's `{{ cart.item_count | default: 0 }}` is an honest
+// SSR placeholder (no cart token exists server-side); this reuses the SAME CART_CHANGED_EVENT /
+// `storage` signals the cart-drawer and cart-page islands already listen for (see
+// LbCartDrawerElement/LbCartElement above) rather than inventing a second cart-sync mechanism.
+function syncHeaderCartCount() {
+    const serverCart = readServerCart();
+    const count = serverCart
+        ? serverCart.lines.reduce((sum, line) => sum + line.quantity, 0)
+        : readCart().reduce((sum, item) => sum + item.quantity, 0);
+    document.querySelectorAll<HTMLElement>('[data-lb-cart-count]').forEach((el) => {
+        el.textContent = String(count);
+    });
+}
+
 export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydrationIslandsProps) {
     useEffect(() => {
         registerLiquidHydrationIslands();
@@ -1363,6 +1537,14 @@ export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydr
             drawer.dataset.basePath = drawer.dataset.basePath || basePath;
         });
         ensureLiquidCartDrawer(root, basePath);
+
+        syncHeaderCartCount();
+        window.addEventListener(CART_CHANGED_EVENT, syncHeaderCartCount);
+        window.addEventListener('storage', syncHeaderCartCount);
+        return () => {
+            window.removeEventListener(CART_CHANGED_EVENT, syncHeaderCartCount);
+            window.removeEventListener('storage', syncHeaderCartCount);
+        };
     }, [basePath, storeId]);
 
     return null;

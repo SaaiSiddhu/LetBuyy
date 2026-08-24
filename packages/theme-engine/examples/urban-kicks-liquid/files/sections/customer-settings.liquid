@@ -15,7 +15,7 @@
     data-authenticated="true"
   ></lb-customer-settings>
   {% else %}
-  <p class="lb-settings__guest">Please <a href="/customers/login">sign in</a> to manage your settings.</p>
+  <p class="lb-settings__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to manage your settings.</p>
   {% endif %}
 </section>
 {% schema %}

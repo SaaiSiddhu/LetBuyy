@@ -1,6 +1,8 @@
 <section class="lb-announcement-bar" data-section-id="{{ section.id }}">
-  <span>{{ section.settings.text }}</span>
-  <a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>
+  <div class="lb-announcement-bar__inner">
+    <span>{{ section.settings.text }}</span>
+    {% if section.settings.linkLabel %}<a href="{{ section.settings.linkHref | store_url }}">{{ section.settings.linkLabel }}</a>{% endif %}
+  </div>
 </section>
 {% schema %}
 {

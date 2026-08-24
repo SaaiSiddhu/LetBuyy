@@ -1,5 +1,5 @@
 <section class="lb-search" data-section-id="{{ section.id }}">
-  <lb-search data-lb-island="search" data-search-url="/search"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>
+  <lb-search data-lb-island="search" data-search-url="{{ routes.search_url }}"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>
   {% if search.terms %}<p class="lb-search__terms">Results for "{{ search.terms }}"</p>{% endif %}
 </section>
 {% schema %}

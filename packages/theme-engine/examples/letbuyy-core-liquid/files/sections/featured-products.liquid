@@ -1,12 +1,14 @@
-{% assign has_content = false %}
-{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}
 <section class="lb-featured-products" data-section-id="{{ section.id }}">
   <div>
     <h2>{{ section.settings.title }}</h2>
     <p>{{ section.settings.subtitle }}</p>
   </div>
-  <div class="lb-featured-products__items">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>
-  {% if has_content %}<a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>{% else %}<div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>{% endif %}
+  {% if collection.products.size > 0 %}
+  <div class="lb-featured-products__items">{% for item in collection.products limit: section.settings.productLimit %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>
+  <a href="{{ section.settings.viewAllHref | store_url }}">{{ section.settings.viewAllLabel }}</a>
+  {% else %}
+  <div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>
+  {% endif %}
 </section>
 {% schema %}
 {
@@ -15,9 +17,10 @@
     { "id": "title", "type": "text", "label": "Heading", "default": "Drop-ready collection" },
     { "id": "subtitle", "type": "text", "label": "Subheading" },
     { "id": "viewAllLabel", "type": "text", "label": "View all label", "default": "View collection" },
-    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" }
+    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" },
+    { "id": "productLimit", "type": "range", "label": "Products to show", "min": 1, "max": 12, "step": 1, "default": 3 }
   ],
-  "blocks": [{ "type": "product-card", "name": "Product card" }],
+  "blocks": [],
   "presets": [{ "name": "Featured Products" }]
 }
 {% endschema %}

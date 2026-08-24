@@ -326,37 +326,35 @@ describe('experience-apply: content preservation', () => {
 // ── COMPLETE_DESIGN: block preservation in retained sections ─────────────────
 
 describe('experience-apply: block preservation in retained sections (HIGH-2)', () => {
-  test('preserveContent=true: category-grid blocks survive apply to retained section', () => {
-    // UK bundle category-grid-default has 3 category blocks (Sneakers/Apparel/Accessories).
+  test('preserveContent=true: category-grid settings survive apply to retained section (no fabricated blocks)', () => {
+    // T2a/W1b: category-grid-default no longer carries fabricated per-item blocks (Sneakers/Apparel/
+    // Accessories never existed as real collections) — it binds the real `collections` drop directly.
     // Summit's composition also includes categoryGrid in index, so the section is 'retained'.
-    // With preserveContent=true the apply engine must carry all blocks forward.
+    // With preserveContent=true the apply engine must carry the section's own settings forward, and
+    // it must never carry blocks it does not have (the schema now declares zero for this section).
     const doc = getUrbanKicksDoc();
     const { document: result } = applyExperienceToDocument(doc, 'summit', COMPLETE_PRESERVE);
     const indexTemplate = result.templates.find((t) => t.key === 'index');
     assert.ok(indexTemplate, 'index template must exist after apply');
     const cg = indexTemplate.sections.find((s) => s.type === 'category-grid');
     assert.ok(cg, 'category-grid must be present in the result index');
-    assert.strictEqual(
-      cg.blocks.length,
-      3,
-      'All 3 category blocks (Sneakers/Apparel/Accessories) must be preserved when preserveContent=true',
-    );
-    const blockTypes = cg.blocks.map((b) => b.type);
-    assert.ok(
-      blockTypes.every((t) => t === 'category'),
-      'All preserved blocks must be of type "category"',
-    );
+    assert.strictEqual(cg.blocks.length, 0, 'category-grid no longer carries per-item blocks — it binds the real collections drop directly');
+    assert.strictEqual(cg.settings.title, 'Shop by style', 'the section\'s own title setting must be preserved');
   });
 
-  test('preserveContent=true: product-card blocks in featured-products section are preserved', () => {
-    // UK bundle featured-collection-default (featured-products) has 3 product-card blocks.
+  test('preserveContent=true: featured-products section settings (including productLimit) are preserved', () => {
+    // T1/W3: featured-collection-default no longer carries fabricated product-card blocks — it
+    // binds the real collection.products drop directly (see theme-bundle.ts's featured-products
+    // section comment). preserveContent now has settings, not blocks, to carry forward for this
+    // section; assert that instead of a block count that can never again be non-zero by design.
     const doc = getUrbanKicksDoc();
     const { document: result } = applyExperienceToDocument(doc, 'summit', COMPLETE_PRESERVE);
     const indexTemplate = result.templates.find((t) => t.key === 'index');
     assert.ok(indexTemplate);
     const fp = indexTemplate.sections.find((s) => s.type === 'featured-products');
     assert.ok(fp, 'featured-products must be present');
-    assert.strictEqual(fp.blocks.length, 3, 'All 3 product-card blocks must be preserved');
+    assert.strictEqual(fp.blocks.length, 0, 'featured-products no longer carries per-item blocks — it binds collection.products directly');
+    assert.strictEqual(fp.settings.productLimit, 3, 'productLimit setting must be preserved');
   });
 
   test('preserveContent=true: diff does NOT report block loss for retained sections', () => {
@@ -380,19 +378,24 @@ describe('experience-apply: block preservation in retained sections (HIGH-2)', (
   test('preserveContent=false: diff reports lost blocks on retained sections with blocks', () => {
     // With preserveContent=false the apply engine does NOT carry blocks forward.
     // The diff must surface this loss so the caller can offer "duplicate before apply".
+    // T2a/W1b: category-grid no longer carries fabricated per-item blocks (it binds the real
+    // `collections` drop directly instead) — swapped the example to `spotlight`, an index-template
+    // section still block-driven by design (its badge/app blocks are genuinely merchant/app content,
+    // not fabricated data — unlike the old category-card blocks, nothing there claims to be live
+    // catalog state).
     const doc = getUrbanKicksDoc();
     const diff = computeExperienceApplyDiff(doc, 'summit', COMPLETE_REPLACE);
     const indexDiff = diff.templates['index'];
     assert.ok(indexDiff);
-    // category-grid is retained by summit but its 3 category blocks would be dropped.
-    const cgEntry = indexDiff.sections.find((e) => e.type === 'category-grid');
-    assert.ok(cgEntry, 'category-grid entry must exist in index diff');
+    // spotlight is retained by summit but its badge/app blocks would be dropped.
+    const spotlightEntry = indexDiff.sections.find((e) => e.type === 'spotlight');
+    assert.ok(spotlightEntry, 'spotlight entry must exist in index diff');
     assert.ok(
-      cgEntry.lostContent?.blocks,
-      'category-grid must carry lostContent.blocks when preserveContent=false',
+      spotlightEntry.lostContent?.blocks,
+      'spotlight must carry lostContent.blocks when preserveContent=false',
     );
     assert.ok(
-      cgEntry.lostContent!.blocks!.length > 0,
+      spotlightEntry.lostContent!.blocks!.length > 0,
       'lostContent.blocks must be non-empty',
     );
   });
@@ -400,55 +403,63 @@ describe('experience-apply: block preservation in retained sections (HIGH-2)', (
   test('preserveContent=false: requiresDuplicateBeforeApply=true when retained sections have blocks', () => {
     // Even when no section is removed at all, block loss in retained sections must trigger the flag.
     // We replace ALL managed templates so there are zero removed sections, and put one block on
-    // category-grid to be the sole source of the required-duplicate signal.
+    // trust-badges to be the sole source of the required-duplicate signal. (T2a/W1b: category-grid,
+    // featured-products and product-grid no longer accept per-item blocks at all — they bind real
+    // drops directly now — so this moved off `summit`, whose index/product/collection compositions
+    // are built entirely from those three plus block-less types, onto `forge`, whose compositions
+    // include `trustBadges` — a section T2a left untouched, still genuinely block-driven by design.)
     const bundleFixture = createUrbanKicksLiquidThemeBundleFixture();
     bundleFixture.templates.index = {
-      name: 'Summit-like index with one block on category-grid',
+      name: 'Forge-like index with one block on trust-badges',
       layout: 'theme',
       sections: {
         'ann-default': { type: 'announcement-bar', settings: {}, blocks: {}, block_order: [], disabled: false },
         'hero-default': { type: 'hero-banner', settings: {}, blocks: {}, block_order: [], disabled: false },
-        'cg-default': {
-          type: 'category-grid',
+        'cg-default': { type: 'category-grid', settings: {}, blocks: {}, block_order: [], disabled: false },
+        'tb-default': {
+          type: 'trust-badges',
           settings: {},
-          blocks: { 'cat-1': { type: 'category', settings: { name: 'Sneakers', slug: 'sneakers' } } },
-          block_order: ['cat-1'],
+          blocks: { 'badge-1': { type: 'badge', settings: { label: 'Free shipping' } } },
+          block_order: ['badge-1'],
           disabled: false,
         },
         'fp-default': { type: 'featured-products', settings: {}, blocks: {}, block_order: [], disabled: false },
         'pg-default': { type: 'product-grid', settings: {}, blocks: {}, block_order: [], disabled: false },
         'nl-default': { type: 'newsletter-signup', settings: {}, blocks: {}, block_order: [], disabled: false },
       },
-      order: ['ann-default', 'hero-default', 'cg-default', 'fp-default', 'pg-default', 'nl-default'],
+      order: ['ann-default', 'hero-default', 'cg-default', 'tb-default', 'fp-default', 'pg-default', 'nl-default'],
     };
-    // Also clear product+collection so they have no sections that would be removed.
+    // Also clear product+collection so they have no sections that would be removed — matching
+    // forge's own product/collection compositions exactly.
     bundleFixture.templates.product = {
       name: 'Clean product',
       layout: 'theme',
       sections: {
         'pd-default': { type: 'product-detail', settings: {}, blocks: {}, block_order: [], disabled: false },
-        'fp-product': { type: 'featured-products', settings: {}, blocks: {}, block_order: [], disabled: false },
+        'tb-product': { type: 'trust-badges', settings: {}, blocks: {}, block_order: [], disabled: false },
       },
-      order: ['pd-default', 'fp-product'],
+      order: ['pd-default', 'tb-product'],
     };
     bundleFixture.templates.collection = {
       name: 'Clean collection',
       layout: 'theme',
       sections: {
+        'cg-collection': { type: 'category-grid', settings: {}, blocks: {}, block_order: [], disabled: false },
+        'cf-collection': { type: 'collection-filter', settings: {}, blocks: {}, block_order: [], disabled: false },
         'pg-collection': { type: 'product-grid', settings: {}, blocks: {}, block_order: [], disabled: false },
       },
-      order: ['pg-collection'],
+      order: ['cg-collection', 'cf-collection', 'pg-collection'],
     };
     const doc = toThemeDocumentV2(bundleFixture);
-    const diff = computeExperienceApplyDiff(doc, 'summit', COMPLETE_REPLACE);
+    const diff = computeExperienceApplyDiff(doc, 'forge', COMPLETE_REPLACE);
     // Verify no removed entries across any managed template.
     const removed = Object.values(diff.templates).flatMap((t) => t.sections).filter((e) => e.action === 'removed');
     assert.deepStrictEqual(removed, [], 'No sections should be removed across any managed template');
-    // The sole content-loss signal must come from the category-grid block.
+    // The sole content-loss signal must come from the trust-badges block.
     assert.strictEqual(
       diff.requiresDuplicateBeforeApply,
       true,
-      'Block loss in retained category-grid must trigger requiresDuplicateBeforeApply=true',
+      'Block loss in retained trust-badges must trigger requiresDuplicateBeforeApply=true',
     );
   });
 

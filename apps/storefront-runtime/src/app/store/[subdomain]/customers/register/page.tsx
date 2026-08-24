@@ -17,7 +17,20 @@ export const revalidate = 60;
 
 type Props = {
     params: Promise<{ subdomain: string }>;
+    searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
+
+// T1/W2 — Next.js searchParams values can be string | string[] | undefined; the Liquid request.query
+// drop only makes sense as flat strings (it is display text, never parsed), so a repeated query key
+// takes its first occurrence rather than silently rendering "a,b".
+function flattenSearchParams(params: Record<string, string | string[] | undefined> | undefined): Record<string, string> {
+    const flat: Record<string, string> = {};
+    for (const [key, value] of Object.entries(params || {})) {
+        if (typeof value === 'string') flat[key] = value;
+        else if (Array.isArray(value) && typeof value[0] === 'string') flat[key] = value[0];
+    }
+    return flat;
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { subdomain } = await params;
@@ -30,8 +43,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
 }
 
-export default async function CustomerRegisterPage({ params }: Props) {
+export default async function CustomerRegisterPage({ params, searchParams }: Props) {
     const { subdomain } = await params;
+    const query = flattenSearchParams(await searchParams);
     const store = await StoreService.getStoreBySubdomain(subdomain);
     if (!store) return notFound();
 
@@ -40,6 +54,7 @@ export default async function CustomerRegisterPage({ params }: Props) {
         path: `/store/${subdomain}/customers/register`,
         subdomain,
         templateKey: 'customers/register',
+        searchParams: query,
     });
     if (plan.liquidTemplateMiss) return notFound();
 

@@ -31,6 +31,9 @@ export interface StorefrontRouteContext {
     resourceSlug?: string;
     templateKey?: string;
     fallbackSections?: SectionModel[];
+    // T1/W2 — the page request's query string (e.g. ?error=bot_verification after a failed
+    // Turnstile challenge), threaded through to the Liquid render context as request.query/error.
+    searchParams?: Record<string, string>;
 }
 
 export interface StorefrontTemplate {

@@ -1,6 +1,7 @@
 <section class="lb-testimonials" data-section-id="{{ section.id }}">
   <h2>{{ section.settings.title }}</h2>
-  {% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}
+  {% if section.blocks.size > 0 %}<div class="lb-testimonials__items">{% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}</div>
+  {% else %}<p class="lb-testimonials__empty">Add customer reviews to build trust.</p>{% endif %}
 </section>
 {% schema %}
 {

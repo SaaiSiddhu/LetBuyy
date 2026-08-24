@@ -1,12 +1,15 @@
 <section class="lb-auth lb-auth--login" data-section-id="{{ section.id }}">
   <h1>{{ section.settings.heading }}</h1>
+  {% if request.error %}<p class="lb-auth__error" role="alert">{% case request.error %}{% when "missing_fields" %}Please fill in all required fields.{% when "invalid_credentials" %}Incorrect email or password.{% when "account_exists" %}An account with this email already exists. Please sign in.{% when "rate_limited" %}Too many attempts. Please try again shortly.{% when "bot_verification" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}
   <form class="lb-auth__form" method="post" action="/api/customer/login">
     <input type="hidden" name="storeId" value="{{ shop.id }}">
+    <input type="hidden" name="turnstileToken" value="">
+    <lb-turnstile data-lb-island="turnstile"></lb-turnstile>
     <label>Email<input type="email" name="email" autocomplete="email" required></label>
     <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
     <button type="submit">Sign in</button>
   </form>
-  <a href="/customers/register">Create an account</a>
+  <a href="{{ routes.customer_register_url }}">Create an account</a>
 </section>
 {% schema %}
 {

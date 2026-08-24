@@ -11,6 +11,15 @@ const PRODUCT_SECTION_TYPES = new Set([
     'product-grid',
     'featured-products',
     'product-detail',
+    // T2a/W1c — collection-product-list.liquid (the /products "all products" page AND the /search
+    // results page both resolve to this section type) reads `collection.products`, which
+    // composition-engine.tsx's collectLiquidProducts() only populates from a section's OWN fetched
+    // `products`/`product` SectionRenderData fields. Without this section type registered here,
+    // buildSectionDataPlan's early-return at `productSections.length === 0` fired for every request
+    // to either page, so `collection.products` was always empty regardless of how many real products
+    // the store had — the page rendered its own real, non-fabricated empty state, which read as
+    // "products aren't showing" rather than the actual bug (products were never fetched at all).
+    'collection-product-list',
 ]);
 const PRODUCT_RENDERER_KEYS = new Set([
     'core.product-grid',
@@ -19,6 +28,7 @@ const PRODUCT_RENDERER_KEYS = new Set([
     'liquid.section.product-grid',
     'liquid.section.featured-products',
     'liquid.section.product-detail',
+    'liquid.section.collection-product-list',
 ]);
 
 function getStringArray(value: unknown): string[] {

@@ -20,7 +20,7 @@
   "layout": {
     "theme": {
       "path": "layout/theme.liquid",
-      "source": "<!doctype html>\n<html lang=\"{{ request.locale | default: \"en\" }}\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  {% assign lb_page_title = shop.name | append: \" - LetBuyy Core\" %}\n  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}\n  <title>{{ lb_page_title }}</title>\n  {% if lb_meta_description != blank %}<meta name=\"description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  <meta name=\"twitter:card\" content=\"{% if settings.socialImageUrl != blank %}summary_large_image{% else %}summary{% endif %}\">\n  <meta name=\"twitter:title\" content=\"{{ lb_page_title }}\">\n  {% if lb_meta_description != blank %}<meta name=\"twitter:description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  {% if settings.socialImageUrl != blank %}<meta name=\"twitter:image\" content=\"{{ settings.socialImageUrl | image_url }}\">{% endif %}\n  <style data-lb-layout=\"1\">\n    :root{--lb-focus-ring-width:2px;--lb-focus-ring-color:var(--accent,#2563eb);--lb-focus-offset:2px;--lb-space-sm:0.5rem;--lb-space-md:0.75rem;--lb-space-lg:1rem;--lb-radius-sm:0.375rem;--lb-layout-max:72rem;--lb-layout-gutter:1rem;--lb-layout-breakpoint:48em;}\n    .lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring-width) solid var(--lb-focus-ring-color);outline-offset:var(--lb-focus-offset);}\n    .lb-skip-link{position:absolute;left:-9999px;top:0;z-index:100;padding:var(--lb-space-md) var(--lb-space-lg);border-radius:var(--lb-radius-sm);background:var(--surface,#f8fafc);color:var(--foreground,#1a1a2e);font-weight:600;}\n    .lb-skip-link:focus,.lb-skip-link:focus-visible{left:var(--lb-space-lg);top:var(--lb-space-lg);}\n    .lb-layout__header,.lb-layout__footer{display:flex;flex-direction:column;align-items:flex-start;gap:var(--lb-space-md);margin-inline:auto;max-width:min(var(--lb-layout-max),calc(100vw - var(--lb-layout-gutter) * 2));padding-block:var(--lb-space-lg);padding-inline:var(--lb-layout-gutter);}\n    .lb-layout__brand{font-family:var(--font-display,inherit);font-weight:700;}\n    .lb-layout__nav{display:flex;flex-wrap:wrap;gap:var(--lb-space-md);}\n    .lb-layout__legal{margin:0;font-size:0.875rem;}\n    @media (min-width:48em){.lb-layout__header,.lb-layout__footer{flex-direction:row;align-items:center;justify-content:space-between;}}\n  </style>\n  {{ content_for_header | raw }}\n</head>\n<body class=\"lb-theme lb-theme--letbuyy-core\">\n  <a class=\"lb-skip-link\" href=\"#MainContent\">Skip to content</a>\n  <header class=\"lb-layout__header\">\n    <a class=\"lb-layout__brand\" href=\"{{ routes.root_url }}\">{{ shop.name }}</a>\n    <nav class=\"lb-layout__nav\" aria-label=\"Primary\">\n      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href=\"{{ link.url }}\"{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}</a>{% endfor %}\n      {% else %}<a href=\"{{ routes.all_products_collection_url }}\">Products</a><a href=\"{{ routes.search_url }}\">Search</a><a href=\"{{ routes.cart_url }}\">Cart</a><a href=\"{{ routes.account_url }}\">Account</a>{% endif %}\n    </nav>\n  </header>\n  <main id=\"MainContent\">\n    {{ content_for_layout | raw }}\n  </main>\n  <footer class=\"lb-layout__footer\">\n    {% if linklists.footer.links.size > 0 %}<nav class=\"lb-layout__nav\" aria-label=\"Footer\">{% for link in linklists.footer.links %}<a href=\"{{ link.url }}\">{{ link.title }}</a>{% endfor %}</nav>{% endif %}\n    <p class=\"lb-layout__legal\">&copy; {{ shop.name }}</p>\n  </footer>\n  {{ content_for_footer | raw }}\n</body>\n</html>"
+      "source": "<!doctype html>\n<html lang=\"{{ request.locale | default: \"en\" }}\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  {% assign lb_page_title = shop.name %}\n  {% assign lb_meta_description = settings.metaDescription | default: shop.description | strip_html | truncate: 160 %}\n  <title>{{ lb_page_title }}</title>\n  {% if lb_meta_description != blank %}<meta name=\"description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  <meta name=\"twitter:card\" content=\"{% if settings.socialImageUrl != blank %}summary_large_image{% else %}summary{% endif %}\">\n  <meta name=\"twitter:title\" content=\"{{ lb_page_title }}\">\n  {% if lb_meta_description != blank %}<meta name=\"twitter:description\" content=\"{{ lb_meta_description }}\">{% endif %}\n  {% if settings.socialImageUrl != blank %}<meta name=\"twitter:image\" content=\"{{ settings.socialImageUrl | image_url }}\">{% endif %}\n  <style data-lb-layout=\"1\">\n    :root{--lb-focus-ring-width:2px;--lb-focus-ring-color:var(--accent,#2563eb);--lb-focus-offset:2px;--lb-space-sm:0.5rem;--lb-space-md:0.75rem;--lb-space-lg:1rem;--lb-radius-sm:0.375rem;--lb-layout-max:72rem;--lb-layout-gutter:1rem;--lb-layout-breakpoint:48em;}\n    .lb-theme :where(a,button,input,select,textarea,summary,details,[tabindex]):focus-visible{outline:var(--lb-focus-ring-width) solid var(--lb-focus-ring-color);outline-offset:var(--lb-focus-offset);}\n    .lb-skip-link{position:absolute;left:-9999px;top:0;z-index:100;padding:var(--lb-space-md) var(--lb-space-lg);border-radius:var(--lb-radius-sm);background:var(--surface,#f8fafc);color:var(--foreground,#1a1a2e);font-weight:600;}\n    .lb-skip-link:focus,.lb-skip-link:focus-visible{left:var(--lb-space-lg);top:var(--lb-space-lg);}\n    .lb-layout__header,.lb-layout__footer{display:flex;flex-direction:column;align-items:flex-start;gap:var(--lb-space-md);margin-inline:auto;max-width:min(var(--lb-layout-max),calc(100vw - var(--lb-layout-gutter) * 2));padding-block:var(--lb-space-lg);padding-inline:var(--lb-layout-gutter);}\n    .lb-layout__brand{font-family:var(--font-display,inherit);font-weight:700;}\n    .lb-layout__nav{display:flex;flex-wrap:wrap;gap:var(--lb-space-md);}\n    .lb-layout__legal{margin:0;font-size:0.875rem;}\n    @media (min-width:48em){.lb-layout__header,.lb-layout__footer{flex-direction:row;align-items:center;justify-content:space-between;}}\n  </style>\n  {{ content_for_header | raw }}\n</head>\n<body class=\"lb-theme lb-theme--letbuyy-core\">\n  <a class=\"lb-skip-link\" href=\"#MainContent\">Skip to content</a>\n  <header class=\"lb-layout__header\">\n    <a class=\"lb-layout__brand\" href=\"{{ routes.root_url }}\">{{ shop.name }}</a>\n    <nav class=\"lb-layout__nav\" aria-label=\"Primary\">\n      {% if linklists.main_menu.links.size > 0 %}{% for link in linklists.main_menu.links %}<a href=\"{{ link.url | store_url }}\"{% if link.active %} aria-current=\"page\"{% endif %}>{{ link.title }}</a>{% endfor %}\n      {% else %}<a href=\"{{ routes.all_products_collection_url }}\">Products</a><a href=\"{{ routes.search_url }}\">Search</a><a href=\"{{ routes.cart_url }}\">Cart</a><a href=\"{{ routes.account_url }}\">Account</a>{% endif %}\n    </nav>\n  </header>\n  <main id=\"MainContent\">\n    {{ content_for_layout | raw }}\n  </main>\n  <footer class=\"lb-layout__footer\">\n    {% if linklists.footer.links.size > 0 %}<nav class=\"lb-layout__nav\" aria-label=\"Footer\">{% for link in linklists.footer.links %}<a href=\"{{ link.url | store_url }}\">{{ link.title }}</a>{% endfor %}</nav>{% endif %}\n    <p class=\"lb-layout__legal\">&copy; {{ shop.name }}</p>\n  </footer>\n  {{ content_for_footer | raw }}\n</body>\n</html>"
     }
   },
   "config": {
@@ -97,7 +97,7 @@
             "metaDescription": {
               "type": "textarea",
               "label": "Meta description",
-              "default": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
+              "default": "",
               "info": "Falls back to the shop description. Truncated to 160 characters on output.",
               "maxLength": 160
             },
@@ -128,7 +128,7 @@
         "headingFontFamily": "Inter",
         "bodyFontFamily": "Inter",
         "borderRadius": 12,
-        "metaDescription": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
+        "metaDescription": "",
         "socialImageUrl": "",
         "faviconUrl": ""
       },
@@ -251,12 +251,23 @@
       "name": "LetBuyy Core header",
       "layout": "theme",
       "sections": {
+        "announcement-default": {
+          "type": "announcement-bar",
+          "settings": {
+            "text": "Free shipping on fresh drops this week.",
+            "linkLabel": "Shop now",
+            "linkHref": "/products"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
         "header-default": {
           "type": "header",
           "settings": {
-            "storeName": "LetBuyy Core",
             "showSearch": true,
-            "showCart": true
+            "showCart": true,
+            "behavior": "sticky"
           },
           "blocks": {
             "header-products": {
@@ -288,6 +299,7 @@
         }
       },
       "order": [
+        "announcement-default",
         "header-default"
       ]
     },
@@ -297,10 +309,7 @@
       "sections": {
         "footer-default": {
           "type": "footer",
-          "settings": {
-            "storeName": "LetBuyy Core",
-            "tagline": "First-party Liquid commerce storefront."
-          },
+          "settings": {},
           "blocks": {
             "footer-contact": {
               "type": "link",
@@ -338,21 +347,10 @@
       "name": "LetBuyy Core home page",
       "layout": "theme",
       "sections": {
-        "announcement-default": {
-          "type": "announcement-bar",
-          "settings": {
-            "text": "Free shipping on fresh drops this week.",
-            "linkLabel": "Shop now",
-            "linkHref": "/products"
-          },
-          "blocks": {},
-          "block_order": [],
-          "disabled": false
-        },
         "banner-carousel-default": {
           "type": "banner-carousel",
           "settings": {
-            "title": "This week on LetBuyy Core",
+            "title": "This week",
             "autoplay": true
           },
           "blocks": {
@@ -405,46 +403,8 @@
             "title": "Shop by style",
             "subtitle": "Launch-ready groupings for daily buyers."
           },
-          "blocks": {
-            "category-sneakers": {
-              "type": "category",
-              "settings": {
-                "name": "Sneakers",
-                "slug": "sneakers",
-                "tagline": "Fresh pairs"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "category-apparel": {
-              "type": "category",
-              "settings": {
-                "name": "Apparel",
-                "slug": "apparel",
-                "tagline": "Daily fits"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "category-accessories": {
-              "type": "category",
-              "settings": {
-                "name": "Accessories",
-                "slug": "accessories",
-                "tagline": "Finish the look"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            }
-          },
-          "block_order": [
-            "category-sneakers",
-            "category-apparel",
-            "category-accessories"
-          ],
+          "blocks": {},
+          "block_order": [],
           "disabled": false
         },
         "featured-collection-default": {
@@ -453,48 +413,11 @@
             "title": "Drop-ready collection",
             "subtitle": "Curated items for the first storefront launch.",
             "viewAllLabel": "View collection",
-            "viewAllHref": "/collections/new-arrivals"
+            "viewAllHref": "/collections/new-arrivals",
+            "productLimit": 3
           },
-          "blocks": {
-            "product-sneaker": {
-              "type": "product-card",
-              "settings": {
-                "title": "Velocity Runner",
-                "price": "Rs 4,999",
-                "url": "/products/velocity-runner"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "product-hoodie": {
-              "type": "product-card",
-              "settings": {
-                "title": "Everyday Hoodie",
-                "price": "Rs 2,499",
-                "url": "/products/everyday-hoodie"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "product-cap": {
-              "type": "product-card",
-              "settings": {
-                "title": "Street Cap",
-                "price": "Rs 899",
-                "url": "/products/street-cap"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            }
-          },
-          "block_order": [
-            "product-sneaker",
-            "product-hoodie",
-            "product-cap"
-          ],
+          "blocks": {},
+          "block_order": [],
           "disabled": false
         },
         "product-grid-default": {
@@ -502,36 +425,11 @@
           "settings": {
             "title": "Featured Products",
             "subtitle": "Products selected from your catalog.",
-            "columns": 4
+            "columns": 4,
+            "productLimit": 8
           },
-          "blocks": {
-            "grid-sneaker": {
-              "type": "product-card",
-              "settings": {
-                "title": "Court Sneaker",
-                "price": "Rs 3,499",
-                "url": "/products/court-sneaker"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "grid-backpack": {
-              "type": "product-card",
-              "settings": {
-                "title": "Transit Backpack",
-                "price": "Rs 1,999",
-                "url": "/products/transit-backpack"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            }
-          },
-          "block_order": [
-            "grid-sneaker",
-            "grid-backpack"
-          ],
+          "blocks": {},
+          "block_order": [],
           "disabled": false
         },
         "video-hero-default": {
@@ -547,14 +445,14 @@
         "spotlight-default": {
           "type": "spotlight",
           "settings": {
-            "heading": "A brand-new Liquid section",
-            "subheading": "Added as sections/spotlight.liquid without changing the storefront React registry."
+            "heading": "Made for daily buyers",
+            "subheading": "A little extra with every order."
           },
           "blocks": {
             "spotlight-badge": {
               "type": "badge",
               "settings": {
-                "label": "Zero storefront code change"
+                "label": "New"
               },
               "disabled": false,
               "blocks": {},
@@ -582,32 +480,8 @@
           "settings": {
             "title": "What our buyers say"
           },
-          "blocks": {
-            "testimonial-ananya": {
-              "type": "testimonial",
-              "settings": {
-                "quote": "The sizing guide was spot on and my Velocity Runners showed up in two days.",
-                "author": "Ananya R., Bengaluru"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            },
-            "testimonial-rohan": {
-              "type": "testimonial",
-              "settings": {
-                "quote": "Easy returns and honest photos — the hoodie fit exactly like the size chart said.",
-                "author": "Rohan K., Pune"
-              },
-              "disabled": false,
-              "blocks": {},
-              "block_order": []
-            }
-          },
-          "block_order": [
-            "testimonial-ananya",
-            "testimonial-rohan"
-          ],
+          "blocks": {},
+          "block_order": [],
           "disabled": false
         },
         "newsletter-default": {
@@ -623,7 +497,6 @@
         }
       },
       "order": [
-        "announcement-default",
         "banner-carousel-default",
         "hero-default",
         "category-grid-default",
@@ -1006,7 +879,7 @@
   "sections": {
     "customer-orders": {
       "path": "sections/customer-orders.liquid",
-      "source": "<section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer.orders and customer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in customer.orders %}<li class=\"lb-orders__row\"><a href=\"/account/orders/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order History\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your orders\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order History\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer.orders and customer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in customer.orders %}<li class=\"lb-orders__row\"><a href=\"{{ routes.account_orders_url }}/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order History\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your orders\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order History\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Order History",
         "tag": "section",
@@ -1070,7 +943,7 @@
     },
     "customer-account": {
       "path": "sections/customer-account.liquid",
-      "source": "<section class=\"lb-account\" data-section-id=\"{{ section.id }}\">\n  {% if customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <p class=\"lb-account__hello\">Signed in as {{ customer.name | default: customer.email }}</p>\n  <nav class=\"lb-account__nav\"><a href=\"/account/orders\">Orders</a><a href=\"/account/addresses\">Addresses</a><a href=\"/account/settings\">Settings</a><lb-logout data-logout-url=\"{{ routes.account_logout_url }}\"><form method=\"post\" action=\"{{ routes.account_logout_url }}\"><button type=\"submit\" class=\"lb-account__nav-link\">Sign out</button></form></lb-logout></nav>\n  {% else %}\n  <p class=\"lb-account__guest\">Please <a href=\"/customers/login\">sign in</a> to view your account.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Account\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Account\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-account\" data-section-id=\"{{ section.id }}\">\n  {% if customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <p class=\"lb-account__hello\">Signed in as {{ customer.name | default: customer.email }}</p>\n  <nav class=\"lb-account__nav\"><a href=\"{{ routes.account_orders_url }}\">Orders</a><a href=\"{{ routes.account_addresses_url }}\">Addresses</a><a href=\"{{ routes.account_settings_url }}\">Settings</a><lb-logout data-logout-url=\"{{ routes.account_logout_url }}\"><form method=\"post\" action=\"{{ routes.account_logout_url }}\"><button type=\"submit\" class=\"lb-account__nav-link\">Sign out</button></form></lb-logout></nav>\n  {% else %}\n  <p class=\"lb-account__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to view your account.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Account\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Account\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Customer Account",
         "tag": "section",
@@ -1102,7 +975,7 @@
     },
     "customer-login": {
       "path": "sections/customer-login.liquid",
-      "source": "<section class=\"lb-auth lb-auth--login\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/login\">\n    <input type=\"hidden\" name=\"storeId\" value=\"{{ shop.id }}\">\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"current-password\" required></label>\n    <button type=\"submit\">Sign in</button>\n  </form>\n  <a href=\"/customers/register\">Create an account</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Login\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Sign in\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Login\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-auth lb-auth--login\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if request.error %}<p class=\"lb-auth__error\" role=\"alert\">{% case request.error %}{% when \"missing_fields\" %}Please fill in all required fields.{% when \"invalid_credentials\" %}Incorrect email or password.{% when \"account_exists\" %}An account with this email already exists. Please sign in.{% when \"rate_limited\" %}Too many attempts. Please try again shortly.{% when \"bot_verification\" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/login\">\n    <input type=\"hidden\" name=\"storeId\" value=\"{{ shop.id }}\">\n    <input type=\"hidden\" name=\"turnstileToken\" value=\"\">\n    <lb-turnstile data-lb-island=\"turnstile\"></lb-turnstile>\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"current-password\" required></label>\n    <button type=\"submit\">Sign in</button>\n  </form>\n  <a href=\"{{ routes.customer_register_url }}\">Create an account</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Login\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Sign in\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Login\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Customer Login",
         "tag": "section",
@@ -1134,7 +1007,7 @@
     },
     "customer-register": {
       "path": "sections/customer-register.liquid",
-      "source": "<section class=\"lb-auth lb-auth--register\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/register\">\n    <input type=\"hidden\" name=\"storeId\" value=\"{{ shop.id }}\">\n    <label>Name<input type=\"text\" name=\"fullName\" autocomplete=\"name\"></label>\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"new-password\" required></label>\n    <button type=\"submit\">Create account</button>\n  </form>\n  <a href=\"/customers/login\">Already have an account?</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Register\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Create account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Register\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-auth lb-auth--register\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if request.error %}<p class=\"lb-auth__error\" role=\"alert\">{% case request.error %}{% when \"missing_fields\" %}Please fill in all required fields.{% when \"invalid_credentials\" %}Incorrect email or password.{% when \"account_exists\" %}An account with this email already exists. Please sign in.{% when \"rate_limited\" %}Too many attempts. Please try again shortly.{% when \"bot_verification\" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}\n  <form class=\"lb-auth__form\" method=\"post\" action=\"/api/customer/register\">\n    <input type=\"hidden\" name=\"storeId\" value=\"{{ shop.id }}\">\n    <input type=\"hidden\" name=\"turnstileToken\" value=\"\">\n    <lb-turnstile data-lb-island=\"turnstile\"></lb-turnstile>\n    <label>Name<input type=\"text\" name=\"fullName\" autocomplete=\"name\"></label>\n    <label>Email<input type=\"email\" name=\"email\" autocomplete=\"email\" required></label>\n    <label>Password<input type=\"password\" name=\"password\" autocomplete=\"new-password\" required></label>\n    <button type=\"submit\">Create account</button>\n  </form>\n  <a href=\"{{ routes.customer_login_url }}\">Already have an account?</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Customer Register\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Create account\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Customer Register\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Customer Register",
         "tag": "section",
@@ -1166,7 +1039,7 @@
     },
     "customer-settings": {
       "path": "sections/customer-settings.liquid",
-      "source": "<section class=\"lb-settings\" data-section-id=\"{{ section.id }}\">\n  {% if customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <div class=\"lb-settings__current\">\n    <p class=\"lb-settings__email\">{{ customer.email }}</p>\n    {% if customer.name %}<p class=\"lb-settings__name\">{{ customer.name }}</p>{% endif %}\n    {% if customer.phone %}<p class=\"lb-settings__phone\">{{ customer.phone }}</p>{% endif %}\n  </div>\n  <lb-customer-settings\n    data-lb-island=\"customer-settings\"\n    data-email=\"{{ customer.email | escape }}\"\n    data-name=\"{{ customer.name | default: \"\" | escape }}\"\n    data-phone=\"{{ customer.phone | default: \"\" | escape }}\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-customer-settings>\n  {% else %}\n  <p class=\"lb-settings__guest\">Please <a href=\"/customers/login\">sign in</a> to manage your settings.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Account Settings\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Account settings\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Account Settings\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-settings\" data-section-id=\"{{ section.id }}\">\n  {% if customer %}\n  <h1>{{ section.settings.heading }}</h1>\n  <div class=\"lb-settings__current\">\n    <p class=\"lb-settings__email\">{{ customer.email }}</p>\n    {% if customer.name %}<p class=\"lb-settings__name\">{{ customer.name }}</p>{% endif %}\n    {% if customer.phone %}<p class=\"lb-settings__phone\">{{ customer.phone }}</p>{% endif %}\n  </div>\n  <lb-customer-settings\n    data-lb-island=\"customer-settings\"\n    data-email=\"{{ customer.email | escape }}\"\n    data-name=\"{{ customer.name | default: \"\" | escape }}\"\n    data-phone=\"{{ customer.phone | default: \"\" | escape }}\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-customer-settings>\n  {% else %}\n  <p class=\"lb-settings__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to manage your settings.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Account Settings\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Account settings\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Account Settings\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Account Settings",
         "tag": "section",
@@ -1198,7 +1071,7 @@
     },
     "customer-wishlist": {
       "path": "sections/customer-wishlist.liquid",
-      "source": "<section class=\"lb-wishlist\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class=\"lb-wishlist__count\">({{ customer.wishlist_products.size }})</span>{% endif %}</h1>\n  {% if customer.wishlist_products and customer.wishlist_products.size > 0 %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in customer.wishlist_products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"true\" data-authenticated=\"true\" data-base-path=\"/store/{{ shop.subdomain }}\"></lb-wishlist-toggle></article>{% endfor %}\n  </div>\n  {% elsif customer %}\n  <p class=\"lb-wishlist__empty\">Your wishlist is empty. <a href=\"/store/{{ shop.subdomain }}/shop\">Browse products</a></p>\n  {% else %}\n  <p class=\"lb-wishlist__guest\">Please <a href=\"/customers/login\">sign in</a> to view your wishlist.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Wishlist\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your wishlist\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Wishlist\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-wishlist\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class=\"lb-wishlist__count\">({{ customer.wishlist_products.size }})</span>{% endif %}</h1>\n  {% if customer.wishlist_products and customer.wishlist_products.size > 0 %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in customer.wishlist_products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"true\" data-authenticated=\"true\" data-base-path=\"/store/{{ shop.subdomain }}\"></lb-wishlist-toggle></article>{% endfor %}\n  </div>\n  {% elsif customer %}\n  <p class=\"lb-wishlist__empty\">Your wishlist is empty. <a href=\"{{ routes.all_products_collection_url }}\">Browse products</a></p>\n  {% else %}\n  <p class=\"lb-wishlist__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to view your wishlist.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Wishlist\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your wishlist\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Wishlist\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Wishlist",
         "tag": "section",
@@ -1230,7 +1103,7 @@
     },
     "customer-addresses": {
       "path": "sections/customer-addresses.liquid",
-      "source": "<section class=\"lb-addresses\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer %}\n  {% if customer.addresses and customer.addresses.size > 0 %}\n  <div class=\"lb-addresses__grid\">\n    {% for addr in customer.addresses %}<div class=\"lb-address-card{% if addr.is_default %} lb-address-card--default{% endif %}\"><span class=\"lb-address-card__label\">{{ addr.label | default: \"address\" }}</span>{% if addr.is_default %}<span class=\"lb-address-card__default-badge\">Default</span>{% endif %}<p class=\"lb-address-card__address\">{{ addr.address1 }}{% if addr.address2 %}, {{ addr.address2 }}{% endif %}</p><p class=\"lb-address-card__city\">{{ addr.city }}, {{ addr.province }} {{ addr.zip }}</p></div>{% endfor %}\n  </div>\n  {% else %}\n  <p class=\"lb-addresses__empty\">No saved addresses.</p>\n  {% endif %}\n  <lb-address-manager\n    data-lb-island=\"address-manager\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-address-manager>\n  {% else %}\n  <p class=\"lb-addresses__guest\">Please <a href=\"/customers/login\">sign in</a> to manage your addresses.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Addresses\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your addresses\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Addresses\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-addresses\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer %}\n  {% if customer.addresses and customer.addresses.size > 0 %}\n  <div class=\"lb-addresses__grid\">\n    {% for addr in customer.addresses %}<div class=\"lb-address-card{% if addr.is_default %} lb-address-card--default{% endif %}\"><span class=\"lb-address-card__label\">{{ addr.label | default: \"address\" }}</span>{% if addr.is_default %}<span class=\"lb-address-card__default-badge\">Default</span>{% endif %}<p class=\"lb-address-card__address\">{{ addr.address1 }}{% if addr.address2 %}, {{ addr.address2 }}{% endif %}</p><p class=\"lb-address-card__city\">{{ addr.city }}, {{ addr.province }} {{ addr.zip }}</p></div>{% endfor %}\n  </div>\n  {% else %}\n  <p class=\"lb-addresses__empty\">No saved addresses.</p>\n  {% endif %}\n  <lb-address-manager\n    data-lb-island=\"address-manager\"\n    data-base-path=\"/store/{{ shop.subdomain }}\"\n    data-authenticated=\"true\"\n  ></lb-address-manager>\n  {% else %}\n  <p class=\"lb-addresses__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to manage your addresses.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Addresses\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your addresses\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Addresses\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Addresses",
         "tag": "section",
@@ -1287,7 +1160,7 @@
     },
     "cart-summary": {
       "path": "sections/cart-summary.liquid",
-      "source": "<section class=\"lb-cart-page\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <lb-cart data-lb-island=\"cart\" data-base-path=\"/store/{{ shop.subdomain }}\">\n    {% if cart.item_count > 0 %}\n    <ul class=\"lb-cart__items\">{% for item in cart.items %}<li class=\"lb-cart__item\"><span class=\"lb-cart__title\">{{ item.title }}</span><span class=\"lb-cart__qty\">x{{ item.quantity }}</span><span class=\"lb-cart__line\">{{ item.line_price | money_with_currency: cart.currency }}</span></li>{% endfor %}</ul>\n    <div class=\"lb-liquid-cart__totals\">\n      {% if cart.subtotal %}<div class=\"lb-liquid-cart__row\"><span>Subtotal</span><span>{{ cart.subtotal | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.coupon_codes.size > 0 %}<div class=\"lb-liquid-cart__row\"><span>Coupons</span><span>{{ cart.coupon_codes | join: \", \" }}</span></div>{% endif %}\n      {% if cart.discount_total %}<div class=\"lb-liquid-cart__row\"><span>Discounts</span><span>{{ cart.discount_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.shipping_total %}<div class=\"lb-liquid-cart__row\"><span>Shipping</span><span>{{ cart.shipping_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.tax_total %}<div class=\"lb-liquid-cart__row\"><span>Tax (GST)</span><span>{{ cart.tax_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n    </div>\n    <p class=\"lb-cart__total\">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>\n    <a class=\"lb-cart__checkout\" href=\"{{ cart.checkout_url }}\">Checkout</a>\n    {% else %}<p class=\"lb-cart__empty\">Your cart is empty. <a href=\"/store/{{ shop.subdomain }}/shop\">Browse products</a></p>{% endif %}\n  </lb-cart>\n</section>\n{% schema %}\n{\n  \"name\": \"Cart\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your cart\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Cart\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-cart-page\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  <lb-cart data-lb-island=\"cart\" data-base-path=\"/store/{{ shop.subdomain }}\">\n    {% if cart.item_count > 0 %}\n    <ul class=\"lb-cart__items\">{% for item in cart.items %}<li class=\"lb-cart__item\"><span class=\"lb-cart__title\">{{ item.title }}</span><span class=\"lb-cart__qty\">x{{ item.quantity }}</span><span class=\"lb-cart__line\">{{ item.line_price | money_with_currency: cart.currency }}</span></li>{% endfor %}</ul>\n    <div class=\"lb-liquid-cart__totals\">\n      {% if cart.subtotal %}<div class=\"lb-liquid-cart__row\"><span>Subtotal</span><span>{{ cart.subtotal | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.coupon_codes.size > 0 %}<div class=\"lb-liquid-cart__row\"><span>Coupons</span><span>{{ cart.coupon_codes | join: \", \" }}</span></div>{% endif %}\n      {% if cart.discount_total %}<div class=\"lb-liquid-cart__row\"><span>Discounts</span><span>{{ cart.discount_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.shipping_total %}<div class=\"lb-liquid-cart__row\"><span>Shipping</span><span>{{ cart.shipping_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n      {% if cart.tax_total %}<div class=\"lb-liquid-cart__row\"><span>Tax (GST)</span><span>{{ cart.tax_total | money_with_currency: cart.currency }}</span></div>{% endif %}\n    </div>\n    <p class=\"lb-cart__total\">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>\n    <a class=\"lb-cart__checkout\" href=\"{{ cart.checkout_url }}\">Checkout</a>\n    {% else %}<p class=\"lb-cart__empty\">Your cart is empty. <a href=\"{{ routes.all_products_collection_url }}\">Browse products</a></p>{% endif %}\n  </lb-cart>\n</section>\n{% schema %}\n{\n  \"name\": \"Cart\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your cart\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Cart\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Cart",
         "tag": "section",
@@ -1319,7 +1192,7 @@
     },
     "search-box": {
       "path": "sections/search-box.liquid",
-      "source": "<section class=\"lb-search\" data-section-id=\"{{ section.id }}\">\n  <lb-search data-lb-island=\"search\" data-search-url=\"/search\"><input type=\"search\" placeholder=\"{{ section.settings.placeholder }}\" aria-label=\"Search products\"></lb-search>\n  {% if search.terms %}<p class=\"lb-search__terms\">Results for \"{{ search.terms }}\"</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Search\",\n  \"settings\": [\n    {\n      \"id\": \"placeholder\",\n      \"type\": \"text\",\n      \"label\": \"Placeholder\",\n      \"default\": \"Search products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Search\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-search\" data-section-id=\"{{ section.id }}\">\n  <lb-search data-lb-island=\"search\" data-search-url=\"{{ routes.search_url }}\"><input type=\"search\" placeholder=\"{{ section.settings.placeholder }}\" aria-label=\"Search products\"></lb-search>\n  {% if search.terms %}<p class=\"lb-search__terms\">Results for \"{{ search.terms }}\"</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Search\",\n  \"settings\": [\n    {\n      \"id\": \"placeholder\",\n      \"type\": \"text\",\n      \"label\": \"Placeholder\",\n      \"default\": \"Search products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Search\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Search",
         "tag": "section",
@@ -1383,7 +1256,7 @@
     },
     "collection-product-list": {
       "path": "sections/collection-product-list.liquid",
-      "source": "<section class=\"lb-product-grid\" data-section-id=\"{{ section.id }}\">\n  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in collection.products %}<article class=\"lb-product-card\"><a href=\"{{ item.url }}\"><strong>{{ item.title }}</strong><span>{{ item.price | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ item.id }}\" data-product-name=\"{{ item.title }}\" data-product-price=\"{{ item.price }}\" data-product-currency=\"{{ item.currency }}\" data-product-url=\"{{ item.url }}\"><button type=\"button\" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if item.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle></article>{% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Products\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Products\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-product-grid\" data-section-id=\"{{ section.id }}\">\n  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  {% if collection.products.size > 0 %}\n  <div class=\"lb-product-grid__items\">\n    {% for item in collection.products %}<article class=\"lb-product-card\"><a class=\"lb-product-card__link\" href=\"{{ item.url }}\"><div class=\"lb-product-card__media\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\">{% else %}<span class=\"lb-product-card__placeholder\">No image yet</span>{% endif %}{% if item.available == false %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sold-out\">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sale\">Sale</span></span>{% endif %}</div><div class=\"lb-product-card__body\"><h3 class=\"lb-product-card__title\">{{ item.title }}</h3><div class=\"lb-product-card__price\"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class=\"lb-product-card__actions\"><lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ item.id }}\" data-product-name=\"{{ item.title }}\" data-product-price=\"{{ item.price }}\" data-product-currency=\"{{ item.currency }}\" data-product-url=\"{{ item.url }}\"><button type=\"button\" class=\"lb-product-card__cta\" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if item.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}\n  </div>\n  {% else %}\n  <div class=\"lb-product-grid__empty\"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Products\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Products\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Collection Products",
         "tag": "section",
@@ -1415,7 +1288,7 @@
     },
     "blog-listing": {
       "path": "sections/blog-listing.liquid",
-      "source": "<section class=\"lb-blog-listing\" data-section-id=\"{{ section.id }}\">\n  <h1 class=\"lb-blog-listing__heading\">{{ section.settings.heading }}</h1>\n  {% if blog.articles and blog.articles.size > 0 %}\n  <div class=\"lb-blog-listing__articles\">\n    {% for article in blog.articles %}\n    <article class=\"lb-blog-article-card\">\n      <h2 class=\"lb-blog-article-card__title\"><a href=\"/blog/{{ article.slug }}\">{{ article.title }}</a></h2>\n      {% if article.excerpt %}<p class=\"lb-blog-article-card__excerpt\">{{ article.excerpt }}</p>{% endif %}\n      {% if article.published_at %}<time class=\"lb-blog-article-card__date\" datetime=\"{{ article.published_at }}\">{{ article.published_at | date: \"%B %-d, %Y\" }}</time>{% endif %}\n    </article>\n    {% endfor %}\n  </div>\n  {% if blog.pages_count and blog.pages_count > 1 %}\n  <nav class=\"lb-blog-listing__pagination\" aria-label=\"Blog pagination\">\n    {% if blog.current_page and blog.current_page > 1 %}<a class=\"lb-blog-listing__prev\" href=\"/blog?page={{ blog.current_page | minus: 1 }}\" rel=\"prev\">Previous</a>{% endif %}\n    {% assign next_page = blog.current_page | plus: 1 %}\n    {% if next_page <= blog.pages_count %}<a class=\"lb-blog-listing__next\" href=\"/blog?page={{ next_page }}\" rel=\"next\">Next</a>{% endif %}\n  </nav>\n  {% endif %}\n  {% else %}\n  <p class=\"lb-blog-listing__empty\">No posts published yet.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Blog Listing\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Our Blog\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Blog Listing\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-blog-listing\" data-section-id=\"{{ section.id }}\">\n  <h1 class=\"lb-blog-listing__heading\">{{ section.settings.heading }}</h1>\n  {% if blog.articles and blog.articles.size > 0 %}\n  <div class=\"lb-blog-listing__articles\">\n    {% for article in blog.articles %}\n    <article class=\"lb-blog-article-card\">\n      <h2 class=\"lb-blog-article-card__title\"><a href=\"{{ routes.blog_url }}/{{ article.slug }}\">{{ article.title }}</a></h2>\n      {% if article.excerpt %}<p class=\"lb-blog-article-card__excerpt\">{{ article.excerpt }}</p>{% endif %}\n      {% if article.published_at %}<time class=\"lb-blog-article-card__date\" datetime=\"{{ article.published_at }}\">{{ article.published_at | date: \"%B %-d, %Y\" }}</time>{% endif %}\n    </article>\n    {% endfor %}\n  </div>\n  {% if blog.pages_count and blog.pages_count > 1 %}\n  <nav class=\"lb-blog-listing__pagination\" aria-label=\"Blog pagination\">\n    {% if blog.current_page and blog.current_page > 1 %}<a class=\"lb-blog-listing__prev\" href=\"{{ routes.blog_url }}?page={{ blog.current_page | minus: 1 }}\" rel=\"prev\">Previous</a>{% endif %}\n    {% assign next_page = blog.current_page | plus: 1 %}\n    {% if next_page <= blog.pages_count %}<a class=\"lb-blog-listing__next\" href=\"{{ routes.blog_url }}?page={{ next_page }}\" rel=\"next\">Next</a>{% endif %}\n  </nav>\n  {% endif %}\n  {% else %}\n  <p class=\"lb-blog-listing__empty\">No posts published yet.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Blog Listing\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Our Blog\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Blog Listing\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Blog Listing",
         "tag": "section",
@@ -1554,7 +1427,7 @@
     },
     "announcement-bar": {
       "path": "sections/announcement-bar.liquid",
-      "source": "<section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <span>{{ section.settings.text }}</span>\n  <a href=\"{{ section.settings.linkHref }}\">{{ section.settings.linkLabel }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Announcement Bar\",\n  \"settings\": [\n    { \"id\": \"text\", \"type\": \"text\", \"label\": \"Message\", \"default\": \"Free shipping on fresh drops this week.\" },\n    { \"id\": \"linkLabel\", \"type\": \"text\", \"label\": \"Link label\", \"default\": \"Shop now\" },\n    { \"id\": \"linkHref\", \"type\": \"url\", \"label\": \"Link URL\", \"default\": \"/products\" }\n  ],\n  \"presets\": [{ \"name\": \"Announcement Bar\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-announcement-bar\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-announcement-bar__inner\">\n    <span>{{ section.settings.text }}</span>\n    {% if section.settings.linkLabel %}<a href=\"{{ section.settings.linkHref | store_url }}\">{{ section.settings.linkLabel }}</a>{% endif %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Announcement Bar\",\n  \"settings\": [\n    { \"id\": \"text\", \"type\": \"text\", \"label\": \"Message\", \"default\": \"Free shipping on fresh drops this week.\" },\n    { \"id\": \"linkLabel\", \"type\": \"text\", \"label\": \"Link label\", \"default\": \"Shop now\" },\n    { \"id\": \"linkHref\", \"type\": \"url\", \"label\": \"Link URL\", \"default\": \"/products\" }\n  ],\n  \"presets\": [{ \"name\": \"Announcement Bar\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Announcement Bar",
         "tag": "section",
@@ -1694,7 +1567,7 @@
     },
     "banner-carousel": {
       "path": "sections/banner-carousel.liquid",
-      "source": "<section class=\"lb-banner-carousel\" data-section-id=\"{{ section.id }}\" data-autoplay=\"{{ section.settings.autoplay }}\">\n  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  <div class=\"lb-banner-carousel__slides\">\n    {% for block in section.blocks %}<a href=\"{{ block.settings.link }}\">{% if block.settings.image %}<img src=\"{{ block.settings.image | image_url }}\" alt=\"{{ block.settings.heading }}\">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Banner Carousel\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\"\n    },\n    {\n      \"id\": \"autoplay\",\n      \"type\": \"toggle\",\n      \"label\": \"Autoplay\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"slide\",\n      \"name\": \"Slide\",\n      \"settings\": [\n        {\n          \"id\": \"heading\",\n          \"type\": \"text\",\n          \"label\": \"Heading\"\n        },\n        {\n          \"id\": \"image\",\n          \"type\": \"image\",\n          \"label\": \"Image\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Banner Carousel\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-banner-carousel\" data-section-id=\"{{ section.id }}\" data-autoplay=\"{{ section.settings.autoplay }}\">\n  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}\n  <div class=\"lb-banner-carousel__slides\">\n    {% for block in section.blocks %}<a href=\"{{ block.settings.link | store_url }}\">{% if block.settings.image %}<img src=\"{{ block.settings.image | image_url }}\" alt=\"{{ block.settings.heading }}\">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Banner Carousel\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\"\n    },\n    {\n      \"id\": \"autoplay\",\n      \"type\": \"toggle\",\n      \"label\": \"Autoplay\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"slide\",\n      \"name\": \"Slide\",\n      \"settings\": [\n        {\n          \"id\": \"heading\",\n          \"type\": \"text\",\n          \"label\": \"Heading\"\n        },\n        {\n          \"id\": \"image\",\n          \"type\": \"image\",\n          \"label\": \"Image\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Banner Carousel\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Banner Carousel",
         "tag": "section",
@@ -1797,7 +1670,7 @@
     },
     "category-grid": {
       "path": "sections/category-grid.liquid",
-      "source": "<section class=\"lb-category-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  <div class=\"lb-category-grid__items\">\n    {% for block in section.blocks %}\n      {{ block.content | raw }}\n    {% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Category Grid\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Shop by style\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" }\n  ],\n  \"blocks\": [{ \"type\": \"category\", \"name\": \"Category\" }],\n  \"presets\": [{ \"name\": \"Category Grid\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-category-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  {% if collections.size > 0 %}\n  <div class=\"lb-category-grid__items\">{% for item in collections %}<a class=\"lb-category-card\" href=\"{{ routes.collections_url }}/{{ item.handle }}\"><strong>{{ item.title }}</strong>{% if item.description %}<span>{{ item.description | strip_html | truncate: 60 }}</span>{% endif %}</a>{% endfor %}</div>\n  {% else %}\n  <div class=\"lb-category-grid__empty\"><h2>No collections yet</h2><p>Collections added to this store will appear here.</p></div>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Category Grid\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Shop by style\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" }\n  ],\n  \"blocks\": [],\n  \"presets\": [{ \"name\": \"Category Grid\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Category Grid",
         "tag": "section",
@@ -1814,13 +1687,7 @@
             "id": "subtitle"
           }
         ],
-        "blocks": [
-          {
-            "type": "category",
-            "name": "Category",
-            "settings": []
-          }
-        ],
+        "blocks": [],
         "presets": [
           {
             "name": "Category Grid",
@@ -1840,7 +1707,7 @@
     },
     "collection-filter": {
       "path": "sections/collection-filter.liquid",
-      "source": "<section class=\"lb-collection-filter\" data-section-id=\"{{ section.id }}\" data-layout=\"{{ section.settings.layout }}\">\n  {% if section.settings.showSearch %}\n  <form class=\"lb-collection-filter__form\" role=\"search\" method=\"get\" action=\"{{ routes.search_url }}\">\n    <label class=\"lb-collection-filter__label\" for=\"lb-collection-filter-{{ section.id }}\">Search products</label>\n    <input class=\"lb-collection-filter__input\" id=\"lb-collection-filter-{{ section.id }}\" type=\"search\" name=\"search\" value=\"{{ search.terms }}\" placeholder=\"Search products\">\n    <button class=\"lb-collection-filter__submit\" type=\"submit\">Search</button>\n  </form>\n  {% endif %}\n  {% if section.settings.showSort and collection.sort_options.size > 0 %}\n  <nav class=\"lb-collection-filter__sort\" aria-label=\"Sort products\">\n    {% for option in collection.sort_options %}<a class=\"lb-collection-filter__sort-link\" href=\"{{ option.url }}\"{% if option.active %} aria-current=\"true\"{% endif %}>{{ option.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if section.settings.showPriceFilter and collection.price_ranges.size > 0 %}\n  <nav class=\"lb-collection-filter__price\" aria-label=\"Filter by price\">\n    {% for range in collection.price_ranges %}<a class=\"lb-collection-filter__price-link\" href=\"{{ range.url }}\"{% if range.active %} aria-current=\"true\"{% endif %}>{{ range.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if section.settings.showVendorFilter and collection.vendors.size > 0 %}\n  <nav class=\"lb-collection-filter__vendor\" aria-label=\"Filter by brand\">\n    {% for vendor in collection.vendors %}<a class=\"lb-collection-filter__vendor-link\" href=\"{{ vendor.url }}\"{% if vendor.active %} aria-current=\"true\"{% endif %}>{{ vendor.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if search.terms != blank %}<p class=\"lb-collection-filter__active\" role=\"status\">Showing results for \"{{ search.terms }}\"{% if collection.handle != blank %} <a class=\"lb-collection-filter__clear\" href=\"/collections/{{ collection.handle }}\">Clear</a>{% endif %}</p>\n  {% elsif collection.products.size > 0 %}<p class=\"lb-collection-filter__count\" role=\"status\">{{ collection.products.size }} products</p>\n  {% else %}<p class=\"lb-collection-filter__empty\" role=\"status\">No products to filter yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Filter\",\n  \"settings\": [\n    {\n      \"id\": \"showSearch\",\n      \"type\": \"toggle\",\n      \"label\": \"Show search\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showSort\",\n      \"type\": \"toggle\",\n      \"label\": \"Show sort\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showPriceFilter\",\n      \"type\": \"toggle\",\n      \"label\": \"Show price filter\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showVendorFilter\",\n      \"type\": \"toggle\",\n      \"label\": \"Show vendor filter\",\n      \"default\": false\n    },\n    {\n      \"id\": \"layout\",\n      \"type\": \"select\",\n      \"label\": \"Layout\",\n      \"default\": \"sidebar\",\n      \"options\": [\n        \"sidebar\",\n        \"drawer\",\n        \"topbar\"\n      ]\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Filter\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-collection-filter\" data-section-id=\"{{ section.id }}\" data-layout=\"{{ section.settings.layout }}\">\n  {% if section.settings.showSearch %}\n  <form class=\"lb-collection-filter__form\" role=\"search\" method=\"get\" action=\"{{ routes.search_url }}\">\n    <label class=\"lb-collection-filter__label\" for=\"lb-collection-filter-{{ section.id }}\">Search products</label>\n    <input class=\"lb-collection-filter__input\" id=\"lb-collection-filter-{{ section.id }}\" type=\"search\" name=\"search\" value=\"{{ search.terms }}\" placeholder=\"Search products\">\n    <button class=\"lb-collection-filter__submit\" type=\"submit\">Search</button>\n  </form>\n  {% endif %}\n  {% if section.settings.showSort and collection.sort_options.size > 0 %}\n  <nav class=\"lb-collection-filter__sort\" aria-label=\"Sort products\">\n    {% for option in collection.sort_options %}<a class=\"lb-collection-filter__sort-link\" href=\"{{ option.url }}\"{% if option.active %} aria-current=\"true\"{% endif %}>{{ option.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if section.settings.showPriceFilter and collection.price_ranges.size > 0 %}\n  <nav class=\"lb-collection-filter__price\" aria-label=\"Filter by price\">\n    {% for range in collection.price_ranges %}<a class=\"lb-collection-filter__price-link\" href=\"{{ range.url }}\"{% if range.active %} aria-current=\"true\"{% endif %}>{{ range.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if section.settings.showVendorFilter and collection.vendors.size > 0 %}\n  <nav class=\"lb-collection-filter__vendor\" aria-label=\"Filter by brand\">\n    {% for vendor in collection.vendors %}<a class=\"lb-collection-filter__vendor-link\" href=\"{{ vendor.url }}\"{% if vendor.active %} aria-current=\"true\"{% endif %}>{{ vendor.label }}</a>{% endfor %}\n  </nav>\n  {% endif %}\n  {% if search.terms != blank %}<p class=\"lb-collection-filter__active\" role=\"status\">Showing results for \"{{ search.terms }}\"{% if collection.handle != blank %} <a class=\"lb-collection-filter__clear\" href=\"{{ routes.collections_url }}/{{ collection.handle }}\">Clear</a>{% endif %}</p>\n  {% elsif collection.products.size > 0 %}<p class=\"lb-collection-filter__count\" role=\"status\">{{ collection.products.size }} products</p>\n  {% else %}<p class=\"lb-collection-filter__empty\" role=\"status\">No products to filter yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Collection Filter\",\n  \"settings\": [\n    {\n      \"id\": \"showSearch\",\n      \"type\": \"toggle\",\n      \"label\": \"Show search\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showSort\",\n      \"type\": \"toggle\",\n      \"label\": \"Show sort\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showPriceFilter\",\n      \"type\": \"toggle\",\n      \"label\": \"Show price filter\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showVendorFilter\",\n      \"type\": \"toggle\",\n      \"label\": \"Show vendor filter\",\n      \"default\": false\n    },\n    {\n      \"id\": \"layout\",\n      \"type\": \"select\",\n      \"label\": \"Layout\",\n      \"default\": \"sidebar\",\n      \"options\": [\n        \"sidebar\",\n        \"drawer\",\n        \"topbar\"\n      ]\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Collection Filter\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Collection Filter",
         "tag": "section",
@@ -1944,7 +1811,7 @@
     },
     "cta-section": {
       "path": "sections/cta-section.liquid",
-      "source": "<section class=\"lb-cta-section\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.heading }}</h2>\n  <p>{{ section.settings.subheading }}</p>\n  <a href=\"{{ section.settings.ctaLink }}\">{{ section.settings.ctaText }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Call to Action\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Ready to get started?\"\n    },\n    {\n      \"id\": \"subheading\",\n      \"type\": \"text\",\n      \"label\": \"Subheading\"\n    },\n    {\n      \"id\": \"ctaText\",\n      \"type\": \"text\",\n      \"label\": \"Button text\",\n      \"default\": \"Shop now\"\n    },\n    {\n      \"id\": \"ctaLink\",\n      \"type\": \"url\",\n      \"label\": \"Button link\",\n      \"default\": \"/products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Call to Action\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-cta-section\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.heading }}</h2>\n  <p>{{ section.settings.subheading }}</p>\n  <a href=\"{{ section.settings.ctaLink | store_url }}\">{{ section.settings.ctaText }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Call to Action\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Ready to get started?\"\n    },\n    {\n      \"id\": \"subheading\",\n      \"type\": \"text\",\n      \"label\": \"Subheading\"\n    },\n    {\n      \"id\": \"ctaText\",\n      \"type\": \"text\",\n      \"label\": \"Button text\",\n      \"default\": \"Shop now\"\n    },\n    {\n      \"id\": \"ctaLink\",\n      \"type\": \"url\",\n      \"label\": \"Button link\",\n      \"default\": \"/products\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Call to Action\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Call to Action",
         "tag": "section",
@@ -1993,7 +1860,7 @@
     },
     "featured-products": {
       "path": "sections/featured-products.liquid",
-      "source": "{% assign has_content = false %}\n{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}\n<section class=\"lb-featured-products\" data-section-id=\"{{ section.id }}\">\n  <div>\n    <h2>{{ section.settings.title }}</h2>\n    <p>{{ section.settings.subtitle }}</p>\n  </div>\n  <div class=\"lb-featured-products__items\">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>\n  {% if has_content %}<a href=\"{{ section.settings.viewAllHref }}\">{{ section.settings.viewAllLabel }}</a>{% else %}<div class=\"lb-featured-products__empty\"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Featured Products\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Drop-ready collection\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" },\n    { \"id\": \"viewAllLabel\", \"type\": \"text\", \"label\": \"View all label\", \"default\": \"View collection\" },\n    { \"id\": \"viewAllHref\", \"type\": \"url\", \"label\": \"View all URL\", \"default\": \"/collections/new-arrivals\" }\n  ],\n  \"blocks\": [{ \"type\": \"product-card\", \"name\": \"Product card\" }],\n  \"presets\": [{ \"name\": \"Featured Products\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-featured-products\" data-section-id=\"{{ section.id }}\">\n  <div>\n    <h2>{{ section.settings.title }}</h2>\n    <p>{{ section.settings.subtitle }}</p>\n  </div>\n  {% if collection.products.size > 0 %}\n  <div class=\"lb-featured-products__items\">{% for item in collection.products limit: section.settings.productLimit %}<article class=\"lb-product-card\"><a class=\"lb-product-card__link\" href=\"{{ item.url }}\"><div class=\"lb-product-card__media\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\">{% else %}<span class=\"lb-product-card__placeholder\">No image yet</span>{% endif %}{% if item.available == false %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sold-out\">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sale\">Sale</span></span>{% endif %}</div><div class=\"lb-product-card__body\"><h3 class=\"lb-product-card__title\">{{ item.title }}</h3><div class=\"lb-product-card__price\"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class=\"lb-product-card__actions\"><lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ item.id }}\" data-product-name=\"{{ item.title }}\" data-product-price=\"{{ item.price }}\" data-product-currency=\"{{ item.currency }}\" data-product-url=\"{{ item.url }}\"><button type=\"button\" class=\"lb-product-card__cta\" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if item.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>\n  <a href=\"{{ section.settings.viewAllHref | store_url }}\">{{ section.settings.viewAllLabel }}</a>\n  {% else %}\n  <div class=\"lb-featured-products__empty\"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Featured Products\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Drop-ready collection\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" },\n    { \"id\": \"viewAllLabel\", \"type\": \"text\", \"label\": \"View all label\", \"default\": \"View collection\" },\n    { \"id\": \"viewAllHref\", \"type\": \"url\", \"label\": \"View all URL\", \"default\": \"/collections/new-arrivals\" },\n    { \"id\": \"productLimit\", \"type\": \"range\", \"label\": \"Products to show\", \"min\": 1, \"max\": 12, \"step\": 1, \"default\": 3 }\n  ],\n  \"blocks\": [],\n  \"presets\": [{ \"name\": \"Featured Products\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Featured Products",
         "tag": "section",
@@ -2020,15 +1887,18 @@
             "label": "View all URL",
             "default": "/collections/new-arrivals",
             "id": "viewAllHref"
-          }
-        ],
-        "blocks": [
+          },
           {
-            "type": "product-card",
-            "name": "Product card",
-            "settings": []
+            "type": "range",
+            "label": "Products to show",
+            "default": 3,
+            "min": 1,
+            "max": 12,
+            "step": 1,
+            "id": "productLimit"
           }
         ],
+        "blocks": [],
         "presets": [
           {
             "name": "Featured Products",
@@ -2157,7 +2027,7 @@
     },
     "footer": {
       "path": "sections/footer.liquid",
-      "source": "<footer class=\"lb-footer\" data-section-id=\"{{ section.id }}\">\n  <div><strong>{{ section.settings.storeName }}</strong>{% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}</div>\n  <nav>{% for block in section.blocks %}<a href=\"{{ block.settings.href }}\">{{ block.settings.label }}</a>{% endfor %}</nav>\n</footer>\n{% schema %}\n{\n  \"name\": \"Footer\",\n  \"settings\": [\n    {\n      \"id\": \"storeName\",\n      \"type\": \"text\",\n      \"label\": \"Store name\",\n      \"default\": \"{{ shop.name }}\"\n    },\n    {\n      \"id\": \"tagline\",\n      \"type\": \"text\",\n      \"label\": \"Tagline\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"link\",\n      \"name\": \"Link\",\n      \"settings\": [\n        {\n          \"id\": \"label\",\n          \"type\": \"text\",\n          \"label\": \"Label\"\n        },\n        {\n          \"id\": \"href\",\n          \"type\": \"url\",\n          \"label\": \"URL\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Footer\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<footer class=\"lb-footer\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-footer__grid\">\n    <div class=\"lb-footer__brand\">\n      <h3>{{ section.settings.storeName | default: shop.name }}</h3>\n      {% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}\n      {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}\n      <div class=\"lb-footer__social\">\n        {% if section.settings.instagramUrl != blank %}<a href=\"{{ section.settings.instagramUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Instagram\">IG</a>{% endif %}\n        {% if section.settings.facebookUrl != blank %}<a href=\"{{ section.settings.facebookUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Facebook\">FB</a>{% endif %}\n        {% if section.settings.twitterUrl != blank %}<a href=\"{{ section.settings.twitterUrl }}\" target=\"_blank\" rel=\"noopener noreferrer\" aria-label=\"Twitter\">X</a>{% endif %}\n      </div>\n      {% endif %}\n    </div>\n    {% if section.blocks.size > 0 %}<div class=\"lb-footer__col\"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href=\"{{ block.settings.href | store_url }}\">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}\n    <div class=\"lb-footer__col\">\n      <h4>Policies</h4>\n      <nav>\n        <a href=\"{{ routes.root_url }}/privacy\">Privacy policy</a>\n        <a href=\"{{ routes.root_url }}/terms\">Terms of service</a>\n        <a href=\"{{ routes.root_url }}/shipping\">Shipping policy</a>\n        <a href=\"{{ routes.root_url }}/returns\">Returns policy</a>\n      </nav>\n    </div>\n    <div class=\"lb-footer__col\">\n      <h4>Contact</h4>\n      {% if section.settings.contactEmail != blank %}<p><a href=\"mailto:{{ section.settings.contactEmail }}\">{{ section.settings.contactEmail }}</a></p>{% endif %}\n      {% if section.settings.contactPhone != blank %}<p><a href=\"tel:{{ section.settings.contactPhone }}\">{{ section.settings.contactPhone }}</a></p>{% endif %}\n      <a href=\"{{ routes.contact_url }}\">Contact us</a>\n    </div>\n  </div>\n  <div class=\"lb-footer__bottom\">\n    <p>&copy; {{ shop.name }}. All rights reserved.</p>\n    <a class=\"lb-footer__watermark\" href=\"https://letbuyy.com\" target=\"_blank\" rel=\"noopener noreferrer\">Powered by LetBuyy</a>\n  </div>\n</footer>\n{% schema %}\n{\n  \"name\": \"Footer\",\n  \"settings\": [\n    {\n      \"id\": \"storeName\",\n      \"type\": \"text\",\n      \"label\": \"Store name\"\n    },\n    {\n      \"id\": \"tagline\",\n      \"type\": \"text\",\n      \"label\": \"Tagline\"\n    },\n    {\n      \"id\": \"contactEmail\",\n      \"type\": \"text\",\n      \"label\": \"Contact email\"\n    },\n    {\n      \"id\": \"contactPhone\",\n      \"type\": \"text\",\n      \"label\": \"Contact phone\"\n    },\n    {\n      \"id\": \"instagramUrl\",\n      \"type\": \"url\",\n      \"label\": \"Instagram URL\"\n    },\n    {\n      \"id\": \"facebookUrl\",\n      \"type\": \"url\",\n      \"label\": \"Facebook URL\"\n    },\n    {\n      \"id\": \"twitterUrl\",\n      \"type\": \"url\",\n      \"label\": \"Twitter/X URL\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"link\",\n      \"name\": \"Link\",\n      \"settings\": [\n        {\n          \"id\": \"label\",\n          \"type\": \"text\",\n          \"label\": \"Label\"\n        },\n        {\n          \"id\": \"href\",\n          \"type\": \"url\",\n          \"label\": \"URL\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Footer\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Footer",
         "tag": "section",
@@ -2165,13 +2035,37 @@
           {
             "type": "text",
             "label": "Store name",
-            "default": "{{ shop.name }}",
             "id": "storeName"
           },
           {
             "type": "text",
             "label": "Tagline",
             "id": "tagline"
+          },
+          {
+            "type": "text",
+            "label": "Contact email",
+            "id": "contactEmail"
+          },
+          {
+            "type": "text",
+            "label": "Contact phone",
+            "id": "contactPhone"
+          },
+          {
+            "type": "url",
+            "label": "Instagram URL",
+            "id": "instagramUrl"
+          },
+          {
+            "type": "url",
+            "label": "Facebook URL",
+            "id": "facebookUrl"
+          },
+          {
+            "type": "url",
+            "label": "Twitter/X URL",
+            "id": "twitterUrl"
           }
         ],
         "blocks": [
@@ -2211,7 +2105,7 @@
     },
     "header": {
       "path": "sections/header.liquid",
-      "source": "<header class=\"lb-header\" data-section-id=\"{{ section.id }}\">\n  <a class=\"lb-header__brand\" href=\"/\">{{ section.settings.storeName }}</a>\n  <nav>{% for block in section.blocks %}<a href=\"{{ block.settings.href }}\">{{ block.settings.label }}</a>{% endfor %}</nav>\n  <div class=\"lb-header__actions\">{% if section.settings.showSearch %}<lb-search data-lb-island=\"search\" data-search-url=\"/search\"></lb-search>{% endif %}{% if section.settings.showCart %}<a href=\"/cart\">{{ \"general.cart\" | t }} ({{ cart.item_count }})</a>{% endif %}</div>\n</header>\n{% schema %}\n{\n  \"name\": \"Header\",\n  \"settings\": [\n    {\n      \"id\": \"storeName\",\n      \"type\": \"text\",\n      \"label\": \"Store name\",\n      \"default\": \"{{ shop.name }}\"\n    },\n    {\n      \"id\": \"showSearch\",\n      \"type\": \"toggle\",\n      \"label\": \"Show search\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showCart\",\n      \"type\": \"toggle\",\n      \"label\": \"Show cart\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"link\",\n      \"name\": \"Link\",\n      \"settings\": [\n        {\n          \"id\": \"label\",\n          \"type\": \"text\",\n          \"label\": \"Label\"\n        },\n        {\n          \"id\": \"href\",\n          \"type\": \"url\",\n          \"label\": \"URL\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Header\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<header class=\"lb-header\" data-section-id=\"{{ section.id }}\" data-sticky=\"{% if section.settings.behavior == 'sticky' %}true{% else %}false{% endif %}\">\n  <div class=\"lb-header__inner\">\n    <lb-mobile-nav class=\"lb-mobile-nav\" data-lb-island=\"mobile-nav\">\n      <button type=\"button\" class=\"lb-header__toggle\" data-lb-nav-toggle aria-expanded=\"false\" aria-label=\"Menu\">\n        <span class=\"lb-header__toggle-bar\"></span><span class=\"lb-header__toggle-bar\"></span><span class=\"lb-header__toggle-bar\"></span>\n      </button>\n      <nav class=\"lb-header__nav\" data-lb-nav-panel aria-label=\"Primary\">\n        {% for block in section.blocks %}<a href=\"{{ block.settings.href | store_url }}\">{{ block.settings.label }}</a>{% endfor %}\n        {% if section.settings.showSearch %}<a class=\"lb-header__nav-search\" href=\"{{ routes.search_url }}\">Search</a>{% endif %}\n        <a href=\"{{ routes.account_url }}\">Account</a>\n      </nav>\n      <div class=\"lb-header__scrim\" data-lb-nav-scrim></div>\n    </lb-mobile-nav>\n    <a class=\"lb-header__brand\" href=\"{{ routes.root_url }}\">{{ section.settings.storeName | default: shop.name }}</a>\n    <div class=\"lb-header__actions\">\n      {% if section.settings.showSearch %}<lb-search class=\"lb-header__search-island\" data-lb-island=\"search\" data-search-url=\"{{ routes.search_url }}\"></lb-search>{% endif %}\n      {% if section.settings.showCart %}<a class=\"lb-header__cart\" href=\"{{ routes.cart_url }}\">{{ \"general.cart\" | t }} (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}\n    </div>\n  </div>\n</header>\n{% schema %}\n{\n  \"name\": \"Header\",\n  \"settings\": [\n    {\n      \"id\": \"storeName\",\n      \"type\": \"text\",\n      \"label\": \"Store name\"\n    },\n    {\n      \"id\": \"showSearch\",\n      \"type\": \"toggle\",\n      \"label\": \"Show search\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showCart\",\n      \"type\": \"toggle\",\n      \"label\": \"Show cart\",\n      \"default\": true\n    },\n    {\n      \"id\": \"behavior\",\n      \"type\": \"select\",\n      \"label\": \"Header behavior\",\n      \"default\": \"sticky\",\n      \"options\": [\n        \"static\",\n        \"sticky\"\n      ]\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"link\",\n      \"name\": \"Link\",\n      \"settings\": [\n        {\n          \"id\": \"label\",\n          \"type\": \"text\",\n          \"label\": \"Label\"\n        },\n        {\n          \"id\": \"href\",\n          \"type\": \"url\",\n          \"label\": \"URL\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Header\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Header",
         "tag": "section",
@@ -2219,7 +2113,6 @@
           {
             "type": "text",
             "label": "Store name",
-            "default": "{{ shop.name }}",
             "id": "storeName"
           },
           {
@@ -2233,6 +2126,16 @@
             "label": "Show cart",
             "default": true,
             "id": "showCart"
+          },
+          {
+            "type": "select",
+            "label": "Header behavior",
+            "default": "sticky",
+            "options": [
+              "static",
+              "sticky"
+            ],
+            "id": "behavior"
           }
         ],
         "blocks": [
@@ -2272,7 +2175,7 @@
     },
     "hero-banner": {
       "path": "sections/hero-banner.liquid",
-      "source": "{% assign overlay_value = section.settings.overlay | default: 0.4 %}\n{% assign height_value = section.settings.height | default: 'full' %}\n{% assign align_value = section.settings.textAlign | default: 'center' %}\n<section class=\"lb-hero-banner lb-hero-banner--height-{{ height_value }} lb-hero-banner--align-{{ align_value }}\" data-section-id=\"{{ section.id }}\" data-height=\"{{ height_value }}\" data-text-align=\"{{ align_value }}\">\n  {% if section.settings.image %}<img class=\"lb-hero-banner__bg-image\" src=\"{{ section.settings.image | image_url }}\" data-image-url=\"{{ section.settings.image | image_url }}\" data-overlay=\"{{ overlay_value }}\" alt=\"\">{% endif %}\n  {% if section.settings.eyebrow %}<p class=\"lb-hero-banner__eyebrow\">{{ section.settings.eyebrow }}</p>{% endif %}\n  <h1 class=\"lb-hero-banner__heading\">{{ section.settings.heading }}</h1>\n  {% if section.settings.subheading %}<p class=\"lb-hero-banner__subheading\">{{ section.settings.subheading }}</p>{% endif %}\n  <a href=\"{{ section.settings.ctaLink }}\" class=\"lb-hero-banner__cta\">{{ section.settings.ctaText }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Hero Banner\",\n  \"settings\": [\n    { \"id\": \"eyebrow\", \"type\": \"text\", \"label\": \"Eyebrow\", \"default\": \"New season essentials\" },\n    { \"id\": \"heading\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Fresh drops for daily buyers\" },\n    { \"id\": \"subheading\", \"type\": \"textarea\", \"label\": \"Subheading\" },\n    { \"id\": \"ctaText\", \"type\": \"text\", \"label\": \"Button text\", \"default\": \"Shop Now\" },\n    { \"id\": \"ctaLink\", \"type\": \"url\", \"label\": \"Button link\", \"default\": \"/products\" },\n    { \"id\": \"image\", \"type\": \"image\", \"label\": \"Background Image\" },\n    { \"id\": \"overlay\", \"type\": \"range\", \"label\": \"Overlay Opacity\", \"default\": 0.4, \"min\": 0, \"max\": 1, \"step\": 0.1 },\n    { \"id\": \"height\", \"type\": \"select\", \"label\": \"Height\", \"options\": [\"full\", \"large\", \"medium\", \"small\"], \"default\": \"full\" },\n    { \"id\": \"textAlign\", \"type\": \"select\", \"label\": \"Text Alignment\", \"options\": [\"left\", \"center\", \"right\"], \"default\": \"center\" }\n  ],\n  \"blocks\": [],\n  \"presets\": [{ \"name\": \"Hero Banner\" }]\n}\n{% endschema %}",
+      "source": "{% assign overlay_value = section.settings.overlay | default: 0.4 %}\n{% assign height_value = section.settings.height | default: 'full' %}\n{% assign align_value = section.settings.textAlign | default: 'center' %}\n<section class=\"lb-hero-banner lb-hero-banner--height-{{ height_value }} lb-hero-banner--align-{{ align_value }}\" data-section-id=\"{{ section.id }}\" data-height=\"{{ height_value }}\" data-text-align=\"{{ align_value }}\">\n  {% if section.settings.image %}<img class=\"lb-hero-banner__bg-image\" src=\"{{ section.settings.image | image_url }}\" data-image-url=\"{{ section.settings.image | image_url }}\" data-overlay=\"{{ overlay_value }}\" alt=\"\">{% endif %}\n  {% if section.settings.eyebrow %}<p class=\"lb-hero-banner__eyebrow\">{{ section.settings.eyebrow }}</p>{% endif %}\n  <h1 class=\"lb-hero-banner__heading\">{{ section.settings.heading }}</h1>\n  {% if section.settings.subheading %}<p class=\"lb-hero-banner__subheading\">{{ section.settings.subheading }}</p>{% endif %}\n  <a href=\"{{ section.settings.ctaLink | store_url }}\" class=\"lb-hero-banner__cta\">{{ section.settings.ctaText }}</a>\n</section>\n{% schema %}\n{\n  \"name\": \"Hero Banner\",\n  \"settings\": [\n    { \"id\": \"eyebrow\", \"type\": \"text\", \"label\": \"Eyebrow\", \"default\": \"New season essentials\" },\n    { \"id\": \"heading\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Fresh drops for daily buyers\" },\n    { \"id\": \"subheading\", \"type\": \"textarea\", \"label\": \"Subheading\" },\n    { \"id\": \"ctaText\", \"type\": \"text\", \"label\": \"Button text\", \"default\": \"Shop Now\" },\n    { \"id\": \"ctaLink\", \"type\": \"url\", \"label\": \"Button link\", \"default\": \"/products\" },\n    { \"id\": \"image\", \"type\": \"image\", \"label\": \"Background Image\" },\n    { \"id\": \"overlay\", \"type\": \"range\", \"label\": \"Overlay Opacity\", \"default\": 0.4, \"min\": 0, \"max\": 1, \"step\": 0.1 },\n    { \"id\": \"height\", \"type\": \"select\", \"label\": \"Height\", \"options\": [\"full\", \"large\", \"medium\", \"small\"], \"default\": \"full\" },\n    { \"id\": \"textAlign\", \"type\": \"select\", \"label\": \"Text Alignment\", \"options\": [\"left\", \"center\", \"right\"], \"default\": \"center\" }\n  ],\n  \"blocks\": [],\n  \"presets\": [{ \"name\": \"Hero Banner\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Hero Banner",
         "tag": "section",
@@ -2396,7 +2299,7 @@
     },
     "portfolio-grid": {
       "path": "sections/portfolio-grid.liquid",
-      "source": "<section class=\"lb-portfolio-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href=\"{{ block.settings.link }}\">View</a></article>{% endfor %}\n</section>\n{% schema %}\n{\n  \"name\": \"Portfolio Grid\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"Portfolio\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"project\",\n      \"name\": \"Project\",\n      \"settings\": [\n        {\n          \"id\": \"title\",\n          \"type\": \"text\",\n          \"label\": \"Title\"\n        },\n        {\n          \"id\": \"summary\",\n          \"type\": \"textarea\",\n          \"label\": \"Summary\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Portfolio Grid\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-portfolio-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.summary }}</p><a href=\"{{ block.settings.link | store_url }}\">View</a></article>{% endfor %}\n</section>\n{% schema %}\n{\n  \"name\": \"Portfolio Grid\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"Portfolio\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"project\",\n      \"name\": \"Project\",\n      \"settings\": [\n        {\n          \"id\": \"title\",\n          \"type\": \"text\",\n          \"label\": \"Title\"\n        },\n        {\n          \"id\": \"summary\",\n          \"type\": \"textarea\",\n          \"label\": \"Summary\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Portfolio Grid\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Portfolio Grid",
         "tag": "section",
@@ -2450,7 +2353,7 @@
     },
     "product-detail": {
       "path": "sections/product-detail.liquid",
-      "source": "<section class=\"lb-product-detail\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ product.title }}</h1>\n  {% if product.review_count > 0 %}<p class=\"lb-product-detail__rating\" aria-label=\"Rated {{ product.rating }} out of 5\">★ {{ product.rating }} <span class=\"lb-product-detail__rating-count\">({{ product.review_count }})</span></p>{% endif %}\n  {% if section.settings.showGallery %}<div class=\"lb-product-detail__gallery\">{% for image in product.images %}<img src=\"{{ image | image_url }}\" alt=\"{{ product.title }}\">{% endfor %}</div>{% endif %}\n  <p>{{ product.price | money_with_currency: product.currency }}</p>\n  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}\n  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island=\"variant-picker\" data-product-id=\"{{ product.id }}\" class=\"lb-product-detail__variants\">{% for option in product.options %}<span class=\"lb-variant-option__name\">{{ option.name }}</span>{% for value in option.values %}<button type=\"button\" data-lb-variant-option data-variant-name=\"{{ option.name }}\" data-variant-value=\"{{ value }}\" aria-pressed=\"false\">{{ value }}</button>{% endfor %}{% endfor %}</lb-variant-picker>{% endif %}\n  <lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ product.id }}\" data-product-name=\"{{ product.title }}\" data-product-price=\"{{ product.price }}\" data-product-currency=\"{{ product.currency }}\" data-product-url=\"{{ product.url }}\"><button type=\"button\" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live=\"polite\"></span></lb-add-to-cart>\n  <lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if product.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle>\n  {% if section.settings.showReviews and product.reviews.size > 0 %}<div class=\"lb-product-reviews\" data-section-id=\"{{ section.id }}-reviews\">\n    <h2 class=\"lb-product-reviews__title\">Customer reviews ({{ product.review_count }})</h2>\n    {% for review in product.reviews %}<article class=\"lb-product-review\">\n      <header class=\"lb-product-review__head\"><strong class=\"lb-product-review__author\">{{ review.author }}</strong><span class=\"lb-product-review__stars\" aria-label=\"Rated {{ review.rating }} out of 5\">★ {{ review.rating }}</span>{% if review.is_verified %}<span class=\"lb-product-review__verified\">Verified purchase</span>{% endif %}</header>\n      {% if review.title %}<h3 class=\"lb-product-review__heading\">{{ review.title }}</h3>{% endif %}\n      {% if review.body %}<p class=\"lb-product-review__body\">{{ review.body }}</p>{% endif %}\n      {% if review.helpful_count > 0 %}<footer class=\"lb-product-review__helpful\">{{ review.helpful_count }} found this helpful</footer>{% endif %}\n    </article>{% endfor %}\n  </div>{% endif %}\n  {% if section.settings.showReviews %}<lb-review-form data-lb-island=\"review-form\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\"></lb-review-form>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Product Detail\",\n  \"settings\": [\n    {\n      \"id\": \"showGallery\",\n      \"type\": \"toggle\",\n      \"label\": \"Show gallery\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showDescription\",\n      \"type\": \"toggle\",\n      \"label\": \"Show description\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showReviews\",\n      \"type\": \"toggle\",\n      \"label\": \"Show reviews\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Product Detail\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-product-detail\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ product.title }}</h1>\n  {% if product.review_count > 0 %}<p class=\"lb-product-detail__rating\" aria-label=\"Rated {{ product.rating }} out of 5\">★ {{ product.rating }} <span class=\"lb-product-detail__rating-count\">({{ product.review_count }})</span></p>{% endif %}\n  {% if section.settings.showGallery %}<div class=\"lb-product-detail__gallery\">{% for image in product.images %}<img src=\"{{ image | image_url }}\" alt=\"{{ product.title }}\">{% endfor %}</div>{% endif %}\n  <p>{{ product.price | times: 100 | money_with_currency: product.currency }}</p>\n  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}\n  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island=\"variant-picker\" data-product-id=\"{{ product.id }}\" class=\"lb-product-detail__variants\">{% for option in product.options %}<span class=\"lb-variant-option__name\">{{ option.name }}</span>{% for value in option.values %}<button type=\"button\" data-lb-variant-option data-variant-name=\"{{ option.name }}\" data-variant-value=\"{{ value }}\" aria-pressed=\"false\">{{ value }}</button>{% endfor %}{% endfor %}</lb-variant-picker>{% endif %}\n  <lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ product.id }}\" data-product-name=\"{{ product.title }}\" data-product-price=\"{{ product.price }}\" data-product-currency=\"{{ product.currency }}\" data-product-url=\"{{ product.url }}\"><button type=\"button\" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live=\"polite\"></span></lb-add-to-cart>\n  <lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if product.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle>\n  {% if section.settings.showReviews and product.reviews.size > 0 %}<div class=\"lb-product-reviews\" data-section-id=\"{{ section.id }}-reviews\">\n    <h2 class=\"lb-product-reviews__title\">Customer reviews ({{ product.review_count }})</h2>\n    {% for review in product.reviews %}<article class=\"lb-product-review\">\n      <header class=\"lb-product-review__head\"><strong class=\"lb-product-review__author\">{{ review.author }}</strong><span class=\"lb-product-review__stars\" aria-label=\"Rated {{ review.rating }} out of 5\">★ {{ review.rating }}</span>{% if review.is_verified %}<span class=\"lb-product-review__verified\">Verified purchase</span>{% endif %}</header>\n      {% if review.title %}<h3 class=\"lb-product-review__heading\">{{ review.title }}</h3>{% endif %}\n      {% if review.body %}<p class=\"lb-product-review__body\">{{ review.body }}</p>{% endif %}\n      {% if review.helpful_count > 0 %}<footer class=\"lb-product-review__helpful\">{{ review.helpful_count }} found this helpful</footer>{% endif %}\n    </article>{% endfor %}\n  </div>{% endif %}\n  {% if section.settings.showReviews %}<lb-review-form data-lb-island=\"review-form\" data-product-id=\"{{ product.id }}\" data-store-id=\"{{ shop.id }}\"></lb-review-form>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Product Detail\",\n  \"settings\": [\n    {\n      \"id\": \"showGallery\",\n      \"type\": \"toggle\",\n      \"label\": \"Show gallery\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showDescription\",\n      \"type\": \"toggle\",\n      \"label\": \"Show description\",\n      \"default\": true\n    },\n    {\n      \"id\": \"showReviews\",\n      \"type\": \"toggle\",\n      \"label\": \"Show reviews\",\n      \"default\": true\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Product Detail\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Product Detail",
         "tag": "section",
@@ -2494,7 +2397,7 @@
     },
     "product-grid": {
       "path": "sections/product-grid.liquid",
-      "source": "{% assign has_content = false %}\n{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}\n<section class=\"lb-product-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  <div class=\"lb-product-grid__items\" data-columns=\"{{ section.settings.columns }}\">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>\n  {% unless has_content %}<div class=\"lb-product-grid__empty\"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>{% endunless %}\n</section>\n{% schema %}\n{\n  \"name\": \"Product Grid\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Featured Products\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" },\n    { \"id\": \"columns\", \"type\": \"range\", \"label\": \"Columns\", \"min\": 2, \"max\": 4, \"step\": 1, \"default\": 4 }\n  ],\n  \"blocks\": [{ \"type\": \"product-card\", \"name\": \"Product card\" }],\n  \"presets\": [{ \"name\": \"Product Grid\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-product-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  <p>{{ section.settings.subtitle }}</p>\n  {% if collection.products.size > 0 %}\n  <div class=\"lb-product-grid__items\" data-columns=\"{{ section.settings.columns }}\">{% for item in collection.products limit: section.settings.productLimit %}<article class=\"lb-product-card\"><a class=\"lb-product-card__link\" href=\"{{ item.url }}\"><div class=\"lb-product-card__media\">{% if item.featured_image %}<img src=\"{{ item.featured_image | image_url }}\" alt=\"{{ item.title }}\" loading=\"lazy\">{% else %}<span class=\"lb-product-card__placeholder\">No image yet</span>{% endif %}{% if item.available == false %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sold-out\">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class=\"lb-product-card__badges\"><span class=\"lb-product-card__badge lb-product-card__badge--sale\">Sale</span></span>{% endif %}</div><div class=\"lb-product-card__body\"><h3 class=\"lb-product-card__title\">{{ item.title }}</h3><div class=\"lb-product-card__price\"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class=\"lb-product-card__actions\"><lb-add-to-cart data-lb-island=\"add-to-cart\" data-product-id=\"{{ item.id }}\" data-product-name=\"{{ item.title }}\" data-product-price=\"{{ item.price }}\" data-product-currency=\"{{ item.currency }}\" data-product-url=\"{{ item.url }}\"><button type=\"button\" class=\"lb-product-card__cta\" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island=\"wishlist-toggle\" data-product-id=\"{{ item.id }}\" data-store-id=\"{{ shop.id }}\" data-in-wishlist=\"{% if item.in_wishlist %}true{% endif %}\"{% if customer %} data-authenticated=\"true\"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>\n  {% else %}\n  <div class=\"lb-product-grid__empty\"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Product Grid\",\n  \"settings\": [\n    { \"id\": \"title\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Featured Products\" },\n    { \"id\": \"subtitle\", \"type\": \"text\", \"label\": \"Subheading\" },\n    { \"id\": \"columns\", \"type\": \"range\", \"label\": \"Columns\", \"min\": 2, \"max\": 4, \"step\": 1, \"default\": 4 },\n    { \"id\": \"productLimit\", \"type\": \"range\", \"label\": \"Products to show\", \"min\": 1, \"max\": 24, \"step\": 1, \"default\": 8 }\n  ],\n  \"blocks\": [],\n  \"presets\": [{ \"name\": \"Product Grid\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Product Grid",
         "tag": "section",
@@ -2518,15 +2421,18 @@
             "max": 4,
             "step": 1,
             "id": "columns"
-          }
-        ],
-        "blocks": [
+          },
           {
-            "type": "product-card",
-            "name": "Product card",
-            "settings": []
+            "type": "range",
+            "label": "Products to show",
+            "default": 8,
+            "min": 1,
+            "max": 24,
+            "step": 1,
+            "id": "productLimit"
           }
         ],
+        "blocks": [],
         "presets": [
           {
             "name": "Product Grid",
@@ -2582,7 +2488,7 @@
     },
     "services-grid": {
       "path": "sections/services-grid.liquid",
-      "source": "<section class=\"lb-services-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href=\"{{ block.settings.link }}\">Learn more</a></article>{% endfor %}\n</section>\n{% schema %}\n{\n  \"name\": \"Services Grid\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"Services\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"service\",\n      \"name\": \"Service\",\n      \"settings\": [\n        {\n          \"id\": \"title\",\n          \"type\": \"text\",\n          \"label\": \"Title\"\n        },\n        {\n          \"id\": \"description\",\n          \"type\": \"textarea\",\n          \"label\": \"Description\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Services Grid\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-services-grid\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<article><h3>{{ block.settings.title }}</h3><p>{{ block.settings.description }}</p><a href=\"{{ block.settings.link | store_url }}\">Learn more</a></article>{% endfor %}\n</section>\n{% schema %}\n{\n  \"name\": \"Services Grid\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"Services\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"service\",\n      \"name\": \"Service\",\n      \"settings\": [\n        {\n          \"id\": \"title\",\n          \"type\": \"text\",\n          \"label\": \"Title\"\n        },\n        {\n          \"id\": \"description\",\n          \"type\": \"textarea\",\n          \"label\": \"Description\"\n        },\n        {\n          \"id\": \"link\",\n          \"type\": \"url\",\n          \"label\": \"Link\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Services Grid\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Services Grid",
         "tag": "section",
@@ -2688,7 +2594,7 @@
     },
     "testimonials": {
       "path": "sections/testimonials.liquid",
-      "source": "<section class=\"lb-testimonials\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}\n</section>\n{% schema %}\n{\n  \"name\": \"Testimonials\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"What customers say\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"testimonial\",\n      \"name\": \"Testimonial\",\n      \"settings\": [\n        {\n          \"id\": \"quote\",\n          \"type\": \"textarea\",\n          \"label\": \"Quote\"\n        },\n        {\n          \"id\": \"author\",\n          \"type\": \"text\",\n          \"label\": \"Author\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Testimonials\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-testimonials\" data-section-id=\"{{ section.id }}\">\n  <h2>{{ section.settings.title }}</h2>\n  {% if section.blocks.size > 0 %}<div class=\"lb-testimonials__items\">{% for block in section.blocks %}<blockquote><p>{{ block.settings.quote }}</p><cite>{{ block.settings.author }}</cite></blockquote>{% endfor %}</div>\n  {% else %}<p class=\"lb-testimonials__empty\">Add customer reviews to build trust.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Testimonials\",\n  \"settings\": [\n    {\n      \"id\": \"title\",\n      \"type\": \"text\",\n      \"label\": \"Title\",\n      \"default\": \"What customers say\"\n    }\n  ],\n  \"blocks\": [\n    {\n      \"type\": \"testimonial\",\n      \"name\": \"Testimonial\",\n      \"settings\": [\n        {\n          \"id\": \"quote\",\n          \"type\": \"textarea\",\n          \"label\": \"Quote\"\n        },\n        {\n          \"id\": \"author\",\n          \"type\": \"text\",\n          \"label\": \"Author\"\n        }\n      ]\n    }\n  ],\n  \"presets\": [\n    {\n      \"name\": \"Testimonials\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Testimonials",
         "tag": "section",
@@ -2828,7 +2734,7 @@
     },
     "spotlight": {
       "path": "sections/spotlight.liquid",
-      "source": "<section class=\"lb-first-party-spotlight\" data-section-id=\"{{ section.id }}\">\n  <p>{{ section.settings.subheading }}</p>\n  <h2>{{ section.settings.heading }}</h2>\n  <div class=\"lb-first-party-spotlight__blocks\">\n    {% for block in section.blocks %}\n      {{ block.content | raw }}\n    {% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Spotlight\",\n  \"settings\": [\n    { \"id\": \"heading\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"A brand-new Liquid section\" },\n    { \"id\": \"subheading\", \"type\": \"text\", \"label\": \"Subheading\" }\n  ],\n  \"blocks\": [\n    { \"type\": \"badge\", \"name\": \"Badge\" },\n    { \"type\": \"@app\", \"name\": \"App block\" }\n  ],\n  \"presets\": [{ \"name\": \"Spotlight\" }]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-first-party-spotlight\" data-section-id=\"{{ section.id }}\">\n  <p>{{ section.settings.subheading }}</p>\n  <h2>{{ section.settings.heading }}</h2>\n  <div class=\"lb-first-party-spotlight__blocks\">\n    {% for block in section.blocks %}\n      {{ block.content | raw }}\n    {% endfor %}\n  </div>\n</section>\n{% schema %}\n{\n  \"name\": \"Spotlight\",\n  \"settings\": [\n    { \"id\": \"heading\", \"type\": \"text\", \"label\": \"Heading\", \"default\": \"Made for daily buyers\" },\n    { \"id\": \"subheading\", \"type\": \"text\", \"label\": \"Subheading\" }\n  ],\n  \"blocks\": [\n    { \"type\": \"badge\", \"name\": \"Badge\" },\n    { \"type\": \"@app\", \"name\": \"App block\" }\n  ],\n  \"presets\": [{ \"name\": \"Spotlight\" }]\n}\n{% endschema %}",
       "schema": {
         "name": "Spotlight",
         "tag": "section",
@@ -2836,7 +2742,7 @@
           {
             "type": "text",
             "label": "Heading",
-            "default": "A brand-new Liquid section",
+            "default": "Made for daily buyers",
             "id": "heading"
           },
           {
@@ -2920,56 +2826,6 @@
     }
   },
   "blocks": {
-    "category": {
-      "path": "blocks/category.liquid",
-      "source": "<a class=\"lb-category-card\" href=\"/collections/{{ block.settings.slug }}\" data-block-id=\"{{ block.id }}\">\n  <strong>{{ block.settings.name }}</strong>\n  <span>{{ block.settings.tagline }}</span>\n</a>",
-      "schema": {
-        "name": "Category",
-        "settings": [
-          {
-            "type": "text",
-            "label": "Name",
-            "id": "name"
-          },
-          {
-            "type": "text",
-            "label": "Slug",
-            "id": "slug"
-          },
-          {
-            "type": "text",
-            "label": "Tagline",
-            "id": "tagline"
-          }
-        ],
-        "presets": []
-      }
-    },
-    "product-card": {
-      "path": "blocks/product-card.liquid",
-      "source": "<article class=\"lb-product-card\" data-block-id=\"{{ block.id }}\">\n  <a href=\"{{ block.settings.url }}\">\n    <strong>{{ block.settings.title }}</strong>\n    <span>{{ block.settings.price }}</span>\n  </a>\n</article>",
-      "schema": {
-        "name": "Product card",
-        "settings": [
-          {
-            "type": "text",
-            "label": "Title",
-            "id": "title"
-          },
-          {
-            "type": "text",
-            "label": "Price",
-            "id": "price"
-          },
-          {
-            "type": "url",
-            "label": "Product URL",
-            "id": "url"
-          }
-        ],
-        "presets": []
-      }
-    },
     "badge": {
       "path": "blocks/badge.liquid",
       "source": "<span class=\"lb-badge\" data-block-id=\"{{ block.id }}\">{{ block.settings.label }}</span>",
@@ -2979,7 +2835,7 @@
           {
             "type": "text",
             "label": "Label",
-            "default": "Zero storefront code change",
+            "default": "New",
             "id": "label"
           }
         ],

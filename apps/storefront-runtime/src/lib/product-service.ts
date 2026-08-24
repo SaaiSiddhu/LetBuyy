@@ -165,7 +165,13 @@ function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
         stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,
-        isActive: (data.is_active as boolean) ?? data.status === 'active',
+        // T2a/W4 — the gateway's product-list endpoint omits both `is_active` and `status` entirely
+        // (confirmed via a direct curl of /v1/storefront/{sub}/products), so the old
+        // `data.is_active ?? data.status === 'active'` silently collapsed to `false` whenever a
+        // product simply lacked those fields — inventing a "Sold out" badge for genuinely
+        // in-stock, active products. Only treat a product as inactive when a field explicitly
+        // says so; a listing that omits both stays optimistic, matching the `stock` fallback above.
+        isActive: data.is_active === false ? false : typeof data.status === 'string' ? data.status === 'active' : true,
         isFeatured: (data.is_featured as boolean) ?? false,
         rating: data.avg_rating ? Number(data.avg_rating) : undefined,
         reviewCount: data.review_count ? Number(data.review_count) : undefined,

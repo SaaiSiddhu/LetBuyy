@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-24T06:23:27.852Z",
+  "generated_at": "2026-08-24T14:29:50.689Z",
   "bundles": [
     {
       "slug": "urban-kicks-liquid",
-      "artifactCount": 76,
-      "contentHash": "f7535dc1759cf0a6947ee7a3d7e5cd7bf8f54c85ad313f325bc46a56c046d790"
+      "artifactCount": 74,
+      "contentHash": "15a113247cbc1aa1650cc4fafd7bb2c70655ab37310abdf55abaeb0878d73969"
     },
     {
       "slug": "letbuyy-core-liquid",
-      "artifactCount": 76,
-      "contentHash": "aeea5b026499a386ccaf68018fa9bc595c93e23b59cbb26acf38b973a945a5ad"
+      "artifactCount": 74,
+      "contentHash": "e0402cad811ed4328f8096f9c43aeb268baccbf3bb482ea9f5bc2502daca49c0"
     }
   ]
 }

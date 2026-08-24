@@ -235,7 +235,7 @@ function productSlug(product: SectionRenderData['product']): string {
         .replace(/^-|-$/g, '') || product.id;
 }
 
-function productToLiquidDrop(product: SectionRenderData['product']): Record<string, unknown> | null {
+function productToLiquidDrop(product: SectionRenderData['product'], basePath = ''): Record<string, unknown> | null {
     if (!product) return null;
 
     const handle = productSlug(product);
@@ -245,10 +245,16 @@ function productToLiquidDrop(product: SectionRenderData['product']): Record<stri
         title: product.name,
         name: product.name,
         description: product.description,
+        // T2a — kept as MAJOR units (rupees), matching product-grid.tsx's own `₹{product.price}` and
+        // this same field's OTHER consumer, `data-product-price` on the add-to-cart/wishlist islands
+        // (whose client-side formatCartMoney also expects major units, no /100). The Liquid
+        // `money_with_currency` filter expects MINOR units (matches order/cart data) — templates that
+        // display this field convert at the call site (`| times: 100 | money_with_currency: ...`)
+        // rather than this drop carrying two differently-scaled fields under one name.
         price: product.price,
         compare_at_price: product.compareAtPrice,
         currency: product.currency || 'INR',
-        url: `/product/${product.id}`,
+        url: `${basePath}/product/${product.id}`,
         featured_image: product.images[0] || null,
         images: product.images,
         available: product.stock > 0 && product.isActive !== false,
@@ -263,15 +269,15 @@ function productToLiquidDrop(product: SectionRenderData['product']): Record<stri
     };
 }
 
-function collectLiquidProducts(sectionData: Map<string, SectionRenderData>): Record<string, unknown>[] {
+function collectLiquidProducts(sectionData: Map<string, SectionRenderData>, basePath = ''): Record<string, unknown>[] {
     const products = new Map<string, Record<string, unknown>>();
 
     for (const data of sectionData.values()) {
-        const singleProduct = productToLiquidDrop(data.product);
+        const singleProduct = productToLiquidDrop(data.product, basePath);
         if (singleProduct) products.set(String(singleProduct.id), singleProduct);
 
         for (const product of data.products || []) {
-            const productDrop = productToLiquidDrop(product);
+            const productDrop = productToLiquidDrop(product, basePath);
             if (productDrop) products.set(String(productDrop.id), productDrop);
         }
     }
@@ -303,7 +309,7 @@ function collectLiquidCart(
         coupon_codes: [],
         currency: 'INR',
         source: 'browser_hydrated',
-        cart_url: '/cart',
+        cart_url: `/store/${plan.route.subdomain}/cart`,
         sync_url: `/api/storefront/${plan.route.subdomain}/cart`,
     };
 }
@@ -414,7 +420,8 @@ async function buildLiquidCommerceContext({
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
 }): Promise<LiquidCommerceDrops> {
-    const products = collectLiquidProducts(sectionData);
+    const basePath = `/store/${plan.route.subdomain}`;
+    const products = collectLiquidProducts(sectionData, basePath);
     const product = products[0] || null;
     const reviewData = collectLiquidProductReviews(sectionData);
     if (product && reviewData) {
@@ -462,7 +469,7 @@ async function buildLiquidCommerceContext({
             const searchResults = await createStorefrontApiClient(
                 storefrontReadInit(30, [`storefront:${plan.route.subdomain}:search`]),
             ).storefront.listProducts(plan.route.subdomain, { search: searchTerm.trim(), limit: 50 });
-            const resultProducts = (searchResults?.data ?? []).map((p) => productToLiquidDrop(p as unknown as SectionRenderData['product'])).filter(Boolean);
+            const resultProducts = (searchResults?.data ?? []).map((p) => productToLiquidDrop(p as unknown as SectionRenderData['product'], basePath)).filter(Boolean);
             searchDrop = {
                 terms: searchTerm.trim(),
                 results: resultProducts,
@@ -582,7 +589,7 @@ async function renderLiquidPlan({
     // Wishlist products: enrich the customer wishlist IDs into full product drops.
     if (plan.route.type === 'customer_wishlist' && customer && customer.wishlist.length > 0) {
         const enriched = await ProductService.getProductsByIds(customer.wishlist, plan.route.subdomain);
-        customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p));
+        customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p, `/store/${plan.route.subdomain}`));
     }
 
     const renderer = createThemeRenderer('liquid');
@@ -594,6 +601,7 @@ async function renderLiquidPlan({
                 path: plan.route.path,
                 previewMode: editorMode,
                 locale: store.locale,
+                searchParams: plan.route.searchParams,
             },
             storeTemplate: {
                 ...store.templateConfig,

@@ -36,7 +36,7 @@ test('L7: search page renders the search island, echoes the query, and lists mat
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /<lb-search[^>]+data-lb-island="search"/);
   assert.match(html, /Results for "runner"/);                 // {{ search.terms }}
-  assert.match(html, /<strong>Apex Runner<\/strong>/);        // results from collection.products
+  assert.match(html, /<h3 class="lb-product-card__title">Apex Runner<\/h3>/);        // results from collection.products
 });
 
 test('L7: empty search renders the box with no result cards', async () => {

@@ -2,21 +2,10 @@
   "name": "LetBuyy Core home page",
   "layout": "theme",
   "sections": {
-    "announcement-default": {
-      "type": "announcement-bar",
-      "settings": {
-        "text": "Free shipping on fresh drops this week.",
-        "linkLabel": "Shop now",
-        "linkHref": "/products"
-      },
-      "blocks": {},
-      "block_order": [],
-      "disabled": false
-    },
     "banner-carousel-default": {
       "type": "banner-carousel",
       "settings": {
-        "title": "This week on LetBuyy Core",
+        "title": "This week",
         "autoplay": true
       },
       "blocks": {
@@ -69,46 +58,8 @@
         "title": "Shop by style",
         "subtitle": "Launch-ready groupings for daily buyers."
       },
-      "blocks": {
-        "category-sneakers": {
-          "type": "category",
-          "settings": {
-            "name": "Sneakers",
-            "slug": "sneakers",
-            "tagline": "Fresh pairs"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "category-apparel": {
-          "type": "category",
-          "settings": {
-            "name": "Apparel",
-            "slug": "apparel",
-            "tagline": "Daily fits"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "category-accessories": {
-          "type": "category",
-          "settings": {
-            "name": "Accessories",
-            "slug": "accessories",
-            "tagline": "Finish the look"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "category-sneakers",
-        "category-apparel",
-        "category-accessories"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     },
     "featured-collection-default": {
@@ -117,48 +68,11 @@
         "title": "Drop-ready collection",
         "subtitle": "Curated items for the first storefront launch.",
         "viewAllLabel": "View collection",
-        "viewAllHref": "/collections/new-arrivals"
+        "viewAllHref": "/collections/new-arrivals",
+        "productLimit": 3
       },
-      "blocks": {
-        "product-sneaker": {
-          "type": "product-card",
-          "settings": {
-            "title": "Velocity Runner",
-            "price": "Rs 4,999",
-            "url": "/products/velocity-runner"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "product-hoodie": {
-          "type": "product-card",
-          "settings": {
-            "title": "Everyday Hoodie",
-            "price": "Rs 2,499",
-            "url": "/products/everyday-hoodie"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "product-cap": {
-          "type": "product-card",
-          "settings": {
-            "title": "Street Cap",
-            "price": "Rs 899",
-            "url": "/products/street-cap"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "product-sneaker",
-        "product-hoodie",
-        "product-cap"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     },
     "product-grid-default": {
@@ -166,36 +80,11 @@
       "settings": {
         "title": "Featured Products",
         "subtitle": "Products selected from your catalog.",
-        "columns": 4
+        "columns": 4,
+        "productLimit": 8
       },
-      "blocks": {
-        "grid-sneaker": {
-          "type": "product-card",
-          "settings": {
-            "title": "Court Sneaker",
-            "price": "Rs 3,499",
-            "url": "/products/court-sneaker"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "grid-backpack": {
-          "type": "product-card",
-          "settings": {
-            "title": "Transit Backpack",
-            "price": "Rs 1,999",
-            "url": "/products/transit-backpack"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "grid-sneaker",
-        "grid-backpack"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     },
     "video-hero-default": {
@@ -211,14 +100,14 @@
     "spotlight-default": {
       "type": "spotlight",
       "settings": {
-        "heading": "A brand-new Liquid section",
-        "subheading": "Added as sections/spotlight.liquid without changing the storefront React registry."
+        "heading": "Made for daily buyers",
+        "subheading": "A little extra with every order."
       },
       "blocks": {
         "spotlight-badge": {
           "type": "badge",
           "settings": {
-            "label": "Zero storefront code change"
+            "label": "New"
           },
           "disabled": false,
           "blocks": {},
@@ -246,32 +135,8 @@
       "settings": {
         "title": "What our buyers say"
       },
-      "blocks": {
-        "testimonial-ananya": {
-          "type": "testimonial",
-          "settings": {
-            "quote": "The sizing guide was spot on and my Velocity Runners showed up in two days.",
-            "author": "Ananya R., Bengaluru"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "testimonial-rohan": {
-          "type": "testimonial",
-          "settings": {
-            "quote": "Easy returns and honest photos — the hoodie fit exactly like the size chart said.",
-            "author": "Rohan K., Pune"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "testimonial-ananya",
-        "testimonial-rohan"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     },
     "newsletter-default": {
@@ -287,7 +152,6 @@
     }
   },
   "order": [
-    "announcement-default",
     "banner-carousel-default",
     "hero-default",
     "category-grid-default",

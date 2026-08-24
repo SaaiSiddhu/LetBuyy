@@ -12,7 +12,7 @@
     </div>
     <p class="lb-cart__total">Total: {{ cart.total_price | money_with_currency: cart.currency }}</p>
     <a class="lb-cart__checkout" href="{{ cart.checkout_url }}">Checkout</a>
-    {% else %}<p class="lb-cart__empty">Your cart is empty. <a href="/store/{{ shop.subdomain }}/shop">Browse products</a></p>{% endif %}
+    {% else %}<p class="lb-cart__empty">Your cart is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>{% endif %}
   </lb-cart>
 </section>
 {% schema %}

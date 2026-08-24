@@ -71,7 +71,7 @@
         "metaDescription": {
           "type": "textarea",
           "label": "Meta description",
-          "default": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
+          "default": "",
           "info": "Falls back to the shop description. Truncated to 160 characters on output.",
           "maxLength": 160
         },
