@@ -22,8 +22,11 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import {
   createMinimalLiquidThemeBundleFixture,
+  createUrbanKicksLiquidThemeBundleFixture,
   LiquidRenderer,
   DEFAULT_THEME_SETTINGS,
+  sanitizeLiquidHeadStyleText,
+  buildLiquidThemeHeadAssets,
 } from '../src/index.ts';
 
 const STORE_ID = 'w5-adversarial-store-000000000000';
@@ -326,4 +329,65 @@ test('W5-app-block-settings-filtered: credential-adjacent app block settings nev
   assert.equal(result.status, 'rendered');
   const html = result.liquid?.contentForLayout ?? '';
   assert.doesNotMatch(html, /SECRET-LEAK-PROBE/, 'api_key must be stripped by filterAppBlockSettings before reaching the Liquid drop');
+});
+
+// T2a-fix/W2/CAP-C19 — sanitizeLiquidHeadStyleText is the new extraction boundary added so the
+// portable theme stylesheet (:root token block + LIQUID_THEME_BASE_CSS) can reach the browser as
+// a real <style> element in composition-engine.tsx's React tree, instead of being discarded with
+// the rest of layoutHtml. It reuses sanitizeRenderedHtml's own allowHeadMetadata DOMPurify pass —
+// these tests prove that reuse is genuinely safe, not merely assumed: a hostile theme-setting
+// value must never survive as live markup/script in the extracted CSS text, even in a
+// worst-case scenario where it somehow bypassed the existing sanitizeCssTokenValue() token-level
+// stripping (defense-in-depth, not "we trust the caller already cleaned it").
+test('W5-head-style-breakout: a </style> breakout with an injected <script> cannot escape the extracted CSS text', async () => {
+  const hostile = '<style data-theme-renderer="liquid">:root{--primary:#000}</style></style><script>window.__W5_PWNED__=1</script><style>';
+  const text = await sanitizeLiquidHeadStyleText(hostile);
+  assert.doesNotMatch(text, /<script/i, 'no script tag may survive extraction');
+  assert.doesNotMatch(text, /__W5_PWNED__/, 'the injected payload must never appear in the extracted text');
+  assert.match(text, /--primary:#000/, 'the legitimate token declaration before the breakout attempt must still survive');
+});
+
+test('W5-head-style-jsurl: a javascript: URL smuggled into head-asset HTML cannot become a live href/src', async () => {
+  const hostile = '<style data-theme-renderer="liquid">:root{--primary:#111}</style><a href="javascript:window.__W5_PWNED__=1">x</a>';
+  const text = await sanitizeLiquidHeadStyleText(hostile);
+  // sanitizeLiquidHeadStyleText only ever returns <style> textContent — an <a> tag has none to
+  // extract from, so the hostile element cannot contribute any text to the result at all.
+  assert.doesNotMatch(text, /javascript:/i, 'no javascript: scheme may appear in the extracted CSS text');
+  assert.doesNotMatch(text, /__W5_PWNED__/, 'the injected payload must never appear in the extracted text');
+  assert.match(text, /--primary:#111/, 'the legitimate token declaration must still survive');
+});
+
+test('W5-head-style-expression: a CSS expression()/onerror payload smuggled via an event handler attribute cannot execute', async () => {
+  const hostile = '<style onerror="window.__W5_PWNED__=1" data-theme-renderer="liquid">:root{--primary:#222}body{width:expression(window.__W5_PWNED__=1)}</style>';
+  const text = await sanitizeLiquidHeadStyleText(hostile);
+  assert.doesNotMatch(text, /onerror=/i, 'event handler attributes on the <style> tag itself must be stripped before extraction');
+  // expression() is legacy-IE-only CSS with no effect in any real target browser; the assertion
+  // here is that the extraction path does not itself provide a NEW way to execute it — the raw
+  // text is inert once rendered as a React string child (see liquid-page-assembly.test.ts).
+  assert.match(text, /--primary:#222/, 'the legitimate token declaration must still survive');
+});
+
+test('W5-head-style-real-pipeline: sanitizeLiquidHeadStyleText over the REAL buildLiquidThemeHeadAssets output stays safe end to end', async () => {
+  const bundle = createUrbanKicksLiquidThemeBundleFixture();
+  bundle.config.settings_data.current = {
+    ...bundle.config.settings_data.current,
+    primaryColor: '</style><script>window.__W5_PWNED__=1</script><style>',
+  };
+  const rawHead = buildLiquidThemeHeadAssets(bundle);
+  const text = await sanitizeLiquidHeadStyleText(rawHead);
+  const primaryDeclaration = text.match(/--primary:[^;]*;/)?.[0] ?? '';
+  // sanitizeCssTokenValue() (theme-renderer.ts) already strips `<>{};@()` from every token value
+  // BEFORE it reaches buildLiquidThemeHeadAssets — this proves that holds through the full real
+  // pipeline: no `<`/`>` character survives WITHIN THE TOKEN-DERIVED DECLARATION specifically
+  // (scoped, not a whole-text check — the legitimate base stylesheet elsewhere in `text` uses `>`
+  // as a real CSS child combinator, e.g. ".lb-featured-products > a", so a blanket check would
+  // false-positive on safe content). No surviving `<`/`>` structurally guarantees no tag (script
+  // or otherwise) can ever form here, regardless of what inert text remains — the leftover
+  // "window.__W5_PWNED__=1" text is expected and harmless: it sits inertly inside a CSS
+  // custom-property value it can never execute from or break out of. This mirrors the file's own
+  // assertNeutralised() philosophy: prove structure/reachability, not a naive substring search.
+  assert.ok(primaryDeclaration.length > 0, 'the --primary token declaration must survive, even if its value was neutralised');
+  assert.doesNotMatch(text, /<script/i, 'no script tag may survive the real head-assets pipeline');
+  assert.doesNotMatch(primaryDeclaration, /[<>]/, 'no angle bracket may survive token sanitization — nothing can ever form a tag');
+  assert.match(text, /\.lb-hero-banner\b/, 'the legitimate base stylesheet must still be present');
 });

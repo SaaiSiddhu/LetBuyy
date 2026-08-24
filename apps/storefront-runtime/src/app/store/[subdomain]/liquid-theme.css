@@ -98,7 +98,13 @@
 }
 
 /* ---- announcement bar ---- */
+/* T2a-fix/W1 — explicit, not merely absent-from-the-shared-rhythm-list: globals.css carries its
+   own independent, stale duplicate of the "shared section rhythm" rule (max-width/margin-inline)
+   that ALSO named .lb-announcement-bar (removed there in this same change) — this element must
+   never again pick up a centred max-width from either surface, so state it here instead of
+   relying on omission. */
 .lb-announcement-bar {
+  width: 100%; max-width: none; margin-inline: 0;
   background: var(--primary, #00b3b3); color: #fff;
   display: flex; gap: .75rem; align-items: center; justify-content: center; flex-wrap: wrap;
   padding: .6rem 1rem; font-size: .9rem; font-weight: 600; text-align: center;

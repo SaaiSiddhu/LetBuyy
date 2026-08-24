@@ -144,6 +144,12 @@ export interface LiquidRenderedTheme {
   // (not React) when the storefront layout opts into engine=liquid.
   header?: string;
   footer?: string;
+  // T2a-fix/W2/CAP-C19 — the per-store :root token block + LIQUID_THEME_BASE_CSS, as plain CSS TEXT
+  // (no wrapping <style> tag), already sanitized via sanitizeRenderedHtml's allowHeadMetadata path
+  // (the exact same DOMPurify document-config pass layoutHtml's wholeDocument sanitization uses).
+  // Composition-engine consumes this to render a real <style> element in the React tree — Next.js
+  // hoists it into <head> — instead of the previous fragment concatenation that discarded it.
+  headStyleText?: string;
 }
 
 export interface ThemeRendererInput extends StorefrontCompositionInput {
@@ -443,11 +449,22 @@ function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
 //     (pre-scoping would produce a double-wrapped selector).
 //   • Absent / empty rawCustomCss → output is byte-identical to the no-custom-CSS baseline.
 //   • LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG is NOT modified (DOMPurify already allows <style>).
+// T2a-fix/W2/CAP-C19 — CSS Cascade Layers name. The base token block + LIQUID_THEME_BASE_CSS are
+// wrapped in this named layer (below) so that when a consuming app ALSO ships its own unlayered
+// CSS for the same .lb-* component classes (e.g. storefront-runtime's liquid-theme.css — 89
+// overlapping selectors were measured between the two, an exhaustive selector-by-selector
+// reconciliation was judged out of scope for this fix), the unlayered app CSS always wins
+// regardless of specificity or DOM/precedence insertion order — per-spec, ANY unlayered rule
+// beats ANY layered rule. When no such app CSS exists (a theme rendered by a different, portable
+// consumer — the actual point of this stylesheet), this layer's rules apply completely normally;
+// they only ever yield, never disappear.
+const LIQUID_THEME_BASE_CSS_LAYER_NAME = 'lb-liquid-theme-base';
+
 export function buildLiquidThemeHeadAssets(
   bundle: LiquidThemePackageBundle,
   rawCustomCss?: string,
 ): string {
-  const baseStyle = `<style data-theme-renderer="liquid">${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}</style>`;
+  const baseStyle = `<style data-theme-renderer="liquid">@layer ${LIQUID_THEME_BASE_CSS_LAYER_NAME}{${buildLiquidRootTokenBlock(bundle)}${LIQUID_THEME_BASE_CSS}}</style>`;
   if (!rawCustomCss || rawCustomCss.trim() === '') {
     return baseStyle;
   }
@@ -727,6 +744,11 @@ export class LiquidRenderer implements ThemeRenderer {
     }
 
     const themeHeadAssets = buildLiquidThemeHeadAssets(bundle);
+    // T2a-fix/W2/CAP-C19 — sanitized in parallel with (not instead of) the wholeDocument pass
+    // layoutHtml already gets below; this is the SAME raw input run through the SAME allowHeadMetadata
+    // DOMPurify config, just also captured as plain CSS text for a caller that renders a real <style>
+    // element instead of nesting a document. See sanitizeLiquidHeadStyleText's own doc comment.
+    const headStyleText = await sanitizeLiquidHeadStyleText(themeHeadAssets);
     const embedHeader = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.header, { allowHeadMetadata: true });
     const contentForHeader = `${themeHeadAssets}${embedHeader}`;
     const contentForFooter = await renderLiquidEmbedRegion(input.liquidAppEmbeds?.footer);
@@ -822,6 +844,7 @@ export class LiquidRenderer implements ThemeRenderer {
       sections: renderedSections,
       header: headerHtml,
       footer: footerHtml,
+      headStyleText,
     };
     const composition = composeLiquidStorefrontTheme(input, bundle, templateKey);
     s7ProfileMark('LiquidRenderer.render:total', s7RenderStart, { path: input.context.path, sanitizeCalls: s7ProfileSanitizeCallCount });
@@ -1519,7 +1542,9 @@ export interface RenderedHtmlSanitizerOptions {
 
 interface ThemeDomPurifyRuntime {
   purify: DOMPurify;
-  createDocument(html: string): { head: { innerHTML: string } };
+  createDocument(html: string): {
+    head: { innerHTML: string; querySelectorAll(selector: string): ArrayLike<{ textContent: string | null }> };
+  };
 }
 
 // DOMPurify singleton — one instance shared across all concurrent requests in this worker.
@@ -1629,6 +1654,33 @@ export async function sanitizeRenderedHtml(
   s7ProfileMark('sanitizeRenderedHtml:purify.sanitize', s7PurifyStart, { htmlLength: html.length, wholeDocument: Boolean(options.wholeDocument) });
   s7ProfileMark('sanitizeRenderedHtml:total', s7SanitizeStart, { htmlLength: html.length, wholeDocument: Boolean(options.wholeDocument) });
   return result;
+}
+
+// T2a-fix/W2/CAP-C19 — extracts SANITIZED CSS TEXT (not an HTML string, no wrapping <style> tag)
+// from theme-controlled head assets, for a caller that wants to render a real <style> element in
+// a React tree (e.g. `<style data-theme-renderer="liquid">{cssText}</style>`) rather than embed a
+// nested HTML document.
+//
+// Safety: this reuses sanitizeRenderedHtml's own `allowHeadMetadata` DOMPurify document-config
+// pass unchanged (rawHeadHtml is parsed as `<head>{rawHeadHtml}</head>` inside a full jsdom
+// document and run through the SAME LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG the
+// wholeDocument layoutHtml path already uses). Extraction happens AFTER that pass, by reading
+// `.textContent` off the resulting sanitized <style> DOM node(s) — not by string-slicing the raw
+// input. A hostile theme-setting value containing a literal `</style>` breakout sequence is
+// neutralized by the DOM round-trip itself: jsdom's HTML parser would already have split it into
+// separate nodes before DOMPurify ever ran, and any injected tag (e.g. <script>) is stripped by
+// the same FORBID_TAGS/allowlist config the whole-document layout pass relies on — proven by the
+// adversarial test in liquid-s1-w5-adversarial-security.test.ts covering this function.
+export async function sanitizeLiquidHeadStyleText(rawHeadHtml: string): Promise<string> {
+  if (!rawHeadHtml || rawHeadHtml.trim() === '') return '';
+  const { purify, createDocument } = await getThemeDomPurify();
+  const sanitizedDocument = purify.sanitize(
+    `<!doctype html><html><head>${rawHeadHtml}</head><body></body></html>`,
+    LIQUID_RENDERED_HTML_DOMPURIFY_DOCUMENT_CONFIG,
+  );
+  const head = createDocument(sanitizedDocument).head;
+  const styleNodes = Array.from(head.querySelectorAll('style'));
+  return styleNodes.map((node) => node.textContent ?? '').join('\n').trim();
 }
 
 function escapeHtmlAttribute(value: string): string {

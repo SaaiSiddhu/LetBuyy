@@ -10,6 +10,7 @@ import {
     type LiquidAppEmbeds,
     type LiquidCommerceDrops,
 } from '@letbuyy/theme-engine';
+import { assembleLiquidPageFromRenderResult } from './liquid-page-assembly';
 import type { ProductReviewItem, SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import LiquidHydrationIslands from './liquid-hydration-islands';
@@ -76,17 +77,35 @@ function RenderSectionList({
 
 function LiquidRenderedHtml({
     html,
+    headStyleText,
     editorMode,
     basePath,
     storeId,
 }: {
     html: string;
+    headStyleText?: string;
     editorMode: boolean;
     basePath: string;
     storeId: string;
 }) {
     return (
         <>
+            {/* T2a-fix/W2/CAP-C19 — headStyleText is already sanitized CSS TEXT (theme-renderer.ts's
+                sanitizeLiquidHeadStyleText), never raw/unsanitized input. Rendered as a real <style>
+                element with a plain string child (not dangerouslySetInnerHTML) so React's own text
+                escaping is the last line of defense, on top of the DOMPurify pass already applied.
+                `precedence` is REQUIRED (not decorative) for React 19's <style> hoisting: without
+                it, <style> renders as an ordinary in-place DOM node — verified empirically (a first
+                attempt without `precedence` rendered two duplicate <style> tags inline in <body>,
+                never hoisted). With `precedence` set, React treats it as a Resource, hoists it into
+                <head>, and dedupes by content across the two renders this layout can trigger — this
+                is what makes the theme's own :root tokens + base stylesheet reach the document head,
+                which the previous header+contentForLayout+footer concatenation could never do. */}
+            {headStyleText ? (
+                <style data-theme-renderer="liquid" precedence="lb-liquid-theme" href="lb-liquid-theme-head-assets">
+                    {headStyleText}
+                </style>
+            ) : null}
             <div
                 data-theme-renderer="liquid"
                 data-editor-mode={editorMode ? 'true' : 'false'}
@@ -571,7 +590,7 @@ async function renderLiquidPlan({
     sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
     liquidPage?: Record<string, unknown> | null;
-}): Promise<string | null> {
+}): Promise<{ html: string; headStyleText: string } | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
 
     const includeOrders = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
@@ -622,12 +641,7 @@ async function renderLiquidPlan({
 
         if (result.status !== 'rendered' || !result.liquid) return null;
 
-        // Full-Liquid page: header + body + footer are ALL rendered by the Liquid engine (each fragment is
-        // sanitized per-section in theme-renderer.ts), so nothing in the storefront chrome is React.
-        // layout.tsx drops its React header/footer when rendererEngine === 'liquid'. We concatenate the
-        // sanitized fragments (not the full <!doctype> layout document, which can't nest inside a <div>).
-        const { header, contentForLayout, footer } = result.liquid;
-        return `${header || ''}${contentForLayout}${footer || ''}`;
+        return assembleLiquidPageFromRenderResult(result.liquid);
     } catch (err: unknown) {
         // Defense-in-depth: renderer should not throw after C1, but guard any unexpected failure
         // (e.g. OOM in LiquidJS, JSDOM init failure). Fall back to React; the lb:canary:render
@@ -665,8 +679,8 @@ export default async function StorefrontCompositionEngine({
     liquidPage?: Record<string, unknown> | null;
 }) {
     const renderStart = Date.now();
-    const liquidHtml = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage });
-    const engine = liquidHtml ? 'liquid' : 'react';
+    const liquidResult = await renderLiquidPlan({ store, plan, sectionData, editorMode, liquidPage });
+    const engine = liquidResult ? 'liquid' : 'react';
     // Canary telemetry (Document 6 §4): structured log consumed by monitoring pipeline.
     console.log(JSON.stringify({
         event: 'lb:canary:render',
@@ -677,17 +691,18 @@ export default async function StorefrontCompositionEngine({
         latency_ms: Date.now() - renderStart,
         editor_mode: editorMode,
         // F5 fix: only set fallback_reason when the plan intended Liquid and the renderer returned null.
-        // A React plan (rendererEngine !== 'liquid') also yields liquidHtml===null, but that is not a
+        // A React plan (rendererEngine !== 'liquid') also yields liquidResult===null, but that is not a
         // fallback — it is the normal React path. Setting fallback_reason on React plans produced
         // misleading monitoring data where every non-Liquid page logged 'renderer_returned_null'.
-        fallback_reason: (liquidHtml === null && plan.rendererEngine === 'liquid') ? 'renderer_returned_null' : null,
+        fallback_reason: (liquidResult === null && plan.rendererEngine === 'liquid') ? 'renderer_returned_null' : null,
         cache_hit: null, // field present; NOT CONNECTED until per-request render cache is wired
     }));
 
-    if (liquidHtml) {
+    if (liquidResult) {
         return (
             <LiquidRenderedHtml
-                html={liquidHtml}
+                html={liquidResult.html}
+                headStyleText={liquidResult.headStyleText}
                 editorMode={editorMode}
                 basePath={`/store/${plan.route.subdomain}`}
                 storeId={store.id}
