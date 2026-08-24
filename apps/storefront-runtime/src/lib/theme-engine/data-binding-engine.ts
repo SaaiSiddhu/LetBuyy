@@ -1,4 +1,5 @@
 import { ProductService } from '@/lib/product-service';
+import { URBAN_KICKS_DEMO_SUBDOMAIN } from '@/lib/demo/urban-kicks-demo';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import type { SectionModel } from '@letbuyy/theme-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
@@ -89,9 +90,19 @@ export async function buildSectionDataPlan({
     }
     store.selectedProductIds.forEach((id) => allProductIds.add(id));
 
-    const products = allProductIds.size > 0
-        ? await ProductService.getProductsByIds(Array.from(allProductIds), route.subdomain)
-        : await ProductService.getProductsByStoreSubdomain(route.subdomain);
+    // S6/W2 — pre-existing gap, closed while building the load harness: the demo/preview route
+    // (app/preview/page.tsx) already sources its TOP-LEVEL product list from the Urban Kicks demo
+    // fixture, not a live backend fetch (see loadProductsForStore there) — but this function, which
+    // resolves PER-SECTION product bindings for product-grid/featured-products/product-detail
+    // sections, had no equivalent special case and unconditionally hit the real gateway, which is
+    // not running in a bare `next start` load-test environment (ECONNREFUSED). Mirrors the exact
+    // same demo-subdomain check loadProductsForStore already uses.
+    const isUrbanKicksDemo = route.subdomain === URBAN_KICKS_DEMO_SUBDOMAIN;
+    const products = isUrbanKicksDemo
+        ? await ProductService.getUrbanKicksDemoProducts(allProductIds.size > 0 ? Array.from(allProductIds) : undefined)
+        : allProductIds.size > 0
+            ? await ProductService.getProductsByIds(Array.from(allProductIds), route.subdomain)
+            : await ProductService.getProductsByStoreSubdomain(route.subdomain);
 
     const productsById = new Map(products.map((product) => [product.id, product]));
     for (const section of productSections) {

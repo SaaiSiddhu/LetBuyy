@@ -112,11 +112,21 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
   );
 });
 
-test('W1: preview/editor-mode callers are unaffected (unchanged, always request the index/customers-account template which always exists in a valid bundle)', () => {
+test('W1: preview/editor-mode callers are unaffected (a real merchant preview still always requests the index/customers-account template which always exists in a valid bundle)', () => {
   const preview = read('apps/storefront-runtime/src/app/preview/page.tsx');
   const layout = read(`${STORE_ROOT}/layout.tsx`);
   const accountLayout = read(`${STORE_ROOT}/account/layout.tsx`);
-  assert.match(preview, /resolveStorefrontTemplate\(previewStore, \{\s*type: 'index',/);
+  // S6/W2 — preview/page.tsx now resolves a `routeContext` variable (demo-only, `route_type`-gated
+  // product/collection override; see resolveDemoRouteType) instead of an inline `{ type: 'index', ... }`
+  // literal, so this assertion checks the variable's declared DEFAULT branch is still 'index' — a real
+  // merchant preview (isDemoPreview === false) always falls through to it, exactly as before.
+  assert.match(preview, /resolveStorefrontTemplate\(previewStore, routeContext\)/);
+  assert.match(preview, /:\s*\{\s*\n\s*type: 'index',\s*\n\s*path: '\/preview',/);
+  assert.match(
+    preview,
+    /const routeType = isDemoPreview \? resolveDemoRouteType\(singleParam\(query\?\.route_type\)\) : 'index';/,
+    'the product/collection override must be gated on isDemoPreview — a real merchant preview must never resolve anything but index',
+  );
   assert.match(layout, /resolveStorefrontTemplate\(store, \{\s*type: 'index',/);
   assert.match(accountLayout, /templateKey: 'customers\/account',/);
 });

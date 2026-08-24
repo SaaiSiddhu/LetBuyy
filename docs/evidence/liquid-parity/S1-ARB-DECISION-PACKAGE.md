@@ -84,3 +84,37 @@ whether to give it a standard `SectionModel` contract (making it comparable) or 
 from the parity matrix as a non-standalone, hero-composed component. Re-run
 `apps/storefront-runtime/scripts/liquid-parity-harness.mjs` after each fix; do not tune the harness itself
 to reach a false green.
+
+---
+
+## S6 ADDENDUM (2026-08-24) — concurrent-load evidence now exists; this section supersedes the
+## "recommended gate verdict" above on the performance dimension only. Everything above this line is
+## S1's original evidence, preserved unmodified — not overwritten, not rewritten in place.
+
+Since this document was written: render-parity closed further (S3/S3-FIX: **8/20 text-matrix, ZERO
+React-only gaps, 10/10 behavioural** — the 11 content gaps referenced above are closed; the remaining
+12 matrix FAILs are accepted "Liquid renders more than React" diffs, not defects — see
+`docs/evidence/liquid-parity/S3-render-parity-summary.md`). The Core home page was composed to spec
+(S5: 10 sections, carousel/video/social proof). And — closing the ONE gap this document's own §2 named
+as "out of scope, materially larger work" — **an HTTP concurrent-load harness now exists and has been
+run head-to-head**: `apps/storefront-runtime/scripts/liquid-load-harness.mjs`, full results and
+reasoning in `docs/evidence/liquid-load/S6-load-summary.md` (+ `S6-workload-definition.md`,
+`S6-load-results-peak.json`, `S6-load-results-steady.json`).
+
+**Headline finding, stated plainly because a red result is a successful phase outcome, not a failure to
+hide:** at a realistic, constitution-derived peak request rate (~10 req/s, 3 trials, home/collection/
+product), Liquid vs React latency deltas are within noise (GREEN). But at a LOWER, off-peak request rate
+(2 req/s), Liquid's p95 is **10–14× React's** (reproducibly, ~530ms vs ~30–50ms) on every surface — the
+opposite shape of what "load degrades Liquid" would predict, and root cause is **NOT fully diagnosed**
+(ruled out: LiquidJS render cost itself, which measured 4–13ms internally throughout; caching artifacts;
+one-time cold start. NOT ruled out: a lazy-import, GC, or idle-timeout-driven cost specific to the Liquid
+code path — needs CPU profiling, out of this phase's scope).
+
+**Updated gate verdict:** render-parity and security/SSTI/XSS remain GREEN (unchanged from above).
+Performance is now **PARTIALLY MEASURED, not GREEN**: peak-load GREEN, steady-rate RED
+(unexplained anomaly). **Still NO-GO for the flip** — not on render-parity anymore, but on the
+steady-rate performance anomaly, which is exactly the class of evidence this gate exists to catch before
+a flip, not after. See `S6-load-summary.md` §9 for the full recommendation (profile and root-cause the
+steady-rate anomaly, then re-run this same harness — it needs no code changes to re-run — before
+revisiting the flip decision). `letbuyy-core` remains DARK; no migration, seed, or committed config
+enables Liquid anywhere in this repository as of this addendum.

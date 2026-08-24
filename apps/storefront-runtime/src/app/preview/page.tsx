@@ -1,12 +1,17 @@
 import { CartProvider } from '@/context/cart-context';
 import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
-import { URBAN_KICKS_DEMO_SUBDOMAIN } from '@/lib/demo/urban-kicks-demo';
+import {
+    URBAN_KICKS_DEMO_SUBDOMAIN,
+    getUrbanKicksDemoProduct,
+    getUrbanKicksDemoReviews,
+} from '@/lib/demo/urban-kicks-demo';
 import { ProductService } from '@/lib/product-service';
 import { StoreService } from '@/lib/store-service';
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine, { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-engine';
-import type { SectionRenderData } from '@/lib/theme-engine/types';
+import { createProductDetailFallbackSection, createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
+import type { SectionRenderData, StorefrontRouteContext } from '@/lib/theme-engine/types';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import type { ProductModel } from '@letbuyy/commerce-core';
@@ -45,6 +50,14 @@ type PreviewSearchParams = {
     settings_data?: string | string[];
     settings_data_b64?: string | string[];
     draft_settings?: string | string[];
+    // S6/W2 — dev-only, demo-only engine override for the concurrent-load harness. Never consulted
+    // outside the already non-production-gated Urban Kicks demo path (see isDemoPreview below) — a
+    // real merchant's preview always renders through its store's own canary resolution, untouched.
+    engine?: string | string[];
+    // S6/W2 — demo-only surface selector ('index' default, 'product', 'collection') so the load
+    // harness can cover more than the home template. Same isDemoPreview gate as `engine`: a real
+    // merchant's preview always renders its own 'index' template, exactly as before this phase.
+    route_type?: string | string[];
 };
 
 type PreviewViewport = 'desktop' | 'tablet' | 'mobile';
@@ -68,6 +81,23 @@ function normalizeSubdomain(value: string | undefined): string | undefined {
 
 function isUrbanKicksDemoPreview(query: PreviewSearchParams | undefined): boolean {
     return singleParam(query?.demo) === 'urban-kicks';
+}
+
+// S6/W2 — 'liquid' forces templateConfig.liquidRenderingCanary=true, 'react' forces it false, so the
+// concurrent-load harness can A/B the SAME demo content (theme, sections, products) on the SAME
+// route, differing ONLY in render engine. Any other/absent value is a no-op (undefined): the store's
+// own canary resolution is used unchanged, exactly as today.
+function resolveEngineOverride(value: string | undefined): boolean | undefined {
+    if (value === 'liquid') return true;
+    if (value === 'react') return false;
+    return undefined;
+}
+
+// S6/W2 — demo-only surface selector. Unrecognised/absent values fall back to 'index', the route
+// this page has always rendered.
+function resolveDemoRouteType(value: string | undefined): 'index' | 'product' | 'collection' {
+    if (value === 'product' || value === 'collection') return value;
+    return 'index';
 }
 
 function normalizeViewport(value: string | undefined): PreviewViewport {
@@ -345,18 +375,77 @@ export default async function PreviewPage({
     if (!store) return <PreviewUnavailable />;
 
     const draftThemeSettings = extractDraftThemeSettings(decodeSettingsPayload(query || {}));
-    const previewStore = applyDraftThemeSettings(store, draftThemeSettings);
-    const renderPlan = resolveStorefrontTemplate(previewStore, {
-        type: 'index',
-        path: '/preview',
-        subdomain: subdomain || '',
-    });
-    const sectionData = await buildSectionDataPlan({
-        store: previewStore,
-        sections: renderPlan.template.sections,
-        route: renderPlan.route,
-    });
+    let previewStore = applyDraftThemeSettings(store, draftThemeSettings);
+    // S6/W2 — demo-only engine override for the concurrent-load harness (see resolveEngineOverride).
+    // Gated on isDemoPreview: a real merchant's ?subdomain= preview never reaches this branch, so its
+    // store's own liquidRenderingCanary resolution is never touched by this query param.
+    if (isDemoPreview) {
+        const engineOverride = resolveEngineOverride(singleParam(query?.engine));
+        if (engineOverride !== undefined) {
+            previewStore = {
+                ...previewStore,
+                templateConfig: { ...previewStore.templateConfig, liquidRenderingCanary: engineOverride },
+            };
+        }
+    }
+    // S6/W2 — demo-only surface selector. routeType stays 'index' (today's only behaviour) for every
+    // real merchant preview; product/collection route contexts mirror exactly what
+    // app/store/[subdomain]/product/[productId]/page.tsx and .../collections/[slug]/page.tsx build,
+    // using the same demo product fixture the 'index'-route demo path already relies on.
+    const routeType = isDemoPreview ? resolveDemoRouteType(singleParam(query?.route_type)) : 'index';
+    const demoProduct = routeType !== 'index' ? (getUrbanKicksDemoProduct('demo-air-runner-90') || null) : null;
+    const routeContext: StorefrontRouteContext = routeType === 'product' && demoProduct
+        ? {
+            type: 'product',
+            path: '/preview',
+            subdomain: subdomain || '',
+            resourceId: demoProduct.id,
+            fallbackSections: [createProductDetailFallbackSection()],
+        }
+        : routeType === 'collection'
+            ? {
+                type: 'collection',
+                path: '/preview',
+                subdomain: subdomain || '',
+                resourceId: 'sneakers',
+                fallbackSections: [createProductListingFallbackSection('Sneakers')],
+            }
+            : {
+                type: 'index',
+                path: '/preview',
+                subdomain: subdomain || '',
+            };
+    const renderPlan = resolveStorefrontTemplate(previewStore, routeContext);
     const products = await loadProductsForStore(previewStore, subdomain, isDemoPreview);
+    let sectionData: Map<string, SectionRenderData>;
+    if (routeType === 'product' && demoProduct) {
+        const demoReviewData = getUrbanKicksDemoReviews(demoProduct.id);
+        const reviews = {
+            reviews: demoReviewData.reviews.map((r) => ({
+                id: r.id,
+                author: r.customer_name,
+                rating: r.rating,
+                title: r.title,
+                body: r.body,
+                images: r.images,
+                isVerified: r.is_verified,
+                helpfulCount: r.helpful_count,
+                createdAt: r.created_at,
+            })),
+            rating: demoReviewData.summary.averageRating,
+            reviewCount: demoReviewData.summary.totalReviews,
+        };
+        sectionData = new Map(renderPlan.template.sections.map((section) => [section.id, { product: demoProduct, reviews }]));
+    } else if (routeType === 'collection') {
+        const collectionProducts = products.filter((product) => product.category === 'Sneakers');
+        sectionData = new Map(renderPlan.template.sections.map((section) => [section.id, { products: collectionProducts }]));
+    } else {
+        sectionData = await buildSectionDataPlan({
+            store: previewStore,
+            sections: renderPlan.template.sections,
+            route: renderPlan.route,
+        });
+    }
     const headerSections = renderPlan.sectionGroups.header;
     const footerSections = renderPlan.sectionGroups.footer;
     const sectionGroupData = buildSectionGroupData([...headerSections, ...footerSections], products);

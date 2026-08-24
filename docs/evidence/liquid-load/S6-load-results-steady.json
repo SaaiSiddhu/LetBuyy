@@ -1,0 +1,366 @@
+{
+  "tool": "liquid-load-harness.mjs",
+  "generatedAt": null,
+  "config": {
+    "baseUrl": "http://localhost:3939",
+    "targetRps": 2,
+    "durationSeconds": 15,
+    "warmupSeconds": 3,
+    "trials": 2,
+    "concurrencyCap": 8,
+    "surfaces": [
+      "index",
+      "product",
+      "collection"
+    ],
+    "requestTimeoutMs": 10000
+  },
+  "scenarios": [
+    {
+      "label": "index/react",
+      "surface": "index",
+      "engine": "react",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=react&route_type=index"
+    },
+    {
+      "label": "index/liquid",
+      "surface": "index",
+      "engine": "liquid",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=liquid&route_type=index"
+    },
+    {
+      "label": "product/react",
+      "surface": "product",
+      "engine": "react",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=react&route_type=product"
+    },
+    {
+      "label": "product/liquid",
+      "surface": "product",
+      "engine": "liquid",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=liquid&route_type=product"
+    },
+    {
+      "label": "collection/react",
+      "surface": "collection",
+      "engine": "react",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=react&route_type=collection"
+    },
+    {
+      "label": "collection/liquid",
+      "surface": "collection",
+      "engine": "liquid",
+      "url": "http://localhost:3939/preview?demo=urban-kicks&engine=liquid&route_type=collection"
+    }
+  ],
+  "trials": [
+    {
+      "trial": 1,
+      "warmupRequestsDiscarded": 6,
+      "measuredWallSeconds": 15.07,
+      "hostLoadBefore": {
+        "loadavg_1m": 4.07,
+        "loadavg_5m": 4.63,
+        "loadavg_15m": 4.16,
+        "cpuCount": 12,
+        "freeMemMb": 2997
+      },
+      "hostLoadAfter": {
+        "loadavg_1m": 4.29,
+        "loadavg_5m": 4.65,
+        "loadavg_15m": 4.18,
+        "cpuCount": 12,
+        "freeMemMb": 1927
+      },
+      "perScenario": {
+        "index/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 26.92,
+          "p90": 48.15,
+          "p95": 48.15,
+          "p99": 48.15,
+          "max": 48.15,
+          "min": 22.75,
+          "mean": 32,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "index/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 530.02,
+          "p90": 555.45,
+          "p95": 555.45,
+          "p99": 555.45,
+          "max": 555.45,
+          "min": 39.09,
+          "mean": 348,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "product/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 44.72,
+          "p90": 53.63,
+          "p95": 53.63,
+          "p99": 53.63,
+          "max": 53.63,
+          "min": 25.07,
+          "mean": 41,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "product/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 72.33,
+          "p90": 542.45,
+          "p95": 542.45,
+          "p99": 542.45,
+          "max": 542.45,
+          "min": 35.14,
+          "mean": 249,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "collection/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 40.36,
+          "p90": 55.12,
+          "p95": 55.12,
+          "p99": 55.12,
+          "max": 55.12,
+          "min": 21.19,
+          "mean": 36,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "collection/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 518.37,
+          "p90": 539.4,
+          "p95": 539.4,
+          "p99": 539.4,
+          "max": 539.4,
+          "min": 29.63,
+          "mean": 335,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "warmupRequestsDiscarded": 6,
+      "measuredWallSeconds": 15.07,
+      "hostLoadBefore": {
+        "loadavg_1m": 4.29,
+        "loadavg_5m": 4.65,
+        "loadavg_15m": 4.18,
+        "cpuCount": 12,
+        "freeMemMb": 1054
+      },
+      "hostLoadAfter": {
+        "loadavg_1m": 4.45,
+        "loadavg_5m": 4.67,
+        "loadavg_15m": 4.19,
+        "cpuCount": 12,
+        "freeMemMb": 1046
+      },
+      "perScenario": {
+        "index/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 22.6,
+          "p90": 26.97,
+          "p95": 26.97,
+          "p99": 26.97,
+          "max": 26.97,
+          "min": 19.92,
+          "mean": 23,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "index/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 530.46,
+          "p90": 532.08,
+          "p95": 532.08,
+          "p99": 532.08,
+          "max": 532.08,
+          "min": 35.42,
+          "mean": 336,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "product/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 29.8,
+          "p90": 37.39,
+          "p95": 37.39,
+          "p99": 37.39,
+          "max": 37.39,
+          "min": 21.64,
+          "mean": 30,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "product/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 36.81,
+          "p90": 524.53,
+          "p95": 524.53,
+          "p99": 524.53,
+          "max": 524.53,
+          "min": 35.68,
+          "mean": 231,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "collection/react": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 24.28,
+          "p90": 28.31,
+          "p95": 28.31,
+          "p99": 28.31,
+          "max": 28.31,
+          "min": 22.86,
+          "mean": 25,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        },
+        "collection/liquid": {
+          "count": 5,
+          "okCount": 5,
+          "errorCount": 0,
+          "p50": 519.26,
+          "p90": 524.57,
+          "p95": 524.57,
+          "p99": 524.57,
+          "max": 524.57,
+          "min": 28.98,
+          "mean": 326,
+          "statusHistogram": {
+            "200": 5
+          },
+          "throughputRps": 0.33
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "index/react": {
+      "surface": "index",
+      "engine": "react",
+      "p50_mean": 24.76,
+      "p50_stddev": 3.05,
+      "p95_mean": 37.56,
+      "p95_stddev": 14.98,
+      "p99_mean": 37.56,
+      "p99_stddev": 14.98,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    },
+    "index/liquid": {
+      "surface": "index",
+      "engine": "liquid",
+      "p50_mean": 530.24,
+      "p50_stddev": 0.31,
+      "p95_mean": 543.7650000000001,
+      "p95_stddev": 16.53,
+      "p99_mean": 543.7650000000001,
+      "p99_stddev": 16.53,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    },
+    "product/react": {
+      "surface": "product",
+      "engine": "react",
+      "p50_mean": 37.26,
+      "p50_stddev": 10.55,
+      "p95_mean": 45.510000000000005,
+      "p95_stddev": 11.48,
+      "p99_mean": 45.510000000000005,
+      "p99_stddev": 11.48,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    },
+    "product/liquid": {
+      "surface": "product",
+      "engine": "liquid",
+      "p50_mean": 54.57,
+      "p50_stddev": 25.12,
+      "p95_mean": 533.49,
+      "p95_stddev": 12.67,
+      "p99_mean": 533.49,
+      "p99_stddev": 12.67,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    },
+    "collection/react": {
+      "surface": "collection",
+      "engine": "react",
+      "p50_mean": 32.32,
+      "p50_stddev": 11.37,
+      "p95_mean": 41.714999999999996,
+      "p95_stddev": 18.96,
+      "p99_mean": 41.714999999999996,
+      "p99_stddev": 18.96,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    },
+    "collection/liquid": {
+      "surface": "collection",
+      "engine": "liquid",
+      "p50_mean": 518.815,
+      "p50_stddev": 0.63,
+      "p95_mean": 531.985,
+      "p95_stddev": 10.49,
+      "p99_mean": 531.985,
+      "p99_stddev": 10.49,
+      "throughputRps_mean": 0.33,
+      "totalErrorsAcrossTrials": 0
+    }
+  }
+}

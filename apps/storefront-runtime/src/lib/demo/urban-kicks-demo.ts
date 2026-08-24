@@ -309,6 +309,35 @@ export function getUrbanKicksDemoStore(): StoreModel {
                 layoutKey: 'theme',
                 sections: templateSections,
             },
+            // S6/W2 — added while building the concurrent-load harness (docs/evidence/liquid-load/):
+            // this demo store's liquidBundle already ships product/collection templates
+            // (createUrbanKicksLiquidThemeBundleFixture()'s templates.product/.collection), but the
+            // React JSON-contract side had no equivalent, so those two surfaces silently fell back to
+            // a single generic placeholder section on React while Liquid rendered a real composed
+            // template — not a fair engine comparison. product mirrors the Liquid template's own
+            // product-detail + featured-products pair (both have real React registrations,
+            // renderer-registry.tsx). collection has no exact React equivalent for
+            // collection-banner/collection-product-list (no such section types are registered), so it
+            // approximates with the closest registered types (heroBanner + productGrid) — a disclosed
+            // approximation, not a content-identical match; see the S6 evidence doc for that caveat.
+            product: {
+                id: 'product',
+                type: 'product',
+                layoutKey: 'theme',
+                sections: [
+                    toSection({ id: 'product-detail-default', type: 'productDetail', order: 0, settings: { showGallery: true, showDescription: true } }),
+                    toSection({ id: 'product-related', type: 'featuredProducts', order: 10, settings: { title: 'You may also like' } }),
+                ],
+            },
+            collection: {
+                id: 'collection',
+                type: 'collection',
+                layoutKey: 'theme',
+                sections: [
+                    toSection({ id: 'collection-banner-default', type: 'heroBanner', order: 0, settings: { heading: 'Sneakers', subheading: 'Shop the Sneakers collection.', height: 'small', textAlign: 'left' } }),
+                    toSection({ id: 'collection-products', type: 'productGrid', order: 10, settings: { title: 'Products' } }),
+                ],
+            },
         },
         liquidRenderingCanary: true,
         liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
