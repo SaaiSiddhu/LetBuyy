@@ -41,6 +41,19 @@ section for exactly why emission is not measurement, and why every emitted
 SLO's stated alert policy is faster than the emission cadence can serve. No
 other dimension was touched by Phase O1.
 
+**Further update, same day (Phase R2):** Dimension 4 was revised after a new
+executable-Postgres test
+(`tests/executable/checkout-order-concurrency-postgres.test.mjs`) closed the
+first of its two named gaps — a genuine concurrent-checkout inventory race
+test against the real, unmodified `create_checkout_order` RPC — and, in the
+process, found a real, reproducible idempotency-under-concurrency defect in
+that same RPC (5/5 runs). Status stays **PARTIALLY MEASURED**: the second
+named gap (end-to-end browser-driven checkout proof) is unaffected and
+explicitly out of scope for this phase. Valid against commit `e43bc1a5` (HEAD
+when the test was run; this repository has concurrent, actively-committing
+sessions — see `letbuyy-concurrent-sessions-one-checkout` memory). No other
+dimension was touched by Phase R2.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -260,20 +273,59 @@ across all three realms.
   and its executable Postgres companion
   (`tests/executable/checkout-order-payment-method-guard-postgres.test.mjs`)
   directly exercise `create_checkout_order`'s guard logic.
+- **(Phase R2, new)** `tests/executable/checkout-order-concurrency-postgres.test.mjs`
+  runs the real, unmodified `create_checkout_order` (and its full dependency
+  chain — `create_order_with_inventory_reservations`, `reserve_inventory`,
+  `commit_inventory_reservation`) against a fresh database built by replaying
+  every one of the 134 files in `database/supabase/migrations/` in order, on
+  a uniquely-named, zero-host-port throwaway container (never the shared
+  `letbuyy-executable-pg`). Four real-concurrency scenarios (separate `psql`
+  processes via `Promise.allSettled`, not sequential calls): (a) two checkouts
+  racing a stock=1 item, (b) five checkouts replaying one idempotency key
+  against ample stock, (c) two checkouts racing a gift card's full balance,
+  (d) one checkout called with no externally-established `app.site_id` GUC.
+  Run 5 times; identical result every time (no flakiness).
 
-**What this proves:** the checkout route and order-creation RPC's request/
-response contracts and payment-method guard behave correctly for the cases
-those tests cover.
+**What this proves:** (a) the inventory-oversell race is already safe —
+`reserve_inventory`'s `SELECT ... FOR UPDATE` plus an atomic conditional
+`UPDATE` inside one transaction correctly serializes concurrent callers;
+exactly one order was created, the loser's transaction (including its own
+`orders` insert) rolled back cleanly on `INSUFFICIENT_INVENTORY`, and
+committed inventory never exceeded the stock that existed. (c) The same
+`FOR UPDATE` pattern on `gift_card_accounts` makes a concurrent full-balance
+redemption race equally safe — exactly one redemption succeeded, the ledger
+balanced to 0 (never negative, never double-spent). (b) **`create_checkout_order`
+has a real, reproducible idempotency defect under concurrency**: its own
+dedup check (`SELECT order_id FROM checkout_sessions WHERE idempotency_key=...`)
+is a non-locking check-then-act, and the only enforced uniqueness
+(`INSERT ... ON CONFLICT (site_id, idempotency_key) DO NOTHING`) fires only
+at the very end of the function, after order creation and inventory commit
+have already happened. Five concurrent calls with the same idempotency key
+produced **5 separate `orders` rows** (not 1) while `checkout_sessions`
+correctly held exactly 1 row — the session-level dedup is real, but it does
+not prevent duplicate order creation upstream of it. (d) `create_checkout_order`
+succeeds and mutates data even with no tenant GUC established by an external,
+independently-authenticated caller — `create_order_with_inventory_reservations`
+self-sets `app.site_id` from its own `p_store_id` argument when unset, then
+checks it matches itself (a self-satisfying check, not an external
+requirement). Not fixed this phase (money-path RPC, ARB-gated; see
+`AGENTS.md` change-control rules) — reported, not remediated.
 
-**What this does NOT prove:** full checkout correctness under real
-concurrency (two simultaneous checkouts against the same low-stock item), a
-real Razorpay round-trip, or GST/shipping/discount computation edge cases
-beyond what `checkout.test.ts` enumerates. No browser-driven or end-to-end
-checkout flow was run this phase (out of scope: this phase does not touch
-application code or run a browser).
+**What this does NOT prove:** a real Razorpay round-trip, or GST/shipping/
+discount computation edge cases beyond what `checkout.test.ts` enumerates.
+No browser-driven or end-to-end checkout flow was run this phase (still out
+of scope). All Phase R2 calls ran as the Postgres superuser (matching every
+sibling `tests/executable/*-postgres.test.mjs` convention), which bypasses
+RLS entirely regardless of GUC state — the tenant-scoping finding above is
+about the RPC's own explicit PL/pgSQL guard, not RLS policy enforcement for
+a non-superuser caller. The idempotency defect's real-world blast radius
+(e.g., whether the gateway route layer already prevents concurrent
+double-submission before reaching this RPC) was not assessed — that is an
+application-layer question, out of scope for a database-level RPC test.
 
-**Gap:** concurrent-checkout inventory race test; end-to-end browser-driven
-checkout proof.
+**Gap:** end-to-end browser-driven checkout proof; the idempotency-under-
+concurrency defect found this phase (report only — a fix is a separate,
+ARB-gated change to a money-path RPC).
 
 **Who closes it:** commerce-platform engineering owner.
 
