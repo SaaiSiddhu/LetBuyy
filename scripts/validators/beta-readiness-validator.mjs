@@ -266,29 +266,27 @@ for (const fragment of [
 ]) {
   reporter.assert(incidentCommandWorker.includes(fragment), `CAP-C10 incident command worker missing: ${fragment}`);
 }
-// Phase N3: routes/employee.ts's only transactional-email path
-// (POST /invite) was intentionally retired -- it enqueued an email whose
-// completion link never worked (see EXECUTION_LEDGER.md's PHASE-N3 row).
-// The file legitimately no longer participates in the CAP-C14
-// queue-based delivery pattern this loop checks; routes/admin.ts's
-// separate /admin/employees/invite flow (not touched this phase) still
-// does, and contacts.ts is unaffected.
+// Phase N3 retired routes/employee.ts's only transactional-email path
+// (POST /invite); Phase N4 retired routes/admin.ts's equivalent
+// (POST /employees/invite) the same way -- both enqueued an email whose
+// completion link never worked (see EXECUTION_LEDGER.md's PHASE-N3 and
+// PHASE-N4 rows). Neither file participates in the CAP-C14 queue-based
+// delivery pattern this loop checks anymore; contacts.ts is unaffected.
 for (const file of [
-  'services/api-gateway/src/routes/admin.ts',
   'services/api-gateway/src/routes/contacts.ts',
 ]) {
   assertIncludes(file, 'enqueue', `${file} must enqueue transactional email delivery after persistence`);
   assertNotIncludes(file, 'SKIP-CAP-TRANSACTIONAL-EMAILS', `${file} must not retain the CAP-C14 delivery seam after queue wiring`);
   assertNotIncludes(file, 'TODO: Send', `${file} must not carry loose transactional email TODOs`);
 }
-assertNotIncludes(
+for (const file of [
   'services/api-gateway/src/routes/employee.ts',
-  'TODO: Send',
-  'services/api-gateway/src/routes/employee.ts must not carry loose transactional email TODOs',
-);
+  'services/api-gateway/src/routes/admin.ts',
+]) {
+  assertNotIncludes(file, 'TODO: Send', `${file} must not carry loose transactional email TODOs`);
+}
 const transactionalEmail = readFile('services/api-gateway/src/lib/transactional-email.ts');
 for (const fragment of [
-  "jobType: 'email.employee_invite'",
   "jobType: 'email.contact_owner_notification'",
   'NOTIFICATION_QUEUE.send',
   'signQueueTenantEnvelope',
@@ -296,6 +294,10 @@ for (const fragment of [
 ]) {
   reporter.assert(transactionalEmail.includes(fragment), `CAP-C14 transactional email helper missing: ${fragment}`);
 }
+reporter.assert(
+  !transactionalEmail.includes('enqueueEmployeeInviteEmail'),
+  'transactional-email.ts must not retain enqueueEmployeeInviteEmail after its two callers (routes/employee.ts, routes/admin.ts) were both retired (Phase N3/N4)',
+);
 const queueWorker = readFile('services/queue-workers/src/index.ts');
 for (const fragment of [
   "jobType === 'email.employee_invite'",

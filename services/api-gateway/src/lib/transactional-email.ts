@@ -7,10 +7,6 @@ type TransactionalEmailEnv = Pick<
     | 'NOTIFICATION_QUEUE'
     | 'INTERNAL_API_SECRET'
     | 'QUEUE_TENANT_ENVELOPE_SECRET'
-    | 'NEXT_PUBLIC_ADMIN_URL'
-    | 'NEXT_PUBLIC_PLATFORM_DOMAIN'
-    | 'LETBUYY_PLATFORM_DOMAIN'
-    | 'PLATFORM_ROOT_DOMAIN'
     | 'ENVIRONMENT'
 >;
 
@@ -22,17 +18,6 @@ export interface TransactionalEmailEnqueueResult {
     queued: boolean;
     jobType: TransactionalEmailJobType;
     reason?: 'missing-notification-queue' | 'missing-recipient';
-}
-
-interface EmployeeInviteEmailInput {
-    inviteId: string;
-    storeId?: string | null;
-    to: string;
-    role: string;
-    token: string;
-    expiresAt?: string | null;
-    inviterEmail?: string | null;
-    requestId?: string | null;
 }
 
 interface ContactOwnerEmailInput {
@@ -49,22 +34,6 @@ interface ContactOwnerEmailInput {
 
 function textValue(value: unknown, fallback = ''): string {
     return typeof value === 'string' && value.trim() ? value.trim() : fallback;
-}
-
-function platformBaseUrl(env: TransactionalEmailEnv): string {
-    const candidate = (
-        env.NEXT_PUBLIC_ADMIN_URL
-        || env.NEXT_PUBLIC_PLATFORM_DOMAIN
-        || env.LETBUYY_PLATFORM_DOMAIN
-        || env.PLATFORM_ROOT_DOMAIN
-        || 'https://letbuyy.com'
-    ).trim();
-    const withProtocol = /^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`;
-    return withProtocol.replace(/\/+$/g, '');
-}
-
-function inviteAcceptanceUrl(env: TransactionalEmailEnv, token: string): string {
-    return `${platformBaseUrl(env)}/employees/auth/accept-invite?token=${encodeURIComponent(token)}`;
 }
 
 function writeTransactionalEmailLog(level: 'warn' | 'info', fields: Record<string, unknown>): void {
@@ -116,49 +85,6 @@ async function enqueueTransactionalEmail(
 
     await env.NOTIFICATION_QUEUE.send(await signQueueTenantEnvelope(env, queueBody));
     return { queued: true, jobType: input.jobType };
-}
-
-export async function enqueueEmployeeInviteEmail(
-    env: TransactionalEmailEnv,
-    input: EmployeeInviteEmailInput,
-): Promise<TransactionalEmailEnqueueResult> {
-    const recipient = textValue(input.to).toLowerCase();
-    if (!recipient) return { queued: false, jobType: 'email.employee_invite', reason: 'missing-recipient' };
-
-    const role = textValue(input.role, 'staff');
-    const acceptUrl = inviteAcceptanceUrl(env, input.token);
-    const expiresAt = input.expiresAt ? new Date(input.expiresAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : 'the invite expiry time';
-    const text = [
-        `You have been invited to join LetBuyy as ${role}.`,
-        '',
-        `Accept the invitation: ${acceptUrl}`,
-        '',
-        `This invitation expires at ${expiresAt}.`,
-        input.inviterEmail ? `Invited by: ${input.inviterEmail}` : '',
-    ].filter(Boolean).join('\n');
-
-    return enqueueTransactionalEmail(env, {
-        jobType: 'email.employee_invite',
-        messageId: `employee-invite:${input.inviteId}`,
-        siteId: input.storeId || null,
-        idempotencyKey: `email.employee_invite:${input.inviteId}`,
-        requestId: input.requestId || null,
-        payload: {
-            to: recipient,
-            subject: 'You have been invited to LetBuyy',
-            text,
-            html: [
-                '<p>You have been invited to join LetBuyy.</p>',
-                `<p><strong>Role:</strong> ${escapeHtml(role)}</p>`,
-                `<p><a href="${escapeHtml(acceptUrl)}">Accept invitation</a></p>`,
-                `<p>This invitation expires at ${escapeHtml(expiresAt)}.</p>`,
-                input.inviterEmail ? `<p>Invited by: ${escapeHtml(input.inviterEmail)}</p>` : '',
-            ].join(''),
-            invite_id: input.inviteId,
-            store_id: input.storeId || null,
-            template_key: 'employee_invite',
-        },
-    });
 }
 
 export async function enqueueContactOwnerNotificationEmail(
