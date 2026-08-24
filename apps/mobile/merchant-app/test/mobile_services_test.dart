@@ -3283,11 +3283,10 @@ void main() {
       },
     );
 
-    test('StaffService manages staff, invites, roles, and removal', () async {
+    test('StaffService manages staff, roles, and removal', () async {
       final api = _FakeApiClient(
         json: {
           '/employees': [_staffJson()],
-          '/employees/invite': _staffInviteJson(),
           '/employees/staff_1': _staffJson(role: 'manager'),
         },
       );
@@ -3301,22 +3300,13 @@ void main() {
           role: 'editor',
         ),
       );
-      final invite = await service.inviteStaff(
-        const StaffInviteInput(
-          storeId: 'store_1',
-          email: 'arjun@example.com',
-          role: 'support',
-        ),
-      );
       final updated = await service.updateRole(staff.single, 'manager');
       await service.removeStaff(updated);
 
       expect(staff.single.email, 'riya@example.com');
       expect(created.role, 'editor');
-      expect(invite.status, 'pending');
       expect(updated.role, 'manager');
       expect(api.paths, contains('/employees'));
-      expect(api.paths, contains('/employees/invite'));
       expect(api.paths, contains('/employees/staff_1'));
       expect(api.bodies['/employees'], containsPair('role', 'editor'));
       expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
@@ -5488,7 +5478,7 @@ void main() {
     expect(find.text('riya@example.com'), findsWidgets);
     expect(find.text('Editor'), findsWidgets);
     expect(find.text('Catalog'), findsOneWidget);
-    expect(find.text('Invite staff'), findsOneWidget);
+    expect(find.text('Add staff'), findsOneWidget);
   });
 
   testWidgets('BillingScreen renders subscription and invoices', (
@@ -7617,15 +7607,6 @@ Map<String, dynamic> _staffJson({
   'created_at': '2026-06-01T11:00:00.000Z',
 };
 
-Map<String, dynamic> _staffInviteJson() => {
-  'id': 'invite_1',
-  'store_id': 'store_1',
-  'email': 'arjun@example.com',
-  'role': 'support',
-  'status': 'pending',
-  'token': 'invite-token',
-  'expires_at': '2026-06-08T11:00:00.000Z',
-};
 
 Map<String, dynamic> _reviewJson({
   String id = 'review_1',

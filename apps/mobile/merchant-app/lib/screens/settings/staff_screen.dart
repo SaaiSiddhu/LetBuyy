@@ -83,7 +83,7 @@ class _StaffScreenState extends State<StaffScreen> {
         backgroundColor: mobile_tokens.LetbuyyColorTokens.brandPrimary,
         foregroundColor: Colors.white,
         icon: const Icon(Icons.person_add_alt_1_outlined),
-        label: const Text('Invite staff'),
+        label: const Text('Add staff'),
       ),
       body: Container(
         decoration: colors.backgroundGradient,
@@ -345,9 +345,15 @@ class _StaffScreenState extends State<StaffScreen> {
     if (input == null) return;
 
     try {
-      await context.read<StaffService>().inviteStaff(input);
+      // Phase N4: staff self-service email invites never had a working
+      // completion path (see EXECUTION_LEDGER.md's PHASE-N3/PHASE-N4 rows)
+      // and the endpoint this used to call is gone. Staff are added
+      // directly instead -- the same capability the merchant web UI
+      // already uses, and the account is immediately active, no email
+      // step required.
+      await context.read<StaffService>().createStaff(input);
       if (mounted) {
-        _showSnackBar('Invite created for ${input.email}');
+        _showSnackBar('${input.email} added as staff');
         _load();
       }
     } catch (error) {
@@ -545,7 +551,7 @@ class _InviteStaffFormState extends State<_InviteStaffForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Invite staff',
+            'Add staff',
             style: TextStyle(
               color: colors.textPrimary,
               fontSize: 18,
@@ -586,8 +592,8 @@ class _InviteStaffFormState extends State<_InviteStaffForm> {
                 ),
               );
             },
-            icon: const Icon(Icons.send_outlined),
-            label: const Text('Send invite'),
+            icon: const Icon(Icons.person_add_alt_1_outlined),
+            label: const Text('Add staff'),
           ),
         ],
       ),

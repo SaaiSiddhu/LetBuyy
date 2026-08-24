@@ -42,38 +42,6 @@ class StaffMemberContract {
   String get displayName => fullName.isEmpty ? email : fullName;
 }
 
-class StaffInviteContract {
-  const StaffInviteContract({
-    required this.id,
-    required this.storeId,
-    required this.email,
-    required this.role,
-    required this.status,
-    required this.token,
-    required this.expiresAt,
-  });
-
-  factory StaffInviteContract.fromJson(Map<String, dynamic> json) {
-    return StaffInviteContract(
-      id: _stringValue(json['id']),
-      storeId: _stringValue(json['store_id'] ?? json['site_id']),
-      email: _stringValue(json['email']),
-      role: _stringValue(json['role'], fallback: 'staff'),
-      status: _stringValue(json['status'], fallback: 'pending'),
-      token: _stringValue(json['token']),
-      expiresAt: _stringValue(json['expires_at']),
-    );
-  }
-
-  final String id;
-  final String storeId;
-  final String email;
-  final String role;
-  final String status;
-  final String token;
-  final String expiresAt;
-}
-
 class StaffInviteInput {
   const StaffInviteInput({
     required this.storeId,
@@ -123,12 +91,6 @@ class StaffService extends ChangeNotifier {
     _members = [member, ..._members];
     notifyListeners();
     return member;
-  }
-
-  Future<StaffInviteContract> inviteStaff(StaffInviteInput input) async {
-    return StaffInviteContract.fromJson(
-      await _api.employees.invite(input.toJson()),
-    );
   }
 
   Future<StaffMemberContract> updateRole(

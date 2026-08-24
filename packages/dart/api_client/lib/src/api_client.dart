@@ -2719,12 +2719,6 @@ class EmployeesApi {
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 
-  Future<JsonMap> invite(JsonMap input, {ApiRequestOptions? options}) =>
-      _client.requestJson(
-        '/employees/invite',
-        options: _mergeOptions(options, method: HttpMethod.post, body: input),
-      );
-
   Future<JsonMap> update(
     String id,
     JsonMap input, {
