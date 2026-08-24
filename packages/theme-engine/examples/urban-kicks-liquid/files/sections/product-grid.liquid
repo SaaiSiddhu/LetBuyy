@@ -1,11 +1,10 @@
+{% assign has_content = false %}
+{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}
 <section class="lb-product-grid" data-section-id="{{ section.id }}">
   <h2>{{ section.settings.title }}</h2>
   <p>{{ section.settings.subtitle }}</p>
-  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">
-    {% for block in section.blocks %}
-      {{ block.content | raw }}
-    {% endfor %}
-  </div>
+  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>
+  {% unless has_content %}<div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>{% endunless %}
 </section>
 {% schema %}
 {

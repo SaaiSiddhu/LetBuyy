@@ -1,5 +1,6 @@
 <section class="lb-skills-section" data-section-id="{{ section.id }}">
   <h2>{{ section.settings.title }}</h2>
+  {% if section.blocks.size > 0 %}<h3>General</h3>{% endif %}
   {% for block in section.blocks %}<span data-level="{{ block.settings.level }}">{{ block.settings.name }} {{ block.settings.level }}%</span>{% endfor %}
 </section>
 {% schema %}

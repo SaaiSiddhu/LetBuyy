@@ -1,6 +1,6 @@
 <section class="lb-trust-badges" data-section-id="{{ section.id }}">
   {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}
-  {% for block in section.blocks %}<article><strong>{{ block.settings.label }}</strong><span>{{ block.settings.description }}</span></article>{% endfor %}
+  {% for block in section.blocks %}<article><h3>{{ block.settings.label }}</h3><span>{{ block.settings.description }}</span></article>{% endfor %}
 </section>
 {% schema %}
 {

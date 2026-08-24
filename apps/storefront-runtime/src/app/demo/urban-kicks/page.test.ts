@@ -6,8 +6,8 @@
 // public contract for which one fired, so no mocking is needed to observe which path this component took.
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import UrbanKicksDemoShortcut from './page.tsx';
-import { isDemoRouteEnvironment } from '@/lib/demo/demo-route-gate.ts';
+import UrbanKicksDemoShortcut from './page';
+import { isDemoRouteEnvironment } from '@/lib/demo/demo-route-gate';
 
 function withEnv(vars: Record<string, string | undefined>, fn: () => void) {
   const previous: Record<string, string | undefined> = {};

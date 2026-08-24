@@ -86,24 +86,13 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
         return 0;
     };
 
-    if (products.length === 0) {
-        return (
-            <section className="py-8 md:py-10 overflow-hidden" style={{ backgroundColor: colors.backgroundColor }}>
-                <div className="max-w-screen-xl mx-auto px-4">
-                    <StorefrontEmptyState
-                        icon={<ShoppingBag size={28} aria-hidden="true" />}
-                        title="No featured products"
-                        body="Featured products added to this store will appear here."
-                    />
-                </div>
-            </section>
-        );
-    }
+    const isEmpty = products.length === 0;
 
     return (
         <section className="py-8 md:py-10 overflow-hidden" style={{ backgroundColor: colors.backgroundColor }}>
             <div className="max-w-screen-xl mx-auto px-4">
-                {/* Header */}
+                {/* Header — always renders, including on an empty catalog (S3-FIX item 1): a merchant's
+                    own heading must not disappear just because they have not added products yet. */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <span
@@ -116,25 +105,34 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                             {title}
                         </h2>
                     </div>
-                    <div className="flex gap-1">
-                        <Button unstyled
-                            onClick={() => scroll('left')}
-                            className="flex h-11 w-11 items-center justify-center rounded-full border hover:bg-surface-hover"
-                            style={{ borderColor: hexToRgba(colors.primaryColor, 0.3) }}
-                        >
-                            <ChevronLeft size={16} style={{ color: colors.primaryColor }} />
-                        </Button>
-                        <Button unstyled
-                            onClick={() => scroll('right')}
-                            className="flex h-11 w-11 items-center justify-center rounded-full text-white"
-                            style={{ backgroundColor: colors.primaryColor }}
-                        >
-                            <ChevronRight size={16} />
-                        </Button>
-                    </div>
+                    {!isEmpty && (
+                        <div className="flex gap-1">
+                            <Button unstyled
+                                onClick={() => scroll('left')}
+                                className="flex h-11 w-11 items-center justify-center rounded-full border hover:bg-surface-hover"
+                                style={{ borderColor: hexToRgba(colors.primaryColor, 0.3) }}
+                            >
+                                <ChevronLeft size={16} style={{ color: colors.primaryColor }} />
+                            </Button>
+                            <Button unstyled
+                                onClick={() => scroll('right')}
+                                className="flex h-11 w-11 items-center justify-center rounded-full text-white"
+                                style={{ backgroundColor: colors.primaryColor }}
+                            >
+                                <ChevronRight size={16} />
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
-                {/* Horizontal Scroll - 4 products */}
+                {isEmpty ? (
+                    <StorefrontEmptyState
+                        icon={<ShoppingBag size={28} aria-hidden="true" />}
+                        title="No featured products"
+                        body="Featured products added to this store will appear here."
+                    />
+                ) : (
+                /* Horizontal Scroll - 4 products */
                 <div
                     ref={scrollRef}
                     className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4"
@@ -228,6 +226,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                         );
                     })}
                 </div>
+                )}
             </div>
         </section>
     );

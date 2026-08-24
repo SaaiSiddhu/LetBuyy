@@ -1,14 +1,12 @@
+{% assign has_content = false %}
+{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}
 <section class="lb-featured-products" data-section-id="{{ section.id }}">
   <div>
     <h2>{{ section.settings.title }}</h2>
     <p>{{ section.settings.subtitle }}</p>
   </div>
-  <div class="lb-featured-products__items">
-    {% for block in section.blocks %}
-      {{ block.content | raw }}
-    {% endfor %}
-  </div>
-  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>
+  <div class="lb-featured-products__items">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>
+  {% if has_content %}<a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>{% else %}<div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>{% endif %}
 </section>
 {% schema %}
 {

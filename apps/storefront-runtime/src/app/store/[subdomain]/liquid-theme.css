@@ -56,6 +56,7 @@
 
 /* ---- hero ---- */
 .lb-hero-banner {
+  position: relative; overflow: hidden;
   max-width: none; text-align: center; color: #fff;
   background: linear-gradient(135deg, var(--primary, #6d5dfc), var(--secondary, #4f7cff));
   padding: clamp(4rem, 12vw, 8rem) clamp(1rem, 4vw, 2rem);
@@ -70,6 +71,22 @@
   transition: transform .15s ease, box-shadow .15s ease;
 }
 .lb-hero-banner a:hover { transform: translateY(-1px); box-shadow: 0 12px 32px rgba(0,0,0,.22); }
+/* A1/B1/B2 — background image + height/align modifiers driven by the section's own settings. */
+.lb-hero-banner__bg-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+.lb-hero-banner--height-large { padding-block: clamp(3.25rem, 10vw, 6.5rem); }
+.lb-hero-banner--height-medium { padding-block: clamp(2.5rem, 8vw, 5rem); }
+.lb-hero-banner--height-small { padding-block: clamp(1.75rem, 6vw, 3.5rem); }
+.lb-hero-banner--align-left { text-align: left; }
+.lb-hero-banner--align-left p { margin-inline: 0; }
+.lb-hero-banner--align-right { text-align: right; }
+.lb-hero-banner--align-right p { margin-inline: auto 0; }
+/* B3 — about-section layout: side-by-side (left/right) vs centered, mirrors about-section.tsx. */
+.lb-about-section--layout-left, .lb-about-section--layout-right {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 2rem; align-items: center;
+}
+.lb-about-section--layout-right .lb-about-section__image { order: -1; }
+.lb-about-section--layout-center { text-align: center; }
+.lb-about-section--layout-center .lb-about-section__image { margin-inline: auto; }
 
 /* ---- section headings (marketing) ---- */
 .lb-category-grid > h2, .lb-category-grid > p, .lb-featured-products > div, .lb-product-grid > h2,

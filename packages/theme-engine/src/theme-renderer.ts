@@ -247,12 +247,28 @@ export const LIQUID_THEME_BASE_CSS = [
   '.lb-header,.lb-footer,.lb-announcement-bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:1rem;}',
   '.lb-header nav,.lb-footer nav,.lb-header__actions{display:flex;flex-wrap:wrap;gap:0.75rem;}',
   '.lb-header__brand,.lb-hero-banner h1,.lb-featured-products h2,.lb-product-grid h2,.lb-category-grid h2,.lb-product-detail h1{font-family:var(--font-display);letter-spacing:0;}',
-  '.lb-hero-banner{display:grid;gap:1rem;min-height:28rem;align-content:center;}',
+  '.lb-hero-banner{position:relative;display:grid;gap:1rem;min-height:28rem;align-content:center;overflow:hidden;}',
   '.lb-hero-banner h1{max-width:14ch;font-size:clamp(2.5rem,7vw,5rem);line-height:0.95;}',
   '.lb-hero-banner a,.lb-featured-products > a,.lb-newsletter-signup button,.lb-contact-form button,.lb-cta-section a{display:inline-flex;width:fit-content;border-radius:0.5rem;background:var(--primary);color:#fff;font-weight:700;padding:0.75rem 1rem;}',
+  // A1/B1/B2: the hero background image sits behind the text (z-index -1, absolutely filled); the
+  // height/align modifier classes are driven by the section's own `height`/`textAlign` settings.
+  '.lb-hero-banner__bg-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;}',
+  '.lb-hero-banner--height-large{min-height:24rem;}',
+  '.lb-hero-banner--height-medium{min-height:20rem;}',
+  '.lb-hero-banner--height-small{min-height:16rem;}',
+  '.lb-hero-banner--align-left{text-align:left;justify-items:start;}',
+  '.lb-hero-banner--align-center{text-align:center;justify-items:center;}',
+  '.lb-hero-banner--align-right{text-align:right;justify-items:end;}',
+  // B3: about-section layout — side-by-side (left/right) vs centered, mirroring about-section.tsx.
+  '.lb-about-section{display:grid;gap:2rem;align-items:center;}',
+  '.lb-about-section--layout-left,.lb-about-section--layout-right{grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));}',
+  '.lb-about-section--layout-right .lb-about-section__image{order:-1;}',
+  '.lb-about-section--layout-center{grid-template-columns:1fr;text-align:center;}',
+  '.lb-about-section--layout-center .lb-about-section__image{margin-inline:auto;}',
   '.lb-category-grid__items,.lb-featured-products__items,.lb-product-grid__items,.lb-first-party-spotlight__blocks,.lb-spotlight__blocks,.lb-banner-carousel__slides{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}',
   '.lb-product-grid__items[data-columns="4"]{grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));}',
   '.lb-category-card,.lb-product-card,.lb-trust-badges article,.lb-testimonials blockquote,.lb-services-grid article,.lb-portfolio-grid article{border:1px solid var(--border-color,rgb(226 232 240));border-radius:0.5rem;background:var(--surface,rgb(255 255 255));padding:1rem;}',
+  '.lb-featured-products__empty,.lb-product-grid__empty{padding-block:2rem;text-align:center;color:var(--foreground);opacity:0.7;}',
   '.lb-product-detail{display:grid;gap:1rem;}',
   '.lb-product-detail__gallery{display:grid;gap:0.75rem;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));}',
   '.lb-product-detail__gallery img,.lb-banner-carousel img{aspect-ratio:1;border-radius:0.5rem;object-fit:cover;width:100%;}',
@@ -1228,7 +1244,11 @@ async function resolveLiquidAppBlockHtml(
     if (configured && typeof configured.html === 'string') return sanitizeRenderedHtml(configured.html);
   }
 
-  return `<div data-letbuyy-app-block="${escapeHtmlAttribute(blockId)}" data-app-block-type="${escapeHtmlAttribute(block.type)}"></div>`;
+  // A5: React's AppBlockCard falls back to "Installed app" (app-platform.ts's default app-block
+  // title) when no real app has populated this slot yet — an honest, visible placeholder rather
+  // than silent empty space. Mirror that exact fallback text here so an app-block-slot section
+  // with no installed app renders the same placeholder in both engines.
+  return `<div class="lb-app-block__placeholder" data-letbuyy-app-block="${escapeHtmlAttribute(blockId)}" data-app-block-type="${escapeHtmlAttribute(block.type)}"><h3 class="lb-app-block__heading">Installed app</h3></div>`;
 }
 
 function composeLiquidStorefrontTheme(

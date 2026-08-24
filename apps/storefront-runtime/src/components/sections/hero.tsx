@@ -102,6 +102,24 @@ export default function HeroSection({ section, theme }: Props) {
         backgroundImage = textSetting(settings.image, textSetting(settings.imageUrl, textSetting(settings.backgroundImage)));
     }
 
+    // B1/B2: declared `height`/`textAlign` settings previously did nothing in this single-banner
+    // path (only the multi-banner BannerCarousel branch read them). "full" keeps the pre-existing
+    // fixed height so a store that never touches this control sees no change; the other three
+    // options are genuinely shorter, matching the carousel's own height ladder.
+    const heightValue = heightSetting(settings.height);
+    const alignValue = alignSetting(settings.textAlign);
+    const singleBannerHeightClasses: Record<'small' | 'medium' | 'large' | 'full', string> = {
+        full: 'h-[430px] md:h-[500px]',
+        large: 'h-[380px] md:h-[440px]',
+        medium: 'h-[320px] md:h-[380px]',
+        small: 'h-[260px] md:h-[320px]',
+    };
+    const contentAlignClass = alignValue === 'center'
+        ? 'mx-auto text-center'
+        : alignValue === 'right'
+            ? 'ml-auto text-right'
+            : 'mx-auto text-left';
+
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -121,7 +139,9 @@ export default function HeroSection({ section, theme }: Props) {
 
     return (
         <section
-            className="relative flex h-[430px] w-full items-center overflow-hidden md:h-[500px]"
+            className={`relative flex w-full items-center overflow-hidden ${singleBannerHeightClasses[heightValue]}`}
+            data-height={heightValue}
+            data-text-align={alignValue}
             style={{
                 background: backgroundImage
                     ? undefined
@@ -151,12 +171,12 @@ export default function HeroSection({ section, theme }: Props) {
                 }}
             />
 
-            {/* Content - Left aligned (matching builder preview) */}
+            {/* Content - aligned per settings.textAlign (B2) */}
             <motion.div
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="relative z-10 mx-auto w-full max-w-[calc(100vw-3rem)] px-6 md:container md:max-w-4xl"
+                className={`relative z-10 w-full max-w-[calc(100vw-3rem)] px-6 md:container md:max-w-4xl ${contentAlignClass}`}
             >
                 {heading && (
                     <motion.h1

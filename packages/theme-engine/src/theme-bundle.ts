@@ -915,10 +915,16 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         liquidSetting('layout', 'select', 'Layout', { default: 'left', options: ['left', 'right', 'center'] }),
       ],
       body: [
-        '<section class="lb-about-section" data-section-id="{{ section.id }}">',
-        '  <h2>{{ section.settings.title }}</h2>',
-        '  <div>{{ section.settings.content }}</div>',
-        '  {% if section.settings.imageUrl %}<img src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}',
+        // B3: layout drives a real class (side-by-side left/right vs centered), mirroring the
+        // structural branch about-section.tsx already implements — see LIQUID_THEME_BASE_CSS for
+        // the matching `lb-about-section--layout-*` rules.
+        '{% assign layout_value = section.settings.layout | default: \'left\' %}',
+        '<section class="lb-about-section lb-about-section--layout-{{ layout_value }}" data-section-id="{{ section.id }}">',
+        '  <div class="lb-about-section__body">',
+        '    <h2>{{ section.settings.title }}</h2>',
+        '    <div>{{ section.settings.content }}</div>',
+        '  </div>',
+        '  {% if section.settings.imageUrl %}<img class="lb-about-section__image" src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}',
         '</section>',
       ],
     }),
@@ -950,10 +956,22 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         liquidSetting('link', 'url', 'Link'),
       ])],
       body: [
+        // S3-FIX item 3, decision (a): banner-carousel.tsx renders the active slide's heading as
+        // an <h1> (single-slide carousel UX), which Liquid's static, all-slides-at-once list
+        // rendering cannot copy verbatim (multiple <h1> per page is a real a11y anti-pattern, not
+        // a cosmetic one). Instead this matches the ALREADY-established convention this same theme
+        // uses everywhere else a list-of-items has its own per-item title alongside a section-level
+        // <h2> (trust-badges' block.settings.label, skills-section's grouping label,
+        // portfolio-grid's block.settings.title, experience-timeline's block.settings.title all
+        // render as <h3>) — a minimal, idiomatic, consistent fix, not a section-level parity
+        // exclusion. banner-carousel remains structurally unusual (its React counterpart is not a
+        // registered storefront section — see hero.tsx/renderer-registry.tsx — only reachable via
+        // hero.tsx's multi-banner branch), but that does not make ITS OWN heading semantics wrong to
+        // fix on the Liquid side.
         '<section class="lb-banner-carousel" data-section-id="{{ section.id }}" data-autoplay="{{ section.settings.autoplay }}">',
         '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
         '  <div class="lb-banner-carousel__slides">',
-        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<span>{{ block.settings.heading }}</span></a>{% endfor %}',
+        '    {% for block in section.blocks %}<a href="{{ block.settings.link }}">{% if block.settings.image %}<img src="{{ block.settings.image | image_url }}" alt="{{ block.settings.heading }}">{% endif %}<h3>{{ block.settings.heading }}</h3></a>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -1325,6 +1343,12 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-skills-section" data-section-id="{{ section.id }}">',
         '  <h2>{{ section.settings.title }}</h2>',
+        // React groups skills by a per-skill "category" field, defaulting ungrouped skills to
+        // "General" (skills-section.tsx). The Liquid skill block declares no category field today
+        // (every skill is uncategorized), so "General" applies universally here — this mirrors
+        // React's actual current behavior exactly rather than fabricating a grouping feature the
+        // schema does not yet support.
+        '  {% if section.blocks.size > 0 %}<h3>General</h3>{% endif %}',
         '  {% for block in section.blocks %}<span data-level="{{ block.settings.level }}">{{ block.settings.name }} {{ block.settings.level }}%</span>{% endfor %}',
         '</section>',
       ],
@@ -1355,7 +1379,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-trust-badges" data-section-id="{{ section.id }}">',
         '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
-        '  {% for block in section.blocks %}<article><strong>{{ block.settings.label }}</strong><span>{{ block.settings.description }}</span></article>{% endfor %}',
+        '  {% for block in section.blocks %}<article><h3>{{ block.settings.label }}</h3><span>{{ block.settings.description }}</span></article>{% endfor %}',
         '</section>',
       ],
     }),
@@ -3034,8 +3058,10 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         path: 'sections/hero-banner.liquid',
         source: [
           '{% assign overlay_value = section.settings.overlay | default: 0.4 %}',
-          '<section class="lb-hero-banner" data-section-id="{{ section.id }}" data-height="{{ section.settings.height | default: \'full\' }}" data-text-align="{{ section.settings.textAlign | default: \'center\' }}">',
-          '  {% if section.settings.image %}<div class="lb-hero-banner__bg" data-image-url="{{ section.settings.image | image_url }}" data-overlay="{{ overlay_value }}"></div>{% endif %}',
+          '{% assign height_value = section.settings.height | default: \'full\' %}',
+          '{% assign align_value = section.settings.textAlign | default: \'center\' %}',
+          '<section class="lb-hero-banner lb-hero-banner--height-{{ height_value }} lb-hero-banner--align-{{ align_value }}" data-section-id="{{ section.id }}" data-height="{{ height_value }}" data-text-align="{{ align_value }}">',
+          '  {% if section.settings.image %}<img class="lb-hero-banner__bg-image" src="{{ section.settings.image | image_url }}" data-image-url="{{ section.settings.image | image_url }}" data-overlay="{{ overlay_value }}" alt="">{% endif %}',
           '  {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}',
           '  <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>',
           '  {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}',
@@ -3184,17 +3210,26 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'featured-products': {
         path: 'sections/featured-products.liquid',
         source: [
+          // S3-FIX item 1: the S3 "A3" fix wrapped title/subtitle/viewAll INSIDE the has_content
+          // guard, so an empty catalog dropped the merchant's own heading too — closing a parity
+          // diff by REMOVING Liquid capability, exactly what S3 was told not to do. Corrected to
+          // product-grid.liquid's shape: heading/subtitle always render; the empty state is
+          // APPENDED, not substituted. "Real content" is judged by each product-card block's own
+          // `title` setting (blocks/product-card.liquid renders from block.settings, not a live
+          // catalog drop — an unconfigured block still emits a structural <article>, so checking
+          // block.content for blankness would never fire). viewAllLabel/viewAllHref stay suppressed
+          // on an empty catalog — unlike the heading, a "View collection" link genuinely has nothing
+          // to point at when there is no collection to view; that is a defensible, additive omission,
+          // not a capability regression.
+          '{% assign has_content = false %}',
+          '{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}',
           '<section class="lb-featured-products" data-section-id="{{ section.id }}">',
           '  <div>',
           '    <h2>{{ section.settings.title }}</h2>',
           '    <p>{{ section.settings.subtitle }}</p>',
           '  </div>',
-          '  <div class="lb-featured-products__items">',
-          '    {% for block in section.blocks %}',
-          '      {{ block.content | raw }}',
-          '    {% endfor %}',
-          '  </div>',
-          '  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>',
+          '  <div class="lb-featured-products__items">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>',
+          '  {% if has_content %}<a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>{% else %}<div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>{% endif %}',
           '</section>',
           '{% schema %}',
           '{',
@@ -3253,14 +3288,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'product-grid': {
         path: 'sections/product-grid.liquid',
         source: [
+          // A4: React always shows the title/header, and additionally shows "No products found"
+          // below the (empty) grid when there is no product content — it does NOT early-return
+          // like featured-products. Mirror that exactly: title stays unconditional here.
+          // Same reasoning as A3 above: "real content" is judged by each product-card block's own
+          // `title` setting, not block.content (which always emits a structural <article>).
+          '{% assign has_content = false %}',
+          '{% for block in section.blocks %}{% if block.settings.title.size > 0 %}{% assign has_content = true %}{% endif %}{% endfor %}',
           '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
           '  <h2>{{ section.settings.title }}</h2>',
           '  <p>{{ section.settings.subtitle }}</p>',
-          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
-          '    {% for block in section.blocks %}',
-          '      {{ block.content | raw }}',
-          '    {% endfor %}',
-          '  </div>',
+          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for block in section.blocks %}{{ block.content | raw }}{% endfor %}</div>',
+          '  {% unless has_content %}<div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>{% endunless %}',
           '</section>',
           '{% schema %}',
           '{',

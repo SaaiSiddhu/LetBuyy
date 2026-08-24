@@ -49,8 +49,8 @@
     },
     {
       "path": "sections/about-section.liquid",
-      "checksum": "1d914b1292628e4fec2febfca9a833b6e357a41e8896b45dbf6227311736b181",
-      "sizeBytes": 965
+      "checksum": "24c8fabdf435d8be4f46552d0ad1f5a46031b243d3d948b6c7d9dfd5090ba4ff",
+      "sizeBytes": 1163
     },
     {
       "path": "sections/announcement-bar.liquid",
@@ -69,8 +69,8 @@
     },
     {
       "path": "sections/banner-carousel.liquid",
-      "checksum": "165c8a595006cba164eab6a7385bde65db9bae5d4ea640d83ce884daf96eb32c",
-      "sizeBytes": 1299
+      "checksum": "8f1ff116995ae47d43982df397d8c9c02a8059115b56d73e1bd1a68e36c33b3a",
+      "sizeBytes": 1295
     },
     {
       "path": "sections/blog-listing.liquid",
@@ -169,8 +169,8 @@
     },
     {
       "path": "sections/featured-products.liquid",
-      "checksum": "1464f2964753b1112abf0f3fd62b0edcd23032b00014db3cd9c41864405b038f",
-      "sizeBytes": 982
+      "checksum": "f462adb46434d54a419bccb4a68a832e9e13e08a1ae019991f91ec3e0b02ec48",
+      "sizeBytes": 1300
     },
     {
       "path": "sections/footer.liquid",
@@ -184,8 +184,8 @@
     },
     {
       "path": "sections/hero-banner.liquid",
-      "checksum": "74cfa38ce0fb3837c9fdcfd2b0603770ea7d2c8f6afca6b22e43d6fed89bad34",
-      "sizeBytes": 1910
+      "checksum": "152b97d1868f9055f75baad4cf46a21cba2bdb4d03f92dac432c91c9fd7e478b",
+      "sizeBytes": 2126
     },
     {
       "path": "sections/marquee.liquid",
@@ -224,8 +224,8 @@
     },
     {
       "path": "sections/product-grid.liquid",
-      "checksum": "dec10fa575fc0bbd2e7111150758203fdbc2695b49031a768136bd0c9eaaaeb4",
-      "sizeBytes": 791
+      "checksum": "5d728a108aba67e75ebf54c80c9807ea30808b1bb3fa119b506ba307766aff26",
+      "sizeBytes": 1093
     },
     {
       "path": "sections/rich-content.liquid",
@@ -244,8 +244,8 @@
     },
     {
       "path": "sections/skills-section.liquid",
-      "checksum": "2423ebaf0aca2f3f368ab91efa5d776d0e6e378bb8e756ecf1f74453f1432a19",
-      "sizeBytes": 931
+      "checksum": "4f832cfea145c662962b1f3d7fec3c72923e9e3f5fa7584fecf75ffd90feba51",
+      "sizeBytes": 993
     },
     {
       "path": "sections/spotlight.liquid",
@@ -259,8 +259,8 @@
     },
     {
       "path": "sections/trust-badges.liquid",
-      "checksum": "aaefec27b3aad16724fc19a68f7c973f13abe257b755785389d80198dd6c9a36",
-      "sizeBytes": 890
+      "checksum": "9be791ef466aaa6709cab7754a0e1620752048cc6a48c3f84f1fc2bda101dffe",
+      "sizeBytes": 882
     },
     {
       "path": "templates/article.json",
@@ -388,11 +388,11 @@
     "letbuyy-theme.json": "c8ff5bc4ceb9a12e4d24ac0d788367b39e275434cb05b7211e05577d20a1bafd",
     "locales/en.json": "30f3b36c69a3f24b34d8b8983ba99c55063fee2c3d355a89c0e5c9487643adde",
     "sections/404-page.liquid": "df22e42ee70bc8b9dfb958f6cc8cf8afb848a2a6315fc9f5c3d8c86e225975f3",
-    "sections/about-section.liquid": "1d914b1292628e4fec2febfca9a833b6e357a41e8896b45dbf6227311736b181",
+    "sections/about-section.liquid": "24c8fabdf435d8be4f46552d0ad1f5a46031b243d3d948b6c7d9dfd5090ba4ff",
     "sections/announcement-bar.liquid": "06dc3d5a4331bf10ffcca35274aa578529e40577622f7686426e4f903c5de8cb",
     "sections/app-block-slot.liquid": "7202f98fbda4b0d0bc6c5bdf7ad836175a6cfdd7c0c2cccc23059cc8008a7a38",
     "sections/article-content.liquid": "a2411dfe397f45cecadcd89e55db94262ba86e640dd60b3c43a9a74658ec6625",
-    "sections/banner-carousel.liquid": "165c8a595006cba164eab6a7385bde65db9bae5d4ea640d83ce884daf96eb32c",
+    "sections/banner-carousel.liquid": "8f1ff116995ae47d43982df397d8c9c02a8059115b56d73e1bd1a68e36c33b3a",
     "sections/blog-listing.liquid": "4c6323320a7e1b8614d1e4ef456c63e786447f50cab429b178e2884b5aba6630",
     "sections/brand-marquee.liquid": "c879667325cdae4d5d4c0b61b2edd30cc9997ca531c0e7f80f565827ce80d938",
     "sections/cart-summary.liquid": "537a368f9cbaffbb4b4395a5bd0272ae0cf00cf88bd86316f898bcf488aa5827",
@@ -412,10 +412,10 @@
     "sections/customer-wishlist.liquid": "04f03498072ab728d119d31f5479a009d9030b7d9ce5ab83d8526163dc377d61",
     "sections/experience-timeline.liquid": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
     "sections/faq-accordion.liquid": "937fad2e49cbeb864a4e55fb55c50e4b92edc9993eeed74a41918499fefae5d3",
-    "sections/featured-products.liquid": "1464f2964753b1112abf0f3fd62b0edcd23032b00014db3cd9c41864405b038f",
+    "sections/featured-products.liquid": "f462adb46434d54a419bccb4a68a832e9e13e08a1ae019991f91ec3e0b02ec48",
     "sections/footer.liquid": "9d3dfaaf167acaa76f57a86f59f373eda1984d6e600ff3ef523fc08d62a434cc",
     "sections/header.liquid": "cf9a15575740c58ddfa4daf3923fdb857170c422ff324696c151a9f82636d0fe",
-    "sections/hero-banner.liquid": "74cfa38ce0fb3837c9fdcfd2b0603770ea7d2c8f6afca6b22e43d6fed89bad34",
+    "sections/hero-banner.liquid": "152b97d1868f9055f75baad4cf46a21cba2bdb4d03f92dac432c91c9fd7e478b",
     "sections/marquee.liquid": "19a77399e2d356880dd7e6723adaca4a251e6b0db4adb149575770da64a29a3c",
     "sections/newsletter-signup.liquid": "649dd3bd2109f75e2090e36b59e11b1ecfa0237693b1c4a1865ba2a1153b76fb",
     "sections/page-content.liquid": "eac1c3570c08f32a752f22d36458a402463d49f7787ff33c790a0f7fb455aa59",
@@ -423,14 +423,14 @@
     "sections/policy-content.liquid": "6ed36b3f4f78af84237246fcaf3c05bd58c2c599e16e2f67030c5b760c9e1ff5",
     "sections/portfolio-grid.liquid": "bcb1f305efae35e5cc39408f76255bf7a548f56c0bdd31bbdc8c8285f8ba0274",
     "sections/product-detail.liquid": "2a5845bb6b4d59f8d4a44018756f1e7e5f86631a8e311232b62b4cea5f9ba30a",
-    "sections/product-grid.liquid": "dec10fa575fc0bbd2e7111150758203fdbc2695b49031a768136bd0c9eaaaeb4",
+    "sections/product-grid.liquid": "5d728a108aba67e75ebf54c80c9807ea30808b1bb3fa119b506ba307766aff26",
     "sections/rich-content.liquid": "86452487b09bdc54e4d4029331e918250501a0e0ba2254d1e06a7dda39e9a62f",
     "sections/search-box.liquid": "98a8ad3f779ef0d9ca921d79c00f83155b24da99260018175af773129a222dce",
     "sections/services-grid.liquid": "5842412d36b0b38556e84e10eef72fc65efeb8110bab53c48de73abf91f44ca6",
-    "sections/skills-section.liquid": "2423ebaf0aca2f3f368ab91efa5d776d0e6e378bb8e756ecf1f74453f1432a19",
+    "sections/skills-section.liquid": "4f832cfea145c662962b1f3d7fec3c72923e9e3f5fa7584fecf75ffd90feba51",
     "sections/spotlight.liquid": "e287ec661d74d75c00120a4c9dbdd7cae615a209d80bf7d2d631eecad667cd55",
     "sections/testimonials.liquid": "c2be93aae75bccf8c0ced6999ea6b4498a53d23cb57e5415a4b2a3cc3fc6dc76",
-    "sections/trust-badges.liquid": "aaefec27b3aad16724fc19a68f7c973f13abe257b755785389d80198dd6c9a36",
+    "sections/trust-badges.liquid": "9be791ef466aaa6709cab7754a0e1620752048cc6a48c3f84f1fc2bda101dffe",
     "templates/article.json": "e0a21feaabe409b8f5febac5625176039f589b00fee566805e4e161766949fdd",
     "templates/blog.json": "a114519f2a7de164568f3501891481ba3879cee137801e2fc791852256265d60",
     "templates/cart.json": "04735d96af2b8011fda8ab331471bf345bd270e6124654a95d20c97297986941",
@@ -455,5 +455,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "42cb1dce340f775db30ae35ab138a16f0cb738c26fd91e6f46a2faa42a674202"
+  "contentHash": "22e54ce5cc2e153eab1c90bd1fce45009e2c9e21afea380fd8a6ecfecb57232c"
 }

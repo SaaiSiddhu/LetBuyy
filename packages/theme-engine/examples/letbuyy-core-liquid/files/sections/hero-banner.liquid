@@ -1,6 +1,8 @@
 {% assign overlay_value = section.settings.overlay | default: 0.4 %}
-<section class="lb-hero-banner" data-section-id="{{ section.id }}" data-height="{{ section.settings.height | default: 'full' }}" data-text-align="{{ section.settings.textAlign | default: 'center' }}">
-  {% if section.settings.image %}<div class="lb-hero-banner__bg" data-image-url="{{ section.settings.image | image_url }}" data-overlay="{{ overlay_value }}"></div>{% endif %}
+{% assign height_value = section.settings.height | default: 'full' %}
+{% assign align_value = section.settings.textAlign | default: 'center' %}
+<section class="lb-hero-banner lb-hero-banner--height-{{ height_value }} lb-hero-banner--align-{{ align_value }}" data-section-id="{{ section.id }}" data-height="{{ height_value }}" data-text-align="{{ align_value }}">
+  {% if section.settings.image %}<img class="lb-hero-banner__bg-image" src="{{ section.settings.image | image_url }}" data-image-url="{{ section.settings.image | image_url }}" data-overlay="{{ overlay_value }}" alt="">{% endif %}
   {% if section.settings.eyebrow %}<p class="lb-hero-banner__eyebrow">{{ section.settings.eyebrow }}</p>{% endif %}
   <h1 class="lb-hero-banner__heading">{{ section.settings.heading }}</h1>
   {% if section.settings.subheading %}<p class="lb-hero-banner__subheading">{{ section.settings.subheading }}</p>{% endif %}

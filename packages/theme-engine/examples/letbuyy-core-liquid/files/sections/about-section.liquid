@@ -1,7 +1,10 @@
-<section class="lb-about-section" data-section-id="{{ section.id }}">
-  <h2>{{ section.settings.title }}</h2>
-  <div>{{ section.settings.content }}</div>
-  {% if section.settings.imageUrl %}<img src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}
+{% assign layout_value = section.settings.layout | default: 'left' %}
+<section class="lb-about-section lb-about-section--layout-{{ layout_value }}" data-section-id="{{ section.id }}">
+  <div class="lb-about-section__body">
+    <h2>{{ section.settings.title }}</h2>
+    <div>{{ section.settings.content }}</div>
+  </div>
+  {% if section.settings.imageUrl %}<img class="lb-about-section__image" src="{{ section.settings.imageUrl | image_url }}" alt="{{ section.settings.title }}">{% endif %}
 </section>
 {% schema %}
 {
