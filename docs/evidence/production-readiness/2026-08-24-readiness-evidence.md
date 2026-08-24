@@ -64,6 +64,20 @@ scoping scenarios all still passing (no regression, no deadlock). Status
 stays **PARTIALLY MEASURED**: the end-to-end browser-driven checkout proof
 remains the only open gap. No other dimension was touched by Phase R3.
 
+**Further update, same day (Phase R4):** Dimension 1 gained additive evidence
+narrowing (not closing) its own named "no concurrent-load ledger test" gap:
+`confirm_order_payment_with_ledger` and `complete_order_refund` (2 of the 5
+canonical money RPCs left unmeasured for this defect class after Phase R3)
+proved safe under 5x concurrent same-idempotency-key replay; `issue_gift_card`
+was found to share the R3 defect *shape*, though its measured failure mode is
+an idempotency-contract error, not money duplication — registered, not fixed
+(`SKIP-GIFT-CARD-ISSUE-IDEMPOTENCY-CONTRACT`). `set_gift_card_status` and
+`restore_gift_card_on_refund` were classified safe by source inspection but
+not measured under concurrency; reasoning stated in
+`docs/evidence/production-readiness/2026-08-24-phase-r4-money-rpc-sweep.md`.
+No dimension was downgraded — no defect this phase contradicts a MEASURED
+claim already on record. No other dimension was touched by Phase R4.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -107,18 +121,42 @@ as a live integration test, and this document does not blur that distinction.
   table CHECK constraints themselves, each with its own executable proof
   (`tests/executable/checkout-order-payment-method-guard-postgres.test.mjs`,
   `tests/executable/money-table-provider-guard-postgres.test.mjs`).
+- **(Phase R4, new)** `tests/executable/money-rpc-idempotency-sweep-postgres.test.mjs`
+  measures 3 of the 5 remaining canonical money RPCs under real concurrent
+  same-idempotency-key replay (5 concurrent `psql` processes, `Promise.allSettled`,
+  not sequential): `confirm_order_payment_with_ledger` and `complete_order_refund`
+  each proved safe (no duplicate `payment_transactions`/refund row, no
+  duplicate ledger transaction, ledger balance 0) across 5 runs; `issue_gift_card`
+  found to have the R3 defect *shape* (a non-locking check-then-act on
+  `p_idempotency_key`), though the measured failure mode is an idempotency-
+  contract violation (a same-key retry errors instead of returning the
+  existing card), not money duplication — see
+  `docs/evidence/production-readiness/2026-08-24-phase-r4-money-rpc-sweep.md`
+  for the full classification, predictions, and per-run results.
 
 **What this proves:** the ledger's double-entry invariants, insufficient-balance
 guards, and payment-rail allowlist are enforced by the database itself (CHECK
 constraints, `NOT VALID` narrowing with historical-row preservation) and are
-exercised by tests that hit a real Postgres, not a mock.
+exercised by tests that hit a real Postgres, not a mock. Two of the three
+remaining canonical money RPCs (`confirm_order_payment_with_ledger`,
+`complete_order_refund`) additionally proved safe under real concurrent
+same-key replay — a narrow slice of "the ledger stays consistent under
+concurrent traffic," not the full claim.
 
 **What this does NOT prove:** live Razorpay reconciliation against a real
 gateway account, live webhook delivery under production load, or that the
-ledger stays consistent under concurrent production traffic. No live payment
-was captured or refunded as part of this evidence.
+ledger stays consistent under **sustained, high-cardinality** concurrent
+production traffic (Phase R4 measured 5 concurrent calls sharing *one* key,
+not thousands of distinct keys / lock-table contention at scale). No live
+payment was captured or refunded as part of this evidence.
+`set_gift_card_status`/`restore_gift_card_on_refund` were classified but not
+measured under concurrency (see the Phase R4 evidence doc for why).
 
-**Gap:** no live-gateway reconciliation drill; no concurrent-load ledger test.
+**Gap:** no live-gateway reconciliation drill; no *sustained high-cardinality*
+concurrent-load ledger test (narrowed by Phase R4 — bounded same-key
+concurrency is now measured for 2 of 3 remaining RPCs; broad-traffic load
+testing is not); `issue_gift_card`'s idempotency-contract defect (see
+`SKIP-GIFT-CARD-ISSUE-IDEMPOTENCY-CONTRACT`, registered not fixed).
 
 **Who closes it:** payment/money engineering owner, with a staging Razorpay
 account and a scheduled reconciliation job proof (see `SKIP-RAZORPAYX-ENUM-PURGE`
