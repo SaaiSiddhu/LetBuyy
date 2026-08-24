@@ -10,10 +10,25 @@
           "label": "Primary color",
           "default": "#8B5CF6"
         },
+        "secondaryColor": {
+          "type": "color",
+          "label": "Secondary color",
+          "default": "#3B82F6"
+        },
         "accentColor": {
           "type": "color",
           "label": "Accent color",
           "default": "#F59E0B"
+        },
+        "backgroundColor": {
+          "type": "color",
+          "label": "Background color",
+          "default": "#FFFFFF"
+        },
+        "textColor": {
+          "type": "color",
+          "label": "Text color",
+          "default": "#1F2937"
         },
         "surfaceColor": {
           "type": "color",
@@ -35,6 +50,17 @@
           "type": "text",
           "label": "Body font",
           "default": "Inter"
+        }
+      }
+    },
+    "appearance": {
+      "label": "Appearance",
+      "description": "Layout tokens shared by every section.",
+      "fields": {
+        "borderRadius": {
+          "type": "number",
+          "label": "Corner radius",
+          "default": 12
         }
       }
     },

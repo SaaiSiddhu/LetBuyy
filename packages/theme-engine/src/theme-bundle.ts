@@ -1,4 +1,7 @@
 import { z } from 'zod';
+// S4 — the 10 Experiences, portable. theme-presets.ts imports nothing from this file (verified),
+// so importing it here carries no circular-import risk.
+import { listExperiences, buildExperienceSettingsOverlay } from './theme-presets';
 
 export const THEME_BUNDLE_SCHEMA_VERSION = '2026-05-json-contract';
 export const THEME_BUNDLE_RENDERER_VERSION = '1.0.0';
@@ -33,6 +36,50 @@ export class UnsupportedLiquidBundleSchemaVersionError extends Error {
     this.schemaVersion = schemaVersion;
     this.known = KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS;
   }
+}
+
+// S4/W2 — the 10 Experiences as real theme-level presets. Generated from EXPERIENCE_REGISTRY
+// (theme-presets.ts) via the same buildExperienceSettingsOverlay() the editor's applyExperience()
+// already uses, so a preset's values can never drift from what "Apply <Experience>" actually
+// writes. Keyed by the Experience's merchant-facing `name` (e.g. "Forge"), matching Shopify preset
+// naming. PRESENTATIONAL ONLY: buildExperienceSettingsOverlay returns exactly the 10 token keys
+// (primaryColor…borderRadius) — it has no metaDescription/socialImageUrl/faviconUrl to leak, by
+// construction, not by a filter added here.
+interface LiquidSettingsSchemaKeySource {
+  settings: Record<string, { fields: Record<string, unknown> }>;
+}
+
+function collectDeclaredSettingKeys(settingsSchema: LiquidSettingsSchemaKeySource): Set<string> {
+  const keys = new Set<string>();
+  for (const group of Object.values(settingsSchema.settings)) {
+    for (const key of Object.keys(group.fields)) keys.add(key);
+  }
+  return keys;
+}
+
+// S4-FIX/Defect 1 — buildExperienceSettingsOverlay() deliberately emits `fontFamily` alongside
+// `bodyFontFamily` as a React-only alias (see its own doc comment: fontFamily is the "React
+// JSON-contract path", bodyFontFamily the "Liquid token map"). The Liquid bundle's settings_schema
+// never declares `fontFamily` for exactly that reason. Filtering HERE, against the bundle's OWN
+// declared schema rather than a hardcoded denylist, means a future overlay key added to
+// buildExperienceSettingsOverlay without a matching schema field is dropped rather than written
+// into the bundle undeclared — the failure class recorded in migration 193's header
+// ("themeSettings.primaryColor is not defined by the theme settings schema"). This function never
+// mutates buildExperienceSettingsOverlay's own output; it only filters what gets copied from it.
+function buildLiquidThemeExperiencePresets(
+  settingsSchema: LiquidSettingsSchemaKeySource,
+): Record<string, Record<string, unknown>> {
+  const declaredKeys = collectDeclaredSettingKeys(settingsSchema);
+  const presets: Record<string, Record<string, unknown>> = {};
+  for (const experience of listExperiences()) {
+    const overlay = buildExperienceSettingsOverlay(experience);
+    const declaredOnly: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(overlay)) {
+      if (declaredKeys.has(key)) declaredOnly[key] = value;
+    }
+    presets[experience.name] = declaredOnly;
+  }
+  return presets;
 }
 
 export function isKnownLiquidBundleSchemaVersion(version: string): boolean {
@@ -2057,6 +2104,126 @@ export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundl
 }
 
 export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBundle {
+  // S4-FIX/Defect 1 — settingsSchema is hoisted out of the returned literal so
+  // buildLiquidThemeExperiencePresets() can filter preset keys against the bundle's OWN declared
+  // schema (see that function's doc comment) instead of a hardcoded denylist.
+  const settingsSchema = {
+    settings: {
+      colors: {
+        label: 'Colors',
+        description: 'Urban Kicks storefront color tokens.',
+        fields: {
+          primaryColor: {
+            type: 'color',
+            label: 'Primary color',
+            default: '#8B5CF6',
+          },
+          // S4/W1: secondaryColor, backgroundColor, textColor were undeclared — every one of the
+          // 10 Experiences (theme-presets.ts) sets them, so a preset referencing them would have
+          // been rejected by the editor (the exact migration-193 "not defined by the theme
+          // settings schema" failure class). Field NAMES converge on migration 197
+          // (database/supabase/migrations/197_letbuyy_core_first_class_theme.sql), the named
+          // convergence authority for this theme's appearance fields. TYPE stays 'color' (not
+          // 197's 'text'): this bundle's OWN settings_schema.json already used 'color' for
+          // primaryColor/accentColor/surfaceColor before this phase (a pre-existing divergence
+          // from 197, not created here — reconciling it would mean editing an applied migration,
+          // out of scope) — 'color' keeps every color field in THIS artifact rendering the same
+          // native color-picker control, rather than 3 fields with a picker and 3 with a bare
+          // text box in the same settings group.
+          secondaryColor: {
+            type: 'color',
+            label: 'Secondary color',
+            default: '#3B82F6',
+          },
+          accentColor: {
+            type: 'color',
+            label: 'Accent color',
+            default: '#F59E0B',
+          },
+          backgroundColor: {
+            type: 'color',
+            label: 'Background color',
+            default: '#FFFFFF',
+          },
+          textColor: {
+            type: 'color',
+            label: 'Text color',
+            default: '#1F2937',
+          },
+          surfaceColor: {
+            type: 'color',
+            label: 'Surface color',
+            default: '#F8FAFC',
+          },
+        },
+      },
+      typography: {
+        label: 'Typography',
+        description: 'First-party type settings mirrored from the JSON-contract Urban Kicks theme.',
+        fields: {
+          headingFontFamily: {
+            type: 'text',
+            label: 'Heading font',
+            default: 'Inter',
+          },
+          bodyFontFamily: {
+            type: 'text',
+            label: 'Body font',
+            default: 'Inter',
+          },
+        },
+      },
+      // S4/W1: borderRadius was undeclared — every Experience sets it (ExperienceTokensSchema:
+      // z.number().int().min(0).max(48)). Type 'number' converges exactly with migration 197
+      // (which also uses 'number' for this field — no pre-existing bundle convention to conflict
+      // with, unlike the color fields above). isDark/enableShadows/enableAnimations (197's other
+      // 3 appearance fields) are deliberately NOT declared here: no Experience in
+      // theme-presets.ts references them, so declaring them would be speculative schema surface
+      // with no preset ever driving a real value into it — scope creep for this phase, not full
+      // 13-field convergence. A later phase that gives an Experience (or the editor) a real
+      // reason to set them can add them then.
+      appearance: {
+        label: 'Appearance',
+        description: 'Layout tokens shared by every section.',
+        fields: {
+          borderRadius: {
+            type: 'number',
+            label: 'Corner radius',
+            default: 12,
+          },
+        },
+      },
+      // Head metadata the layout renders. Kept as merchant-editable theme settings rather than
+      // hard-coded markup so each store controls its own search/social preview. Every value is
+      // emitted through an escaped {{ }} output in layout/theme.liquid — never `| raw`.
+      seo: {
+        label: 'SEO and social',
+        description: 'Metadata rendered into <head> by the theme layout.',
+        fields: {
+          metaDescription: {
+            type: 'textarea',
+            label: 'Meta description',
+            info: 'Falls back to the shop description. Truncated to 160 characters on output.',
+            default: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
+            maxLength: 160,
+          },
+          socialImageUrl: {
+            type: 'url',
+            label: 'Social share image URL',
+            info: 'Used for og:image and twitter:image. Left empty until the merchant uploads one.',
+            default: '',
+          },
+          faviconUrl: {
+            type: 'url',
+            label: 'Favicon URL',
+            info: 'Rendered as <link rel="icon">. Left empty until the merchant uploads one.',
+            default: '',
+          },
+        },
+      },
+    },
+  };
+
   return parseLiquidThemePackageBundle({
     schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION,
     package: {
@@ -2153,88 +2320,35 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       },
     },
     config: {
-      settings_schema: {
-        settings: {
-          colors: {
-            label: 'Colors',
-            description: 'Urban Kicks storefront color tokens.',
-            fields: {
-              primaryColor: {
-                type: 'color',
-                label: 'Primary color',
-                default: '#8B5CF6',
-              },
-              accentColor: {
-                type: 'color',
-                label: 'Accent color',
-                default: '#F59E0B',
-              },
-              surfaceColor: {
-                type: 'color',
-                label: 'Surface color',
-                default: '#F8FAFC',
-              },
-            },
-          },
-          typography: {
-            label: 'Typography',
-            description: 'First-party type settings mirrored from the JSON-contract Urban Kicks theme.',
-            fields: {
-              headingFontFamily: {
-                type: 'text',
-                label: 'Heading font',
-                default: 'Inter',
-              },
-              bodyFontFamily: {
-                type: 'text',
-                label: 'Body font',
-                default: 'Inter',
-              },
-            },
-          },
-          // Head metadata the layout renders. Kept as merchant-editable theme settings rather than
-          // hard-coded markup so each store controls its own search/social preview. Every value is
-          // emitted through an escaped {{ }} output in layout/theme.liquid — never `| raw`.
-          seo: {
-            label: 'SEO and social',
-            description: 'Metadata rendered into <head> by the theme layout.',
-            fields: {
-              metaDescription: {
-                type: 'textarea',
-                label: 'Meta description',
-                info: 'Falls back to the shop description. Truncated to 160 characters on output.',
-                default: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
-                maxLength: 160,
-              },
-              socialImageUrl: {
-                type: 'url',
-                label: 'Social share image URL',
-                info: 'Used for og:image and twitter:image. Left empty until the merchant uploads one.',
-                default: '',
-              },
-              faviconUrl: {
-                type: 'url',
-                label: 'Favicon URL',
-                info: 'Rendered as <link rel="icon">. Left empty until the merchant uploads one.',
-                default: '',
-              },
-            },
-          },
-        },
-      },
+      settings_schema: settingsSchema,
       settings_data: {
         current: {
           primaryColor: '#8B5CF6',
+          secondaryColor: '#3B82F6',
           accentColor: '#F59E0B',
+          backgroundColor: '#FFFFFF',
+          textColor: '#1F2937',
           surfaceColor: '#F8FAFC',
           headingFontFamily: 'Inter',
           bodyFontFamily: 'Inter',
+          borderRadius: 12,
           metaDescription: 'Shop sneakers, apparel, and accessories at Urban Kicks.',
           // Empty, not a fabricated URL: an unset asset must render no tag at all, and the layout
           // guards both with `!= blank` so nothing broken is emitted before a merchant uploads one.
           socialImageUrl: '',
           faviconUrl: '',
         },
+        // S4/W2: the 10 Experiences as real theme-level presets — see
+        // buildLiquidThemeExperiencePresets(). Shopify caps a theme at 5 presets; LetBuyy's 10 is a
+        // deliberate overshoot (theme-presets.ts's own header), not trimmed to fit.
+        // urban-kicks and letbuyy-core deliberately get the SAME ten: both bundles are produced from
+        // this one shared object literal (letbuyy-core is a branding-token clone of it — see
+        // theme-bundle-core.ts), and `presets` is not text that clone touches, so giving urban-kicks
+        // a different preset set would mean adding new per-bundle branching logic to what is
+        // currently a single generic clone-via-string-substitution mechanism. urban-kicks is
+        // reference-only and never installed to a live store, so ten inert presets cost nothing;
+        // diverging them would cost real complexity for zero live benefit.
+        presets: buildLiquidThemeExperiencePresets(settingsSchema),
       },
     },
     templates: {

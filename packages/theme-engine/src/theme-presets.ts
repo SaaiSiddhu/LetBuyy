@@ -572,3 +572,87 @@ export function collectExperienceRegistryIssues(): string[] {
   }
   return issues;
 }
+
+// ── S4-FIX/Defect 2 — settings_data.presets as the single source ──────────────
+//
+// The bundle's settings_data.presets (theme-bundle.ts's buildLiquidThemeExperiencePresets, keyed
+// by Experience `name`) is now the SINGLE SOURCE for which presets a theme has and what values
+// applying one writes. This registry (EXPERIENCE_REGISTRY) stays the AUTHORING input that
+// generates the bundle, plus the source of display metadata (description/industry/swatches/font)
+// the bundle's flat value-only preset shape has no room for. A preset present in the bundle but
+// absent from the registry (a hand-authored or third-party theme preset) still renders, with a
+// generic fallback description and swatches derived from its own color values — the bundle stays
+// authoritative for existence and values. A registry Experience with no bundle preset does not
+// render — the bundle is what the merchant's theme actually carries, the registry is not a second
+// runtime source.
+
+const PRESET_SWATCH_KEYS = [
+  'primaryColor', 'secondaryColor', 'accentColor', 'backgroundColor', 'textColor', 'surfaceColor',
+] as const;
+
+/** Merchant-facing preset item: bundle-sourced values + name-resolved (or fallback) display copy. */
+export interface ExperiencePresetItem {
+  /** Stable identifier for apply + active-state tracking — the matched Experience's id when the
+   *  bundle preset name resolves against the registry, otherwise a slug of the preset name. */
+  id: string;
+  /** The bundle preset's key (Shopify-style preset display name, e.g. "Forge"). */
+  name: string;
+  description: string;
+  industry: string | null;
+  swatches: string[];
+  headingFont: string | null;
+  sectionCount: number | null;
+  /** The exact values to write into themeSettings / settings_data.current when applied — read
+   *  directly from the bundle preset, never recomputed from the registry. */
+  values: Record<string, unknown>;
+}
+
+function slugifyPresetName(name: string): string {
+  const slug = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return slug || 'preset';
+}
+
+function derivePresetSwatches(values: Record<string, unknown>): string[] {
+  const swatches: string[] = [];
+  for (const key of PRESET_SWATCH_KEYS) {
+    const value = values[key];
+    if (typeof value === 'string' && HEX.test(value)) swatches.push(value);
+  }
+  return swatches;
+}
+
+/** Resolve a bundle's settings_data.presets into merchant-facing display items. `bundlePresets`
+ *  should be `config.settings_data.presets` (or the root `settings_data.presets`, whichever a
+ *  caller's loaded theme config carries) — an arbitrary JSON record, not assumed to be well-formed. */
+export function resolveExperiencePresetItems(bundlePresets: Record<string, unknown>): ExperiencePresetItem[] {
+  const registryByName = new Map(listExperiences().map((experience) => [experience.name, experience]));
+  const items: ExperiencePresetItem[] = [];
+  for (const [name, rawValues] of Object.entries(bundlePresets)) {
+    if (!isRecord(rawValues)) continue;
+    const matched = registryByName.get(name);
+    if (matched) {
+      items.push({
+        id: matched.id,
+        name: matched.name,
+        description: matched.description,
+        industry: matched.industry,
+        swatches: matched.preview.swatches,
+        headingFont: matched.typography.headingFont,
+        sectionCount: matched.preview.sectionCount,
+        values: rawValues,
+      });
+      continue;
+    }
+    items.push({
+      id: slugifyPresetName(name),
+      name,
+      description: 'A saved preset from this theme.',
+      industry: null,
+      swatches: derivePresetSwatches(rawValues),
+      headingFont: typeof rawValues.headingFontFamily === 'string' ? rawValues.headingFontFamily : null,
+      sectionCount: null,
+      values: rawValues,
+    });
+  }
+  return items;
+}

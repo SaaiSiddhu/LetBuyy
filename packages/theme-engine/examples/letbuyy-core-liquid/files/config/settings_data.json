@@ -1,13 +1,128 @@
 {
   "current": {
     "primaryColor": "#8B5CF6",
+    "secondaryColor": "#3B82F6",
     "accentColor": "#F59E0B",
+    "backgroundColor": "#FFFFFF",
+    "textColor": "#1F2937",
     "surfaceColor": "#F8FAFC",
     "headingFontFamily": "Inter",
     "bodyFontFamily": "Inter",
+    "borderRadius": 12,
     "metaDescription": "Shop sneakers, apparel, and accessories at LetBuyy Core.",
     "socialImageUrl": "",
     "faviconUrl": ""
   },
-  "presets": {}
+  "presets": {
+    "Forge": {
+      "primaryColor": "#1E3A5F",
+      "secondaryColor": "#1E40AF",
+      "accentColor": "#00B4D8",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#1A202C",
+      "surfaceColor": "#F0F4F8",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 8
+    },
+    "Sense": {
+      "primaryColor": "#1A1A2E",
+      "secondaryColor": "#2D2D44",
+      "accentColor": "#E63946",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#1A1A2E",
+      "surfaceColor": "#FAFAFA",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Playfair Display",
+      "borderRadius": 4
+    },
+    "Aura": {
+      "primaryColor": "#C2798B",
+      "secondaryColor": "#9E5A6F",
+      "accentColor": "#D4AF7A",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#2D1B22",
+      "surfaceColor": "#FFF8F9",
+      "bodyFontFamily": "Lato",
+      "headingFontFamily": "Cormorant Garamond",
+      "borderRadius": 16
+    },
+    "Craft": {
+      "primaryColor": "#3E2723",
+      "secondaryColor": "#5D3B2E",
+      "accentColor": "#8D6E63",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#2C1B12",
+      "surfaceColor": "#FFF8F0",
+      "bodyFontFamily": "Source Sans Pro",
+      "headingFontFamily": "Libre Baskerville",
+      "borderRadius": 6
+    },
+    "Refresh": {
+      "primaryColor": "#2D6A4F",
+      "secondaryColor": "#1B4332",
+      "accentColor": "#F4A261",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#1B2521",
+      "surfaceColor": "#F8FFF4",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 10
+    },
+    "Ride": {
+      "primaryColor": "#FF4D00",
+      "secondaryColor": "#1C1C1C",
+      "accentColor": "#FFD100",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#111111",
+      "surfaceColor": "#F5F5F5",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 6
+    },
+    "Dawn": {
+      "primaryColor": "#3B4F6B",
+      "secondaryColor": "#2C3E50",
+      "accentColor": "#C0832B",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#2C2C2C",
+      "surfaceColor": "#FDF6EC",
+      "bodyFontFamily": "Source Sans Pro",
+      "headingFontFamily": "Libre Baskerville",
+      "borderRadius": 4
+    },
+    "Bloom": {
+      "primaryColor": "#E07B39",
+      "secondaryColor": "#B55E24",
+      "accentColor": "#4CAF73",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#2C1A0A",
+      "surfaceColor": "#FFF9F0",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 14
+    },
+    "Nova": {
+      "primaryColor": "#8B5CF6",
+      "secondaryColor": "#6D28D9",
+      "accentColor": "#F59E0B",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#1A1A2E",
+      "surfaceColor": "#F8FAFC",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 10
+    },
+    "Summit": {
+      "primaryColor": "#00B3B3",
+      "secondaryColor": "#008080",
+      "accentColor": "#A4E500",
+      "backgroundColor": "#FFFFFF",
+      "textColor": "#1A1A2E",
+      "surfaceColor": "#F9FAFB",
+      "bodyFontFamily": "Inter",
+      "headingFontFamily": "Inter",
+      "borderRadius": 12
+    }
+  }
 }

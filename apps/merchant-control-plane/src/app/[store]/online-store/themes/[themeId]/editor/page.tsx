@@ -34,12 +34,12 @@ import {
 } from 'lucide-react'
 import { Button, Badge, ConfirmDialog, SaveBar, Select, letbuyyPrimitiveTokens, useToast } from '@letbuyy/ui'
 import {
-    buildExperienceSettingsOverlay,
     getDefaultStorefrontThemeTemplate,
-    getExperience,
     getSectionSchemas,
     getThemeSettingsSchema,
     hasRenderableThemeTemplate,
+    resolveExperiencePresetItems,
+    type ExperiencePresetItem,
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import CenterPanel from '@/components/theme-editor/CenterPanel'
@@ -622,6 +622,18 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
     }
 }
 
+// S4-FIX/Defect 2 — settings_data.presets (not the Experience registry) is the single source for
+// which presets this theme has and what values applying one writes. Mirrors buildDraftConfig's own
+// config-then-root precedence for `presets` so reading and writing agree on which layer wins.
+function presetsFromBaseConfig(baseConfig: JsonRecord): Record<string, unknown> {
+    const configSettingsData = asRecord(asRecord(baseConfig.config).settings_data)
+    const rootSettingsData = asRecord(baseConfig.settings_data)
+    return {
+        ...asRecord(configSettingsData.presets),
+        ...asRecord(rootSettingsData.presets),
+    }
+}
+
 function getAllSections(state: EditorState): SectionEntry[] {
     return [
         state.sections.header,
@@ -728,6 +740,12 @@ function ThemeEditorInner() {
     const canUndo = history.past.length > 0
     const canRedo = history.future.length > 0
     const themeGroups = useMemo(() => Object.entries(settingsSchema.settings), [settingsSchema])
+    // S4-FIX/Defect 2 — resolved from the loaded theme's own settings_data.presets, enriched by
+    // name lookup against the Experience registry. Recomputes only when the loaded config changes.
+    const presetItems: ExperiencePresetItem[] = useMemo(
+        () => resolveExperiencePresetItems(presetsFromBaseConfig(baseConfig)),
+        [baseConfig],
+    )
     const selectedSection = useMemo(() => {
         if (selection.kind === 'section') return getSectionById(editorState, selection.sectionId)
         if (selection.kind === 'block') return getSectionById(editorState, selection.sectionId)
@@ -778,19 +796,20 @@ function ThemeEditorInner() {
         })
     }, [])
 
-    // Phase-2.5 Stream A/B — apply a merchant-facing Experience to the draft. Merges the experience
-    // token overlay into themeSettings (buildDraftConfig propagates it to BOTH themeSettings and
-    // settings_data.current), records the active experience id, flips isDirty so the existing 900ms
+    // Phase-2.5 Stream A/B — apply a merchant-facing preset to the draft. Merges the preset's
+    // BUNDLE values into themeSettings (buildDraftConfig propagates it to BOTH themeSettings and
+    // settings_data.current), records the active preset id, flips isDirty so the existing 900ms
     // debounce auto-saves the draft and refreshes the live preview. No page refresh, no new API.
-    const applyExperience = useCallback((experienceId: string) => {
-        const experience = getExperience(experienceId)
-        if (!experience) return
-        const overlay = buildExperienceSettingsOverlay(experience)
+    // S4-FIX/Defect 2 — presetId identifies an entry in presetItems (settings_data.presets), not a
+    // raw Experience registry id; values come from that entry's `values`, sourced from the bundle.
+    const applyExperience = useCallback((presetId: string) => {
+        const preset = presetItems.find((item) => item.id === presetId)
+        if (!preset) return
         applyChange((current) => ({
             ...current,
-            themeSettings: { ...current.themeSettings, ...overlay, experienceId },
+            themeSettings: { ...current.themeSettings, ...preset.values, experienceId: preset.id },
         }))
-    }, [applyChange])
+    }, [applyChange, presetItems])
 
     const loadReleases = useCallback(async () => {
         if (!store || !themeId) return
@@ -1455,6 +1474,7 @@ function ThemeEditorInner() {
 
                     {panelMode === 'experiences' ? (
                         <ExperiencePicker
+                            presets={presetItems}
                             activeExperienceId={typeof editorState.themeSettings.experienceId === 'string' ? editorState.themeSettings.experienceId : undefined}
                             onApply={applyExperience}
                         />
