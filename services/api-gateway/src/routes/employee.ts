@@ -1,11 +1,9 @@
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
-import { enqueueEmployeeInviteEmail } from '../lib/transactional-email';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
 import {
     employeeRemovalPatch,
-    planEmployeeInvite,
     planEmployeeStaffCreate,
     planEmployeeUpdate,
 } from '@letbuyy/auth-core';
@@ -300,68 +298,20 @@ router.get('/limits', async (c) => {
     }));
 });
 
-// POST /employees/invite — Invite an employee
+// POST /employees/invite — Staff self-service invite. Phase N3 retired the
+// only completion path for an invite (the GoTrue-backed accept-invite
+// endpoint and its email link never worked end-to-end -- see the Phase N3
+// report). Rather than create an employee_invites row and send an email
+// that can never be completed (ANTI-R9: a stub must never read as success),
+// this fails closed with an explicit, honest error. Use POST /employees
+// (direct staff creation, unaffected by this) to add staff instead.
 router.post('/invite', async (c) => {
-    const auth = c.get('auth');
-    const body = await c.req.json() as Record<string, unknown>;
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-    const token = crypto.randomUUID();
-    const invitePlan = planEmployeeInvite(
-        body,
-        customUser?.id || '',
-        token,
-        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-    );
-
-    if (!invitePlan.ok) {
-        return c.json({ error: { code: 'VALIDATION', message: invitePlan.message } }, 400);
-    }
-
-    if (!customUser || !(await verifySiteOwnership(db, invitePlan.value.store_id, customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
-    }
-
-    const inviteSeatExceeded = await staffSeatExceeded(db, invitePlan.value.store_id);
-    if (inviteSeatExceeded) {
-        return c.json({
-            error: {
-                code: 'STAFF_LIMIT_REACHED',
-                message: `Your ${inviteSeatExceeded.plan_name} plan includes ${inviteSeatExceeded.limit} staff ${inviteSeatExceeded.limit === 1 ? 'account' : 'accounts'}. Upgrade your plan to add more staff.`,
-                details: { staff_limit: inviteSeatExceeded.limit, staff_used: inviteSeatExceeded.used },
-            },
-        }, 409);
-    }
-
-    // Create invite
-    const { data, error } = await db
-        .from('employee_invites')
-        .insert(invitePlan.value)
-        .select()
-        .single();
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    await enqueueEmployeeInviteEmail(c.env, {
-        inviteId: String(data.id),
-        storeId: invitePlan.value.store_id,
-        to: invitePlan.value.email,
-        role: invitePlan.value.role,
-        token: String(data.token || token),
-        expiresAt: typeof data.expires_at === 'string' ? data.expires_at : invitePlan.value.expires_at,
-        inviterEmail: auth.user.email || null,
-        requestId: c.req.header('X-Request-ID') || null,
-    });
-
-    await writeEmployeeAudit(c, db, 'employee.invited', String((data as { id?: string }).id || ''), {
-        store_id: invitePlan.value.store_id,
-        email: invitePlan.value.email,
-        role: invitePlan.value.role,
-    });
-
-    return c.json(success(data), 201);
+    return c.json({
+        error: {
+            code: 'STAFF_INVITE_UNAVAILABLE',
+            message: 'Staff self-service invites are not available. Add staff directly instead.',
+        },
+    }, 503);
 });
 
 // ============================================================
