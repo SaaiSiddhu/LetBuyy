@@ -211,6 +211,13 @@ export const legacyGatewayAuthVerifiers: GatewayAuthVerifier[] = [
         verify: (c) => getInternalAuthContext(c),
     },
     {
+        // [HUMAN-REQUIRED] SKIP-IDN-R5-EMPLOYEE-GOTRUE-ISSUER: this is the
+        // only verifier that matches `Authorization: Bearer`, and
+        // GET /employees/me (routes/employee.ts:369) depends on it accepting
+        // the Supabase session routes/employee.ts:135 mints. Do not remove
+        // this verifier until that dependency is migrated off Supabase Auth
+        // -- doing so would break employee self-service, not just delete
+        // dead code.
         name: 'supabase-bearer',
         shouldAttempt: (_c, authHeader) => Boolean(authHeader?.startsWith('Bearer ')),
         verify: getSupabaseBearerAuthContext,
