@@ -5,7 +5,6 @@ import { isIdentityFoundationFlagEnabled } from './feature-flags';
 export type AuthVerifierName =
   | 'internal-session-hmac'
   | 'internal-identity-hmac'
-  | 'supabase-bearer'
   | 'oidc-jwks';
 
 export interface AuthVerifierRegistration {
@@ -30,12 +29,6 @@ export const AUTH_VERIFIER_REGISTRY: AuthVerifierRegistration[] = [
     order: 30,
     realm: 'merchant',
     description: 'Existing internal identity assertion HMAC branch.',
-  },
-  {
-    name: 'supabase-bearer',
-    activeByDefault: true,
-    order: 40,
-    description: 'Existing Supabase bearer token branch.',
   },
   {
     name: 'oidc-jwks',
