@@ -38,6 +38,32 @@ for (const entry of phaseBEntries(["apps", "services", "packages"])) {
 
 assertNoOffenders(reporter, offenders, "Identity Platform must remain the only token issuer");
 
+// N1: Supabase Auth (GoTrue) itself is a second, independent token issuer --
+// a route that calls these methods mints a real Supabase session, which is
+// exactly the "legacy Supabase /auth/*" surface ART-05 requires to collapse
+// into identity-platform. routes/auth.ts's 7 GoTrue-minting handlers were
+// removed in Phase N1; routes/employee.ts's /auth/login and /auth/accept-invite
+// still call them and are a KNOWN, tracked, not-yet-remediated seam -- allow-
+// listed here by exact path (never by pattern) so this check still catches any
+// NEW GoTrue-minting route while that one is worked.
+const gotrueMintingAllowlist = new Set([
+  "services/api-gateway/src/routes/employee.ts", // SKIP-IDN-R5-EMPLOYEE-GOTRUE-ISSUER
+]);
+const gotrueMintingPattern = /\bsupabase\.auth\.(?:signInWithPassword|signInWithOtp|verifyOtp|signOut|resetPasswordForEmail|updateUser|admin\.createUser)\s*\(/g;
+const gotrueOffenders = [];
+for (const entry of phaseBEntries(["services"], { filePattern: /\.ts$/ })) {
+  if (!entry.path.startsWith("services/api-gateway/src/routes/")) continue;
+  if (gotrueMintingAllowlist.has(entry.path) && !entry.extra) continue;
+
+  pushRegexOffenders(
+    gotrueOffenders,
+    entry,
+    gotrueMintingPattern,
+    () => "Supabase Auth (GoTrue) session minting is a second token issuer, forbidden by ART-05 -- identity-platform is the sole issuer",
+  );
+}
+assertNoOffenders(reporter, gotrueOffenders, "No gateway route may mint a Supabase Auth session outside the tracked SKIP-IDN-R5-EMPLOYEE-GOTRUE-ISSUER seam");
+
 const skippedHumanDecisions = readFile("SKIPPED_HUMAN_DECISIONS.md");
 const capabilityBacklog = readFile("CAPABILITY_BACKLOG.md");
 const gatewayAuthRoute = readFile("services/api-gateway/src/routes/auth.ts");

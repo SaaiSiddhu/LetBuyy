@@ -1,9 +1,5 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import {
-    createSupabaseAnonClient,
-    createSupabaseServiceClient,
-} from '@letbuyy/infrastructure/supabase-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
 import { bytesToHex, verifyInternalAppRequest, verifyInternalSessionHeaders } from '../lib/internal-auth';
@@ -19,11 +15,7 @@ import {
     AUTH_OTP_EXPIRY_MS,
     AUTH_SESSION_DURATION_MS,
     AUTH_TOKEN_EXPIRY_MS,
-    SignUpSchema,
     SignInSchema,
-    OtpRequestSchema,
-    OtpVerifySchema,
-    PasswordResetRequestSchema,
     PasswordUpdateSchema,
     isAuthTokenType,
     isAuthUuid,
@@ -324,19 +316,6 @@ async function getOrCreateDevice(db: ReturnType<typeof getSupabaseAdmin>, userId
     }
 
     return { device_id: device.id as string, is_new: true };
-}
-
-function accountsPasswordResetUrl(c: Context<{ Bindings: import('../index').Env }>): string {
-    const rawDomain = c.env.LETBUYY_PLATFORM_DOMAIN
-        || c.env.NEXT_PUBLIC_PLATFORM_DOMAIN
-        || c.env.PLATFORM_ROOT_DOMAIN
-        || 'letbuyy.com';
-    const domain = rawDomain
-        .trim()
-        .replace(/^https?:\/\//, '')
-        .replace(/\/.*$/, '')
-        .replace(/^\.+|\.+$/g, '');
-    return `https://accounts.${domain || 'letbuyy.com'}/reset-password`;
 }
 
 // GET /auth/custom/session — Validate LetBuyy opaque session token from a signed
@@ -1332,168 +1311,6 @@ auth.post('/custom/tokens/validate', async (c) => {
 
     await db.from('verification_tokens').update({ used: true }).eq('id', data.id);
     return c.json({ data: { email: data.email, user_id: data.user_id } });
-});
-
-// POST /auth/signup — Register new user
-// FIX: Strong password validation via Zod (8+ chars, upper/lower/number/special)
-auth.post('/signup', validate('json', SignUpSchema), async (c) => {
-    const body = c.get('validatedBody') as { email: string; password: string; name?: string };
-
-    const supabase = createSupabaseServiceClient(c.env);
-
-    const { data, error } = await supabase.auth.admin.createUser({
-        email: body.email,
-        password: body.password,
-        user_metadata: { name: body.name || '', role: 'seller' },
-        email_confirm: true,
-    });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Unable to create account'), 400);
-    }
-
-    // Create user_profiles record
-    if (data.user) {
-        await supabase.from('user_profiles').insert({
-            id: data.user.id,
-            email: body.email,
-            full_name: body.name || '',
-            role: 'seller',
-        });
-    }
-
-    return c.json({ data: { user: data.user } }, 201);
-});
-
-// POST /auth/signin — Email + password login
-auth.post('/signin', validate('json', SignInSchema), async (c) => {
-    const body = c.get('validatedBody') as { email: string; password: string };
-
-    const supabase = createSupabaseAnonClient(c.env);
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-        email: body.email,
-        password: body.password,
-    });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Invalid email or password'), 401);
-    }
-
-    return c.json({
-        data: {
-            user: data.user,
-            session: {
-                access_token: data.session.access_token,
-                refresh_token: data.session.refresh_token,
-                expires_at: data.session.expires_at,
-            },
-        },
-    });
-});
-
-// POST /auth/signin/otp — Request OTP
-auth.post('/signin/otp', validate('json', OtpRequestSchema), async (c) => {
-    const body = c.get('validatedBody') as { email: string };
-
-    const supabase = createSupabaseAnonClient(c.env);
-
-    const { error } = await supabase.auth.signInWithOtp({ email: body.email });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Unable to send OTP'), 400);
-    }
-
-    return c.json({ data: { message: 'OTP sent successfully' } });
-});
-
-// POST /auth/signin/otp/verify — Verify OTP
-auth.post('/signin/otp/verify', validate('json', OtpVerifySchema), async (c) => {
-    const body = c.get('validatedBody') as { email: string; token: string };
-
-    const supabase = createSupabaseAnonClient(c.env);
-
-    const { data, error } = await supabase.auth.verifyOtp({
-        email: body.email,
-        token: body.token,
-        type: 'email',
-    });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Invalid or expired OTP'), 401);
-    }
-
-    return c.json({
-        data: {
-            user: data.user,
-            session: data.session
-                ? {
-                    access_token: data.session.access_token,
-                    refresh_token: data.session.refresh_token,
-                    expires_at: data.session.expires_at,
-                }
-                : null,
-        },
-    });
-});
-
-// POST /auth/signout — Logout
-auth.post('/signout', async (c) => {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-        return c.json({ data: { message: 'Signed out' } });
-    }
-
-    const supabase = createSupabaseAnonClient(c.env, {
-        global: { headers: { Authorization: authHeader } },
-    });
-
-    await supabase.auth.signOut();
-
-    return c.json({ data: { message: 'Signed out successfully' } });
-});
-
-// POST /auth/password/reset — Request password reset
-auth.post('/password/reset', validate('json', PasswordResetRequestSchema), async (c) => {
-    const body = c.get('validatedBody') as { email: string };
-
-    const supabase = createSupabaseAnonClient(c.env);
-
-    const { error } = await supabase.auth.resetPasswordForEmail(body.email, {
-        redirectTo: accountsPasswordResetUrl(c),
-    });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Unable to send password reset email'), 400);
-    }
-
-    return c.json({ data: { message: 'Password reset email sent' } });
-});
-
-// POST /auth/password/update — Update password (requires valid session)
-// FIX: Strong password validation (was only checking length >= 6)
-auth.post('/password/update', validate('json', PasswordUpdateSchema), async (c) => {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-        return c.json(
-            { error: { code: 'UNAUTHORIZED', message: 'Token required' } },
-            401
-        );
-    }
-
-    const body = c.get('validatedBody') as { password: string };
-
-    const supabase = createSupabaseAnonClient(c.env, {
-        global: { headers: { Authorization: authHeader } },
-    });
-
-    const { error } = await supabase.auth.updateUser({ password: body.password });
-
-    if (error) {
-        return c.json(errorBody('AUTH_ERROR', 'Unable to update password'), 400);
-    }
-
-    return c.json({ data: { message: 'Password updated successfully' } });
 });
 
 export default auth;
