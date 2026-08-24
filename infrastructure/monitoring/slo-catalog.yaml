@@ -6,3 +6,85 @@ slos:
     window: 30d
     errorBudgetPolicy: block-production-promotion-on-failed-gate
     evidenceTable: deployment_health_gate_results
+
+  # Phase R1 additions below. DEFINITIONS ONLY -- see
+  # docs/evidence/production-readiness/<date>-readiness-evidence.md dimension
+  # 10 for the honest status of each. None of these have live telemetry
+  # wired up today: the evidenceTable named for each is a real table this
+  # repository already writes to (verified against the schema/migrations at
+  # authoring time), but nothing currently rolls its rows up into an SLI on
+  # a schedule, alerts on error-budget burn, or exposes it on a dashboard.
+  # An SLO with a real evidence table and no telemetry behind it is a
+  # target, not a measurement -- do not read these as "monitored."
+
+  - name: checkout-order-creation-success
+    owner: commerce-platform
+    sli: successful_create_checkout_order_calls / total_create_checkout_order_calls
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: page-on-call-if-burn-rate-exceeds-2x-over-1h
+    evidenceTable: checkout_sessions
+    # checkout_sessions.status ('completed' vs a failed/absent session) is
+    # the real signal create_checkout_order (database/supabase/migrations/
+    # 202_narrow_checkout_order_payment_method.sql) already writes on every
+    # call. NOT MEASURED today: no scheduled rollup or alert reads this
+    # table for SLO purposes.
+
+  - name: payment-capture-confirmation-success
+    owner: commerce-platform
+    sli: successful_confirm_order_payment_with_ledger_calls / total_capture_webhook_events
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: page-on-call-if-burn-rate-exceeds-2x-over-1h
+    evidenceTable: payment_transactions
+    # payment_transactions.status ('captured' vs 'pending'/absent) after a
+    # payment.captured webhook is the real signal. NOT MEASURED today: no
+    # scheduled rollup or alert reads this table for SLO purposes.
+
+  - name: razorpay-webhook-signature-verification
+    owner: commerce-platform
+    sli: signature_valid_true_rows / total_payment_webhook_events_rows
+    target: 100
+    window: 7d
+    errorBudgetPolicy: page-on-call-immediately-on-any-false
+    evidenceTable: payment_webhook_events
+    # payment_webhook_events.signature_valid is written by
+    # services/webhook-service/src/index.ts's /razorpay handler ONLY after
+    # verifyRazorpayWebhookSignature passes (a failed signature returns 400
+    # before any row is written -- see Phase M5's evidence). A row existing
+    # with signature_valid=false would mean the write path changed; today
+    # it structurally cannot happen. NOT MEASURED today: no scheduled
+    # rollup or alert reads this table for SLO purposes.
+
+  - name: outbox-event-processing-lag
+    owner: platform-sre
+    sli: p95(outbox_events.dispatched_at - outbox_events.created_at) for status='processed' rows
+    target: 60
+    window: 24h
+    errorBudgetPolicy: page-on-call-if-p95-exceeds-target-for-15m
+    evidenceTable: outbox_events
+    # outbox_events.created_at, .dispatched_at, and .status (queued/
+    # processing/processed/failed/dead) are real columns this repository
+    # already writes (transactional-outbox relay, per root AGENTS.md;
+    # database/supabase/migrations/000_baseline.sql, complete_outbox_event
+    # sets status='processed'). Column names verified directly against
+    # baseline.sql at authoring time. NOT MEASURED today: no scheduled
+    # rollup or alert computes this p95 from the table.
+
+  - name: tenant-isolation-zero-cross-tenant-rows
+    owner: security-platform
+    sli: cross_tenant_rows_returned_under_unscoped_query / total_red_team_probes
+    target: 0
+    window: continuous
+    errorBudgetPolicy: page-on-call-immediately-on-any-nonzero
+    evidenceTable: N/A -- not measurable via a database rollup
+    # This SLO is intentionally different in shape: it is a zero-tolerance
+    # invariant (RLS FORCE + tenant GUC), not a percentage target with a
+    # meaningful error budget. Its only real evidence today is the RT-1
+    # through RT-9 red-team suite (tests/executable/tenant-redteam-postgres.
+    # test.mjs), which is a point-in-time behavioural test run by a human or
+    # CI, not a continuous production signal. NOT MEASURABLE via a database
+    # evidenceTable as written -- would need a scheduled, production-safe
+    # red-team probe job (SKIP-CAP-TENANT-REDTEAM-ADOPTION) before this
+    # entry means anything beyond "the suite passed once, locally, on this
+    # commit."

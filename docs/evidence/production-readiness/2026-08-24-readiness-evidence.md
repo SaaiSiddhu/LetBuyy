@@ -1,0 +1,420 @@
+# Production-Readiness Evidence Snapshot — 2026-08-24
+
+**This is an evidence snapshot, not a readiness certification.** It records what was
+directly measured on this date, against this commit, and what was not. It contains
+no GO/NO-GO verdict, no readiness percentage, and no score. Per the Constitution's
+production-readiness law, "architecture diagrams, green builds, and file-presence
+validators do not prove production readiness" — this document exists to separate
+what is genuinely measured from what merely looks measured, not to declare the
+platform ready or unready. A matrix that is mostly `NOT MEASURED` is the honest,
+expected state of a pre-launch, ~100-1,000-merchant-envelope system; it is not a
+finding of failure.
+
+**Baseline commit:** `89274860` (HEAD at the time this phase began, 2026-08-24
+11:33:35 +05:30). Re-check `git log -1` before trusting this document past today —
+this snapshot is valid only for the commit it names, and this repository has
+concurrent, actively-committing sessions (see `letbuyy-concurrent-sessions-one-checkout`
+memory). At the time this document was authored, the working tree also carried
+unrelated, uncommitted theme/Liquid changes from a concurrent session; none of
+those files were touched, read for correctness, or included in this evidence.
+
+**Scope of this phase (R1):** measurement only. No application, money, identity,
+tenancy, theme, or validator code was modified to produce this evidence. The
+destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
+run this phase (see the Phase M4 human decision this phase inherits: the lane's
+own runner does not short-circuit, so the individually-run validators below give
+equivalent coverage without the lane's `rm -rf` of every `node_modules`, which
+would have broken a concurrent session's in-progress build). Only
+`--lane=gate --plan` (a safe, read-only inventory/drift check) was run — see
+Dimension 11 and the closing verification section.
+
+**Methodology note (TEST-R10):** several of the suites cited below assert against
+reimplemented, standalone copies of algorithmic logic (e.g. retry backoff math,
+event-reducer determinism) rather than by exercising the actual running service.
+Each such case is called out explicitly in its own section — a validator or a
+unit test proving an algorithm is correct in isolation is not the same evidence
+as a live integration test, and this document does not blur that distinction.
+
+---
+
+## Dimension 1 — Payment integrity and reconciliation
+
+**Status:** MEASURED (repository-level, not live-production)
+
+**Evidence:**
+- `pnpm test:foundation:wave0` → `tests/governance/foundation-wave0.test.mjs` (5
+  tests) + `tests/executable/money-ledger-postgres.test.mjs` run against a real,
+  isolated Postgres 16 container (`letbuyy-r1-evidence-pg`, spun up via the
+  existing `LETBUYY_EXECUTABLE_PG_CONTAINER`/`LETBUYY_EXECUTABLE_PG_DATABASE`
+  overrides so the shared `letbuyy-executable-pg` container used by other
+  sessions was never touched). All passing.
+- `pnpm test:foundation:wave1` → `packages/payments/test/payments.test.ts`,
+  `packages/billing-core/test/billing-core.test.ts`,
+  `services/api-gateway/src/__tests__/money.test.ts`, plus
+  `tests/executable/foundation-wave1-money-postgres.test.mjs` (25 tests total)
+  against the same isolated container. All passing, including real
+  append-only-ledger and insufficient-balance rejection proofs (genuine
+  Postgres constraint violations, not mocked assertions).
+- Phase M1-M5 (this same execution ledger, commits `07494bcb` through
+  `2cd8da35`) closed every non-canonical payment rail (Stripe/PayPal/Cashfree)
+  from route registration, zod schemas, hand-written TS unions, and the money
+  table CHECK constraints themselves, each with its own executable proof
+  (`tests/executable/checkout-order-payment-method-guard-postgres.test.mjs`,
+  `tests/executable/money-table-provider-guard-postgres.test.mjs`).
+
+**What this proves:** the ledger's double-entry invariants, insufficient-balance
+guards, and payment-rail allowlist are enforced by the database itself (CHECK
+constraints, `NOT VALID` narrowing with historical-row preservation) and are
+exercised by tests that hit a real Postgres, not a mock.
+
+**What this does NOT prove:** live Razorpay reconciliation against a real
+gateway account, live webhook delivery under production load, or that the
+ledger stays consistent under concurrent production traffic. No live payment
+was captured or refunded as part of this evidence.
+
+**Gap:** no live-gateway reconciliation drill; no concurrent-load ledger test.
+
+**Who closes it:** payment/money engineering owner, with a staging Razorpay
+account and a scheduled reconciliation job proof (see `SKIP-RAZORPAYX-ENUM-PURGE`
+for the one remaining non-canonical enum-value residue, already tracked).
+
+---
+
+## Dimension 2 — Cross-tenant isolation
+
+**Status:** MEASURED (repository-level, not live-production)
+
+**Evidence:**
+- `pnpm test:foundation:wave2` → `tests/governance/foundation-wave2-tenant.test.ts`
+  + `tests/executable/tenant-redteam-postgres.test.mjs` (5 tests) against the
+  isolated container, plus `validate:tenant-isolation`. All passing.
+- The tenant red-team suite runs RT-1 through RT-9 against a real Postgres role
+  (`app_tenant`, confirmed non-`BYPASSRLS`) and observes genuine
+  `permission denied` errors from Postgres itself when tenant context is
+  missing, forged, or mismatched — not application-level assertions.
+
+**What this proves:** RLS `ENABLE` + `FORCE` + the transaction-local tenant GUC
+correctly produce zero rows and no mutation when tenant context is absent or
+wrong, exercised against a real database engine.
+
+**What this does NOT prove:** behavior under a deployed, production-shaped
+connection pool/role configuration, or under concurrent cross-tenant request
+load.
+
+**Gap:** live/staging-shaped red-team run; already tracked, not duplicated here.
+
+**Who closes it:** already an open row —
+`SKIP-CAP-TENANT-REDTEAM-ADOPTION` (database/security engineering owner) —
+this phase reuses it rather than creating a duplicate.
+
+---
+
+## Dimension 3 — Authentication forgery, replay, and escalation resistance
+
+**Status:** PARTIALLY MEASURED
+
+**Evidence:**
+- `pnpm test:foundation:wave4` → `tests/auth/session-verifier.test.mjs` +
+  `tests/governance/foundation-wave4-session-security.test.ts` +
+  `tests/executable/foundation-wave4-session-postgres.test.mjs` (14 tests) +
+  `validate:session-security`. All passing, against the isolated container.
+
+**What this proves:** session verification and session-security validator
+rules hold at the unit/governance level, including some database-backed
+session checks.
+
+**What this does NOT prove:** a full authentication forgery/replay/escalation
+red-team (e.g. deliberately forged JWTs, replayed tokens across realms,
+attempted merchant→operator or buyer→merchant privilege escalation) was NOT
+run this phase — no such suite was found in the repository at the roots
+checked. Additionally, per the root `CLAUDE.md`'s own recorded known
+deviation, the customer/buyer realm is still minted with **HS256**
+(`CUSTOMER_SESSION_SECRET`, `issueCustomerSession`) rather than the sole
+asymmetric issuer target state — meaning the verification key is also the
+forgery key for that realm today. This document does not re-verify that
+deviation's current boundaries (a separate, prior finding
+`letbuyy-auth-secret-shared-across-domains` already tracks it); it is
+restated here because it is directly relevant to this dimension's honest
+status and must not be implied as closed by wave4 passing.
+
+**Gap:** no forgery/replay/escalation red-team suite exists; the HS256
+customer-realm deviation is a structural forgery-resistance gap, not merely
+a style deviation.
+
+**Who closes it:** identity-platform engineering owner — collapse the
+customer realm onto the sole asymmetric issuer (ART-05/R-14 target state),
+then author a red-team suite exercising forged/replayed/escalated tokens
+across all three realms.
+
+---
+
+## Dimension 4 — Checkout correctness
+
+**Status:** PARTIALLY MEASURED
+
+**Evidence:**
+- `pnpm test:foundation:wave7` includes
+  `services/api-gateway/src/__tests__/checkout.test.ts` and `orders-v1.test.ts`
+  (part of 27 total wave7 tests, alongside `whatsapp.test.ts`, the mobile-bff
+  suite, and a Flutter Turnstile test). All passing.
+- Phase M3-REVISED's draft-order-convert guard test
+  (`services/api-gateway/src/__tests__/draft-order-payment-method-retirement.test.ts`)
+  and its executable Postgres companion
+  (`tests/executable/checkout-order-payment-method-guard-postgres.test.mjs`)
+  directly exercise `create_checkout_order`'s guard logic.
+
+**What this proves:** the checkout route and order-creation RPC's request/
+response contracts and payment-method guard behave correctly for the cases
+those tests cover.
+
+**What this does NOT prove:** full checkout correctness under real
+concurrency (two simultaneous checkouts against the same low-stock item), a
+real Razorpay round-trip, or GST/shipping/discount computation edge cases
+beyond what `checkout.test.ts` enumerates. No browser-driven or end-to-end
+checkout flow was run this phase (out of scope: this phase does not touch
+application code or run a browser).
+
+**Gap:** concurrent-checkout inventory race test; end-to-end browser-driven
+checkout proof.
+
+**Who closes it:** commerce-platform engineering owner.
+
+---
+
+## Dimension 5 — Queue lag and retry behavior
+
+**Status:** PARTIALLY MEASURED (algorithm-level only)
+
+**Evidence:**
+- `node --test tests/queues/queue-recovery.test.mjs` (run this phase, not part
+  of any existing wave): 2/2 passing — "releases expired leases with
+  deterministic retry time" and "dead-letters exhausted messages."
+
+**What this proves:** the retry-backoff and dead-letter decision math is
+internally correct for the cases tested.
+
+**What this does NOT prove:** this test defines and asserts against a
+**locally reimplemented copy** of the retry/backoff functions
+(`queueRetryDelayMs`, `queueRetryAvailableAt`, `planQueueRecovery`) inside the
+test file itself — it does not import or exercise `services/queue-workers`'
+actual runtime code. No live queue depth, dispatch lag, or dead-letter rate
+was measured against a running worker. `tests/operations/queue-storm-controls.test.mjs`
+and `tests/operations/queue-bulk-cost.test.mjs` exist but were not run or
+attributed to this dimension this phase (not yet reviewed for relevance;
+flagged for a future pass rather than guessed at).
+
+**Gap:** no suite exercises the actual `services/queue-workers` retry/backoff
+implementation directly; no live queue-lag telemetry exists (see Dimension 10,
+`outbox-event-processing-lag` SLO — defined this phase, unmeasured).
+
+**Who closes it:** queue-workers engineering owner.
+
+---
+
+## Dimension 6 — Alert delivery to a real human
+
+**Status:** NOT MEASURED (existing human seam, reused)
+
+**Evidence:** none run this phase. `services/api-gateway/src/lib/runtime-alerting.ts`
+and `services/queue-workers/src/incident-command.ts` emit alerts into a
+dry-run/queue path locally, per the existing skip row.
+
+**What this proves / does not prove:** unchanged from the existing row —
+repository-side emission and dry-run routing exist; no live provider
+delivery to a human has ever been demonstrated.
+
+**Gap:** unchanged.
+
+**Who closes it:** already an open row — `SKIP-CAP-ALERTING-END-TO-END`
+(observability/platform operations owner). Reused, not duplicated.
+
+---
+
+## Dimension 7 — Backup, PITR, and a successful restore drill
+
+**Status:** PARTIALLY MEASURED — plan-mode only
+
+**Evidence:**
+- `pnpm foundation:restore-drill:plan` → `node scripts/governance/foundation-restore-drill.mjs --plan`,
+  run this phase. Output:
+  ```
+  LetBuyy restore drill plan
+  - Codex mode: plan only; no production/shared DB action.
+  - Execute locally with --execute and LETBUYY_RESTORE_DRILL_SOURCE_URL / LETBUYY_RESTORE_DRILL_TARGET_URL.
+  - Human shared-env apply remains SKIP-DEPLOY with backup, verify, and rollback evidence.
+  ```
+- Execute-mode was investigated (the R1 prompt explicitly permits a genuinely
+  private local execute-mode run, clearly labelled local-only). Blocked:
+  `which pg_dump pg_restore` → exit 127 on the host (neither binary
+  installed). `foundation-restore-drill.mjs` calls `pg_dump`/`pg_restore`
+  directly via `spawnSync` (not through `docker exec`), and modifying the
+  script is out of scope for this measurement-only phase. Confirmed as a
+  supplementary data point, NOT a workaround: `docker run --rm
+  postgres:16-alpine pg_dump --version` → `pg_dump (PostgreSQL) 16.14` — the
+  binary exists inside the same Postgres image already used elsewhere in this
+  repository's tooling, just not on the host `PATH`.
+
+**What this proves:** the plan-mode path is safe-by-default and correctly
+refuses to touch production/shared infrastructure without explicit
+`--execute` + an allow-flag + explicit source/target URLs, and
+`assertLocalTarget()` exists as a hard local-only guard.
+
+**What this does NOT prove:** no restore was ever actually performed, locally
+or otherwise. No RTO figure exists — local or production.
+
+**Gap:** (a) host-level: `pg_dump`/`pg_restore` are not installed, so even a
+local, low-stakes execute-mode drill cannot run today without either
+installing the client tools on the host or adapting the script to shell out
+via `docker exec` against the `postgres:16-alpine` image (a script change,
+correctly out of scope this phase). (b) production-level: unchanged from the
+existing row.
+
+**Who closes it:** for (a), any engineer — install `postgresql-client`
+(or equivalent) locally, or file a follow-up to adapt
+`foundation-restore-drill.mjs` to invoke `pg_dump`/`pg_restore` via `docker
+exec`. For (b), database/platform operations owner — already tracked as
+`SKIP-W0-PITR-TIER`, reused, not duplicated.
+
+---
+
+## Dimension 8 — RTO and RPO
+
+**Status:** NOT MEASURED
+
+**Evidence:** none. Tied directly to Dimension 7: no restore was performed,
+so no recovery-time or recovery-point figure — local or production — exists
+to report.
+
+**What this does NOT prove:** nothing can be claimed about actual recovery
+time or data-loss window.
+
+**Gap:** same as Dimension 7.
+
+**Who closes it:** same as Dimension 7; RTO/RPO figures can only be produced
+once a restore drill (local or production) actually completes.
+
+---
+
+## Dimension 9 — Load, spike, soak, and failure testing
+
+**Status:** NOT MEASURED — by design, explicitly out of scope this phase
+
+**Evidence:** none. No load-testing tooling exists in the canonical
+repository. Stale `k6`-style scripts exist only under `.claude/worktrees/**`,
+which the R1 prompt explicitly forbids restoring from (dead, unmaintained
+path). `SKIP-D11-OPERATIONAL-THEATER-TABLE-PROBE` documents residual
+`load_test_runs`/`chaos_experiment_runs` database tables as inert schema
+residue from a prior era, not live capability — reinforcing that no load/
+chaos capability exists today, repository-wide.
+
+**What this does NOT prove:** nothing about behavior under load, spike, soak,
+or induced-failure conditions is known.
+
+**Gap:** no load/spike/soak/chaos tooling exists at all — this is a
+tooling-acquisition gap, not a "run the existing tool" gap.
+
+**Who closes it:** genuinely new seam — no existing `SKIP-*`/`CAP-*` row
+covers "stand up load/spike/soak/failure-injection tooling and run it."
+Added `SKIP-CAP-LOAD-SPIKE-SOAK-TESTING` this phase (see
+`SKIPPED_HUMAN_DECISIONS.md`). Platform-SRE/infrastructure engineering owner.
+
+---
+
+## Dimension 10 — Defined SLOs and error budgets
+
+**Status:** MOSTLY NOT MEASURED — definitions added this phase, zero live
+telemetry behind any of them
+
+**Evidence:**
+- Before this phase: `infrastructure/monitoring/slo-catalog.yaml` defined
+  exactly one SLO (`deployment-gate-success`).
+- This phase added five SLO **definitions** (not measurements) to the same
+  file, each citing a real, schema-verified table it could theoretically be
+  computed from: `checkout-order-creation-success` (`checkout_sessions`),
+  `payment-capture-confirmation-success` (`payment_transactions`),
+  `razorpay-webhook-signature-verification` (`payment_webhook_events.signature_valid`,
+  confirmed a real column, written only after signature verification passes
+  per Phase M5's evidence), `outbox-event-processing-lag`
+  (`outbox_events.created_at`/`.dispatched_at`/`.status`, confirmed real
+  column names directly against `database/supabase/migrations/000_baseline.sql`,
+  correcting an earlier draft of this document that had guessed a
+  non-existent `processed_at` column), and
+  `tenant-isolation-zero-cross-tenant-rows` (a zero-tolerance invariant with
+  no meaningful database evidence table — its only real evidence is the
+  point-in-time RT-1–RT-9 suite, not a continuous signal).
+
+**What this proves:** the named tables and columns are real and already
+written by production code paths, so each SLO's SLI is theoretically
+computable without inventing new instrumentation.
+
+**What this does NOT prove:** none of these five SLOs have a scheduled
+rollup, a dashboard, or an alert wired to them. "A real evidence table
+exists" is not "this is monitored" — no burn-rate alert has ever fired or
+could fire today for any of them.
+
+**Gap:** zero live telemetry/rollup/alerting behind any SLO except possibly
+`deployment-gate-success` (unverified this phase — out of scope to confirm
+whether even the original SLO has live wiring).
+
+**Who closes it:** genuinely new seam. Added `SKIP-CAP-SLO-TELEMETRY-WIRING`
+this phase (distinct from `SKIP-W3-SENTRY-DSN`, which covers general
+observability DSN/alert-routing provisioning, not SLO-specific rollup
+wiring against these named tables). Platform-SRE/observability engineering
+owner.
+
+---
+
+## Dimension 11 — Safe rollback
+
+**Status:** PARTIALLY MEASURED
+
+**Evidence:**
+- Every migration authored across Phases M3-REVISED through M5 (`201` through
+  `204`) ships a paired, faithful rollback file, each individually verified
+  against the actual prior live constraint definition (not the stale
+  baseline) — e.g. migration `204`'s rollback restores migration `142`'s real
+  7-value provider array, confirmed via `diff`, not baseline's stale 5-value
+  one.
+- `rollback-integrity-validator` re-run clean after each such migration
+  (part of the per-phase validator sweeps in this same execution ledger).
+- `node scripts/validate-governance.mjs --lane=gate --plan` (safe, read-only
+  inventory/drift mode) was run as this phase's closing verification step —
+  see the Verification section below for its result.
+
+**What this proves:** the paired-rollback authoring discipline and the
+validator that checks for it are real and exercised repeatedly across five
+prior phases.
+
+**What this does NOT prove:** no rollback migration has ever actually been
+*applied* against a live or staging database — only diffed and validated
+statically. No application-level (non-database) rollback (e.g. a bad
+deploy of `services/api-gateway`) was drilled this phase.
+
+**Gap:** no live rollback-application drill, database or application-level.
+
+**Who closes it:** database operator, for a staging-environment rollback
+apply-and-verify drill; release engineering owner, for an application
+rollback drill.
+
+---
+
+## Verification run this phase
+
+`node scripts/validate-governance.mjs --lane=gate --plan` was run as required
+(safe: inventory + drift check only, no destructive artifact cleanup). This
+phase did not modify any validator or application code, so no change to the
+validator sweep's outcome is expected or claimed from this phase's own edits.
+
+---
+
+## Closing statement
+
+This document is an evidence snapshot for commit `89274860`, dated
+2026-08-24. It supersedes no prior evidence document and is itself
+superseded the moment a new commit lands. It certifies nothing. Where a
+dimension above reads `MEASURED`, it means a specific, named, reproducible
+command was run and its result recorded — not that the corresponding
+production capability is proven safe at scale. Where a dimension reads
+`NOT MEASURED`, that is the honest and, for a system at this stage, the
+expected state — not a defect to be silently waived away in a future
+document.
