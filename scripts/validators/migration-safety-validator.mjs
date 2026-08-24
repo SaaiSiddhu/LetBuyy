@@ -13,6 +13,17 @@ function stripSqlComments(sql) {
     .replace(/--.*$/gm, "");
 }
 
+// Liquid theme-bundle migrations (171, 172, 199, 200, ...) embed an entire portable theme bundle — real
+// Liquid source, HTML, and merchant-facing copy — as a single jsonb literal via Postgres dollar-quoting,
+// e.g. `$liquidbundle$ { ... } $liquidbundle$::jsonb`. That payload is DATA, not executable SQL, but can
+// legitimately contain the English/Liquid words this file's keyword patterns look for (e.g. Liquid's
+// `truncate:` filter, or settings copy like "Truncated to 160 characters"). Strip only this one, fixed,
+// already-established tag (not dollar-quoting in general, which also wraps real PL/pgSQL function bodies
+// this validator must keep scanning) before running the destructive-keyword patterns below.
+function stripLiquidBundleJsonPayloads(sql) {
+  return sql.replace(/\$liquidbundle\$[\s\S]*?\$liquidbundle\$/g, () => "$liquidbundle$$liquidbundle$");
+}
+
 const forbiddenPatterns = [
   { pattern: /\bDROP\s+TABLE\b/i, message: "DROP TABLE is forbidden in replayable migrations; use additive compatibility or explicit repair runbooks" },
   { pattern: /\bDROP\s+SCHEMA\b/i, message: "DROP SCHEMA is forbidden in replayable migrations" },
@@ -26,7 +37,11 @@ const forbiddenPatterns = [
 ];
 
 for (const file of getTrackedFiles().filter((candidate) => candidate.startsWith("database/supabase/migrations/") && candidate.endsWith(".sql"))) {
-  const sql = stripSqlComments(readFile(file));
+  // Strip the dollar-quoted JSON payload BEFORE stripping SQL comments: the embedded bundle contains
+  // real `--lb-*` CSS custom-property declarations, and stripSqlComments' `--.*$` line-comment strip
+  // would otherwise eat everything from the first one to end-of-line — on a JSON.stringify'd single-line
+  // payload, that is the rest of the statement, including the closing dollar-quote tag.
+  const sql = stripSqlComments(stripLiquidBundleJsonPayloads(readFile(file)));
   for (const { pattern, message } of forbiddenPatterns) {
     reporter.assert(!pattern.test(sql), `${file}: ${message}`);
   }

@@ -203,3 +203,6 @@ graphify-out/infrastructure-control-intel.json
 graphify-out/commerce-control-intel.json
 graphify-out/launch-command-center.json
 .tmp/
+
+# S1/W4 render-parity harness — temp per-run React section copies with mocked Next.js imports.
+apps/storefront-runtime/src/__liquid_parity_harness__/

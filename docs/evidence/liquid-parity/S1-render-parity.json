@@ -1,0 +1,789 @@
+{
+  "generatedBy": "scripts/liquid-parity/render-parity-harness.mjs",
+  "method": "Semantic diff (headings/links/images/setting-value presence) via react-dom/server renderToStaticMarkup vs the real LiquidRenderer + sanitizeRenderedHtml path. Not a byte-compare.",
+  "totalSections": 20,
+  "passCount": 5,
+  "failCount": 15,
+  "results": [
+    {
+      "reactFile": "about-section.tsx",
+      "rendererKey": "core.about",
+      "liquidSectionType": "about-section",
+      "settingsUsed": {
+        "title": "About us",
+        "content": "Parity value for content",
+        "imageUrl": "https://cdn.example/parity-imageUrl.jpg",
+        "layout": "left"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"layout\" absent from BOTH outputs — neither side renders it (value: left)"
+      ],
+      "stats": {
+        "checked": 4,
+        "matched": 3,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 1
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 1
+        }
+      }
+    },
+    {
+      "reactFile": "app-block-slot.tsx",
+      "rendererKey": "apps.app-block-slot",
+      "liquidSectionType": "app-block-slot",
+      "settingsUsed": {
+        "title": "Parity value for title",
+        "slot": "storefront.home.after-hero"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-@app-0",
+          "type": "@app",
+          "settings": {}
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"slot\" absent from BOTH outputs — neither side renders it (value: storefront.home.after-hero)",
+        "heading text only in React: [\"Installed app\"]"
+      ],
+      "stats": {
+        "checked": 2,
+        "matched": 1,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "banner-carousel.tsx",
+      "rendererKey": "frozen.banner-carousel",
+      "liquidSectionType": "banner-carousel",
+      "settingsUsed": {
+        "title": "Parity value for title",
+        "autoplay": true
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-slide-0",
+          "type": "slide",
+          "settings": {
+            "heading": "Parity value for heading",
+            "image": "https://cdn.example/parity-image.jpg",
+            "link": "/parity-test/link"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": false,
+        "reason": "React render threw: TypeError: Cannot read properties of undefined (reading 'length') |     at BannerCarousel (apps/storefront-runtime/src/__liquid_parity_harness__/banner-carousel.harness.tsx:76:36) |     at Object.react_stack_bottom_frame (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:9808:18) |     at renderWithHooks (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5062:19)"
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "React: React render threw: TypeError: Cannot read properties of undefined (reading 'length') |     at BannerCarousel (apps/storefront-runtime/src/__liquid_parity_harness__/banner-carousel.harness.tsx:76:36) |     at Object.react_stack_bottom_frame (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:9808:18) |     at renderWithHooks (node_modules/.pnpm/react-dom@19.2.3_react@19.2.3/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5062:19)"
+      ]
+    },
+    {
+      "reactFile": "brand-marquee.tsx",
+      "rendererKey": "commerce.brand-marquee",
+      "liquidSectionType": "brand-marquee",
+      "settingsUsed": {
+        "title": "Featured brands"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-brand-0",
+          "type": "brand",
+          "settings": {
+            "name": "Parity value for name"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "heading text only in Liquid: [\"Featured brands\"]"
+      ],
+      "stats": {
+        "checked": 2,
+        "matched": 2,
+        "react": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "category-grid.tsx",
+      "rendererKey": "commerce.category-grid",
+      "liquidSectionType": "category-grid",
+      "settingsUsed": {
+        "title": "Shop by style",
+        "subtitle": "Parity value for subtitle"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-category-0",
+          "type": "category",
+          "settings": {}
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"title\" present in Liquid output only (value: Shop by style)",
+        "setting \"subtitle\" present in Liquid output only (value: Parity value for subtitle)",
+        "heading text only in Liquid: [\"Shop by style\"]"
+      ],
+      "stats": {
+        "checked": 2,
+        "matched": 0,
+        "react": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "contact-form.tsx",
+      "rendererKey": "core.contact-form",
+      "liquidSectionType": "contact-form",
+      "settingsUsed": {
+        "title": "Contact us",
+        "subtitle": "Parity value for subtitle",
+        "showPhone": true
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "PASS",
+      "reasons": [],
+      "stats": {
+        "checked": 2,
+        "matched": 2,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "cta-section.tsx",
+      "rendererKey": "core.cta",
+      "liquidSectionType": "cta-section",
+      "settingsUsed": {
+        "heading": "Ready to get started?",
+        "subheading": "Parity value for subheading",
+        "ctaText": "Shop now",
+        "ctaLink": "/products"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "PASS",
+      "reasons": [],
+      "stats": {
+        "checked": 4,
+        "matched": 4,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "experience-timeline.tsx",
+      "rendererKey": "core.experience-timeline",
+      "liquidSectionType": "experience-timeline",
+      "settingsUsed": {
+        "title": "Experience"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-experience-0",
+          "type": "experience",
+          "settings": {
+            "title": "Parity value for title",
+            "company": "Parity value for company",
+            "period": "Parity value for period"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"block.experience.period\" present in Liquid output only (value: Parity value for period)"
+      ],
+      "stats": {
+        "checked": 4,
+        "matched": 3,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 2,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "featured-products.tsx",
+      "rendererKey": "core.featured-products",
+      "liquidSectionType": "featured-products",
+      "settingsUsed": {
+        "title": "Drop-ready collection",
+        "subtitle": "Parity value for subtitle",
+        "viewAllLabel": "View collection",
+        "viewAllHref": "/collections/new-arrivals"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-product-card-0",
+          "type": "product-card",
+          "settings": {}
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"title\" present in Liquid output only (value: Drop-ready collection)",
+        "setting \"subtitle\" present in Liquid output only (value: Parity value for subtitle)",
+        "setting \"viewAllLabel\" present in Liquid output only (value: View collection)",
+        "setting \"viewAllHref\" present in Liquid output only (value: /collections/new-arrivals)",
+        "heading text only in React: [\"No featured products\"]",
+        "heading text only in Liquid: [\"Drop-ready collection\"]"
+      ],
+      "stats": {
+        "checked": 4,
+        "matched": 0,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 2,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "hero.tsx",
+      "rendererKey": "core.hero",
+      "liquidSectionType": "hero-banner",
+      "settingsUsed": {
+        "eyebrow": "New season essentials",
+        "heading": "Fresh drops for daily buyers",
+        "subheading": "Parity value for subheading",
+        "ctaText": "Shop Now",
+        "ctaLink": "/products",
+        "image": "https://cdn.example/parity-image.jpg",
+        "overlay": 0.4,
+        "height": "full",
+        "textAlign": "center"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"eyebrow\" present in Liquid output only (value: New season essentials)",
+        "setting \"image\" present in React output only (value: https://cdn.example/parity-image.jpg)",
+        "setting \"height\" absent from BOTH outputs — neither side renders it (value: full)",
+        "setting \"textAlign\" absent from BOTH outputs — neither side renders it (value: center)"
+      ],
+      "stats": {
+        "checked": 8,
+        "matched": 4,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 1
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "marquee.tsx",
+      "rendererKey": "frozen.marquee",
+      "liquidSectionType": "marquee",
+      "settingsUsed": {
+        "text": "Featured announcement"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"text\" present in Liquid output only (value: Featured announcement)"
+      ],
+      "stats": {
+        "checked": 1,
+        "matched": 0,
+        "react": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "newsletter.tsx",
+      "rendererKey": "core.newsletter",
+      "liquidSectionType": "newsletter-signup",
+      "settingsUsed": {
+        "title": "Get first access",
+        "subtitle": "Parity value for subtitle",
+        "buttonLabel": "Sign up"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"buttonLabel\" present in Liquid output only (value: Sign up)"
+      ],
+      "stats": {
+        "checked": 3,
+        "matched": 2,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "portfolio-grid.tsx",
+      "rendererKey": "core.portfolio-grid",
+      "liquidSectionType": "portfolio-grid",
+      "settingsUsed": {
+        "title": "Portfolio"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-project-0",
+          "type": "project",
+          "settings": {
+            "title": "Parity value for title",
+            "summary": "Parity value for summary",
+            "link": "/parity-test/link"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"block.project.summary\" present in Liquid output only (value: Parity value for summary)"
+      ],
+      "stats": {
+        "checked": 4,
+        "matched": 3,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 1,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 2,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "product-detail-section.tsx",
+      "rendererKey": "core.product-detail",
+      "liquidSectionType": "product-detail",
+      "settingsUsed": {
+        "showGallery": true,
+        "showDescription": true,
+        "showReviews": true
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "PASS",
+      "reasons": [],
+      "stats": {
+        "checked": 0,
+        "matched": 0,
+        "react": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "product-grid.tsx",
+      "rendererKey": "core.product-grid",
+      "liquidSectionType": "product-grid",
+      "settingsUsed": {
+        "title": "Featured Products",
+        "subtitle": "Parity value for subtitle",
+        "columns": 4
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-product-card-0",
+          "type": "product-card",
+          "settings": {}
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"subtitle\" present in Liquid output only (value: Parity value for subtitle)",
+        "heading text only in React: [\"No products found\"]"
+      ],
+      "stats": {
+        "checked": 2,
+        "matched": 1,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 1,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "rich-content-section.tsx",
+      "rendererKey": "core.rich-content",
+      "liquidSectionType": "rich-content",
+      "settingsUsed": {
+        "title": "Parity value for title",
+        "body": "Parity value for body"
+      },
+      "blocksUsed": [],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "PASS",
+      "reasons": [],
+      "stats": {
+        "checked": 2,
+        "matched": 2,
+        "react": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "services-grid.tsx",
+      "rendererKey": "core.services-grid",
+      "liquidSectionType": "services-grid",
+      "settingsUsed": {
+        "title": "Services"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-service-0",
+          "type": "service",
+          "settings": {
+            "title": "Parity value for title",
+            "description": "Parity value for description",
+            "link": "/parity-test/link"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "PASS",
+      "reasons": [],
+      "stats": {
+        "checked": 4,
+        "matched": 4,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 1,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 2,
+          "linkCount": 1,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "skills-section.tsx",
+      "rendererKey": "core.skills",
+      "liquidSectionType": "skills-section",
+      "settingsUsed": {
+        "title": "Skills"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-skill-0",
+          "type": "skill",
+          "settings": {
+            "name": "Parity value for name",
+            "level": 2
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "heading text only in React: [\"General\"]"
+      ],
+      "stats": {
+        "checked": 2,
+        "matched": 2,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "testimonials.tsx",
+      "rendererKey": "core.testimonials",
+      "liquidSectionType": "testimonials",
+      "settingsUsed": {
+        "title": "What customers say"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-testimonial-0",
+          "type": "testimonial",
+          "settings": {
+            "quote": "Parity value for quote",
+            "author": "Parity value for author"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "setting \"title\" present in Liquid output only (value: What customers say)",
+        "setting \"block.testimonial.quote\" present in Liquid output only (value: Parity value for quote)",
+        "setting \"block.testimonial.author\" present in Liquid output only (value: Parity value for author)",
+        "heading text only in Liquid: [\"What customers say\"]"
+      ],
+      "stats": {
+        "checked": 3,
+        "matched": 0,
+        "react": {
+          "headingCount": 0,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    },
+    {
+      "reactFile": "trust-badges.tsx",
+      "rendererKey": "commerce.trust-badges",
+      "liquidSectionType": "trust-badges",
+      "settingsUsed": {
+        "title": "Parity value for title"
+      },
+      "blocksUsed": [
+        {
+          "id": "parity-block-badge-0",
+          "type": "badge",
+          "settings": {
+            "label": "Parity value for label",
+            "description": "Parity value for description"
+          }
+        }
+      ],
+      "liquid": {
+        "ok": true
+      },
+      "react": {
+        "ok": true
+      },
+      "verdict": "FAIL",
+      "reasons": [
+        "heading text only in React: [\"Parity value for label\"]"
+      ],
+      "stats": {
+        "checked": 3,
+        "matched": 3,
+        "react": {
+          "headingCount": 2,
+          "linkCount": 0,
+          "imageCount": 0
+        },
+        "liquid": {
+          "headingCount": 1,
+          "linkCount": 0,
+          "imageCount": 0
+        }
+      }
+    }
+  ]
+}

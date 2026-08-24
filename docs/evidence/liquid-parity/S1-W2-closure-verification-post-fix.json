@@ -1,0 +1,619 @@
+{
+  "startedAt": null,
+  "steps": [
+    {
+      "step": "container-ready-check",
+      "ok": true,
+      "detail": "/var/run/postgresql:5432 - accepting connections"
+    },
+    {
+      "step": "recreate-database",
+      "ok": true
+    },
+    {
+      "step": "bootstrap",
+      "ok": true
+    },
+    {
+      "step": "migration:000_baseline.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:073_order_item_required_field_compatibility.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:074_cod_pending_status.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:075_cashfree_payment_provider.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:076_app_extension_registry.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:077_customer_reset_tokens.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:078_password_set_intents.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:079_partition_worker_request_logs.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:080_partition_runtime_telemetry_metrics.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:081_partition_outbox_events.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:082_partition_platform_queue_jobs.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:083_partition_webhook_deliveries.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:084_trigram_search_indexes.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:085_orders_items_reconcile.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:086_products_variants_reconcile.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:087_theme_template_drafts.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:088_inventory_available_batch.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:089_quarantine_platform_queue_job.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:090_custom_domains_and_store_access.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:091_theme_marketplace_stepup.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:092_app_marketplace_pricing_policy.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:093_app_pricing_plans.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:094_app_billing_trials.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:095_app_usage_metering.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:096_app_spend_controls.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:097_app_uninstall_feedback.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:098_app_versions.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:099_app_developer_consent_and_approval.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:100_app_discovery_foundation.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:101_app_trust_reviews_content.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:102_app_developer_tooling_analytics.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:103_app_api_quota_and_legacy_rls.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:104_app_marketplace_scale_services.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:105_app_marketplace_responsiveness_i18n.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:106_app_marketplace_growth_polish.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:107_security_rls_hardening_and_payment_uniqueness.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:108_orders_tenant_key_not_null.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:109_orders_money_width.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:110_fk_hygiene_and_order_indexes.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:111_customer_credentials_source_of_truth.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:112_app_marketplace_parity_data_layer.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:113_internal_os_rbac_spine.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:114_mobile_onboarding_attempt_progress.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:115_product_review_merchant_replies.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:116_mobile_draft_orders.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:117_mobile_customer_notes_tags.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:118_mobile_shipping_labels.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:119_mobile_money_ledgers.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:120_mobile_kyc_documents.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:121_mobile_merchant_2fa_factors.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:122_mobile_business_profile.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:123_mobile_tax_rate_parity.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:124_internal_os_risk_detection.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:125_internal_os_trust_safety_cases.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:126_internal_os_merchant_360_impersonation.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:127_internal_os_support_ticketing.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:128_internal_os_review_check_runs.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:129_mobile_customer_segments.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:130_orders_site_id_not_null.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:131_hot_table_partition_shadow_mirror.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:132_mobile_whatsapp_commerce.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:133_internal_os_incident_command.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:134_internal_os_developer_360_payout_reconciliation.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:135_internal_os_compliance_data_subjects.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:136_mobile_marketing_email_campaigns.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:137_mobile_storefront_localization.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:138_mobile_store_metafields.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:139_executable_foundation_ledger_core.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:140_mobile_cod_reconciliation.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:141_executable_inventory_reservations.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:142_executable_payment_sessions.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:143_executable_discount_stack.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:144_executable_tax_gst_invoices.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:145_executable_shipping_serviceability.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:146_executable_checkout_state_machine.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:147_executable_order_state_risk.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:148_executable_notifications_router.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:149_executable_email_delivery.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:150_executable_whatsapp_scoped.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:151_executable_settlement_ledger.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:152_executable_billing_autopay.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:153_executable_identity_security.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:154_executable_analytics_media_ai_seam.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:155_storefront_session_analytics.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:156_executable_cart_channel_handoff.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:157_product_metadata.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:158_order_items_tenant_scope.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:159_identity_foundation_core.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:160_foundation_money_ledger_authority.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:161_foundation_session_security.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:162_phase_a_commission_zero.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:163_d2_live_data_leak_rls.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:164_d4_tenant_role_guc.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:165_d5_canonical_money_paths.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:166_d6_checkout_handoff_inventory.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:167_app_billing_provider_mode_sandbox.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:168_b1_b2_capture_refund_ledgering.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:169_internal_os_executive_analytics_rollups.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:170_v1_shipping_rates_gst.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:171_liquid_bundle_persistence.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:172_liquid_bundle_refresh.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:173_v1_gift_card_issuance_lifecycle.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:174_v1_gift_card_refund_restore.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:175_fix_session_rpc_search_path.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:176_v1_founding_program_schema.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:177_v1_founding_program_rpcs.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:178_v1_pricing_plans_seed.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:179_outbox_partition_shadow_published_at.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:180_urban_kicks_liquid_theme.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:181_urban_kicks_settings_schema_complete.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:182_v1_sites_timezone.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:183_v1_pricing_recompete.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:184_v1_subscription_coupons.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:185_v1_site_domains.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:186_v1_scale_commerce_os_coming_soon.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:187_v1_sites_site_settings.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:188_letbuyy_core_theme_row.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:189_theme_persistence_idempotency.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:190_theme_library_q.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:191_theme_purchases_rls_tenant_scope.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:192_theme_engine_actor_fk_users_custom.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:193_theme_registry_settings_schema_sync.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:194_demo_requests.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:195_contact_requests.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:196_theme_rls_tenant_hardening.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:197_letbuyy_core_first_class_theme.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:198_tenant_registry_guc_closure.sql",
+      "ok": true
+    },
+    {
+      "step": "migration:199_liquid_activation_fresh_db_closure.sql",
+      "ok": true
+    },
+    {
+      "step": "seed:theme-marketplace-sample-catalog.sql",
+      "ok": true
+    },
+    {
+      "step": "seed:urban-kicks-theme.sql",
+      "ok": true
+    },
+    {
+      "step": "seed:001_seed.sql",
+      "ok": true
+    },
+    {
+      "step": "query-themes",
+      "ok": true
+    }
+  ],
+  "verdict": "D2_NOT_REPRODUCED",
+  "themeRows": [
+    {
+      "slug": "app-startup",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "bazaar-minimal",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "case-study-pro",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "commerce-canvas",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "creator-grid",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "cv-focus",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "event-splash",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "launch-landing",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "lead-magnet",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "letbuyy-core",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "market-luxe",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "portfolio-studio",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "product-docs",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "profile-brief",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "resume-slate",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "saas-console",
+      "rendererEngine": "<unset>"
+    },
+    {
+      "slug": "urban-kicks",
+      "rendererEngine": "liquid"
+    }
+  ],
+  "d2Reproduced": false,
+  "summary": "Fresh-database replay produced 1 theme row(s) with rendererEngine='liquid': urban-kicks. D2 did NOT reproduce as described."
+}
