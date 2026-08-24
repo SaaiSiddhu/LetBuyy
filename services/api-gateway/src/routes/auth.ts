@@ -10,6 +10,7 @@ import { hashMerchantPassword, verifyMerchantPassword } from '../lib/merchant-pa
 import { validateMerchantSessionToken } from '../lib/merchant-session';
 import { decryptTextAesGcm } from '../lib/crypto';
 import { validateIdentityIssuedMerchantSessionToken } from '../lib/identity-session-verifier';
+import { decodeJwt } from 'jose';
 import { verifyTotpCode } from '../lib/totp';
 import {
     AUTH_OTP_EXPIRY_MS,
@@ -1105,6 +1106,8 @@ auth.post('/custom/sessions/create', async (c) => {
         }, 503);
     }
 
+    const db = getSupabaseAdmin(c);
+
     if (providedToken) {
         const tokenValidation = await validateIdentityIssuedMerchantSessionToken(c.env, providedToken, userId);
         if (!tokenValidation.ok) {
@@ -1115,9 +1118,50 @@ auth.post('/custom/sessions/create', async (c) => {
                 },
             }, 400);
         }
+
+        // IRT-4 (Phase I3): validateIdentityIssuedMerchantSessionToken stays a
+        // pure function -- no DB access, unchanged signature, both
+        // identity-issuer-d3.test.ts and identity-redteam.test.ts untouched.
+        // Consumption is enforced here, one layer up, right after
+        // cryptographic validation succeeds and before the opaque session is
+        // minted. decodeJwt only reads claims out of an already-verified
+        // token; it performs no signature check of its own.
+        const claims = decodeJwt(providedToken);
+        const jti = typeof claims.jti === 'string' ? claims.jti : '';
+        const exp = typeof claims.exp === 'number' ? claims.exp : null;
+        if (!jti || !exp) {
+            return c.json({
+                error: {
+                    code: 'INVALID_IDENTITY_SESSION_TOKEN',
+                    message: 'Identity-issued merchant session token is missing required claims',
+                },
+            }, 400);
+        }
+
+        const { data: consumed, error: consumeError } = await db.rpc('consume_merchant_session_jti', {
+            p_jti: jti,
+            p_user_id: userId,
+            p_expires_at: new Date(exp * 1000).toISOString(),
+        });
+
+        if (consumeError) {
+            if (!shouldReturnEmptyForMissingLocalSchema(c.env, consumeError)) {
+                return c.json(dbErrorBody(), 500);
+            }
+            // Local dev without the migration applied: fall through exactly
+            // as the rest of this handler already does for a missing schema,
+            // rather than hard-failing local work over an enforcement table
+            // that does not exist yet in that environment.
+        } else if (!consumed) {
+            return c.json({
+                error: {
+                    code: 'MERCHANT_SESSION_TOKEN_ALREADY_CONSUMED',
+                    message: 'Identity-issued merchant session token has already been used',
+                },
+            }, 409);
+        }
     }
 
-    const db = getSupabaseAdmin(c);
     const token = providedToken || randomHex(32);
     const expiresAt = new Date(Date.now() + AUTH_SESSION_DURATION_MS).toISOString();
     const { error } = await db.from('sessions').insert({

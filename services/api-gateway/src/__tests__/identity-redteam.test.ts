@@ -309,9 +309,24 @@ test('IRT-3 / W3(b) continued: a genuinely-issued customer session, re-signed wi
     assert.equal(result.ok, false, 'IRT-3/W3(b): a tampered-and-resigned real customer session must still be rejected by the merchant verifier');
 });
 
-// ── IRT-4: ES256 merchant_session replay (documented gap, bounded severity) ─
+// ── IRT-4: ES256 merchant_session replay — closed at the route layer, not here ─
+//
+// Phase I3 closed this gap by choosing Fork 1(b) in the ARB packet
+// (docs/evidence/identity/2026-08-24-customer-realm-collapse-ARB-packet.md,
+// W6): validateIdentityIssuedMerchantSessionToken stays a pure function with
+// no DB access and this unchanged signature — consumption is enforced one
+// layer up, at its sole call site
+// (services/api-gateway/src/routes/auth.ts, POST /custom/sessions/create),
+// via an atomic INSERT ... ON CONFLICT DO NOTHING against
+// merchant_session_jti_consumptions (205_merchant_session_jti_consumption.sql).
+// That is why this test's assertions are UNCHANGED from before Phase I3: the
+// pure verifier genuinely still accepts the same token twice — replay
+// defense now lives entirely in the route, proven separately by
+// tests/executable/merchant-session-jti-consumption-postgres.test.mjs, not
+// by this file. Do not read this test passing as "IRT-4 is still open" —
+// see that suite, and SKIP-IDN-MERCHANT-SESSION-JTI-CONSUMPTION, for the fix.
 
-test('IRT-4: a valid merchant_session token is accepted on repeated presentation (no jti consumption tracking)', async () => {
+test('IRT-4: the pure verifier itself still accepts a valid merchant_session token twice — replay defense lives at the route layer (see merchant-session-jti-consumption-postgres.test.mjs)', async () => {
     const { publicKey, privateKey } = await generateMerchantKeyPair();
     const gatewayEnv = env({ LETBUYY_IDENTITY_PUBLIC_JWKS: await jwksEnvValue(publicKey) });
     const token = await mintValidMerchantToken(privateKey, { jti: 'irt-4-replay-jti-000000001' });
@@ -319,20 +334,8 @@ test('IRT-4: a valid merchant_session token is accepted on repeated presentation
     const first = await validateIdentityIssuedMerchantSessionToken(gatewayEnv, token, USER_ID);
     const second = await validateIdentityIssuedMerchantSessionToken(gatewayEnv, token, USER_ID);
 
-    // This documents CURRENT behavior, not a defended property: unlike the
-    // opaque, DB-tracked merchant session (validate_and_rotate_merchant_
-    // session, which correctly returns reuse_detected on replay — see
-    // tests/executable/foundation-wave4-session-postgres.test.mjs), this
-    // ES256 bootstrap token has NO consumption store anywhere in the
-    // repository (grepped for used_jti/consumed_jti/jti_store and found
-    // none). Its only replay defense is a bounded TTL. Severity is bounded
-    // by its sole call site (services/api-gateway/src/routes/auth.ts:1130,
-    // POST /custom/sessions/create) sitting behind requireAccountsInternal
-    // — a SEPARATE, independently HMAC-signed internal-auth layer — so
-    // replaying this token requires already holding INTERNAL_API_SECRET.
-    // Flagged in this suite's Findings section as a real, if bounded, gap.
     assert.equal(first.ok, true, 'IRT-4: first presentation must succeed (sanity check on the token itself)');
-    assert.equal(second.ok, true, 'IRT-4: DOCUMENTED GAP — second presentation of the same jti also succeeds; no replay defense beyond TTL exists for this token type today');
+    assert.equal(second.ok, true, 'IRT-4: the pure verifier has no consumption store by design (Fork 1b) — this is expected, not a regression');
 });
 
 // ── IRT-5: expiry bypass on the merchant ES256 token ────────────────────────

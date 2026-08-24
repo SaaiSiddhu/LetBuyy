@@ -13,6 +13,7 @@ import { processRiskScoringDeliveries } from './risk-scoring';
 import { processReviewCheckDeliveries } from './review-checks';
 import { processSupportAutomationDeliveries } from './support-automation';
 import { runInventoryReservationSweeper } from './inventory-reservations';
+import { runMerchantSessionJtiConsumptionSweeper } from './merchant-session-jti-sweeper';
 import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
 
 type QueuePayload = {
@@ -643,6 +644,21 @@ export default {
           route: 'scheduled.inventory_reservation_sweeper',
           status: 'failed',
           error: error instanceof Error ? error.message : 'inventory reservation sweeper failed',
+        })),
+    );
+    ctx.waitUntil(
+      runMerchantSessionJtiConsumptionSweeper(env, {
+        requestId: `scheduled:merchant-session-jti-sweeper:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.merchant_session_jti_sweeper',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.merchant_session_jti_sweeper',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'merchant session jti sweeper failed',
         })),
     );
     ctx.waitUntil(
