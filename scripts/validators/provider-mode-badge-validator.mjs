@@ -320,13 +320,15 @@ reporter.assert(taxInvoiceMigration.includes("irp_mode text NOT NULL DEFAULT 'sa
 for (const [label, source] of [
   ["checkout route", checkoutRoute],
   ["storefront cart route", storefrontCartRoutes],
-  ["media route", mediaRoute],
 ]) {
   reporter.assert(!source.includes("letbuyy-local-mock"), `${label} local fallback secrets must use sandbox labels`);
 }
 reporter.assert(checkoutRoute.includes("letbuyy-local-sandbox-checkout-handoff-secret"), "checkout route local handoff secret must be sandbox-labelled");
 reporter.assert(storefrontCartRoutes.includes("letbuyy-local-sandbox-checkout-handoff-secret"), "storefront cart route local handoff secret must be sandbox-labelled");
-reporter.assert(mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route local upload secret must be sandbox-labelled");
+// Phase D2: media.ts's local-dev fallback secret (and the signing machinery it
+// belonged to) was deleted outright -- nothing ever verified the token it
+// produced. There is no longer a media-route local fallback secret to badge.
+reporter.assert(!mediaRoute.includes("letbuyy-local-sandbox-media-upload-secret"), "media route must not reintroduce the deleted local upload secret");
 reporter.assert(!shippingRoute.includes("mock-standard"), "shipping route local fallback rate must be sandbox-labelled");
 reporter.assert(shippingRoute.includes("sandbox-standard"), "shipping route local fallback rate must expose sandbox-standard");
 reporter.assert(logisticsAdapter.includes("LOGISTICS_LIVE_PROVIDER_UNAVAILABLE"), "logistics adapter live mode must fail closed while real carrier clients are absent");
