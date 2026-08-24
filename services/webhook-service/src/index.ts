@@ -108,7 +108,15 @@ function razorpayProviderEventId(
     return String(paymentId || refundId || orderId || `${event.event}:${event.created_at || "unknown"}:${signature.slice(0, 24)}`);
 }
 
-type PaymentProvider = "razorpay" | "stripe" | "paypal" | "cashfree";
+// Phase M5, DOC 03 row 11 "Payments": narrowed after confirming every
+// usage (writeWebhookEvent -> payment_webhook_events.provider,
+// markWebhookEvent, markOrderPaid, markOrderFailed, markOrderRefunded,
+// and emitPaymentDomainEvent transitively through those three) traces back
+// to a hardcoded "razorpay" literal inside the single surviving /razorpay
+// handler below -- Phase M1 W4 retired every other provider's webhook
+// route, confirmed fresh via `grep -n '^app\.post('` (exactly 3 routes:
+// /app-lifecycle/dispatch, /webhook-deliveries/dispatch, /razorpay).
+type PaymentProvider = "razorpay";
 type PaymentDomainEventType = "payment.captured" | "payment.failed" | "refund.created" | "payment.subscription.activated";
 type JsonObject = Record<string, unknown>;
 
@@ -250,7 +258,14 @@ async function verifyRazorpayWebhookSignature(
 async function emitPaymentDomainEvent(
     env: Env,
     params: {
-        provider: PaymentProvider;
+        // PAYMENT-RAIL-VALIDATOR: BILLING-DOMAIN-EXEMPT -- deliberately
+        // wider than PaymentProvider: this is a generic domain-event
+        // emitter shared by BOTH the Payments domain (order events, always
+        // "razorpay") and the Billing domain (subscription events via
+        // activateStoreSubscription, which can be "stripe") -- see
+        // aggregateType below. It only forwards provider into an event
+        // payload/idempotency-key string; it gates nothing.
+        provider: PaymentProvider | "stripe";
         providerEventId: string;
         eventType: string;
         aggregateType: "order" | "subscription";
@@ -458,6 +473,14 @@ async function activateStoreSubscription(
         storeId: string;
         planSlug: string;
         billingPeriod?: string;
+        // PAYMENT-RAIL-VALIDATOR: BILLING-DOMAIN-EXEMPT -- this activates a
+        // store's SUBSCRIPTION plan (LetBuyy invoicing MERCHANTS for
+        // platform access) via activateGatewayStoreSubscription, imported
+        // from ./gateway-billing-transitions -- the same Billing domain DOC
+        // 03 draws as a separate winner from customer-checkout Payments
+        // (row 11). It stays wide for the same reason
+        // gateway-billing-transitions.ts's own "razorpay" | "stripe" types
+        // do, even though this wrapper physically lives in index.ts.
         provider: "razorpay" | "stripe";
         providerOrderId?: string;
         providerPaymentId?: string;

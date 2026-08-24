@@ -1,4 +1,15 @@
-export type GatewayPaymentProvider = "razorpay" | "stripe" | "paypal" | "cashfree";
+// Phase M5, DOC 03 row 11 "Payments": webhooks are inherently provider-
+// specific -- there is no "COD webhook", so unlike orders.payment_method
+// (which spans razorpay/cod at order-creation time), this type only ever
+// needs the live capture provider. Narrowed from
+// "razorpay" | "stripe" | "paypal" | "cashfree" after confirming every
+// caller (confirmGatewayOrderPayment / recordGatewayOrderPaymentFailure /
+// recordGatewayOrderPaymentEvent) is reached exclusively from
+// services/webhook-service/src/index.ts's markOrderPaid/markOrderFailed/
+// markOrderRefunded, all of which are called only from the surviving
+// /razorpay webhook handler with a hardcoded "razorpay" literal -- Phase
+// M1 W4 retired every other provider's webhook ingress.
+export type GatewayPaymentProvider = "razorpay";
 
 export interface GatewayServiceBinding {
     fetch(input: string | Request, init?: RequestInit): Promise<Response>;

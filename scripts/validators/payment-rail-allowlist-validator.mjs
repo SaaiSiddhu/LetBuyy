@@ -36,7 +36,32 @@ const FROZEN_SEAM_EXCLUSIONS = new Set([
 const BILLING_DOMAIN_EXCLUSIONS = new Set([
   "services/api-gateway/src/execution/subscription-execution.adapter.ts",
   "services/api-gateway/src/routes/internal-billing.ts",
+  // Phase M5: activateGatewayStoreSubscription itself -- the Billing-domain
+  // subscription-activation RPC wrapper -- lives here, called from
+  // services/webhook-service/src/index.ts's activateStoreSubscription
+  // (a thin pass-through, marked with BILLING_DOMAIN_MARKER below since it
+  // shares a file with genuinely Payments-domain code).
+  "services/webhook-service/src/gateway-billing-transitions.ts",
 ]);
+
+// A narrower, surgical alternative to a whole-file BILLING_DOMAIN_EXCLUSIONS
+// entry: for a construct inside a file that ALSO contains genuinely
+// Payments-domain code (so a whole-file exclusion would blind the scan to
+// real violations there), e.g. services/webhook-service/src/index.ts, which
+// has both the Payments-domain PaymentProvider type and the Billing-domain
+// activateStoreSubscription. Uses the same nearby-marker mechanism as
+// HISTORICAL_READ_PATH_MARKER, deliberately under its own name -- "billing
+// domain, not a customer checkout rail" is a different reason than
+// "historical data", and conflating them would misdescribe why a future
+// reader finds this exemption here.
+const BILLING_DOMAIN_MARKER = "PAYMENT-RAIL-VALIDATOR: BILLING-DOMAIN-EXEMPT";
+
+function hasNearbyBillingDomainMarker(text, matchIndex) {
+  const upToMatch = text.slice(0, matchIndex);
+  const lines = upToMatch.split("\n");
+  const window = lines.slice(Math.max(0, lines.length - 9)).join("\n");
+  return window.includes(BILLING_DOMAIN_MARKER);
+}
 
 // Phase M2: apps/storefront-runtime/src/lib/order-service.ts only MAPS DB
 // rows for display -- a read path, not a write path. create_checkout_order
@@ -152,19 +177,22 @@ for (const entry of phaseBEntries(
 // 'razorpay' | 'stripe' | ...` alias, an inline parameter annotation, or a
 // `value is '...'` type-guard predicate) or a `===`/`==` equality check
 // against a forbidden literal (a hand-written normalizer/type-guard body).
-// Check (b)'s `.enum([...])` pattern never sees this form. Scans
-// services/api-gateway's checkout/payment execution, route, and lib layers;
-// packages/checkout-core and packages/shared-types (the same hand-written-
-// union shape can appear on a domain model, e.g. OrderPayment); and apps/
-// (client-side comparisons/unions). A forbidden literal only counts if a `|`
-// (union) or a non-negated `===`/`==` (equality, not `!==`/`!=`) sits
-// immediately next to it; an unrelated string like a migration filename
+// Check (b)'s `.enum([...])` pattern never sees this form. Scans the same
+// roots as check (a) -- services/api-gateway's execution/route/lib layers,
+// services/webhook-service/src, services/queue-workers/src,
+// services/mobile-bff/src, apps/** -- plus packages/checkout-core and
+// packages/shared-types (the same hand-written-union shape can appear on a
+// domain model, e.g. OrderPayment, which check (a) has no reason to scan).
+// A forbidden literal only counts if a `|` (union) or a non-negated
+// `===`/`==` (equality, not `!==`/`!=`) sits immediately next to it; an
+// unrelated string like a migration filename
 // ("..._cashfree_payment_provider.sql") never satisfies that adjacency and is
-// left alone. A file/construct that genuinely needs to read a historical,
-// no-longer-writable value (see HISTORICAL_READ_PATH_FILE_EXCLUSIONS /
-// HISTORICAL_READ_PATH_MARKER above) is exempted, not silently unscanned --
-// both exemption paths carry a citation-bearing comment at the exemption
-// site.
+// left alone. A file/construct that genuinely needs to stay wide is
+// exempted, not silently unscanned, via one of two citation-bearing
+// mechanisms: HISTORICAL_READ_PATH_FILE_EXCLUSIONS/_MARKER (reads
+// historical, no-longer-writable data) or BILLING_DOMAIN_EXCLUSIONS/_MARKER
+// (DOC 03's separate Billing winner, which legitimately keeps Stripe for
+// merchant platform subscriptions -- not a customer checkout rail).
 const forbiddenLiteralPattern = new RegExp(`(['"])(${forbiddenProviderAlternation})\\1`, "gi");
 
 function isProviderAdmission(text, match) {
@@ -180,6 +208,9 @@ for (const entry of phaseBEntries(
     "services/api-gateway/src/execution",
     "services/api-gateway/src/routes",
     "services/api-gateway/src/lib",
+    "services/webhook-service/src",
+    "services/queue-workers/src",
+    "services/mobile-bff/src",
     "packages/checkout-core",
     "packages/shared-types",
     "apps",
@@ -204,6 +235,7 @@ for (const entry of phaseBEntries(
   for (const match of text.matchAll(forbiddenLiteralPattern)) {
     if (!isProviderAdmission(text, match)) continue;
     if (hasNearbyHistoricalReadPathMarker(entry.text, match.index || 0)) continue;
+    if (hasNearbyBillingDomainMarker(entry.text, match.index || 0)) continue;
     offenders.push(
       `${entry.path}:${lineNumberForIndex(text, match.index || 0)} provider typing/comparison admits non-canonical rail '${match[2].toLowerCase()}'; only ${CANONICAL_PAYMENT_RAILS.join("/")} (plus 'upi' as a Razorpay instrument, where applicable) are canonical (DOC 03 row 11)`,
     );
@@ -213,7 +245,15 @@ for (const entry of phaseBEntries(
 assertNoOffenders(
   reporter,
   offenders,
-  "Non-canonical payment rails (Stripe/PayPal/Cashfree/Adyen/Square/Braintree) must not be reachable from routes (apps, api-gateway, webhook-service, queue-workers, mobile-bff), admitted by a schema enum (apps, checkout-core, shared-types, api-gateway schemas), or admitted by hand-written provider typing/comparisons (apps, api-gateway execution/routes/lib, checkout-core, shared-types) -- excluding the documented ART-16 frozen seam, Billing-domain files, and marked historical-read-path exemptions",
+  "Non-canonical payment rails (Stripe/PayPal/Cashfree/Adyen/Square/Braintree) must not be reachable from routes (apps, api-gateway, webhook-service, queue-workers, mobile-bff), admitted by a schema enum (apps, checkout-core, shared-types, api-gateway schemas), or admitted by hand-written provider typing/comparisons (apps, api-gateway execution/routes/lib, webhook-service, queue-workers, mobile-bff, checkout-core, shared-types) -- excluding the documented ART-16 frozen seam, Billing-domain files/constructs, and marked historical-read-path exemptions",
 );
 
-reporter.finish("no non-canonical payment rail is reachable from routes, schema enums, or hand-written provider typing/comparisons across apps/services/packages, excluding the documented ART-16 frozen seam, Billing-domain files, and historical-read-path exemptions");
+// Checks (a) and (c) now scan identical roots (apps, api-gateway routes/
+// execution/lib, webhook-service, queue-workers, mobile-bff); check (b)
+// additionally covers checkout-core/shared-types/api-gateway schemas, where
+// zod enums live but hand-written unions don't. This message names exactly
+// that -- it does not claim blanket "across apps/services/packages"
+// coverage, because it isn't literally true for all three checks (queue-
+// workers and mobile-bff, for instance, have no zod schemas of their own to
+// scan in check (b)).
+reporter.finish("no non-canonical payment rail is reachable from routes (apps, api-gateway, webhook-service, queue-workers, mobile-bff), schema enums (apps, checkout-core, shared-types, api-gateway schemas), or hand-written provider typing/comparisons (apps, api-gateway execution/routes/lib, webhook-service, queue-workers, mobile-bff, checkout-core, shared-types) -- excluding the documented ART-16 frozen seam, Billing-domain files/constructs, and historical-read-path exemptions");
