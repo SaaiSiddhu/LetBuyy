@@ -107,7 +107,7 @@ function normalizeCustomerSessionSecret(value: string | null | undefined): strin
   return normalized.length > 0 ? normalized : null;
 }
 
-function normalizeCustomerSessionId(value: string | null | undefined): string | null {
+export function normalizeCustomerSessionId(value: string | null | undefined): string | null {
   const normalized = typeof value === 'string' ? value.trim() : '';
   if (!normalized || normalized.length > 128 || /[\u0000-\u001F\u007F]/.test(normalized)) {
     return null;

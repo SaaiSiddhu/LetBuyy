@@ -364,16 +364,27 @@ test('IRT-5b: a merchant token with iat skewed far into the future is rejected',
     assert.match(result.reason ?? '', /issue time is invalid/);
 });
 
-// ── IRT-6: legacy customer verifier accepts input the primary rejects ──────
+// ── IRT-6: legacy customer verifier now matches the primary — closed ───────
+//
+// Phase I4 closed this gap directly in the function this test exercises:
+// packages/auth-core/src/index.ts's isCustomerSessionPayload (the LEGACY
+// verifyCustomerSessionToken's payload validator) now calls the exact same
+// normalizeCustomerSessionId (packages/auth-core/src/customer-session.ts)
+// the PRIMARY verifyCustomerSession already used, reused rather than
+// duplicated. Unlike IRT-4 (Phase I3), where the fix landed one layer above
+// the pure function IRT-4 exercises and so left that test's assertion
+// correctly unchanged, here the fix IS inside isCustomerSessionPayload
+// itself — so the assertion below correctly flips from accepted to
+// rejected. Phase I4's W1 audit established every live writer of sub/
+// storeId sources a Postgres uuid column (store_customers.id/store_id),
+// which can never contain a control character or exceed 128 chars, so this
+// tightening cannot lock out any legitimate session.
 
-test('IRT-6: the legacy customer verifier omits the length/control-character guard the primary verifier enforces', async () => {
-    // packages/auth-core/src/customer-session.ts's normalizeCustomerSessionId
-    // (used by the PRIMARY verifyCustomerSession) caps store_id/customer_id
-    // at 128 chars and rejects control characters. packages/auth-core/src/
-    // index.ts's isCustomerSessionPayload (used by the LEGACY
-    // verifyCustomerSessionToken) checks only `typeof === 'string' &&
-    // length > 0` for the equivalent sub/storeId fields. This proves the
-    // divergence concretely with the same bad value on both paths.
+test('IRT-6: the legacy customer verifier now rejects the same oversized/control-character id the primary verifier already rejected', async () => {
+    // Same setup as before the fix: packages/auth-core/src/customer-session.ts's
+    // normalizeCustomerSessionId caps store_id/customer_id at 128 chars and
+    // rejects control characters. This proves both verifiers now agree on
+    // the same bad value.
     const oversizedWithControlChar = `${'a'.repeat(200)}\x07`;
 
     const legacyToken = await createCustomerSessionToken(
@@ -383,8 +394,8 @@ test('IRT-6: the legacy customer verifier omits the length/control-character gua
     const legacyResult = await verifyCustomerSessionToken(legacyToken, CUSTOMER_SESSION_SECRET);
     assert.equal(
         legacyResult.accepted,
-        true,
-        'IRT-6: DOCUMENTED DIVERGENCE — the legacy verifier accepts a 200+ char, control-character-bearing customer id',
+        false,
+        'IRT-6: CLOSED — the legacy verifier must now reject a 200+ char, control-character-bearing customer id, matching the primary',
     );
 
     // Same bad value, but built in the PRIMARY verifier's own payload shape
@@ -401,6 +412,16 @@ test('IRT-6: the legacy customer verifier omits the length/control-character gua
     assert.equal(
         primaryResult,
         null,
-        'IRT-6: the primary verifier must reject the same oversized/control-character id the legacy verifier accepted above',
+        'IRT-6: the primary verifier must still reject the same oversized/control-character id — unchanged, the legacy path moved toward it',
     );
+});
+
+test('IRT-6 positive control: a genuinely uuid-shaped id still verifies through the legacy path after the tightening', async () => {
+    const uuidLikeId = '11111111-1111-4111-8111-111111111111';
+    const legacyToken = await createCustomerSessionToken(
+        { id: uuidLikeId, storeId: '22222222-2222-4222-8222-222222222222', email: 'buyer@example.test', fullName: null },
+        CUSTOMER_SESSION_SECRET,
+    );
+    const legacyResult = await verifyCustomerSessionToken(legacyToken, CUSTOMER_SESSION_SECRET);
+    assert.equal(legacyResult.accepted, true, 'IRT-6 positive control: a real uuid-shaped id must still be accepted — this is not a lockout');
 });

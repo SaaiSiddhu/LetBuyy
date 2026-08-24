@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EmailSchema } from '@letbuyy/shared-types';
+import { normalizeCustomerSessionId } from './customer-session';
 
 export * from './customer-session';
 export * from './storefront-access';
@@ -1296,12 +1297,14 @@ function normalizeCustomerFederationUrl(value: unknown): string | null {
 }
 
 function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value is LetbuyyCustomerSessionPayload {
+  // Phase I4 (IRT-6): sub/storeId now reuse the primary verifier's own
+  // normalizeCustomerSessionId (customer-session.ts) instead of a second,
+  // weaker hand-written length/type check -- that duplication is how this
+  // legacy path ended up strictly more permissive than the primary one.
   return Boolean(
     value &&
-    typeof value.sub === 'string' &&
-    value.sub.length > 0 &&
-    typeof value.storeId === 'string' &&
-    value.storeId.length > 0 &&
+    normalizeCustomerSessionId(value.sub) &&
+    normalizeCustomerSessionId(value.storeId) &&
     isSafeAuthEmail(value.email) &&
     (value.name === null || typeof value.name === 'string') &&
     Number.isFinite(value.iat) &&

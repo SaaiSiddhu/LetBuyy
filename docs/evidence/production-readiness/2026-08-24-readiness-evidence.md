@@ -26,6 +26,14 @@ continuation of this exact snapshot's own stated gap for the same commit
 lineage — see that section for the new baseline commit this update is valid
 against. No other dimension was touched by Phase I1.
 
+**Further update, same day (Phase I4):** Phase I3 closed IRT-4
+(2026-08-24, migration 205) but did not revisit this document, leaving the
+Dimension 3 text stale for one phase; Phase I4 then closed IRT-6 and
+corrected both statuses in the same edit. See that section for what
+changed and why neither closure moves this dimension's overall status —
+the remaining gap (no live/deployed-system red-team) is unaffected by
+either.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -168,25 +176,28 @@ of the exact hash and was directly observed by running the suite.
 - **Expiry (IRT-5):** an expired merchant token, and one with `iat` skewed
   more than 60s into the future, are both rejected.
 
-**What this newly reveals as NOT resistant (documented gaps, not fixed —
-out of scope for this measurement/proof-authoring phase):**
-- **IRT-4 — merchant_session JWT replay:** the ES256 merchant bootstrap
-  token has no jti-consumption tracking anywhere in the repository (grepped
-  and found none); presenting the same valid token twice succeeds both
-  times. Severity is bounded: its sole call site
-  (`services/api-gateway/src/routes/auth.ts:1130`) sits behind
-  `requireAccountsInternal`, a second, independently HMAC-signed
-  internal-auth layer — replaying it requires already holding
-  `INTERNAL_API_SECRET`.
-- **IRT-6 — legacy customer verifier divergence:** `verifyCustomerSessionToken`
-  (`packages/auth-core/src/index.ts:772`, the fallback path in
-  `services/api-gateway/src/middleware/customer-session.ts:61`) accepts a
-  `store_id`/`customer_id` value that the primary `verifyCustomerSession`
-  (`packages/auth-core/src/customer-session.ts:61`) would reject — the
-  legacy payload validator omits the 128-character cap and control-character
-  rejection the primary's `normalizeCustomerSessionId` applies. Demonstrated
-  concretely; downstream exploitability of accepting an oversized/malformed
-  id was not audited further this phase.
+**Update (Phase I3, then I4 — both CLOSED after this document was first
+written; corrected here rather than left stale):** at authoring time (Phase
+I1/I2), this section listed IRT-4 and IRT-6 as undefended. Both are now
+closed:
+- **IRT-4 — merchant_session JWT replay — CLOSED, Phase I3** (migration
+  `205_merchant_session_jti_consumption.sql`): an atomic, jti-keyed
+  consumption check now runs at the token's one call site
+  (`services/api-gateway/src/routes/auth.ts`, right after cryptographic
+  validation succeeds), proven by
+  `tests/executable/merchant-session-jti-consumption-postgres.test.mjs`
+  against a real Postgres. The pure verifier itself is deliberately
+  unchanged (Fork 1b) — `identity-redteam.test.ts`'s `IRT-4` case still
+  documents that fact, correctly, by design.
+- **IRT-6 — legacy customer verifier divergence — CLOSED, Phase I4**:
+  `isCustomerSessionPayload` (`packages/auth-core/src/index.ts`) now reuses
+  `normalizeCustomerSessionId` (the primary verifier's own guard) instead of
+  a weaker duplicate check. Closed structurally, not by a production data
+  audit: every live writer of the affected fields sources a Postgres `uuid`
+  column, which cannot produce a value the tightened guard would reject —
+  see `SKIPPED_HUMAN_DECISIONS.md`'s row for the full trace. Proven by 4 new
+  cases in `packages/auth-core/test/auth-core.test.ts` plus a flipped
+  `identity-redteam.test.ts` `IRT-6` case.
 
 **What this still does NOT prove:** a red-team run against the live,
 deployed system (this suite exercises the verifier functions directly with
@@ -201,19 +212,21 @@ itself remains open — collapsing it onto the sole asymmetric issuer (ART-05
 owner; this update proves its current *blast radius is bounded*, not that
 the deviation is closed.
 
-**Gap:** no live/deployed-system red-team; the merchant_session replay gap
-(IRT-4) and the legacy-verifier divergence (IRT-6) are both undefended
-today, though bounded in severity as described above; the HS256 deviation
-itself is unchanged.
+**Gap:** no live/deployed-system red-team; the HS256 customer-realm
+deviation itself is unchanged. IRT-4 and IRT-6, the two specific gaps
+originally listed here, are both closed as of Phase I3/I4 (above) — this
+dimension's remaining gap is narrower than it was at authoring time, but
+still real: nothing here has ever exercised a running Worker.
 
 **Who closes it:** identity-platform engineering owner — collapse the
-customer realm onto the sole asymmetric issuer (ART-05/R-14 target state);
-add jti-consumption tracking to the merchant_session bootstrap token or
-document why its internal-auth gating is considered sufficient; align the
-legacy customer verifier's payload validation with the primary's, or retire
-the legacy path once its drain telemetry (`SKIP-IDN-R2-ACCOUNTS-COOKIE-DRAIN`
-tracks the adjacent accounts-cookie legacy drain, a related but distinct
-seam) reaches zero.
+customer realm onto the sole asymmetric issuer (ART-05/R-14 target state).
+That is the one item on this list still requiring the identity-platform
+owner; IRT-4 and IRT-6 required no further owner action once Phase I3/I4
+landed. The legacy customer verifier itself will eventually retire alongside
+the realm collapse, once its drain telemetry
+(`SKIP-IDN-R2-ACCOUNTS-COOKIE-DRAIN` tracks the adjacent accounts-cookie
+legacy drain, a related but distinct seam) reaches zero — that is a future
+deletion, not a currently-open defect.
 
 **Gap:** no forgery/replay/escalation red-team suite exists; the HS256
 customer-realm deviation is a structural forgery-resistance gap, not merely
