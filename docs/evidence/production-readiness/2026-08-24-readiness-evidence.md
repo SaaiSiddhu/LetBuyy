@@ -54,6 +54,16 @@ when the test was run; this repository has concurrent, actively-committing
 sessions — see `letbuyy-concurrent-sessions-one-checkout` memory). No other
 dimension was touched by Phase R2.
 
+**Further update, same day (Phase R3):** Dimension 4's idempotency-under-
+concurrency defect (found by Phase R2, reported not fixed) is now closed —
+migration 206 adds a transaction-scoped advisory lock to
+`create_checkout_order`, and Phase R2's own unmodified test (W1b) flips from
+FAIL (5 orders from 1 idempotency key) to PASS (1 order), verified 5 times
+plus a 20-concurrent-call pass, with the oversell, gift-card, and tenant-
+scoping scenarios all still passing (no regression, no deadlock). Status
+stays **PARTIALLY MEASURED**: the end-to-end browser-driven checkout proof
+remains the only open gap. No other dimension was touched by Phase R3.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -285,6 +295,16 @@ across all three realms.
   against ample stock, (c) two checkouts racing a gift card's full balance,
   (d) one checkout called with no externally-established `app.site_id` GUC.
   Run 5 times; identical result every time (no flakiness).
+- **(Phase R3, new)** `database/supabase/migrations/206_checkout_order_
+  idempotency_advisory_lock.sql` redefines `create_checkout_order` with one
+  added statement — a transaction-scoped
+  `pg_advisory_xact_lock(hashtextextended(p_store_id::text || ':' ||
+  p_idempotency_key, 0))`, taken before the existence check and before every
+  row lock the function transitively takes. Phase R2's own test file, run
+  unmodified, is the before/after proof: W1b flips from FAIL (5 orders from
+  1 idempotency key) to PASS (1 order). Run 5 times post-fix (identical
+  every time) plus one 20-concurrent-call pass (20/20 fulfilled, 1 order,
+  1 session, 215ms, no deadlock).
 
 **What this proves:** (a) the inventory-oversell race is already safe —
 `reserve_inventory`'s `SELECT ... FOR UPDATE` plus an atomic conditional
@@ -294,40 +314,42 @@ exactly one order was created, the loser's transaction (including its own
 committed inventory never exceeded the stock that existed. (c) The same
 `FOR UPDATE` pattern on `gift_card_accounts` makes a concurrent full-balance
 redemption race equally safe — exactly one redemption succeeded, the ledger
-balanced to 0 (never negative, never double-spent). (b) **`create_checkout_order`
-has a real, reproducible idempotency defect under concurrency**: its own
-dedup check (`SELECT order_id FROM checkout_sessions WHERE idempotency_key=...`)
-is a non-locking check-then-act, and the only enforced uniqueness
-(`INSERT ... ON CONFLICT (site_id, idempotency_key) DO NOTHING`) fires only
-at the very end of the function, after order creation and inventory commit
-have already happened. Five concurrent calls with the same idempotency key
-produced **5 separate `orders` rows** (not 1) while `checkout_sessions`
-correctly held exactly 1 row — the session-level dedup is real, but it does
-not prevent duplicate order creation upstream of it. (d) `create_checkout_order`
-succeeds and mutates data even with no tenant GUC established by an external,
+balanced to 0 (never negative, never double-spent). **(b) is now closed**:
+`create_checkout_order`'s idempotency-under-concurrency defect (its dedup
+check was a non-locking check-then-act; the only enforced uniqueness fired
+only at the very end of the function, after order creation and inventory
+commit had already happened — five concurrent calls with the same
+idempotency key used to produce 5 separate `orders` rows) is fixed by the
+Phase R3 advisory lock: the second-and-later callers now block until the
+first commits, then see its committed `checkout_sessions` row and return
+the existing order instead of racing into a second creation pipeline —
+proven at 5x and 20x concurrency, with the `ON CONFLICT DO NOTHING` kept as
+an unchanged second line of defence. (d) `create_checkout_order` succeeds
+and mutates data even with no tenant GUC established by an external,
 independently-authenticated caller — `create_order_with_inventory_reservations`
 self-sets `app.site_id` from its own `p_store_id` argument when unset, then
 checks it matches itself (a self-satisfying check, not an external
-requirement). Not fixed this phase (money-path RPC, ARB-gated; see
-`AGENTS.md` change-control rules) — reported, not remediated.
+requirement). Registered, not fixed (`SKIP-CHECKOUT-INVENTORY-GUC-SELF-SET`
+in `SKIPPED_HUMAN_DECISIONS.md`) — migration 166 is explicitly out of scope
+for both Phase R2 and Phase R3.
 
 **What this does NOT prove:** a real Razorpay round-trip, or GST/shipping/
 discount computation edge cases beyond what `checkout.test.ts` enumerates.
 No browser-driven or end-to-end checkout flow was run this phase (still out
-of scope). All Phase R2 calls ran as the Postgres superuser (matching every
-sibling `tests/executable/*-postgres.test.mjs` convention), which bypasses
-RLS entirely regardless of GUC state — the tenant-scoping finding above is
-about the RPC's own explicit PL/pgSQL guard, not RLS policy enforcement for
-a non-superuser caller. The idempotency defect's real-world blast radius
-(e.g., whether the gateway route layer already prevents concurrent
-double-submission before reaching this RPC) was not assessed — that is an
-application-layer question, out of scope for a database-level RPC test.
+of scope). All Phase R2/R3 calls ran as the Postgres superuser (matching
+every sibling `tests/executable/*-postgres.test.mjs` convention), which
+bypasses RLS entirely regardless of GUC state — the tenant-scoping finding
+above is about the RPC's own explicit PL/pgSQL guard, not RLS policy
+enforcement for a non-superuser caller. The advisory lock's behavior under
+sustained production concurrency (thousands of distinct keys, lock-table
+contention at scale) was not load-tested — only correctness under a bounded
+concurrent-call count (5 and 20) was measured.
 
-**Gap:** end-to-end browser-driven checkout proof; the idempotency-under-
-concurrency defect found this phase (report only — a fix is a separate,
-ARB-gated change to a money-path RPC).
+**Gap:** end-to-end browser-driven checkout proof. The idempotency-under-
+concurrency defect is closed as of Phase R3.
 
-**Who closes it:** commerce-platform engineering owner.
+**Who closes it:** commerce-platform engineering owner (browser-driven
+proof remains open).
 
 ---
 
