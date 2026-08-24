@@ -470,3 +470,186 @@ tree as of this commit** — confirmed by the empty `git diff` below.
   previously covered under any existing row title *or* cited line numbers, cross-checked directly
   against `SKIP-IDN-R2-DRAIN-TELEMETRY` (covers the unrelated merchant/staff opaque
   gateway-session-mint drain) and `SKIP-CAP-OIDC-REVOCATION` (covers OIDC/partner SSO, not this).
+
+---
+
+## I5 ADDENDUM (2026-08-24) — adversarial verification pass, 34 commits after this packet's baseline.
+## This section supersedes the citation line numbers below and records what has changed since. Everything
+## above this line is the original packet, preserved unmodified — not overwritten, not rewritten in place.
+
+**Baseline re-check:** written against `2e4dc449`. 34 commits have landed since (through `54c646c3` at
+verification time); 3 touch identity: `acce0112` (Phase I4, IRT-6 fix) and `7caf9cf2` (Phase I3,
+IRT-4 fix) both landed *after* this packet's own commit `c54cba22` — verified by both commit
+timestamp (`c54cba22` 14:01:09, `7caf9cf2` 14:27:14, same day) and `git merge-base --is-ancestor`
+(confirms `c54cba22` is the older commit). An earlier draft of this addendum stated the opposite —
+that IRT-4 was already fixed when the packet was written — which was wrong and is corrected here,
+not silently. Both closures are genuine drift that accumulated *after* the packet's baseline, exactly
+as W8's own recommendation anticipated. The third identity-adjacent commit, `43a635f1` (Phase N3 W4),
+is an unrelated GoTrue-allowlist edit to the same validator file this packet cites for a different
+reason. A 4th commit, `806690ae` (a concurrent theme session, not identity work), incidentally
+touched two of the six issuance-site files while fixing storefront routing — recorded below because
+it moved two citations, not because it changed identity behaviour.
+
+### 1. W6 is superseded — both designed fixes are now CLOSED, verified at source
+
+- **IRT-4 (no `jti` consumption)** — CLOSED by migration `205_merchant_session_jti_consumption.sql`
+  (Phase I3, `7caf9cf2`). Confirmed: the table exists, `services/api-gateway/src/routes/auth.ts` now
+  calls a consumption check after `validateIdentityIssuedMerchantSessionToken` succeeds (the packet's
+  own recommended Fork 1(b) shape). `SKIP-IDN-MERCHANT-SESSION-JTI-CONSUMPTION` reads **CLOSED,
+  Phase I3** in `SKIPPED_HUMAN_DECISIONS.md:73`. Note for the record: `7caf9cf2` precedes this
+  packet's own commit (`c54cba22`) in history — IRT-4 was *already fixed* when W6 was written
+  designing a fix for it. That is a packet-authoring gap (W6 should have found this fixed and said
+  so), not drift that accumulated afterward; recorded here because it means W6's IRT-4 section was
+  never accurate, not that it became inaccurate.
+- **IRT-6 (weak legacy predicate)** — CLOSED by Phase I4 (`acce0112`, after this packet). Confirmed:
+  `packages/auth-core/src/index.ts`'s `isCustomerSessionPayload` now calls `normalizeCustomerSessionId`
+  (exported from `customer-session.ts`) instead of the old bare `typeof === 'string' && length > 0`
+  check — exactly the fix W6 proposed. `SKIP-IDN-CUSTOMER-LEGACY-VERIFIER-PAYLOAD-HARDENING` reads
+  **CLOSED, Phase I4** in `SKIPPED_HUMAN_DECISIONS.md:74`. This one *is* drift that accumulated after
+  the packet was written, exactly as W8's recommendation anticipated and asked for.
+- Neither closure touches `SKIP-IDN-CUSTOMER-SESSION-HS256-COLLAPSE`, which remains open, unedited by
+  this addendum, per the phase's explicit instruction.
+
+### 2. Citation audit — every `path:line` in the packet, not a sample
+
+30 distinct `path:line` citations found (the CTO spot-check that authorized this phase estimated 24;
+this audit's count differs because it treats every distinct line number in the same file as its own
+citation — e.g. `middleware/customer-session.ts:56`, `:58` and `:61` count as three, not one). **10 of
+30 have drifted; 20 resolve exactly as written.** Every row below was checked directly against the
+file at current `HEAD`, not inferred from a commit message.
+
+| Citation as written | Resolves? | Accurate? | Current value |
+|---|---|---|---|
+| `routes/storefront/customer-registration.ts:141` | Y | Y | unchanged |
+| `routes/storefront/customer-engagement-routes.ts:610` | Y | Y | unchanged |
+| `routes/storefront/customer-engagement-routes.ts:770` | Y | Y | unchanged |
+| `app/api/customer/login/route.ts:92` | **N** | — | `createSession(` now at **:108** (`806690ae` inserted a 16-line `accountRedirectUrl` routing helper above it) |
+| `app/api/customer/register/route.ts:91` | **N** | — | `createSession(` now at **:110** (`806690ae` inserted a 19-line equivalent helper) |
+| `app/api/customer/set-password/route.ts:73` | Y | Y | unchanged (file untouched since baseline) |
+| `middleware/customer-session.ts:56` | Y | Y | unchanged (`verifyGatewayCustomerSession` signature) |
+| `middleware/customer-session.ts:58` | Y | Y | unchanged (`verifyCustomerSession` call) |
+| `middleware/customer-session.ts:61` | Y | Y | unchanged (`verifyCustomerSessionToken` call) |
+| `identity-foundation/realm-registry.ts:34-42` | Y | Y | unchanged |
+| `apps/identity-platform/src/lib/auth/cookies.ts:62` | Y | Y | unchanged |
+| `packages/auth-core/src/customer-session.ts:4` | Y | Y | unchanged |
+| `packages/auth-core/src/customer-session.ts:28` | Y | Y | unchanged |
+| `packages/auth-core/src/customer-session.ts:61` | Y | Y | unchanged |
+| `packages/auth-core/src/customer-session.ts:110-116` | Y | Y | unchanged in location; `acce0112` made the function `export` on the same line, no shift |
+| `packages/auth-core/src/index.ts:751` (`createCustomerSessionToken`) | **N** | — | now **:752** (`acce0112` added one `import` line near the top) |
+| `packages/auth-core/src/index.ts:772` (`verifyCustomerSessionToken`) | **N** | — | now **:773** |
+| `packages/auth-core/src/index.ts:841` (`createHostOnlyShopperIdentityProvider`) | **N** | — | now **:842** |
+| `packages/auth-core/src/index.ts:131` (`LETBUYY_CUSTOMER_SESSION_TTL_SECONDS`) | **N** | — | now **:132** |
+| `packages/auth-core/src/index.ts:824-830` (`ShopperIdentityCookieContract`) | **N** | Y (content) | now **:825-831**, content unchanged |
+| `packages/auth-core/src/index.ts:864-960` (federation functions) | **N** | Y (content) | now approx. **:865-961**, content unchanged |
+| `packages/auth-core/src/index.ts:1298-1310` (`isCustomerSessionPayload`) | **N** | **N — substantively** | now starts **:1299**; the code AT this citation is the Phase I4-fixed version, not the weaker version the packet describes and W6 designs a fix for |
+| `scripts/validators/identity-sole-issuer-validator.mjs:12` | Y | Y | unchanged |
+| `scripts/validators/identity-sole-issuer-validator.mjs:86-96` | Y | Y | unchanged content (the file was edited by `43a635f1` earlier in the same file, for an unrelated GoTrue-allowlist reason; this specific range was unaffected — verified directly, not assumed) |
+| `packages/lcis-security/src/identity/IdentitySecretService.ts:52` | Y | Y | unchanged — the LCIS inaccuracy the packet recorded is still present, still unfixed, exactly as the packet left it |
+| `apps/identity-platform/src/lib/auth/identity-issued-session.ts:5` | Y | Y | unchanged |
+| `.github/workflows/production-deploy.yml:323` | Y | Y | unchanged |
+| `apps/storefront-runtime/src/lib/session.ts:74` (`getSession`) | Y | Y | unchanged (file untouched since baseline) |
+| `apps/storefront-runtime/src/lib/session.ts:88` (`createSessionFromFederationToken`) | Y | Y | unchanged |
+| `services/api-gateway/src/routes/auth.ts:1130` | **N** | **N — substantively** | the real `validateIdentityIssuedMerchantSessionToken(...)` call site is now **:1112**; `:1130` itself now falls inside the *new* jti-extraction code Phase I3 added to close IRT-4 — the exact fix this citation's surrounding W6 text describes as not yet built |
+
+### 3. Load-bearing facts — all five re-verified at source, all five still hold
+
+- **Six issuance sites across two runtimes.** Still six, still the same six files. Two of the three
+  storefront-runtime sites (`login`, `register`) have drifted line citations (above); their `createSession`
+  mechanism, payload shape, and runtime placement are unchanged. `set-password` is untouched.
+- **`identity-platform` has no customer-realm issuance path.** Still true — no commit since baseline
+  adds a `customer`-realm equivalent of `identity-issued-session.ts` anywhere under
+  `apps/identity-platform/src`. The packet's "BUILD not wire-up" conclusion and its framing as the
+  single biggest cost driver both stand.
+- **Two TTLs (30 min primary / 7 days legacy).** Both values unchanged at source. The 7-day figure's
+  citation (`index.ts:131`) drifted to `:132`; the value itself did not move.
+- **Primary-then-legacy verifier fallback.** The *structure* `middleware/customer-session.ts` uses —
+  try `verifyCustomerSession` (primary) first, fall back to `verifyCustomerSessionToken` (legacy) —
+  is byte-for-byte unchanged (file untouched since baseline). What Phase I4 changed is what the legacy
+  path's *internal* payload check accepts, not whether the fallback exists or how it's ordered. W3
+  Step 2's design (a third, new-asymmetric branch tried before both) is unaffected by this — if
+  anything, IRT-6's closure makes the two existing branches marginally more consistent with each
+  other, which slightly reduces (does not increase) the risk W3 Step 2 was written to manage. Not a
+  reason to alter the design; noted for the ARB's awareness only.
+- **The `merchant_session` 30-day TTL.** Unchanged at `identity-issued-session.ts:5`, citation accurate.
+
+**One fact worth flagging that is neither drift nor a load-bearing-fact failure:** W2 says the new
+customer-session issuer should mirror `identity-issued-session.ts` "exactly in mechanism." That file
+itself is unchanged since baseline (confirmed — zero commits touch it), so the claim is still literally
+true. But IRT-4's fix (jti consumption) landed at the *call site* in `routes/auth.ts`, not inside
+`identity-issued-session.ts` — the merchant-realm bootstrap flow this packet's design is templated on
+is now more complete than the template file alone shows. An implementer building the customer-realm
+equivalent should know the merchant pattern now includes route-layer jti consumption, not just token
+issuance/verification. This is an observation for whoever implements W2/W3, not a redesign of them —
+the packet's own text is left as written.
+
+### 4. Does the recommendation still stand? Yes, unchanged in substance.
+
+W8's core recommendation — approve the collapse in principle, phased per W3, with Step 5 (deleting
+`CUSTOMER_SESSION_SECRET`) held for a second, separate sign-off — survives this pass with no premise
+invalidated. `IRT-3`/`W3(b)`, the constraint W8 names as required to hold throughout any future
+implementation, is confirmed **still passing (17/17, including both IRT-3/W3(b) cases)** at current
+HEAD.
+
+W8's *secondary* recommendation — "ship IRT-4 and IRT-6 as small, separate, standalone changes now" —
+is no longer a recommendation to act on; it has been **acted on and completed**. Both shipped exactly
+as separable, standalone changes, exactly as the packet predicted, with their own narrow tests, and
+neither touched the issuer model or the realm-collapse design. This is confirmation the packet's own
+separability judgment was correct, not a reason to revisit it.
+
+No step in W3's five-step sequence has a premise that moved. The sequence is not rewritten here.
+
+### 5. What this pass could NOT establish
+
+- **Whether any commit besides the 3 identified (`acce0112`, `7caf9cf2`, `806690ae`) touches a file
+  this packet reasons about but was not in the explicitly-checked path list** (`packages/auth-core`,
+  `services/api-gateway/src/{middleware,lib,routes/storefront}`, `apps/identity-platform`,
+  `apps/storefront-runtime/src/lib/session.ts`, the three customer route handlers, the two registry
+  files, the LCIS file, the deploy workflow, and the validator). The 34-commit sweep was filtered to
+  these paths via `git log -- <paths>`; a commit touching a packet-relevant fact through an unlisted
+  path (for example, a new caller of `issueCustomerSession` added somewhere not yet enumerated) would
+  not have been caught by this method.
+- **Whether `identity-foundation/`'s scaffold status changed.** Not re-checked this pass — the
+  packet's original W1 correction #2 finding (16-file dead scaffold, no live customer-session path)
+  was not re-verified at current HEAD; no commit in the 34-commit log touches
+  `services/api-gateway/src/identity-foundation/`, which is weak evidence it is unchanged, not
+  confirmation.
+- **Live production id-length distribution for IRT-6.** Moot now — IRT-6 shipped, and its own W2
+  value-source audit (Phase I4) established every live writer sources from `store_customers.id/store_id`
+  (native `uuid` columns), closing the exact question this packet's W6 flagged as needing a production
+  query. Recorded here because the packet's own W7 still lists it as an open item; this addendum does
+  not edit W7, so the correction lives here instead.
+- **Whether the concurrent theme session's routing changes (`806690ae`) have any OTHER effect on the
+  customer-session mechanism beyond moving two citations.** Read both diffs in full; found only
+  routing-helper insertions ahead of the unchanged `createSession()` calls. Did not read the full
+  commit's other ~15 files (Liquid section templates, CSS, generator changes) — none are packet-relevant
+  paths, so this is a scoping choice, not an unfindable gap.
+
+### 6. An unrelated defect found during this audit — reported, not fixed
+
+This is out of scope for the addendum's own subject (it is not identity drift), but it was found while
+grep-auditing the citations above and the phase's own rule is to report rather than silently act, so it
+is recorded here rather than dropped.
+
+**The original document (committed at `c54cba22`, unchanged by this addendum) contains one literal NUL
+byte and its neighbouring raw control-character bytes**, at the point in the original W6 section that
+describes rejecting `[ -]` control characters — the actual bytes `\x00`–`\x1f`/`\x7f`
+appear to have been typed literally into the Markdown instead of their escaped/printable representation.
+Confirmed present in the git-committed original via `git show c54cba22:<path> | python3 -c
+"...find(b'\x00')"` — not introduced by this addendum's edits, and not something this addendum edits or
+removes, per the explicit instruction to leave the original content untouched. Effect: `file`(1)
+classifies the document as `data` (binary) rather than text, and a plain `grep` (without `-a`) silently
+returns zero matches instead of an error — which is what caused most of this audit's own citation greps
+to need `-a` once discovered. `git diff`/`git show` render it as a normal text diff regardless (verified
+— `161 insertions`, not `Binary files differ`), so this has not corrupted history or blocked review; it
+is a latent trap for any other tool that uses a binary-detection heuristic before treating this file as
+text. Not registered as a `SKIP-*` row — this addendum does not touch the registry beyond
+`EXECUTION_LEDGER.md`, per the phase's own scope, and a one-file Markdown typo does not rise to that
+threshold; recorded here so the fact is not lost.
+
+### Confirmation
+
+Zero code changed to produce this addendum. `git diff --numstat -- services apps packages` at
+verification time showed only pre-existing, unrelated diffs from two concurrent sibling sessions
+(an identity-platform theming refactor and a Liquid/theme-engine refactor) — none authored by this
+phase. No `SKIP-*` row was closed, reopened, or re-rated. `identity-redteam.test.ts` was not modified
+and was re-run clean: 17/17, `IRT-3`/`W3(b)` intact.
