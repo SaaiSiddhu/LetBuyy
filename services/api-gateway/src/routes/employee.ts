@@ -4,17 +4,10 @@ import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../
 import { enqueueEmployeeInviteEmail } from '../lib/transactional-email';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
 import {
-    createSupabaseAnonClient,
-    createSupabaseServiceClient,
-} from '@letbuyy/infrastructure/supabase-adapter';
-import {
     employeeRemovalPatch,
-    isEmployeeInviteExpired,
     planEmployeeInvite,
-    planEmployeeInviteAcceptance,
     planEmployeeStaffCreate,
     planEmployeeUpdate,
-    type EmployeeInviteRecord,
 } from '@letbuyy/auth-core';
 import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
 
@@ -127,52 +120,6 @@ function isMissingSitesDeletedAtColumn(error: { message?: string } | null | unde
     return isMissingColumnError(error, 'sites', 'deleted_at');
 }
 
-// ============================================================
-// EMPLOYEE AUTH
-// ============================================================
-
-// POST /employees/auth/login — Employee login
-router.post('/auth/login', async (c) => {
-    const { email, password } = await c.req.json();
-
-    if (!email || !password) {
-        return c.json({ error: { code: 'VALIDATION', message: 'email and password required' } }, 400);
-    }
-
-    const supabase = createSupabaseAnonClient(c.env);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-        return c.json({ error: { code: 'AUTH_ERROR', message: error.message } }, 401);
-    }
-
-    // Verify this user is an employee
-    const db = getSupabaseAdmin(c);
-    const { data: employee } = await db
-        .from('employees')
-        .select('id, role, status')
-        .eq('user_id', data.user.id)
-        .eq('status', 'active')
-        .single();
-
-    if (!employee) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Not an active employee' } }, 403);
-    }
-
-    return c.json({
-        data: {
-            user: data.user,
-            employee,
-            session: {
-                access_token: data.session.access_token,
-                refresh_token: data.session.refresh_token,
-                expires_at: data.session.expires_at,
-            },
-        },
-    });
-});
-
-// POST /employees/auth/accept-invite — Accept an employee invite
 // Phase-4.5 — traceability for staff lifecycle changes. Best-effort: an audit
 // failure must never fail the underlying employee mutation.
 async function writeEmployeeAudit(
@@ -204,62 +151,6 @@ async function writeEmployeeAudit(
         }));
     }
 }
-
-router.post('/auth/accept-invite', async (c) => {
-    const { token, password } = await c.req.json();
-    const db = getSupabaseAdmin(c);
-
-    if (!token || !password) {
-        return c.json({ error: { code: 'VALIDATION', message: 'token and password required' } }, 400);
-    }
-
-    // Find invite
-    const { data: invite } = await db
-        .from('employee_invites')
-        .select('*')
-        .eq('token', token)
-        .eq('status', 'pending')
-        .single();
-
-    if (!invite) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Invalid or expired invite' } }, 404);
-    }
-
-    // Check expiry
-    if (isEmployeeInviteExpired(invite as EmployeeInviteRecord, new Date())) {
-        await db.from('employee_invites').update({ status: 'expired' }).eq('id', invite.id);
-        return c.json({ error: { code: 'EXPIRED', message: 'Invite has expired' } }, 410);
-    }
-
-    // Create Supabase auth user for employee
-    const supabase = createSupabaseServiceClient(c.env);
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: invite.email,
-        password,
-        user_metadata: { role: 'employee' },
-        email_confirm: true,
-    });
-
-    if (authError) {
-        return c.json({ error: { code: 'AUTH_ERROR', message: authError.message } }, 400);
-    }
-
-    // Create employee record
-    const { data: employee, error: empError } = await db
-        .from('employees')
-        .insert(planEmployeeInviteAcceptance(invite as EmployeeInviteRecord, authData.user.id))
-        .select()
-        .single();
-
-    if (empError) {
-        return c.json({ error: { code: 'DB_ERROR', message: empError.message } }, 500);
-    }
-
-    // Mark invite as accepted
-    await db.from('employee_invites').update({ status: 'accepted' }).eq('id', invite.id);
-
-    return c.json(success(employee), 201);
-});
 
 // ============================================================
 // EMPLOYEE CRUD (existing routes, kept from before)
