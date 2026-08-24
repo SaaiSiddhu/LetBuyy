@@ -185,6 +185,27 @@ function issueGiftCardSql({ code, key, initialValue = 500 }) {
 }
 
 test('W1a — issue_gift_card: same code + same idempotency key, 5 concurrent calls', async () => {
+  // Phase R5 (2026-08-24): the `rejected > 0` assertion this test used to
+  // carry encoded "the race must occur" as a requirement -- a scheduling
+  // artifact, not a system property. On a cold container every call can
+  // serialize naturally (each takes the early-return existence-check path
+  // before any other call starts mutating), rejected=0, and the old
+  // assertion failed -- observed 1 run in 4 while R4 reported 5/5 because
+  // its own runs happened to all be warm. Separately, and more
+  // fundamentally: this bootstrap now applies ALL migrations, including
+  // Phase R5's migration 207 (the advisory-lock fix for the VARYING-code
+  // defect this same RPC had -- see gift-card-issue-idempotency-postgres.
+  // test.mjs). That lock also changes this SAME-code scenario's behaviour
+  // permanently, not just intermittently: every concurrent caller now
+  // serializes on the lock, and every one after the first sees the
+  // already-committed row via the existence check and returns it
+  // gracefully -- so `rejected > 0` would now fail 100% of the time, not
+  // merely flake. The invariant that actually holds, cold or warm, before
+  // or after 207, is money-safety: exactly one account, exactly one
+  // ledger row. `rejected`/`rejectMessages` are recorded as an
+  // OBSERVATION below, never an assertion (same antipattern as a
+  // source-regex test that once pinned an AUTH_SECRET defect in place --
+  // asserting the presence of a defect makes fixing it a test failure).
   const code = 'R4-SWEEP-GIFTCARD-CODE';
   const key = 'race:issue-gift-card:same-key';
 
@@ -200,28 +221,17 @@ test('W1a — issue_gift_card: same code + same idempotency key, 5 concurrent ca
   const ledgerCount = psql(`SELECT count(*) FROM public.gift_card_ledger_entries gle JOIN public.gift_card_accounts gca ON gca.id = gle.gift_card_account_id WHERE gca.site_id = ${sqlString(SITE_ID)}::uuid AND gca.code_hash = encode(digest(${sqlString(code)}, 'sha256'), 'hex') AND gle.entry_type = 'issued';`);
 
   console.log(
-    `[W1a] fulfilled=${fulfilled.length} rejected=${rejected.length} accounts=${accountCount} ` +
-    `issued-ledger-rows=${ledgerCount} rejectMessages=${JSON.stringify(rejectMessages)} ` +
-    `(prediction: exactly 1 account/1 ledger row -- no money duplication -- but rejected>0, i.e. an ` +
-    `idempotency-contract violation: a same-key retry should succeed identically, not error)`,
+    `[W1a] OBSERVATION (not asserted): fulfilled=${fulfilled.length} rejected=${rejected.length} ` +
+    `rejectMessages=${JSON.stringify(rejectMessages)} -- accounts=${accountCount} issued-ledger-rows=${ledgerCount} ` +
+    `(the money-safety invariant below is the real, always-true property; rejected count varies with ` +
+    `scheduling and, since migration 207, is expected to be 0 in every run, not merely sometimes)`,
   );
 
-  // Money-safety invariant (should hold regardless): never more than one
-  // gift-card account or 'issued' ledger row for this code, no matter how
-  // many concurrent replays.
+  // Money-safety invariant: never more than one gift-card account or
+  // 'issued' ledger row for this code, no matter how many concurrent
+  // replays or how the race resolves.
   assert.equal(accountCount, '1', 'exactly one gift_card_accounts row must exist for this code — no duplicate money issuance');
   assert.equal(ledgerCount, '1', 'exactly one issued ledger entry must exist for this code');
-
-  // Idempotency-contract invariant (the actual W0 prediction under test):
-  // a same-key retry is expected to FAIL here, not succeed gracefully. If
-  // this assertion ever flips to failing (i.e. all 5 fulfil), that is
-  // GOOD NEWS -- report it plainly rather than treating a fixed assertion
-  // as ground truth.
-  assert.ok(rejected.length > 0, 'W0 predicted at least one concurrent replay would be rejected with a code-collision error, not silently deduplicated');
-  assert.ok(
-    rejectMessages.every((m) => /code collision/i.test(m)),
-    'every rejection must be the expected code-collision error, not something unrelated',
-  );
 });
 
 // ---------------------------------------------------------------------

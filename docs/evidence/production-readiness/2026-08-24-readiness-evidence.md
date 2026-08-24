@@ -78,6 +78,24 @@ not measured under concurrency; reasoning stated in
 No dimension was downgraded — no defect this phase contradicts a MEASURED
 claim already on record. No other dimension was touched by Phase R4.
 
+**Further update, same day (Phase R5):** Phase R4's characterization of
+`issue_gift_card`'s defect above was **wrong, not merely incomplete** — its
+own test replayed the same idempotency key with the SAME code, so
+`ON CONFLICT (site_id, code_hash)` masked the real hole and it reported "not
+money duplication." Replaying the same key with DIFFERENT codes — exactly
+what a retrying caller that regenerates its code does — reproduces real
+duplication: Phase R5 independently measured 3 `gift_card_accounts` rows / 3
+issued ledger entries / ₹15,000 issued for one ₹5,000 key (one run measured
+2/2/₹10,000 — the exact multiplicity varies with scheduling; duplication
+itself was 100% reproducible). Migration 207 closes it with the same
+advisory-lock pattern migration 206 used, proven with a rollback control
+(without the lock: duplication every run; with it: exactly 1 account/1
+ledger entry, and a graceful idempotent return, not a collision error) — see
+`tests/executable/gift-card-issue-idempotency-postgres.test.mjs`. This
+dimension's Gap line below is corrected accordingly; the underlying evidence
+paragraph is left as Phase R4 wrote it, with this note superseding its
+conclusion, per this document's own established correction convention.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -155,8 +173,10 @@ measured under concurrency (see the Phase R4 evidence doc for why).
 **Gap:** no live-gateway reconciliation drill; no *sustained high-cardinality*
 concurrent-load ledger test (narrowed by Phase R4 — bounded same-key
 concurrency is now measured for 2 of 3 remaining RPCs; broad-traffic load
-testing is not); `issue_gift_card`'s idempotency-contract defect (see
-`SKIP-GIFT-CARD-ISSUE-IDEMPOTENCY-CONTRACT`, registered not fixed).
+testing is not). `issue_gift_card`'s varying-code double-issuance defect —
+real money duplication, not merely a contract violation as Phase R4
+characterized it — was closed by Phase R5, migration 207
+(`SKIP-GIFT-CARD-ISSUE-IDEMPOTENCY-CONTRACT`, now CLOSED).
 
 **Who closes it:** payment/money engineering owner, with a staging Razorpay
 account and a scheduled reconciliation job proof (see `SKIP-RAZORPAYX-ENUM-PURGE`
