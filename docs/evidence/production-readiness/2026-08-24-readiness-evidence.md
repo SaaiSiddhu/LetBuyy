@@ -34,6 +34,13 @@ changed and why neither closure moves this dimension's overall status —
 the remaining gap (no live/deployed-system red-team) is unaffected by
 either.
 
+**Further update, same day (Phase O1):** Dimension 10 was revised to record
+that `services/queue-workers` now emits four of the six catalog SLOs to
+Analytics Engine every 6 hours. Explicitly still NOT MEASURED — see that
+section for exactly why emission is not measurement, and why every emitted
+SLO's stated alert policy is faster than the emission cadence can serve. No
+other dimension was touched by Phase O1.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -413,13 +420,31 @@ Added `SKIP-CAP-LOAD-SPIKE-SOAK-TESTING` this phase (see
 
 ## Dimension 10 — Defined SLOs and error budgets
 
-**Status:** MOSTLY NOT MEASURED — definitions added this phase, zero live
-telemetry behind any of them
+**Status:** MOSTLY NOT MEASURED — **explicitly still not MEASURED after
+Phase O1's emission wiring; see the update below for exactly why.**
+
+**Update (Phase O1, 2026-08-24):** `services/queue-workers/src/slo-telemetry.ts`
+now emits 4 of the 6 catalog SLOs to `RUNTIME_TELEMETRY` (Cloudflare
+Analytics Engine) every 6 hours, on the existing `scheduled()` cron.
+**This does not move the status to MEASURED and is not read as such here** —
+reading Analytics Engine back out needs Cloudflare API credentials this
+repository does not have, and every emitted SLO's `errorBudgetPolicy`
+(1h burn-rate, 15m p95-breach, or "immediately") implies a detection window
+the 6-hourly cron structurally cannot serve. What changed concretely: an
+SLO with a real evidence table and zero telemetry is now an SLO with real
+telemetry and zero reader — a narrower gap, not a closed one. See
+`infrastructure/monitoring/slo-catalog.yaml`'s per-SLO comments for the
+emission/cadence detail on each, and 11 genuine behavioral tests in
+`services/queue-workers/test/slo-telemetry.test.mjs` proving each SLI
+computes correctly, an empty window is never emitted as a coerced zero
+(tested directly against the adapter's own `NaN`→`0` coercion, not just
+inferred from this code), a query failure cannot take down a sibling
+emission, and nothing is written to any commerce table.
 
 **Evidence:**
-- Before this phase: `infrastructure/monitoring/slo-catalog.yaml` defined
+- Before Phase R1: `infrastructure/monitoring/slo-catalog.yaml` defined
   exactly one SLO (`deployment-gate-success`).
-- This phase added five SLO **definitions** (not measurements) to the same
+- Phase R1 added five SLO **definitions** (not measurements) to the same
   file, each citing a real, schema-verified table it could theoretically be
   computed from: `checkout-order-creation-success` (`checkout_sessions`),
   `payment-capture-confirmation-success` (`payment_transactions`),
@@ -433,25 +458,38 @@ telemetry behind any of them
   `tenant-isolation-zero-cross-tenant-rows` (a zero-tolerance invariant with
   no meaningful database evidence table — its only real evidence is the
   point-in-time RT-1–RT-9 suite, not a continuous signal).
+- Phase O1 re-verified every cited column against the LATEST migration
+  touching each table (not just baseline — `outbox_events` was re-checked
+  against migrations 179 and 202 too), then wired emission for four of the
+  five real-table SLOs. **Deliberately NOT emitted:** `deployment-gate-success`
+  (found, this phase, to have zero writers anywhere in the codebase —
+  emitting it would always show `sample_size=0`, which serves no one) and
+  `tenant-isolation-zero-cross-tenant-rows` (unchanged reasoning from Phase
+  R1 — not measurable via a database rollup at all).
 
-**What this proves:** the named tables and columns are real and already
-written by production code paths, so each SLO's SLI is theoretically
-computable without inventing new instrumentation.
+**What this proves:** the named tables and columns are real, already
+written by production code paths, and four of them now genuinely compute
+and emit a real SLI value on a schedule — proven by real, executed tests
+against a mocked Analytics Engine and Supabase REST layer, not asserted.
 
-**What this does NOT prove:** none of these five SLOs have a scheduled
-rollup, a dashboard, or an alert wired to them. "A real evidence table
-exists" is not "this is monitored" — no burn-rate alert has ever fired or
-could fire today for any of them.
+**What this does NOT prove:** that anything reads these values back out;
+that any dashboard, alert, or on-call page exists (`SKIP-CAP-ALERTING-END-TO-END`
+stays fully open, unaffected by this phase); that the emission cadence can
+serve any of the stated error-budget policies — it structurally cannot, for
+any of the four, not only the outbox one. "Now emits" is not "monitored."
 
-**Gap:** zero live telemetry/rollup/alerting behind any SLO except possibly
-`deployment-gate-success` (unverified this phase — out of scope to confirm
-whether even the original SLO has live wiring).
+**Gap:** the read/dashboard/alert side of all six SLOs remains entirely
+open — Phase O1 closed the emission half only. The cadence mismatch (every
+emitted SLO's alert policy implies a faster detection window than the
+6-hourly cron can serve) is itself an unclosed gap, not a cosmetic detail —
+a future phase adding the read side must also decide whether to accept
+6-hourly-or-coarser alerting or add a second, faster-cadence emission path.
 
-**Who closes it:** genuinely new seam. Added `SKIP-CAP-SLO-TELEMETRY-WIRING`
-this phase (distinct from `SKIP-W3-SENTRY-DSN`, which covers general
-observability DSN/alert-routing provisioning, not SLO-specific rollup
-wiring against these named tables). Platform-SRE/observability engineering
-owner.
+**Who closes it:** `SKIP-CAP-SLO-TELEMETRY-WIRING` (updated in place this
+phase to partial closure — emission done, read/alert side explicitly still
+open). Platform-SRE/observability engineering owner, for the Cloudflare API
+credentials, the read/rollup/dashboard layer, and the alerting wiring
+(`SKIP-CAP-ALERTING-END-TO-END`, unchanged and still fully open).
 
 ---
 

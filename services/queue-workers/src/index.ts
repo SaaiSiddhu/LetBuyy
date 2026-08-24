@@ -14,6 +14,7 @@ import { processReviewCheckDeliveries } from './review-checks';
 import { processSupportAutomationDeliveries } from './support-automation';
 import { runInventoryReservationSweeper } from './inventory-reservations';
 import { runMerchantSessionJtiConsumptionSweeper } from './merchant-session-jti-sweeper';
+import { runSloTelemetryEmitter } from './slo-telemetry';
 import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
 
 type QueuePayload = {
@@ -659,6 +660,21 @@ export default {
           route: 'scheduled.merchant_session_jti_sweeper',
           status: 'failed',
           error: error instanceof Error ? error.message : 'merchant session jti sweeper failed',
+        })),
+    );
+    ctx.waitUntil(
+      runSloTelemetryEmitter(env, {
+        requestId: `scheduled:slo-telemetry-emitter:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.slo_telemetry_emitter',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.slo_telemetry_emitter',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'SLO telemetry emitter failed',
         })),
     );
     ctx.waitUntil(

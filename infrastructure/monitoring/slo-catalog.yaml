@@ -6,16 +6,27 @@ slos:
     window: 30d
     errorBudgetPolicy: block-production-promotion-on-failed-gate
     evidenceTable: deployment_health_gate_results
+    # Phase O1 checked whether to emit this and deliberately did NOT: grepped
+    # the whole repository and found ZERO writers to deployment_health_gate_
+    # results anywhere -- only structural presence checks in two validators
+    # and a read-only dashboard query (services/api-gateway/src/routes/
+    # operations.ts). The table is permanently empty today, so an emitted
+    # metric here would always carry sample_size=0 -- indistinguishable from
+    # "monitored" to a reader who doesn't check the sample count. NOT
+    # MEASURED, and deliberately NOT emitted until something actually writes
+    # to this table.
 
-  # Phase R1 additions below. DEFINITIONS ONLY -- see
+  # Phase R1 additions below. DEFINITIONS ONLY at authoring time -- see
   # docs/evidence/production-readiness/<date>-readiness-evidence.md dimension
-  # 10 for the honest status of each. None of these have live telemetry
-  # wired up today: the evidenceTable named for each is a real table this
-  # repository already writes to (verified against the schema/migrations at
-  # authoring time), but nothing currently rolls its rows up into an SLI on
-  # a schedule, alerts on error-budget burn, or exposes it on a dashboard.
-  # An SLO with a real evidence table and no telemetry behind it is a
-  # target, not a measurement -- do not read these as "monitored."
+  # 10 for the honest status of each. Phase O1 (2026-08-24) began emitting
+  # four of these six to RUNTIME_TELEMETRY (services/queue-workers/src/
+  # slo-telemetry.ts, on the existing 6-hourly scheduled() cron) -- see each
+  # SLO's own comment below for its emission status. Emitting is NOT
+  # measuring: reading Analytics Engine back out needs Cloudflare API
+  # credentials this repository does not have, and no alert/dashboard/page
+  # is wired to any of these regardless of emission status
+  # (SKIP-CAP-ALERTING-END-TO-END stays open). Do not read an "emits" note
+  # below as "monitored."
 
   - name: checkout-order-creation-success
     owner: commerce-platform
@@ -27,8 +38,12 @@ slos:
     # checkout_sessions.status ('completed' vs a failed/absent session) is
     # the real signal create_checkout_order (database/supabase/migrations/
     # 202_narrow_checkout_order_payment_method.sql) already writes on every
-    # call. NOT MEASURED today: no scheduled rollup or alert reads this
-    # table for SLO purposes.
+    # call. Phase O1: NOW EMITS every 6h to RUNTIME_TELEMETRY (metric
+    # letbuyy.slo.checkout-order-creation-success). Still NOT MEASURED --
+    # nothing reads Analytics Engine back out, and no alert fires. Cadence
+    # mismatch: this SLO's errorBudgetPolicy implies 1h burn-rate detection;
+    # the emitter runs every 6h. The value is a rolling historical trend
+    # signal, not a real-time one.
 
   - name: payment-capture-confirmation-success
     owner: commerce-platform
@@ -38,8 +53,11 @@ slos:
     errorBudgetPolicy: page-on-call-if-burn-rate-exceeds-2x-over-1h
     evidenceTable: payment_transactions
     # payment_transactions.status ('captured' vs 'pending'/absent) after a
-    # payment.captured webhook is the real signal. NOT MEASURED today: no
-    # scheduled rollup or alert reads this table for SLO purposes.
+    # payment.captured webhook is the real signal. Phase O1: NOW EMITS every
+    # 6h to RUNTIME_TELEMETRY (metric
+    # letbuyy.slo.payment-capture-confirmation-success). Still NOT MEASURED
+    # -- same reasoning as checkout-order-creation-success above, including
+    # the same 1h-burn-rate-vs-6h-cron cadence mismatch.
 
   - name: razorpay-webhook-signature-verification
     owner: commerce-platform
@@ -53,8 +71,13 @@ slos:
     # verifyRazorpayWebhookSignature passes (a failed signature returns 400
     # before any row is written -- see Phase M5's evidence). A row existing
     # with signature_valid=false would mean the write path changed; today
-    # it structurally cannot happen. NOT MEASURED today: no scheduled
-    # rollup or alert reads this table for SLO purposes.
+    # it structurally cannot happen. Phase O1: NOW EMITS every 6h to
+    # RUNTIME_TELEMETRY (metric
+    # letbuyy.slo.razorpay-webhook-signature-verification, filtered
+    # provider=razorpay). Still NOT MEASURED. Cadence mismatch is the
+    # sharpest of the four emitted SLOs: errorBudgetPolicy says
+    # page-on-call-IMMEDIATELY-on-any-false, but the emitter runs every 6h
+    # -- no batch cadence can serve "immediately."
 
   - name: outbox-event-processing-lag
     owner: platform-sre
@@ -67,9 +90,16 @@ slos:
     # processing/processed/failed/dead) are real columns this repository
     # already writes (transactional-outbox relay, per root AGENTS.md;
     # database/supabase/migrations/000_baseline.sql, complete_outbox_event
-    # sets status='processed'). Column names verified directly against
-    # baseline.sql at authoring time. NOT MEASURED today: no scheduled
-    # rollup or alert computes this p95 from the table.
+    # sets status='processed'). Column names re-verified against every
+    # later migration touching this table (179, 202), not just baseline.
+    # Phase O1: NOW EMITS every 6h to RUNTIME_TELEMETRY (metric
+    # letbuyy.slo.outbox-event-processing-lag), computed as a nearest-rank
+    # p95 in TypeScript over a bounded (LIMIT 5000), time-windowed row fetch
+    # -- not a server-side SQL percentile function, to keep this emitter's
+    # blast radius auditable without a new migration. Still NOT MEASURED.
+    # Cadence mismatch: errorBudgetPolicy wants 15-minute p95 breach
+    # detection; the emitter runs every 6h -- roughly 24x too coarse for the
+    # stated policy.
 
   - name: tenant-isolation-zero-cross-tenant-rows
     owner: security-platform
