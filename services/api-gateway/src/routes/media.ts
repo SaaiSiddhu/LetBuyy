@@ -2,7 +2,6 @@ import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, success } from '../lib/supabase';
-import { hmacSha256Hex, sha256Hex } from '../lib/crypto';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { validate } from '../middleware/validation';
 import { ListMediaQuery } from '../schemas/media.schema';
@@ -54,40 +53,6 @@ type SignedMediaUploadInput = z.infer<typeof SignedMediaUploadSchema>;
 
 function requestId(c: MediaContext): string | null {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
-}
-
-// [HUMAN-REQUIRED] SKIP-CAP-MEDIA-UPLOAD-SIGNING-SECRET: MEDIA_UPLOAD_SIGNING_SECRET
-// is declared in the Worker env schema but has never been provisioned as a real
-// staging/production secret, so this fallback is the LIVE signing key today, not
-// dead code -- do NOT remove it until SKIPPED_HUMAN_DECISIONS.md confirms the
-// dedicated secret is provisioned and resolving correctly (S1 W3, SEC-R7).
-function mediaUploadSigningSecret(env: Pick<Env, 'MEDIA_UPLOAD_SIGNING_SECRET' | 'AUTH_SECRET' | 'ENVIRONMENT' | 'APP_ENV'>): string | null {
-    const configured = env.MEDIA_UPLOAD_SIGNING_SECRET || env.AUTH_SECRET;
-    if (configured && !configured.startsWith('SKIP_NEEDS_HUMAN_')) return configured;
-    if (env.ENVIRONMENT === 'production' || env.APP_ENV === 'production') return null;
-    return 'letbuyy-local-sandbox-media-upload-secret';
-}
-
-function base64UrlJson(value: Record<string, unknown>): string {
-    const bytes = new TextEncoder().encode(JSON.stringify(value));
-    let binary = '';
-    for (const byte of bytes) binary += String.fromCharCode(byte);
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
-}
-
-async function signUploadIntent(env: Env, intent: ReturnType<typeof planSignedR2UploadIntent>): Promise<string | null> {
-    const secret = mediaUploadSigningSecret(env);
-    if (!secret) return null;
-    const payload = base64UrlJson({
-        site_id: intent.siteId,
-        intent_id: intent.intentId,
-        object_key: intent.objectKey,
-        content_type: intent.contentType,
-        size_bytes: intent.sizeBytes,
-        expires_at: intent.expiresAt,
-    });
-    const signature = await hmacSha256Hex(secret, payload);
-    return `${payload}.${signature}`;
 }
 
 function assetTypeForMediaType(mediaType: string): MediaAssetType {
@@ -247,7 +212,11 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
     }));
 });
 
-// POST /media/signed-upload — Create a signed R2 upload intent without activating a media service.
+// POST /media/signed-upload — Plan an R2 upload intent (object key, public URL) without activating
+// a media service. Phase D2: no caller anywhere signs or verifies this intent -- it previously
+// carried an HMAC token that nothing ever checked (routes/upload.ts, the only live upload path, is
+// independently guarded by session auth and never reads it). The signing machinery was removed;
+// this route still records the planned media_assets row and returns the intent shape.
 router.post('/signed-upload', async (c) => {
     const auth = c.get('auth');
     const parsed = SignedMediaUploadSchema.safeParse(await c.req.json());
@@ -276,11 +245,6 @@ router.post('/signed-upload', async (c) => {
         publicBaseUrl: c.env.ASSET_PUBLIC_BASE_URL,
         uploadPath: `${origin}/v1/upload`,
     });
-    const token = await signUploadIntent(c.env, intent);
-    if (!token) {
-        return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'Media upload signing is not configured' } }, 503);
-    }
-    const tokenHash = await sha256Hex(token);
 
     const { data, error } = await db
         .from('media_assets')
@@ -295,7 +259,6 @@ router.post('/signed-upload', async (c) => {
             filename: intent.filename,
             content_type: intent.contentType,
             size_bytes: intent.sizeBytes,
-            upload_token_hash: tokenHash,
             upload_intent_expires_at: intent.expiresAt,
             processing_status: 'pending',
             checksum_sha256: input.checksum_sha256 || null,
@@ -314,14 +277,7 @@ router.post('/signed-upload', async (c) => {
 
     return c.json(success({
         asset: data,
-        upload: {
-            ...intent,
-            token,
-            headers: {
-                ...intent.headers,
-                'x-letbuyy-media-upload-token': token,
-            },
-        },
+        upload: intent,
     }), 201);
 });
 

@@ -34,7 +34,6 @@
     "PREVIEW_SIGNING_KEY": { "type": "string" },
     "STORE_ACCESS_SIGNING_KEY": { "type": "string" },
     "CHECKOUT_SIGNING_SECRET": { "type": "string" },
-    "MEDIA_UPLOAD_SIGNING_SECRET": { "type": "string" },
     "AUTH_SECRET": { "type": "string" },
     "CUSTOMER_SESSION_SECRET": { "type": "string" },
     "ACCOUNTS_COOKIE_SECRET": { "type": "string" },

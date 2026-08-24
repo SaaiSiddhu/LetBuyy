@@ -382,9 +382,6 @@
     "LETBUYY_KMS_KEY_ID": {
       "type": "string"
     },
-    "MEDIA_UPLOAD_SIGNING_SECRET": {
-      "type": "string"
-    },
     "SES_ACCESS_KEY_ID": {
       "type": "string"
     },
