@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
-import { enqueueEmployeeInviteEmail } from '../lib/transactional-email';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { dispatchStoreAppComplianceWebhook } from './app-store/compliance-routes';
@@ -266,47 +265,20 @@ router.get('/employees', async (c) => {
     return c.json(success(data || []));
 });
 
-// POST /admin/employees/invite — Invite an employee (Super Admin)
+// POST /admin/employees/invite — Super-admin staff invite. Phase N3 retired
+// the merchant-facing equivalent (routes/employee.ts's POST /invite) because
+// its only completion path (a Supabase-auth-backed accept-invite endpoint)
+// never worked end-to-end. This route shares that exact defect: it also
+// emailed a link to that same now-deleted endpoint. Fails closed here too,
+// before any DB write or email enqueue (ANTI-R9), rather than creating a
+// phantom employee_invites row a super admin would believe was delivered.
 router.post('/employees/invite', async (c) => {
-
-    const auth = c.get('auth');
-    const { email, store_id, role } = await c.req.json();
-    const db = getSupabaseAdmin(c);
-
-    if (!email) {
-        return c.json({ error: { code: 'VALIDATION', message: 'email required' } }, 400);
-    }
-
-    const token = crypto.randomUUID();
-    const { data, error } = await db
-        .from('employee_invites')
-        .insert({
-            store_id: store_id || null,
-            email,
-            role: role || 'support',
-            token,
-            invited_by: auth.user.id,
-            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        })
-        .select()
-        .single();
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    await enqueueEmployeeInviteEmail(c.env, {
-        inviteId: String(data.id),
-        storeId: typeof data.store_id === 'string' ? data.store_id : null,
-        to: String(data.email || email),
-        role: String(data.role || role || 'support'),
-        token: String(data.token || token),
-        expiresAt: typeof data.expires_at === 'string' ? data.expires_at : null,
-        inviterEmail: auth.user.email || null,
-        requestId: c.req.header('X-Request-ID') || null,
-    });
-
-    return c.json(success(data), 201);
+    return c.json({
+        error: {
+            code: 'STAFF_INVITE_UNAVAILABLE',
+            message: 'Staff self-service invites are not available.',
+        },
+    }, 503);
 });
 
 // PATCH /admin/employees/:id/deactivate — Deactivate an employee
