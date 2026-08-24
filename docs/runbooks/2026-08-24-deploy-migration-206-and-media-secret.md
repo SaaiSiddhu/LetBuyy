@@ -110,6 +110,19 @@ psql "$PRODUCTION_DB_CONNECTION_STRING" -Atc "SELECT pg_get_functiondef('public.
 
 ## Runbook B — provision `MEDIA_UPLOAD_SIGNING_SECRET`
 
+**OBSOLETE as of Phase D2 (2026-08-24, commit `6b4ceba7`). Do not execute the steps below.**
+The unverified signing subsystem this secret was for has been deleted outright, not
+provisioned — `POST /media/signed-upload` no longer signs anything, `MEDIA_UPLOAD_SIGNING_SECRET`
+is no longer read by any runtime, and `PRODUCTION_MEDIA_UPLOAD_SIGNING_SECRET`/
+`STAGING_MEDIA_UPLOAD_SIGNING_SECRET` are no longer required by either deploy workflow's
+preflight or `wrangler secret put` steps. There is nothing left to generate or set for this
+secret. `SKIPPED_HUMAN_DECISIONS.md`'s `SKIP-CAP-MEDIA-UPLOAD-SIGNING-SECRET` row is marked
+RESOLVED-BY-DELETION with the full evidence. The steps below are preserved only as a historical
+record of what this runbook originally proposed, before the reachability sweep in Phase D2
+found the decisive fact that made the "same-value cutover" question moot: nothing ever
+verified this token, so there was no cutover risk to manage in the first place — the correct
+action turned out to be deletion, not provisioning.
+
 ### The decisive finding — read this before the same-value-cutover framing below
 
 The owner's request assumed a same-value cutover might be **necessary** to avoid invalidating already-issued signed upload URLs. Direct source reading (`services/api-gateway/src/routes/media.ts`, `services/api-gateway/src/routes/upload.ts`) found something more specific: **the signed upload token this secret produces is never verified anywhere in this codebase.**
