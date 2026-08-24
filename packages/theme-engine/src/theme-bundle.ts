@@ -2427,6 +2427,38 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               linkHref: '/products',
             },
           },
+          // S5/W1 — banner-carousel existed as sections/banner-carousel.liquid but was never composed
+          // into a template. Two slides so the real carousel path renders (its React counterpart,
+          // banner-carousel.tsx, only engages above one slide — it is a sub-component of hero.tsx, not
+          // a standalone registered section; see renderer-registry.tsx). No slide image: this bundle
+          // has no real hosted product photography to link to, so — matching hero-banner's own image
+          // setting and every other externally-hosted asset in this template — the image is left
+          // unset rather than pointing at a fabricated URL; banner-carousel.liquid already guards
+          // `{% if block.settings.image %}`, so an unset image renders no <img>, just the heading link.
+          'banner-carousel-default': {
+            type: 'banner-carousel',
+            settings: {
+              title: 'This week on LetBuyy Core',
+              autoplay: true,
+            },
+            blocks: {
+              'carousel-monsoon': {
+                type: 'slide',
+                settings: {
+                  heading: 'Monsoon-ready sneakers, restocked',
+                  link: '/collections/new-arrivals',
+                },
+              },
+              'carousel-apparel': {
+                type: 'slide',
+                settings: {
+                  heading: 'Apparel drop: up to 30% off',
+                  link: '/products',
+                },
+              },
+            },
+            block_order: ['carousel-monsoon', 'carousel-apparel'],
+          },
           'hero-default': {
             type: 'hero-banner',
             settings: {
@@ -2538,6 +2570,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
             },
             block_order: ['grid-sneaker', 'grid-backpack'],
           },
+          // S5/W2 — video-hero (new Liquid-only section; see its definition comment above for the
+          // full sanitizer/type-system reasoning). videoUrl is deliberately OMITTED (not an empty
+          // string): matching hero-default's own unset `image`, this ships with no fabricated,
+          // unowned public video baked into every merchant's default demo storefront — the section
+          // renders its heading/subheading copy and guards the <iframe> on videoUrl being set.
+          'video-hero-default': {
+            type: 'video-hero',
+            settings: {
+              heading: 'See the fit in motion',
+              subheading: 'A quick look at how each drop moves, from the box to your feet.',
+            },
+          },
           'spotlight-default': {
             type: 'spotlight',
             settings: {
@@ -2561,6 +2605,37 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
             },
             block_order: ['spotlight-badge', 'spotlight-app'],
           },
+          // S5/W1 — social proof. Chose testimonials over trust-badges and brand-marquee (all three
+          // exist as sections; composing all three would give the home page three separate
+          // social-proof bands, which is worse, not better). testimonials is the closest literal
+          // match to "social proof" — real buyer quotes, not a generic trust/shipping badge or a
+          // list of third-party brand names (brand-marquee reads as a multi-brand marketplace band,
+          // which LetBuyy Core is not: this is a single merchant's own storefront). Placed right
+          // before the newsletter signup: reinforcing trust immediately before asking for an email
+          // is a deliberate ordering choice, not incidental.
+          'testimonials-default': {
+            type: 'testimonials',
+            settings: {
+              title: 'What our buyers say',
+            },
+            blocks: {
+              'testimonial-ananya': {
+                type: 'testimonial',
+                settings: {
+                  quote: 'The sizing guide was spot on and my Velocity Runners showed up in two days.',
+                  author: 'Ananya R., Bengaluru',
+                },
+              },
+              'testimonial-rohan': {
+                type: 'testimonial',
+                settings: {
+                  quote: 'Easy returns and honest photos — the hoodie fit exactly like the size chart said.',
+                  author: 'Rohan K., Pune',
+                },
+              },
+            },
+            block_order: ['testimonial-ananya', 'testimonial-rohan'],
+          },
           'newsletter-default': {
             type: 'newsletter-signup',
             settings: {
@@ -2572,11 +2647,14 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         },
         order: [
           'announcement-default',
+          'banner-carousel-default',
           'hero-default',
           'category-grid-default',
           'featured-collection-default',
           'product-grid-default',
+          'video-hero-default',
           'spotlight-default',
+          'testimonials-default',
           'newsletter-default',
         ],
       },
@@ -3524,6 +3602,53 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           ],
         },
       },
+      // S5/W2 — Video, decision (b): a NEW Liquid section, not a React one (ART-17 freezes React
+      // sections at 20 FILES; Liquid sections are the sanctioned path per
+      // no-new-react-sections-validator's own message). No section had a video-capable setting —
+      // rich-content.liquid only carries title/richtext body, and neither the theme-registry.ts
+      // React section-schema model nor this portable ThemeBundleSettingFieldSchema declares a
+      // video-typed field for any EXISTING section. The Phase-U VideoControl/VideoUrlControl
+      // (apps/merchant-control-plane/.../controls/) are wired for a DIFFERENT, parallel type system
+      // (theme-registry.ts's ExtendedFieldType, the React/JSON-contract editor model) that this
+      // portable Liquid bundle's ThemeBundleSettingFieldSchema enum does not include — deliberately
+      // NOT reused here. Instead the video URL is a plain `url`-typed setting, a type ALREADY in
+      // ThemeBundleSettingFieldSchema's enum with an ALREADY-working editor control (UrlInput, via
+      // SchemaFormRenderer's `case 'url'`) — zero type-system or control changes needed. The value
+      // is rendered as an <iframe> (YouTube/Vimeo embed), which the sanitizer ALREADY permits:
+      // `iframe` is in LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG's ADD_TAGS, and `src`/`width`/`height`/
+      // `title`/`loading`/`sandbox` are all in ADD_ATTR (theme-renderer.ts) — verified by reading the
+      // config before writing this, not assumed. No sanitizer change was made or needed. The `src`
+      // value is filtered through the new `video_url` Liquid filter (registered above; identical to
+      // `asset_url`/`image_url`'s existing safeLiquidUrl — a javascript:/data: scheme becomes '', an
+      // http(s) URL passes through), and only ever reaches the page via an escaped `{{ }}` output
+      // (never `| raw`), so a quote-breakout attempt is HTML-attribute-escaped by the Liquid engine's
+      // own outputEscape:'escape' regardless of what the filter does with the scheme. Two independent
+      // layers, matching the same pattern image_url/asset_url already use. Deliberately NOT added to
+      // THEME_LIQUID_PORTABLE_SECTION_PARITY (theme-governance.ts): that list pairs a Liquid section
+      // with a React counterpart file, and this section has none — adding it would create a
+      // permanent, unclosable parity failure for a section that structurally cannot have a React
+      // twin without a 21st frozen React file. videoUrl ships with NO default (empty), matching the
+      // established convention for every other externally-hosted asset in this bundle (hero image,
+      // socialImageUrl, faviconUrl): an unset external URL renders no tag at all rather than a
+      // fabricated, unowned public video baked into every merchant's default demo storefront.
+      'video-hero': createLiquidSectionFile({
+        type: 'video-hero',
+        name: 'Video Hero',
+        settings: [
+          liquidSetting('heading', 'text', 'Heading', { default: 'See the fit in motion' }),
+          liquidSetting('subheading', 'textarea', 'Subheading', { default: 'A quick look at how each drop moves, from the box to your feet.' }),
+          liquidSetting('videoUrl', 'url', 'Video embed URL', { info: 'A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.' }),
+        ],
+        body: [
+          '<section class="lb-video-hero" data-section-id="{{ section.id }}">',
+          '  <div class="lb-video-hero__copy">',
+          '    <h2 class="lb-video-hero__heading">{{ section.settings.heading }}</h2>',
+          '    {% if section.settings.subheading %}<p class="lb-video-hero__subheading">{{ section.settings.subheading }}</p>{% endif %}',
+          '  </div>',
+          '  {% if section.settings.videoUrl != blank %}<div class="lb-video-hero__embed"><iframe src="{{ section.settings.videoUrl | video_url }}" title="{{ section.settings.heading }}" loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe></div>{% endif %}',
+          '</section>',
+        ],
+      }),
       'newsletter-signup': {
         path: 'sections/newsletter-signup.liquid',
         source: [

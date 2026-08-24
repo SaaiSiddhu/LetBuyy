@@ -24,7 +24,8 @@
 .lb-about-section, .lb-rich-content, .lb-services-grid, .lb-portfolio-grid, .lb-skills-section,
 .lb-experience-timeline, .lb-testimonials, .lb-trust-badges, .lb-brand-marquee, .lb-marquee,
 .lb-contact-form, .lb-spotlight, .lb-first-party-spotlight, .lb-collection-banner, .lb-banner-carousel,
-.lb-product-detail, .lb-cart, .lb-account, .lb-auth, .lb-orders, .lb-order-detail, .lb-app-block-slot {
+.lb-product-detail, .lb-cart, .lb-account, .lb-auth, .lb-orders, .lb-order-detail, .lb-app-block-slot,
+.lb-video-hero {
   box-sizing: border-box;
   max-width: 1200px;
   margin-inline: auto;
@@ -184,6 +185,9 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 }
 .lb-account__nav { display: flex; gap: 1rem; flex-wrap: wrap; }
 .lb-collection-banner { text-align: center; }
+.lb-video-hero__copy { text-align: center; margin-bottom: 1.5rem; }
+.lb-video-hero__embed { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius, 8px); }
+.lb-video-hero__embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
 /* ---- responsive ---- */
 @media (max-width: 760px) {

@@ -61,12 +61,18 @@ describe('experience-apply: section-type-map integrity', () => {
     assert.strictEqual(resolveLiquidSectionType('collectionFilter', doc.section_definitions), 'collection-filter');
   });
 
-  // The mapped-but-absent branch still needs coverage; instagramFeed and videoHero remain the two
-  // BUILT_IN types with a kebab mapping and no Liquid section file.
+  // videoHero USED to assert null here too: it had a kebab mapping ('video-hero') but no Liquid
+  // section file. S5 shipped sections/video-hero.liquid (a home-page video embed section), so the
+  // expectation inverts — same pattern as the faqAccordion/collectionFilter update above.
+  // instagramFeed remains the one BUILT_IN type with a kebab mapping and no Liquid section file.
   test('resolveLiquidSectionType returns null for a mapped type absent from the bundle', () => {
     const doc = getUrbanKicksDoc();
     assert.strictEqual(resolveLiquidSectionType('instagramFeed', doc.section_definitions), null);
-    assert.strictEqual(resolveLiquidSectionType('videoHero', doc.section_definitions), null);
+  });
+
+  test('resolveLiquidSectionType resolves videoHero → video-hero in UK bundle', () => {
+    const doc = getUrbanKicksDoc();
+    assert.strictEqual(resolveLiquidSectionType('videoHero', doc.section_definitions), 'video-hero');
   });
 
   test('resolveLiquidSectionType returns null for unknown type', () => {

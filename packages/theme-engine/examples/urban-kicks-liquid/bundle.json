@@ -349,6 +349,40 @@
           "block_order": [],
           "disabled": false
         },
+        "banner-carousel-default": {
+          "type": "banner-carousel",
+          "settings": {
+            "title": "This week on LetBuyy Core",
+            "autoplay": true
+          },
+          "blocks": {
+            "carousel-monsoon": {
+              "type": "slide",
+              "settings": {
+                "heading": "Monsoon-ready sneakers, restocked",
+                "link": "/collections/new-arrivals"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "carousel-apparel": {
+              "type": "slide",
+              "settings": {
+                "heading": "Apparel drop: up to 30% off",
+                "link": "/products"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "carousel-monsoon",
+            "carousel-apparel"
+          ],
+          "disabled": false
+        },
         "hero-default": {
           "type": "hero-banner",
           "settings": {
@@ -500,6 +534,16 @@
           ],
           "disabled": false
         },
+        "video-hero-default": {
+          "type": "video-hero",
+          "settings": {
+            "heading": "See the fit in motion",
+            "subheading": "A quick look at how each drop moves, from the box to your feet."
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
         "spotlight-default": {
           "type": "spotlight",
           "settings": {
@@ -533,6 +577,39 @@
           ],
           "disabled": false
         },
+        "testimonials-default": {
+          "type": "testimonials",
+          "settings": {
+            "title": "What our buyers say"
+          },
+          "blocks": {
+            "testimonial-ananya": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "The sizing guide was spot on and my Velocity Runners showed up in two days.",
+                "author": "Ananya R., Bengaluru"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            },
+            "testimonial-rohan": {
+              "type": "testimonial",
+              "settings": {
+                "quote": "Easy returns and honest photos — the hoodie fit exactly like the size chart said.",
+                "author": "Rohan K., Pune"
+              },
+              "disabled": false,
+              "blocks": {},
+              "block_order": []
+            }
+          },
+          "block_order": [
+            "testimonial-ananya",
+            "testimonial-rohan"
+          ],
+          "disabled": false
+        },
         "newsletter-default": {
           "type": "newsletter-signup",
           "settings": {
@@ -547,11 +624,14 @@
       },
       "order": [
         "announcement-default",
+        "banner-carousel-default",
         "hero-default",
         "category-grid-default",
         "featured-collection-default",
         "product-grid-default",
+        "video-hero-default",
         "spotlight-default",
+        "testimonials-default",
         "newsletter-default"
       ]
     },
@@ -2780,6 +2860,50 @@
         "presets": [
           {
             "name": "Spotlight",
+            "settings": {},
+            "blocks": []
+          }
+        ],
+        "enabled_on": {
+          "templates": [
+            "*"
+          ]
+        },
+        "disabled_on": {
+          "templates": []
+        }
+      }
+    },
+    "video-hero": {
+      "path": "sections/video-hero.liquid",
+      "source": "<section class=\"lb-video-hero\" data-section-id=\"{{ section.id }}\">\n  <div class=\"lb-video-hero__copy\">\n    <h2 class=\"lb-video-hero__heading\">{{ section.settings.heading }}</h2>\n    {% if section.settings.subheading %}<p class=\"lb-video-hero__subheading\">{{ section.settings.subheading }}</p>{% endif %}\n  </div>\n  {% if section.settings.videoUrl != blank %}<div class=\"lb-video-hero__embed\"><iframe src=\"{{ section.settings.videoUrl | video_url }}\" title=\"{{ section.settings.heading }}\" loading=\"lazy\" sandbox=\"allow-scripts allow-same-origin allow-presentation\" allowfullscreen></iframe></div>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Video Hero\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"See the fit in motion\"\n    },\n    {\n      \"id\": \"subheading\",\n      \"type\": \"textarea\",\n      \"label\": \"Subheading\",\n      \"default\": \"A quick look at how each drop moves, from the box to your feet.\"\n    },\n    {\n      \"id\": \"videoUrl\",\n      \"type\": \"url\",\n      \"label\": \"Video embed URL\",\n      \"info\": \"A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Video Hero\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "schema": {
+        "name": "Video Hero",
+        "tag": "section",
+        "settings": [
+          {
+            "type": "text",
+            "label": "Heading",
+            "default": "See the fit in motion",
+            "id": "heading"
+          },
+          {
+            "type": "textarea",
+            "label": "Subheading",
+            "default": "A quick look at how each drop moves, from the box to your feet.",
+            "id": "subheading"
+          },
+          {
+            "type": "url",
+            "label": "Video embed URL",
+            "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video.",
+            "id": "videoUrl"
+          }
+        ],
+        "blocks": [],
+        "presets": [
+          {
+            "name": "Video Hero",
             "settings": {},
             "blocks": []
           }

@@ -284,8 +284,10 @@ describe('AC/add-section-ok', () => {
 
 describe('AC/add-section-incompat', () => {
   // faqAccordion and collectionFilter used to be asserted here as 'incompatible' because the bundle
-  // shipped no Liquid file for either. The bundle now ships both, so adding them must succeed;
-  // instagramFeed and videoHero below keep the incompatible branch covered.
+  // shipped no Liquid file for either. The bundle now ships both, so adding them must succeed.
+  // videoHero (S5: sections/video-hero.liquid) is now compatible too, for the same reason — see
+  // experience-apply.test.ts's resolveLiquidSectionType coverage. instagramFeed below is the one
+  // remaining example that keeps the incompatible branch covered.
   test('faqAccordion can be added now that the bundle ships a parity file', () => {
     const doc = makeUrbanKicksDoc();
     const result = proposeThemeCustomization(doc, {
@@ -300,6 +302,15 @@ describe('AC/add-section-incompat', () => {
     const result = proposeThemeCustomization(doc, {
       kind: 'add-section',
       sectionType: 'collectionFilter',
+    });
+    assert.notStrictEqual(result.status, 'incompatible');
+  });
+
+  test('videoHero can be added now that the bundle ships sections/video-hero.liquid (S5)', () => {
+    const doc = makeUrbanKicksDoc();
+    const result = proposeThemeCustomization(doc, {
+      kind: 'add-section',
+      sectionType: 'videoHero',
     });
     assert.notStrictEqual(result.status, 'incompatible');
   });

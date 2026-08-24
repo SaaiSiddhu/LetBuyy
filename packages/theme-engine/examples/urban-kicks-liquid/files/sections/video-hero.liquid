@@ -1,0 +1,40 @@
+<section class="lb-video-hero" data-section-id="{{ section.id }}">
+  <div class="lb-video-hero__copy">
+    <h2 class="lb-video-hero__heading">{{ section.settings.heading }}</h2>
+    {% if section.settings.subheading %}<p class="lb-video-hero__subheading">{{ section.settings.subheading }}</p>{% endif %}
+  </div>
+  {% if section.settings.videoUrl != blank %}<div class="lb-video-hero__embed"><iframe src="{{ section.settings.videoUrl | video_url }}" title="{{ section.settings.heading }}" loading="lazy" sandbox="allow-scripts allow-same-origin allow-presentation" allowfullscreen></iframe></div>{% endif %}
+</section>
+{% schema %}
+{
+  "name": "Video Hero",
+  "settings": [
+    {
+      "id": "heading",
+      "type": "text",
+      "label": "Heading",
+      "default": "See the fit in motion"
+    },
+    {
+      "id": "subheading",
+      "type": "textarea",
+      "label": "Subheading",
+      "default": "A quick look at how each drop moves, from the box to your feet."
+    },
+    {
+      "id": "videoUrl",
+      "type": "url",
+      "label": "Video embed URL",
+      "info": "A YouTube or Vimeo embed URL (for example https://www.youtube.com/embed/VIDEO_ID). Leave blank to hide the video."
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "Video Hero",
+      "settings": {},
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

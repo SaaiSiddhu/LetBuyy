@@ -13,6 +13,40 @@
       "block_order": [],
       "disabled": false
     },
+    "banner-carousel-default": {
+      "type": "banner-carousel",
+      "settings": {
+        "title": "This week on LetBuyy Core",
+        "autoplay": true
+      },
+      "blocks": {
+        "carousel-monsoon": {
+          "type": "slide",
+          "settings": {
+            "heading": "Monsoon-ready sneakers, restocked",
+            "link": "/collections/new-arrivals"
+          },
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
+        },
+        "carousel-apparel": {
+          "type": "slide",
+          "settings": {
+            "heading": "Apparel drop: up to 30% off",
+            "link": "/products"
+          },
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
+        }
+      },
+      "block_order": [
+        "carousel-monsoon",
+        "carousel-apparel"
+      ],
+      "disabled": false
+    },
     "hero-default": {
       "type": "hero-banner",
       "settings": {
@@ -164,6 +198,16 @@
       ],
       "disabled": false
     },
+    "video-hero-default": {
+      "type": "video-hero",
+      "settings": {
+        "heading": "See the fit in motion",
+        "subheading": "A quick look at how each drop moves, from the box to your feet."
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
     "spotlight-default": {
       "type": "spotlight",
       "settings": {
@@ -197,6 +241,39 @@
       ],
       "disabled": false
     },
+    "testimonials-default": {
+      "type": "testimonials",
+      "settings": {
+        "title": "What our buyers say"
+      },
+      "blocks": {
+        "testimonial-ananya": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The sizing guide was spot on and my Velocity Runners showed up in two days.",
+            "author": "Ananya R., Bengaluru"
+          },
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
+        },
+        "testimonial-rohan": {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Easy returns and honest photos — the hoodie fit exactly like the size chart said.",
+            "author": "Rohan K., Pune"
+          },
+          "disabled": false,
+          "blocks": {},
+          "block_order": []
+        }
+      },
+      "block_order": [
+        "testimonial-ananya",
+        "testimonial-rohan"
+      ],
+      "disabled": false
+    },
     "newsletter-default": {
       "type": "newsletter-signup",
       "settings": {
@@ -211,11 +288,14 @@
   },
   "order": [
     "announcement-default",
+    "banner-carousel-default",
     "hero-default",
     "category-grid-default",
     "featured-collection-default",
     "product-grid-default",
+    "video-hero-default",
     "spotlight-default",
+    "testimonials-default",
     "newsletter-default"
   ]
 }

@@ -1152,6 +1152,11 @@ function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackage
   engine.registerFilter('json', (value: unknown) => JSON.stringify(toLiquidDrop(value) ?? null).replace(/</g, '\\u003c'));
   engine.registerFilter('asset_url', (value: unknown) => safeLiquidUrl(value));
   engine.registerFilter('image_url', (value: unknown) => safeLiquidUrl(value));
+  // S5/W2 — video embed URLs (YouTube/Vimeo) get the exact same scheme allowlist as images/assets:
+  // only absolute http(s), protocol-relative, or a root-relative path survive; anything else (a
+  // javascript:/data: scheme) becomes ''. A distinct filter NAME for readability at the call site
+  // only — safeLiquidUrl itself is not duplicated or reimplemented.
+  engine.registerFilter('video_url', (value: unknown) => safeLiquidUrl(value));
   engine.registerFilter('t', (value: unknown, replacements?: unknown) => translateLiquidKey(bundle, locale, value, replacements));
 }
 
