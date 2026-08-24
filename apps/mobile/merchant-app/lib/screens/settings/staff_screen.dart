@@ -123,7 +123,7 @@ class _StaffScreenState extends State<StaffScreen> {
                   ),
                 ),
                 Text(
-                  'Staff invites, roles, and access',
+                  'Staff accounts, roles, and access',
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
               ],
@@ -181,7 +181,7 @@ class _StaffScreenState extends State<StaffScreen> {
       return _centerState(
         Icons.manage_accounts_outlined,
         'No staff users',
-        'Invite staff when you need shared store operations.',
+        'Add staff when you need shared store operations.',
       );
     }
 
