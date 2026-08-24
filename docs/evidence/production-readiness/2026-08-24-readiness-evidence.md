@@ -18,6 +18,14 @@ memory). At the time this document was authored, the working tree also carried
 unrelated, uncommitted theme/Liquid changes from a concurrent session; none of
 those files were touched, read for correctness, or included in this evidence.
 
+**Update, same day (Phase I1):** Dimension 3 below was revised after Phase R1
+by a follow-on phase that authored an adversarial identity red-team suite
+(`services/api-gateway/src/__tests__/identity-redteam.test.ts`). Updated in
+place rather than as a separate dated document, since it is a same-day
+continuation of this exact snapshot's own stated gap for the same commit
+lineage — see that section for the new baseline commit this update is valid
+against. No other dimension was touched by Phase I1.
+
 **Scope of this phase (R1):** measurement only. No application, money, identity,
 tenancy, theme, or validator code was modified to produce this evidence. The
 destructive `node scripts/validate-governance.mjs --lane=gate` was explicitly NOT
@@ -111,31 +119,101 @@ this phase reuses it rather than creating a duplicate.
 
 ## Dimension 3 — Authentication forgery, replay, and escalation resistance
 
-**Status:** PARTIALLY MEASURED
+**Status:** PARTIALLY MEASURED (upgraded from Phase R1's PARTIALLY MEASURED —
+still not MEASURED; see the specific coverage gaps below)
+
+**Baseline commit for this update:** to be confirmed at commit time by Phase
+I1's own worker report; re-check `git log -1` before trusting the specific
+commit hash. The test evidence itself (pass counts, case IDs) is independent
+of the exact hash and was directly observed by running the suite.
 
 **Evidence:**
-- `pnpm test:foundation:wave4` → `tests/auth/session-verifier.test.mjs` +
-  `tests/governance/foundation-wave4-session-security.test.ts` +
-  `tests/executable/foundation-wave4-session-postgres.test.mjs` (14 tests) +
-  `validate:session-security`. All passing, against the isolated container.
+- `pnpm test:foundation:wave4` → `tests/auth/session-verifier.test.mjs` (9
+  tests) + `tests/governance/foundation-wave4-session-security.test.ts` +
+  `services/api-gateway/src/__tests__/identity-redteam.test.ts` (16 tests,
+  new this update) run together via one `tsx --test` invocation (20 tests
+  combined with the 4 pre-existing governance-file tests) +
+  `tests/executable/foundation-wave4-session-postgres.test.mjs` (1 test) +
+  `validate:session-security`. All 30 passing. The Postgres-touching test ran
+  against a disposable, uniquely-named, zero-host-port container
+  (`letbuyy-i1-evidence-pg`), never the shared `letbuyy-executable-pg`
+  container other sessions use; teardown confirmed via `docker ps` before
+  and after.
+- The new `identity-redteam.test.ts` suite (`IRT-1` through `IRT-6`, 16
+  cases with positive controls) directly and adversarially exercises
+  `services/api-gateway/src/lib/identity-session-verifier.ts` — the merchant
+  realm's ES256 verifier — for the first time; no prior test file in the
+  repository referenced it.
 
-**What this proves:** session verification and session-security validator
-rules hold at the unit/governance level, including some database-backed
-session checks.
+**What this proves, newly, as of this update:**
+- **Alg confusion (IRT-1):** the merchant verifier rejects `alg: none` and
+  `alg: HS256`-signed-with-the-public-key-as-secret; a genuinely valid ES256
+  token is accepted (positive control).
+- **Cross-realm presentation (IRT-2):** a valid customer-realm token, and a
+  valid operator/platform-console token, are both rejected by the merchant
+  verifier; a valid merchant token is rejected by both the customer and the
+  operator/platform verifiers. `realm`-correct-but-`token_use`-wrong (and the
+  reverse) are both rejected by the merchant verifier.
+- **The HS256 customer-realm deviation is now proven AND bounded (IRT-3 /
+  W3), not merely restated:** (a) with `CUSTOMER_SESSION_SECRET` known, a
+  valid customer session is genuinely mintable from scratch — the
+  verification key is the forgery key for that realm, demonstrated, not
+  assumed; (b) that same knowledge does **not** grant merchant-realm access —
+  three independent attempts (raw forged token with merchant claims, and a
+  tampered-and-resigned genuine customer session, both carrying `realm:
+  merchant`/`token_use: merchant_session`) were all rejected by the merchant
+  verifier, on algorithm grounds alone, before realm/token_use claims are
+  even inspected. **This is the phase's designated STOP condition and it did
+  NOT trigger** — the deviation's boundary held under direct test.
+- **Expiry (IRT-5):** an expired merchant token, and one with `iat` skewed
+  more than 60s into the future, are both rejected.
 
-**What this does NOT prove:** a full authentication forgery/replay/escalation
-red-team (e.g. deliberately forged JWTs, replayed tokens across realms,
-attempted merchant→operator or buyer→merchant privilege escalation) was NOT
-run this phase — no such suite was found in the repository at the roots
-checked. Additionally, per the root `CLAUDE.md`'s own recorded known
-deviation, the customer/buyer realm is still minted with **HS256**
-(`CUSTOMER_SESSION_SECRET`, `issueCustomerSession`) rather than the sole
-asymmetric issuer target state — meaning the verification key is also the
-forgery key for that realm today. This document does not re-verify that
-deviation's current boundaries (a separate, prior finding
-`letbuyy-auth-secret-shared-across-domains` already tracks it); it is
-restated here because it is directly relevant to this dimension's honest
-status and must not be implied as closed by wave4 passing.
+**What this newly reveals as NOT resistant (documented gaps, not fixed —
+out of scope for this measurement/proof-authoring phase):**
+- **IRT-4 — merchant_session JWT replay:** the ES256 merchant bootstrap
+  token has no jti-consumption tracking anywhere in the repository (grepped
+  and found none); presenting the same valid token twice succeeds both
+  times. Severity is bounded: its sole call site
+  (`services/api-gateway/src/routes/auth.ts:1130`) sits behind
+  `requireAccountsInternal`, a second, independently HMAC-signed
+  internal-auth layer — replaying it requires already holding
+  `INTERNAL_API_SECRET`.
+- **IRT-6 — legacy customer verifier divergence:** `verifyCustomerSessionToken`
+  (`packages/auth-core/src/index.ts:772`, the fallback path in
+  `services/api-gateway/src/middleware/customer-session.ts:61`) accepts a
+  `store_id`/`customer_id` value that the primary `verifyCustomerSession`
+  (`packages/auth-core/src/customer-session.ts:61`) would reject — the
+  legacy payload validator omits the 128-character cap and control-character
+  rejection the primary's `normalizeCustomerSessionId` applies. Demonstrated
+  concretely; downstream exploitability of accepting an oversized/malformed
+  id was not audited further this phase.
+
+**What this still does NOT prove:** a red-team run against the live,
+deployed system (this suite exercises the verifier functions directly with
+synthetic, test-generated key material, not a running Worker); a full
+enumeration of every conceivable forgery path (this is a targeted suite
+covering the attack classes listed in the Phase I1 worker report's gap
+matrix, not an exhaustive one); anything about the storefront password-gate
+token mechanism (`storefront-access.ts`), which is a separate, out-of-scope
+mechanism from the three auth realms. The HS256 customer-realm deviation
+itself remains open — collapsing it onto the sole asymmetric issuer (ART-05
+/ R-14) is unchanged and still requires the identity-platform engineering
+owner; this update proves its current *blast radius is bounded*, not that
+the deviation is closed.
+
+**Gap:** no live/deployed-system red-team; the merchant_session replay gap
+(IRT-4) and the legacy-verifier divergence (IRT-6) are both undefended
+today, though bounded in severity as described above; the HS256 deviation
+itself is unchanged.
+
+**Who closes it:** identity-platform engineering owner — collapse the
+customer realm onto the sole asymmetric issuer (ART-05/R-14 target state);
+add jti-consumption tracking to the merchant_session bootstrap token or
+document why its internal-auth gating is considered sufficient; align the
+legacy customer verifier's payload validation with the primary's, or retire
+the legacy path once its drain telemetry (`SKIP-IDN-R2-ACCOUNTS-COOKIE-DRAIN`
+tracks the adjacent accounts-cookie legacy drain, a related but distinct
+seam) reaches zero.
 
 **Gap:** no forgery/replay/escalation red-team suite exists; the HS256
 customer-realm deviation is a structural forgery-resistance gap, not merely
