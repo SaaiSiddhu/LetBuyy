@@ -169,11 +169,59 @@ function routeKey(filePath, method, routePath) {
   return `${relative}:${method}:${routePath}`;
 }
 
+// W1: requireOwnedSite/requireOwnedSiteOrError must resolve to the single
+// canonical implementation in lib/tenant-context.ts, never a local
+// per-route-file redefinition. containsGuard() above only matches the
+// literal substring, so without this check a re-duplicated local function of
+// the same name would still silently satisfy the ownership-gate signal.
+const canonicalOwnershipGateNamePattern = /^requireOwnedSite/;
+const canonicalOwnershipGateModule = path.join(repoRoot, 'services/api-gateway/src/lib/tenant-context');
+
+function importsOwnershipGateFromCanonicalModule(sourceFile, filePath, identifierName) {
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement)) continue;
+    const namedBindings = statement.importClause?.namedBindings;
+    if (!namedBindings || !ts.isNamedImports(namedBindings)) continue;
+    const importsIdentifier = namedBindings.elements.some((element) => element.name.text === identifierName);
+    if (!importsIdentifier) continue;
+    const moduleSpecifier = stringLiteralText(statement.moduleSpecifier);
+    if (!moduleSpecifier || !moduleSpecifier.startsWith('.')) continue;
+    const resolved = path.resolve(path.dirname(filePath), moduleSpecifier);
+    if (resolved === canonicalOwnershipGateModule) return true;
+  }
+  return false;
+}
+
+const knownOwnershipGateNames = ['requireOwnedSite', 'requireOwnedSiteOrError'];
+const duplicateGuardDefinitions = [];
 const violations = [];
 
 for (const filePath of listTypeScriptFiles(routesRoot)) {
   const sourceText = readFileSync(filePath, 'utf8');
   const sourceFile = ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const relative = path.relative(routesRoot, filePath).split(path.sep).join('/');
+
+  const locallyDefinedNames = new Set();
+  for (const statement of sourceFile.statements) {
+    if (ts.isFunctionDeclaration(statement) && statement.name && canonicalOwnershipGateNamePattern.test(statement.name.text)) {
+      locallyDefinedNames.add(statement.name.text);
+      const line = sourceFile.getLineAndCharacterOfPosition(statement.getStart(sourceFile)).line + 1;
+      duplicateGuardDefinitions.push(
+        `${relative}:${line} locally defines ${statement.name.text} -- import it from services/api-gateway/src/lib/tenant-context.ts instead`
+      );
+    }
+  }
+
+  for (const identifierName of knownOwnershipGateNames) {
+    if (locallyDefinedNames.has(identifierName)) continue; // already reported above
+    const referencedAsWord = new RegExp(`\\b${identifierName}\\b`).test(sourceText);
+    if (!referencedAsWord) continue; // this file never uses this identifier
+    if (!importsOwnershipGateFromCanonicalModule(sourceFile, filePath, identifierName)) {
+      duplicateGuardDefinitions.push(
+        `${relative} references ${identifierName} without importing it from services/api-gateway/src/lib/tenant-context.ts`
+      );
+    }
+  }
 
   function visit(node) {
     if (ts.isCallExpression(node)) {
@@ -202,11 +250,25 @@ for (const filePath of listTypeScriptFiles(routesRoot)) {
   visit(sourceFile);
 }
 
+let failed = false;
+
+if (duplicateGuardDefinitions.length > 0) {
+  console.error('Route ownership validator found non-canonical ownership-gate definitions or references:');
+  for (const violation of duplicateGuardDefinitions) {
+    console.error(` - ${violation}`);
+  }
+  failed = true;
+}
+
 if (violations.length > 0) {
   console.error('Route ownership validator found tenant-table handlers without an ownership/internal/session gate:');
   for (const violation of violations) {
     console.error(` - ${violation}`);
   }
+  failed = true;
+}
+
+if (failed) {
   process.exit(1);
 }
 

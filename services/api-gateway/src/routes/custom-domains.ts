@@ -1,5 +1,4 @@
 import { Hono } from 'hono';
-import type { Context } from 'hono';
 import { z } from 'zod';
 import {
     createStorefrontPreviewToken,
@@ -14,12 +13,12 @@ import {
 } from '@letbuyy/tenant-core';
 import { StoreAccessModeSchema } from '@letbuyy/shared-types';
 import type { Env } from '../index';
-import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dnsAnswerMatchesTarget, getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { screenCustomDomainClaim } from '../lib/custom-domain-abuse';
 import { readCustomDomainHealth } from '../lib/custom-domain-health';
 import { resolveDoh, resolveMxOrNsSnapshot } from '../lib/dns';
 import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
+import { requireOwnedSite } from '../lib/tenant-context';
 import { hashStoreAccessPassword } from '../lib/store-access-password';
 import { attachVercelProjectDomain, readVercelDomainStatus, VercelDomainConfigError } from '../lib/vercel-domains';
 import { detectDnsProvider } from '../lib/domain-provider';
@@ -129,16 +128,6 @@ function validateCustomDomain(domain: string, env: Env): string | null {
     }
 
     return null;
-}
-
-async function requireOwnedSite(c: Context<{ Bindings: Env }>, siteId: string) {
-    const db = getSupabaseAdmin(c);
-    const auth = c.get('auth');
-    const customUser = await resolveCustomUser(db, auth.user);
-    if (!customUser || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
-        return { db, customUser: null, response: c.json({ error: { code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' } }, 404) };
-    }
-    return { db, customUser, response: null };
 }
 
 function randomToken(byteCount = 24): string {

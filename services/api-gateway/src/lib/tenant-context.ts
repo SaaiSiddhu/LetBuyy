@@ -257,6 +257,60 @@ export async function resolveTenantContextForOrder(c: AppContext, orderId: strin
     return resolveTenantContextForOwnedSite(c, order.store_id as string);
 }
 
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+/**
+ * W1 (route-ownership consolidation): canonical replacement for the
+ * `requireOwnedSite` definition previously duplicated verbatim in
+ * custom-domains.ts and domains.ts. 404 STORE_NOT_FOUND folds "no profile"
+ * and "not the owner" into one branch -- do not split it, callers depend on
+ * that single shape. This is intentionally lighter than resolveOwnedStoreScope
+ * (no membership/role/entitlement resolution, no tenant context side effect)
+ * because those two routes never needed that work.
+ */
+export async function requireOwnedSite(c: AppContext, siteId: string) {
+    const db = getSupabaseAdmin(c);
+    const auth = c.get('auth');
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
+        return { db, customUser: null, response: c.json({ error: { code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' } }, 404) };
+    }
+    return { db, customUser, response: null };
+}
+
+/**
+ * W1 (route-ownership consolidation): canonical replacement for the
+ * `requireOwnedSite` definition previously duplicated verbatim in
+ * app-store/growth-routes.ts. Deliberately a separate export from
+ * requireOwnedSite above -- this one distinguishes "no profile" (403) from
+ * "no site_id" (400) from "not the owner" (403), and falls back to
+ * auth.user.storeId when no site_id is supplied. Do not merge the two: the
+ * domain routes must never gain the site_id fallback, and this one must never
+ * collapse to a single 404 branch.
+ */
+export async function requireOwnedSiteOrError(c: AppContext, requestedSiteId?: string | null) {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return { ok: false as const, status: 403, error: { code: 'FORBIDDEN', message: 'User profile not found' } };
+    }
+
+    const siteId = stringOrNull(requestedSiteId) || stringOrNull(auth.user.storeId);
+    if (!siteId) {
+        return { ok: false as const, status: 400, error: { code: 'VALIDATION', message: 'site_id is required' } };
+    }
+
+    const ownsStore = await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return { ok: false as const, status: 403, error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } };
+    }
+
+    return { ok: true as const, db, customUser, siteId };
+}
+
 export async function createPublicStorefrontTenantContext(
     c: AppContext,
     siteId: string

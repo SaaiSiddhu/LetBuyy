@@ -2,10 +2,10 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
-import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getCustomDomainCnameTarget } from '../lib/custom-domain-config';
 import { createDomainRegistrarProvider } from '../lib/registrar';
 import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
+import { requireOwnedSite } from '../lib/tenant-context';
 import { attachVercelProjectDomain, readVercelDomainStatus } from '../lib/vercel-domains';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -38,16 +38,6 @@ function normalizeDomain(input: string): string | null {
     } catch {
         return null;
     }
-}
-
-async function requireOwnedSite(c: Context<{ Bindings: Env }>, siteId: string) {
-    const db = getSupabaseAdmin(c);
-    const auth = c.get('auth');
-    const customUser = await resolveCustomUser(db, auth.user);
-    if (!customUser || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
-        return { db, customUser: null, response: c.json({ error: { code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' } }, 404) };
-    }
-    return { db, customUser, response: null };
 }
 
 function idempotencyKey(c: Context<{ Bindings: Env }>, domain: string, siteId: string): string {

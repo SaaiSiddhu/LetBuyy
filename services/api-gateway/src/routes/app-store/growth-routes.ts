@@ -1,7 +1,7 @@
-import { Hono, type Context } from 'hono';
+import { Hono } from 'hono';
 import type { Env } from '../../index';
-import { resolveCustomUser, verifySiteOwnership } from '../../lib/auth-user';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
+import { requireOwnedSiteOrError } from '../../lib/tenant-context';
 import { authMiddleware } from '../../middleware/auth';
 import { AppRequestInputSchema, AppSavedAppInputSchema } from '@letbuyy/shared-types';
 
@@ -14,10 +14,6 @@ function normalizePositiveInt(value: string | undefined, fallback: number, max: 
     const parsed = Number.parseInt(value || '', 10);
     if (!Number.isFinite(parsed) || parsed < 1) return fallback;
     return Math.min(parsed, max);
-}
-
-function stringOrNull(value: unknown): string | null {
-    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
 function decorateAppRecord(app: AppRecord): AppRecord {
@@ -37,30 +33,6 @@ function decorateAppRecord(app: AppRecord): AppRecord {
 
 function decorateAppRecords(apps: AppRecord[] | null): AppRecord[] {
     return (apps || []).map((app) => decorateAppRecord({ ...app }));
-}
-
-async function requireOwnedSite(
-    c: Context<{ Bindings: Env }>,
-    requestedSiteId?: string | null,
-) {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-    const customUser = await resolveCustomUser(db, auth.user);
-    if (!customUser) {
-        return { ok: false as const, status: 403, error: { code: 'FORBIDDEN', message: 'User profile not found' } };
-    }
-
-    const siteId = stringOrNull(requestedSiteId) || stringOrNull(auth.user.storeId);
-    if (!siteId) {
-        return { ok: false as const, status: 400, error: { code: 'VALIDATION', message: 'site_id is required' } };
-    }
-
-    const ownsStore = await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId);
-    if (!ownsStore) {
-        return { ok: false as const, status: 403, error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } };
-    }
-
-    return { ok: true as const, db, customUser, siteId };
 }
 
 function ownershipStatus(status: number): 400 | 403 {
@@ -213,7 +185,7 @@ export function registerAppStoreGrowthRoutes(router: AppStoreHono) {
     });
 
     router.get('/growth/saved-apps', authMiddleware, async (c) => {
-        const ownership = await requireOwnedSite(c, c.req.query('site_id'));
+        const ownership = await requireOwnedSiteOrError(c, c.req.query('site_id'));
         if (!ownership.ok) return c.json({ error: ownership.error }, ownershipStatus(ownership.status));
 
         try {
@@ -230,7 +202,7 @@ export function registerAppStoreGrowthRoutes(router: AppStoreHono) {
             return c.json({ error: { code: 'VALIDATION', message: parsed.error.issues[0]?.message || 'Invalid saved app' } }, 400);
         }
 
-        const ownership = await requireOwnedSite(c, parsed.data.site_id);
+        const ownership = await requireOwnedSiteOrError(c, parsed.data.site_id);
         if (!ownership.ok) return c.json({ error: ownership.error }, ownershipStatus(ownership.status));
 
         const { data: app, error: appError } = await ownership.db
@@ -266,7 +238,7 @@ export function registerAppStoreGrowthRoutes(router: AppStoreHono) {
     });
 
     router.delete('/growth/saved-apps/:appId', authMiddleware, async (c) => {
-        const ownership = await requireOwnedSite(c, c.req.query('site_id'));
+        const ownership = await requireOwnedSiteOrError(c, c.req.query('site_id'));
         if (!ownership.ok) return c.json({ error: ownership.error }, ownershipStatus(ownership.status));
 
         const { error } = await ownership.db

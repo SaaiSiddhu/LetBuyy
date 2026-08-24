@@ -157,6 +157,32 @@ test('pages, policies, and navigation require owned store checks before content 
     assert.match(routeSource, /verifySiteOwnership\(db,\s*policy\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
 });
 
+test('the requireOwnedSite ownership gate has one canonical definition per shape, not one per route file', () => {
+    const customDomainsSource = source('routes/custom-domains.ts');
+    const domainsSource = source('routes/domains.ts');
+    const growthRoutesSource = source('routes/app-store/growth-routes.ts');
+    const tenantSource = source('lib/tenant-context.ts');
+
+    for (const routeSource of [customDomainsSource, domainsSource, growthRoutesSource]) {
+        assert.doesNotMatch(routeSource, /async function requireOwnedSite/);
+    }
+
+    assert.match(customDomainsSource, /import \{ requireOwnedSite \} from '\.\.\/lib\/tenant-context'/);
+    assert.match(domainsSource, /import \{ requireOwnedSite \} from '\.\.\/lib\/tenant-context'/);
+    assert.match(growthRoutesSource, /import \{ requireOwnedSiteOrError \} from '\.\.\/\.\.\/lib\/tenant-context'/);
+
+    assert.match(tenantSource, /export async function requireOwnedSite\(c: AppContext,\s*siteId: string\)/);
+    assert.match(tenantSource, /export async function requireOwnedSiteOrError\(c: AppContext,\s*requestedSiteId\?: string \| null\)/);
+
+    // custom-domains.ts / domains.ts shape: customer-missing and not-owner fold into one 404, never split.
+    assert.match(tenantSource, /code: 'STORE_NOT_FOUND', message: 'Store not found or access denied' \} \}, 404\)/);
+    // growth-routes.ts shape: distinct 403 FORBIDDEN / 400 VALIDATION branches, plus the site_id fallback.
+    assert.match(tenantSource, /code: 'FORBIDDEN', message: 'User profile not found' \}/);
+    assert.match(tenantSource, /code: 'VALIDATION', message: 'site_id is required' \}/);
+    assert.match(tenantSource, /code: 'FORBIDDEN', message: 'Not authorized for this store' \}/);
+    assert.match(tenantSource, /stringOrNull\(requestedSiteId\) \|\| stringOrNull\(auth\.user\.storeId\)/);
+});
+
 test('theme editor instances, drafts, releases, and installs are isolated by owned store', () => {
     const routeSource = source('routes/themes.ts');
     const adapterSource = source('execution/theme-execution.adapter.ts');
