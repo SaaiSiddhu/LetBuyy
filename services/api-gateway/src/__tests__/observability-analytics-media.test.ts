@@ -40,7 +40,7 @@ test('Task 016 analytics reads are in-monolith and backed by in-DB rollups', () 
     assert.match(rollback, /DROP MATERIALIZED VIEW IF EXISTS public\.commerce_analytics_daily_mv/);
 });
 
-test('Task 016 media module signs R2 upload intents and publishes media.processed through the outbox', () => {
+test('Task 016 media module plans R2 upload intents and publishes media.processed through the outbox', () => {
     const mediaRoute = source('routes/media.ts');
     const storageAdapter = repositorySource('packages/infrastructure/storage-adapter/index.ts');
     const eventCore = repositorySource('packages/event-core/src/index.ts');
@@ -49,12 +49,20 @@ test('Task 016 media module signs R2 upload intents and publishes media.processe
 
     assert.match(mediaRoute, /router\.post\('\/signed-upload'/);
     assert.match(mediaRoute, /planSignedR2UploadIntent/);
-    assert.match(mediaRoute, /hmacSha256Hex/);
-    assert.match(mediaRoute, /sha256Hex/);
     assert.match(mediaRoute, /\.from\('media_assets'\)/);
     assert.match(mediaRoute, /media\.processed/);
     assert.match(mediaRoute, /EventExecutionAdapter/);
     assert.doesNotMatch(mediaRoute, /media-service/);
+
+    // Phase D2: the signing machinery is deleted, not merely unused -- nothing
+    // ever verified it (routes/upload.ts, the only live upload path, never
+    // read the token), so it read as an authorization boundary and enforced
+    // nothing (ANTI-R9). Proves the deletion, not just that the route exists.
+    assert.doesNotMatch(mediaRoute, /signUploadIntent/);
+    assert.doesNotMatch(mediaRoute, /mediaUploadSigningSecret/);
+    assert.doesNotMatch(mediaRoute, /hmacSha256Hex/);
+    assert.doesNotMatch(mediaRoute, /upload_token_hash/);
+    assert.doesNotMatch(mediaRoute, /MEDIA_UPLOAD_SIGNING_SECRET/);
 
     assert.match(storageAdapter, /export function planSignedR2UploadIntent/);
     assert.match(storageAdapter, /export function mediaAssetTypeForContent/);
