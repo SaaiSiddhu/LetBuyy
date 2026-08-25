@@ -810,6 +810,29 @@ function defaultBranding(siteId: string) {
     };
 }
 
+// T8/W2 — store_branding's real columns are only site_id/logo_url/favicon_url/primary_color/
+// accent_color/checkout_theme/tokens/metadata (no migration this phase). The 7 new
+// StoreBrandingSchema fields (secondary/background/text/surface colour, both fonts, radius,
+// is_dark) are genuinely typed and validated at the Zod layer, but physically persist inside the
+// existing schemaless `tokens` jsonb column under this reserved, unambiguous key prefix — never
+// mixed with a merchant's own arbitrary `tokens` entries, and never spread directly onto the
+// upsert payload (the table has no such columns; doing that would 500 on a real write).
+const EXTENDED_BRANDING_TOKEN_PREFIX = 'theme_override__';
+const EXTENDED_BRANDING_FIELDS = [
+    'secondary_color', 'background_color', 'text_color', 'surface_color',
+    'heading_font_family', 'body_font_family', 'border_radius', 'is_dark',
+] as const;
+
+function packExtendedBrandingIntoTokens(body: StoreBrandingInput): Record<string, string | number | boolean> {
+    const packed: Record<string, string | number | boolean> = { ...body.tokens };
+    for (const field of EXTENDED_BRANDING_FIELDS) {
+        const value = body[field];
+        if (value === undefined || value === null) continue;
+        packed[`${EXTENDED_BRANDING_TOKEN_PREFIX}${field}`] = value;
+    }
+    return packed;
+}
+
 publicStoreBrandingRouter.get('/:storeId/branding', async (c) => {
     const storeId = c.req.param('storeId');
     const db = getSupabaseAdmin(c);
@@ -837,7 +860,12 @@ storeBrandingManagementRouter.put('/:storeId/branding', validate('json', StoreBr
         .from('store_branding')
         .upsert({
             site_id: storeId,
-            ...body,
+            logo_url: body.logo_url ?? null,
+            favicon_url: body.favicon_url ?? null,
+            primary_color: body.primary_color,
+            accent_color: body.accent_color,
+            checkout_theme: body.checkout_theme,
+            tokens: packExtendedBrandingIntoTokens(body),
             updated_by: customUser.id,
             created_by: customUser.id,
         }, { onConflict: 'site_id' })

@@ -23,6 +23,11 @@ const requiredScriptDirectories = [
   "scripts/utilities",
   "scripts/money-certification",
   "scripts/liquid-parity",
+  // T8/W0 — added deliberately for scripts/search/backfill-search-documents.sql (T6/W4,
+  // commit d3921eab): a one-time, idempotent local data backfill for search_documents, the same
+  // class of thing scripts/liquid-parity's bundle-attach scripts already are — not a migration,
+  // not a generator, not a validator. A real, nameable category, not a workaround for one file.
+  "scripts/search",
 ];
 
 const allowedRootScriptFiles = new Set([

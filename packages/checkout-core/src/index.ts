@@ -125,12 +125,38 @@ export const CheckoutConfirmSchema = z.object({
   simulate_order_failure: z.boolean().default(false),
 }).strict();
 
+// T8/W2 — a font-family value that will ever reach a CSS context (today: a React `style` prop,
+// which cannot itself be broken out of statement-by-statement — but this schema is the boundary
+// for the VALUE, not for one specific consumer, and a future caller could easily copy it into a
+// raw <style> block) is a CSS injection vector: `Inter; } body { display:none } .a{` is a
+// syntactically valid CSS custom-ident followed by a breakout. Letters, digits, spaces, hyphens
+// and commas (font-stack fallbacks) cover every real font name; quotes, braces, semicolons,
+// colons and backslashes are never legitimate in one and are rejected outright.
+const FONT_FAMILY_PATTERN = /^[a-zA-Z0-9\s,-]{1,80}$/;
+const FontFamilySchema = z.string().regex(FONT_FAMILY_PATTERN).optional().nullable();
+
 export const StoreBrandingSchema = z.object({
   logo_url: z.string().url().optional().nullable(),
   favicon_url: z.string().url().optional().nullable(),
   primary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default('#111827'),
   accent_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default('#2563EB'),
   checkout_theme: z.enum(['system', 'light', 'dark']).default('system'),
+  // T8/W2 — the merchant's full theme token set (config/settings_schema.json has 9 real fields;
+  // this schema previously carried only primary_color/accent_color). These stay OPTIONAL: when
+  // absent, the checkout-origin caller resolves them from the store's own
+  // theme_releases.template_snapshot.themeSettings (the same data the merchant's storefront
+  // already renders from — no second configuration step). When present here, they are an
+  // explicit checkout-specific override on top of that base, validated with the same rigor as
+  // primary_color/accent_color above: hex regex with no free-form fallback, a bounded number for
+  // radius, and the font-family allowlist above.
+  secondary_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  background_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  text_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  surface_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+  heading_font_family: FontFamilySchema,
+  body_font_family: FontFamilySchema,
+  border_radius: z.number().finite().min(0).max(32).optional().nullable(),
+  is_dark: z.boolean().optional().nullable(),
   tokens: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).default({}),
 }).strict();
 

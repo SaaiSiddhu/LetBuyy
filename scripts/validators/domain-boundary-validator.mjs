@@ -210,7 +210,11 @@ for (const file of appApiRoutes) {
   routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
 }
 
-reporter.assert(appApiRoutes.length === 188, `App-local API route inventory changed without updating P4-4 classification: expected 188, found ${appApiRoutes.length}`);
+// T8/W0 — 189 as of apps/storefront-runtime/src/app/api/store/[subdomain]/search-suggest/
+// route.ts (T5, commit 68ed4b29): a thin gateway-proxy read route, already correctly classified
+// by the existing `apps/storefront-runtime/src/app/api/` catch-all above — this bump is the
+// deliberate maintenance action the classification check above expects, not a workaround.
+reporter.assert(appApiRoutes.length === 189, `App-local API route inventory changed without updating P4-4 classification: expected 189, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {

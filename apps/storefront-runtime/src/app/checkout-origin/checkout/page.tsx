@@ -3,7 +3,8 @@ import type { StoreBrandingInput } from '@letbuyy/checkout-core';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { StoreService } from '@/lib/store-service';
 import CheckoutClient, { type CheckoutOriginCartLine } from '../../store/[subdomain]/checkout/checkout-client';
-import { sanitizeBranding, brandingCssVariables, sanitizeBrandingUrl } from '../branding';
+import { sanitizeBranding, brandingCssVariables } from '../branding';
+import CheckoutLogo from '../checkout-logo';
 
 export const metadata: Metadata = {
     title: 'Secure Checkout',
@@ -46,9 +47,18 @@ function resolveStorefrontOriginUrl(subdomain: string): string {
     return `https://${subdomain}.${rootDomain}`;
 }
 
+// T8/W1 — this page renders BEFORE a store or its branding is ever resolved (an invalid/expired
+// handoff never reaches that step), so it cannot depend on the store-specific branding wrapper
+// below. It gets the neutral LetBuyy design layer directly (sanitizeBranding(null, null)) rather
+// than relying on any ambient variable — the exact "no branding configured" path W1 requires to
+// stay legible, just reached from a different route through this file.
 function InvalidHandoffPage({ reason }: { reason: string }) {
+    const neutral = sanitizeBranding(null, null);
     return (
-        <main className="flex min-h-screen items-center justify-center px-4">
+        <main
+            className="flex min-h-screen items-center justify-center px-4"
+            style={brandingCssVariables(neutral)}
+        >
             <div className="w-full max-w-md rounded-2xl border border-[var(--lb-color-border,#e5e7eb)] bg-surface p-8 text-center shadow-xl">
                 <h1 className="mb-2 text-xl font-bold text-theme">This checkout link isn&apos;t valid</h1>
                 <p className="text-sm text-theme-secondary">{reason}</p>
@@ -134,26 +144,23 @@ export default async function CheckoutOriginPage({
     if (!store) return <InvalidHandoffPage reason="This store is no longer available." />;
 
     const brandingInput = await loadBranding(verified.siteId);
-    const branding = sanitizeBranding(brandingInput);
-    const logoUrl = branding.logoUrl ?? sanitizeBrandingUrl(store.logoUrl);
+    // T8/W2 — resolved from the store's own already-computed templateConfig.themeSettings (the
+    // exact same object apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx derives the
+    // real storefront's CSS variables from — see mapSupabaseToStore in lib/store-service.ts), so
+    // checkout inherits the merchant's real theme without a second configuration step. The
+    // store_branding row (brandingInput) layers a checkout-specific override on top where set.
+    const branding = sanitizeBranding(brandingInput, store.templateConfig.themeSettings);
     const cartLines = verified.lines.map(toCartLine).filter((line): line is CheckoutOriginCartLine => line !== null);
 
     return (
-        <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme}>
+        <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
             <header className="border-b border-[var(--lb-color-border,#e5e7eb)] px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a
                         href={resolveStorefrontOriginUrl(store.subdomain)}
                         className="flex items-center gap-2 text-sm font-semibold text-theme"
                     >
-                        {logoUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element -- a merchant logo host is never
-                            // known ahead of time, so next/image's static remotePatterns allowlist can't cover it;
-                            // the URL itself is already scheme-validated above.
-                            <img src={logoUrl} alt={store.name} className="h-7 w-auto" />
-                        ) : (
-                            <span>{store.name}</span>
-                        )}
+                        <CheckoutLogo logoUrl={branding.logoUrl} storeName={store.name} />
                     </a>
                     <span className="flex items-center gap-1 text-xs font-medium text-theme-secondary">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
