@@ -8,7 +8,7 @@ import {
     storefrontBrowserApiFetch,
 } from '@/lib/api/browser-client';
 
-interface CartContextType {
+export interface CartContextType {
     items: CartItem[];
     addToCart: (product: ProductModel, variantContext?: CartVariantContext) => void;
     removeFromCart: (productId: string, variantId?: string | null) => void;
@@ -52,7 +52,12 @@ type CartLineInput = {
     properties: Record<string, unknown>;
 };
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+// T6/W2 — exported so the checkout-origin route tree (apps/storefront-runtime/src/app/
+// checkout-origin/**, which is NEVER wrapped by this file's CartProvider — see
+// app/store/[subdomain]/layout.tsx, the only place CartProvider mounts) can read via
+// useContext directly (never throws on a missing provider, unlike useCart()) and fall back to
+// a server-fetched cart sourced from the verified handoff instead.
+export const CartContext = createContext<CartContextType | undefined>(undefined);
 const CART_STORAGE_KEY = 'lb_cart';
 const CART_TOKEN_STORAGE_KEY = 'lb_cart_token';
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { useCart } from '@/context/cart-context';
-import { useEffect, useRef, useState } from 'react';
+import { CartContext } from '@/context/cart-context';
+import { useContext, useEffect, useRef, useState } from 'react';
 import Image, { type ImageLoaderProps } from 'next/image';
 import { Button, Input,
     AlertCircle, ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
@@ -64,6 +64,21 @@ declare global {
     }
 }
 
+// T6/W2/W4 — a checkout.<root>-hosted line, sourced server-side from the verified handoff's own
+// cart snapshot (services/api-gateway's GET /checkout/:cartId/verify-handoff), never from
+// browser storage — checkout.<root> is a different origin than the merchant's storefront, so
+// the CartProvider-backed useCart() below (localStorage-scoped to the storefront's own origin)
+// is unreachable there by design, not by oversight.
+export interface CheckoutOriginCartLine {
+    id: string;
+    variantId?: string | null;
+    name: string;
+    images: string[];
+    price: number;
+    quantity: number;
+    selectedVariant?: Record<string, string>;
+}
+
 interface CheckoutClientProps {
     storeId: string;
     sellerId: string;
@@ -71,6 +86,14 @@ interface CheckoutClientProps {
     storeName: string;
     codEnabled: boolean;
     onlinePaymentEnabled: boolean;
+    // When set, this render is on the checkout-origin tree: cart lines come from this prop
+    // (server-verified handoff data) instead of useCart(), and basePath points at the real
+    // storefront origin (an absolute URL) instead of a same-origin /store/<subdomain> path,
+    // since checkout.<root> serves no /store/** tree at all.
+    checkoutOrigin?: {
+        storefrontBaseUrl: string;
+        cartLines: CheckoutOriginCartLine[];
+    };
 }
 
 interface FormData {
@@ -147,9 +170,35 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled }: CheckoutClientProps) {
-    const { items, cartTotal, clearCart } = useCart();
-    const basePath = `/store/${subdomain}`;
+export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, checkoutOrigin }: CheckoutClientProps) {
+    // useContext (not useCart()) never throws when there is no CartProvider ancestor — true on
+    // the checkout-origin tree, which mounts no CartProvider at all (it belongs to
+    // app/store/[subdomain]/layout.tsx only). checkoutOrigin's own cart lines take priority when
+    // present; the storefront-origin render (checkoutOrigin undefined) is byte-for-byte the same
+    // behaviour as before this prop existed.
+    const cartContext = useContext(CartContext);
+    // Normalized to one consistent shape (CheckoutOriginCartLine) regardless of source, so every
+    // existing `.map`/`.reduce` below needs no branching of its own.
+    const items: CheckoutOriginCartLine[] = checkoutOrigin
+        ? checkoutOrigin.cartLines
+        : (cartContext?.items ?? []).map((item) => ({
+            id: item.id,
+            variantId: (item as typeof item & { variantId?: string | null }).variantId ?? null,
+            name: item.name,
+            images: item.images,
+            price: item.price,
+            quantity: item.quantity,
+            selectedVariant: item.selectedVariant,
+        }));
+    const cartTotal = checkoutOrigin
+        ? items.reduce((sum, line) => sum + line.price * line.quantity, 0)
+        : cartContext?.cartTotal ?? 0;
+    // The checkout-origin's browser has no access to the storefront origin's localStorage cart
+    // to clear in the first place (different origin) — a no-op there is correct, not a gap; the
+    // storefront's own cart badge count self-corrects the next time that origin's CartProvider
+    // reads its (now stale) local cart against the real order it already placed.
+    const clearCart = cartContext?.clearCart ?? (() => {});
+    const basePath = checkoutOrigin ? checkoutOrigin.storefrontBaseUrl : `/store/${subdomain}`;
     const hasPaymentMethods = onlinePaymentEnabled || codEnabled;
     const initialPaymentMethod: PaymentMethod = onlinePaymentEnabled ? 'online' : codEnabled ? 'cod' : 'online';
 

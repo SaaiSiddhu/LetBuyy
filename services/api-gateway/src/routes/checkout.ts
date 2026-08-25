@@ -486,6 +486,39 @@ async function runIdempotentStep(
     }
 }
 
+// T6/W2 — checkout.letbuyy.com resolves its tenant from the signed handoff, never the Host
+// header. This is a thin, read-only, PUBLIC wrapper around the exact same verifyCheckoutHandoff
+// used by every hosted-checkout state-machine route above — no separate verification logic, no
+// weakened check. It creates nothing; a caller that only wants to know "is this handoff valid"
+// (the checkout-origin page, before rendering anything) never needs to touch the state machine.
+checkoutRouter.get('/:cartId/verify-handoff', async (c) => {
+    const cartId = c.req.param('cartId');
+    const verified = await verifyCheckoutHandoff(c, cartId);
+    if (!verified.ok) return verified.response;
+
+    const lines = cartLines(verified.handoff.cart);
+    // Resolves the subdomain the checkout-origin page needs for its "back to store" links and
+    // to reuse the already-proven-reliable getStoreBySubdomain read path, deliberately not the
+    // legacy `GET /storefront/store/:storeId` route (kept for a different, older caller and not
+    // otherwise touched by this phase).
+    const db = getSupabaseAdmin(c);
+    const { data: site } = await db
+        .from('sites')
+        .select('subdomain, name')
+        .eq('id', verified.handoff.siteId)
+        .eq('status', 'published')
+        .maybeSingle();
+
+    return c.json(success({
+        site_id: verified.handoff.siteId,
+        cart_id: verified.handoff.cartId,
+        cart_token: verified.handoff.cartToken,
+        channel: verified.handoff.channel,
+        subdomain: (site as { subdomain?: string } | null)?.subdomain || null,
+        lines,
+    }));
+});
+
 checkoutRouter.post('/:cartId/contact', validate('json', CheckoutContactSchema), async (c) => {
     const cartId = c.req.param('cartId');
     const verified = await verifyCheckoutHandoff(c, cartId);

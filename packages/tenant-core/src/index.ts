@@ -41,6 +41,13 @@ export const RESERVED_STOREFRONT_LABELS = [
   'mail',
   'dcv',
   'connect',
+  // T6 — checkout.letbuyy.com is a hosted, signed-handoff-only origin (see
+  // services/api-gateway/src/routes/storefront/cart-routes.ts, CHECKOUT_ORIGIN in
+  // wrangler.toml). A merchant-registered `checkout` subdomain would let a merchant control
+  // the hostname the gateway signs cart handoffs to. checkout-staging is wrangler.toml's own
+  // preview/staging CHECKOUT_ORIGIN host, reserved for the same reason.
+  'checkout',
+  'checkout-staging',
 ] as const;
 
 export const RESERVED_SUBDOMAINS = [
@@ -116,14 +123,28 @@ export function extractStorefrontSubdomain(
   return label;
 }
 
+// Additional literal hostnames (no scheme/port) that should resolve as the platform root
+// alongside `rootDomain` — e.g. a LAN IP so the marketplace root is reachable from another
+// device in local dev. Never used for tenant/custom-domain matching, only for this equality
+// check, so it cannot widen subdomain or custom-domain resolution.
+function normalizeRootDomainAliases(aliases: readonly string[] | string | null | undefined): string[] {
+  const list = Array.isArray(aliases) ? aliases : typeof aliases === 'string' ? aliases.split(',') : [];
+  return list
+    .map((alias) => normalizeRequestHost(alias))
+    .filter((alias): alias is string => Boolean(alias));
+}
+
 export function resolveStorefrontHost(
   host: string | null | undefined,
   rootDomain: string | null | undefined,
+  rootDomainAliases?: readonly string[] | string | null,
 ): StorefrontHostResolution {
   const normalizedHost = normalizeRequestHost(host);
   const normalizedRoot = normalizeStoreRootDomain(rootDomain);
   if (!normalizedHost) return { kind: 'invalid', host: '', rootDomain: normalizedRoot };
-  if (normalizedHost === normalizedRoot) return { kind: 'root', host: normalizedHost, rootDomain: normalizedRoot };
+  if (normalizedHost === normalizedRoot || normalizeRootDomainAliases(rootDomainAliases).includes(normalizedHost)) {
+    return { kind: 'root', host: normalizedHost, rootDomain: normalizedRoot };
+  }
 
   const suffix = `.${normalizedRoot}`;
   if (!normalizedHost.endsWith(suffix)) {

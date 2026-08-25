@@ -189,6 +189,40 @@ function isInternalStorePath(pathname: string): boolean {
   return pathname === '/store' || pathname.startsWith('/store/');
 }
 
+// T6/W2 — `/checkout-origin` is the internal rewrite target for the checkout.<root> host (see
+// rewriteToCheckoutOrigin below). Reached as a URL directly it would skip host-based tenant
+// resolution — the checkout tree resolves its tenant from the signed handoff query params, not
+// from a path segment, so nothing here needs a subdomain name, but the path itself must still
+// only ever be reachable via the checkout host, matching /store/<subdomain>'s own protection.
+function isInternalCheckoutOriginPath(pathname: string): boolean {
+  return pathname === '/checkout-origin' || pathname.startsWith('/checkout-origin/');
+}
+
+// True when `host` is the checkout-only origin (checkout.<root> or checkout-staging.<root> —
+// both reserved in RESERVED_STOREFRONT_LABELS, packages/tenant-core/src/index.ts). Compares the
+// label resolveStorefrontHost already extracted rather than re-deriving it, so this can never
+// disagree with the reserved-label check immediately below.
+function isCheckoutOriginHost(resolution: { kind: string; host: string; rootDomain: string | null }): boolean {
+  if (resolution.kind !== 'reserved' || !resolution.rootDomain) return false;
+  const suffix = `.${resolution.rootDomain}`;
+  if (!resolution.host.endsWith(suffix)) return false;
+  const label = resolution.host.slice(0, -suffix.length);
+  return label === 'checkout' || label === 'checkout-staging';
+}
+
+// checkout.<root> never rewrites into /store/<subdomain> — the checkout tree resolves its
+// tenant from the verified handoff (site_id in the query string), never from the Host header,
+// so it must not inherit any tenant-specific state (theme CSS, store layout, a subdomain path
+// segment). This preserves every query param (site_id/cart_id/cart_token/expires_at/
+// cart_digest/signature/channel) verbatim; the destination route re-verifies them itself.
+function rewriteToCheckoutOrigin(req: NextRequest): NextResponse {
+  const destination = req.nextUrl.clone();
+  if (!isInternalCheckoutOriginPath(destination.pathname)) {
+    destination.pathname = `/checkout-origin${destination.pathname}`;
+  }
+  return noIndex(NextResponse.rewrite(destination));
+}
+
 // Theme-editor preview cookie (host-only, no domain attribute) for a subdomain.
 function applyThemePreviewCookie(response: NextResponse, subdomain: string, token: string): NextResponse {
   if (!token || !subdomain) return response;
@@ -368,10 +402,33 @@ export async function proxy(req: NextRequest) {
   // call site (`src/app/preview/page.tsx`), which loads a store solely against a theme preview
   // session token minted for that store.
   if (isVercelDeploymentHost(host)) {
-    return isInternalStorePath(req.nextUrl.pathname) ? storeNotFound() : NextResponse.next();
+    return isInternalStorePath(req.nextUrl.pathname) || isInternalCheckoutOriginPath(req.nextUrl.pathname)
+      ? storeNotFound()
+      : NextResponse.next();
   }
 
-  const parsed = resolveStorefrontHost(host, process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
+  const parsed = resolveStorefrontHost(
+    host,
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+    process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES,
+  );
+
+  // T6/W2 — checkout.<root> (and its staging variant) is a reserved label (never a merchant
+  // subdomain — see RESERVED_STOREFRONT_LABELS), so it falls into `kind:'reserved'` below.
+  // Intercept it here, before the generic reserved-host 404, and route it to the checkout tree
+  // instead. The checkout tree resolves its own tenant from the verified handoff in the query
+  // string — this branch never touches `resolveAccess`/the site-access gate below, on purpose:
+  // that gate is keyed by Host, and the checkout host maps to no single site.
+  if (isCheckoutOriginHost(parsed)) {
+    return rewriteToCheckoutOrigin(req);
+  }
+
+  if (isInternalCheckoutOriginPath(req.nextUrl.pathname)) {
+    // Reached directly (not via the checkout host) — deny, matching /store/<subdomain>'s own
+    // protection against being addressed directly instead of through host-based rewriting.
+    return storeNotFound();
+  }
+
   if (parsed.kind === 'reserved' || parsed.kind === 'invalid') {
     return storeNotFound();
   }
@@ -393,7 +450,10 @@ export async function proxy(req: NextRequest) {
     if (!isInternalStorePath(req.nextUrl.pathname)) return NextResponse.next();
     const requestedSubdomain = req.nextUrl.pathname.split('/')[2];
     if (!requestedSubdomain) return storeNotFound();
-    accessHost = `${requestedSubdomain}.${host}`;
+    // Build against the canonical root domain, not the request host: `host` here may be a
+    // root-domain alias (e.g. a LAN IP) the backend's own tenant resolver has never heard of,
+    // and `subdomain.<alias>` would resolve as an unknown custom domain instead of a subdomain.
+    accessHost = `${requestedSubdomain}.${parsed.rootDomain || host}`;
   }
 
   const resolution = await resolveAccess(accessHost);

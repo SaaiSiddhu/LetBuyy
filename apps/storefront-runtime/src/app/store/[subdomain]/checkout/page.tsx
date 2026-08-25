@@ -1,7 +1,7 @@
 import { StoreService } from '@/lib/store-service';
 import { buildStoreMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
-import CheckoutClient from './checkout-client';
+import CheckoutRedirect from './checkout-redirect';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
@@ -18,6 +18,12 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
     });
 }
 
+// T6/W4/W5 — this route no longer renders the checkout form. checkout.<root> (see
+// apps/storefront-runtime/src/app/checkout-origin/checkout/page.tsx) is now the one live
+// checkout surface: it verifies a signed handoff server-side and carries no merchant theme CSS.
+// This page's only remaining job is to mint that handoff for whatever cart is in the browser
+// right now and hand the shopper off to it — it must never render the old themed checkout form
+// again (that would resurrect the second entry point this phase closed).
 export default async function CheckoutPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const { subdomain } = await params;
     const store = await StoreService.getStoreBySubdomain(subdomain);
@@ -26,14 +32,5 @@ export default async function CheckoutPage({ params }: { params: Promise<{ subdo
         return notFound();
     }
 
-    return (
-        <CheckoutClient
-            storeId={store.id}
-            sellerId={store.sellerId}
-            subdomain={subdomain}
-            storeName={store.name}
-            codEnabled={store.codEnabled !== false}
-            onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
-        />
-    );
+    return <CheckoutRedirect subdomain={subdomain} />;
 }
