@@ -23,6 +23,7 @@
 // this tree, not that the classes themselves were wrong.
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 import type { StoreBrandingInput } from '@letbuyy/checkout-core';
+import { letbuyyColorTokens, letbuyyPrimitiveTokens } from '@letbuyy/ui/tokens';
 
 const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 // Mirrors packages/checkout-core/src/index.ts's FONT_FAMILY_PATTERN exactly — this is a second,
@@ -186,17 +187,32 @@ export interface SanitizedBranding {
     contrastFallbackApplied: boolean;
 }
 
-// Neutral LetBuyy defaults — recognisably LetBuyy's own palette (matches the platform :root
-// defaults in globals.css: --primary rgb(99 102 241), --background white), never a guess at any
-// particular merchant's brand. Used whenever a value is absent from BOTH the branding override
-// and the store's own resolved theme settings.
+// T9/W2 — sourced from @letbuyy/ui/tokens (packages/typescript/ui/src/tokens.ts), the design
+// system's one token source, instead of standalone hex literals (the previous version of this
+// object hardcoded 6 raw hex values here, none of them actually read from the token package).
+// Four of the six already matched an existing token exactly, byte for byte — accentColor,
+// textColor, surfaceColor and backgroundColor are unchanged in appearance, just now traced to a
+// real source instead of coincidentally matching one:
+//   accentColor      letbuyyPrimitiveTokens.color.pink[400]   ('#F472B6', exact prior match)
+//   textColor        letbuyyPrimitiveTokens.color.slate[900]  ('#0F172A', exact prior match)
+//   surfaceColor     letbuyyPrimitiveTokens.color.gray[50]    ('#F9FAFB', exact prior match)
+//   backgroundColor  letbuyyPrimitiveTokens.color.white       ('#FFFFFF', exact prior match)
+// primaryColor and secondaryColor did NOT have a real match: the previous '#6366F1' was an
+// indigo hue copied from globals.css's own standalone `--primary: rgb(99 102 241)` CSS default —
+// a second, uncoordinated colour source, not this token package. The design system's own
+// semantic name for its one brand hue is `letbuyyColorTokens.primary` (violet/purple, not
+// indigo) — used here for primaryColor with its `primaryHover` shade for secondaryColor, since
+// this token package has no separate "second brand hue" concept to draw on (its "secondary"
+// tokens are all text/button treatments, not a distinct brand colour). This is a deliberate,
+// disclosed shift in the neutral fallback's hue (indigo → violet), not a decision to invent a
+// new token — see PHASE-T9's ledger entry for the full reasoning.
 const NEUTRAL = {
-    primaryColor: '#6366F1',
-    secondaryColor: '#8B5CF6',
-    accentColor: '#F472B6',
-    backgroundColor: '#FFFFFF',
-    textColor: '#0F172A',
-    surfaceColor: '#F9FAFB',
+    primaryColor: letbuyyColorTokens.primary,
+    secondaryColor: letbuyyColorTokens.primaryHover,
+    accentColor: letbuyyPrimitiveTokens.color.pink[400],
+    backgroundColor: letbuyyPrimitiveTokens.color.white,
+    textColor: letbuyyPrimitiveTokens.color.slate[900],
+    surfaceColor: letbuyyPrimitiveTokens.color.gray[50],
     headingFontFamily: 'Inter',
     bodyFontFamily: 'Inter',
     borderRadius: 12,
@@ -285,7 +301,20 @@ export function brandingCssVariables(branding: SanitizedBranding): React.CSSProp
         '--font-main': `${branding.bodyFontFamily}, system-ui, sans-serif`,
         '--font-heading': `${branding.headingFontFamily}, system-ui, sans-serif`,
         '--text-secondary': isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-        '--text-muted': isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)',
+        // T9/W3 — checkout-client.tsx's ONE informational use of .text-theme-muted is the
+        // payment-step contact-details line ("{phone} • {email}"), where a buyer verifies their
+        // own delivery contact before paying; the other 6 uses (step-badge/field icons) are
+        // purely decorative. Since the class is shared, the tier itself must pass AA, not just
+        // that one consumer. layout.tsx's real-storefront value (0.4 light / 0.5 dark) is left
+        // untouched — this only changes the checkout-origin derivation. Light: 0.4 → 255*(1-0.4)
+        // =153 grey on white computes to 2.85:1 (fails AA); 0.56 → 112 grey computes to 4.94:1
+        // (passes, verified against this store's real #FFFFFF background). Dark has no live
+        // merchant to verify against a concrete background, so it is raised by the same relative
+        // margin under --text-secondary (0.7 − 0.04) rather than exact photometric math.
+        '--text-muted': isDark ? 'rgba(255,255,255,0.66)' : 'rgba(0,0,0,0.56)',
+        // --text-hint has zero consumers anywhere in checkout-client.tsx or checkout-origin/ (grepped) —
+        // left at its existing value; branding.test.ts asserts it stays unconsumed so this
+        // decision is re-examined if a future change starts reading it.
         '--text-hint': isDark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
         '--text-inverse': isDark ? 'rgb(0 0 0)' : 'rgb(255 255 255)',
         '--border-color': isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',

@@ -15,6 +15,10 @@
 // Run: npx tsx --tsconfig apps/storefront-runtime/tsconfig.json --test src/app/checkout-origin/branding.test.ts
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { letbuyyColorTokens, letbuyyPrimitiveTokens } from '@letbuyy/ui/tokens';
 import {
     sanitizeBranding,
     brandingCssVariables,
@@ -23,6 +27,20 @@ import {
     sanitizeBrandingFontFamily,
     sanitizeBrandingHexColor,
 } from './branding';
+
+// rgba(0,0,0,alpha) or rgba(255,255,255,alpha) composited over a solid background reduces to a
+// flat grey/tint whose hex is `background * (1-alpha) + channel * alpha` per channel — exact for
+// these tiers since they're always pure black or pure white with no other tint.
+function compositeRgbaOverHex(rgba: string, backgroundHex: string): string {
+    const m = rgba.match(/rgba\((\d+),(\d+),(\d+),([\d.]+)\)/);
+    if (!m) throw new Error(`not an rgba() string: ${rgba}`);
+    const [, r, g, b, a] = m;
+    const alpha = Number(a);
+    const bg = [0, 2, 4].map((i) => parseInt(backgroundHex.slice(1 + i, 3 + i), 16));
+    const fg = [Number(r), Number(g), Number(b)];
+    const mixed = fg.map((c, i) => Math.round(c * alpha + bg[i] * (1 - alpha)));
+    return '#' + mixed.map((c) => c.toString(16).padStart(2, '0')).join('');
+}
 
 // Every custom property checkout-client.tsx's .text-theme-*/.bg-surface/.card-theme* utility
 // classes read (apps/storefront-runtime/src/app/globals.css:71-120), plus the two the button/
@@ -122,8 +140,51 @@ test('W2: sanitizeBranding rejects a hostile font-family end to end and still re
     assert.equal(branding.headingFontFamily, 'Inter', 'an injected heading_font_family override must fall back to the neutral default, not reach the rendered style');
 });
 
+test('T9/W2: the neutral fallback palette traces to @letbuyy/ui/tokens, not standalone hex literals', () => {
+    const branding = sanitizeBranding(null, null);
+    assert.equal(branding.primaryColor, letbuyyColorTokens.primary, 'primaryColor must equal the token package\'s primary brand hue');
+    assert.equal(branding.secondaryColor, letbuyyColorTokens.primaryHover, 'secondaryColor must equal the token package\'s primaryHover shade');
+    assert.equal(branding.accentColor, letbuyyPrimitiveTokens.color.pink[400]);
+    assert.equal(branding.textColor, letbuyyPrimitiveTokens.color.slate[900]);
+    assert.equal(branding.surfaceColor, letbuyyPrimitiveTokens.color.gray[50]);
+    assert.equal(branding.backgroundColor, letbuyyPrimitiveTokens.color.white);
+});
+
 test('a malformed hex colour is rejected and falls back, never reaching the rendered style', () => {
     assert.equal(sanitizeBrandingHexColor('not-a-color', '#FFFFFF'), '#FFFFFF');
     assert.equal(sanitizeBrandingHexColor('#12345', '#FFFFFF'), '#FFFFFF', 'a short hex must be rejected');
     assert.equal(sanitizeBrandingHexColor('#1a2b3c', '#FFFFFF'), '#1a2b3c', 'a valid lowercase hex must pass through');
+});
+
+// T9/W3 — checkout-client.tsx's ONE genuinely informational use of the muted text tier is the
+// payment-step "{phone} • {email}" contact-confirmation line (line ~989); the other six uses
+// (step-badge, form-field icons) are decorative. The tier is shared by class, so it must pass AA
+// as a whole rather than only for that one consumer — this is the regression guard for that fix.
+test('W3: --text-muted (light) passes AA against a white background — it carries the buyer contact-confirmation line', () => {
+    const branding = sanitizeBranding(null, { backgroundColor: '#FFFFFF', isDark: false });
+    const vars = brandingCssVariables(branding) as Record<string, string>;
+    const effectiveHex = compositeRgbaOverHex(vars['--text-muted'], branding.backgroundColor);
+    const ratio = contrastRatio(effectiveHex, branding.backgroundColor);
+    assert.ok(ratio >= 4.5, `--text-muted only reaches ${ratio.toFixed(2)}:1 against white, below WCAG AA — checkout's contact-confirmation line uses this tier`);
+});
+
+test('W3: --text-muted (dark) is raised by the same margin under --text-secondary as the light-mode fix (no live dark merchant to verify exact photometrics)', () => {
+    const branding = sanitizeBranding(null, { isDark: true });
+    const vars = brandingCssVariables(branding) as Record<string, string>;
+    const secondaryAlpha = Number(vars['--text-secondary'].match(/,([\d.]+)\)$/)?.[1]);
+    const mutedAlpha = Number(vars['--text-muted'].match(/,([\d.]+)\)$/)?.[1]);
+    assert.ok(mutedAlpha > 0.5, 'dark --text-muted must be raised above its old 0.5 baseline');
+    assert.ok(secondaryAlpha - mutedAlpha <= 0.05, 'dark --text-muted should track close under --text-secondary, matching the light-mode fix\'s margin');
+});
+
+test('W3: --text-hint has zero consumers anywhere in the checkout tree — decorative-only, left unraised', () => {
+    const checkoutClientPath = join(dirname(fileURLToPath(import.meta.url)), '..', 'store', '[subdomain]', 'checkout', 'checkout-client.tsx');
+    const checkoutOriginDir = dirname(fileURLToPath(import.meta.url));
+    const sources = [
+        readFileSync(checkoutClientPath, 'utf8'),
+        readFileSync(join(checkoutOriginDir, 'checkout', 'page.tsx'), 'utf8'),
+        readFileSync(join(checkoutOriginDir, 'checkout-logo.tsx'), 'utf8'),
+    ].join('\n');
+    assert.ok(!sources.includes('text-theme-hint'), 'a new .text-theme-hint consumer appeared on checkout — the W3 decision to leave --text-hint unraised must be re-examined (does the new use carry information a buyer needs?)');
+    assert.ok(!sources.includes('text-card-muted'), 'a new .text-card-muted consumer appeared on checkout — --card-text-muted was also left unraised on the same "zero consumers" basis and must be re-examined');
 });

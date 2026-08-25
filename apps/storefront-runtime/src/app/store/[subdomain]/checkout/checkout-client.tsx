@@ -8,7 +8,7 @@ import { Button, Input,
     ShieldCheck, MapPin, Truck, Clock, Package, User, Phone, Mail, Home
 } from '@letbuyy/ui';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Script from 'next/script';
 import {
     readStorefrontApiJson,
@@ -600,12 +600,23 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     // Success Screen
     if (isSuccess) {
+        // T9/W1 — found while capturing this phase's mandatory confirmation-step screenshot: this
+        // card hardcoded bg-[var(--lb-color-surface)] + text-slate-900/950/600/700, assuming a
+        // light card. --lb-color-surface is a @letbuyy/ui design-system token never set on the
+        // checkout-origin tree, so it fell through to LetbuyyThemeProvider's own ambient DARK
+        // default (measured live: rgb(13,11,22), matching letbuyyPrimitiveTokens.color.ink[900])
+        // — the exact same "inherits from an unrelated ambient theme" shape as the two defects
+        // T8 fixed on the Address/Payment steps, just via a different CSS variable. Dark-on-near-
+        // black hardcoded slate text was then unreadable. Fixed by switching to the same
+        // theme-aware classes (card-theme/text-theme/text-theme-secondary/bg-surface/border-card)
+        // already used throughout this file's Address and Payment steps — not a new pattern, just
+        // extending the one already fixed to the one screen that was missed.
         return (
             <div className="min-h-screen pt-20 flex items-center justify-center p-4" style={{ backgroundColor: 'var(--background)' }}>
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="w-full max-w-md rounded-2xl border border-slate-200 bg-[var(--lb-color-surface)] p-8 text-center text-slate-900 shadow-xl"
+                    className="w-full max-w-md rounded-2xl border border-card card-theme p-8 text-center text-theme shadow-xl"
                 >
                     <motion.div
                         initial={{ scale: 0 }}
@@ -615,16 +626,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     >
                         <CheckCircle size={32} />
                     </motion.div>
-                    <h1 className="mb-2 text-2xl font-bold text-slate-950">Order Confirmed!</h1>
-                    <p className="mb-2 text-sm text-slate-600">
+                    <h1 className="mb-2 text-2xl font-bold text-theme">Order Confirmed!</h1>
+                    <p className="mb-2 text-sm text-theme-secondary">
                         Thank you for your purchase. We will send order updates to the contact details you provided.
                     </p>
                     {orderNumber && (
-                        <p className="mb-6 inline-block rounded-lg bg-slate-50 px-4 py-2 text-xs text-slate-700">
+                        <p className="mb-6 inline-block rounded-lg bg-surface px-4 py-2 text-xs text-theme-secondary">
                             Order Number: <span className="font-mono font-semibold">{orderNumber}</span>
                         </p>
                     )}
-                    <p className="mb-6 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                    <p className="mb-6 rounded-xl border border-card px-4 py-3 text-sm text-theme-secondary">
                         {paymentMethod === 'cod'
                             ? 'COD order confirmed. Keep the order amount ready for the delivery partner.'
                             : 'Payment confirmation is complete. Keep this order number for support.'}
@@ -639,7 +650,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         </Link>
                         <Link
                             href={basePath}
-                            className="block w-full rounded-xl border border-slate-200 py-3 font-semibold text-slate-600"
+                            className="block w-full rounded-xl border border-card py-3 font-semibold text-theme-secondary"
                         >
                             Continue Shopping
                         </Link>
@@ -720,7 +731,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Main Content */}
                         <div className="lg:col-span-2">
-                            <AnimatePresence mode="wait">
+                            {/* T9/W0 — AnimatePresence never completed its exit/enter cycle here
+                            (framer-motion 12.34.0 + React 19.2.3 + Next 16.1.6, reproduced in both
+                            `next dev` and a production `next build && next start`): clicking
+                            "Continue to Payment" correctly called setStep(2) — the step-indicator
+                            badge above updated — but the step===2 branch below never entered the
+                            DOM while these two motion.div children were coordinated by
+                            AnimatePresence, in either mode="wait" or its default mode. No customer
+                            could reach the Payment step at all (CAP-C37 — real production defect,
+                            not a dev-tooling artifact; see EXECUTION_LEDGER.md PHASE-T9).
+                            Each motion.div's own `initial`/`animate` still runs its enter animation
+                            standalone; only the coordinated cross-fade `exit` transition for the
+                            step being LEFT is lost (its `exit` prop is now simply inert) — a small,
+                            deliberately accepted cosmetic change of "the old step disappears
+                            instantly instead of sliding out" in exchange for the transition working
+                            at all. */}
                                 {step === 1 && (
                                     <motion.div
                                         key="address"
@@ -1089,7 +1114,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         </div>
                                     </motion.div>
                                 )}
-                            </AnimatePresence>
                         </div>
 
                         {/* Order Summary Sidebar */}
