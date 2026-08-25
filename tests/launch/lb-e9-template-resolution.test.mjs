@@ -1,6 +1,9 @@
 // E9 — Template-key resolution end-to-end (LANE-B static contract tests).
 // Verifies that the blog/page.tsx file exists, composition-engine has the E9 scope drop
 // branches, and the login route was updated with D10 parity.
+// T3-fix W2: blog/page.tsx + loading.tsx moved into blog/(list)/ (a route group — no URL
+// change) so blog/[slug]'s dynamic page no longer inherits the listing's loading.tsx-driven
+// Suspense boundary. See CAPABILITY_BACKLOG.md CAP-C22.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
@@ -14,18 +17,18 @@ const exists = (p) => existsSync(resolve(ROOT, p));
 // ── (a) blog/page.tsx exists and exports a default ───────────────────────────
 test('E9(a): blog/page.tsx exists', () => {
   assert.ok(
-    exists('apps/storefront-runtime/src/app/store/[subdomain]/blog/page.tsx'),
+    exists('apps/storefront-runtime/src/app/store/[subdomain]/blog/(list)/page.tsx'),
     'blog/page.tsx must exist — it was MISSING per data source verdicts',
   );
 });
 
 test('E9(a): blog/page.tsx exports a default function', () => {
-  const src = read('apps/storefront-runtime/src/app/store/[subdomain]/blog/page.tsx');
+  const src = read('apps/storefront-runtime/src/app/store/[subdomain]/blog/(list)/page.tsx');
   assert.match(src, /export\s+default\s+(async\s+)?function/, 'blog/page.tsx must export a default function');
 });
 
 test('E9(a): blog/page.tsx is a server component (no "use client")', () => {
-  const src = read('apps/storefront-runtime/src/app/store/[subdomain]/blog/page.tsx');
+  const src = read('apps/storefront-runtime/src/app/store/[subdomain]/blog/(list)/page.tsx');
   assert.doesNotMatch(src, /['"]use client['"]/, 'blog/page.tsx must not be a client component');
 });
 

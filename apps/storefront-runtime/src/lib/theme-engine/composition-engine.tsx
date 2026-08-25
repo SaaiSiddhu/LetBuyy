@@ -22,6 +22,7 @@ import {
     type LiquidCustomerOrderDetail,
 } from '@/lib/customer-drop';
 import { ProductService } from '@/lib/product-service';
+import { ContentService } from '@/lib/content-service';
 import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
 
 function RenderSectionList({
@@ -549,6 +550,15 @@ async function buildLiquidCommerceContext({
         };
     }
 
+    // T3-fix W3 — the footer (and any other section) must never link to a policy page that
+    // 404s. `storefront_policies` is the actual source `/privacy` /terms /shipping /returns
+    // read from (ContentService.getPolicy), so it — not a hardcoded list — decides which links
+    // are real. One list call, cached the same 60s window as pages/blog. A fetch failure must
+    // not break every page's footer, so it degrades to "no published policies" rather than throwing.
+    const publishedPolicyTypes = await ContentService.listPolicies(plan.route.subdomain)
+        .then((policies) => policies.map((policy) => policy.policyType).filter((type): type is string => Boolean(type)))
+        .catch(() => []);
+
     return {
         shop: {
             id: store.id,
@@ -557,6 +567,7 @@ async function buildLiquidCommerceContext({
             url: store.storeUrl || `/store/${plan.route.subdomain}`,
             locale: store.locale || 'en',
             currency: 'INR',
+            policies: publishedPolicyTypes,
         },
         product,
         collection,

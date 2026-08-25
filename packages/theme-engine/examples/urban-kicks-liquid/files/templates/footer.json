@@ -20,7 +20,7 @@
           "type": "link",
           "settings": {
             "label": "Policies",
-            "href": "/policies/shipping-policy"
+            "href": "/shipping"
           },
           "disabled": false,
           "blocks": {},

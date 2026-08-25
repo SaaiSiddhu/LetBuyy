@@ -12,15 +12,15 @@
       {% endif %}
     </div>
     {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}
-    <div class="lb-footer__col">
+    {% if shop.policies.size > 0 %}<div class="lb-footer__col">
       <h4>Policies</h4>
       <nav>
-        <a href="{{ routes.root_url }}/privacy">Privacy policy</a>
-        <a href="{{ routes.root_url }}/terms">Terms of service</a>
-        <a href="{{ routes.root_url }}/shipping">Shipping policy</a>
-        <a href="{{ routes.root_url }}/returns">Returns policy</a>
+        {% if shop.policies contains 'privacy' %}<a href="{{ routes.root_url }}/privacy">Privacy policy</a>{% endif %}
+        {% if shop.policies contains 'terms' %}<a href="{{ routes.root_url }}/terms">Terms of service</a>{% endif %}
+        {% if shop.policies contains 'shipping' %}<a href="{{ routes.root_url }}/shipping">Shipping policy</a>{% endif %}
+        {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}<a href="{{ routes.root_url }}/returns">Returns policy</a>{% endif %}
       </nav>
-    </div>
+    </div>{% endif %}
     <div class="lb-footer__col">
       <h4>Contact</h4>
       {% if section.settings.contactEmail != blank %}<p><a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a></p>{% endif %}

@@ -1247,15 +1247,21 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '      {% endif %}',
         '    </div>',
         '    {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}',
-        '    <div class="lb-footer__col">',
+        // T3-fix W3 — shop.policies is the real set of policy TYPES this store has published
+        // (composition-engine.tsx, sourced from storefront_policies), not a hardcoded assumption
+        // that all four exist. Only link to a policy page this store can actually answer with
+        // 200; the whole column disappears rather than showing an empty "Policies" heading when
+        // none are published. Returns checks both historical type names (refund/returns) — see
+        // returns/page.tsx's own identical fallback.
+        '    {% if shop.policies.size > 0 %}<div class="lb-footer__col">',
         '      <h4>Policies</h4>',
         '      <nav>',
-        '        <a href="{{ routes.root_url }}/privacy">Privacy policy</a>',
-        '        <a href="{{ routes.root_url }}/terms">Terms of service</a>',
-        '        <a href="{{ routes.root_url }}/shipping">Shipping policy</a>',
-        '        <a href="{{ routes.root_url }}/returns">Returns policy</a>',
+        '        {% if shop.policies contains \'privacy\' %}<a href="{{ routes.root_url }}/privacy">Privacy policy</a>{% endif %}',
+        '        {% if shop.policies contains \'terms\' %}<a href="{{ routes.root_url }}/terms">Terms of service</a>{% endif %}',
+        '        {% if shop.policies contains \'shipping\' %}<a href="{{ routes.root_url }}/shipping">Shipping policy</a>{% endif %}',
+        '        {% if shop.policies contains \'refund\' or shop.policies contains \'returns\' %}<a href="{{ routes.root_url }}/returns">Returns policy</a>{% endif %}',
         '      </nav>',
-        '    </div>',
+        '    </div>{% endif %}',
         '    <div class="lb-footer__col">',
         '      <h4>Contact</h4>',
         '      {% if section.settings.contactEmail != blank %}<p><a href="mailto:{{ section.settings.contactEmail }}">{{ section.settings.contactEmail }}</a></p>{% endif %}',
@@ -2503,8 +2509,12 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               'footer-policy': {
                 type: 'link',
                 settings: {
+                  // T3-fix W3 — was '/policies/shipping-policy', Shopify's own policy-page URL
+                  // convention, not a route this app has ever served (the real route is
+                  // /shipping — see apps/storefront-runtime/src/app/store/[subdomain]/shipping).
+                  // A demo storefront must not link to a URL of its own that never existed.
                   label: 'Policies',
-                  href: '/policies/shipping-policy',
+                  href: '/shipping',
                 },
               },
             },

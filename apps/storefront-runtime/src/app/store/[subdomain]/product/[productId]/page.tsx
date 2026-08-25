@@ -1,4 +1,4 @@
-import { ProductService } from '@/lib/product-service';
+import { ProductService, StorefrontCatalogueError } from '@/lib/product-service';
 import { ReviewService } from '@/lib/review-service';
 import { StoreService } from '@/lib/store-service';
 import { notFound } from 'next/navigation';
@@ -7,14 +7,32 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { createProductDetailFallbackSection } from '@/lib/theme-engine/product-route';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { buildBreadcrumbJsonLd, buildProductJsonLd, buildStoreJsonLd, buildStoreMetadata } from '@/lib/seo';
+import { LetbuyyApiError } from '@letbuyy/api-client';
 import type { Metadata } from 'next';
 
 export const revalidate = 30;
 
+// T3-fix W1 — ProductService.getProductById throws on every failure (by design: a gateway
+// outage must not read as "no such product", see product-service.ts's own StorefrontCatalogueError
+// doc comment). That means "genuinely absent" and "the call failed" arrive here identically as a
+// throw, and this page previously had no try/catch at all, so BOTH cases escaped as an uncaught
+// exception (a 500, not a 404). Unwrap to the real LetbuyyApiError and only treat a genuine
+// gateway 404/NOT_FOUND as absence; any other cause (network failure, 500, schema error) is
+// rethrown so app/error.tsx's real error boundary handles it — never silently swallowed into notFound().
+async function loadProductOrThrow(productId: string, subdomain: string) {
+    try {
+        return await ProductService.getProductById(productId, subdomain);
+    } catch (err) {
+        const cause = err instanceof StorefrontCatalogueError ? err.cause : err;
+        if (cause instanceof LetbuyyApiError && cause.status === 404) return null;
+        throw err;
+    }
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string; productId: string }> }): Promise<Metadata> {
     const { subdomain, productId } = await params;
     const [product, store] = await Promise.all([
-        ProductService.getProductById(productId, subdomain),
+        loadProductOrThrow(productId, subdomain),
         StoreService.getStoreBySubdomain(subdomain),
     ]);
 
@@ -35,7 +53,7 @@ export default async function ProductPage({ params }: { params: Promise<{ subdom
     const { subdomain, productId } = await params;
 
     const [product, store] = await Promise.all([
-        ProductService.getProductById(productId, subdomain),
+        loadProductOrThrow(productId, subdomain),
         StoreService.getStoreBySubdomain(subdomain),
     ]);
 

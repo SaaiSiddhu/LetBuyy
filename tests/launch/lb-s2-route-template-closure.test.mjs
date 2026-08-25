@@ -257,7 +257,10 @@ const TEMPLATE_ROUTES = {
   collection: `${STORE_ROOT}/collections/[slug]/page.tsx`,
   page: `${STORE_ROOT}/[...path]/page.tsx`,
   policy: `${STORE_ROOT}/privacy/page.tsx`,
-  blog: `${STORE_ROOT}/blog/page.tsx`,
+  // T3-fix W2: blog + account routes moved into (list)/(hub) route groups (no URL change) so
+  // their dynamic siblings stop inheriting a loading.tsx-driven Suspense boundary they never
+  // opted into — see CAPABILITY_BACKLOG.md CAP-C22.
+  blog: `${STORE_ROOT}/blog/(list)/page.tsx`,
   article: `${STORE_ROOT}/blog/[slug]/page.tsx`,
   cart: `${STORE_ROOT}/cart/page.tsx`,
   search: `${STORE_ROOT}/search/page.tsx`,
@@ -266,8 +269,8 @@ const TEMPLATE_ROUTES = {
   password: `${STORE_ROOT}/password/page.tsx`,
   'customers/login': `${STORE_ROOT}/customers/login/page.tsx`,
   'customers/register': `${STORE_ROOT}/customers/register/page.tsx`,
-  'customers/account': `${STORE_ROOT}/account/page.tsx`,
-  'customers/orders': `${STORE_ROOT}/account/orders/page.tsx`,
+  'customers/account': `${STORE_ROOT}/account/(hub)/page.tsx`,
+  'customers/orders': `${STORE_ROOT}/account/orders/(list)/page.tsx`,
   'customers/order': `${STORE_ROOT}/account/orders/[id]/page.tsx`,
   'customers/wishlist': `${STORE_ROOT}/account/wishlist/page.tsx`,
   'customers/settings': `${STORE_ROOT}/account/settings/page.tsx`,

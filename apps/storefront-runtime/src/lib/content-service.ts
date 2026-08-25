@@ -128,4 +128,17 @@ export const ContentService = {
     async getPolicy(subdomain: string, policyType: string) {
         return fetchContent(() => storefrontContentClient(subdomain, 'policies').policy(subdomain, policyType) as Promise<WorkerContentPayload>);
     },
+
+    // T3-fix W3 — the set of policy TYPES a store has actually published, in one call (the
+    // gateway already filters to status='published'). Used to decide which footer/policy links
+    // are real before rendering them, instead of the theme unconditionally emitting all four.
+    async listPolicies(subdomain: string) {
+        try {
+            const data = await storefrontContentClient(subdomain, 'policies').policies(subdomain);
+            return data.map((item) => mapContentResource(item as WorkerContentPayload));
+        } catch (error) {
+            if (isNotFoundError(error)) return [];
+            throw error;
+        }
+    },
 };
