@@ -33,12 +33,19 @@
 .lb-experience-timeline, .lb-testimonials, .lb-trust-badges, .lb-brand-marquee, .lb-marquee,
 .lb-contact-form, .lb-spotlight, .lb-first-party-spotlight, .lb-collection-banner, .lb-banner-carousel,
 .lb-product-detail, .lb-cart, .lb-account, .lb-auth, .lb-orders, .lb-order-detail, .lb-app-block-slot,
-.lb-video-hero {
+.lb-video-hero,
+/* T2b — .lb-cart is dead: the real cart section markup carries .lb-cart-page, which this list never
+   named, leaving the whole cart page unstyled at the container/rhythm level. Added alongside the
+   14 new/newly-composed surfaces this phase covers. */
+.lb-cart-page, .lb-search, .lb-collection-filter, .lb-addresses, .lb-settings, .lb-wishlist,
+.lb-policy, .lb-page, .lb-article, .lb-blog-listing, .lb-faq-accordion, .lb-product-reviews {
   box-sizing: border-box;
   max-width: 1200px;
   margin-inline: auto;
   padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 2rem);
 }
+/* .lb-404 and .lb-password-gate get their own narrower, centred treatment below — a 404 or a
+   password gate is a single focused message, not a content-width page. */
 
 /* ---- header ---- */
 .lb-header {
@@ -167,7 +174,7 @@
 .lb-category-card {
   display: flex; flex-direction: column; gap: .4rem;
   background: var(--card-bg, #fff); color: var(--card-text, #111827);
-  border: 1px solid var(--card-border, #e5e7eb); border-radius: var(--radius, 12px);
+  border: 1px solid var(--card-border); border-radius: var(--radius, 12px);
   padding: 1.25rem; transition: box-shadow .18s ease, transform .18s ease;
 }
 .lb-category-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.10); }
@@ -181,12 +188,12 @@
 .lb-product-card {
   display: flex; flex-direction: column;
   background: var(--card-bg, #fff); color: var(--card-text, #111827);
-  border: 1px solid var(--card-border, #e5e7eb); border-radius: var(--radius, 12px);
+  border: 1px solid var(--card-border); border-radius: var(--radius, 12px);
   overflow: hidden; transition: box-shadow .18s ease, transform .18s ease;
 }
 .lb-product-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgba(0,0,0,.12); }
 .lb-product-card__link { display: flex; flex-direction: column; }
-.lb-product-card__media { position: relative; aspect-ratio: 1; background: var(--card-border, #e5e7eb); overflow: hidden; }
+.lb-product-card__media { position: relative; aspect-ratio: 1; background: var(--card-border); overflow: hidden; }
 .lb-product-card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
 .lb-product-card:hover .lb-product-card__media img { transform: scale(1.04); }
 .lb-product-card__placeholder {
@@ -222,7 +229,7 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 .lb-product-detail__variants { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1.25rem 0; }
 .lb-variant-option__name { font-weight: 700; margin-right: .35rem; }
 [data-lb-variant-option] {
-  cursor: pointer; border: 1px solid var(--card-border, #e5e7eb); background: var(--card-bg, #fff);
+  cursor: pointer; border: 1px solid var(--card-border); background: var(--card-bg, #fff);
   color: var(--card-text, #111827); border-radius: var(--radius, 8px); padding: .5rem .9rem; font-weight: 600;
 }
 [data-lb-variant-option][aria-pressed="true"] { border-color: var(--primary); background: var(--primary); color: #fff; }
@@ -245,7 +252,7 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 .lb-brand-marquee > div, .lb-marquee { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; opacity: .8; font-weight: 600; }
 .lb-testimonials article, .lb-services-grid article, .lb-portfolio-grid article, .lb-experience-timeline article,
 .lb-spotlight, .lb-first-party-spotlight {
-  background: var(--card-bg, #fff); border: 1px solid var(--card-border, #e5e7eb);
+  background: var(--card-bg, #fff); border: 1px solid var(--card-border);
   border-radius: var(--radius, 12px); padding: 1.5rem; margin: .75rem 0;
 }
 .lb-badge { display: inline-block; background: var(--surface, rgba(0,0,0,.05)); border-radius: 999px; padding: .25rem .75rem; font-size: .8rem; font-weight: 600; }
@@ -304,7 +311,7 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 .lb-product-detail__gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: .75rem; margin: 1.25rem 0; }
 .lb-cart__item, .lb-cart__line, .lb-orders__row, .lb-order-detail__line {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  padding: .85rem 0; border-bottom: 1px solid var(--border-color, #e5e7eb);
+  padding: .85rem 0; border-bottom: 1px solid var(--border-color);
 }
 .lb-cart__total, .lb-order-detail__total { font-weight: 800; font-size: 1.1rem; padding-top: 1rem; }
 .lb-cart__checkout, .lb-account__nav a {
@@ -320,3 +327,278 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 /* ---- responsive ---- */
 /* T2a — .lb-header no longer wraps its nav on mobile (superseded by the hamburger drawer above);
    .lb-footer's mobile stacking is now handled by .lb-footer__grid's single-column default. */
+
+/* =========================================================================================
+   T2b — the 14 remaining storefront surfaces (Group 1 commerce, Group 2 account, Group 3
+   auth, Group 4 content, Group 5 system), designed to the exact system T2a established:
+   the shared section-rhythm container above, the 48em/64em breakpoints, the clamp() type
+   scale, --lb-* / var(--x) tokens already in use in this file. No new foundation.
+   ========================================================================================= */
+
+/* ---- Group 1: cart page ---- */
+.lb-cart-page h1 { margin-bottom: 1.5rem; }
+.lb-cart__empty {
+  padding: 3rem 1rem; text-align: center; font-size: 1.05rem; color: var(--text-secondary, rgba(0,0,0,.65));
+}
+.lb-cart__empty a { color: var(--primary); font-weight: 700; text-decoration: underline; }
+.lb-cart__items { list-style: none; margin: 0 0 1.5rem; padding: 0; border-top: 1px solid var(--border-color); }
+.lb-cart__item {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: .75rem 1rem;
+  padding: 1rem 0; border-bottom: 1px solid var(--border-color);
+}
+.lb-cart__title { font-weight: 600; }
+.lb-cart__qty { color: var(--card-text-muted); font-size: .9rem; }
+.lb-cart__line { font-weight: 700; text-align: right; }
+.lb-liquid-cart__totals { max-width: 26rem; margin-inline: auto 0; padding-top: 1rem; }
+.lb-liquid-cart__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .5rem 0; font-size: .95rem; color: var(--text-secondary, rgba(0,0,0,.7));
+}
+.lb-cart__total {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 800; font-size: 1.2rem; padding-top: 1rem; margin-top: .5rem;
+  border-top: 1px solid var(--border-color);
+}
+.lb-cart__checkout {
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px;
+  margin-top: 1.5rem; background: var(--primary); color: var(--text-inverse); font-weight: 700;
+  border-radius: var(--radius, 8px);
+}
+@media (min-width: 48em) {
+  .lb-cart__checkout { width: auto; padding-inline: 2.5rem; margin-inline-start: auto; }
+}
+
+/* ---- Group 1: search results ---- */
+.lb-search__terms { font-size: 1.1rem; margin: 1rem 0 0; color: var(--card-text-muted); }
+
+/* ---- Group 1: collection filter ---- */
+.lb-collection-filter { padding-top: clamp(1.5rem, 4vw, 2rem); padding-bottom: clamp(1.5rem, 4vw, 2rem); }
+.lb-collection-filter__form { display: flex; gap: .5rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1rem; }
+.lb-collection-filter__label { font-size: .85rem; font-weight: 600; flex-basis: 100%; }
+.lb-collection-filter__input {
+  flex: 1 1 16rem; min-height: 44px; padding: .6rem .9rem; border-radius: var(--radius, 8px);
+  border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text);
+}
+.lb-collection-filter__submit {
+  min-height: 44px; padding-inline: 1.5rem; border-radius: var(--radius, 8px);
+  background: var(--primary); color: var(--text-inverse); font-weight: 700;
+}
+.lb-collection-filter__sort, .lb-collection-filter__price, .lb-collection-filter__vendor {
+  display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .75rem;
+}
+.lb-collection-filter__sort-link, .lb-collection-filter__price-link, .lb-collection-filter__vendor-link {
+  display: inline-flex; align-items: center; min-height: 36px; padding: .3rem .9rem;
+  border-radius: 999px; border: 1px solid var(--border-color); font-size: .85rem; font-weight: 600;
+}
+.lb-collection-filter__sort-link[aria-current="true"],
+.lb-collection-filter__price-link[aria-current="true"],
+.lb-collection-filter__vendor-link[aria-current="true"] {
+  background: var(--primary); color: var(--text-inverse); border-color: var(--primary);
+}
+.lb-collection-filter__active, .lb-collection-filter__count, .lb-collection-filter__empty {
+  font-size: .9rem; color: var(--card-text-muted); margin: .5rem 0 0;
+}
+.lb-collection-filter__clear { color: var(--primary); font-weight: 700; text-decoration: underline; margin-inline-start: .5rem; }
+
+/* ---- Group 1: product reviews ---- */
+.lb-product-reviews__title { margin-bottom: 1.25rem; }
+.lb-product-review {
+  padding: 1.25rem 0; border-bottom: 1px solid var(--border-color);
+}
+.lb-product-review__head { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: .35rem; }
+.lb-product-review__author { font-weight: 700; }
+.lb-product-review__stars { color: var(--primary); font-weight: 700; }
+.lb-product-review__verified {
+  font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--card-text-muted);
+}
+.lb-product-review__heading { font-size: 1rem; margin: 0 0 .25rem; }
+.lb-product-review__body { color: var(--text-secondary, rgba(0,0,0,.75)); margin: 0; }
+.lb-product-review__helpful { font-size: .85rem; color: var(--card-text-muted); margin-top: .5rem; }
+
+/* ---- Group 2: account hub ---- */
+.lb-account__hello { font-size: 1.05rem; margin: 0 0 1.5rem; color: var(--card-text-muted); }
+.lb-account__guest { padding: 2rem 0; font-size: 1.05rem; }
+.lb-account__guest a, .lb-addresses__guest a, .lb-settings__guest a, .lb-wishlist__guest a {
+  color: var(--primary); font-weight: 700; text-decoration: underline;
+}
+.lb-account__nav-link {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 1.5rem;
+  border-radius: var(--radius, 8px); background: var(--card-bg); border: 1px solid var(--border-color);
+  font-weight: 600; cursor: pointer;
+}
+
+/* ---- Group 2: orders ---- */
+.lb-orders__empty, .lb-orders__guest { padding: 3rem 1rem; text-align: center; font-size: 1.05rem; color: var(--card-text-muted); }
+.lb-orders__guest a { color: var(--primary); font-weight: 700; text-decoration: underline; }
+.lb-orders__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border-color); }
+.lb-orders__row a {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: .5rem 1rem;
+  padding: 1rem 0; border-bottom: 1px solid var(--border-color); min-height: 44px;
+}
+.lb-orders__num { font-weight: 700; }
+.lb-orders__status {
+  justify-self: start; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  padding: .25rem .7rem; border-radius: 999px; background: var(--surface); color: var(--card-text-muted);
+}
+.lb-orders__total { font-weight: 700; text-align: right; }
+@media (min-width: 48em) {
+  .lb-orders__row a { grid-template-columns: 1fr auto auto; }
+}
+
+/* ---- Group 2: order detail ---- */
+.lb-order-detail__status { font-weight: 600; margin-bottom: 1rem; }
+.lb-order-detail__items { list-style: none; margin: 0 0 1.5rem; padding: 0; border-top: 1px solid var(--border-color); }
+.lb-order-detail__items li {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: .5rem 1rem;
+  padding: 1rem 0; border-bottom: 1px solid var(--border-color);
+}
+.lb-order-detail__title { font-weight: 600; }
+.lb-order-detail__qty { color: var(--card-text-muted); font-size: .9rem; }
+.lb-order-detail__total { font-weight: 800; font-size: 1.1rem; padding-top: 1rem; }
+.lb-order-detail__missing { padding: 3rem 1rem; text-align: center; color: var(--card-text-muted); }
+.lb-order-detail__timeline {
+  list-style: none; margin: 1.5rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .5rem;
+}
+.lb-order-detail__step {
+  position: relative; padding-inline-start: 1.5rem; font-size: .9rem; color: var(--card-text-muted);
+}
+.lb-order-detail__step::before {
+  content: ''; position: absolute; left: 0; top: .35rem; width: .6rem; height: .6rem; border-radius: 999px;
+  background: var(--border-color);
+}
+.lb-order-detail__step.is-reached { color: var(--text); font-weight: 600; }
+.lb-order-detail__step.is-reached::before { background: var(--primary); }
+.lb-order-detail__tracking { margin-top: 1rem; font-size: .9rem; color: var(--card-text-muted); }
+
+/* ---- Group 2: addresses ---- */
+.lb-addresses__empty, .lb-addresses__guest { padding: 2rem 0; text-align: center; color: var(--card-text-muted); }
+.lb-addresses__grid {
+  display: grid; gap: 1rem; grid-template-columns: 1fr; margin-bottom: 1.5rem;
+}
+@media (min-width: 48em) { .lb-addresses__grid { grid-template-columns: repeat(2, 1fr); } }
+.lb-address-card {
+  position: relative; padding: 1.25rem; border-radius: var(--radius, 12px);
+  border: 1px solid var(--card-border); background: var(--card-bg);
+}
+.lb-address-card__label { font-weight: 700; text-transform: capitalize; }
+.lb-address-card__default-badge {
+  margin-inline-start: .5rem; font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  padding: .15rem .5rem; border-radius: 999px; background: var(--primary); color: var(--text-inverse);
+}
+.lb-address-card__address { margin: .5rem 0 0; }
+.lb-address-card__city { margin: .15rem 0 0; color: var(--card-text-muted); }
+
+/* ---- Group 2: settings ---- */
+.lb-settings__current { padding-bottom: 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
+.lb-settings__email { font-weight: 700; font-size: 1.05rem; margin: 0; }
+.lb-settings__name, .lb-settings__phone { margin: .35rem 0 0; color: var(--card-text-muted); }
+.lb-settings__guest { padding: 2rem 0; }
+
+/* ---- Group 2: wishlist ---- */
+.lb-wishlist__count { color: var(--card-text-muted); font-weight: 600; }
+.lb-wishlist__empty, .lb-wishlist__guest { padding: 3rem 1rem; text-align: center; color: var(--card-text-muted); }
+
+/* ---- Group 3: auth (login / register) ---- */
+.lb-auth { max-width: 26rem; }
+.lb-auth h1 { margin-bottom: 1.5rem; }
+.lb-auth__error {
+  display: block; margin-bottom: 1.25rem; padding: .85rem 1rem; border-radius: var(--radius, 8px);
+  background: var(--surface); border: 1px solid var(--sale-color, crimson); color: var(--sale-color, crimson);
+  font-size: .9rem; font-weight: 600;
+}
+.lb-auth__form { display: grid; gap: 1rem; }
+.lb-auth__form label { display: grid; gap: .35rem; font-size: .85rem; font-weight: 600; }
+.lb-auth__form input {
+  min-height: 44px; padding: .65rem .9rem; border-radius: var(--radius, 8px);
+  border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); font: inherit;
+}
+.lb-auth__form button {
+  min-height: 48px; margin-top: .5rem; border-radius: var(--radius, 8px);
+  background: var(--primary); color: var(--text-inverse); font-weight: 700;
+}
+.lb-auth > a { display: inline-block; margin-top: 1.25rem; color: var(--primary); font-weight: 600; text-decoration: underline; }
+
+/* ---- Group 3: password gate (editor-preview-only today; styled per the phase brief's own scope) ---- */
+.lb-password-gate {
+  max-width: 26rem; margin-inline: auto; padding: clamp(3rem, 8vw, 5rem) clamp(1rem, 4vw, 2rem);
+  text-align: center;
+}
+.lb-password-gate__heading { margin-bottom: .5rem; }
+.lb-password-gate__message { font-weight: 600; margin: 0 0 .35rem; }
+.lb-password-gate__info { color: var(--card-text-muted); margin: 0 0 1.5rem; }
+.lb-password-gate__form { display: grid; gap: 1rem; text-align: left; }
+.lb-password-gate__label { display: grid; gap: .35rem; font-size: .85rem; font-weight: 600; }
+.lb-password-gate__input {
+  min-height: 44px; padding: .65rem .9rem; border-radius: var(--radius, 8px);
+  border: 1px solid var(--input-border); background: var(--input-bg); color: var(--input-text); font: inherit;
+}
+.lb-password-gate__btn {
+  min-height: 48px; border-radius: var(--radius, 8px); background: var(--primary); color: var(--text-inverse);
+  font-weight: 700;
+}
+.lb-password-gate__access-message { margin-top: 1.5rem; color: var(--card-text-muted); font-size: .9rem; }
+
+/* ---- Group 4: policy / page / article (prose content) ---- */
+.lb-policy__title, .lb-page__title, .lb-article__title { margin-bottom: 1.5rem; }
+.lb-policy__body, .lb-page__body, .lb-article__body {
+  max-width: 68ch; font-size: 1rem; line-height: 1.7; color: var(--text-secondary, rgba(0,0,0,.8));
+}
+.lb-policy__body :is(h2, h3), .lb-page__body :is(h2, h3), .lb-article__body :is(h2, h3) { margin-top: 2rem; }
+.lb-policy__body p, .lb-page__body p, .lb-article__body p { margin: 0 0 1rem; }
+.lb-page__empty, .lb-page__missing, .lb-article__missing {
+  padding: 3rem 1rem; text-align: center; color: var(--card-text-muted);
+}
+.lb-article__date { display: block; margin-bottom: 1rem; color: var(--card-text-muted); font-size: .9rem; }
+.lb-article__image { border-radius: var(--radius, 12px); margin-bottom: 1.5rem; width: 100%; height: auto; }
+
+/* ---- Group 4: blog ---- */
+.lb-blog-listing__heading { margin-bottom: 1.5rem; }
+.lb-blog-listing__empty { padding: 3rem 1rem; text-align: center; color: var(--card-text-muted); }
+.lb-blog-listing__articles { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 48em) { .lb-blog-listing__articles { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 64em) { .lb-blog-listing__articles { grid-template-columns: repeat(3, 1fr); } }
+.lb-blog-article-card {
+  padding: 1.25rem; border-radius: var(--radius, 12px); border: 1px solid var(--card-border);
+  background: var(--card-bg);
+}
+.lb-blog-article-card__title { font-size: 1.1rem; margin: 0 0 .5rem; }
+.lb-blog-article-card__excerpt { color: var(--card-text-muted); margin: 0 0 .75rem; }
+.lb-blog-article-card__date { font-size: .8rem; color: var(--card-text-muted); }
+.lb-blog-listing__pagination { display: flex; justify-content: space-between; margin-top: 2rem; }
+.lb-blog-listing__prev, .lb-blog-listing__next {
+  display: inline-flex; align-items: center; min-height: 44px; padding-inline: 1.25rem;
+  border-radius: var(--radius, 8px); border: 1px solid var(--border-color); font-weight: 600;
+}
+
+/* ---- Group 4: FAQ accordion ---- */
+.lb-faq-accordion__empty { padding: 2rem 0; text-align: center; color: var(--card-text-muted); }
+.lb-faq-accordion__items { display: grid; gap: .75rem; max-width: 48rem; }
+.lb-faq-accordion__item {
+  border: 1px solid var(--border-color); border-radius: var(--radius, 8px); padding: 0 1rem;
+}
+.lb-faq-accordion__question {
+  padding: 1rem 0; font-weight: 600; cursor: pointer; min-height: 44px; display: flex; align-items: center;
+}
+.lb-faq-accordion__answer { padding: 0 0 1rem; color: var(--text-secondary, rgba(0,0,0,.75)); }
+
+/* ---- Group 5: 404 ---- */
+.lb-404 {
+  max-width: 32rem; margin-inline: auto; padding: clamp(4rem, 12vw, 7rem) clamp(1rem, 4vw, 2rem);
+  text-align: center;
+}
+.lb-404__code { font-size: clamp(3rem, 10vw, 5rem); font-weight: 800; margin: 0; color: var(--primary); }
+.lb-404__message { font-size: 1.1rem; margin: .5rem 0 2rem; color: var(--card-text-muted); }
+.lb-404__home {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding-inline: 2rem;
+  border-radius: var(--radius, 8px); background: var(--primary); color: var(--text-inverse); font-weight: 700;
+}
+
+/* ---- hero-banner BEM class variants (some markup paths use these instead of bare h1/p/a) ---- */
+.lb-hero-banner__eyebrow { text-transform: uppercase; letter-spacing: .18em; font-size: .78rem; font-weight: 700; opacity: .9; }
+.lb-hero-banner__heading { color: var(--text-inverse); }
+.lb-hero-banner__subheading { color: rgba(255,255,255,.88); max-width: 42rem; margin-inline: auto; font-size: 1.15rem; }
+.lb-hero-banner__cta {
+  display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.5rem; min-height: 44px;
+  background: var(--background); color: var(--primary); font-weight: 700; padding: .85rem 1.85rem; border-radius: var(--radius, 8px);
+}

@@ -4,7 +4,9 @@
   "sections": {
     "customer-settings-default": {
       "type": "customer-settings",
-      "settings": {},
+      "settings": {
+        "heading": "Account settings"
+      },
       "blocks": {},
       "block_order": [],
       "disabled": false

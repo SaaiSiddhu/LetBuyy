@@ -2693,9 +2693,14 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         layout: 'theme',
         sections: {
           'collection-banner-default': { type: 'collection-banner', settings: { showDescription: true } },
+          // T2b — collection-filter was a fully real, already-implemented section (search form bound to
+          // the live search route; sort/price/vendor facets correctly gated on data the platform does
+          // not yet supply, per its own header comment) that was simply never placed into this template's
+          // default composition. Wiring up an already-built section, not new design work.
+          'collection-filter-default': { type: 'collection-filter', settings: { showSearch: true, showSort: true, showPriceFilter: true, showVendorFilter: false, layout: 'topbar' } },
           'collection-products': { type: 'collection-product-list', settings: { title: 'Products' } },
         },
-        order: ['collection-banner-default', 'collection-products'],
+        order: ['collection-banner-default', 'collection-filter-default', 'collection-products'],
       },
       search: {
         name: 'Urban Kicks search',
@@ -2709,7 +2714,9 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       cart: {
         name: 'Urban Kicks cart',
         layout: 'theme',
-        sections: { 'cart-summary-default': { type: 'cart-summary', settings: {} } },
+        // T2b — see the customers/login comment below: settings:{} silently loses the section
+        // schema's own `heading` default. Composed explicitly with the schema's own default text.
+        sections: { 'cart-summary-default': { type: 'cart-summary', settings: { heading: 'Your cart' } } },
         order: ['cart-summary-default'],
       },
       // The collection-list page. Shopify's OS-2.0 template key is `list-collections`; without it a
@@ -2739,49 +2746,56 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'customers/login': {
         name: 'Login',
         layout: 'theme',
-        sections: { 'customer-login-default': { type: 'customer-login', settings: {} } },
+        // T2b — an empty settings:{} composition does not pick up the section schema's own
+        // `heading` default (confirmed reproducible with a fresh, non-persisted bundle via
+        // LiquidRenderer directly — a genuine renderer-level schema-default gap, not something
+        // this phase's design work caused; out of scope to fix generally here). Worked around
+        // narrowly by composing the section's OWN already-declared default value explicitly,
+        // exactly like every other section in this file already does (e.g. cart-summary's
+        // `heading: 'Your cart'`) — not new copy, the same text the schema always intended.
+        sections: { 'customer-login-default': { type: 'customer-login', settings: { heading: 'Sign in' } } },
         order: ['customer-login-default'],
       },
       'customers/register': {
         name: 'Register',
         layout: 'theme',
-        sections: { 'customer-register-default': { type: 'customer-register', settings: {} } },
+        sections: { 'customer-register-default': { type: 'customer-register', settings: { heading: 'Create account' } } },
         order: ['customer-register-default'],
       },
       'customers/account': {
         name: 'Account',
         layout: 'theme',
-        sections: { 'customer-account-default': { type: 'customer-account', settings: {} } },
+        sections: { 'customer-account-default': { type: 'customer-account', settings: { heading: 'Your account' } } },
         order: ['customer-account-default'],
       },
       'customers/orders': {
         name: 'Order history',
         layout: 'theme',
-        sections: { 'customer-orders-default': { type: 'customer-orders', settings: {} } },
+        sections: { 'customer-orders-default': { type: 'customer-orders', settings: { heading: 'Your orders' } } },
         order: ['customer-orders-default'],
       },
       'customers/order': {
         name: 'Order detail',
         layout: 'theme',
-        sections: { 'customer-order-detail-default': { type: 'customer-order-detail', settings: {} } },
+        sections: { 'customer-order-detail-default': { type: 'customer-order-detail', settings: { heading: 'Order' } } },
         order: ['customer-order-detail-default'],
       },
       'customers/settings': {
         name: 'Account settings',
         layout: 'theme',
-        sections: { 'customer-settings-default': { type: 'customer-settings', settings: {} } },
+        sections: { 'customer-settings-default': { type: 'customer-settings', settings: { heading: 'Account settings' } } },
         order: ['customer-settings-default'],
       },
       'customers/wishlist': {
         name: 'Wishlist',
         layout: 'theme',
-        sections: { 'customer-wishlist-default': { type: 'customer-wishlist', settings: {} } },
+        sections: { 'customer-wishlist-default': { type: 'customer-wishlist', settings: { heading: 'Your wishlist' } } },
         order: ['customer-wishlist-default'],
       },
       'customers/addresses': {
         name: 'Addresses',
         layout: 'theme',
-        sections: { 'customer-addresses-default': { type: 'customer-addresses', settings: {} } },
+        sections: { 'customer-addresses-default': { type: 'customer-addresses', settings: { heading: 'Your addresses' } } },
         order: ['customer-addresses-default'],
       },
       policy: {
@@ -2848,9 +2862,17 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-orders" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
+          // T2b — customer-orders previously had no guest branch at all: an unauthenticated visitor
+          // (customer is nil) fell into the {% else %} arm and saw "No orders yet.", which falsely
+          // implies they have an account with an empty order history. Matches the {% if customer %}
+          // guest-messaging pattern every other account section already uses.
+          '  {% if customer %}',
           '  {% if customer.orders and customer.orders.size > 0 %}',
           '  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="{{ routes.account_orders_url }}/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
           '  {% else %}<p class="lb-orders__empty">No orders yet.</p>{% endif %}',
+          '  {% else %}',
+          '  <p class="lb-orders__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to view your orders.</p>',
+          '  {% endif %}',
           '</section>',
         ],
       }),

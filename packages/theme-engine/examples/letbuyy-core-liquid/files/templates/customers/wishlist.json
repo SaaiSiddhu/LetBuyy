@@ -4,7 +4,9 @@
   "sections": {
     "customer-wishlist-default": {
       "type": "customer-wishlist",
-      "settings": {},
+      "settings": {
+        "heading": "Your wishlist"
+      },
       "blocks": {},
       "block_order": [],
       "disabled": false

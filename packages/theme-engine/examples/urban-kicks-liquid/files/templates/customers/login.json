@@ -4,7 +4,9 @@
   "sections": {
     "customer-login-default": {
       "type": "customer-login",
-      "settings": {},
+      "settings": {
+        "heading": "Sign in"
+      },
       "blocks": {},
       "block_order": [],
       "disabled": false

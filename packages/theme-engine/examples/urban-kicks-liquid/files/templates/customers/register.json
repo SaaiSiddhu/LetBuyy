@@ -4,7 +4,9 @@
   "sections": {
     "customer-register-default": {
       "type": "customer-register",
-      "settings": {},
+      "settings": {
+        "heading": "Create account"
+      },
       "blocks": {},
       "block_order": [],
       "disabled": false

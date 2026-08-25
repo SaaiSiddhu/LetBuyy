@@ -4,7 +4,9 @@
   "sections": {
     "customer-orders-default": {
       "type": "customer-orders",
-      "settings": {},
+      "settings": {
+        "heading": "Your orders"
+      },
       "blocks": {},
       "block_order": [],
       "disabled": false

@@ -9,7 +9,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const bundle = readFileSync(resolve(ROOT, 'packages/theme-engine/src/theme-bundle.ts'), 'utf8');
 
 test('L8: fixture ships a cart template + cart-summary section', () => {
-  assert.match(bundle, /cart:\s*\{[\s\S]{0,160}'cart-summary-default'/);
+  assert.match(bundle, /cart:\s*\{[\s\S]{0,500}'cart-summary-default'/);
   assert.match(bundle, /type:\s*'cart-summary'/);
 });
 

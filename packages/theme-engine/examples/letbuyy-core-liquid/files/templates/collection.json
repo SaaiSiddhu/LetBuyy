@@ -11,6 +11,19 @@
       "block_order": [],
       "disabled": false
     },
+    "collection-filter-default": {
+      "type": "collection-filter",
+      "settings": {
+        "showSearch": true,
+        "showSort": true,
+        "showPriceFilter": true,
+        "showVendorFilter": false,
+        "layout": "topbar"
+      },
+      "blocks": {},
+      "block_order": [],
+      "disabled": false
+    },
     "collection-products": {
       "type": "collection-product-list",
       "settings": {
@@ -23,6 +36,7 @@
   },
   "order": [
     "collection-banner-default",
+    "collection-filter-default",
     "collection-products"
   ]
 }

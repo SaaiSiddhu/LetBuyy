@@ -550,6 +550,19 @@
           "block_order": [],
           "disabled": false
         },
+        "collection-filter-default": {
+          "type": "collection-filter",
+          "settings": {
+            "showSearch": true,
+            "showSort": true,
+            "showPriceFilter": true,
+            "showVendorFilter": false,
+            "layout": "topbar"
+          },
+          "blocks": {},
+          "block_order": [],
+          "disabled": false
+        },
         "collection-products": {
           "type": "collection-product-list",
           "settings": {
@@ -562,6 +575,7 @@
       },
       "order": [
         "collection-banner-default",
+        "collection-filter-default",
         "collection-products"
       ]
     },
@@ -599,7 +613,9 @@
       "sections": {
         "cart-summary-default": {
           "type": "cart-summary",
-          "settings": {},
+          "settings": {
+            "heading": "Your cart"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -653,7 +669,9 @@
       "sections": {
         "customer-login-default": {
           "type": "customer-login",
-          "settings": {},
+          "settings": {
+            "heading": "Sign in"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -669,7 +687,9 @@
       "sections": {
         "customer-register-default": {
           "type": "customer-register",
-          "settings": {},
+          "settings": {
+            "heading": "Create account"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -685,7 +705,9 @@
       "sections": {
         "customer-account-default": {
           "type": "customer-account",
-          "settings": {},
+          "settings": {
+            "heading": "Your account"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -701,7 +723,9 @@
       "sections": {
         "customer-orders-default": {
           "type": "customer-orders",
-          "settings": {},
+          "settings": {
+            "heading": "Your orders"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -717,7 +741,9 @@
       "sections": {
         "customer-order-detail-default": {
           "type": "customer-order-detail",
-          "settings": {},
+          "settings": {
+            "heading": "Order"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -733,7 +759,9 @@
       "sections": {
         "customer-settings-default": {
           "type": "customer-settings",
-          "settings": {},
+          "settings": {
+            "heading": "Account settings"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -749,7 +777,9 @@
       "sections": {
         "customer-wishlist-default": {
           "type": "customer-wishlist",
-          "settings": {},
+          "settings": {
+            "heading": "Your wishlist"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -765,7 +795,9 @@
       "sections": {
         "customer-addresses-default": {
           "type": "customer-addresses",
-          "settings": {},
+          "settings": {
+            "heading": "Your addresses"
+          },
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -879,7 +911,7 @@
   "sections": {
     "customer-orders": {
       "path": "sections/customer-orders.liquid",
-      "source": "<section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer.orders and customer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in customer.orders %}<li class=\"lb-orders__row\"><a href=\"{{ routes.account_orders_url }}/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order History\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your orders\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order History\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
+      "source": "<section class=\"lb-orders\" data-section-id=\"{{ section.id }}\">\n  <h1>{{ section.settings.heading }}</h1>\n  {% if customer %}\n  {% if customer.orders and customer.orders.size > 0 %}\n  <ul class=\"lb-orders__list\">{% for order in customer.orders %}<li class=\"lb-orders__row\"><a href=\"{{ routes.account_orders_url }}/{{ order.id }}\"><span class=\"lb-orders__num\">#{{ order.number }}</span><span class=\"lb-orders__status\">{{ order.status }}</span><span class=\"lb-orders__total\">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>\n  {% else %}<p class=\"lb-orders__empty\">No orders yet.</p>{% endif %}\n  {% else %}\n  <p class=\"lb-orders__guest\">Please <a href=\"{{ routes.customer_login_url }}\">sign in</a> to view your orders.</p>\n  {% endif %}\n</section>\n{% schema %}\n{\n  \"name\": \"Order History\",\n  \"settings\": [\n    {\n      \"id\": \"heading\",\n      \"type\": \"text\",\n      \"label\": \"Heading\",\n      \"default\": \"Your orders\"\n    }\n  ],\n  \"blocks\": [],\n  \"presets\": [\n    {\n      \"name\": \"Order History\",\n      \"settings\": {},\n      \"blocks\": []\n    }\n  ]\n}\n{% endschema %}",
       "schema": {
         "name": "Order History",
         "tag": "section",
