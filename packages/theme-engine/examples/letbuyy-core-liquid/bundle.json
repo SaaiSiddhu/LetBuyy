@@ -613,9 +613,7 @@
       "sections": {
         "cart-summary-default": {
           "type": "cart-summary",
-          "settings": {
-            "heading": "Your cart"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -669,9 +667,7 @@
       "sections": {
         "customer-login-default": {
           "type": "customer-login",
-          "settings": {
-            "heading": "Sign in"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -687,9 +683,7 @@
       "sections": {
         "customer-register-default": {
           "type": "customer-register",
-          "settings": {
-            "heading": "Create account"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -705,9 +699,7 @@
       "sections": {
         "customer-account-default": {
           "type": "customer-account",
-          "settings": {
-            "heading": "Your account"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -723,9 +715,7 @@
       "sections": {
         "customer-orders-default": {
           "type": "customer-orders",
-          "settings": {
-            "heading": "Your orders"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -741,9 +731,7 @@
       "sections": {
         "customer-order-detail-default": {
           "type": "customer-order-detail",
-          "settings": {
-            "heading": "Order"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -759,9 +747,7 @@
       "sections": {
         "customer-settings-default": {
           "type": "customer-settings",
-          "settings": {
-            "heading": "Account settings"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -777,9 +763,7 @@
       "sections": {
         "customer-wishlist-default": {
           "type": "customer-wishlist",
-          "settings": {
-            "heading": "Your wishlist"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false
@@ -795,9 +779,7 @@
       "sections": {
         "customer-addresses-default": {
           "type": "customer-addresses",
-          "settings": {
-            "heading": "Your addresses"
-          },
+          "settings": {},
           "blocks": {},
           "block_order": [],
           "disabled": false

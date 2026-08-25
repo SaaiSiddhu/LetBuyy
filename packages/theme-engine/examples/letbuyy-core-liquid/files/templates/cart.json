@@ -4,9 +4,7 @@
   "sections": {
     "cart-summary-default": {
       "type": "cart-summary",
-      "settings": {
-        "heading": "Your cart"
-      },
+      "settings": {},
       "blocks": {},
       "block_order": [],
       "disabled": false

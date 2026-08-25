@@ -2714,9 +2714,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       cart: {
         name: 'Urban Kicks cart',
         layout: 'theme',
-        // T2b — see the customers/login comment below: settings:{} silently loses the section
-        // schema's own `heading` default. Composed explicitly with the schema's own default text.
-        sections: { 'cart-summary-default': { type: 'cart-summary', settings: { heading: 'Your cart' } } },
+        sections: { 'cart-summary-default': { type: 'cart-summary', settings: {} } },
         order: ['cart-summary-default'],
       },
       // The collection-list page. Shopify's OS-2.0 template key is `list-collections`; without it a
@@ -2746,56 +2744,54 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       'customers/login': {
         name: 'Login',
         layout: 'theme',
-        // T2b — an empty settings:{} composition does not pick up the section schema's own
-        // `heading` default (confirmed reproducible with a fresh, non-persisted bundle via
-        // LiquidRenderer directly — a genuine renderer-level schema-default gap, not something
-        // this phase's design work caused; out of scope to fix generally here). Worked around
-        // narrowly by composing the section's OWN already-declared default value explicitly,
-        // exactly like every other section in this file already does (e.g. cart-summary's
-        // `heading: 'Your cart'`) — not new copy, the same text the schema always intended.
-        sections: { 'customer-login-default': { type: 'customer-login', settings: { heading: 'Sign in' } } },
+        // W2 (PHASE-T3) — settings:{} now correctly picks up the section schema's own `heading`
+        // default at render time (theme-renderer.ts applyLiquidSectionSchemaDefaults). T2b had
+        // worked around the prior renderer-level gap by composing each section's already-declared
+        // default value explicitly; every one of those 9 compositions is now back to settings:{},
+        // proven byte-identical via the parity harness and liquid-w2-schema-defaults.test.ts.
+        sections: { 'customer-login-default': { type: 'customer-login', settings: {} } },
         order: ['customer-login-default'],
       },
       'customers/register': {
         name: 'Register',
         layout: 'theme',
-        sections: { 'customer-register-default': { type: 'customer-register', settings: { heading: 'Create account' } } },
+        sections: { 'customer-register-default': { type: 'customer-register', settings: {} } },
         order: ['customer-register-default'],
       },
       'customers/account': {
         name: 'Account',
         layout: 'theme',
-        sections: { 'customer-account-default': { type: 'customer-account', settings: { heading: 'Your account' } } },
+        sections: { 'customer-account-default': { type: 'customer-account', settings: {} } },
         order: ['customer-account-default'],
       },
       'customers/orders': {
         name: 'Order history',
         layout: 'theme',
-        sections: { 'customer-orders-default': { type: 'customer-orders', settings: { heading: 'Your orders' } } },
+        sections: { 'customer-orders-default': { type: 'customer-orders', settings: {} } },
         order: ['customer-orders-default'],
       },
       'customers/order': {
         name: 'Order detail',
         layout: 'theme',
-        sections: { 'customer-order-detail-default': { type: 'customer-order-detail', settings: { heading: 'Order' } } },
+        sections: { 'customer-order-detail-default': { type: 'customer-order-detail', settings: {} } },
         order: ['customer-order-detail-default'],
       },
       'customers/settings': {
         name: 'Account settings',
         layout: 'theme',
-        sections: { 'customer-settings-default': { type: 'customer-settings', settings: { heading: 'Account settings' } } },
+        sections: { 'customer-settings-default': { type: 'customer-settings', settings: {} } },
         order: ['customer-settings-default'],
       },
       'customers/wishlist': {
         name: 'Wishlist',
         layout: 'theme',
-        sections: { 'customer-wishlist-default': { type: 'customer-wishlist', settings: { heading: 'Your wishlist' } } },
+        sections: { 'customer-wishlist-default': { type: 'customer-wishlist', settings: {} } },
         order: ['customer-wishlist-default'],
       },
       'customers/addresses': {
         name: 'Addresses',
         layout: 'theme',
-        sections: { 'customer-addresses-default': { type: 'customer-addresses', settings: { heading: 'Your addresses' } } },
+        sections: { 'customer-addresses-default': { type: 'customer-addresses', settings: {} } },
         order: ['customer-addresses-default'],
       },
       policy: {

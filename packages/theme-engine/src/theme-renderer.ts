@@ -522,6 +522,26 @@ export class JsonContractThemeRenderer implements ThemeRenderer {
 
 // Render every section of one Liquid template to sanitized HTML. Shared by the page body and by the
 // header/footer chrome templates (L4) so chrome and body go through the identical sanitized pipeline.
+// W2: `settings` on a composed section only carries the keys someone actually set. A key that
+// is genuinely absent falls back to its {% schema %} field `default`; a key that IS present —
+// even set to an empty string — is an explicit value (possibly a merchant deliberately clearing
+// a field) and must never be overwritten. hasOwnProperty is the absent/deliberately-blank test:
+// it is true for `{ heading: '' }` and false for `{}`. A field with no declared default that is
+// absent from settings stays absent (existing behavior for a field the schema never defaults).
+function applyLiquidSectionSchemaDefaults(
+    settings: Record<string, unknown>,
+    schemaFields: ReadonlyArray<{ id: string; default?: unknown }>,
+): Record<string, unknown> {
+    let merged: Record<string, unknown> | null = null;
+    for (const field of schemaFields) {
+        if (field.default === undefined) continue;
+        if (Object.prototype.hasOwnProperty.call(settings, field.id)) continue;
+        merged ??= { ...settings };
+        merged[field.id] = field.default;
+    }
+    return merged ?? settings;
+}
+
 // C1: returns sectionErrors count so the caller can determine 'rendered' vs 'error' status.
 //
 // F2 — Parallel Section Rendering: sections are rendered concurrently via Promise.allSettled.
@@ -575,6 +595,16 @@ async function renderLiquidTemplateSections(
             if (task.kind === 'skip') return null;
             const { sectionId, resolvedType, templateSection } = task;
             const sectionFile = bundle.sections[resolvedType]!;
+            // W2: a merchant-composed settings object only carries the keys the merchant (or
+            // LetBuyy's own template compositions) actually set. Any key absent from it falls
+            // back to its {% schema %} `default` — explicit merchant value (including a
+            // deliberately empty string, which stays present as an own key) always wins, then
+            // schema default, then genuinely nothing. Computed once, outside the try, so both the
+            // success path and the error-placeholder path report the same resolved settings.
+            const defaultedSectionSettings = applyLiquidSectionSchemaDefaults(
+                templateSection.settings,
+                sectionFile.schema.settings,
+            );
 
             // C1: per-section try/catch — a single bad section must not crash the full page render.
             // On error we push an HTML comment placeholder and continue.
@@ -584,7 +614,7 @@ async function renderLiquidTemplateSections(
                 // descriptors are present). siteDrops is already tenant-scoped by the caller.
                 const siteDrops: SiteDrops = (input.liquidContext?.siteDrops as SiteDrops | undefined) ?? {};
                 const resolvedSectionSettings = resolveDynamicSourceDescriptors(
-                    templateSection.settings,
+                    defaultedSectionSettings,
                     siteDrops,
                 );
 
@@ -630,7 +660,7 @@ async function renderLiquidTemplateSections(
                 return {
                     id: sectionId,
                     type: resolvedType,
-                    settings: templateSection.settings,
+                    settings: defaultedSectionSettings,
                     html: await sanitizeRenderedHtml(String(sectionHtml)),
                     blocks: renderedBlocks,
                 };
@@ -640,7 +670,7 @@ async function renderLiquidTemplateSections(
                 return {
                     id: sectionId,
                     type: resolvedType,
-                    settings: templateSection.settings,
+                    settings: defaultedSectionSettings,
                     // HTML-comment safe: escapeHtmlAttribute handles ", ', <, >, & and we additionally
                     // strip '--' sequences so a crafted sectionId/type cannot break out of the comment.
                     html: `<!-- lb:section-error sectionId="${escapeHtmlCommentValue(sectionId)}" type="${escapeHtmlCommentValue(resolvedType)}" -->`,

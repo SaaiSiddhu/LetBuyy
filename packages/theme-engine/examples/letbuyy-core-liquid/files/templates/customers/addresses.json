@@ -4,9 +4,7 @@
   "sections": {
     "customer-addresses-default": {
       "type": "customer-addresses",
-      "settings": {
-        "heading": "Your addresses"
-      },
+      "settings": {},
       "blocks": {},
       "block_order": [],
       "disabled": false

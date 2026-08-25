@@ -28,8 +28,12 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
     'id,store_name,name,description,site_type,status,subdomain,custom_domain,domain,is_published,is_active,is_password_protected,coming_soon_enabled,tagline,logo_url,cover_image,primary_color,secondary_color,published_at,created_at,updated_at,seo_title,seo_description,seo_keywords,og_image_url,twitter_handle,settings,theme_settings,currency,timezone,language,theme_id,theme_config';
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
+// Column names verified against the live `products` table (see W1 in EXECUTION_LEDGER.md
+// PHASE-T3): the previous list referenced short_description, compare_at_price, category_id,
+// brand, inventory_quantity and dimensions, none of which exist, so PostgREST rejected every
+// call with 42703 and the swallowed error was misreported as "Product not found".
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,short_description,price,compare_at_price,cost_price,sku,barcode,category_id,brand,product_type,tags,images,featured_image,inventory_quantity,track_inventory,is_active,is_featured,weight,dimensions,seo_title,seo_description,created_at,updated_at,variants';
+    'id,store_id,name,slug,description,price,compare_price,cost_price,sku,barcode,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,seo_title,seo_description,created_at,updated_at,variants';
 const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
 const STOREFRONT_BEACON_EVENT_TYPES: Record<StorefrontAnalyticsBeaconEventType, string> = {
     session_started: 'storefront.session_started',
@@ -840,13 +844,39 @@ export function registerStorefrontPublicRoutes(
                     body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
                 };
             }
-            const { data } = await db
+            // `id` is a uuid column — PostgREST/Postgres reject the OR filter outright
+            // (22P02 invalid input syntax for type uuid) when the id.eq. branch is given a
+            // non-uuid string, which is exactly what every slug lookup is. That cast failure
+            // was the second half of W1: it broke every by-slug (and every genuinely-missing)
+            // lookup even after the column-list fix above. Only add the id.eq. branch when the
+            // identifier is actually uuid-shaped.
+            const isUuidIdentifier = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+            const identifierFilter = isUuidIdentifier
+                ? `slug.eq.${identifier},id.eq.${identifier}`
+                : `slug.eq.${identifier}`;
+            const { data, error } = await db
                 .from('products')
                 .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_SELECT_FULL_RELATIONAL : '*')
                 .eq('store_id', store.id)
-                .or(`slug.eq.${identifier},id.eq.${identifier}`)
+                .or(identifierFilter)
                 .eq('is_active', true)
                 .single();
+            // PGRST116 is PostgREST's "0 (or >1) rows for .single()" code — a genuine absence,
+            // safe to report as NOT_FOUND. Any other error (bad column, connection failure, etc.)
+            // is a query failure, not an absence, and must not be reported as NOT_FOUND — doing so
+            // previously hid a schema mismatch behind an indistinguishable 404 (W1).
+            if (error && error.code !== 'PGRST116') {
+                console.error(JSON.stringify({
+                    level: 'error',
+                    event: 'storefront_product_detail_query_failed',
+                    store_id: store.id,
+                    identifier,
+                    request_id: getRequestId(c),
+                    error_code: error.code,
+                    error_message: error.message,
+                }));
+                return { status: 500, body: dbFailureBody() };
+            }
             if (!data) {
                 return {
                     status: 404,
