@@ -1,12 +1,54 @@
 <section class="lb-product-detail" data-section-id="{{ section.id }}">
+  <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ routes.root_url }}">Home</a>
+    <a href="{{ routes.all_products_collection_url }}">Shop</a>
+    <span aria-current="page">{{ product.title }}</span>
+  </nav>
+  <div class="lb-product-detail__layout">
+  {% if section.settings.showGallery and product.images.size > 0 %}
+  <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">
+    <div class="lb-product-detail__gallery-main">
+      {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}
+    </div>
+    {% if product.images.size > 1 %}
+    <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">
+      {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}
+    </div>
+    {% endif %}
+  </lb-product-gallery>
+  {% endif %}
+  <div class="lb-product-detail__info">
   <h1>{{ product.title }}</h1>
   {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}
-  {% if section.settings.showGallery %}<div class="lb-product-detail__gallery">{% for image in product.images %}<img src="{{ image | image_url }}" alt="{{ product.title }}">{% endfor %}</div>{% endif %}
-  <p>{{ product.price | times: 100 | money_with_currency: product.currency }}</p>
-  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}
-  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" class="lb-product-detail__variants">{% for option in product.options %}<span class="lb-variant-option__name">{{ option.name }}</span>{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}{% endfor %}</lb-variant-picker>{% endif %}
-  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live="polite"></span></lb-add-to-cart>
-  <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle>
+  <div class="lb-product-detail__price">
+    <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>
+    {% if product.compare_at_price and product.compare_at_price > product.price %}
+    <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>
+    <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>
+    {% endif %}
+  </div>
+  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}
+  <div class="lb-product-detail__purchase">
+    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">
+      <label class="lb-sr-only" for="lb-quantity-{{ section.id }}">Quantity</label>
+      <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">
+      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>
+      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>
+      <span data-lb-add-to-cart-status aria-live="polite"></span>
+    </lb-add-to-cart>
+    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>
+  </div>
+  {% if section.settings.showDescription and product.description %}
+  <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>
+  {% endif %}
+  {% if shop.policies contains 'shipping' %}
+  <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>
+  {% endif %}
+  {% if shop.policies contains 'refund' or shop.policies contains 'returns' %}
+  <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>
+  {% endif %}
+  </div>
+  </div>
   {% if section.settings.showReviews and product.reviews.size > 0 %}<div class="lb-product-reviews" data-section-id="{{ section.id }}-reviews">
     <h2 class="lb-product-reviews__title">Customer reviews ({{ product.review_count }})</h2>
     {% for review in product.reviews %}<article class="lb-product-review">

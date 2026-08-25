@@ -952,7 +952,63 @@ const LIQUID_ICONS = {
   instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg>',
   facebook: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 4h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3z"></path></svg>',
   twitter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="4" x2="20" y2="20"></line><line x1="20" y1="4" x2="4" y2="20"></line></svg>',
+  // T6/W2 — a filled star for the product card/PDP rating display. Built from <path> only (no new
+  // SVG primitive needed beyond the T5 sanitizer allowlist) — a plain 5-point star polygon, not
+  // derived from any icon library.
+  star: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" class="lb-icon-star"><path d="M12 2.5l2.9 6.4 6.9.7-5.2 4.8 1.5 6.9L12 17.8l-6.1 3.5 1.5-6.9-5.2-4.8 6.9-.7z"></path></svg>',
 };
+
+// T6/W2 — the ONE product card, used identically by collection-product-list.liquid,
+// featured-products.liquid and product-grid.liquid (previously three byte-identical copies of the
+// same markup maintained independently — a change to one silently drifted from the other two).
+// Assumes the enclosing `{% for item in collection.products %}` loop variable is always `item`,
+// which all three call sites already use. Data-driven only: badges (sold out / sale / low stock),
+// the second hover image, and the rating row all render exclusively from fields confirmed to reach
+// this drop (composition-engine.tsx's productToLiquidDrop) — never fabricated. Two Dawn-class
+// features were investigated and deliberately left out because the data does not exist: `vendor`
+// (productToLiquidDrop has no such field) and colour swatches (product.options carries option
+// name/value strings, not swatch colour data) — see docs/theme-deploy-chain.md-adjacent report
+// notes rather than inventing either. True responsive `srcset` (multiple resolutions of the same
+// image) is also not buildable: `image_url`/`safeLiquidUrl` is a pass-through sanitizer with no
+// resize/CDN parameter support anywhere in this asset pipeline — `sizes` + `loading="lazy"` +
+// `aspect-ratio` (CSS) are the real, honest substitute that still prevents layout shift.
+const LIQUID_PRODUCT_CARD = [
+  '<article class="lb-product-card">',
+  '  <a class="lb-product-card__link" href="{{ item.url }}">',
+  '    <div class="lb-product-card__media">',
+  '      {% if item.featured_image %}',
+  `      <img class="lb-product-card__image lb-product-card__image--primary" src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy" decoding="async" sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw">`,
+  '      {% if item.images.size > 1 %}<img class="lb-product-card__image lb-product-card__image--hover" src="{{ item.images[1] | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async">{% endif %}',
+  '      {% else %}',
+  '      <span class="lb-product-card__placeholder">No image yet</span>',
+  '      {% endif %}',
+  '      {% if item.available == false %}',
+  '      <span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>',
+  '      {% elsif item.compare_at_price and item.compare_at_price > item.price %}',
+  '      <span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>',
+  '      {% elsif item.stock > 0 and item.stock <= 5 %}',
+  '      <span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--low-stock">Only {{ item.stock }} left</span></span>',
+  '      {% endif %}',
+  '    </div>',
+  '    <div class="lb-product-card__body">',
+  '      <h3 class="lb-product-card__title">{{ item.title }}</h3>',
+  '      {% if item.review_count > 0 %}',
+  `      <div class="lb-product-card__rating" aria-label="Rated {{ item.rating }} out of 5 from {{ item.review_count }} reviews">${LIQUID_ICONS.star}<span class="lb-product-card__rating-value">{{ item.rating }}</span><span class="lb-product-card__rating-count">({{ item.review_count }})</span></div>`,
+  '      {% endif %}',
+  '      <div class="lb-product-card__price">',
+  '        <span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>',
+  '        {% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}',
+  '      </div>',
+  '    </div>',
+  '  </a>',
+  '  <div class="lb-product-card__actions">',
+  '    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}">',
+  '      <button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Quick add{% endif %}</button>',
+  '    </lb-add-to-cart>',
+  '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ item.title }} to wishlist"></lb-wishlist-toggle>',
+  '  </div>',
+  '</article>',
+].join('');
 
 export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSectionFile> {
   return {
@@ -1468,14 +1524,83 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       ],
       body: [
         '<section class="lb-product-detail" data-section-id="{{ section.id }}">',
+        // T6/W3 — a real, visible breadcrumb (the JSON-LD structured-data breadcrumb already ships
+        // separately from apps/storefront-runtime's own page component, see buildBreadcrumbJsonLd in
+        // lib/seo.ts — this is the on-page, clickable counterpart Dawn also ships). Every href through
+        // store_url, matching the rest of this bundle's convention.
+        '  <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">',
+        '    <a href="{{ routes.root_url }}">Home</a>',
+        '    <a href="{{ routes.all_products_collection_url }}">Shop</a>',
+        '    <span aria-current="page">{{ product.title }}</span>',
+        '  </nav>',
+        '  <div class="lb-product-detail__layout">',
+        // T6/W3 — a real image carousel + thumbnails (lb-product-gallery, liquid-hydration-islands.tsx).
+        // No-JS-first: every image renders up front, `hidden` on all but the first — a browser with
+        // JS disabled sees a plain stacked image list, never zero images. images.size > 1 gates the
+        // thumbnail row so a single-image product does not render a redundant one-thumbnail strip.
+        '  {% if section.settings.showGallery and product.images.size > 0 %}',
+        '  <lb-product-gallery class="lb-product-detail__gallery" data-lb-island="product-gallery">',
+        '    <div class="lb-product-detail__gallery-main">',
+        '      {% for image in product.images %}<img class="lb-product-detail__gallery-image" src="{{ image | image_url }}" alt="{{ product.title }}" data-lb-gallery-image data-index="{{ forloop.index0 }}"{% unless forloop.first %} hidden{% endunless %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async">{% endfor %}',
+        '    </div>',
+        '    {% if product.images.size > 1 %}',
+        '    <div class="lb-product-detail__gallery-thumbs" role="tablist" aria-label="Product images">',
+        '      {% for image in product.images %}<button type="button" class="lb-product-detail__gallery-thumb" data-lb-gallery-thumb data-index="{{ forloop.index0 }}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}" aria-label="Image {{ forloop.index }} of {{ product.images.size }}"><img src="{{ image | image_url }}" alt="" aria-hidden="true" loading="lazy" decoding="async"></button>{% endfor %}',
+        '    </div>',
+        '    {% endif %}',
+        '  </lb-product-gallery>',
+        '  {% endif %}',
+        '  <div class="lb-product-detail__info">',
         '  <h1>{{ product.title }}</h1>',
         '  {% if product.review_count > 0 %}<p class="lb-product-detail__rating" aria-label="Rated {{ product.rating }} out of 5">★ {{ product.rating }} <span class="lb-product-detail__rating-count">({{ product.review_count }})</span></p>{% endif %}',
-        '  {% if section.settings.showGallery %}<div class="lb-product-detail__gallery">{% for image in product.images %}<img src="{{ image | image_url }}" alt="{{ product.title }}">{% endfor %}</div>{% endif %}',
-        '  <p>{{ product.price | times: 100 | money_with_currency: product.currency }}</p>',
-        '  {% if section.settings.showDescription %}<div>{{ product.description }}</div>{% endif %}',
-        '  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" class="lb-product-detail__variants">{% for option in product.options %}<span class="lb-variant-option__name">{{ option.name }}</span>{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}{% endfor %}</lb-variant-picker>{% endif %}',
-        '  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button><span data-lb-add-to-cart-status aria-live="polite"></span></lb-add-to-cart>',
-        '  <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle>',
+        // T6/W3 — compare-at price + real percentage savings, the same "compare_at_price >
+        // price" gate the product card already uses (never a fabricated discount).
+        '  <div class="lb-product-detail__price">',
+        '    <span class="lb-product-detail__price-current">{{ product.price | times: 100 | money_with_currency: product.currency }}</span>',
+        '    {% if product.compare_at_price and product.compare_at_price > product.price %}',
+        '    <s class="lb-product-detail__price-compare">{{ product.compare_at_price | times: 100 | money_with_currency: product.currency }}</s>',
+        '    <span class="lb-product-detail__price-save">Save {{ product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price | round }}%</span>',
+        '    {% endif %}',
+        '  </div>',
+        // T6/W3 — data-variants carries the real product.variants array (id/options/stock, the same
+        // shape commerce-core's ProductVariant already declares) so LbVariantPickerElement can judge
+        // real availability once every option group is selected — see its own doc comment for why
+        // this attribute is safe to embed with raw quotes (the engine's outputEscape already proved
+        // it HTML-entity-escapes {{ }} output landing inside an attribute, confirmed against
+        // data-product-name earlier in this same template).
+        '  {% if product.options.size > 0 %}<lb-variant-picker data-lb-island="variant-picker" data-product-id="{{ product.id }}" data-variants="{{ product.variants | json }}" class="lb-product-detail__variants">{% for option in product.options %}<div class="lb-product-detail__variant-group"><span class="lb-variant-option__name">{{ option.name }}</span><div class="lb-product-detail__variant-values">{% for value in option.values %}<button type="button" data-lb-variant-option data-variant-name="{{ option.name }}" data-variant-value="{{ value }}" aria-pressed="false">{{ value }}</button>{% endfor %}</div></div>{% endfor %}<p class="lb-product-detail__variant-status" data-lb-variant-status role="status"></p></lb-variant-picker>{% endif %}',
+        // T6/W3 — quantity was already fully supported by LbAddToCartElement/quantityFromElement
+        // ([name="quantity"] or [data-lb-quantity] within the element) but never rendered anywhere;
+        // this is the first Liquid template to actually surface it. Buy now reuses the exact same
+        // add-to-cart call (see LbAddToCartElement.addCurrentProduct) and then redirects straight to
+        // the one existing checkout route instead of opening the drawer — not a second checkout path.
+        '  <div class="lb-product-detail__purchase">',
+        '    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ product.id }}" data-product-name="{{ product.title }}" data-product-price="{{ product.price }}" data-product-currency="{{ product.currency }}" data-product-url="{{ product.url }}">',
+        '      <label class="lb-sr-only" for="lb-quantity-{{ section.id }}">Quantity</label>',
+        '      <input type="number" name="quantity" id="lb-quantity-{{ section.id }}" class="lb-product-detail__quantity" value="1" min="1" inputmode="numeric">',
+        '      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--primary" data-lb-add-to-cart{% if product.available == false %} disabled{% endif %}>{% if product.available == false %}Sold out{% else %}Add to cart{% endif %}</button>',
+        '      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>',
+        '      <span data-lb-add-to-cart-status aria-live="polite"></span>',
+        '    </lb-add-to-cart>',
+        '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>',
+        '  </div>',
+        // T6/W3 — description, shipping and returns as <details> accordions (confirmed to survive the
+        // sanitizer, matching faq-accordion.liquid's own established pattern). Shipping/returns are
+        // gated on shop.policies (the SAME published-policy source T3-fix/T4/T5 already wired the
+        // footer to, deliberately not a second data-fetch) and link to the real policy pages rather
+        // than duplicating policy body text inline — no legal text authored here, and an unpublished
+        // policy renders no accordion at all, not an empty one.
+        '  {% if section.settings.showDescription and product.description %}',
+        '  <details class="lb-product-detail__accordion"><summary>Description</summary><div class="lb-product-detail__accordion-body">{{ product.description }}</div></details>',
+        '  {% endif %}',
+        '  {% if shop.policies contains \'shipping\' %}',
+        '  <details class="lb-product-detail__accordion"><summary>Shipping</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/shipping">Read our shipping policy</a></div></details>',
+        '  {% endif %}',
+        '  {% if shop.policies contains \'refund\' or shop.policies contains \'returns\' %}',
+        '  <details class="lb-product-detail__accordion"><summary>Returns</summary><div class="lb-product-detail__accordion-body"><a href="{{ routes.root_url }}/returns">Read our returns policy</a></div></details>',
+        '  {% endif %}',
+        '  </div>',
+        '  </div>',
         '  {% if section.settings.showReviews and product.reviews.size > 0 %}<div class="lb-product-reviews" data-section-id="{{ section.id }}-reviews">',
         '    <h2 class="lb-product-reviews__title">Customer reviews ({{ product.review_count }})</h2>',
         '    {% for review in product.reviews %}<article class="lb-product-review">',
@@ -3184,7 +3309,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  {% if section.settings.title %}<h2>{{ section.settings.title }}</h2>{% endif %}',
           '  {% if collection.products.size > 0 %}',
           '  <div class="lb-product-grid__items">',
-          '    {% for item in collection.products %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}',
+          `    {% for item in collection.products %}${LIQUID_PRODUCT_CARD}{% endfor %}`,
           '  </div>',
           '  {% else %}',
           '  <div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>',
@@ -3544,7 +3669,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    <p>{{ section.settings.subtitle }}</p>',
           '  </div>',
           '  {% if collection.products.size > 0 %}',
-          '  <div class="lb-featured-products__items">{% for item in collection.products limit: section.settings.productLimit %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>',
+          `  <div class="lb-featured-products__items">{% for item in collection.products limit: section.settings.productLimit %}${LIQUID_PRODUCT_CARD}{% endfor %}</div>`,
           '  <a href="{{ section.settings.viewAllHref | store_url }}">{{ section.settings.viewAllLabel }}</a>',
           '  {% else %}',
           '  <div class="lb-featured-products__empty"><h2>No featured products</h2><p>Featured products added to this store will appear here.</p></div>',
@@ -3620,7 +3745,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <h2>{{ section.settings.title }}</h2>',
           '  <p>{{ section.settings.subtitle }}</p>',
           '  {% if collection.products.size > 0 %}',
-          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for item in collection.products limit: section.settings.productLimit %}<article class="lb-product-card"><a class="lb-product-card__link" href="{{ item.url }}"><div class="lb-product-card__media">{% if item.featured_image %}<img src="{{ item.featured_image | image_url }}" alt="{{ item.title }}" loading="lazy">{% else %}<span class="lb-product-card__placeholder">No image yet</span>{% endif %}{% if item.available == false %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sold-out">Sold out</span></span>{% elsif item.compare_at_price and item.compare_at_price > item.price %}<span class="lb-product-card__badges"><span class="lb-product-card__badge lb-product-card__badge--sale">Sale</span></span>{% endif %}</div><div class="lb-product-card__body"><h3 class="lb-product-card__title">{{ item.title }}</h3><div class="lb-product-card__price"><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span>{% if item.compare_at_price and item.compare_at_price > item.price %}<s>{{ item.compare_at_price | times: 100 | money_with_currency: item.currency }}</s>{% endif %}</div></div></a><div class="lb-product-card__actions"><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Add to cart{% endif %}</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></div></article>{% endfor %}</div>',
+          `  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">{% for item in collection.products limit: section.settings.productLimit %}${LIQUID_PRODUCT_CARD}{% endfor %}</div>`,
           '  {% else %}',
           '  <div class="lb-product-grid__empty"><h2>No products found</h2><p>Products added to this store will appear here.</p></div>',
           '  {% endif %}',

@@ -94,8 +94,8 @@
     },
     {
       "path": "sections/collection-product-list.liquid",
-      "checksum": "a92aa6ea746490bf20a341f101bc6cce959d4499cf07072eeb5ccc8fff5b772a",
-      "sizeBytes": 2611
+      "checksum": "f4ab6248addecd719997784928299226dec02998e6afc9873bc0c0611bb1e367",
+      "sizeBytes": 3882
     },
     {
       "path": "sections/contact-form.liquid",
@@ -159,8 +159,8 @@
     },
     {
       "path": "sections/featured-products.liquid",
-      "checksum": "56323a7c007104bfbdfa9e694e97943b3cf122c43813373a29a7b23b9ad19087",
-      "sizeBytes": 3106
+      "checksum": "83ea9ea13f2f248fb3804dcaac463e9a7efab67c50bc681c59fd269e3c9b729c",
+      "sizeBytes": 4377
     },
     {
       "path": "sections/footer.liquid",
@@ -209,13 +209,13 @@
     },
     {
       "path": "sections/product-detail.liquid",
-      "checksum": "ecdeb20244420d957d5160f71c313c09753e4447ef522037bb9bd2910f38eaa3",
-      "sizeBytes": 3662
+      "checksum": "13765642cf8f2c49f89bbbd5e1bfc714d3f7a4c9b7fd8d2e456db479b336d71d",
+      "sizeBytes": 7233
     },
     {
       "path": "sections/product-grid.liquid",
-      "checksum": "7149c17715b0f8a4bb1196532953f771b9288d6a24f9ef3d5b2331ad3487767b",
-      "sizeBytes": 2886
+      "checksum": "17e2e1817ee1c4fd9f6376833f5d1eab28a100cb9454ec5a50adcf789c933a63",
+      "sizeBytes": 4157
     },
     {
       "path": "sections/rich-content.liquid",
@@ -392,7 +392,7 @@
     "sections/category-grid.liquid": "7a1c3ef82a788df11c84ffe3cc0f0d98646bea3728a7530f17cdc5cf7c531bec",
     "sections/collection-banner.liquid": "5373bde2d45fad3a3d8a93d535e50477b45a43c314088a2d5ac6e316eca5f02e",
     "sections/collection-filter.liquid": "4387999ad13be26bbd8832706fd519b21c24097a568005569cc25fc16a92d3fe",
-    "sections/collection-product-list.liquid": "a92aa6ea746490bf20a341f101bc6cce959d4499cf07072eeb5ccc8fff5b772a",
+    "sections/collection-product-list.liquid": "f4ab6248addecd719997784928299226dec02998e6afc9873bc0c0611bb1e367",
     "sections/contact-form.liquid": "73fc42eae7975b542e3199ee829014a40768cb3b8cfe333217348c774b950aca",
     "sections/cta-section.liquid": "bb82b3600e464a9959cf3a8e10c3ffe0abc90a731372fccf938caa4486914e37",
     "sections/customer-account.liquid": "8634e5668eca6204286f02c059065b2676522fa1baebdb18497b33f306e2d0df",
@@ -405,7 +405,7 @@
     "sections/customer-wishlist.liquid": "6d7a928d9c365f929e1272f6ea4b632c1861a9aaf543191f76dc163723993b50",
     "sections/experience-timeline.liquid": "a99dd81e0ef878af79b1946f47333611c4d7a7c61e5c72d43be71ac9cf76a498",
     "sections/faq-accordion.liquid": "937fad2e49cbeb864a4e55fb55c50e4b92edc9993eeed74a41918499fefae5d3",
-    "sections/featured-products.liquid": "56323a7c007104bfbdfa9e694e97943b3cf122c43813373a29a7b23b9ad19087",
+    "sections/featured-products.liquid": "83ea9ea13f2f248fb3804dcaac463e9a7efab67c50bc681c59fd269e3c9b729c",
     "sections/footer.liquid": "90418115af7eb07ef4f13891aa2d411c806339a6f1e9d5489aef93d0b8dd2a59",
     "sections/header.liquid": "5475c6a2b6e6e5e5eb77515417b62f44b06ecc2fbf5c894c7d70b53eb5024c19",
     "sections/hero-banner.liquid": "748a868a18959f967b12e056136491eec069f5b4901ea85752b46fb3238c7fd2",
@@ -415,8 +415,8 @@
     "sections/password-gate.liquid": "b375dbd054f920a2df9529e5fab69c70e024cbb288d07715a8005c697820f220",
     "sections/policy-content.liquid": "6ed36b3f4f78af84237246fcaf3c05bd58c2c599e16e2f67030c5b760c9e1ff5",
     "sections/portfolio-grid.liquid": "2c2e59f1405bf33d5990183dbea1aaf548b0fc5514f00bb375d38d64542edfbd",
-    "sections/product-detail.liquid": "ecdeb20244420d957d5160f71c313c09753e4447ef522037bb9bd2910f38eaa3",
-    "sections/product-grid.liquid": "7149c17715b0f8a4bb1196532953f771b9288d6a24f9ef3d5b2331ad3487767b",
+    "sections/product-detail.liquid": "13765642cf8f2c49f89bbbd5e1bfc714d3f7a4c9b7fd8d2e456db479b336d71d",
+    "sections/product-grid.liquid": "17e2e1817ee1c4fd9f6376833f5d1eab28a100cb9454ec5a50adcf789c933a63",
     "sections/rich-content.liquid": "86452487b09bdc54e4d4029331e918250501a0e0ba2254d1e06a7dda39e9a62f",
     "sections/search-box.liquid": "4646e84620b24242bfe1d660542f8b56a97fd20cfdaf5033656fb852d0f28ea1",
     "sections/services-grid.liquid": "376e52310c3199f10864112bfd5c732aa953e71768d86fc00684a666f4b3363c",
@@ -449,5 +449,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "f5c142ee6cdc6c33b115931a18102632b3e71363095d95fd4590b072c88d8f39"
+  "contentHash": "f76b6e923350a177e395c9be3317f99ac56295adcc9ad02c5b8d4105f7adc5e2"
 }

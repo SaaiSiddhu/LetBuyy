@@ -199,6 +199,8 @@ const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
   'lb-mobile-nav',
   // T5/W3: lb-predictive-search island — the header search overlay's debounced predictive results.
   'lb-predictive-search',
+  // T6/W3: lb-product-gallery island — the PDP image carousel + thumbnails.
+  'lb-product-gallery',
 ] as const;
 
 export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
@@ -290,7 +292,8 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
   CUSTOM_ELEMENT_HANDLING: {
     // F7-Lane-A: lb-logout added. Keep in sync with LIQUID_HYDRATION_CUSTOM_ELEMENTS above.
     // T5/W3: lb-predictive-search added.
-    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout|turnstile|mobile-nav|predictive-search)$/,
+    // T6/W3: lb-product-gallery added.
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout|turnstile|mobile-nav|predictive-search|product-gallery)$/,
     attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
     allowCustomizedBuiltInElements: false,
   },
@@ -452,26 +455,64 @@ export const LIQUID_THEME_BASE_CSS = [
   '.lb-product-card{position:relative;display:flex;flex-direction:column;border-radius:var(--lb-radius-lg);background:var(--surface,rgb(255 255 255));border:1px solid var(--border-color,rgb(226 232 240));overflow:hidden;transition:transform var(--lb-transition),box-shadow var(--lb-transition);}',
   '.lb-product-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(15,23,42,.1);}',
   '.lb-product-card__media{position:relative;aspect-ratio:1;background:var(--border-color,rgb(226 232 240));overflow:hidden;}',
-  '.lb-product-card__media img{width:100%;height:100%;object-fit:cover;transition:transform 400ms ease;}',
-  '.lb-product-card:hover .lb-product-card__media img{transform:scale(1.04);}',
+  // T6/W2 — functional parity for the two-image hover swap; see liquid-theme.css's identical rule
+  // for why this is a plain opacity swap, not a resolution/srcset swap (no resize service exists).
+  '.lb-product-card__image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 300ms ease,transform 400ms ease;}',
+  '.lb-product-card__image--hover{opacity:0;}',
+  '.lb-product-card:hover .lb-product-card__image--primary,.lb-product-card:focus-within .lb-product-card__image--primary{transform:scale(1.04);}',
+  '.lb-product-card:hover .lb-product-card__image--hover,.lb-product-card:focus-within .lb-product-card__image--hover{opacity:1;}',
   '.lb-product-card__placeholder{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--foreground);opacity:.35;font-size:var(--lb-text-xs);text-align:center;padding:var(--lb-space-2xs);}',
   '.lb-product-card__badges{position:absolute;top:0.625rem;left:0.625rem;display:flex;flex-direction:column;gap:0.25rem;z-index:1;}',
   '.lb-product-card__badge{display:inline-flex;align-items:center;border-radius:var(--lb-radius-pill);padding:0.1875rem 0.625rem;font-size:var(--lb-text-xs);font-weight:700;background:var(--background);}',
   '.lb-product-card__badge--sale{background:#dc2626;color:#fff;}',
   '.lb-product-card__badge--sold-out{background:var(--foreground);color:var(--background);}',
+  '.lb-product-card__badge--low-stock{background:var(--background);border:1px solid var(--border-color,rgb(226 232 240));}',
   '.lb-product-card__badge--new{background:var(--accent,#2563eb);color:#fff;}',
   '.lb-product-card__body{display:flex;flex-direction:column;gap:0.25rem;padding:var(--lb-space-xs);flex:1;}',
   '.lb-product-card__title{font-size:var(--lb-text-sm);font-weight:600;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}',
+  '.lb-product-card__rating{display:flex;align-items:center;gap:0.3rem;font-size:var(--lb-text-xs);opacity:.7;}',
+  '.lb-product-card__rating .lb-icon-star{width:14px;height:14px;color:var(--primary);}',
   '.lb-product-card__price{display:flex;align-items:baseline;gap:0.375rem;font-weight:700;}',
   '.lb-product-card__price s{font-weight:400;opacity:.55;}',
   '.lb-product-card__actions{display:flex;gap:0.5rem;padding:0 var(--lb-space-xs) var(--lb-space-xs);margin-top:auto;}',
-  '.lb-product-card__cta{flex:1;display:inline-flex;align-items:center;justify-content:center;min-height:40px;border-radius:var(--lb-radius-md);background:var(--primary);color:#fff;font-weight:600;font-size:var(--lb-text-sm);border:0;cursor:pointer;}',
+  '.lb-product-card__cta{flex:1;display:inline-flex;align-items:center;justify-content:center;min-height:44px;border-radius:var(--lb-radius-md);background:var(--primary);color:#fff;font-weight:600;font-size:var(--lb-text-sm);border:0;cursor:pointer;}',
   '.lb-product-card__cta:disabled{opacity:.5;cursor:not-allowed;}',
-  // ---- Product detail -----------------------------------------------------------------------------
-  '.lb-product-detail{display:grid;gap:var(--lb-space-lg);}',
-  '.lb-product-detail__gallery{display:grid;gap:0.75rem;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));}',
-  '.lb-product-detail__gallery img,.lb-banner-carousel img{aspect-ratio:1;border-radius:var(--lb-radius-md);object-fit:cover;width:100%;}',
-  '@media (min-width:64em){.lb-product-detail{grid-template-columns:1.1fr 1fr;align-items:start;}}',
+  '.lb-product-card__actions lb-wishlist-toggle{min-width:44px;min-height:44px;}',
+  // ---- Product detail (T6/W3 — functional parity: breadcrumb, gallery+thumbs, purchase row,
+  // accordions; the two-column split now targets .lb-product-detail__layout, the wrapper this
+  // phase introduced, not the section root the old rule assumed) ------------------------------
+  '.lb-product-detail{display:block;}',
+  '.lb-product-detail__breadcrumb{display:flex;flex-wrap:wrap;gap:0.4rem;font-size:var(--lb-text-xs);opacity:.7;margin-bottom:var(--lb-space-sm);}',
+  '.lb-product-detail__layout{display:flex;flex-direction:column;gap:var(--lb-space-lg);}',
+  '@media (min-width:64em){.lb-product-detail__layout{flex-direction:row;align-items:flex-start;}.lb-product-detail__gallery{flex:1 1 55%;position:sticky;top:var(--lb-space-sm);}.lb-product-detail__info{flex:1 1 45%;}}',
+  '.lb-product-detail__gallery-main{position:relative;aspect-ratio:1;border-radius:var(--lb-radius-lg);overflow:hidden;background:var(--border-color,rgb(226 232 240));}',
+  '.lb-product-detail__gallery-image,.lb-banner-carousel img{width:100%;height:100%;aspect-ratio:1;border-radius:var(--lb-radius-md);object-fit:cover;}',
+  '.lb-product-detail__gallery-thumbs{display:flex;gap:var(--lb-space-2xs);margin-top:var(--lb-space-2xs);overflow-x:auto;}',
+  '.lb-product-detail__gallery-thumb{flex:0 0 auto;width:56px;height:56px;padding:0;border-radius:var(--lb-radius-sm);overflow:hidden;border:2px solid transparent;background:none;cursor:pointer;}',
+  '.lb-product-detail__gallery-thumb img{width:100%;height:100%;object-fit:cover;}',
+  '.lb-product-detail__gallery-thumb[aria-selected="true"]{border-color:var(--primary);}',
+  '.lb-product-detail__price{display:flex;align-items:baseline;gap:0.5rem;flex-wrap:wrap;margin:var(--lb-space-2xs) 0 var(--lb-space-sm);}',
+  '.lb-product-detail__price-current{font-size:var(--lb-text-xl);font-weight:700;color:var(--primary);}',
+  '.lb-product-detail__price-compare{font-weight:400;opacity:.55;}',
+  '.lb-product-detail__price-save{font-size:var(--lb-text-xs);font-weight:700;color:#dc2626;}',
+  '.lb-product-detail__purchase{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;margin:var(--lb-space-sm) 0;}',
+  '.lb-product-detail__purchase lb-add-to-cart{display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem;margin-top:0;flex:1 1 100%;}',
+  '.lb-product-detail__quantity{width:4.5rem;min-height:44px;border:1px solid var(--border-color,rgb(226 232 240));border-radius:var(--lb-radius-md);padding-inline:0.6rem;}',
+  '.lb-product-detail__cta{flex:1 1 10rem;min-height:44px;width:auto;}',
+  '.lb-product-detail__cta--secondary{background:none;border:2px solid var(--primary);color:var(--primary);}',
+  '.lb-product-detail__variant-group{display:flex;flex-wrap:wrap;gap:var(--lb-space-2xs);align-items:center;}',
+  '.lb-product-detail__variant-values{display:flex;flex-wrap:wrap;gap:var(--lb-space-2xs);}',
+  '.lb-product-detail__variant-status{font-size:var(--lb-text-xs);color:#dc2626;min-height:1em;}',
+  '.lb-product-detail__accordion{border-top:1px solid var(--border-color,rgb(226 232 240));padding-block:0.1rem;}',
+  '.lb-product-detail__accordion summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer;}',
+  '.lb-product-detail__accordion-body{padding-bottom:var(--lb-space-sm);opacity:.85;}',
+  // T6/W3 — [data-lb-variant-option] had no portable styling at all before this phase (a
+  // pre-existing gap, not introduced here); a minimal, real style closes it.
+  '.lb-product-detail__variants{display:flex;flex-direction:column;gap:var(--lb-space-2xs);margin-block:var(--lb-space-sm);}',
+  '.lb-variant-option__name{font-weight:700;margin-right:var(--lb-space-3xs);}',
+  '[data-lb-variant-option]{cursor:pointer;border:1px solid var(--border-color,rgb(226 232 240));background:var(--surface,#fff);border-radius:var(--lb-radius-md);padding:0.5rem 0.9rem;font-weight:600;min-height:44px;}',
+  '[data-lb-variant-option][aria-pressed="true"]{border-color:var(--primary);background:var(--primary);color:#fff;}',
+  '[data-lb-add-to-cart]:disabled,[data-lb-buy-now]:disabled{opacity:.5;cursor:not-allowed;}',
   // ---- Misc content sections ------------------------------------------------------------------
   '.lb-newsletter-signup form,.lb-contact-form form{display:flex;flex-wrap:wrap;gap:var(--lb-space-2xs);}',
   '.lb-newsletter-signup input,.lb-contact-form input{min-width:min(100%,16rem);min-height:44px;border:1px solid var(--border-color,rgb(226 232 240));border-radius:var(--lb-radius-md);padding-inline:1rem;}',

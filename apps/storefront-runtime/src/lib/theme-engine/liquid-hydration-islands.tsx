@@ -232,6 +232,18 @@ const LiquidIslandBase: typeof HTMLElement =
 class LbAddToCartElement extends LiquidIslandBase {
     private readonly handleClick = (event: Event) => {
         const target = event.target instanceof Element ? event.target : null;
+        // T6/W3 — Buy now is NOT a second checkout path: it calls the exact same addCurrentProduct()
+        // as a plain Add to cart, then navigates straight to the one existing checkout route
+        // (the same URL the cart drawer's own Checkout link and the cart page already use) instead
+        // of leaving the drawer open. data-lb-buy-now is checked first since a buy-now button may
+        // also carry data-lb-add-to-cart for progressive-enhancement/no-JS reasons.
+        const buyNowTrigger = target?.closest('[data-lb-buy-now]');
+        if (buyNowTrigger) {
+            event.preventDefault();
+            this.addCurrentProduct({ redirectToCheckout: true });
+            return;
+        }
+
         const trigger = target?.closest('[data-lb-add-to-cart],button[type="submit"]');
         if (!trigger && target !== this) return;
 
@@ -254,7 +266,7 @@ class LbAddToCartElement extends LiquidIslandBase {
         this.removeEventListener('submit', this.handleSubmit);
     }
 
-    private addCurrentProduct() {
+    private addCurrentProduct(options: { redirectToCheckout?: boolean } = {}) {
         const item = cartItemFromElement(this);
         const status = this.querySelector<HTMLElement>('[data-lb-add-to-cart-status]');
         if (!item) {
@@ -263,6 +275,10 @@ class LbAddToCartElement extends LiquidIslandBase {
         }
 
         addCartItem(item);
+        if (options.redirectToCheckout) {
+            window.location.assign(`${this.dataset.basePath || inferBasePath()}/checkout`);
+            return;
+        }
         if (status) status.textContent = 'Added';
         this.setAttribute('data-lb-added', 'true');
         window.setTimeout(() => {
@@ -614,7 +630,22 @@ class LbPredictiveSearchElement extends LiquidIslandBase {
     }
 }
 
+type PickerVariant = {
+    options?: Record<string, string>;
+    stock?: number;
+    stock_quantity?: number;
+    inventory_qty?: number;
+};
+
+// T6/W3 — real variant availability, not merely a picker that always looks selectable.
+// `data-variants` carries the same product.variants array the drop already resolves (real
+// stock/stock_quantity/inventory_qty per-variant, per commerce-core's ProductVariant shape),
+// serialized via the existing `| json` Liquid filter (already auto-HTML-escaped by this engine's
+// outputEscape setting — confirmed live, the same mechanism data-product-name already relies on
+// for embedding a quoted string inside an attribute). No new data source, no new endpoint.
 class LbVariantPickerElement extends LiquidIslandBase {
+    private variants: PickerVariant[] = [];
+
     private readonly handleClick = (event: Event) => {
         const target = event.target instanceof Element ? event.target : null;
         const option = target?.closest<HTMLElement>('[data-lb-variant-option]');
@@ -625,12 +656,19 @@ class LbVariantPickerElement extends LiquidIslandBase {
     };
 
     private readonly handleChange = () => {
+        this.applyAvailability();
         window.dispatchEvent(new CustomEvent(VARIANT_CHANGED_EVENT, { detail: selectedVariantsFrom(this) }));
     };
 
     connectedCallback() {
+        try {
+            this.variants = JSON.parse(this.dataset.variants || '[]');
+        } catch {
+            this.variants = [];
+        }
         this.addEventListener('click', this.handleClick);
         this.addEventListener('change', this.handleChange);
+        this.applyAvailability();
     }
 
     disconnectedCallback() {
@@ -654,7 +692,138 @@ class LbVariantPickerElement extends LiquidIslandBase {
             this.appendChild(hiddenInput);
         }
         hiddenInput.value = value;
+        this.applyAvailability();
         window.dispatchEvent(new CustomEvent(VARIANT_CHANGED_EVENT, { detail: selectedVariantsFrom(this) }));
+    }
+
+    // Only judges availability once every option group has a selection — a partial selection
+    // (e.g. Size chosen, Colour not yet) cannot honestly be marked available or unavailable.
+    private applyAvailability() {
+        if (this.variants.length === 0) return;
+        const optionGroups = new Set(
+            Array.from(this.querySelectorAll<HTMLElement>('[data-lb-variant-option]')).map((el) => el.dataset.variantName),
+        );
+        const selected = selectedVariantsFrom(this);
+        const fullySelected = optionGroups.size > 0 && Array.from(optionGroups).every((name) => name && selected[name]);
+
+        const status = this.querySelector<HTMLElement>('[data-lb-variant-status]');
+        if (!fullySelected) {
+            if (status) status.textContent = '';
+            this.dispatchAvailability(true);
+            return;
+        }
+
+        const match = this.variants.find((variant) => {
+            const options = variant.options || {};
+            return Object.entries(selected).every(([name, value]) => options[name] === value);
+        });
+        const stock = match ? (match.stock ?? match.stock_quantity ?? match.inventory_qty ?? 0) : null;
+        const available = match ? stock !== null && stock > 0 : true; // no matching variant record → do not falsely block
+
+        if (status) status.textContent = match && !available ? 'This combination is currently unavailable' : '';
+        this.dispatchAvailability(available);
+    }
+
+    private dispatchAvailability(available: boolean) {
+        const section = this.closest('[data-section-id]') || document;
+        section.querySelectorAll<HTMLElement>('[data-lb-add-to-cart],[data-lb-buy-now]').forEach((button) => {
+            if (available) button.removeAttribute('disabled');
+            else button.setAttribute('disabled', '');
+        });
+    }
+}
+
+// T6/W3 — the PDP image carousel + thumbnails. The Liquid template renders every product image up
+// front (progressive enhancement: with JS disabled every image is visible, stacked — never zero
+// images), each already marked `hidden` except the first via the `data-lb-gallery-image` markup;
+// this class only toggles which one is visible and keeps a thumbnail row in sync. Keyboard: Left/
+// Right/Home/End move between thumbnails (roving tabindex, the same one-tab-stop pattern as a
+// native tab list), matching the "keyboard-navigable carousel" requirement. Swipe support on touch
+// uses plain pointer events (no gesture library dependency) and honours prefers-reduced-motion via
+// the existing global CSS rule (the crossfade transition duration collapses to ~0 under it).
+class LbProductGalleryElement extends LiquidIslandBase {
+    private index = 0;
+    private touchStartX: number | null = null;
+
+    private get images(): HTMLElement[] {
+        return Array.from(this.querySelectorAll<HTMLElement>('[data-lb-gallery-image]'));
+    }
+
+    private get thumbs(): HTMLElement[] {
+        return Array.from(this.querySelectorAll<HTMLElement>('[data-lb-gallery-thumb]'));
+    }
+
+    private readonly handleClick = (event: Event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        const thumb = target?.closest<HTMLElement>('[data-lb-gallery-thumb]');
+        if (!thumb) return;
+        const index = Number(thumb.dataset.index);
+        if (Number.isFinite(index)) this.showImage(index, { focusThumb: false });
+    };
+
+    private readonly handleKeydown = (event: KeyboardEvent) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target?.closest('[data-lb-gallery-thumb]')) return;
+        const count = this.thumbs.length;
+        if (count === 0) return;
+
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+            event.preventDefault();
+            this.showImage((this.index + 1) % count, { focusThumb: true });
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            this.showImage((this.index - 1 + count) % count, { focusThumb: true });
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            this.showImage(0, { focusThumb: true });
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            this.showImage(count - 1, { focusThumb: true });
+        }
+    };
+
+    private readonly handleTouchStart = (event: TouchEvent) => {
+        this.touchStartX = event.touches[0]?.clientX ?? null;
+    };
+
+    private readonly handleTouchEnd = (event: TouchEvent) => {
+        if (this.touchStartX === null) return;
+        const endX = event.changedTouches[0]?.clientX ?? this.touchStartX;
+        const delta = endX - this.touchStartX;
+        this.touchStartX = null;
+        const count = this.images.length;
+        if (count < 2 || Math.abs(delta) < 40) return;
+        if (delta < 0) this.showImage((this.index + 1) % count, { focusThumb: false });
+        else this.showImage((this.index - 1 + count) % count, { focusThumb: false });
+    };
+
+    connectedCallback() {
+        this.addEventListener('click', this.handleClick);
+        this.addEventListener('keydown', this.handleKeydown);
+        this.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+        this.addEventListener('touchend', this.handleTouchEnd, { passive: true });
+    }
+
+    disconnectedCallback() {
+        this.removeEventListener('click', this.handleClick);
+        this.removeEventListener('keydown', this.handleKeydown);
+        this.removeEventListener('touchstart', this.handleTouchStart);
+        this.removeEventListener('touchend', this.handleTouchEnd);
+    }
+
+    private showImage(index: number, options: { focusThumb: boolean }) {
+        const images = this.images;
+        const thumbs = this.thumbs;
+        if (index < 0 || index >= images.length) return;
+
+        images.forEach((img, i) => { img.hidden = i !== index; });
+        thumbs.forEach((thumb, i) => {
+            const active = i === index;
+            thumb.setAttribute('aria-selected', String(active));
+            thumb.tabIndex = active ? 0 : -1;
+        });
+        this.index = index;
+        if (options.focusThumb) thumbs[index]?.focus();
     }
 }
 
@@ -1725,6 +1894,8 @@ export function registerLiquidHydrationIslands() {
     defineLiquidIsland('lb-mobile-nav', LbMobileNavElement);
     // T5/W3: lb-predictive-search island — header search overlay's debounced results.
     defineLiquidIsland('lb-predictive-search', LbPredictiveSearchElement);
+    // T6/W3: lb-product-gallery island — PDP image carousel + thumbnails.
+    defineLiquidIsland('lb-product-gallery', LbProductGalleryElement);
 }
 
 function ensureLiquidCartDrawer(root: ParentNode, basePath: string) {

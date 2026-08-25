@@ -41,8 +41,14 @@ const nextConfig: NextConfig = {
   // client graph. Keep jsdom server-external, and drop it from the client bundle
   // (it is never executed client-side) so its node:* deps don't break the build.
   serverExternalPackages: ['jsdom'],
-  webpack: (config, { isServer, webpack }) => {
-    if (!isServer) {
+  webpack: (config, { isServer, nextRuntime, webpack }) => {
+    // T6/W4 — the same node:crypto problem below also hits the Edge runtime compiler pass
+    // (src/instrumentation.ts's register() does `await import('@letbuyy/theme-engine')`, gated
+    // at runtime to Node.js only, but webpack still statically bundles that dynamic import target
+    // for the Edge pass too). Next reports isServer:true for both the Node and Edge server
+    // compilations, so `!isServer` alone misses Edge. The stub is safe there for the same reason
+    // it's safe on the client: theme-packager's checksum code never actually runs at the edge.
+    if (!isServer || nextRuntime === 'edge') {
       config.resolve = config.resolve || {};
       config.resolve.fallback = { ...(config.resolve.fallback || {}), jsdom: false };
 
