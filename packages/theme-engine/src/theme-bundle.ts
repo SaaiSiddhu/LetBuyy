@@ -2506,19 +2506,18 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
                   href: '/contact',
                 },
               },
-              'footer-policy': {
-                type: 'link',
-                settings: {
-                  // T3-fix W3 — was '/policies/shipping-policy', Shopify's own policy-page URL
-                  // convention, not a route this app has ever served (the real route is
-                  // /shipping — see apps/storefront-runtime/src/app/store/[subdomain]/shipping).
-                  // A demo storefront must not link to a URL of its own that never existed.
-                  label: 'Policies',
-                  href: '/shipping',
-                },
-              },
+              // T4 W1 — removed the fixture's own 'footer-policy' quick-link block (was
+              // '/policies/shipping-policy', a Shopify URL convention this app never served;
+              // T3-fix corrected it to '/shipping', but that only swapped one hardcoded dead
+              // link for another that is honest only when the store happens to have a
+              // published shipping policy). The generic "Quick links" mechanism stays available
+              // for a merchant to add their own arbitrary link blocks; this specific
+              // fixture-authored one duplicated the auto-managed Policies column's job through
+              // an unconditional path the column's shop.policies gating never reached — the
+              // exact class of dead link this phase exists to eliminate. The Policies column
+              // alone is now the single, real, data-driven source for policy links.
             },
-            block_order: ['footer-contact', 'footer-policy'],
+            block_order: ['footer-contact'],
           },
         },
         order: ['footer-default'],

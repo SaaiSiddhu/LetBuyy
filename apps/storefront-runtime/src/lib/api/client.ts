@@ -8,11 +8,14 @@ import {
     type LetbuyyApiClient,
 } from '@letbuyy/api-client';
 import { storefrontApiBaseUrlCandidates } from './base-url';
+import { isStorefrontInternalOnlyPath } from './internal-only-paths';
 import {
     createLetbuyyInternalAppHeaders,
     getLetbuyyInternalAuthSecret,
     LETBUYY_CUSTOMER_SESSION_COOKIE,
 } from '@letbuyy/auth-core';
+
+export { isStorefrontInternalOnlyPath };
 
 type StorefrontApiFetchInit = RequestInit & {
     next?: {
@@ -64,19 +67,6 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
     }
 
     return fetch(`${storefrontApiBaseUrl()}${cleanPath}`, requestInit);
-}
-
-function isStorefrontInternalOnlyPath(path: string): boolean {
-    return path === '/storefront/customer/find-or-create'
-        || path === '/storefront/customer/by-email'
-        || path === '/storefront/customer/status'
-        || path === '/storefront/customer/password'
-        || path === '/storefront/customer/login-success'
-        || path === '/storefront/customer/order-credential'
-        || path === '/storefront/customer/order-credential/login'
-        || path === '/storefront/customer/order-credential/login-success'
-        || path === '/storefront/customer/order-stats'
-        || /^\/storefront\/[^/]+\/orders\/contact$/.test(path);
 }
 
 async function signStorefrontInternalRequest(headers: Headers): Promise<void> {

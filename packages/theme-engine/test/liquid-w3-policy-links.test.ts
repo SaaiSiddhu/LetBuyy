@@ -86,11 +86,16 @@ test('W3: this is driven by real data, not a hardcoded policy set — an unknown
   assert.doesNotMatch(column, /\/returns/);
 });
 
-test('W3: the Urban Kicks quick-links fixture no longer points at a URL this app never served', async () => {
+test('T4 W1: the Urban Kicks quick-links fixture carries no policy-shaped dead link', async () => {
   const bundle = createUrbanKicksLiquidThemeBundleFixture();
   const footerTemplate = bundle.templates.footer;
   const blocks = footerTemplate?.sections['footer-default']?.blocks ?? {};
   const hrefs = Object.values(blocks).map((block) => (block as { settings?: { href?: string } }).settings?.href);
   assert.ok(!hrefs.includes('/policies/shipping-policy'), 'the fabricated Shopify-convention URL must be gone');
-  assert.ok(hrefs.includes('/shipping'), 'the quick link must point at this app\'s real shipping route');
+  // T4 W1 — the fixture's own 'footer-policy' quick-link duplicated the Policies column's job
+  // through a path shop.policies gating never reached (an unconditional block render), which is
+  // exactly the class of dead link this phase closes. Removed entirely rather than re-pointed:
+  // the Policies column alone is now the single, data-driven source for policy links.
+  assert.ok(!hrefs.includes('/shipping'), 'no quick-link block should duplicate the Policies column\'s job outside its shop.policies gate');
+  assert.deepEqual(hrefs, ['/contact'], 'only the real Contact quick link should remain');
 });

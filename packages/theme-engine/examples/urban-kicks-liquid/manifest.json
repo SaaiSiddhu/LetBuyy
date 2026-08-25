@@ -324,8 +324,8 @@
     },
     {
       "path": "templates/footer.json",
-      "checksum": "20beb8812fe6a443d587c64d59e649035f8de4670cc1a26416ec27356b639c5c",
-      "sizeBytes": 816
+      "checksum": "59c80f5d770a5f3303b28b1dd3ba02912198879246eccece67729feb39519d1f",
+      "sizeBytes": 544
     },
     {
       "path": "templates/header.json",
@@ -438,7 +438,7 @@
     "templates/customers/register.json": "d7a6b992699a1bc89698c66cbc959fdfafd0bf84944b49cbd51aa5026cb5781f",
     "templates/customers/settings.json": "2d18698352dbacee5abc66b7d3d1948a9e9234bf0f06b436e7106a133a42b229",
     "templates/customers/wishlist.json": "a54f47f482033ff99b71d1bfff8360bab8f4a54819b2b06410ea2a763f4588e4",
-    "templates/footer.json": "20beb8812fe6a443d587c64d59e649035f8de4670cc1a26416ec27356b639c5c",
+    "templates/footer.json": "59c80f5d770a5f3303b28b1dd3ba02912198879246eccece67729feb39519d1f",
     "templates/header.json": "7e27c4f448adcea90c938c1ba7db2c04428ef86d22316e14707a8d3ddf145a4c",
     "templates/index.json": "260967372441feed63b9f39f8fa09e3b68cc53f2c149382bd346e52bb0cb7ac7",
     "templates/list-collections.json": "cf8ac110f92d87ce7ccce638f7fe870c348bb2cad65df5ed6f8bb937c09e90e6",
@@ -449,5 +449,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "c2ddeb05c6911621487b5d7e12ce9079e76b6e6b1b1779ef79b84b693dea05a9"
+  "contentHash": "1b3b30e64070970dbf6fd880127a19976bd39f838dad66145c85cc7cb26e88d8"
 }

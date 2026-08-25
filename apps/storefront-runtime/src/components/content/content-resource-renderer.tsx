@@ -35,10 +35,18 @@ export default async function ContentResourceRenderer({
     });
 
     const resourceContent = resource.content as Record<string, unknown> | null | undefined;
+    // T4 W3 — the merchant-facing page/policy write path (services/api-gateway pageBodyToContent,
+    // shared by pages.ts's page AND policy routes) stores plain text under content.body, not
+    // content.html. This reader only ever checked .html, so a policy or page saved through the
+    // (until this phase, disconnected) merchant editor would show its title with an empty body on
+    // a Liquid-rendered store. Same tolerant order as cms-core's own normalizeStorefrontPolicyRecord
+    // (.body first, then .html) so both existing shapes keep working.
+    const contentBodyText = typeof resourceContent?.body === 'string' ? resourceContent.body : null;
+    const contentHtmlText = typeof resourceContent?.html === 'string' ? resourceContent.html : null;
     const liquidPage: Record<string, unknown> = {
         title: resource.title,
         content: resource.content,
-        body_html: typeof resource.content?.html === 'string' ? resource.content.html : null,
+        body_html: contentBodyText || contentHtmlText,
         slug: resource.slug,
         policy_type: resource.policyType ?? null,
         // The composition-engine article branch reads these for article.published_at / article.image;

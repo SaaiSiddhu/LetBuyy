@@ -17,8 +17,19 @@ import { Button,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
 
+// T4 W3 (CAP-C25) — this page used to read/write GET/PATCH /api/stores/:store/settings with
+// keys refund_policy/privacy_policy/terms_of_service/shipping_policy. Those are not real
+// columns on `sites` (never were, in any migration) — every save through this page failed with
+// a DB_ERROR. The storefront has always read published policies exclusively from the
+// `storefront_policies` table (ContentService.getPolicy/listPolicies, and the footer's
+// shop.policies drop). This page now talks to the already-existing, already-correct
+// /api/stores/:store/policies proxy (apps/merchant-control-plane/src/app/api/stores/[store]/
+// policies/**), which was built but never wired to any page. `policyType` below is the
+// storefront_policies.policy_type value each field maps to.
 interface PolicyField {
     key: string
+    policyType: 'refund' | 'privacy' | 'terms' | 'shipping'
+    id: string | null
     label: string
     description: string
     placeholder: string
@@ -28,55 +39,63 @@ interface PolicyField {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
-type SettingsPayload = {
+type ApiPayload = {
     data?: unknown
     error?: string | { message?: string }
 }
 
-const POLICY_FIELDS: PolicyField[] = [
+type PolicyRecord = {
+    id: string
+    policy_type: string
+    body?: string | null
+}
+
+const POLICY_FIELD_DEFS: Array<Pick<PolicyField, 'key' | 'policyType' | 'label' | 'description' | 'placeholder' | 'Icon'>> = [
     {
         key: 'refund_policy',
+        policyType: 'refund',
         label: 'Refund policy',
         description: 'Set expectations for returns, refunds, exchange windows, and eligibility.',
         placeholder: 'Enter your refund policy...',
         Icon: ClipboardList,
-        value: '',
     },
     {
         key: 'privacy_policy',
+        policyType: 'privacy',
         label: 'Privacy policy',
         description: 'Explain how customer information is collected, used, and protected.',
         placeholder: 'Enter your privacy policy...',
         Icon: Shield,
-        value: '',
     },
     {
         key: 'terms_of_service',
+        policyType: 'terms',
         label: 'Terms of service',
         description: 'Define the terms customers agree to when using your storefront.',
         placeholder: 'Enter your terms of service...',
         Icon: FileText,
-        value: '',
     },
     {
         key: 'shipping_policy',
+        policyType: 'shipping',
         label: 'Shipping policy',
         description: 'Describe shipping timelines, charges, delivery areas, and tracking.',
         placeholder: 'Enter your shipping policy...',
         Icon: Truck,
-        value: '',
     },
 ]
 
+const EMPTY_POLICIES: PolicyField[] = POLICY_FIELD_DEFS.map((def) => ({ ...def, id: null, value: '' }))
+
 function policySignature(policies: PolicyField[]) {
-    return policies.map((policy) => `${policy.key}:${policy.value}`).join('|')
+    return policies.map((policy) => `${policy.key}:${policy.id ?? ''}:${policy.value}`).join('|')
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return Boolean(value && typeof value === 'object' && !Array.isArray(value))
 }
 
-function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+function getPayloadError(payload: ApiPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
@@ -87,8 +106,8 @@ export default function PoliciesSettingsPage() {
     const [loading, setLoading] = useState(true)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [saveState, setSaveState] = useState<SaveState>('saved')
-    const [policies, setPolicies] = useState<PolicyField[]>(POLICY_FIELDS)
-    const [initialPolicies, setInitialPolicies] = useState<PolicyField[]>(POLICY_FIELDS)
+    const [policies, setPolicies] = useState<PolicyField[]>(EMPTY_POLICIES)
+    const [initialPolicies, setInitialPolicies] = useState<PolicyField[]>(EMPTY_POLICIES)
 
     const hasUnsavedChanges = useMemo(() => policySignature(policies) !== policySignature(initialPolicies), [initialPolicies, policies])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
@@ -99,22 +118,24 @@ export default function PoliciesSettingsPage() {
         setLoadError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/policies?status=all`, {
                 cache: 'no-store',
                 signal,
             })
-            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
+            const payload = (await response.json().catch(() => null)) as ApiPayload | null
 
             if (!response.ok) {
                 throw new Error(getPayloadError(payload, 'Unable to load policies'))
             }
 
-            const data = isRecord(payload?.data) ? payload.data : {}
-            const nextPolicies = POLICY_FIELDS.map((policy) => {
-                const value = data[policy.key]
+            const rows: PolicyRecord[] = Array.isArray(payload?.data) ? payload.data as PolicyRecord[] : []
+            const byType = new Map(rows.map((row) => [row.policy_type, row]))
+            const nextPolicies = POLICY_FIELD_DEFS.map((def) => {
+                const row = byType.get(def.policyType)
                 return {
-                    ...policy,
-                    value: typeof value === 'string' ? value : '',
+                    ...def,
+                    id: row?.id ?? null,
+                    value: typeof row?.body === 'string' ? row.body : '',
                 }
             })
 
@@ -157,23 +178,42 @@ export default function PoliciesSettingsPage() {
         setSaveState('saving')
 
         try {
-            const update: Record<string, string> = {}
-            policies.forEach((policy) => {
-                update[policy.key] = policy.value
-            })
+            const saved = await Promise.all(policies.map(async (policy) => {
+                const status = policy.value.trim().length > 0 ? 'published' : 'draft'
 
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(update),
-            })
-            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
+                if (policy.id) {
+                    const response = await fetch(`/api/stores/${encodeURIComponent(store)}/policies/${encodeURIComponent(policy.id)}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ body: policy.value, status }),
+                    })
+                    const payload = (await response.json().catch(() => null)) as ApiPayload | null
+                    if (!response.ok) throw new Error(getPayloadError(payload, `Unable to save ${policy.label}`))
+                    const data = isRecord(payload?.data) ? payload.data : {}
+                    return { ...policy, id: typeof data.id === 'string' ? data.id : policy.id }
+                }
 
-            if (!response.ok) {
-                throw new Error(getPayloadError(payload, 'Unable to save policies'))
-            }
+                // A blank field that was never saved has nothing to create.
+                if (!policy.value.trim()) return policy
 
-            setInitialPolicies(policies)
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/policies`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        policy_type: policy.policyType,
+                        title: policy.label,
+                        body: policy.value,
+                        status,
+                    }),
+                })
+                const payload = (await response.json().catch(() => null)) as ApiPayload | null
+                if (!response.ok) throw new Error(getPayloadError(payload, `Unable to save ${policy.label}`))
+                const data = isRecord(payload?.data) ? payload.data : {}
+                return { ...policy, id: typeof data.id === 'string' ? data.id : policy.id }
+            }))
+
+            setPolicies(saved)
+            setInitialPolicies(saved)
             setSaveState('saved')
             notify({
                 title: 'Policies saved',

@@ -15,21 +15,10 @@
           "disabled": false,
           "blocks": {},
           "block_order": []
-        },
-        "footer-policy": {
-          "type": "link",
-          "settings": {
-            "label": "Policies",
-            "href": "/shipping"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
         }
       },
       "block_order": [
-        "footer-contact",
-        "footer-policy"
+        "footer-contact"
       ],
       "disabled": false
     }

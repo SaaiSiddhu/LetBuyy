@@ -18,6 +18,14 @@ Purpose: Local operating rules for `packages/theme-engine`. This file is hand-au
 - Reserved roots must stay manifest-only. Frozen roots are source-kept and de-deployed unless the Constitution and ARB explicitly activate them; do not add production deploy targets, public launch copy, or live marketplace/portal operation by default.
 - Provider secrets, service-role credentials, and generated artifacts are never source authority.
 
+## Deploy Chain (read this before assuming a theme change is "cached")
+
+- Editing `theme-bundle.ts`/`theme-bundle-core.ts` changes nothing for an already-published
+  store. A store renders from `theme_releases.template_snapshot -> 'liquidBundle'`, a frozen
+  snapshot captured at publish time — it is NOT re-derived from `themes.default_template` after
+  the fact. Full chain, both traps (`node` vs `npx tsx`; `template_snapshot` beating
+  `release_manifest`), and the only supported way to publish a release: `docs/theme-deploy-chain.md`.
+
 ## Migration Notes
 
 - The previous scan-generated repository-intelligence content was removed because generated drift is not law.
