@@ -5,21 +5,8 @@
     "footer-default": {
       "type": "footer",
       "settings": {},
-      "blocks": {
-        "footer-contact": {
-          "type": "link",
-          "settings": {
-            "label": "Contact",
-            "href": "/contact"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "footer-contact"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     }
   },

@@ -935,6 +935,25 @@ function createLiquidSectionFile(input: {
   };
 }
 
+// T5/W1 — a small, hand-authored icon set (plain geometric primitives — a circle+line for search,
+// a chevron path, two crossing lines for close, three horizontal lines for a menu toggle — none
+// derived from any third-party icon library). Needs theme-renderer.ts's DOMPurify ADD_TAGS/ADD_ATTR
+// expansion (svg/path/circle/line/polyline/rect/g + viewBox/fill/stroke/d/points/…) to survive the
+// sanitizer at all — confirmed empirically, since USE_PROFILES.html does not include SVG by default.
+// Every icon is decorative (aria-hidden="true" focusable="false") and is always paired with a
+// visible or sr-only text label at the call site, never the sole content of a control.
+const LIQUID_ICONS = {
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+  account: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path></svg>',
+  cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 4h2l2 12h11l2-8H6"></path><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle></svg>',
+  hamburger: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg>',
+  chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="lb-icon-chevron"><path d="M6 9l6 6 6-6"></path></svg>',
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg>',
+  facebook: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 4h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3z"></path></svg>',
+  twitter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="4" x2="20" y2="20"></line><line x1="20" y1="4" x2="4" y2="20"></line></svg>',
+};
+
 export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSectionFile> {
   return {
     'announcement-bar': createLiquidSectionFile({
@@ -1240,13 +1259,25 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '      {% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}',
         '      {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}',
         '      <div class="lb-footer__social">',
-        '        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>{% endif %}',
-        '        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">FB</a>{% endif %}',
-        '        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter">X</a>{% endif %}',
+        `        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">${LIQUID_ICONS.instagram}</a>{% endif %}`,
+        `        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">${LIQUID_ICONS.facebook}</a>{% endif %}`,
+        `        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X">${LIQUID_ICONS.twitter}</a>{% endif %}`,
         '      </div>',
         '      {% endif %}',
         '    </div>',
-        '    {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}',
+        // T5/W5 — same override precedence as the header (W1): explicit `link` blocks win when
+        // present (existing stores keep exactly what they configured); an empty block list falls
+        // through to the merchant's real footer_menu linklist. Policies below are DELIBERATELY left
+        // on shop.policies (T3-fix/T4's source, storefront_policies) rather than linklists.
+        // policy_menu — the phase brief's own protected invariant is "policies conditional on
+        // publication," and shop.policies is what publication actually gates; nav.policies is a
+        // separate, unrelated navigation list that has no relationship to what is published, so
+        // switching sources here would silently change what "protected invariant" means.
+        '    {% if section.blocks.size > 0 %}',
+        '    <div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>',
+        '    {% elsif linklists.footer_menu.links.size > 0 %}',
+        '    <div class="lb-footer__col"><h4>Quick links</h4><nav>{% for link in linklists.footer_menu.links %}<a href="{{ link.url | store_url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}</nav></div>',
+        '    {% endif %}',
         // T3-fix W3 — shop.policies is the real set of policy TYPES this store has published
         // (composition-engine.tsx, sourced from storefront_policies), not a hardcoded assumption
         // that all four exist. Only link to a policy page this store can actually answer with
@@ -1287,46 +1318,90 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         // header.settings.behavior). Was declared nowhere on the Liquid side, so "Sticky" never had
         // anything to actually turn on; header.liquid's data-sticky attribute now reads it directly.
         liquidSetting('behavior', 'select', 'Header behavior', { default: 'sticky', options: ['static', 'sticky'] }),
+        // T5/W1 — which linklist (built by navToLinklists from the merchant's real
+        // control-plane navigation) populates the primary nav when no explicit `link` blocks are
+        // configured. There is no link_list-picker control in SchemaFormRenderer yet (checked
+        // apps/merchant-control-plane/src/components/theme-editor/controls/ — only the types in
+        // ThemeBundleSettingFieldSchema exist: text/textarea/richtext/color/image/select/toggle/
+        // range/number/url/radio), so this is a `select` over the three fixed handles
+        // navToLinklists actually produces — an accurate, if coarse, interim per the phase brief.
+        liquidSetting('menu', 'select', 'Menu', { default: 'main_menu', options: ['main_menu', 'footer_menu', 'policy_menu'] }),
+        liquidSetting('layout', 'select', 'Layout', { default: 'inline', options: ['inline', 'centered'] }),
       ],
+      // T5/W1 — explicit `link` blocks remain a supported OVERRIDE: any store that already
+      // configured them keeps exactly its existing header, unchanged. Only a header with ZERO
+      // blocks falls through to the merchant's real linklist. This precedence (blocks win when
+      // present) is deliberate backward compatibility, not an accident of code order.
       blocks: [liquidInlineBlock('link', 'Link', [
         liquidSetting('label', 'text', 'Label'),
         liquidSetting('href', 'url', 'URL'),
       ])],
       body: [
-        '<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == \'sticky\' %}true{% else %}false{% endif %}">',
+        '<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == \'sticky\' %}true{% else %}false{% endif %}" data-layout="{{ section.settings.layout | default: \'inline\' }}">',
         '  <div class="lb-header__inner">',
         // T2a/W3a — <lb-mobile-nav> wraps the toggle button + the ONE nav-links list; CSS
         // repositions the SAME markup between the mobile off-canvas drawer and the desktop inline
         // row (see LIQUID_THEME_BASE_CSS), so there is exactly one list to keep in sync — no
-        // separate mobile/desktop nav content to duplicate or drift.
+        // separate mobile/desktop nav content to duplicate or drift. T5/W2 kept this one-DOM
+        // design deliberately (see docs/theme-deploy-chain.md sibling report section X) rather than
+        // splitting into two nav trees, since the existing architecture note above already argued
+        // the drift risk of two copies, and CSS alone is enough to give each width a native-feeling
+        // affordance (inline row vs. off-canvas drawer) over identical markup.
         '    <lb-mobile-nav class="lb-mobile-nav" data-lb-island="mobile-nav">',
-        '      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-label="Menu">',
-        '        <span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span>',
-        '      </button>',
-        '      <nav class="lb-header__nav" data-lb-nav-panel aria-label="Primary">',
-        '        {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}',
-        // T2a/W3a — search lives in the drawer's own link list at mobile widths (the phase's own
-        // spec: "hamburger → drawer/panel with nav, search, account") so it never has to compete for
-        // width in the compact header row; `.lb-header__nav-search` hides this duplicate entry once
-        // the desktop breakpoint gives the inline <lb-search> island room of its own (see CSS).
-        '        {% if section.settings.showSearch %}<a class="lb-header__nav-search" href="{{ routes.search_url }}">Search</a>{% endif %}',
-        '        <a href="{{ routes.account_url }}">Account</a>',
+        `      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-controls="lb-nav-panel-{{ section.id }}" aria-label="Menu">${LIQUID_ICONS.hamburger}<span class="lb-sr-only">Menu</span></button>`,
+        '      <nav class="lb-header__nav" data-lb-nav-panel id="lb-nav-panel-{{ section.id }}" aria-label="Primary">',
+        `        <div class="lb-header__nav-head"><span class="lb-header__nav-head-brand">{{ section.settings.storeName | default: shop.name }}</span><button type="button" class="lb-header__nav-close" data-lb-nav-close aria-label="Close menu">${LIQUID_ICONS.close}<span class="lb-sr-only">Close menu</span></button></div>`,
+        '        <div class="lb-header__nav-links">',
+        '        {% if section.blocks.size > 0 %}',
+        '          {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}',
+        '        {% else %}',
+        '          {% assign lb_menu_handle = section.settings.menu | default: \'main_menu\' %}',
+        '          {% assign lb_nav_links = linklists[lb_menu_handle].links %}',
+        '          {% for link in lb_nav_links %}',
+        '            {% if link.links.size > 0 %}',
+        `            <details class="lb-header__nav-item" data-lb-nav-dropdown><summary{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}${LIQUID_ICONS.chevron}</summary>`,
+        '              <div class="lb-header__nav-submenu">{% for child in link.links %}<a href="{{ child.url | store_url }}"{% if child.active %} aria-current="page"{% endif %}>{{ child.title }}</a>{% endfor %}</div>',
+        '            </details>',
+        '            {% else %}<a href="{{ link.url | store_url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endif %}',
+        '          {% endfor %}',
+        '        {% endif %}',
+        '        </div>',
+        '        <div class="lb-header__nav-foot">',
+        `          {% if customer %}<a href="{{ routes.account_url }}">${LIQUID_ICONS.account}<span>Account</span></a>{% else %}<a href="{{ routes.customer_login_url }}">${LIQUID_ICONS.account}<span>Log in</span></a>{% endif %}`,
+        '        </div>',
         '      </nav>',
         '      <div class="lb-header__scrim" data-lb-nav-scrim></div>',
         '    </lb-mobile-nav>',
-        '    <a class="lb-header__brand" href="{{ routes.root_url }}">{{ section.settings.storeName | default: shop.name }}</a>',
+        '    <a class="lb-header__brand" href="{{ routes.root_url }}">',
+        '      {% if shop.logo_url %}<img class="lb-header__logo" src="{{ shop.logo_url | image_url }}" alt="{{ section.settings.storeName | default: shop.name }}">{% else %}{{ section.settings.storeName | default: shop.name }}{% endif %}',
+        '    </a>',
         '    <div class="lb-header__actions">',
-        '      {% if section.settings.showSearch %}<lb-search class="lb-header__search-island" data-lb-island="search" data-search-url="{{ routes.search_url }}"></lb-search>{% endif %}',
-        // T2a/W3a — cart.item_count is null at SSR (no cart token exists server-side; T1's own
-        // comment on collectLiquidCart documents this as deliberately honest, not a bug). The bare
-        // count previously rendered as "Cart ()". `default: 0` gives an honest, standard placeholder
-        // (every storefront shows 0 before its cart hydrates) and the count is real the moment the
-        // client-side lb-mobile-nav/cart islands report the true localStorage/gateway cart state —
-        // the SAME CART_CHANGED_EVENT the existing cart-drawer/cart-page islands already dispatch,
-        // not a new mechanism (see liquid-hydration-islands.tsx LiquidHydrationIslands' cart-count sync).
-        '      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}">{{ "general.cart" | t }} (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}',
+        `      {% if section.settings.showSearch %}<button type="button" class="lb-header__search-toggle" data-lb-search-toggle aria-expanded="false" aria-controls="lb-search-overlay-{{ section.id }}" aria-label="Search">${LIQUID_ICONS.search}<span class="lb-sr-only">Search</span></button>{% endif %}`,
+        `      <a class="lb-header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.customer_login_url }}{% endif %}">${LIQUID_ICONS.account}<span class="lb-sr-only">{% if customer %}Account{% else %}Log in{% endif %}</span></a>`,
+        // T5/W4 — the header cart control is now the drawer's ONLY open trigger (data-lb-cart-trigger,
+        // wired to CART_OPEN_EVENT in liquid-hydration-islands.tsx). The real href to routes.cart_url
+        // is kept so the cart PAGE stays reachable with JS disabled, via right-click "open in new tab",
+        // and via the drawer's own "View cart" link (see LbCartDrawerElement) — clicking it normally
+        // opens the drawer instead of navigating away. cart.item_count is null at SSR (no cart token
+        // exists server-side — T1's own documented, deliberate honesty); `default: 0` is the same
+        // standard placeholder every storefront shows before the client-side cart hydrates via the
+        // same CART_CHANGED_EVENT the cart-drawer/cart-page islands already dispatch.
+        `      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}" data-lb-cart-trigger>${LIQUID_ICONS.cart}<span class="lb-sr-only">{{ "general.cart" | t }}</span> (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}`,
         '    </div>',
         '  </div>',
+        '  {% if section.settings.showSearch %}',
+        '  <div class="lb-header__search-overlay" id="lb-search-overlay-{{ section.id }}" data-lb-search-overlay hidden>',
+        '    <lb-predictive-search class="lb-predictive-search" data-lb-island="predictive-search" data-search-url="{{ routes.search_url }}">',
+        '      <form role="search" method="get" action="{{ routes.search_url }}" data-lb-search-form>',
+        '        <label class="lb-sr-only" for="lb-search-input-{{ section.id }}">Search products</label>',
+        '        <input type="search" name="search" id="lb-search-input-{{ section.id }}" data-lb-search-input placeholder="Search products" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="lb-search-results-{{ section.id }}" aria-autocomplete="list">',
+        `        <button type="submit" aria-label="Search">${LIQUID_ICONS.search}<span class="lb-sr-only">Search</span></button>`,
+        `        <button type="button" data-lb-search-close aria-label="Close search">${LIQUID_ICONS.close}<span class="lb-sr-only">Close search</span></button>`,
+        '      </form>',
+        '      <div id="lb-search-results-{{ section.id }}" class="lb-predictive-search__results" data-lb-search-results role="listbox" aria-live="polite"></div>',
+        '    </lb-predictive-search>',
+        '  </div>',
+        '  {% endif %}',
         '</header>',
       ],
     }),
@@ -2463,6 +2538,17 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               linkHref: '/products',
             },
           },
+          // T6/W0 — this section used to ship two example `link` blocks ("Products", "Collections").
+          // header.liquid's own precedence is `section.blocks.size > 0` WINS over
+          // `linklists[section.settings.menu].links` (an explicit override for stores that already
+          // configured blocks, kept intact — see header.liquid's own body comment). Because every
+          // fresh store and every regenerated example bundle carried these two blocks by
+          // construction, the linklist path (T5's actual feature) was UNREACHABLE from the shipped
+          // fixture — T5 only ever demonstrated it live after hand-stripping this exact field from a
+          // deployed database row, which the repo itself never reflected. Dawn's own ordering is the
+          // menu setting is primary; blocks are an app/opt-in surface, not the default nav source.
+          // Emptied so `linklists.main_menu` is the default path for every new store and every
+          // regenerated bundle; a store that configures its own blocks still overrides it, unchanged.
           'header-default': {
             type: 'header',
             settings: {
@@ -2470,23 +2556,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
               showCart: true,
               behavior: 'sticky',
             },
-            blocks: {
-              'header-products': {
-                type: 'link',
-                settings: {
-                  label: 'Products',
-                  href: '/products',
-                },
-              },
-              'header-collections': {
-                type: 'link',
-                settings: {
-                  label: 'Collections',
-                  href: '/collections/new-arrivals',
-                },
-              },
-            },
-            block_order: ['header-products', 'header-collections'],
+            blocks: {},
+            block_order: [],
           },
         },
         order: ['announcement-default', 'header-default'],
@@ -2495,29 +2566,22 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         name: 'Urban Kicks footer',
         layout: 'theme',
         sections: {
+          // T4 W1 — removed the fixture's own 'footer-policy' quick-link block (was
+          // '/policies/shipping-policy', a Shopify URL convention this app never served;
+          // T3-fix corrected it to '/shipping', but that only swapped one hardcoded dead
+          // link for another that is honest only when the store happens to have a
+          // published shipping policy). The Policies column alone is the single, real,
+          // data-driven source for policy links.
+          // T6/W0 — the remaining 'footer-contact' example block is ALSO emptied for the same
+          // reason as header-default above: it unconditionally beat `linklists.footer_menu` in
+          // every shipped fixture, making the footer's linklist path just as unreachable by
+          // default as the header's was. The generic "Quick links" override mechanism stays
+          // available for a merchant to add their own arbitrary link blocks.
           'footer-default': {
             type: 'footer',
             settings: {},
-            blocks: {
-              'footer-contact': {
-                type: 'link',
-                settings: {
-                  label: 'Contact',
-                  href: '/contact',
-                },
-              },
-              // T4 W1 — removed the fixture's own 'footer-policy' quick-link block (was
-              // '/policies/shipping-policy', a Shopify URL convention this app never served;
-              // T3-fix corrected it to '/shipping', but that only swapped one hardcoded dead
-              // link for another that is honest only when the store happens to have a
-              // published shipping policy). The generic "Quick links" mechanism stays available
-              // for a merchant to add their own arbitrary link blocks; this specific
-              // fixture-authored one duplicated the auto-managed Policies column's job through
-              // an unconditional path the column's shop.policies gating never reached — the
-              // exact class of dead link this phase exists to eliminate. The Policies column
-              // alone is now the single, real, data-driven source for policy links.
-            },
-            block_order: ['footer-contact'],
+            blocks: {},
+            block_order: [],
           },
         },
         order: ['footer-default'],

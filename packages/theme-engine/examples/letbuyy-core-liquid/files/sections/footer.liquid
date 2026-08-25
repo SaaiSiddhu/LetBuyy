@@ -5,13 +5,17 @@
       {% if section.settings.tagline %}<p>{{ section.settings.tagline }}</p>{% endif %}
       {% if section.settings.instagramUrl != blank or section.settings.facebookUrl != blank or section.settings.twitterUrl != blank %}
       <div class="lb-footer__social">
-        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram">IG</a>{% endif %}
-        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">FB</a>{% endif %}
-        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter">X</a>{% endif %}
+        {% if section.settings.instagramUrl != blank %}<a href="{{ section.settings.instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1"></circle></svg></a>{% endif %}
+        {% if section.settings.facebookUrl != blank %}<a href="{{ section.settings.facebookUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 4h-2a4 4 0 0 0-4 4v3H6v4h3v7h4v-7h3l1-4h-4V8a1 1 0 0 1 1-1h3z"></path></svg></a>{% endif %}
+        {% if section.settings.twitterUrl != blank %}<a href="{{ section.settings.twitterUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="4" y1="4" x2="20" y2="20"></line><line x1="20" y1="4" x2="4" y2="20"></line></svg></a>{% endif %}
       </div>
       {% endif %}
     </div>
-    {% if section.blocks.size > 0 %}<div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>{% endif %}
+    {% if section.blocks.size > 0 %}
+    <div class="lb-footer__col"><h4>Quick links</h4><nav>{% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}</nav></div>
+    {% elsif linklists.footer_menu.links.size > 0 %}
+    <div class="lb-footer__col"><h4>Quick links</h4><nav>{% for link in linklists.footer_menu.links %}<a href="{{ link.url | store_url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endfor %}</nav></div>
+    {% endif %}
     {% if shop.policies.size > 0 %}<div class="lb-footer__col">
       <h4>Policies</h4>
       <nav>

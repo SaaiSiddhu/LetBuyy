@@ -197,6 +197,8 @@ const LIQUID_HYDRATION_CUSTOM_ELEMENTS = [
   'lb-turnstile',
   // T2a/W3a: lb-mobile-nav island — hamburger drawer wrapping the header's nav-links panel.
   'lb-mobile-nav',
+  // T5/W3: lb-predictive-search island — the header search overlay's debounced predictive results.
+  'lb-predictive-search',
 ] as const;
 
 export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
@@ -205,10 +207,43 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
     ...LIQUID_HYDRATION_CUSTOM_ELEMENTS,
     'iframe',
     'meta',
+    // T5/W1 — USE_PROFILES.html does NOT include SVG (confirmed empirically: an <svg><path>
+    // survived nothing before this). This adds only the 7 inert, non-interactive shape primitives
+    // needed for a small hand-authored icon set (search/account/cart/hamburger/close/chevron) —
+    // deliberately excludes <use> (external xlink:href reference), <foreignObject> and <a>/<script>
+    // inside SVG, so this cannot become an XSS or resource-injection vector. Verified against an
+    // adversarial `<svg onload=...><use href=...><foreignObject><script>` probe: all four stripped.
+    'svg',
+    'path',
+    'circle',
+    'line',
+    'polyline',
+    'rect',
+    'g',
   ],
   ADD_ATTR: [
     'aria-live',
     'aria-pressed',
+    // T5/W1 — attributes for the SVG icon primitives above; not reachable on any other allowed tag
+    // in a way that changes behavior (no href/src/on* here).
+    'viewBox',
+    'fill',
+    'stroke',
+    'stroke-width',
+    'stroke-linecap',
+    'stroke-linejoin',
+    'd',
+    'points',
+    'cx',
+    'cy',
+    'r',
+    'x1',
+    'y1',
+    'x2',
+    'y2',
+    'rx',
+    'ry',
+    'focusable',
     'class',
     'content',
     'data-app-block-app-id',
@@ -254,7 +289,8 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
   ],
   CUSTOM_ELEMENT_HANDLING: {
     // F7-Lane-A: lb-logout added. Keep in sync with LIQUID_HYDRATION_CUSTOM_ELEMENTS above.
-    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout|turnstile|mobile-nav)$/,
+    // T5/W3: lb-predictive-search added.
+    tagNameCheck: /^lb-(?:add-to-cart|cart-drawer|search|variant-picker|review-form|wishlist-toggle|cart|customer-settings|address-manager|logout|turnstile|mobile-nav|predictive-search)$/,
     attributeNameCheck: /^(?:aria-[a-z0-9-]+|data-[a-z0-9-]+|class|id|role|slot|title|type|name|value|href|src)$/i,
     allowCustomizedBuiltInElements: false,
   },
@@ -305,42 +341,77 @@ export const LIQUID_THEME_BASE_CSS = [
   // Mobile-first: single row, brand + hamburger + cart. The nav panel (desktop: inline row; mobile:
   // off-canvas drawer) lives inside <lb-mobile-nav> — same markup both widths, CSS repositions it,
   // so there is exactly one nav-links list to keep in sync (no server/client duplication).
-  '.lb-header{position:relative;z-index:40;background:var(--background);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  // T5/W1 — display:block stated explicitly (not just relied on as <header>'s UA default) so a
+  // portable/exported theme stays correct even if the host page later adds its own conflicting rule.
+  '.lb-header{display:block;position:relative;z-index:40;background:var(--background);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
   '.lb-header[data-sticky="true"]{position:sticky;top:0;}',
   '.lb-header__inner{display:flex;align-items:center;justify-content:space-between;gap:var(--lb-space-sm);min-height:var(--lb-header-h);}',
   '.lb-header__brand{font-family:var(--font-display);font-weight:700;font-size:var(--lb-text-lg);letter-spacing:-0.01em;}',
   '.lb-header__actions{display:flex;align-items:center;gap:var(--lb-space-xs);}',
   '.lb-header__cart{display:inline-flex;align-items:center;gap:0.375rem;min-height:44px;padding-inline:0.25rem;font-weight:600;font-size:var(--lb-text-sm);}',
   '.lb-mobile-nav{display:contents;}',
-  '.lb-header__toggle{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:44px;height:44px;padding:10px;border:0;background:none;cursor:pointer;order:-1;}',
-  '.lb-header__toggle-bar{display:block;height:2px;width:100%;background:currentColor;border-radius:2px;transition:transform var(--lb-transition),opacity var(--lb-transition);}',
-  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(1){transform:translateY(6px) rotate(45deg);}',
-  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(2){opacity:0;}',
-  '.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(3){transform:translateY(-6px) rotate(-45deg);}',
-  '.lb-header__nav{position:fixed;inset:0 0 0 auto;z-index:50;width:min(88vw,22rem);display:flex;flex-direction:column;gap:var(--lb-space-2xs);padding:calc(var(--lb-header-h) + var(--lb-space-md)) var(--lb-space-md) var(--lb-space-md);background:var(--background);box-shadow:-16px 0 40px rgba(15,23,42,.16);transform:translateX(100%);transition:transform var(--lb-transition);overflow-y:auto;}',
+  // T5/W1-W3 — functional parity for the rebuilt header/drawer/search-overlay markup: enough to be
+  // usable and accessible on an exported theme with no app sheet, not a full visual match of
+  // liquid-theme.css (see docs/theme-deploy-chain.md sibling report note on this being a bounded,
+  // disclosed scope decision rather than a silent gap).
+  '.lb-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}',
+  '.lb-header__toggle{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;background:none;cursor:pointer;order:-1;}',
+  // T5/W1 — broad default (see liquid-theme.css's identical fix for why): an <svg> with only a
+  // viewBox and no explicit width/height renders at the browser intrinsic default, confirmed live
+  // to blow up to near-full-viewport width for any icon a more specific selector missed.
+  '.lb-header svg{width:20px;height:20px;flex-shrink:0;}',
+  '.lb-header__toggle svg,.lb-header__nav-close svg,.lb-header__search-toggle svg,.lb-header__account svg,.lb-header__cart svg{width:22px;height:22px;}',
+  '.lb-icon-chevron{width:16px;height:16px;}',
+  '.lb-header__nav{position:fixed;inset:0 0 0 auto;z-index:50;width:min(100%,25rem);display:flex;flex-direction:column;background:var(--background);box-shadow:-16px 0 40px rgba(15,23,42,.2);transform:translateX(100%);transition:transform var(--lb-transition);overflow-y:auto;}',
   '.lb-mobile-nav[data-open="true"] .lb-header__nav{transform:translateX(0);}',
-  '.lb-header__nav a{padding-block:var(--lb-space-2xs);font-size:var(--lb-text-lg);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
-  '.lb-header__scrim{position:fixed;inset:0;z-index:45;background:rgba(15,23,42,.35);opacity:0;pointer-events:none;transition:opacity var(--lb-transition);}',
+  '.lb-header__nav-head{display:flex;align-items:center;justify-content:space-between;gap:var(--lb-space-sm);padding:var(--lb-space-sm);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-header__nav-close{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:none;cursor:pointer;}',
+  '.lb-header__nav-links{display:flex;flex-direction:column;padding:var(--lb-space-2xs) var(--lb-space-sm);}',
+  '.lb-header__nav-links>a,.lb-header__nav-item summary{display:flex;align-items:center;justify-content:space-between;gap:var(--lb-space-2xs);min-height:44px;padding-block:var(--lb-space-2xs);font-size:var(--lb-text-lg);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));cursor:pointer;list-style:none;}',
+  '.lb-header__nav-item[open] .lb-icon-chevron{transform:rotate(180deg);}',
+  '.lb-header__nav-submenu{display:flex;flex-direction:column;padding:0 0 var(--lb-space-2xs) var(--lb-space-sm);}',
+  '.lb-header__nav-submenu a{display:flex;align-items:center;min-height:44px;padding-block:var(--lb-space-3xs);font-size:var(--lb-text-sm);}',
+  '.lb-header__nav-foot{margin-top:auto;padding:var(--lb-space-sm);border-top:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-header__nav-foot a{display:flex;align-items:center;gap:var(--lb-space-3xs);min-height:44px;font-weight:600;}',
+  '.lb-header__scrim{position:fixed;inset:0;z-index:45;background:rgba(10,12,20,.6);opacity:0;pointer-events:none;transition:opacity var(--lb-transition);}',
   '.lb-mobile-nav[data-open="true"] .lb-header__scrim{opacity:1;pointer-events:auto;}',
-  '@media (min-width:48em){.lb-header__toggle{display:none;}.lb-header__nav{position:static;inset:auto;width:auto;flex-direction:row;align-items:center;gap:var(--lb-space-md);padding:0;background:none;box-shadow:none;transform:none;overflow:visible;order:0;}.lb-header__nav a{padding-block:0.25rem;font-size:var(--lb-text-sm);font-weight:600;border-bottom:0;}.lb-header__scrim{display:none;}}',
+  '@media (min-width:48em){.lb-header__toggle{display:none;}.lb-header__nav{position:static;inset:auto;width:auto;flex-direction:row;align-items:center;background:none;box-shadow:none;transform:none;overflow:visible;order:0;}.lb-header__nav-head,.lb-header__nav-foot{display:none;}.lb-header__nav-links{flex-direction:row;align-items:center;gap:var(--lb-space-md);padding:0;}.lb-header__nav-links>a,.lb-header__nav-item summary{padding-block:0;min-height:auto;font-size:var(--lb-text-sm);font-weight:600;border-bottom:0;}.lb-header__nav-item{position:relative;}.lb-header__nav-submenu{position:absolute;top:100%;left:0;z-index:70;min-width:12rem;margin-top:var(--lb-space-2xs);padding:var(--lb-space-2xs);background:var(--background);border:1px solid var(--border-color,rgba(0,0,0,.08));border-radius:var(--lb-radius-md);box-shadow:0 12px 32px rgba(15,23,42,.16);}.lb-header__scrim{display:none;}}',
+  // ---- header search overlay + predictive search (T5/W3) ------------------------------------
+  '.lb-header__search-overlay{position:absolute;inset:100% 0 auto 0;z-index:65;background:var(--background);border-bottom:1px solid var(--border-color,rgba(0,0,0,.08));box-shadow:0 16px 40px rgba(15,23,42,.14);}',
+  '.lb-header__search-overlay[hidden]{display:none;}',
+  '.lb-predictive-search{display:block;padding:var(--lb-space-sm);}',
+  '.lb-predictive-search [data-lb-search-form]{display:flex;align-items:center;gap:var(--lb-space-2xs);}',
+  '.lb-predictive-search input[type="search"]{flex:1;min-height:44px;padding:0 var(--lb-space-xs);font-size:var(--lb-text-lg);border:1px solid var(--border-color,rgba(0,0,0,.15));border-radius:var(--lb-radius-md);}',
+  '.lb-predictive-search button{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:none;cursor:pointer;}',
+  '.lb-predictive-search__item{display:flex;align-items:center;gap:var(--lb-space-2xs);padding:var(--lb-space-3xs);min-height:44px;}',
+  '.lb-predictive-search__item img{width:44px;height:44px;object-fit:cover;border-radius:var(--lb-radius-sm);}',
+  '.lb-predictive-search__item-price{margin-left:auto;font-weight:700;}',
   // ---- Announcement bar (full-bleed, positioned above the header by template order — see
   // theme-bundle.ts's `header` template composition, which places announcement-default first) ----
   '.lb-announcement-bar{background:var(--foreground);color:var(--background);}',
   '.lb-announcement-bar__inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--lb-space-2xs);padding-block:var(--lb-space-2xs);font-size:var(--lb-text-sm);text-align:center;}',
   '.lb-announcement-bar__inner a{font-weight:700;text-decoration:underline;text-underline-offset:2px;}',
   // ---- Footer: multi-column, LetBuyy watermark -------------------------------------------------
-  '.lb-footer{padding-block:var(--lb-space-xl) var(--lb-space-lg);border-top:1px solid var(--border-color,rgba(0,0,0,.08));}',
+  '.lb-footer{display:block;padding-block:var(--lb-space-xl) var(--lb-space-lg);border-top:1px solid var(--border-color,rgba(0,0,0,.08));}',
   '.lb-footer__grid{display:grid;gap:var(--lb-space-lg);grid-template-columns:1fr;}',
   '.lb-footer__brand h3{font-family:var(--font-display);font-size:var(--lb-text-xl);}',
   '.lb-footer__brand p{margin:var(--lb-space-2xs) 0 0;color:var(--foreground);opacity:.7;max-width:32ch;}',
   '.lb-footer__col h4{margin:0 0 var(--lb-space-2xs);font-size:var(--lb-text-sm);text-transform:uppercase;letter-spacing:.06em;opacity:.6;}',
-  '.lb-footer__col nav{display:flex;flex-direction:column;gap:var(--lb-space-3xs);}',
-  '.lb-footer__col nav a,.lb-footer__col p{font-size:var(--lb-text-sm);opacity:.85;}',
+  '.lb-footer__col nav{display:flex;flex-direction:column;}',
+  // T5/W2 — every footer link gets a real >=44px tap target (WCAG 2.5.5) instead of relying on line
+  // height; .lb-footer__col > a covers the unconditional "Contact us" link, which sits directly in
+  // the column (not inside <nav> or <p>) and previously had no rule of its own here either.
+  '.lb-footer__col nav a,.lb-footer__col p a,.lb-footer__col>a{display:inline-flex;align-items:center;min-height:44px;font-size:var(--lb-text-sm);opacity:.85;}',
   '.lb-footer__social{display:flex;gap:var(--lb-space-2xs);margin-top:var(--lb-space-2xs);}',
-  '.lb-footer__social a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:var(--lb-radius-pill);border:1px solid var(--border-color,rgba(0,0,0,.12));}',
-  '.lb-footer__bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--lb-space-2xs);margin-top:var(--lb-space-lg);padding-top:var(--lb-space-md);border-top:1px solid var(--border-color,rgba(0,0,0,.08));font-size:var(--lb-text-xs);opacity:.7;}',
-  '.lb-footer__watermark{display:inline-flex;align-items:center;gap:0.375rem;font-weight:600;}',
-  '@media (min-width:48em){.lb-footer__grid{grid-template-columns:1.4fr repeat(3,1fr);}}',
+  '.lb-footer__social a{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:var(--lb-radius-pill);border:1px solid var(--border-color,rgba(0,0,0,.12));}',
+  '.lb-footer__social a svg{width:18px;height:18px;}',
+  '.lb-footer__bottom{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--lb-space-2xs) var(--lb-space-sm);margin-top:var(--lb-space-lg);padding-top:var(--lb-space-md);border-top:1px solid var(--border-color,rgba(0,0,0,.08));font-size:var(--lb-text-xs);opacity:.7;}',
+  '.lb-footer__watermark{display:inline-flex;align-items:center;gap:0.375rem;min-height:44px;font-weight:600;}',
+  // T5/W1/W2 — was a fixed 4-track `1.4fr repeat(3,1fr)`, assuming every store has a full quick-links
+  // list and all four policy types; a store with only brand+contact left two tracks empty. auto-fit
+  // sizes tracks to however many blocks actually rendered (2-4, driven by section.blocks/shop.policies)
+  // and collapses the rest to 0 width, so the grid reads deliberate regardless of column count.
+  '@media (min-width:48em){.lb-footer__grid{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}}',
   // ---- Hero banner ------------------------------------------------------------------------------
   '.lb-hero-banner{position:relative;display:grid;gap:var(--lb-space-sm);min-height:26rem;align-content:center;overflow:hidden;}',
   '.lb-hero-banner h1{max-width:16ch;font-size:var(--lb-text-5xl);line-height:0.98;}',
@@ -1246,7 +1317,12 @@ function buildLiquidScope(
     order: commerceDrops.order,
     // D1-A: linklists drop (Shopify convention). Populated by LANE-B (composition-engine.tsx).
     // toLiquidDrop safely sanitizes the nested nav structure; falls back to empty object.
-    linklists: toLiquidDrop(input.liquidContext?.linklists) ?? {},
+    // T5/W1 — +2 depth budget: linklists(0)->menu(1)->links[](2)->item(3)->children[](4)->
+    // child-item(5, an OBJECT, needs depth < max) is where the default cap of 4 blocks a child's
+    // own entries (title/url/active) from ever being read. +1 alone only rescues the empty array
+    // shell, not its contents — verified by a failing test before landing on +2. See
+    // toLiquidDrop's doc comment for why this is scoped to linklists only.
+    linklists: toLiquidDrop(input.liquidContext?.linklists, 0, MAX_LIQUID_DROP_DEPTH + 2) ?? {},
     // E1: blog listing drop. Populated by LANE-B when route.type === 'blog'.
     blog: toLiquidDrop(input.liquidContext?.blog) ?? null,
     // E2: article drop. Populated by LANE-B when route.type === 'article'.
@@ -1322,16 +1398,22 @@ function asDropRecord(value: unknown): Record<string, unknown> | null {
     : null;
 }
 
-function toLiquidDrop(value: unknown, depth = 0): unknown {
+// T5/W1 — `maxDepth` defaults to MAX_LIQUID_DROP_DEPTH (the enforced global cap; SEC-4 tests this
+// exact default and must never be weakened). linklists is the one caller that passes a raised
+// budget: a nav item's nested `.links` (one level of dropdown children) sits at depth 4 by the time
+// its own array is reached (linklists->menu->links[]->item->links[]), one level deeper than generic
+// drops need. Navigation is merchant-curated/editor-bounded, not arbitrary embedded content, so a
+// scoped +1 for this one call site is a materially different risk than raising the global default.
+function toLiquidDrop(value: unknown, depth = 0, maxDepth = MAX_LIQUID_DROP_DEPTH): unknown {
   if (value === null || value === undefined) return undefined;
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return value;
   if (value instanceof Date) return value.toISOString();
-  if (depth >= MAX_LIQUID_DROP_DEPTH) return undefined;
+  if (depth >= maxDepth) return undefined;
 
   if (Array.isArray(value)) {
     return value
       .slice(0, MAX_LIQUID_DROP_ARRAY_ITEMS)
-      .map((item) => toLiquidDrop(item, depth + 1))
+      .map((item) => toLiquidDrop(item, depth + 1, maxDepth))
       .filter((item) => item !== undefined);
   }
 
@@ -1340,7 +1422,7 @@ function toLiquidDrop(value: unknown, depth = 0): unknown {
   const output: Record<string, unknown> = {};
   for (const [key, raw] of Object.entries(value as Record<string, unknown>).slice(0, MAX_LIQUID_DROP_KEYS)) {
     if (!/^[a-zA-Z][a-zA-Z0-9_]*$/.test(key) || BLOCKED_DROP_KEYS.has(key)) continue;
-    const next = toLiquidDrop(raw, depth + 1);
+    const next = toLiquidDrop(raw, depth + 1, maxDepth);
     if (next !== undefined) output[key] = next;
   }
 

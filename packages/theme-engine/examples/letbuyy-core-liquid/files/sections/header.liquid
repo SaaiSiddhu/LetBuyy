@@ -1,22 +1,52 @@
-<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == 'sticky' %}true{% else %}false{% endif %}">
+<header class="lb-header" data-section-id="{{ section.id }}" data-sticky="{% if section.settings.behavior == 'sticky' %}true{% else %}false{% endif %}" data-layout="{{ section.settings.layout | default: 'inline' }}">
   <div class="lb-header__inner">
     <lb-mobile-nav class="lb-mobile-nav" data-lb-island="mobile-nav">
-      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-label="Menu">
-        <span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span><span class="lb-header__toggle-bar"></span>
-      </button>
-      <nav class="lb-header__nav" data-lb-nav-panel aria-label="Primary">
-        {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}
-        {% if section.settings.showSearch %}<a class="lb-header__nav-search" href="{{ routes.search_url }}">Search</a>{% endif %}
-        <a href="{{ routes.account_url }}">Account</a>
+      <button type="button" class="lb-header__toggle" data-lb-nav-toggle aria-expanded="false" aria-controls="lb-nav-panel-{{ section.id }}" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg><span class="lb-sr-only">Menu</span></button>
+      <nav class="lb-header__nav" data-lb-nav-panel id="lb-nav-panel-{{ section.id }}" aria-label="Primary">
+        <div class="lb-header__nav-head"><span class="lb-header__nav-head-brand">{{ section.settings.storeName | default: shop.name }}</span><button type="button" class="lb-header__nav-close" data-lb-nav-close aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg><span class="lb-sr-only">Close menu</span></button></div>
+        <div class="lb-header__nav-links">
+        {% if section.blocks.size > 0 %}
+          {% for block in section.blocks %}<a href="{{ block.settings.href | store_url }}">{{ block.settings.label }}</a>{% endfor %}
+        {% else %}
+          {% assign lb_menu_handle = section.settings.menu | default: 'main_menu' %}
+          {% assign lb_nav_links = linklists[lb_menu_handle].links %}
+          {% for link in lb_nav_links %}
+            {% if link.links.size > 0 %}
+            <details class="lb-header__nav-item" data-lb-nav-dropdown><summary{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" class="lb-icon-chevron"><path d="M6 9l6 6 6-6"></path></svg></summary>
+              <div class="lb-header__nav-submenu">{% for child in link.links %}<a href="{{ child.url | store_url }}"{% if child.active %} aria-current="page"{% endif %}>{{ child.title }}</a>{% endfor %}</div>
+            </details>
+            {% else %}<a href="{{ link.url | store_url }}"{% if link.active %} aria-current="page"{% endif %}>{{ link.title }}</a>{% endif %}
+          {% endfor %}
+        {% endif %}
+        </div>
+        <div class="lb-header__nav-foot">
+          {% if customer %}<a href="{{ routes.account_url }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path></svg><span>Account</span></a>{% else %}<a href="{{ routes.customer_login_url }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path></svg><span>Log in</span></a>{% endif %}
+        </div>
       </nav>
       <div class="lb-header__scrim" data-lb-nav-scrim></div>
     </lb-mobile-nav>
-    <a class="lb-header__brand" href="{{ routes.root_url }}">{{ section.settings.storeName | default: shop.name }}</a>
+    <a class="lb-header__brand" href="{{ routes.root_url }}">
+      {% if shop.logo_url %}<img class="lb-header__logo" src="{{ shop.logo_url | image_url }}" alt="{{ section.settings.storeName | default: shop.name }}">{% else %}{{ section.settings.storeName | default: shop.name }}{% endif %}
+    </a>
     <div class="lb-header__actions">
-      {% if section.settings.showSearch %}<lb-search class="lb-header__search-island" data-lb-island="search" data-search-url="{{ routes.search_url }}"></lb-search>{% endif %}
-      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}">{{ "general.cart" | t }} (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}
+      {% if section.settings.showSearch %}<button type="button" class="lb-header__search-toggle" data-lb-search-toggle aria-expanded="false" aria-controls="lb-search-overlay-{{ section.id }}" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="lb-sr-only">Search</span></button>{% endif %}
+      <a class="lb-header__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.customer_login_url }}{% endif %}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path></svg><span class="lb-sr-only">{% if customer %}Account{% else %}Log in{% endif %}</span></a>
+      {% if section.settings.showCart %}<a class="lb-header__cart" href="{{ routes.cart_url }}" data-lb-cart-trigger><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 4h2l2 12h11l2-8H6"></path><circle cx="9" cy="20" r="1"></circle><circle cx="17" cy="20" r="1"></circle></svg><span class="lb-sr-only">{{ "general.cart" | t }}</span> (<span data-lb-cart-count>{{ cart.item_count | default: 0 }}</span>)</a>{% endif %}
     </div>
   </div>
+  {% if section.settings.showSearch %}
+  <div class="lb-header__search-overlay" id="lb-search-overlay-{{ section.id }}" data-lb-search-overlay hidden>
+    <lb-predictive-search class="lb-predictive-search" data-lb-island="predictive-search" data-search-url="{{ routes.search_url }}">
+      <form role="search" method="get" action="{{ routes.search_url }}" data-lb-search-form>
+        <label class="lb-sr-only" for="lb-search-input-{{ section.id }}">Search products</label>
+        <input type="search" name="search" id="lb-search-input-{{ section.id }}" data-lb-search-input placeholder="Search products" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="lb-search-results-{{ section.id }}" aria-autocomplete="list">
+        <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="lb-sr-only">Search</span></button>
+        <button type="button" data-lb-search-close aria-label="Close search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="5" y1="5" x2="19" y2="19"></line><line x1="19" y1="5" x2="5" y2="19"></line></svg><span class="lb-sr-only">Close search</span></button>
+      </form>
+      <div id="lb-search-results-{{ section.id }}" class="lb-predictive-search__results" data-lb-search-results role="listbox" aria-live="polite"></div>
+    </lb-predictive-search>
+  </div>
+  {% endif %}
 </header>
 {% schema %}
 {
@@ -47,6 +77,27 @@
       "options": [
         "static",
         "sticky"
+      ]
+    },
+    {
+      "id": "menu",
+      "type": "select",
+      "label": "Menu",
+      "default": "main_menu",
+      "options": [
+        "main_menu",
+        "footer_menu",
+        "policy_menu"
+      ]
+    },
+    {
+      "id": "layout",
+      "type": "select",
+      "label": "Layout",
+      "default": "inline",
+      "options": [
+        "inline",
+        "centered"
       ]
     }
   ],

@@ -97,5 +97,10 @@ test('T4 W1: the Urban Kicks quick-links fixture carries no policy-shaped dead l
   // exactly the class of dead link this phase closes. Removed entirely rather than re-pointed:
   // the Policies column alone is now the single, data-driven source for policy links.
   assert.ok(!hrefs.includes('/shipping'), 'no quick-link block should duplicate the Policies column\'s job outside its shop.policies gate');
-  assert.deepEqual(hrefs, ['/contact'], 'only the real Contact quick link should remain');
+  // T6/W0 — the fixture's remaining example 'footer-contact' block was ALSO removed (it
+  // unconditionally beat linklists.footer_menu, the same class of "default beats the real
+  // feature" bug W0 fixed for the header). The shipped fixture now carries no footer link blocks
+  // at all — an even stronger guarantee against a policy-shaped dead link than "only /contact
+  // remains", since there is nothing left to duplicate the Policies column's job.
+  assert.deepEqual(hrefs, [], 'the shipped fixture must carry no default footer link blocks — they would beat linklists.footer_menu');
 });

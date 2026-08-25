@@ -568,6 +568,11 @@ async function buildLiquidCommerceContext({
             locale: store.locale || 'en',
             currency: 'INR',
             policies: publishedPolicyTypes,
+            // T5/W1 — store.logoUrl is already resolved (site_settings.logo_url overriding
+            // sites.logo_url, see store-service.ts:718) but was never threaded through to Liquid.
+            // null (not '') when absent, so `{% if shop.logo_url %}` degrades to the text lockup
+            // rather than an empty <img>.
+            logo_url: store.logoUrl || null,
         },
         product,
         collection,

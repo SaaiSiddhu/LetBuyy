@@ -385,11 +385,6 @@ class LbCartDrawerElement extends LiquidIslandBase {
     private render() {
         const items = readCart();
         const serverCart = readServerCart();
-        // item_count is a non-money count of quantities; all money totals are read verbatim from the
-        // gateway cart response (renderLiquidCartTotals) and are never computed in the browser.
-        const count = serverCart
-            ? serverCart.lines.reduce((sum, line) => sum + line.quantity, 0)
-            : items.reduce((sum, item) => sum + item.quantity, 0);
         const basePath = this.dataset.basePath || inferBasePath();
         const rows = items.length === 0
             ? '<p class="lb-liquid-cart__empty">Your bag is empty.</p>'
@@ -403,7 +398,12 @@ class LbCartDrawerElement extends LiquidIslandBase {
 
         this.innerHTML = [
             '<style>',
-            '.lb-liquid-cart__toggle{min-height:44px;padding:0 14px;border:1px solid var(--border-color,rgb(229 231 235));border-radius:8px;background:var(--card-bg,rgb(255 255 255));color:var(--card-text,rgb(17 24 39));font-weight:700}',
+            // T5/W4 — this element used to render its OWN visible "Cart (N)" toggle button; since
+            // `ensureLiquidCartDrawer` appends it as the last child of its root (after the footer, on
+            // any page with an add-to-cart control) and the toggle set no `position`, that button
+            // rendered as a plain in-flow white button below the footer. The header's [data-lb-cart-
+            // trigger] (registerLiquidHydrationIslands' delegated listener) is now the SOLE open
+            // control, so this element renders the PANEL only — nothing else, at no width.
             '.lb-liquid-cart__panel{position:fixed;inset:0 0 0 auto;z-index:100;width:min(420px,100vw);padding:20px;background:var(--card-bg,rgb(255 255 255));color:var(--card-text,rgb(17 24 39));box-shadow:0 20px 60px rgba(15,23,42,.28);overflow:auto}',
             '.lb-liquid-cart__item{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-color,rgb(229 231 235))}',
             '.lb-liquid-cart__footer{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:20px}',
@@ -412,14 +412,16 @@ class LbCartDrawerElement extends LiquidIslandBase {
             '.lb-liquid-cart__row{display:flex;justify-content:space-between;gap:12px;font-size:.95rem}',
             '.lb-liquid-cart__row--total{margin-top:6px;padding-top:10px;border-top:1px solid var(--border-color,rgb(229 231 235));font-weight:700;font-size:1.05rem}',
             '.lb-liquid-cart__pending{margin-top:16px;color:var(--text-secondary,rgb(107 114 128))}',
+            '.lb-liquid-cart__close{min-height:44px;min-width:44px;}',
+            '.lb-liquid-cart__view-cart{min-height:44px;display:inline-flex;align-items:center;font-weight:700;}',
             '</style>',
-            `<${liquidButtonTag} type="button" data-lb-cart-toggle class="lb-liquid-cart__toggle" aria-expanded="${this.open ? 'true' : 'false'}">Cart (${count})</${liquidButtonTag}>`,
             `<aside class="lb-liquid-cart__panel" role="dialog" aria-modal="true" aria-label="Shopping cart" ${this.open ? '' : 'hidden'}>`,
-            `<${liquidButtonTag} type="button" data-lb-cart-close aria-label="Close cart">Close</${liquidButtonTag}>`,
+            `<${liquidButtonTag} type="button" data-lb-cart-close class="lb-liquid-cart__close" aria-label="Close cart">Close</${liquidButtonTag}>`,
             '<h2>Cart</h2>',
             rows,
             items.length > 0 ? renderLiquidCartTotals(serverCart) : '',
             '<div class="lb-liquid-cart__footer">',
+            `<a class="lb-liquid-cart__view-cart" href="${escapeHtml(basePath)}/cart">View cart</a>`,
             `<a class="lb-liquid-cart__checkout" href="${escapeHtml(basePath)}/checkout">Checkout</a>`,
             '</div>',
             '</aside>',
@@ -453,6 +455,162 @@ class LbSearchElement extends LiquidIslandBase {
 
     disconnectedCallback() {
         this.removeEventListener('submit', this.handleSubmit);
+    }
+}
+
+type PredictiveSearchSuggestion = {
+    id: string;
+    title: string;
+    price: number | null;
+    currency: string;
+    image: string | null;
+    url: string;
+};
+
+// T5/W3 — the header search overlay's predictive results. Debounced (300ms), cancels the previous
+// in-flight request on every new keystroke (AbortController), and keeps the existing full-page GET
+// submit working with JS disabled — this class only ever enhances the <form> already in its markup,
+// never replaces it. ARIA combobox pattern: the <input> (role="combobox", written in header.liquid)
+// gets aria-expanded/aria-activedescendant kept in sync here; results carry role="option" and
+// aria-selected; [data-lb-search-results] carries aria-live="polite" (also in the markup) so a
+// screen reader announces the result count text this class writes into it.
+class LbPredictiveSearchElement extends LiquidIslandBase {
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    private abortController: AbortController | null = null;
+    private selectedIndex = -1;
+    private results: PredictiveSearchSuggestion[] = [];
+
+    private get input(): HTMLInputElement | null {
+        return this.querySelector('[data-lb-search-input]');
+    }
+
+    private get resultsEl(): HTMLElement | null {
+        return this.querySelector('[data-lb-search-results]');
+    }
+
+    private readonly handleInput = () => {
+        const query = this.input?.value.trim() || '';
+        if (this.debounceTimer) clearTimeout(this.debounceTimer);
+        if (this.abortController) this.abortController.abort();
+
+        if (query.length < 2) {
+            this.renderResults([], query, false);
+            return;
+        }
+
+        this.debounceTimer = setTimeout(() => {
+            void this.fetchSuggestions(query);
+        }, 300);
+    };
+
+    private async fetchSuggestions(query: string) {
+        this.renderResults([], query, true);
+        this.abortController = new AbortController();
+        try {
+            const suggestUrl = `/api${inferBasePath()}/search-suggest?q=${encodeURIComponent(query)}`;
+            const response = await fetch(suggestUrl, { signal: this.abortController.signal });
+            if (!response.ok) {
+                this.renderResults([], query, false);
+                return;
+            }
+            const payload = await response.json() as { results?: PredictiveSearchSuggestion[] };
+            this.renderResults(Array.isArray(payload.results) ? payload.results : [], query, false);
+        } catch (error) {
+            if (error instanceof DOMException && error.name === 'AbortError') return;
+            this.renderResults([], query, false);
+        }
+    }
+
+    private renderResults(results: PredictiveSearchSuggestion[], query: string, loading: boolean) {
+        const container = this.resultsEl;
+        const input = this.input;
+        if (!container || !input) return;
+
+        this.results = results;
+        this.selectedIndex = -1;
+        input.removeAttribute('aria-activedescendant');
+        input.setAttribute('aria-expanded', String(loading || results.length > 0));
+
+        if (loading) {
+            container.innerHTML = '<p class="lb-predictive-search__loading" role="status">Searching…</p>';
+            return;
+        }
+        if (query.length < 2) {
+            container.innerHTML = '';
+            return;
+        }
+        if (results.length === 0) {
+            container.innerHTML = `<p class="lb-predictive-search__empty" role="status">No results for "${escapeHtml(query)}"</p>`;
+            return;
+        }
+
+        const form = this.querySelector<HTMLFormElement>('[data-lb-search-form]');
+        const resultsPageUrl = new URL(form?.getAttribute('action') || '/search', window.location.origin);
+        resultsPageUrl.searchParams.set('search', query);
+
+        const items = results.map((item, index) => {
+            const priceText = item.price != null ? formatCartMoney(item.price, item.currency) : '';
+            return [
+                `<a href="${escapeHtml(item.url)}" id="lb-search-option-${index}" class="lb-predictive-search__item" role="option" aria-selected="false" data-lb-search-option data-index="${index}">`,
+                item.image ? `<img src="${escapeHtml(item.image)}" alt="" loading="lazy">` : '',
+                `<span>${escapeHtml(item.title)}</span>`,
+                priceText ? `<span class="lb-predictive-search__item-price">${escapeHtml(priceText)}</span>` : '',
+                '</a>',
+            ].join('');
+        }).join('');
+
+        container.innerHTML = [
+            `<p class="lb-sr-only" role="status">${results.length} result${results.length === 1 ? '' : 's'} found</p>`,
+            '<div class="lb-predictive-search__group"><h3>Products</h3>',
+            items,
+            '</div>',
+            `<a class="lb-predictive-search__view-all" href="${escapeHtml(resultsPageUrl.pathname + resultsPageUrl.search)}">Search for "${escapeHtml(query)}"</a>`,
+        ].join('');
+    }
+
+    private moveSelection(delta: number) {
+        if (this.results.length === 0) return;
+        const count = this.results.length;
+        this.selectedIndex = ((this.selectedIndex + delta) % count + count) % count;
+
+        const options = this.resultsEl?.querySelectorAll<HTMLElement>('[data-lb-search-option]');
+        options?.forEach((option, index) => option.setAttribute('aria-selected', String(index === this.selectedIndex)));
+
+        const activeOption = options?.[this.selectedIndex];
+        if (activeOption) {
+            this.input?.setAttribute('aria-activedescendant', activeOption.id);
+            activeOption.scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    private readonly handleKeydown = (event: KeyboardEvent) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            this.moveSelection(1);
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            this.moveSelection(-1);
+        } else if (event.key === 'Enter' && this.selectedIndex >= 0) {
+            const option = this.resultsEl?.querySelector<HTMLAnchorElement>(`[data-index="${this.selectedIndex}"]`);
+            if (option) {
+                event.preventDefault();
+                window.location.assign(option.href);
+            }
+        }
+        // Escape is handled by the header-level delegated listener (bindHeaderControls), which
+        // closes the whole overlay — this class does not need its own duplicate handler for it.
+    };
+
+    connectedCallback() {
+        this.input?.addEventListener('input', this.handleInput);
+        this.addEventListener('keydown', this.handleKeydown);
+    }
+
+    disconnectedCallback() {
+        this.input?.removeEventListener('input', this.handleInput);
+        this.removeEventListener('keydown', this.handleKeydown);
+        if (this.debounceTimer) clearTimeout(this.debounceTimer);
+        if (this.abortController) this.abortController.abort();
     }
 }
 
@@ -1428,6 +1586,12 @@ class LbTurnstileElement extends LiquidIslandBase {
 // T2a/W3a — mobile hamburger drawer. Same markup serves both widths (see LIQUID_THEME_BASE_CSS):
 // CSS repositions the ONE nav-links list between an off-canvas mobile drawer and a static desktop
 // row, so this island only needs to own open/close state and a11y attributes, never nav content.
+// T5/W2/W1 — <lb-mobile-nav> owns two related widgets sharing one markup: the off-canvas drawer
+// (mobile) and, at desktop, the same nested <details> becoming per-item dropdowns (see the CSS
+// section in liquid-theme.css). Rebuilt this phase for: a real close button, a real Tab focus trap
+// while the drawer is open (previously only set initial focus, never constrained subsequent Tabs),
+// Escape closing the innermost open thing first (a dropdown, then the drawer), click-outside closing
+// an open desktop dropdown, and arrow-key navigation within an open dropdown's links.
 class LbMobileNavElement extends LiquidIslandBase {
     private readonly handleClick = (event: Event) => {
         const target = event.target instanceof Element ? event.target : null;
@@ -1437,14 +1601,73 @@ class LbMobileNavElement extends LiquidIslandBase {
             this.setOpen(this.dataset.open !== 'true');
             return;
         }
-        if (target.closest('[data-lb-nav-scrim]') || target.closest('[data-lb-nav-panel] a')) {
+        if (target.closest('[data-lb-nav-close]') || target.closest('[data-lb-nav-scrim]') || target.closest('[data-lb-nav-panel] a')) {
             this.setOpen(false);
+            return;
         }
+
+        // Click outside an open desktop dropdown closes it (native <details> only closes another
+        // <details> that shares its `name` group — these don't share one, since desktop dropdowns
+        // must be able to be open independently, one per top-level item, hence this manual check).
+        const clickedDropdown = target.closest<HTMLDetailsElement>('[data-lb-nav-dropdown]');
+        this.querySelectorAll<HTMLDetailsElement>('[data-lb-nav-dropdown][open]').forEach((dropdown) => {
+            if (dropdown !== clickedDropdown) dropdown.open = false;
+        });
     };
 
     private readonly handleKeydown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape' && this.dataset.open === 'true') this.setOpen(false);
+        if (event.key === 'Escape') {
+            const openDropdown = this.querySelector<HTMLDetailsElement>('[data-lb-nav-dropdown][open]');
+            if (openDropdown) {
+                openDropdown.open = false;
+                openDropdown.querySelector('summary')?.focus();
+                return;
+            }
+            if (this.dataset.open === 'true') this.setOpen(false);
+            return;
+        }
+
+        if (this.dataset.open === 'true') this.trapTab(event);
+
+        const withinDropdown = (event.target as Element | null)?.closest<HTMLDetailsElement>('[data-lb-nav-dropdown][open]');
+        if (withinDropdown && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+            event.preventDefault();
+            const links = Array.from(withinDropdown.querySelectorAll<HTMLElement>('.lb-header__nav-submenu a'));
+            if (links.length === 0) return;
+            const current = links.indexOf(document.activeElement as HTMLElement);
+            const delta = event.key === 'ArrowDown' ? 1 : -1;
+            const next = current === -1 ? 0 : ((current + delta) % links.length + links.length) % links.length;
+            links[next]?.focus();
+        }
     };
+
+    // A real focus trap: while the drawer is open, Tab/Shift+Tab cycle only among the panel's own
+    // focusable elements — previously Tab could walk focus straight out into the (visually hidden
+    // behind the scrim, but still in the DOM and still focusable) rest of the page.
+    private trapTab(event: KeyboardEvent) {
+        if (event.key !== 'Tab') return;
+        const panel = this.querySelector<HTMLElement>('[data-lb-nav-panel]');
+        if (!panel) return;
+        const focusable = Array.from(
+            panel.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'),
+        ).filter((el) => el.offsetParent !== null);
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+
+        if (event.shiftKey && active === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && active === last) {
+            event.preventDefault();
+            first.focus();
+        } else if (!panel.contains(active)) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
 
     connectedCallback() {
         this.dataset.open = 'false';
@@ -1467,9 +1690,10 @@ class LbMobileNavElement extends LiquidIslandBase {
         // behind the drawer). Reverts on close/disconnect.
         document.body.style.overflow = open ? 'hidden' : '';
         if (open) {
-            const firstLink = this.querySelector<HTMLElement>('[data-lb-nav-panel] a');
-            firstLink?.focus();
+            const closeButton = this.querySelector<HTMLElement>('[data-lb-nav-close]');
+            (closeButton || this.querySelector<HTMLElement>('[data-lb-nav-panel] a'))?.focus();
         } else {
+            this.querySelectorAll<HTMLDetailsElement>('[data-lb-nav-dropdown][open]').forEach((d) => { d.open = false; });
             toggle?.focus();
         }
     }
@@ -1499,11 +1723,17 @@ export function registerLiquidHydrationIslands() {
     defineLiquidIsland('lb-turnstile', LbTurnstileElement);
     // T2a/W3a: lb-mobile-nav island — hamburger drawer.
     defineLiquidIsland('lb-mobile-nav', LbMobileNavElement);
+    // T5/W3: lb-predictive-search island — header search overlay's debounced results.
+    defineLiquidIsland('lb-predictive-search', LbPredictiveSearchElement);
 }
 
 function ensureLiquidCartDrawer(root: ParentNode, basePath: string) {
     const hasDrawer = root.querySelector('lb-cart-drawer,[data-lb-island="cart-drawer"]');
-    const needsDrawer = root.querySelector('lb-add-to-cart,[data-lb-island="add-to-cart"],[data-lb-cart-toggle]');
+    // T5/W4 — [data-lb-cart-toggle] (the drawer's own visible "Cart (N)" button) no longer renders;
+    // the header's [data-lb-cart-trigger] is the sole open control now, and it exists on every page
+    // that has a header (i.e. every real page), so the drawer must exist wherever it does too — not
+    // just on pages with an add-to-cart control — or clicking it would silently do nothing.
+    const needsDrawer = root.querySelector('lb-add-to-cart,[data-lb-island="add-to-cart"],[data-lb-cart-trigger]');
     if (hasDrawer || !needsDrawer) return;
 
     const drawer = document.createElement('lb-cart-drawer');
@@ -1526,6 +1756,66 @@ function syncHeaderCartCount() {
     });
 }
 
+function openHeaderSearchOverlay(toggle: HTMLElement) {
+    const overlayId = toggle.getAttribute('aria-controls');
+    const overlay = overlayId ? document.getElementById(overlayId) : null;
+    if (!overlay) return;
+    overlay.hidden = false;
+    toggle.setAttribute('aria-expanded', 'true');
+    overlay.querySelector<HTMLInputElement>('[data-lb-search-input]')?.focus();
+}
+
+function closeHeaderSearchOverlay(overlay: HTMLElement) {
+    overlay.hidden = true;
+    const toggle = document.querySelector<HTMLElement>(`[aria-controls="${CSS.escape(overlay.id)}"]`);
+    toggle?.setAttribute('aria-expanded', 'false');
+    toggle?.focus();
+}
+
+// T5/W4 — the header cart control ([data-lb-cart-trigger]) is a real <a href="…/cart"> (works with
+// JS disabled, in a new tab, or if the drawer never mounted) that a delegated click handler upgrades
+// into the drawer's open trigger. T5/W3 — the search icon similarly toggles the full-width overlay
+// this same delegated handler owns. Delegated on `root` (not document) so it only ever affects this
+// store's own render, and is registered/torn down alongside everything else this effect owns.
+function bindHeaderControls(root: HTMLElement): () => void {
+    const handleClick = (event: Event) => {
+        const target = event.target instanceof Element ? event.target : null;
+        if (!target) return;
+
+        const cartTrigger = target.closest<HTMLElement>('[data-lb-cart-trigger]');
+        if (cartTrigger) {
+            event.preventDefault();
+            window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT, { detail: { source: 'header-cart-trigger' } }));
+            return;
+        }
+
+        const searchToggle = target.closest<HTMLElement>('[data-lb-search-toggle]');
+        if (searchToggle) {
+            openHeaderSearchOverlay(searchToggle);
+            return;
+        }
+
+        const searchClose = target.closest<HTMLElement>('[data-lb-search-close]');
+        const overlayFromClose = searchClose?.closest<HTMLElement>('.lb-header__search-overlay');
+        if (overlayFromClose) {
+            closeHeaderSearchOverlay(overlayFromClose);
+        }
+    };
+
+    const handleKeydown = (event: KeyboardEvent) => {
+        if (event.key !== 'Escape') return;
+        const openOverlay = root.querySelector<HTMLElement>('.lb-header__search-overlay:not([hidden])');
+        if (openOverlay) closeHeaderSearchOverlay(openOverlay);
+    };
+
+    root.addEventListener('click', handleClick);
+    root.addEventListener('keydown', handleKeydown);
+    return () => {
+        root.removeEventListener('click', handleClick);
+        root.removeEventListener('keydown', handleKeydown);
+    };
+}
+
 export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydrationIslandsProps) {
     useEffect(() => {
         registerLiquidHydrationIslands();
@@ -1537,6 +1827,7 @@ export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydr
             drawer.dataset.basePath = drawer.dataset.basePath || basePath;
         });
         ensureLiquidCartDrawer(root, basePath);
+        const unbindHeaderControls = bindHeaderControls(root);
 
         syncHeaderCartCount();
         window.addEventListener(CART_CHANGED_EVENT, syncHeaderCartCount);
@@ -1544,6 +1835,7 @@ export default function LiquidHydrationIslands({ basePath, storeId }: LiquidHydr
         return () => {
             window.removeEventListener(CART_CHANGED_EVENT, syncHeaderCartCount);
             window.removeEventListener('storage', syncHeaderCartCount);
+            unbindHeaderControls();
         };
     }, [basePath, storeId]);
 

@@ -20,32 +20,8 @@
         "showCart": true,
         "behavior": "sticky"
       },
-      "blocks": {
-        "header-products": {
-          "type": "link",
-          "settings": {
-            "label": "Products",
-            "href": "/products"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        },
-        "header-collections": {
-          "type": "link",
-          "settings": {
-            "label": "Collections",
-            "href": "/collections/new-arrivals"
-          },
-          "disabled": false,
-          "blocks": {},
-          "block_order": []
-        }
-      },
-      "block_order": [
-        "header-products",
-        "header-collections"
-      ],
+      "blocks": {},
+      "block_order": [],
       "disabled": false
     }
   },

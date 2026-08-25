@@ -18,7 +18,16 @@ async function render() {
     // T1: header/footer storeName no longer hardcodes the theme's own brand — it falls back to the
     // real merchant shop.name when the merchant hasn't set a custom section storeName. Pass a real
     // shop name here so this test exercises that fallback rather than a fabricated theme brand string.
-    liquidContext: { shop: { name: 'Local Kicks Test Store' } },
+    // T6/W0: the fixture no longer ships example `link` blocks (see theme-bundle.ts's header-default/
+    // footer-default), so linklists.main_menu — now the shipped default nav source, not a mutated
+    // override — is supplied here to exercise the actual default rendering path.
+    liquidContext: {
+      shop: { name: 'Local Kicks Test Store' },
+      linklists: { main_menu: { handle: 'main_menu', title: 'Main Menu', links: [
+        { title: 'Products', url: '/products', active: false, links: [] },
+        { title: 'Collections', url: '/collections/new-arrivals', active: false, links: [] },
+      ] } },
+    },
     liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
   });
 }
@@ -29,8 +38,8 @@ test('L4: renderer emits Liquid header chrome with the store name + nav links', 
   const header = result.liquid?.header ?? '';
   assert.match(header, /class="lb-header"/);
   assert.match(header, /Local Kicks Test Store/);     // header storeName falls back to shop.name
-  assert.match(header, /Products/);        // nav link block
-  assert.match(header, /Collections/);     // nav link block
+  assert.match(header, /Products/);        // nav link, from linklists.main_menu (the shipped default)
+  assert.match(header, /Collections/);     // nav link, from linklists.main_menu (the shipped default)
 });
 
 test('L4: renderer emits Liquid footer chrome', async () => {

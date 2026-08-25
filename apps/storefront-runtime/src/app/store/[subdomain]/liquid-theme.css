@@ -47,9 +47,22 @@
 /* .lb-404 and .lb-password-gate get their own narrower, centred treatment below — a 404 or a
    password gate is a single focused message, not a content-width page. */
 
+/* ---- sr-only utility (T5/W1) ---- */
+.lb-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
 /* ---- header ---- */
 .lb-header {
-  position: static; top: 0; z-index: 50;
+  /* T5/W1 — explicit, not relying on <header>'s default: a resurrected duplicate rule elsewhere
+     once set display:flex here unopposed (see globals.css's removal note) and clipped this band's
+     full-bleed background to a centred box. Stating it plainly closes that class of bug for good. */
+  display: block;
+  /* T5/W3 — relative (not static) so .lb-header__search-overlay's position:absolute anchors to the
+     header itself, not the nearest OTHER positioned ancestor; behaves identically to static for the
+     header's own box since it carries no top/left offset. */
+  position: relative; top: 0; z-index: 50;
   padding: 0;
   background: var(--background, #fff);
   border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08));
@@ -60,41 +73,101 @@
   padding: 1rem clamp(1rem, 4vw, 2rem);
   max-width: 1200px; margin-inline: auto;
 }
-.lb-header__brand { font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--text); }
-.lb-header__actions { display: flex; align-items: center; gap: 1rem; white-space: nowrap; }
+/* T5/W1 — centred layout variant: logo on its own row, nav below it, both centred. Inline (default)
+   keeps the existing brand-left/nav-inline arrangement untouched. */
+.lb-header[data-layout="centered"] .lb-header__inner { flex-wrap: wrap; justify-content: center; text-align: center; }
+.lb-header[data-layout="centered"] .lb-header__brand { order: 0; width: 100%; justify-content: center; }
+@media (min-width: 48em) {
+  .lb-header[data-layout="centered"] .lb-header__nav { order: 2; width: 100%; justify-content: center; }
+  .lb-header[data-layout="centered"] .lb-header__actions { order: 1; }
+}
+.lb-header__brand { display: flex; font-family: var(--font-heading); font-weight: 800; font-size: 1.35rem; color: var(--text); }
+.lb-header__logo { max-height: 2.25rem; width: auto; }
+.lb-header__actions { display: flex; align-items: center; gap: .5rem; white-space: nowrap; }
 .lb-header__actions a { font-weight: 600; }
-.lb-header__cart { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; }
+.lb-header__search-toggle, .lb-header__account, .lb-header__cart {
+  display: inline-flex; align-items: center; gap: .35rem; min-width: 44px; min-height: 44px;
+  justify-content: center; padding-inline: .25rem; border: 0; background: none; cursor: pointer; color: inherit;
+}
+/* T5/W1 — every icon anywhere in the header/drawer gets a fixed, sane size by default (an <svg>
+   with only a viewBox and no explicit width/height renders at the browser's intrinsic default,
+   ~300x150 — confirmed live: the drawer footer's account icon, which carries no other class the
+   old per-selector list matched, rendered nearly full-viewport width). A single broad rule beats an
+   easily-incomplete per-selector list; specific rules below only adjust size where genuinely needed. */
+.lb-header svg { width: 20px; height: 20px; flex-shrink: 0; }
+.lb-header__search-toggle svg, .lb-header__account svg, .lb-header__cart svg, .lb-header__toggle svg, .lb-header__nav-close svg { width: 22px; height: 22px; }
+.lb-icon-chevron { width: 16px; height: 16px; }
 /* T2a/W3a — hamburger drawer. <lb-mobile-nav> promotes its own children (toggle/nav/scrim) into the
    flex row via display:contents so there is exactly one nav-links list — CSS repositions the SAME
-   markup between the mobile off-canvas drawer and the desktop inline row, no duplicated content. */
+   markup between the mobile off-canvas drawer and the desktop inline row, no duplicated content.
+   T5/W2 — kept this one-DOM design (see the header body comment for the "why"); everything below
+   is a rebuild of the drawer's own internals (head/links/foot, real close button, darker scrim,
+   nested <details> submenus), not a change to that top-level decision. */
 .lb-mobile-nav { display: contents; }
 .lb-header__toggle {
-  order: -1; display: inline-flex; flex-direction: column; justify-content: center; gap: 4px;
-  width: 44px; height: 44px; padding: 10px; border: 0; background: none; cursor: pointer;
+  order: -1; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer;
 }
-.lb-header__toggle-bar { display: block; height: 2px; width: 100%; background: currentColor; border-radius: 2px; transition: transform .2s ease, opacity .2s ease; }
-.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(2) { opacity: 0; }
-.lb-mobile-nav[data-open="true"] .lb-header__toggle-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 .lb-header__nav {
-  position: fixed; inset: 0 0 0 auto; z-index: 60; width: min(88vw, 22rem);
-  display: flex; flex-direction: column; gap: .5rem;
-  padding: 5rem 1.5rem 1.5rem; background: var(--background, #fff);
-  box-shadow: -16px 0 40px rgba(15,23,42,.16);
-  transform: translateX(100%); transition: transform .2s ease; overflow-y: auto;
+  position: fixed; inset: 0 0 0 auto; z-index: 60;
+  /* T5/W2 — the owner asked for a full-width sidebar drawer. min(100%,25rem) IS full width on every
+     real phone (400px is wider than virtually all handsets) while still capping at a sane 400px on
+     a tablet/desktop viewport, where a literal 100vw drawer would look like a broken page swap
+     rather than a drawer. */
+  width: min(100%, 25rem);
+  display: flex; flex-direction: column;
+  background: var(--background, #fff);
+  box-shadow: -16px 0 40px rgba(15,23,42,.24);
+  transform: translateX(100%); transition: transform .25s ease; overflow-y: auto;
 }
 .lb-mobile-nav[data-open="true"] .lb-header__nav { transform: translateX(0); }
-.lb-header__nav a { padding-block: .5rem; font-size: 1.1rem; font-weight: 600; color: var(--text-secondary, rgba(0,0,0,.7)); border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08)); }
-.lb-header__scrim { position: fixed; inset: 0; z-index: 55; background: rgba(15,23,42,.35); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+.lb-header__nav-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem 1rem 1rem 1.5rem; border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08));
+}
+.lb-header__nav-head-brand { font-family: var(--font-heading); font-weight: 800; font-size: 1.1rem; }
+.lb-header__nav-close { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; background: none; cursor: pointer; }
+.lb-header__nav-links { display: flex; flex-direction: column; padding: .5rem 1.5rem; }
+.lb-header__nav-links > a, .lb-header__nav-item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+  padding-block: .85rem; min-height: 44px; font-size: 1.05rem; font-weight: 600;
+  color: var(--text-secondary, rgba(0,0,0,.7)); border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08));
+  cursor: pointer; list-style: none;
+}
+.lb-header__nav-links > a::-webkit-details-marker, .lb-header__nav-item summary::-webkit-details-marker { display: none; }
+.lb-header__nav-links [aria-current="page"] { color: var(--primary); }
+.lb-header__nav-item { border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08)); }
+.lb-header__nav-item summary { border-bottom: 0; }
+.lb-header__nav-item .lb-icon-chevron { transition: transform .2s ease; }
+.lb-header__nav-item[open] .lb-icon-chevron { transform: rotate(180deg); }
+.lb-header__nav-submenu { display: flex; flex-direction: column; padding: 0 0 .5rem 1rem; }
+.lb-header__nav-submenu a { padding-block: .6rem; min-height: 44px; display: flex; align-items: center; font-size: .95rem; color: var(--text-secondary, rgba(0,0,0,.65)); }
+.lb-header__nav-foot { margin-top: auto; padding: 1rem 1.5rem 1.5rem; border-top: 1px solid var(--border-color, rgba(0,0,0,.08)); }
+.lb-header__nav-foot a { display: flex; align-items: center; gap: .5rem; min-height: 44px; font-weight: 600; }
+/* T5/W2 — owner-reported: "the site still fully legible behind an inadequate scrim." .35 read as
+   barely-there; a real scrim should make the background page recede, not just tint it. */
+.lb-header__scrim { position: fixed; inset: 0; z-index: 55; background: rgba(10,12,20,.6); opacity: 0; pointer-events: none; transition: opacity .25s ease; }
 .lb-mobile-nav[data-open="true"] .lb-header__scrim { opacity: 1; pointer-events: auto; }
 @media (min-width: 48em) {
   .lb-header__toggle { display: none; }
   .lb-header__nav {
     position: static; inset: auto; width: auto; flex-direction: row; align-items: center;
-    gap: 1.25rem; padding: 0; background: none; box-shadow: none; transform: none; overflow: visible;
+    background: none; box-shadow: none; transform: none; overflow: visible;
     order: 1;
   }
-  .lb-header__nav a { padding-block: 0; font-size: .95rem; border-bottom: 0; }
+  .lb-header__nav-head, .lb-header__nav-foot { display: none; }
+  .lb-header__nav-links { flex-direction: row; align-items: center; gap: 1.25rem; padding: 0; }
+  .lb-header__nav-links > a, .lb-header__nav-item summary { padding-block: 0; min-height: auto; font-size: .95rem; border-bottom: 0; }
+  .lb-header__nav-item { position: relative; border-bottom: 0; }
+  /* T5/W1 — at desktop the SAME <details> becomes a floating dropdown instead of an in-place
+     expansion: the submenu is pulled out of flow so opening it never pushes the header row down. */
+  .lb-header__nav-submenu {
+    position: absolute; top: 100%; left: 0; z-index: 70; min-width: 12rem; margin-top: .5rem;
+    padding: .5rem; background: var(--background, #fff); border: 1px solid var(--border-color, rgba(0,0,0,.08));
+    border-radius: 8px; box-shadow: 0 12px 32px rgba(15,23,42,.16);
+  }
+  .lb-header__nav-submenu a { padding-inline: .5rem; border-radius: 6px; }
+  .lb-header__nav-submenu a:hover { background: var(--surface, rgba(0,0,0,.04)); }
   .lb-header__scrim { display: none; }
   /* T2a/W3a — <lb-mobile-nav>'s display:contents promotes the drawer's toggle+nav directly into
      the header row in DOM order (nav, then brand, then actions), which is right for the mobile
@@ -103,6 +176,33 @@
   .lb-header__brand { order: 0; }
   .lb-header__actions { order: 2; }
 }
+
+/* ---- header search overlay + predictive search (T5/W3) ---- */
+.lb-header__search-overlay {
+  position: absolute; inset: 100% 0 auto 0; z-index: 65;
+  background: var(--background, #fff); border-bottom: 1px solid var(--border-color, rgba(0,0,0,.08));
+  box-shadow: 0 16px 40px rgba(15,23,42,.14);
+}
+.lb-header__search-overlay[hidden] { display: none; }
+.lb-predictive-search { display: block; max-width: 1200px; margin-inline: auto; padding: 1.25rem clamp(1rem,4vw,2rem); }
+.lb-predictive-search [data-lb-search-form] { display: flex; align-items: center; gap: .5rem; }
+.lb-predictive-search input[type="search"] {
+  flex: 1; min-height: 44px; padding: 0 .75rem; font-size: 1.05rem; border: 1px solid var(--border-color, rgba(0,0,0,.15));
+  border-radius: 8px; background: var(--input-bg, #fff); color: inherit;
+}
+.lb-predictive-search button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; background: none; cursor: pointer; }
+.lb-predictive-search__results { margin-top: 1rem; }
+.lb-predictive-search__results:empty { margin-top: 0; }
+.lb-predictive-search__group + .lb-predictive-search__group { margin-top: 1rem; }
+.lb-predictive-search__group h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; opacity: .6; margin-bottom: .5rem; }
+.lb-predictive-search__item {
+  display: flex; align-items: center; gap: .75rem; padding: .5rem; border-radius: 8px; min-height: 44px;
+}
+.lb-predictive-search__item[aria-selected="true"], .lb-predictive-search__item:hover { background: var(--surface, rgba(0,0,0,.04)); }
+.lb-predictive-search__item img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; background: var(--surface, rgba(0,0,0,.06)); }
+.lb-predictive-search__item-price { margin-left: auto; font-weight: 700; color: var(--primary); }
+.lb-predictive-search__view-all { display: block; padding: .75rem .5rem; font-weight: 700; color: var(--primary); }
+.lb-predictive-search__empty, .lb-predictive-search__loading { padding: .75rem .5rem; color: var(--text-secondary, rgba(0,0,0,.6)); }
 
 /* ---- announcement bar ---- */
 /* T2a-fix/W1 — explicit, not merely absent-from-the-shared-rhythm-list: globals.css carries its
@@ -280,29 +380,48 @@ lb-add-to-cart button:hover { filter: brightness(1.06); }
 
 /* ---- footer ---- */
 .lb-footer {
+  /* T5/W1 — explicit for the same reason as .lb-header above: this element's own layout is entirely
+     .lb-footer__grid's (a real grid) and .lb-footer__bottom's (a real flex bar) responsibility, never
+     .lb-footer itself. */
+  display: block;
   max-width: none; background: var(--footer-bg, #0f172a); color: var(--footer-text, #fff);
   padding: 3rem clamp(1rem, 4vw, 2rem) 1.5rem; margin-top: 2rem;
 }
-.lb-footer__grid { display: grid; gap: 2rem; grid-template-columns: 1fr; max-width: 1200px; margin-inline: auto; }
+.lb-footer__grid { display: grid; gap: 2.5rem; grid-template-columns: 1fr; max-width: 1200px; margin-inline: auto; }
 .lb-footer h3 { font-size: 1.2rem; font-weight: 800; color: var(--footer-text, #fff); margin: 0; }
 .lb-footer p { color: var(--footer-text-muted, rgba(255,255,255,.7)); margin: .35rem 0 0; }
-.lb-footer h4 { margin: 0 0 .5rem; font-size: .85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--footer-text-muted, rgba(255,255,255,.55)); }
-.lb-footer__col nav { display: flex; flex-direction: column; gap: .5rem; }
-.lb-footer__col nav a, .lb-footer__col p { color: var(--footer-text-muted, rgba(255,255,255,.7)); font-size: .92rem; }
-.lb-footer__col nav a:hover { color: var(--footer-text, #fff); }
+.lb-footer h4 { margin: 0 0 .5rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--footer-text-muted, rgba(255,255,255,.55)); }
+.lb-footer__col nav { display: flex; flex-direction: column; }
+/* T5/W2 — every footer link gets a real >=44px tap target (WCAG 2.5.5) via inline-flex + min-height
+   rather than relying on line-height alone; gap on the nav is dropped since each link's own box
+   already provides visual separation. .lb-footer__col > a covers the unconditional "Contact us"
+   link, which sits directly in the column (not inside <nav> or <p>) and previously had no rule of
+   its own at all. */
+.lb-footer__col nav a, .lb-footer__col p a, .lb-footer__col > a {
+  display: inline-flex; align-items: center; min-height: 44px;
+  color: var(--footer-text-muted, rgba(255,255,255,.7)); font-size: .92rem;
+}
+.lb-footer__col nav a:hover, .lb-footer__col p a:hover, .lb-footer__col > a:hover { color: var(--footer-text, #fff); }
 .lb-footer__social { display: flex; gap: .6rem; margin-top: .75rem; }
 .lb-footer__social a {
-  display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
   border-radius: 999px; border: 1px solid rgba(255,255,255,.2); color: var(--footer-text); font-size: .75rem; font-weight: 700;
 }
+.lb-footer__social a svg { width: 18px; height: 18px; }
 .lb-footer__bottom {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem;
-  max-width: 1200px; margin: 2rem auto 0; padding-top: 1.25rem;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1.5rem;
+  max-width: 1200px; margin: 2.5rem auto 0; padding-top: 1.25rem;
   border-top: 1px solid rgba(255,255,255,.12); font-size: .8rem; color: var(--footer-text-muted, rgba(255,255,255,.55));
 }
-.lb-footer__watermark { display: inline-flex; align-items: center; gap: .35rem; font-weight: 700; color: var(--footer-text); }
+.lb-footer__watermark { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; font-weight: 700; color: var(--footer-text); }
 @media (min-width: 48em) {
-  .lb-footer__grid { grid-template-columns: 1.4fr repeat(3, 1fr); }
+  /* T5/W2 — was a fixed 4-track `1.4fr repeat(3,1fr)`, which assumed every store publishes a full
+     quick-links list AND all four policy types; a store with only brand+contact (2 real blocks) left
+     two tracks completely empty, reproducing the same "dead space" complaint at a different cause.
+     auto-fit sizes tracks to however many .lb-footer__brand/.lb-footer__col blocks actually rendered
+     (2-4, driven by section.blocks/shop.policies) and collapses anything beyond that to 0 width, so
+     the grid always reads as deliberate regardless of which columns a given store has. */
+  .lb-footer__grid { grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
 }
 
 /* ---- product detail / cart / account / orders ---- */
