@@ -16,6 +16,7 @@ import {
     storefrontApiErrorMessage,
 } from '@/lib/api/browser-client';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
+import { GST_STATES, gstStateCodeFromName } from '@letbuyy/checkout-core';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -103,6 +104,12 @@ interface FormData {
     address: string;
     city: string;
     state: string;
+    // T13/W1 — the two-digit GST state code (IndianStateCodeSchema: 01-38 or 97), never
+    // free text. The gateway's server-side GST computation reads
+    // body.customer.address.stateCode; `state` alone (a display name) was silently ignored,
+    // so tax was never computed for any order. Sourced from a picker (GST_STATES), not
+    // typed, since a wrong code drives a real tax computation.
+    stateCode: string;
     pincode: string;
 }
 
@@ -227,6 +234,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         address: '',
         city: '',
         state: '',
+        stateCode: '',
         pincode: '',
     });
 
@@ -334,6 +342,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             address: [address.address_line1, address.address_line2].filter(Boolean).join(', '),
             city: address.city || '',
             state: address.state || '',
+            stateCode: gstStateCodeFromName(address.state) || '',
             pincode: address.postal_code || '',
         }));
         setErrors({});
@@ -366,7 +375,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         if (formData.phone.replace(/\D/g, '').length < 10) newErrors.phone = 'Valid phone required';
         if (!formData.address.trim()) newErrors.address = 'Address is required';
         if (!formData.city.trim()) newErrors.city = 'City is required';
-        if (!formData.state.trim()) newErrors.state = 'State is required';
+        if (!formData.stateCode.trim()) newErrors.state = 'State is required';
         if (formData.pincode.length !== 6) newErrors.pincode = 'Valid 6-digit pincode';
 
         setErrors(newErrors);
@@ -397,6 +406,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 address: formData.address,
                 city: formData.city,
                 state: formData.state,
+                stateCode: formData.stateCode,
                 pincode: formData.pincode,
             }
         },
@@ -865,13 +875,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </div>
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">State *</label>
-                                                    <Input unstyled
-                                                        type="text"
-                                                        value={formData.state}
-                                                        onChange={e => updateFormField('state', e.target.value)}
+                                                    <select
+                                                        value={formData.stateCode}
+                                                        onChange={e => {
+                                                            const code = e.target.value;
+                                                            const name = GST_STATES.find(s => s.code === code)?.name ?? '';
+                                                            setFormData(prev => ({ ...prev, stateCode: code, state: name }));
+                                                            setErrors(prev => ({ ...prev, state: undefined }));
+                                                        }}
                                                         className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.state ? 'ring-2 ring-red-300' : ''}`}
-                                                        placeholder="Karnataka"
-                                                    />
+                                                    >
+                                                        <option value="">Select state…</option>
+                                                        {GST_STATES.map(s => (
+                                                            <option key={s.code} value={s.code}>{s.name}</option>
+                                                        ))}
+                                                    </select>
                                                     {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
                                                 </div>
                                                 <div>

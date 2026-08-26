@@ -147,6 +147,8 @@ export class OrderExecutionAdapter {
         input: CreateCheckoutOrderCommand & {
             shipping_rate_id?: string | null;
             tax_amount?: number | null;
+            place_of_supply_state?: string | null;
+            tax_lines?: Array<{ title: string; rate: number; amount: number; jurisdiction?: Record<string, unknown> }> | null;
         },
         tenant: TenantContext,
         options: CreateOrderOptions = {},
@@ -173,6 +175,11 @@ export class OrderExecutionAdapter {
             // V1 LB-7: thread server-resolved shipping rate ID and GST amount.
             p_shipping_rate_id: input.shipping_rate_id ?? null,
             p_tax_amount: typeof input.tax_amount === 'number' ? input.tax_amount : null,
+            // T13/W3-W4: the recipient GST state code the gateway resolved, and the
+            // CGST/SGST/IGST breakdown behind p_tax_amount — written atomically with order
+            // creation (place_of_supply_state directly on orders; tax_lines into order_tax_lines).
+            p_place_of_supply_state: input.place_of_supply_state ?? null,
+            p_tax_lines: input.tax_lines && input.tax_lines.length > 0 ? input.tax_lines : null,
         });
 
         if (error) {
@@ -217,12 +224,20 @@ export class OrderExecutionAdapter {
         if (typeof data === 'object' && data && 'id' in data) {
             const invoice = await this.generateAndPersistGstInvoice(String(data.id), tenant.siteId);
             if (invoice) {
+                // T13/W4: do NOT overwrite `tax`/`place_of_supply_state` from the invoice here —
+                // create_checkout_order (T13 migration 213) already set both authoritatively at
+                // creation time, using the post-discount, HSN-aware computation the customer was
+                // actually charged from. This invoice-generation step recomputes tax
+                // independently (still discount_amount_minor: 0, still no HSN precedence — a
+                // known, filed gap, see CAP registry) purely to produce the gst_invoice JSONB
+                // snapshot; letting its own, less-correct figure silently overwrite the real
+                // charged amount was a genuine money-correctness risk once both paths could ever
+                // both resolve a supplier state at the same time (they now read the same
+                // sites.gstin/gst_state_code source, so both routinely succeed together).
                 return {
                     ...data,
                     gst_invoice_number: invoice.invoice_number,
                     gst_invoice: invoice,
-                    place_of_supply_state: invoice.place_of_supply_state_code,
-                    tax: invoice.tax_amount_minor / 100,
                 };
             }
         }
@@ -334,14 +349,20 @@ export class OrderExecutionAdapter {
             lines,
         });
 
+        // T13/W4: `tax` and `place_of_supply_state` are intentionally NOT written here —
+        // create_checkout_order (migration 213) already sets both authoritatively at order
+        // creation, from the same post-discount/HSN-aware computation the customer was
+        // actually charged from. This function's own line-building still uses
+        // discount_amount_minor: 0 and no HSN precedence (a filed, unfixed gap — see the T13
+        // CAP registry entry for GST invoice generation), so its recomputed tax figure can
+        // legitimately differ from the real charged amount; overwriting the authoritative
+        // value with it would silently corrupt orders.tax.
         const { error: updateError } = await this.db
             .from('orders')
             .update({
                 gst_invoice_number: invoice.invoice_number,
                 gst_invoice: invoice,
-                place_of_supply_state: invoice.place_of_supply_state_code,
                 customer_gstin: invoice.recipient.gstin,
-                tax: invoice.tax_amount_minor / 100,
                 updated_at: new Date().toISOString(),
             })
             .eq('id', orderId)
