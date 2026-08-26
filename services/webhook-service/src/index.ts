@@ -382,7 +382,13 @@ async function markOrderFailed(
         paymentStatus: "failed",
         orderStatus: "cancelled",
         reason: params.reason || null,
-        releaseInventory: false,
+        // T12: this was hardcoded false with no comment -- an oversight, not a
+        // decision. markOrderRefunded (below) already computes this correctly;
+        // a payment.failed webhook is exactly the explicit signal that should
+        // release a committed-but-unpaid reservation immediately, same as a
+        // refund does, rather than waiting for the TTL sweep
+        // (expire_unpaid_committed_reservations, 211) to catch it later.
+        releaseInventory: Boolean(order.inventory_reserved_at && !order.inventory_released_at),
         idempotencyKey: `payment-webhook:${provider}:${params.providerEventId}:failed`,
     });
 
