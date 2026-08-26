@@ -263,9 +263,19 @@ async function hydrateOrderItems(
 
     if (orderIds.length === 0) return orders;
 
+    // Tenant guard predicate on order_items' own store_id, derived from the already tenant-verified parent orders.
+    const storeIds = Array.from(new Set(
+        orders
+            .map((order) => textValue(order.store_id) || textValue(order.site_id))
+            .filter((id): id is string => Boolean(id)),
+    ));
+
+    if (storeIds.length === 0) return orders;
+
     const { data, error } = await db
         .from('order_items')
         .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('store_id', storeIds)
         .in('order_id', Array.from(new Set(orderIds)))
         .is('deleted_at', null)
         .order('created_at', { ascending: true });
@@ -1028,6 +1038,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
             const { data: existing, error: existingError } = await db
                 .from('order_items')
                 .select('id, price, unit_price')
+                .eq('store_id', tenant.siteId)
                 .eq('id', line.order_item_id)
                 .eq('order_id', orderId)
                 .is('deleted_at', null)
@@ -1045,6 +1056,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
                     total: Math.round(unitPrice * line.quantity * 100) / 100,
                     updated_at: new Date().toISOString(),
                 })
+                .eq('store_id', tenant.siteId)
                 .eq('id', line.order_item_id)
                 .eq('order_id', orderId);
             if (error) throw new Error('Order line update failed');
@@ -1054,6 +1066,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
             const { error } = await db
                 .from('order_items')
                 .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+                .eq('store_id', tenant.siteId)
                 .in('id', Array.from(removals))
                 .eq('order_id', orderId);
             if (error) throw new Error('Order line removal failed');
@@ -1076,6 +1089,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
             const { error } = await db
                 .from('order_items')
                 .insert({
+                    store_id: tenant.siteId,
                     order_id: orderId,
                     product_id: item.product_id,
                     variant_id: item.variant_id || null,
@@ -1094,6 +1108,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
         const { data: activeLines, error: linesError } = await db
             .from('order_items')
             .select('total')
+            .eq('store_id', tenant.siteId)
             .eq('order_id', orderId)
             .is('deleted_at', null);
         if (linesError) throw new Error('Order line total lookup failed');

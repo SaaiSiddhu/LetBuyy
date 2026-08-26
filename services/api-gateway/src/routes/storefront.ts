@@ -538,10 +538,21 @@ async function hydrateStorefrontOrderItems(c: AppContext, orders: SqlRecord[]): 
 
     if (orderIds.length === 0) return orders;
 
+    // Same tenant-guard requirement as hydrateOrderItems in routes/orders.ts -- derived from the
+    // already store-scoped parent orders, never trusted from the request.
+    const storeIds = Array.from(new Set(
+        orders
+            .map((order) => storefrontString(order.store_id) || storefrontString(order.site_id))
+            .filter((id): id is string => Boolean(id)),
+    ));
+
+    if (storeIds.length === 0) return orders;
+
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('order_items')
         .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('store_id', storeIds)
         .in('order_id', Array.from(new Set(orderIds)))
         .is('deleted_at', null)
         .order('created_at', { ascending: true });

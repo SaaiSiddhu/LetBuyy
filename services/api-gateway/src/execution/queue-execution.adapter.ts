@@ -325,6 +325,7 @@ export class QueueExecutionAdapter {
         const { data, error } = await this.db
             .from('order_items')
             .select('product_id, name, sku, quantity, total')
+            .eq('store_id', siteId)
             .eq('order_id', orderId)
             .is('deleted_at', null);
 

@@ -794,6 +794,7 @@ router.get('/levels', async (c) => {
                 product_variants(id,title,sku),
                 inventory_locations(id,name,is_default,status)
             `, { count: 'exact' })
+            .in('store_id', ownedStoreIds)
             .in('products.store_id', ownedStoreIds);
 
         if (includeProductDeletedAtFilter) query = query.is('products.deleted_at', null);
@@ -978,6 +979,7 @@ router.get('/reservations', async (c) => {
     let query = db
         .from('inventory_reservations')
         .select('*, products!inner(name, store_id)', { count: 'exact' })
+        .in('store_id', ownedStoreIds)
         .in('products.store_id', ownedStoreIds);
 
     if (statusFilter) query = query.eq('status', statusFilter);
@@ -1037,6 +1039,7 @@ router.get('/receipts', async (c) => {
                 'id, purchase_order_id, quantity_received, notes, received_at, created_at, purchase_orders!inner(id, site_id)',
                 { count: 'exact' }
             )
+            .in('site_id', ownedStoreIds)
             .in('purchase_orders.site_id', ownedStoreIds);
 
         if (poIdFilter) poQuery = poQuery.eq('purchase_order_id', poIdFilter);
@@ -1067,6 +1070,7 @@ router.get('/receipts', async (c) => {
                 'id, transfer_id, quantity_received, notes, received_at, created_at, inventory_transfers!inner(id, site_id)',
                 { count: 'exact' }
             )
+            .in('site_id', ownedStoreIds)
             .in('inventory_transfers.site_id', ownedStoreIds);
 
         if (transferIdFilter) trQuery = trQuery.eq('transfer_id', transferIdFilter);
@@ -1130,6 +1134,7 @@ router.get('/analytics', async (c) => {
     const { data: levelData, error: levelError } = await db
         .from('inventory_levels')
         .select('id, products!inner(store_id)', { count: 'exact' })
+        .in('store_id', ownedStoreIds)
         .in('products.store_id', ownedStoreIds)
         .lte('available', 10);
 

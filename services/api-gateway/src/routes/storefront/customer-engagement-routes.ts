@@ -1028,17 +1028,17 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('orders')
-            // T14/W4: tax + gst_invoice_number, for the customer order-detail drop. This SELECT
-            // also feeds fields (subtotal/discount/shipping_cost/payment_method/tracking_number)
-            // it never selects -- a separate, pre-existing, out-of-scope gap (see CAP registry).
-            .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, order_number, status, total, tax, gst_invoice_number, created_at' : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items')
+            // T14/W4: tax + gst_invoice_number for the customer order-detail drop (subtotal/discount/shipping_cost/payment_method/tracking_number are a separate, pre-existing, out-of-scope gap -- see CAP registry).
+            .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at' : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items')
             .eq('store_id', storeId)
             .eq('customer_email', normalizeEmail(customer.email))
             .order('created_at', { ascending: false })
             .limit(50);
 
         if (error) return c.json(dbFailureBody(), 500);
-        const orders = await hydrateStorefrontOrderItems(c, (data || []) as unknown as SqlRecord[]);
+        const hydrated = await hydrateStorefrontOrderItems(c, (data || []) as unknown as SqlRecord[]);
+        // store_id was added to the SELECT only to satisfy the order_items hydration guard above.
+        const orders = hydrated.map(({ store_id: _storeId, ...rest }) => rest);
         return c.json(success({ orders }));
     });
 

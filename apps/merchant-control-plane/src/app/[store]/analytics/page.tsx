@@ -190,7 +190,13 @@ export default function AnalyticsPage() {
                         >
                             <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2 xl:grid-cols-5">
                                 {orderStatuses.map((status) => {
-                                    const count = data.ordersByStatus[status.key] || 0
+                                    // orders.status carries payment-method-specific variants the
+                                    // breakdown buckets don't enumerate separately (pending_cod is
+                                    // the large real-world case -- a COD order awaiting merchant
+                                    // confirmation is a Pending order to a merchant, not invisible).
+                                    const count = status.key === 'pending'
+                                        ? (data.ordersByStatus.pending || 0) + (data.ordersByStatus.pending_cod || 0)
+                                        : data.ordersByStatus[status.key] || 0
 
                                     return (
                                         <div

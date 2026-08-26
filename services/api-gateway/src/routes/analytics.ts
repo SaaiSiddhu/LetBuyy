@@ -193,7 +193,10 @@ function topDimensionEntries(
 
 async function loadRollupLiveView(db: AnalyticsDb, storeId: string, windowMinutes: number) {
     const rows = await loadRollups(db, storeId, LIVE_VIEW_METRICS, rollupDate(1), 2000);
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const now = Date.now();
     const sinceMs = now - windowMinutes * 60000;
@@ -248,7 +251,10 @@ async function loadRollupTrafficSources(db: AnalyticsDb, storeId: string, period
     const rows = await loadRollups(db, storeId, TRAFFIC_SOURCE_METRICS, rollupDate(analyticsPeriodDays(period)), 2000);
     const generatedAt = new Date().toISOString();
 
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const totalSessions = Math.round(sumRollup(rows, 'storefront.sessions.started'));
     const totalPageViews = Math.round(sumRollup(rows, 'storefront.page.views') + sumRollup(rows, 'storefront.page.view'));
@@ -295,7 +301,10 @@ async function loadRollupDashboard(db: AnalyticsDb, storeId: string, period: str
     const currentSince = rollupDate(days);
     const previousSince = rollupDate(days * 2);
     const rows = await loadRollups(db, storeId, ['orders.created', 'orders.paid', 'revenue.paid_minor'], previousSince);
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const currentRows = rollupRowsBetween(rows, currentSince);
     const previousRows = rollupRowsBetween(rows, previousSince, currentSince);
@@ -350,7 +359,10 @@ async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: strin
     const currentSince = rollupDate(days);
     const previousSince = rollupDate(days * 2);
     const rows = await loadRollups(db, storeId, ['orders.paid', 'revenue.paid_minor'], previousSince);
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const currentRows = rollupRowsBetween(rows, currentSince);
     const previousRows = rollupRowsBetween(rows, previousSince, currentSince);
@@ -371,7 +383,10 @@ async function loadRollupRevenue(db: AnalyticsDb, storeId: string, period: strin
 
 async function loadRollupTopProducts(db: AnalyticsDb, storeId: string, limit: number) {
     const rows = await loadRollups(db, storeId, ['product.units_sold', 'product.revenue_minor'], undefined, 2000);
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const products = new Map<string, { id: string; name: string; sku: string | null; total_sold: number; revenue: number }>();
     for (const row of rows) {
@@ -402,7 +417,10 @@ async function loadRollupTopProducts(db: AnalyticsDb, storeId: string, limit: nu
 
 async function loadRollupOrderBreakdown(db: AnalyticsDb, storeId: string) {
     const rows = await loadRollups(db, storeId, ['orders.status'], undefined, 2000);
-    if (!rows) return null;
+    // An empty array is a truthy result -- a store with no rollup rows yet (never computed, or
+    // the queue-worker rollup cron hasn't caught up) must fall through to the live query below,
+    // not be served as a confirmed "everything is zero" projection.
+    if (!rows || rows.length === 0) return null;
 
     const breakdown: Record<string, number> = {};
     for (const row of rows) {
@@ -429,6 +447,10 @@ async function loadCommerceAnalyticsMvSummary(db: AnalyticsDb, storeId: string, 
 
     if (error) return null;
     const rows = Array.isArray(data) ? data as CommerceAnalyticsDailyMvRow[] : [];
+    // Same class as loadRollups' callers: an empty materialized view for this period (never
+    // refreshed, or refreshed before these orders existed) is "no data available", not
+    // "confirmed zero" -- the caller must fall through to the rollup/live tiers below it.
+    if (rows.length === 0) return null;
     const totals = rows.reduce(
         (acc, row) => ({
             orders_created: acc.orders_created + rollupNumber(row.orders_created),

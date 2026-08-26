@@ -81,6 +81,7 @@ router.get('/supplier-metrics', async (c) => {
         const { data: receiptRows, error: receiptError } = await db
             .from('purchase_order_receipts')
             .select('purchase_order_id, received_at')
+            .eq('site_id', storeId)
             .in('purchase_order_id', poIds);
 
         if (!receiptError && !isMissingTableError(receiptError, 'purchase_order_receipts')) {
@@ -212,6 +213,7 @@ router.get('/warehouse-metrics', async (c) => {
     const { data: levelRows, error: levelError } = await db
         .from('inventory_levels')
         .select('location_id, available, reserved, incoming')
+        .eq('store_id', storeId)
         .in('location_id', locationIds);
 
     if (isMissingTableError(levelError, 'inventory_levels')) {
@@ -414,6 +416,7 @@ router.get('/operations-summary', async (c) => {
     const { data: lowStockRows, error: lowStockError } = await db
         .from('inventory_levels')
         .select('id, products!inner(store_id)')
+        .eq('store_id', storeId)
         .in('products.store_id', [storeId])
         .lte('available', 10);
 
