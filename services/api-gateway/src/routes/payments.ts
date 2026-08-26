@@ -1215,7 +1215,7 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         throw new ConflictError('Payment reference mismatch');
     }
 
-    await assertProviderPaymentNotReplayed(db, {
+    await assertProviderPaymentNotReplayed(c, {
         provider: 'razorpay',
         providerPaymentId: body.razorpay_payment_id,
         providerOrderId: body.razorpay_order_id,

@@ -549,7 +549,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
             // SECURITY: reject cross-order payment replay — provider payment IDs are globally
             // unique; if this razorpay_payment_id is already recorded for a different order,
             // the caller is replaying a prior capture.
-            await assertProviderPaymentNotReplayed(db, {
+            await assertProviderPaymentNotReplayed(c, {
                 provider: 'razorpay',
                 providerPaymentId: body.razorpay_payment_id,
                 providerOrderId: body.razorpay_order_id,

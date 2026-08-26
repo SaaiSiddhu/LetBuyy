@@ -90,6 +90,17 @@ export const StorefrontCreateOrderSchema = z.object({
   notes: z.string().max(1000).optional(),
   couponCode: z.string().max(50).optional(),
   giftCardCode: z.string().min(6).max(100).optional(),
+  // T11/W1 — checkout-client.tsx has sent this since "V1 LB-7" (its own comment: "send server-
+  // resolvable rate ID"), but this schema never declared it. z.object() without .strict() strips
+  // unrecognised keys silently, so `body.shippingRateId` was always undefined in the route
+  // handler regardless of what the client sent — resolveShippingRate(db, store.id,
+  // body.shippingRateId ?? null) always received null, always took its "no ID passed" fall-
+  // through, and a merchant's real configured shipping_rates row was never enforced or even
+  // reachable. Confirmed live: a real ₹99 flat rate existed for `snaz`, yet a bogus/nonexistent
+  // shippingRateId was silently accepted and every order fell back to the legacy free/₹99
+  // standard-express logic. Declaring the field here is what actually connects the client to the
+  // resolver this repo's own shipping-rate-resolver.ts already implements correctly.
+  shippingRateId: UuidSchema.optional().nullable(),
   idempotencyKey: z.string().min(8).max(200),
 });
 

@@ -35,15 +35,22 @@ export async function resolveShippingRate(
     shippingRateId: string | null | undefined,
 ): Promise<ResolvedShippingRate | null> {
     // Check whether the store has any active rates at all.
-    const { data: countData } = await db
+    // T11/W1 — a `head: true` Supabase query returns no rows: the count lives on the response's
+    // `count` property, never on `data` (which is always null/empty for a head request). This
+    // used to destructure `{ data: countData }` and test `Array.isArray(countData)`, which is
+    // always false for a head response, so `hasRates` was always false — server-side shipping-
+    // rate resolution never activated for ANY store, even ones with real configured rates
+    // (confirmed live: snaz has a real ₹99 flat rate, yet a bogus/nonexistent shippingRateId was
+    // silently accepted and the order fell through to the legacy free/₹99 standard-express logic
+    // instead of being rejected). Reading `count` instead of `data` is the fix.
+    const { count } = await db
         .from('shipping_rates')
         .select('id', { count: 'exact', head: true })
         .eq('site_id', storeId)
         .eq('is_active', true)
-        .is('deleted_at', null)
-        .limit(1);
+        .is('deleted_at', null);
 
-    const hasRates = Array.isArray(countData) ? countData.length > 0 : Boolean(countData);
+    const hasRates = Boolean(count && count > 0);
 
     if (!hasRates) {
         // No configured rates — caller uses legacy standard/express logic.

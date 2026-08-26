@@ -3,7 +3,7 @@ import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from './order-confirmation-email';
 import { verifySiteOwnership } from './auth-user';
-import { getSupabaseAdmin } from './supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
 import {
     isProductionRuntime,
@@ -224,7 +224,7 @@ export async function loadOwnedPaymentSession(
 }
 
 export async function assertProviderPaymentNotReplayed(
-    db: ReturnType<typeof getSupabaseAdmin>,
+    c: AppContext,
     // Phase M1 (DOC 03 row 11 "Payments"): Razorpay is the only live money-in
     // gateway with a provider-confirmed payment to replay-guard against.
     params: {
@@ -234,6 +234,22 @@ export async function assertProviderPaymentNotReplayed(
         orderId: string;
     },
 ): Promise<void> {
+    // T11/W0 — this is a GLOBAL replay check, not a tenant-scoped lookup: Razorpay
+    // provider_payment_id values are unique across Razorpay's entire platform (this repo's own
+    // storefront doesn't run per-merchant Razorpay accounts), so the whole point of this query is
+    // to catch a payment_id being reused across a DIFFERENT order — including, in principle, a
+    // different tenant's order. Adding a site_id predicate here wouldn't fix a bug, it would
+    // silently narrow this check to "not replayed within this tenant" and delete the cross-tenant
+    // replay protection the function's own contract promises. This is exactly the documented
+    // shape getSupabaseAdminUnguarded exists for (see its own doc comment in lib/supabase.ts): a
+    // bootstrap lookup by a claimed-globally-unique external key, before any tenant is known,
+    // `.limit(1)` so no cross-tenant enumeration is possible, and its result is never trusted
+    // blindly — the order_id/provider_order_id comparisons below still independently verify the
+    // match before anything is treated as a replay. Confirmed live: with the previously-guarded
+    // client, EVERY call to this function threw "Tenant table payment_transactions requires a
+    // tenant/owner predicate before execution" — not just tampered calls, ALL of them, meaning no
+    // Razorpay payment could ever be verified, independent of whether its signature was valid.
+    const db = getSupabaseAdminUnguarded(c);
     const { data: existing, error } = await db
         .from('payment_transactions')
         .select('order_id, provider_order_id, provider_payment_id')

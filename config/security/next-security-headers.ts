@@ -50,13 +50,30 @@ function isDevelopmentRuntime(): boolean {
 export function createContentSecurityPolicy(options: SecurityHeaderOptions = {}): string {
   const origins = unique(configuredOrigins());
   const frameAncestors = unique(options.frameAncestors?.length ? options.frameAncestors : ["'self'"]);
-  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co']);
+  // T11/W0 — checkout.razorpay.com was never allowlisted anywhere in this policy: the storefront
+  // renders "Pay Online (Razorpay)" and calls `new window.Razorpay(...)` (checkout-client.tsx),
+  // but the CSP silently blocked https://checkout.razorpay.com/v1/checkout.js from ever loading
+  // (confirmed live: a real CSP violation on every checkout-origin page load, every environment,
+  // since this function has no dev-only carve-out). window.Razorpay was therefore always
+  // undefined and the "Pay ₹X" button never enabled — no customer could ever complete an online
+  // payment, on any store, in any environment. api.razorpay.com is Razorpay's own checkout iframe
+  // origin (confirmed needed — checkout.razorpay.com's checkout-frame.js loads a nested frame
+  // there for the payment form itself). cdn.razorpay.com is a second, lazily-loaded script
+  // (razorpay-risk-detection/bundle.js, fraud-signal collection checkout.js pulls in at runtime)
+  // — confirmed as a second, separate CSP violation only after the first fix let the main script
+  // load far enough to attempt it.
+  const razorpayOrigins = ['https://checkout.razorpay.com', 'https://api.razorpay.com', 'https://cdn.razorpay.com'];
+  // lumberjack.razorpay.com is Razorpay's own telemetry/fraud-signal beacon (checkout.js posts to
+  // /v2/logz throughout the checkout flow) — connect-src only, never a script or frame origin.
+  const razorpayConnectOnly = ['https://lumberjack.razorpay.com'];
+  const connectSrc = unique(["'self'", ...origins, 'https://*.supabase.co', 'wss://*.supabase.co', ...razorpayOrigins, ...razorpayConnectOnly]);
   const imgSrc = unique(["'self'", 'data:', 'blob:', 'https:', ...origins]);
   const scriptSrc = unique([
     "'self'",
     "'unsafe-inline'",
     ...(isDevelopmentRuntime() ? ["'unsafe-eval'"] : []),
     'https://challenges.cloudflare.com',
+    ...razorpayOrigins,
   ]);
   // D7: Google Fonts stylesheet (fonts.googleapis.com) must be in style-src, and the actual
   // font file downloads (fonts.gstatic.com) must be in font-src. Without these, the browser
@@ -65,7 +82,7 @@ export function createContentSecurityPolicy(options: SecurityHeaderOptions = {})
   // layout.tsx are emitted correctly but have no effect when the CSP blocks the stylesheet.
   const styleSrc = unique(["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com']);
   const fontSrc = unique(["'self'", 'data:', 'https://fonts.gstatic.com']);
-  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...origins]);
+  const frameSrc = unique(["'self'", 'https://challenges.cloudflare.com', ...razorpayOrigins, ...origins]);
 
   return [
     "default-src 'self'",
