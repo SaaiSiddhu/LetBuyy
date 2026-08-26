@@ -4,6 +4,7 @@
   <p class="lb-order-detail__status">Status: {{ order.status }}</p>
   <ul class="lb-order-detail__items">{% for item in order.line_items %}<li><span class="lb-order-detail__title">{{ item.title }}</span><span class="lb-order-detail__qty">{{ item.quantity }}</span><span class="lb-order-detail__line">{{ item.line_price | money_with_currency: order.currency }}</span></li>{% endfor %}</ul>
   <p class="lb-order-detail__total">Total: {{ order.total | money_with_currency: order.currency }}</p>
+  {% if order.gst_invoice_number != blank %}<p class="lb-order-detail__invoice">GST Invoice: {{ order.gst_invoice_number }} (Tax: {{ order.tax_total | money_with_currency: order.currency }})</p>{% endif %}
   <ol class="lb-order-detail__timeline">{% for step in order.timeline %}<li class="lb-order-detail__step{% if step.reached %} is-reached{% endif %}">{{ step.label }}</li>{% endfor %}</ol>
   {% if order.tracking_number != blank %}<p class="lb-order-detail__tracking">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}
   {% else %}<p class="lb-order-detail__missing">Order not found.</p>{% endif %}

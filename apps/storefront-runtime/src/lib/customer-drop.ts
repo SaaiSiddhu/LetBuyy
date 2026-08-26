@@ -33,7 +33,9 @@ export interface LiquidCustomerOrderDetail {
     subtotal: number;
     discount_total: number;
     shipping_total: number;
+    tax_total: number;
     total: number;
+    gst_invoice_number: string | null;
     payment_method: string;
     payment_status: string;
     tracking_number: string | null;
@@ -211,7 +213,9 @@ function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomerOrderDe
         subtotal: Number(row.subtotal) || 0,
         discount_total: Number(row.discount) || 0,
         shipping_total: Number(row.shipping_cost) || 0,
+        tax_total: Number(row.tax) || 0,
         total: Number(row.total) || 0,
+        gst_invoice_number: typeof row.gst_invoice_number === 'string' ? row.gst_invoice_number : null,
         payment_method: typeof row.payment_method === 'string' ? row.payment_method : 'cod',
         payment_status: typeof row.payment_status === 'string' ? row.payment_status : 'pending',
         tracking_number: typeof row.tracking_number === 'string' ? row.tracking_number : null,

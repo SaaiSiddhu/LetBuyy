@@ -1028,7 +1028,10 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('orders')
-            .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, order_number, status, total, created_at' : 'id, order_number, status, total, created_at, items')
+            // T14/W4: tax + gst_invoice_number, for the customer order-detail drop. This SELECT
+            // also feeds fields (subtotal/discount/shipping_cost/payment_method/tracking_number)
+            // it never selects -- a separate, pre-existing, out-of-scope gap (see CAP registry).
+            .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, order_number, status, total, tax, gst_invoice_number, created_at' : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items')
             .eq('store_id', storeId)
             .eq('customer_email', normalizeEmail(customer.email))
             .order('created_at', { ascending: false })
