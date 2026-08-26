@@ -26,6 +26,26 @@ export const OrderItemInput = z.object({
   quantity: z.number().int().min(1).max(999),
 });
 
+// T10/W3 — the single source of truth for the storefront cart-line wire shape. Before this, the
+// gateway (services/api-gateway/src/routes/storefront/cart-routes.ts) and the React storefront
+// client (apps/storefront-runtime/src/context/cart-context.tsx) each hand-declared their own
+// local type for the SAME request body, and drifted: the client's local `CartLineInput` carried
+// an extra `unit_price` field the gateway's `.strict()` Zod schema had never accepted, so every
+// cart write from the React (non-Liquid) storefront renderer 400'd, silently, from day one of
+// server-side carts (61b68172). A client-supplied price is correctly never trusted here — pricing
+// is always recomputed server-side from `product_id`/`quantity` — so the fix is not to accept the
+// field, it is to stop declaring it twice. Both sides now import this one schema; adding a field
+// to a hand-rolled duplicate can never happen again because there is no longer a duplicate to
+// diverge. `.strict()` is preserved — an unrecognised key is still a 400, exactly as before.
+export const StorefrontCartLineInputSchema = z.object({
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(99),
+  properties: z.record(z.string(), z.unknown()).default({}),
+}).strict();
+
+export type StorefrontCartLineInput = z.infer<typeof StorefrontCartLineInputSchema>;
+
 export const CreateOrderSchema = z.object({
   store_id: UuidSchema,
   idempotency_key: z.string().min(8).max(200),

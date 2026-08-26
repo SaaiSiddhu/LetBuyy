@@ -7,7 +7,11 @@ import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { CommerceChannelSchema, DEFAULT_PLATFORM_DOMAIN, type CommerceChannel } from '@letbuyy/shared-types';
-import { canonicalCheckoutCartBinding, canonicalCheckoutHandoffPayload } from '@letbuyy/checkout-core';
+import {
+    canonicalCheckoutCartBinding,
+    canonicalCheckoutHandoffPayload,
+    StorefrontCartLineInputSchema,
+} from '@letbuyy/checkout-core';
 
 type AppContext = Context<{ Bindings: Env }>;
 type DbRecord = Record<string, unknown>;
@@ -27,13 +31,9 @@ type StorefrontCartRouteDependencies = {
     normalizePublicRouteToken: (value: string) => string | null;
 };
 
-const StorefrontCartLineInputSchema = z.object({
-    product_id: z.string().uuid(),
-    variant_id: z.string().uuid().optional().nullable(),
-    quantity: z.number().int().min(1).max(99),
-    properties: z.record(z.string(), z.unknown()).default({}),
-}).strict();
-
+// T10/W3 — StorefrontCartLineInputSchema now lives in @letbuyy/checkout-core, the single source
+// of truth for this wire shape (previously a local duplicate here, which the storefront client
+// diverged from — see cart-context.tsx's matching comment for the full incident).
 const StorefrontCartMutationSchema = z.object({
     cart_token: z.string().trim().min(1).max(120).optional().nullable(),
     customer_id: z.string().uuid().optional().nullable(),

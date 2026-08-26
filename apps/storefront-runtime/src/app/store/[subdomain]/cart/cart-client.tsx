@@ -11,7 +11,7 @@ import { StorefrontEmptyState } from '@/components/storefront/storefront-states'
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
 export default function CartPageClient() {
-    const { items, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+    const { items, removeFromCart, updateQuantity, cartTotal, clearCart, syncError } = useCart();
     const params = useParams();
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
@@ -46,6 +46,19 @@ export default function CartPageClient() {
                         <ArrowLeft size={16} className="mr-2" /> Continue Shopping
                     </Link>
                 </div>
+
+                {/* T10/W2 — the server explicitly rejected the last cart write (not a network
+                outage, which stays silent by design). Shown here rather than as a toast: this is
+                the one page a shopper reliably looks at before checkout, and the failure means
+                what they see below may not match what the server has. */}
+                {syncError && (
+                    <div
+                        className="mb-4 rounded-lg border px-4 py-3 text-sm"
+                        style={{ borderColor: 'var(--border-color, rgb(229 231 235))', color: 'var(--text)', backgroundColor: 'var(--surface, rgb(249 250 251))' }}
+                    >
+                        {syncError}
+                    </div>
+                )}
 
                 <div className="flex items-center justify-between mb-6">
                     <div>

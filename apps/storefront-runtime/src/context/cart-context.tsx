@@ -1,10 +1,11 @@
 'use client';
 
-import type { CartItem } from '@letbuyy/checkout-core';
+import type { CartItem, StorefrontCartLineInput } from '@letbuyy/checkout-core';
 import type { ProductModel } from '@letbuyy/commerce-core';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
     readStorefrontApiJson,
+    storefrontApiErrorMessage,
     storefrontBrowserApiFetch,
 } from '@/lib/api/browser-client';
 
@@ -18,6 +19,11 @@ export interface CartContextType {
     cartCount: number;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+    // T10/W2 — the server explicitly REJECTED the last cart write (a validation error, not a
+    // network outage). Distinct from silence: a shopper's cart can now diverge from the server
+    // without ever being told, which is exactly the failure mode this field exists to close. Null
+    // means the last sync (if any) succeeded, or none has been attempted yet.
+    syncError: string | null;
 }
 
 export interface CartVariantContext {
@@ -44,13 +50,18 @@ type ServerCart = {
     lines: ServerCartLine[];
 };
 
-type CartLineInput = {
-    product_id: string;
-    variant_id?: string | null;
-    quantity: number;
-    unit_price?: number;
-    properties: Record<string, unknown>;
-};
+// T10/W3 — this used to be a local, hand-rolled type that carried an extra `unit_price` field
+// the gateway's StorefrontCartLineInputSchema (`.strict()`) had never accepted, so every cart
+// write from this (React/non-Liquid) storefront renderer 400'd, silently, since server-side
+// carts shipped (61b68172) — the UI showed the item added, the server cart stayed empty, and a
+// shopper who then went to checkout was bounced back to /cart in a loop with no error message
+// (CheckoutRedirect finds no cart_token in localStorage, since the failed sync never set one).
+// A client-supplied price is correctly never trusted server-side — pricing is always recomputed
+// from product_id/quantity — so the fix is not to accept the field, it is to stop this file
+// declaring its own copy of the request shape at all. Importing the gateway's actual schema type
+// makes the two structurally impossible to diverge again: assigning an object literal with an
+// extra key to this type fails TypeScript's excess-property check at the call site below.
+type CartLineInput = StorefrontCartLineInput;
 
 // T6/W2 — exported so the checkout-origin route tree (apps/storefront-runtime/src/app/
 // checkout-origin/**, which is NEVER wrapped by this file's CartProvider — see
@@ -106,7 +117,6 @@ function cartLineInputFromItem(item: CartItem): CartLineInput {
         product_id: item.id,
         variant_id: variantId,
         quantity: item.quantity,
-        unit_price: item.price,
         properties: item.selectedVariant || {},
     };
 }
@@ -126,6 +136,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [cartToken, setCartToken] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+    const [syncError, setSyncError] = useState<string | null>(null);
     const skipNextSyncRef = useRef(false);
     const lastSyncPayloadRef = useRef('');
 
@@ -149,8 +160,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 body: JSON.stringify(body),
             });
             const result = await readStorefrontApiJson<ServerCart>(response);
-            if (!response.ok || !result.success || !result.data) return;
 
+            // T10/W2 — the request reached the server and the server REJECTED it (e.g. a schema
+            // validation error). This is not "the gateway is unreachable" — the previous version
+            // of this function treated both the same way (silently give up), which is exactly how
+            // a 400 on every write from this renderer shipped unnoticed: the local cart kept
+            // showing the item, the server cart stayed empty, and the shopper was later bounced
+            // out of checkout with no explanation. A genuinely offline/unreachable gateway is
+            // still handled below, silently, by design — that distinction is the point.
+            if (!response.ok || !result.success || !result.data) {
+                const message = storefrontApiErrorMessage(result, 'Could not update your cart. Please try again.');
+                // eslint-disable-next-line no-console
+                console.error('[cart] server rejected cart sync', { status: response.status, body });
+                setSyncError(message);
+                return;
+            }
+
+            setSyncError(null);
             const serverCart = result.data;
             const serverItems = serverCartToItems(serverCart);
             const serverPayload = JSON.stringify(serverItems);
@@ -164,8 +190,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 lastSyncPayloadRef.current = serverPayload;
                 setItems(serverItems);
             }
-        } catch {
-            // Keep the browser cache usable while the gateway is temporarily unavailable.
+        } catch (err) {
+            // Keep the browser cache usable while the gateway is temporarily unavailable — a
+            // transient network failure must not destroy a shopper's cart. Logged (not shown to
+            // the shopper — this branch is specifically the "offline-tolerant" case, distinct
+            // from the explicit-rejection branch above) so it is still visible in devtools/telemetry.
+            // eslint-disable-next-line no-console
+            console.error('[cart] cart sync network failure (server unreachable, will retry on next change)', err);
         }
     }
 
@@ -256,7 +287,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             cartTotal,
             cartCount,
             isOpen,
-            setIsOpen
+            setIsOpen,
+            syncError
         }}>
             {children}
         </CartContext.Provider>
