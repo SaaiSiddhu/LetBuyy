@@ -5,7 +5,7 @@ import {
     resolveStorefrontHost,
 } from '@letbuyy/tenant-core';
 import type { Env } from '../index';
-import { dbErrorBody, getSupabaseAdmin, success } from '../lib/supabase';
+import { dbErrorBody, getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { verifyInternalAppRequest } from '../lib/internal-auth';
 import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import { verifyStoreAccessPassword } from '../lib/store-access-password';
@@ -34,7 +34,11 @@ router.get('/resolve', async (c) => {
     const host = normalizeRequestHost(c.req.query('host') || c.req.header('Host'));
     if (!host) return c.json({ error: { code: 'HOST_REQUIRED', message: 'host is required' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Bootstrap lookup: the tenant is not known until the host resolves to one, so a
+    // scope predicate cannot be supplied. Matches getSupabaseAdminUnguarded's documented
+    // purpose exactly (resolve by a globally-unique key before the tenant is known); the
+    // result is public routing metadata only, never trusted as authorization by itself.
+    const db = getSupabaseAdminUnguarded(c);
     const resolved = await resolveStorefrontSiteByHost(db, host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
     if (!resolved) {
         const parsed = resolveStorefrontHost(host, c.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN);
