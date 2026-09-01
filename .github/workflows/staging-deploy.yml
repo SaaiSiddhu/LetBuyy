@@ -3,7 +3,8 @@ name: Staging deploy
 on:
   # push trigger disabled: 'develop' branch is fully merged and stale (deleted 2026-06-12
   # per EXECUTION_LEDGER.md LAUNCH-READINESS-P2-5). Active staging deploy lane is
-  # deploy-staging.yml (push → stepup/main, governance-gated per FOUNDATION_CLOSURE_2026_06_12).
+  # deploy-staging.yml (push → stepup/main, governance-gated per
+  # docs/archive/certifications/FOUNDATION_CLOSURE_2026_06_12).
   # Re-enable only after 'develop' is recreated with governance gate in place.
   workflow_dispatch:
 

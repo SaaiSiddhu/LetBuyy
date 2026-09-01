@@ -8,7 +8,7 @@
 >
 > **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`.
 >
-> **Evidence base (the "why," not authority):** `docs/archive/root-governance-2026-06-10/directories/FORENSIC_MASTER_2026_06_10/` (291 issues / 9 S0) + `STRATEGIC_CANONICALIZATION_2026_06_10/` (the ratified winners, the 24 ADRs, the legacy register, the testing plan). Every load-bearing rule traces to an ADR, a forensic ISSUE-ID, or a `path:line`.
+> **Evidence base (the "why," not authority):** `docs/archive/root-governance-2026-06-10/directories/FORENSIC_MASTER_2026_06_10/` (291 issues / 9 S0) + `docs/archive/research/STRATEGIC_CANONICALIZATION_2026_06_10/` (the ratified winners, the 24 ADRs, the legacy register, the testing plan). Every load-bearing rule traces to an ADR, a forensic ISSUE-ID, or a `path:line`.
 
 ---
 
@@ -34,7 +34,7 @@ On any conflict, the higher number's document does **not** win — the **lower o
 | **3** | `LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03) | The winner registry — names the one true system per domain (the `CANONICAL_SYSTEMS` reference used by winner-selection rules below). |
 | **4** | `LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md` + `LETBUYY_FOUNDATION_ROADMAP.md` (DOC 04, 05) | How/when to converge and delete. |
 | **5** | `LETBUYY_UI_UX_GOVERNANCE.md` + surviving retargeted `docs/governance/*` (DOC 06) | Domain governance. |
-| **6** | Evidence base (`docs/archive/root-governance-2026-06-10/directories/FORENSIC_MASTER_2026_06_10/` + `STRATEGIC_CANONICALIZATION_2026_06_10/`) | The "why." Evidence, **not** authority. |
+| **6** | Evidence base (`docs/archive/root-governance-2026-06-10/directories/FORENSIC_MASTER_2026_06_10/` + `docs/archive/research/STRATEGIC_CANONICALIZATION_2026_06_10/`) | The "why." Evidence, **not** authority. |
 
 - **AUTH-R1 — MUST** read DOC 01 (Constitution), then this file (DOC 02), then the relevant local `AGENTS.md`, then `DOC 03` before making any architecture, topology, schema, money, identity, or governance decision.
 - **AUTH-R2 — MUST NOT** cite the old generated `AGENTS.md`, `LETBUYY_CHECKOUT_PLATFORM_ARCHITECTURE.md`, or any `docs/archive/*` document as current authority. They are historical record only. The maximalist CHECKOUT_PLATFORM vision (1M-merchant / 22-service / Wasm) is **formally rejected** (ADR-021).
@@ -398,7 +398,7 @@ You **cannot** create architecture drift if you obey these eight:
 
 - The six anon RLS-to-PUBLIC GRANTs are set by Supabase's managed bootstrap (not repo SQL) — confirm live state with an anon-key probe / `\dp public.orders` before final S0 sign-off (mig 107's header is strong evidence they are live).
 - `legacy/` git-tracked file count (37 reported vs empty from the Linux mount); live-DB writers for the ~37 product-dead tables (`pg_stat_user_tables` before any DROP); full RLS/FORCE coverage per tenant table (~41–76/261 confirmed; needs live `pg_policies`); `pnpm turbo build` green baseline — all require a live check, not a code-only assertion.
-- `LETBUYY_CONSTITUTION.md` (DOC 01) and `LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03) are the named authorities above/beside this file; until they physically exist, follow V1+Freeze as the constitution and the `STRATEGIC_CANONICALIZATION_2026_06_10/` winner registry (matrix + ADR set) as DOC 03.
+- `LETBUYY_CONSTITUTION.md` (DOC 01) and `LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03) are the named authorities above/beside this file; until they physically exist, follow V1+Freeze as the constitution and the `docs/archive/research/STRATEGIC_CANONICALIZATION_2026_06_10/` winner registry (matrix + ADR set) as DOC 03.
 
 ---
 

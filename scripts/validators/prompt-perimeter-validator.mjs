@@ -10,8 +10,8 @@ import {
 const reporter = createReporter("Prompt perimeter validator");
 
 const registryPath = "PROMPTS.md";
-const canonicalExecutionPrompt = "FINAL_TRUTH_AUDIT_2026_06_11/LETBUYY_FINAL_CONVERGENCE_CODEX_EXECUTION_PROMPT.md";
-const spentFoundationPrompt = "CONVERGENCE_CLEANUP_2026_06_10/CODEX_FOUNDATION_STEPUP_MASTER_EXECUTION_PROMPT.md";
+const canonicalExecutionPrompt = "docs/archive/audits/FINAL_TRUTH_AUDIT_2026_06_11/LETBUYY_FINAL_CONVERGENCE_CODEX_EXECUTION_PROMPT.md";
+const spentFoundationPrompt = "docs/archive/research/CONVERGENCE_CLEANUP_2026_06_10/CODEX_FOUNDATION_STEPUP_MASTER_EXECUTION_PROMPT.md";
 const promptDriftArchiveRoot = "docs/archive/prompt-drift-2026-06-10";
 const archiveSentinel = "ARCHIVED — REJECTED ARCHITECTURE — DO NOT EXECUTE";
 
