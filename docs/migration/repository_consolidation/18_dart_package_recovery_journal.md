@@ -15,7 +15,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S4 | Import/rename System B's quick-commerce packages | COMPLETE | dbcef593 |
 | S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | 1b064dab |
 | S6 | Make each app resolve/analyze/test | COMPLETE | b1cd91b5 |
-| S7 | Full verification | COMPLETE | (this commit) |
+| S7 | Full verification | COMPLETE | 96d0f06e |
+| S8 | Documentation and close-out | COMPLETE | (this commit) |
 | S8 | Documentation and close-out | PENDING | |
 
 ## Decision log
@@ -445,3 +446,25 @@ Both required artifact classes were needed and are now present: `runtime.manifes
 `e85e8d4d` (all three gate-failure fixes, in one commit — a runtime-manifest correction, 11 new `AGENTS.md` files, and one stray-file deletion, none of which stand alone as separate logical units worth splitting further).
 
 **S7 verdict: COMPLETE. Real governance gate at 105 PASS / 6 FAIL, byte-identical to the documented post-Phase-M baseline, with the interim 3-failure regression this phase itself introduced fully root-caused and closed rather than left disclosed-but-unresolved. `node_modules`/`pnpm-lock.yaml` restored and verified unchanged. All three web runtimes independently re-typechecked, not assumed.**
+
+---
+
+## S8 — Documentation and close-out
+
+Wrote `docs/migration/repository_consolidation/19_dart_package_recovery.md` — the full close-out document: every package recovered (old/new name, old/new path, source commit, bundle), the transitive-closure discovery, the Stage 2 collision evidence condensed for a reader who hasn't seen this journal, per-app final resolve/analyze/test status with exact counts and first errors, the explicit D0_BLOCKED list (`letbuyy_marketplace_services` named explicitly, per the brief's own instruction), the PENDING EXTERNAL Android-identifier table, everything left unresolved with reasons, and the process notes (the `git checkout --` incident, the two SDK bumps, the inherited circular dependency).
+
+Updated `17_remaining_migration_backlog.md` §2 ("Packages never consolidated") — marked CLOSED 2026-09-03, explicitly framed as **namespaced, not merged**, cross-referencing `19_dart_package_recovery.md` and correcting the direct-consequence paragraph (customer_app/admin_app now ARE workspace members; the phase_2 apps' blocker is now a version conflict, not a missing-package problem). Updated §10 ("Branch state") with the current commit-ahead-of-main count (60, up from 39).
+
+Checked `CLAUDE.md` for any `packages/dart` content enumeration that would need updating — found none (`grep -n "packages/dart" CLAUDE.md` returns no matches). Nothing to change there.
+
+### Commits this stage
+
+`e2bb3a4d` (`19_dart_package_recovery.md` + the two backlog-document updates).
+
+**S8 verdict: COMPLETE.**
+
+---
+
+## Phase N — final summary
+
+All 8 stages (S0–S7 substantive work, S8 documentation) COMPLETE. 21 commits total (`091e979c` through this journal's own closing commit). Governance gate: 105 PASS / 6 FAIL, byte-identical to the pre-phase baseline. `apps/merchant_app`: 172/172, unchanged. `apps/customer_app`/`apps/admin_app`: resolve, zero analyze issues, no tests to run. `apps/phase_2/rider_app`/`apps/phase_2/store_ops_app`: resolve standalone, 2/3 test files pass each, the one failure pre-existing and unrelated. 3 workspace members correctly and disclosedly BLOCKED, not forced. No package was merged. D-0 was never touched. Nothing pushed, deployed, or rotated. One disclosed process violation (`git checkout --`), caught and corrected before any commit, with no work lost. Full detail for every claim above is in this journal's own stage-by-stage entries; `19_dart_package_recovery.md` is the reader-facing summary.
