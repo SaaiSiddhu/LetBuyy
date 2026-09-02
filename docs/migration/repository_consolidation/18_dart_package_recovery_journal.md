@@ -12,8 +12,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Recover packages from bundles | COMPLETE | 6d12bfc6 |
 | S2 | Collision evidence and naming decision | COMPLETE | a0330b2d |
 | S3 | Import/rename System A's four packages | COMPLETE | 3edecdc9 |
-| S4 | Import/rename System B's quick-commerce packages | COMPLETE | (this commit) |
-| S5 | Workspace membership and path repair | PENDING | |
+| S4 | Import/rename System B's quick-commerce packages | COMPLETE | dbcef593 |
+| S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | (this commit) |
 | S6 | Make each app resolve/analyze/test | PENDING | |
 | S7 | Full verification | PENDING | |
 | S8 | Documentation and close-out | PENDING | |
@@ -301,3 +301,51 @@ Authored `README.md` for all 7 `quickcommerce_*` packages (System B has no local
 `7454b66c` (`quickcommerce_{api,core,domain,observability}`), `a0221f4a` (`quickcommerce_{design_system,offline,realtime}`), `455c8e1c` (`rider_app`/`store_ops_app` rewrites, including the disclosed process-violation note in the commit message itself). Each verified with `git diff --cached --name-status` before commit.
 
 **S4 verdict: COMPLETE.**
+
+---
+
+## S5 — Workspace membership and path repair
+
+### 5.1 — `apps/merchant_app`'s stale path depth
+
+Fixed `../../../packages/dart/*` → `../../packages/dart/*` (`apps/merchant_app/` is two levels deep, not three — Phase M's Stage 3 moved it out of `apps/mobile/merchant-app/`, and this pubspec was never updated to match). `flutter pub get` at the workspace root succeeded; `cd apps/merchant_app && flutter test` — **172/172, exact baseline match.** Commit `3d55966f`.
+
+### 5.2/5.3 — Incremental workspace-list additions
+
+Added members one at a time (or as a tightly-coupled cluster where pub's own error made clear they must join together), running `flutter pub get` after each and re-running `apps/merchant_app`'s full test suite at two checkpoints (after the two-app addition, and again at the end) to catch a Phase-M-class regression early. Order and outcome:
+
+| Added | Result |
+|---|---|
+| `packages/dart/quickcommerce_core` alone | **FAILED**: `resolution`/`workspace` requires language version ≥ 3.5; `quickcommerce_core` declared `sdk: '>=3.4.0 <4.0.0'`. Bumped the lower bound to `3.5.0` on all 6 not-yet-blocked `quickcommerce_*` packages up front (manifest-only, can't change behavior on a toolchain already at 3.12.2) before continuing. |
+| `packages/dart/quickcommerce_core` (2nd try, post SDK bump) | **FAILED differently**: `quickcommerce_core`'s `hive_generator ^2.0.1` (dev dependency) → `analyzer` conflicts with `letbuyy_api_client`'s `test ^1.25.8` → `test_api` pinned by `flutter_test` from the Flutter SDK. **BLOCKED — see below.** |
+| `packages/dart/quickcommerce_domain` (with `quickcommerce_core` reverted to a plain, non-member path dependency) | **Succeeded.** Confirms: a workspace member may `path:`-depend on a *non-member* package without issue — only the non-member's `dependencies:` enter the unified solve, not its `dev_dependencies:`. This is the mechanism that makes the `quickcommerce_core` BLOCKED status survivable. |
+| `packages/dart/quickcommerce_observability` | Succeeded. |
+| `packages/dart/quickcommerce_design_system` | Succeeded. |
+| `packages/dart/quickcommerce_offline` | Succeeded. |
+| `packages/dart/quickcommerce_api` | Succeeded. |
+| `packages/dart/quickcommerce_realtime` | Succeeded. |
+| `packages/dart/marketplace_core` alone | **FAILED**: `letbuyy_marketplace_core` depends on `letbuyy_marketplace_ui_kit: any` (the pre-existing circular reference documented in Stage 1) with no `path:` — since `ui_kit` wasn't yet a workspace member, pub tried to resolve it from pub.dev and failed (not a published package). |
+| `packages/dart/marketplace_core` + `packages/dart/marketplace_ui_kit` together | **Succeeded** — pub resolves a genuine circular workspace-member dependency fine as long as both sides are present simultaneously. |
+| `packages/dart/marketplace_models` | Succeeded. |
+| `packages/dart/marketplace_services` | Succeeded (pulled in ~42 transitive third-party deps — Firebase, Razorpay, etc. — expected given its size). |
+| `apps/customer_app` | Succeeded. |
+| `apps/admin_app` | Succeeded. **Checkpoint: `apps/merchant_app` re-run — 172/172.** |
+| `apps/phase_2/rider_app` alone | **FAILED**: same `resolution`/language-version-3.5 error as `quickcommerce_core` (its `sdk: '>=3.4.0 <4.0.0'`). Bumped to `3.5.0`. |
+| `apps/phase_2/rider_app` (2nd try) | **FAILED differently**: `rider_app depends on flutter_secure_storage ^10.0.0` vs. `letbuyy_store` (`apps/merchant_app`) `depends on flutter_secure_storage ^9.2.4` — no overlapping range. **BLOCKED — see below.** Removed; re-verified the workspace resolves cleanly again. |
+| `apps/phase_2/store_ops_app` alone (to get its own independent error for the record, not assumed from `rider_app`'s identical dependency block) | **FAILED, identical error**: `store_ops_app depends on flutter_secure_storage ^10.0.0` vs. the same `letbuyy_store` constraint. **BLOCKED.** Removed; re-verified clean. |
+
+**Final checkpoint:** `apps/merchant_app` — **172/172, exact baseline match** — confirmed after the full set of additions and removals settled.
+
+### BLOCKED members (3 of 15 candidates) — not added to the workspace, per the brief's own instruction to remove and continue rather than force a fix
+
+1. **`packages/dart/quickcommerce_core`.** Root cause: Dart pub workspaces solve every member's `dependencies:` **and** `dev_dependencies:` in one unified graph; `quickcommerce_core`'s `hive_generator ^2.0.1` dev-dependency requires an `analyzer` range incompatible with `test ^1.25.8` (from `letbuyy_api_client`, already a member) once `flutter_test`'s SDK-pinned `test_api` version is factored in. Fixing this would mean bumping `hive_generator` or `test`'s version constraint on an existing, working member — explicitly out of scope ("do NOT upgrade a dependency to make something compile"). **Mitigation, not a workaround:** left as a plain path dependency (not a workspace member, `resolution: workspace` line removed from its own pubspec). `quickcommerce_domain` and everything above it in the closure still resolves and pulls in `quickcommerce_core`'s actual runtime code correctly — only the unified dev-tooling solve is avoided. Functionally complete for `dart analyze`/`dart test` purposes on the packages/apps that need it.
+2. **`apps/phase_2/rider_app`.** Root cause: `flutter_secure_storage ^10.0.0` (declared by `rider_app`, inherited from System B) vs. `^9.2.4` (declared by `apps/merchant_app`, this repository's own working app) — a real, pre-existing version incompatibility between two unrelated apps that happen to now share one workspace, not introduced by any rename in this phase.
+3. **`apps/phase_2/store_ops_app`.** Same root cause and same dependency line as `rider_app` (both apps share an identical `dependencies:` block).
+
+**Consequence for Stage 6:** `packages/dart/quickcommerce_core` still resolves fine as a non-member (confirmed by `quickcommerce_domain`'s successful addition), so nothing downstream of it is blocked. `apps/phase_2/rider_app` and `apps/phase_2/store_ops_app` themselves **cannot** be `flutter pub get`/`analyze`/`test`ed from the shared workspace root as long as they stay out of the `workspace:` list — Stage 6 will attempt them standalone (each app has its own `pubspec.yaml`; Dart can still resolve a single app in isolation, outside the shared workspace, using its own dependency graph) and record whatever that produces.
+
+### Commits this stage
+
+`3d55966f` (`merchant_app` path fix), `64069e0b` (all 12 successful workspace additions + the 2 SDK-constraint bumps + regenerated `pubspec.lock`, with the 3 BLOCKED members and their exact errors in the commit message itself).
+
+**S5 verdict: COMPLETE — 12 of 15 candidate members added; 3 correctly and deliberately left out, each with a recorded, reproducible reason. A partially-restored workspace, not a forced green.**
