@@ -9,8 +9,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 091e979c |
-| S1 | Recover packages from bundles | COMPLETE | (this commit) |
-| S2 | Collision evidence and naming decision | PENDING | |
+| S1 | Recover packages from bundles | COMPLETE | 6d12bfc6 |
+| S2 | Collision evidence and naming decision | COMPLETE | (this commit) |
 | S3 | Import/rename System A's four packages | PENDING | |
 | S4 | Import/rename System B's quick-commerce packages | PENDING | |
 | S5 | Workspace membership and path repair | PENDING | |
@@ -171,3 +171,45 @@ Declared by both `phase_2` apps: `agrimore_api`, `agrimore_design_system`, `agri
 Neither clone's copy step (Stage 3/4) will include `.git`, `build/`, `.dart_tool/`, `node_modules/`, or `coverage/` — verified none of the 11 source package directories currently contain a checked-in `build/`/`.dart_tool/`/`coverage/` (both source repos' own `.gitignore` excludes these; only fresh local pub-get/build artifacts would create them, and neither clone has been built).
 
 **S1 verdict: COMPLETE.**
+
+---
+
+## S2 — Collision evidence and the naming decision
+
+This is the evidence a future unification phase needs — produced now, from a direct file-by-file and byte-level comparison, while both sides are in front of us. "C" = this repository's existing `packages/dart/{core,models,ui_kit}`. "A" = System A's `packages/{core,models,ui_kit}` (from the be716ae clone).
+
+### `letbuyy_core`: C (23 dart files) vs. A (27 dart files)
+
+Export surface (`lib/letbuyy_core.dart`) is 16 exports in C, 17 in A — identical except A additionally exports `src/constants/firebase_constants.dart`. File-level diff: **zero files unique to C; 4 files unique to A** (`firebase_constants.dart`, and A's `responsive/` is split across 3 files — `breakpoints.dart`, `responsive_helper.dart`, `size_config.dart` — where C's `responsive/` is one consolidated `responsive.dart`). Of the 19 filenames common to both, 11 are **byte-for-byte identical**; 8 differ (`letbuyy_core.dart`, `gemini_config.dart`, `razorpay_config.dart`, `api_constants.dart`, `app_constants.dart`, `dialog_helper.dart`, `snackbar_helper.dart`, `web_scaffold.dart`), all still resembling light edits of a shared ancestor, not independent rewrites. **Verdict: near-identical lineage — C looks like a refactor/consolidation of the same original `core`, minus Firebase-specific constants (consistent with C never having been Firebase-coupled) and with `responsive/` merged into one file.** Both assume no specific backend (pure Dart/Flutter utilities, constants, formatting, error types) — this package is close to backend-agnostic on both sides.
+
+### `letbuyy_models`: C (15 dart files) vs. A (52 dart files)
+
+Export surface: C's `letbuyy_models.dart` is 9 lines; A's is 109 lines (over 10x). File-level diff: **9 files unique to C** — all merchant-app/store-builder-scoped (`merchant_contracts.dart`, `shared_contracts.dart`, `src/merchant_app/{mobile_telemetry,order,store_auth_request,store,store_theme}_model.dart`, `src/merchant_app/theme_editor_models.dart`). **46 files unique to A** — a large marketplace/social-commerce domain model set with no C equivalent at all: ad campaigns/tracking/wallet, cart, category (with attribute schemas), chat messages, commission settings, coupons, deals, fee config, India-locations reference data, loyalty, notifications, order/order-item/order-invoice/order-status/order-timeline, payment settings, products, "reels" (short-video social-commerce models — `reel_model.dart`, `reel_comment_model.dart`), and more. Only **6 filenames are common** to both (`letbuyy_models.dart`, `payment_config_model.dart`, `section_defaults.dart`, `section_model.dart`, `store_template_model.dart`, `subscription_model.dart`) — of those, only `section_defaults.dart` (608 lines) is byte-identical; the other 5 are close in size but have diverged. **Verdict: genuinely different scope, not just different implementations of the same domain — A's `models` covers an entire marketplace/social-commerce catalog+order+loyalty+ads domain that C's `merchant_web`/`merchant_app`-scoped model set never needed.** A assumes Firestore-shaped data (imports `cloud_firestore` types in several models per its pubspec); C's models are backend-agnostic DTOs consumed by the Supabase/Cloudflare `api-gateway`.
+
+### `letbuyy_ui_kit`: C (23 dart files) vs. A (23 dart files)
+
+Export/file surface is the closest pair by far: **22 of 23 filenames common**, and of those, **19 are byte-for-byte identical** (every widget: badges, dialogs, app bar, bottom nav, buttons, drawer, text field, empty/error states, glass container, loading indicator/overlay, network image, rating, search bar, shimmer, plus `app_theme.dart`). Only 3 differ (`letbuyy_ui_kit.dart` export list, `app_colors.dart`, `app_text_styles.dart` — consistent with small palette/typography-token differences, not structural divergence). Each side has exactly one file the other lacks: C has `src/tokens/letbuyy_tokens.dart` (this repo's `--lb-*` design-token bridge, per `CLAUDE.md`'s design-system ratchet); A has `src/widgets/update_dialog.dart` (an app-update-prompt widget, irrelevant to a web-first token system). **Verdict: essentially a fork of the same package at a very recent common ancestor — the smallest-effort future-unification candidate of the three, by a wide margin.**
+
+### Naming decision
+
+Adopting the Phase N brief's proposed target names as-is — no deviation, no alternative considered as superior given the evidence above (the collision evidence argues for *keeping both* visible and comparable under clearly-scoped names, which is exactly what "marketplace_*"/"quickcommerce_*" achieves; there is no reason to rename C's originals, which keep their existing `letbuyy_core`/`letbuyy_models`/`letbuyy_ui_kit`/`letbuyy_api_client` names unchanged):
+
+| Source | Old path | Old `name:` | New path | New `name:` |
+|---|---|---|---|---|
+| System A | `packages/core` | `letbuyy_core` | `packages/dart/marketplace_core` | `letbuyy_marketplace_core` |
+| System A | `packages/models` | `letbuyy_models` | `packages/dart/marketplace_models` | `letbuyy_marketplace_models` |
+| System A | `packages/services` | `letbuyy_services` | `packages/dart/marketplace_services` | `letbuyy_marketplace_services` |
+| System A | `packages/ui_kit` | `letbuyy_ui_kit` | `packages/dart/marketplace_ui_kit` | `letbuyy_marketplace_ui_kit` |
+| System B | `packages/agrimore_api` | `agrimore_api` | `packages/dart/quickcommerce_api` | `quickcommerce_api` |
+| System B | `packages/agrimore_core` | `agrimore_core` | `packages/dart/quickcommerce_core` | `quickcommerce_core` |
+| System B | `packages/agrimore_design_system` | `agrimore_design_system` | `packages/dart/quickcommerce_design_system` | `quickcommerce_design_system` |
+| System B | `packages/agrimore_domain` | `agrimore_domain` | `packages/dart/quickcommerce_domain` | `quickcommerce_domain` |
+| System B | `packages/agrimore_observability` | `agrimore_observability` | `packages/dart/quickcommerce_observability` | `quickcommerce_observability` |
+| System B | `packages/agrimore_offline` | `agrimore_offline` | `packages/dart/quickcommerce_offline` | `quickcommerce_offline` |
+| System B | `packages/agrimore_realtime` | `agrimore_realtime` | `packages/dart/quickcommerce_realtime` | `quickcommerce_realtime` |
+
+### Collision check against everything already in the workspace
+
+Existing `packages/dart/*` names: `letbuyy_core`, `letbuyy_models`, `letbuyy_ui_kit`, `letbuyy_api_client`. Existing app names in the root `workspace:` list: `letbuyy_store` (`apps/merchant_app`), `letbuyy_workspace` (root). None of the 11 new names (`letbuyy_marketplace_{core,models,services,ui_kit}`, `quickcommerce_{api,core,design_system,domain,observability,offline,realtime}`) collide with any existing name, with each other, or with `letbuyy_marketplace` (`apps/customer_app`'s own `name:`) or `letbuyy_admin` (`apps/admin_app`'s own `name:`) — checked directly by string comparison, no overlap.
+
+**S2 verdict: COMPLETE.**
