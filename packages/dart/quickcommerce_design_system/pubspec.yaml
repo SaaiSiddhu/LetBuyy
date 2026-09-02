@@ -1,0 +1,20 @@
+name: quickcommerce_design_system
+description: Flutter design-system foundation for Quickcommerce enterprise apps.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  quickcommerce_domain:
+    path: ../quickcommerce_domain
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

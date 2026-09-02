@@ -1,0 +1,17 @@
+name: quickcommerce_realtime
+description: Realtime channel contracts for the Quickcommerce enterprise rebuild.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  quickcommerce_domain:
+    path: ../quickcommerce_domain
+  quickcommerce_observability:
+    path: ../quickcommerce_observability
+  web_socket_channel: ^3.0.3
+
+dev_dependencies:
+  test: ^1.25.8

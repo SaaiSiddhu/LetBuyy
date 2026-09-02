@@ -1,0 +1,15 @@
+name: quickcommerce_offline
+description: Offline cache and sync boundary for the Quickcommerce enterprise rebuild.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  quickcommerce_domain:
+    path: ../quickcommerce_domain
+  drift: ^2.24.0
+
+dev_dependencies:
+  test: ^1.25.8
