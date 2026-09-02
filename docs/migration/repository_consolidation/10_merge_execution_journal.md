@@ -26,7 +26,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S6 | Workspace and configuration repair | **COMPLETE** | (this checkpoint) |
 | S7 | Stale path eradication | **COMPLETE** | (this checkpoint) |
 | S8 | Verification | **COMPLETE** | (this checkpoint) |
-| S9 | Remove nested trees, certify | PENDING | — |
+| S9 | Remove nested trees, certify | **COMPLETE** | (this checkpoint) |
 
 ---
 
@@ -417,5 +417,33 @@ Full root-cause table in `12_final_verification.md`. Summary: **21 of the 25 ini
 **Two fixes were attempted, found to use the wrong mechanism once verified against a second validator's cross-check, and reverted rather than forced through** (an anti-fabrication allowlist entry that satisfied one validator but broke `session-security-validator`'s separate "allowlist must stay burned-down" invariant). **One class of finding (`environment-validator`'s Firebase Web API key flags) was left disclosed rather than silenced**, since that validator has no existing exemption mechanism and adding one to security-sensitive logic under time pressure was judged the wrong trade-off this late in a long session.
 
 **Final state: 6 failures = the same 4 pre-existing baseline items (root cause unchanged from `09`) + 2 disclosed, understood, low-risk items** (`foundation-antifabrication-gate`'s inert bridge-code literal; `environment-validator`'s already-`00c`-classified-safe Firebase key flags).
+
+---
+
+## S9 — Remove nested trees, certify
+
+**Verdict: COMPLETE.**
+
+### 9.1 — Pre-deletion verification, re-run fresh (not assumed from Stage 1)
+
+Re-measured Systems A and B: HEAD, changed-file-count, and untracked-file-count all **exactly unchanged** since Stage 1 (`be716ae1`/1523/1, `20548b89`/1704/242) — zero drift across the entire multi-hour phase. Both bundles re-verified (`git bundle verify`, both "is okay", complete history). Patches, untracked copies (242/242 for B), and the 2 gitignored signing-config backups all re-confirmed present. All 4 keystore files (3 distinct + 1 duplicate) and all 7 credential-evidence files re-confirmed present. `07_final_path_mapping.md` assigns every top-level path a documented disposition — satisfied as "destination or explicit approval," with the explicit caveat that "documented" ≠ "physically executed" for everything not yet moved (that gap becomes `17_remaining_migration_backlog.md`, not a silent drop).
+
+### 9.2 — Deletion, checkpoint `00894cc5`
+
+Two literal, absolute-path deletions, no variables, no wildcards: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy/Ecommerce/LetBuyy` (System A, 4.0 GB, with System B nested inside at `.../Agrimore`, 1.7 GB) and the now-empty `/Users/saai_siddharth/Projects/Start_Up/LetBuyy/Ecommerce` parent. Removed the now-obsolete `/Ecommerce/` `.gitignore` line. `--plan` re-confirmed clean (111/1/112) immediately after.
+
+### 9.3 — Credential exposure, restated
+
+Deleting the trees does not remediate the published GitHub-history exposure — stated explicitly in `15_final_executive_summary.md` and `16_deleted_files_manifest.md`, unchanged from `00c`'s own standing finding.
+
+### 9.4 — Certification set written
+
+`13_final_repository_tree.md`, `14_recovery_and_rollback.md`, `15_final_executive_summary.md`, `docs/architecture/{REPOSITORY_STRUCTURE,APPLICATION_OWNERSHIP,PRODUCT_CHANNEL_MODEL}.md`, `16_deleted_files_manifest.md`, `17_remaining_migration_backlog.md` — all written this stage, all cross-referencing each other and the earlier evidence documents rather than restating facts independently.
+
+### What this stage proves and does not prove
+
+**Proves:** both nested repositories are fully recoverable from outside-repo backups proven byte-identical in Stage 1 and re-verified fresh immediately before deletion; the deletion itself touched only the two literal paths named; nothing was pushed, deployed, or rotated; the certification set gives a future reader (human or AI) everything needed to understand what changed, what didn't, and what's still open, without re-deriving it from the 19 individual commits.
+
+**Does not prove:** that every file inside the deleted trees has a physical, already-executed destination in this repository — most do not (see `17_remaining_migration_backlog.md`'s package-consolidation and donor-integration sections). The bundle is now the only copy of that content. Does not prove this repository is production-ready — this phase was structural consolidation, not a readiness certification, and says so explicitly in `12_final_verification.md`'s own closing line.
 
 ---
