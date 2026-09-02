@@ -9,15 +9,32 @@ environment:
 # ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
 # New structure: six-app model roots + packages/dart/*
 # Updated 2026-09-02 (Phase M, Stage 6): apps/mobile/merchant-app renamed to
-# apps/merchant_app in Stage 3; apps/customer_app and apps/admin_app
-# established the same stage; apps/phase_2/* added in Stage 4. See CLAUDE.md's
-# "Six-App Target Topology" section.
+# apps/merchant_app in Stage 3 — the only one of the six-app-model Flutter
+# apps that is native to this repository. See CLAUDE.md's "Six-App Target
+# Topology" section.
+#
+# apps/customer_app, apps/admin_app (Stage 3, cross-repo from System A) and
+# apps/phase_2/{rider_app,store_ops_app} (Stage 4, cross-repo from System B)
+# are deliberately NOT workspace members yet (Stage 8 finding, corrected
+# after two broken attempts): customer_app/admin_app path-depend on System
+# A's own packages/{core,models,services,ui_kit} (4 packages); the phase_2
+# apps path-depend on 6 packages/agrimore_* packages. None of those 10
+# packages were copied into this repository — Stage 5 deliberately deferred
+# ALL packages/agrimore_*-and-packages/core-class consolidation as
+# D0_BLOCKED, since verifying they're genuinely compatible with (not
+# name-colliding against) this workspace's own packages/dart/{core,models,
+# ui_kit} needs real per-package comparison, not a rushed copy under this
+# stage's time pressure. Declaring resolution: workspace on any of these 4
+# apps without their dependencies present breaks pub resolution for the
+# ENTIRE workspace, not just that app (reproduced and reverted twice this
+# stage — see the journal). All four apps' own README.md already discloses
+# "NOT production-ready" for the phase_2 pair; customer_app/admin_app carry
+# real production-relevant identity (customer_app is the shipped Play Store
+# app) but their *shared Dart package* dependencies are unresolved pending
+# the deferred package-unification pass — not being a pub workspace member
+# yet is an accurate reflection of that, not a regression this stage caused.
 workspace:
   - apps/merchant_app
-  - apps/customer_app
-  - apps/admin_app
-  - apps/phase_2/rider_app
-  - apps/phase_2/store_ops_app
   - packages/dart/core
   - packages/dart/api_client
   - packages/dart/models

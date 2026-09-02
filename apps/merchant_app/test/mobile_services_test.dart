@@ -4174,12 +4174,12 @@ void main() {
         repoRelative: 'apps/mobile/merchant-app/ios/Runner/AppDelegate.swift',
       );
       final pushDispatcher = _readSource(
-        appRelative: '../../../services/queue-workers/src/push-dispatcher.ts',
+        appRelative: '../../services/queue-workers/src/push-dispatcher.ts',
         repoRelative: 'services/queue-workers/src/push-dispatcher.ts',
       );
       final queueConsumer = _readSource(
         appRelative:
-            '../../../services/queue-workers/src/platform-queue-consumer.ts',
+            '../../services/queue-workers/src/platform-queue-consumer.ts',
         repoRelative: 'services/queue-workers/src/platform-queue-consumer.ts',
       );
       final dashboard = _readSource(
@@ -5893,16 +5893,16 @@ void main() {
 
   test('Gateway upload route supports bounded video and model media', () {
     final route = _readSource(
-      appRelative: '../../../services/api-gateway/src/routes/upload.ts',
+      appRelative: '../../services/api-gateway/src/routes/upload.ts',
       repoRelative: 'services/api-gateway/src/routes/upload.ts',
     );
     final sharedTypes = _readSource(
-      appRelative: '../../../packages/shared-types/src/index.ts',
+      appRelative: '../../packages/shared-types/src/index.ts',
       repoRelative: 'packages/shared-types/src/index.ts',
     );
     final uploadTest = _readSource(
       appRelative:
-          '../../../services/api-gateway/src/__tests__/upload.security.test.ts',
+          '../../services/api-gateway/src/__tests__/upload.security.test.ts',
       repoRelative: 'services/api-gateway/src/__tests__/upload.security.test.ts',
     );
 
