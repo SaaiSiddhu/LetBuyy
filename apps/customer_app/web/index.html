@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description"
+    content="LetBuyy - Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta name="keywords" content="ecommerce, online shopping, marketplace, buy online, sell online, letbuyy">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=overlays-content">
+  <meta name="author" content="LetBuyy">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="LetBuyy - Online Shopping Marketplace">
+  <meta name="description" content="A comprehensive e-commerce marketplace for all your shopping needs">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://letbuyy.com/">
+  <meta property="og:title" content="LetBuyy - Online Shopping Marketplace">
+  <meta property="og:description"
+    content="Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta property="og:image" content="https://letbuyy.com/icons/Icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://letbuyy.com/">
+  <meta property="twitter:title" content="LetBuyy - Online Shopping Marketplace">
+  <meta property="twitter:description"
+    content="Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta property="twitter:image" content="https://letbuyy.com/icons/Icon-512.png">
+
+  <!-- ✅ PRECONNECT HINTS - Critical for faster resource loading -->
+  <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin="">
+  <link rel="preconnect" href="https://firebase.googleapis.com" crossorigin="">
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin="">
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin="">
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="theme-color" content="#F8FAFC">
+
+  <!-- iOS meta tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LetBuyy">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Google Sign-In -->
+  <meta name="google-signin-client_id"
+    content="240895353385-5s5hh8plfvivkj1usgk3lvj8v8qdkimk.apps.googleusercontent.com">
+
+  <title>LetBuyy - Online Shopping Marketplace</title>
+  <link rel="canonical" href="https://letbuyy.com/">
+  <meta name="robots" content="index, follow">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ✅ SEO: Structured Data (JSON-LD) for rich results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "LetBuyy",
+    "url": "https://letbuyy.com/",
+    "description": "Your trusted online marketplace for shopping. Buy and sell products online with ease.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://letbuyy.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "LetBuyy",
+    "url": "https://letbuyy.com/",
+    "logo": "https://letbuyy.com/icons/Icon-512.png",
+    "sameAs": [],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "availableLanguage": ["English"]
+    }
+  }
+  </script>
+
+  <!-- ✅ DEFERRED Google Maps - Only loads when needed via loadGoogleMaps() -->
+  <script>
+    window.googleMapsLoaded = false;
+    window.loadGoogleMaps = function () {
+      if (window.googleMapsLoaded) return Promise.resolve();
+      return new Promise(function (resolve) {
+        var script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAB-NXBRjrubWRDrp2HNgbgeG7fNzxSQlY&libraries=places,geometry';
+        script.onload = function () {
+          window.googleMapsLoaded = true;
+          resolve();
+        };
+        document.head.appendChild(script);
+      });
+    };
+  </script>
+
+  <!-- 🔥 MOBILE KEYBOARD FIX: Override browser viewport API -->
+  <script>
+    (function () {
+      // Enable virtual keyboard overlay
+      if ("virtualKeyboard" in navigator) {
+        navigator.virtualKeyboard.overlaysContent = true;
+      }
+
+      // Capture initial dimensions
+      var LOCKED_HEIGHT = window.innerHeight;
+      var LOCKED_WIDTH = window.innerWidth;
+
+      console.log('🔥 Marketplace: Locking viewport to:', LOCKED_WIDTH, 'x', LOCKED_HEIGHT);
+
+      // Override visualViewport API
+      if (window.visualViewport) {
+        var originalVV = window.visualViewport;
+        var fakeVV = {
+          get width() { return LOCKED_WIDTH; },
+          get height() { return LOCKED_HEIGHT; },
+          get offsetLeft() { return 0; },
+          get offsetTop() { return 0; },
+          get pageLeft() { return originalVV.pageLeft; },
+          get pageTop() { return originalVV.pageTop; },
+          get scale() { return 1; },
+          addEventListener: function (type, listener, options) {
+            if (type === 'resize') {
+              console.log('🔥 Blocked visualViewport resize listener');
+              return;
+            }
+            originalVV.addEventListener(type, listener, options);
+          },
+          removeEventListener: function (type, listener, options) {
+            originalVV.removeEventListener(type, listener, options);
+          },
+          dispatchEvent: function (event) {
+            return originalVV.dispatchEvent(event);
+          }
+        };
+
+        try {
+          Object.defineProperty(window, 'visualViewport', {
+            value: fakeVV,
+            writable: false,
+            configurable: false
+          });
+          console.log('🔥 Successfully overrode visualViewport');
+        } catch (e) {
+          console.log('🔥 Could not override visualViewport:', e);
+        }
+      }
+
+      // Also override innerHeight getter
+      try {
+        Object.defineProperty(window, 'innerHeight', {
+          get: function () { return LOCKED_HEIGHT; },
+          configurable: true
+        });
+        console.log('🔥 Successfully overrode innerHeight');
+      } catch (e) {
+        console.log('🔥 Could not override innerHeight:', e);
+      }
+
+      // Handle orientation changes
+      window.addEventListener('orientationchange', function () {
+        setTimeout(function () {
+          if (window.orientation !== undefined) {
+            if (Math.abs(window.orientation) === 90) {
+              LOCKED_WIDTH = Math.max(screen.width, screen.height);
+              LOCKED_HEIGHT = Math.min(screen.width, screen.height);
+            } else {
+              LOCKED_WIDTH = Math.min(screen.width, screen.height);
+              LOCKED_HEIGHT = Math.max(screen.width, screen.height);
+            }
+            console.log('🔥 Orientation changed:', LOCKED_WIDTH, 'x', LOCKED_HEIGHT);
+          }
+        }, 100);
+      });
+    })();
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #F8FAFC;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    flt-glass-pane {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+    }
+
+    /* ✅ LOADING SPLASH - Improves FCP (First Contentful Paint) */
+    #loading-splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #0F5257 0%, #0a3a3d 50%, #073335 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.3s ease-out;
+    }
+
+    #loading-splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .splash-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .splash-text {
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10B981, #34D399);
+      border-radius: 2px;
+      animation: loading 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+      }
+    }
+
+    @keyframes loading {
+      0% {
+        width: 0%;
+        margin-left: 0;
+      }
+
+      50% {
+        width: 70%;
+        margin-left: 15%;
+      }
+
+      100% {
+        width: 0%;
+        margin-left: 100%;
+      }
+    }
+  </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <style id="splash-screen-style">
+    html {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #002c35;
+      background-size: 100% 100%;
+    }
+
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .contain {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .stretch {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+
+    .bottomLeft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bottomRight {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #002c35;
+      }
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
+</head>
+
+<body>
+  <picture id="splash">
+    <source
+      srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
+      media="(prefers-color-scheme: light)">
+    <source
+      srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x"
+      media="(prefers-color-scheme: dark)">
+    <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- 🔥 KEYBOARD CONFIGURATION & VISUAL VIEWPORT FIX -->
+  <script>
+    // Enable virtual keyboard overlay mode
+    if ("virtualKeyboard" in navigator) {
+      navigator.virtualKeyboard.overlaysContent = true;
+    }
+
+    // 🔥 FIX: Visual Viewport reset on keyboard dismiss
+    (function () {
+      if (typeof window.visualViewport === 'undefined') return;
+
+      var lastHeight = window.visualViewport.height;
+
+      window.visualViewport.addEventListener('resize', function () {
+        var currentHeight = window.visualViewport.height;
+
+        // Keyboard dismissed: height increased significantly
+        if (currentHeight > lastHeight + 50) {
+          var scrollPos = window.scrollY;
+          window.scrollTo(0, scrollPos + 1);
+          setTimeout(function () { window.scrollTo(0, scrollPos); }, 50);
+          setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 100);
+        }
+
+        lastHeight = currentHeight;
+      });
+    })();
+  </script>
+
+  <!-- ✅ LOADING SPLASH - Shows immediately for better FCP -->
+  <div id="loading-splash">
+    <img src="icons/Icon-192.png" alt="LetBuyy Logo - Online Shopping Marketplace" class="splash-logo">
+    <div class="splash-text">LetBuyy</div>
+    <div class="loading-bar">
+      <div class="loading-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- ✅ SEO: Noscript fallback for search engine crawlers -->
+  <noscript>
+    <div style="padding: 40px; text-align: center; font-family: sans-serif;">
+      <h1>LetBuyy - Online Shopping Marketplace</h1>
+      <p>Your trusted online marketplace for shopping. Buy and sell products online with ease.</p>
+      <p>Please enable JavaScript to use this application.</p>
+      <nav>
+        <a href="/shop">Shop</a> |
+        <a href="/categories">Categories</a> |
+        <a href="/cart">Cart</a> |
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </noscript>
+
+  <!-- Android Smart App Banner -->
+  <link rel="alternate" href="android-app://com.letbuyy.letbuyy/https/letbuyy.com">
+
+  <!-- ✅ Smart App Redirect for Mobile Users -->
+  <script>
+    (function () {
+      // Only run on mobile devices
+      var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      var isAndroid = /android/i.test(userAgent);
+      var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+      if (isAndroid || isIOS) {
+        var currentPath = window.location.pathname;
+        var currentSearch = window.location.search;
+        var fullPath = currentPath + currentSearch;
+
+        // Check if this is a deep linkable path (reels, product, seller-profile)
+        if (currentPath.startsWith('/reels/') ||
+          currentPath.startsWith('/product/') ||
+          currentPath.startsWith('/seller-profile/')) {
+
+          // Try to open the app using custom scheme
+          var appUrl = 'letbuyy://open' + fullPath;
+          var webUrl = window.location.href;
+          var startTime = Date.now();
+
+          // Create a hidden iframe to attempt app open
+          var iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = appUrl;
+          document.body.appendChild(iframe);
+
+          // Also try direct window.location (works better on some devices)
+          setTimeout(function () {
+            window.location.href = appUrl;
+          }, 25);
+
+          // If still on page after timeout, app is not installed - continue to web
+          setTimeout(function () {
+            document.body.removeChild(iframe);
+          }, 2000);
+        }
+      }
+    })();
+  </script>
+
+  <!-- ✅ Firebase Functions Configuration -->
+  <script>
+    // Make Firebase Functions region available globally for Flutter
+    window.firebaseFunctionsRegion = 'us-central1';
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then((registration) => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('❌ Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- Flutter Bootstrap with Splash Hide -->
+  <script src="flutter_bootstrap.js" async=""></script>
+  <script>
+    // Hide splash when Flutter is ready
+    window.addEventListener('flutter-first-frame', function () {
+      var splash = document.getElementById('loading-splash');
+      if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(function () { splash.remove(); }, 300);
+      }
+    });
+
+    // Fallback: hide splash after max 8 seconds even if Flutter hasn't loaded
+    setTimeout(function () {
+      var splash = document.getElementById('loading-splash');
+      if (splash) {
+        splash.classList.add('hidden');
+        setTimeout(function () { splash.remove(); }, 300);
+      }
+    }, 8000);
+  </script>
+
+
+
+
+</body>
+
+</html>

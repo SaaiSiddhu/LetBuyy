@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>$(DEVELOPMENT_LANGUAGE)</string>
+		<key>CFBundleDisplayName</key>
+		<string>LetBuyy</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>letbuyy</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>$(FLUTTER_BUILD_NAME)</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Google Sign-In</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.468123057306-h0ct8knmj7osp5p7kq2u8vb8qj9r3q4p</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>letbuyy-custom-scheme</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>letbuyy</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>Firebase-Deep-Links</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>letbuy-y</string>
+				</array>
+			</dict>
+		</array>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
+		<key>GIDClientID</key>
+		<string>468123057306-h0ct8knmj7osp5p7kq2u8vb8qj9r3q4p.apps.googleusercontent.com</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>razorpay</string>
+			<string>upi</string>
+			<string>googlechromes</string>
+			<string>comgooglemaps</string>
+			<string>whatsapp</string>
+			<string>fbapi</string>
+			<string>fbapi20130328</string>
+			<string>fbauth2</string>
+			<string>fbshare</string>
+			<string>instagram</string>
+			<string>twitter</string>
+			<string>twitterauth</string>
+		</array>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>MinimumOSVersion</key>
+		<string>12.0</string>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<false/>
+			<key>NSExceptionDomains</key>
+			<dict>
+				<key>firebase.google.com</key>
+				<dict>
+					<key>NSIncludesSubdomains</key>
+					<true/>
+					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+					<false/>
+				</dict>
+				<key>firebaseio.com</key>
+				<dict>
+					<key>NSIncludesSubdomains</key>
+					<true/>
+					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+					<false/>
+				</dict>
+				<key>localhost</key>
+				<dict>
+					<key>NSIncludesSubdomains</key>
+					<true/>
+					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
+					<true/>
+					<key>NSTemporaryExceptionMinimumTLSVersion</key>
+					<string>TLSv1.2</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_http._tcp</string>
+			<string>_https._tcp</string>
+		</array>
+		<key>NSCalendarsUsageDescription</key>
+		<string>LetBuyy needs access to your calendar for order reminders</string>
+		<!-- ✅ UPDATED CAMERA DESCRIPTION FOR KYC -->
+		<key>NSCameraUsageDescription</key>
+		<string>LetBuyy needs camera access to capture your live selfie for KYC verification and upload product photos</string>
+		<key>NSContactsUsageDescription</key>
+		<string>LetBuyy needs access to your contacts to share products with friends</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string>LetBuyy uses Face ID for secure authentication</string>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>LetBuyy needs to access your local network</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>LetBuyy needs access to your location for better service</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>LetBuyy needs your location in the background for delivery tracking</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>LetBuyy needs your location to find nearby products and provide accurate delivery options</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>LetBuyy needs microphone access for voice search and seller communication</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>LetBuyy needs permission to save photos to your photo library</string>
+		<!-- ✅ UPDATED PHOTO LIBRARY DESCRIPTION FOR KYC -->
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>LetBuyy needs access to your photo library to select and upload KYC documents and product images</string>
+		<key>NSUserTrackingUsageDescription</key>
+		<string>LetBuyy uses your data for personalized shopping experience and analytics</string>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
+		<key>UIStatusBarHidden</key>
+		<true/>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
+	</dict>
+</plist>

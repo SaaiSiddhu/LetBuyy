@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://letbuyy.com/sitemap.xml
+
+# Disallow sensitive paths
+Disallow: /api/
+Disallow: /admin/

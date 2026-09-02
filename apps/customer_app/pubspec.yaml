@@ -1,0 +1,150 @@
+name: letbuyy_marketplace
+description: LetBuyy Marketplace - Customer shopping app
+version: 1.0.10+4013
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  
+  # Internal packages
+  letbuyy_core:
+    path: ../../packages/core
+  letbuyy_models:
+    path: ../../packages/models
+  letbuyy_services:
+    path: ../../packages/services
+  letbuyy_ui_kit:
+    path: ../../packages/ui_kit
+
+  # State Management
+  provider: ^6.1.2
+  flutter_hooks: ^0.20.5
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.4
+  cloud_functions: ^5.1.3
+  firebase_storage: ^12.3.4
+  firebase_messaging: ^15.1.3
+  firebase_analytics: ^11.3.3
+  
+  # UI
+  cupertino_icons: ^1.0.8
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
+  carousel_slider: ^5.0.0
+  flutter_rating_bar: ^4.0.1
+  lottie: ^3.2.0
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+  font_awesome_flutter: ^10.7.0
+  fluttertoast: ^8.2.8
+  
+  # Authentication
+  google_sign_in: ^6.2.1
+  local_auth: ^2.3.0
+  crypto: ^3.0.5
+  
+  # Payment
+  razorpay_flutter: ^1.3.7
+  android_intent_plus: ^5.0.2
+  url_launcher: ^6.3.1
+  
+  # Location
+  google_maps_flutter: ^2.9.0
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
+  
+  # AI
+  google_generative_ai: ^0.4.7
+  
+  # Image
+  image_picker: ^1.1.2
+  image_cropper: ^8.0.2
+  
+  # Utilities
+  intl: ^0.20.2
+  share_plus: ^12.0.1
+  permission_handler: ^12.0.1
+  shared_preferences: ^2.5.3
+  connectivity_plus: ^6.1.1
+  package_info_plus: ^8.1.2
+  path_provider: ^2.1.4
+  
+  # Deep Linking
+  app_links: ^6.3.2
+  
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  
+  # Speech
+  speech_to_text: ^7.0.0
+  
+  # Video
+  video_player: ^2.9.2
+  webview_flutter: ^4.10.0
+  
+  # Ads Tracking
+  visibility_detector: ^0.4.0+2
+  dio: ^5.9.0
+  open_filex: ^4.7.0
+
+  flutter_markdown: any
+  http: any
+  photo_view: any
+  confetti: any
+  timeline_tile: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/animations/
+    - assets/lottie/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#002c35"
+  adaptive_icon_foreground: "assets/icons/app_icon.png"
+
+# 🚀 NATIVE SPLASH SCREEN CONFIGURATION
+# Run: dart run flutter_native_splash:create
+flutter_native_splash:
+  # Background Color
+  color: "#002c35"
+  color_dark: "#002c35"
+  
+  # Full logo image (centered, no cropping)
+  image: assets/icons/splash_icon.png
+  image_dark: assets/icons/splash_icon.png
+  
+  # Android 12+ - only set background color (no icon to avoid circular mask)
+  android_12:
+    color: "#002c35"
+    color_dark: "#002c35"
+  
+  # iOS Settings
+  ios: true
+  
+  # Fullscreen Mode
+  fullscreen: true
+  
+  # Android Settings
+  android: true
