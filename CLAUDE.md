@@ -57,6 +57,8 @@ Infrastructure may evolve; the canonical commerce rules, ledger, tenant model an
 
 ## Canonical Runtime Map
 
+**Updated 2026-09-02 (Phase M, Stage 3):** the six-app rename below has been **executed on disk** — `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/mobile/merchant-app`, and `apps/platform-console` no longer exist under those names; they are `apps/customer_web`, `apps/merchant_web`, `apps/merchant_app`, and `apps/admin_web` respectively. `governance-common.mjs`'s `canonicalAppRoots` array and the config/manifest files enumerated in `00b_topology_amendment_draft.md`'s §61 sweep **still reference the old names** — that repair is Stage 6 (Workspace and Configuration Repair) work, not yet done as of this edit. Until Stage 6 lands, the real governance gate (not `--plan`) will not resolve these paths correctly.
+
 Roots are **not** one undifferentiated list. Four classes, with different rules:
 
 **ACTIVE (the 8 canonical runtimes — the entire deployable topology):**
@@ -66,14 +68,16 @@ Roots are **not** one undifferentiated list. Four classes, with different rules:
 - `services/mobile-bff`
 - `apps/identity-platform`
 - `services/webhook-service`
-- `apps/storefront-runtime`
-- `apps/merchant-control-plane`
+- `apps/customer_web` (formerly `apps/storefront-runtime`)
+- `apps/merchant_web` (formerly `apps/merchant-control-plane`)
 - `apps/marketing-site`
 
 **SUPPORTING (ride the canonical topology; non-extractable; authorize no further backend service):**
 
-- `apps/mobile/merchant-app`
-- `apps/platform-console`
+- `apps/merchant_app` (formerly `apps/mobile/merchant-app`)
+- `apps/admin_web` (formerly `apps/platform-console`)
+
+**The other four of the six product-facing app roots** (established this stage, cross-repository, from System A — see `10_merge_execution_journal.md` Stage 3 for survivor evidence): `apps/customer_app` (Play Store `com.letbuyy.letbuyy`), `apps/admin_app` (`com.letbuyy.admin`, not production-signed). `apps/merchant_app` and `apps/merchant_web` are listed above since they map 1:1 from prior ACTIVE/SUPPORTING runtimes; `customer_app` and `admin_app` are new-to-C additions with no prior ACTIVE/SUPPORTING classification, so their tier (ACTIVE-equivalent, since they are two of the six core product names) is recorded here rather than invented a new class for them.
 
 **RESERVED (manifest-only placeholders — MUST stay empty; no source, tests, or deployment config):**
 
@@ -113,11 +117,11 @@ Do not recreate or reference deprecated app aliases as active topology:
 
 Historical references may remain only under `docs/archive/`.
 
-## Six-App Target Topology (Constitution amendment, 2026-09-02 — authorized, not yet executed)
+## Six-App Target Topology (Constitution amendment, 2026-09-02 — the six apps are executed; phase_2/auxiliary/TOOLING are authorized, not yet executed)
 
-> The Canonical Runtime Map above still describes the **current, live** topology. Nothing below has been renamed on disk; Stage 3 of the repository-consolidation merge executes it. This section records what the amendment **authorizes as the destination**, per `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (Gaps 1–4), applied under the owner's standing six-app product/channel decision. **The owner's Signature Block in `00b` is not yet completed** — this amendment proceeds under the original brief's explicit instruction to apply it anyway and flag the missing signature, not to block on it.
+> **The Canonical Runtime Map above now reflects the current, live topology** — Stage 3 of the repository-consolidation merge executed the six-app rename/establishment on 2026-09-02 (six commits, `cd34284b`…`930ea8b8`; survivor evidence and rejected-candidate disposition in `docs/migration/repository_consolidation/10_merge_execution_journal.md`, Stage 3). The `apps/phase_2/*`, `apps/auxiliary/`, and TOOLING items below remain authorized-but-not-yet-executed (Stage 4/backend-classification work). Per `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (Gaps 1–4), applied under the owner's standing six-app product/channel decision. **The owner's Signature Block in `00b` is not yet completed** — this amendment proceeds under the original brief's explicit instruction to apply it anyway and flag the missing signature, not to block on it. **`governance-common.mjs`'s arrays and the 18-file config sweep still reference the old runtime names — Stage 6 work, not done yet.**
 
-- **Six product-facing app roots** (target names; each maps from an existing ACTIVE/SUPPORTING runtime, survivor TBD per `04_application_survivor_scorecard.md` — not decided by this amendment): `apps/customer_app`, `apps/customer_web`, `apps/merchant_app`, `apps/merchant_web`, `apps/admin_app`, `apps/admin_web`.
+- **Six product-facing app roots — EXECUTED:** `apps/customer_app` (from System A `apps/marketplace`, cross-repo copy), `apps/customer_web` (from System C `apps/storefront-runtime`, `git mv`), `apps/merchant_app` (from System C `apps/mobile/merchant-app`, `git mv`), `apps/merchant_web` (from System C `apps/merchant-control-plane`, `git mv`), `apps/admin_app` (from System A `apps/admin`, cross-repo copy), `apps/admin_web` (from System C `apps/platform-console`, `git mv`).
 - **`apps/phase_2/*`** — holds product capabilities not yet part of the six-app core (currently `rider_app`, `store_ops_app`, donor-only from System B). Not ACTIVE, not RESERVED (holds real source — RESERVED's "must stay empty" rule does not apply here), not FROZEN. Authorizes no new backend service; any backend work routes through the D-0-selected canonical backend.
 - **The auxiliary tier** (Gap 2, Option B) — `apps/auxiliary/` is the chosen name for the directory grouping non-six-app-model runtimes (`marketing-site`, `identity-platform`-class). This is a **directory grouping, not a new authority tier**: membership does not change a runtime's ACTIVE/RESERVED/FROZEN status. The existing constitutional **SUPPORTING** tier (`apps/mobile/merchant-app`, `apps/platform-console`) is unchanged and keeps its name — Option A (renaming the existing tier) and Option C (keep both names, disambiguate forever) were considered and not chosen; see `00b` for the full menu.
 - **TOOLING classification** (Gap 3, Option B) — `services/lcis-api`, `tools/graph-server`, `tools/central-intelligence`, and all 19 `packages/lcis-*` packages are the Central Intelligence System's own dev-time tooling: non-deployed, non-commerce, named in none of the four topology classes above. Recorded as the `toolingRoots` export in `scripts/validators/governance-common.mjs`. Option A (relocating `services/lcis-api` under `tools/`) was considered and not chosen — zero files moved, classification-only.
