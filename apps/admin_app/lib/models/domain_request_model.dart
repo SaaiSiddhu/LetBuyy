@@ -102,7 +102,7 @@ class DomainRequestModel {
   /// Get the domain URL that was requested
   String get requestedDomain {
     if (isCustomDomainRequest) return customDomain!;
-    return '$subdomain.letbuyy.store';
+    return '$subdomain.letbuyy.com';
   }
 
   /// Generate DNS instructions for Vercel
@@ -114,6 +114,6 @@ CNAME   www     cname.vercel-dns.com
 CNAME   @       cname.vercel-dns.com''';
     }
     // Subdomains use Cloudflare wildcard - no manual DNS needed
-    return 'Subdomain $subdomain.letbuyy.store is auto-configured via Cloudflare wildcard DNS.';
+    return 'Subdomain $subdomain.letbuyy.com is auto-configured via Cloudflare wildcard DNS.';
   }
 }

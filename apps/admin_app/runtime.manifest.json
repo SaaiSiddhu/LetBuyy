@@ -1,0 +1,103 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Admin App",
+  "runtimeRoot": "apps/admin_app",
+  "actorType": [
+    "platform-operator",
+    "admin"
+  ],
+  "runtimeCategory": "flutter-app",
+  "runtimeClassification": "mobile-admin-app",
+  "ownership": {
+    "sourceAuthority": "apps/admin_app",
+    "businessAuthority": "Platform-operator mobile app — seller/user management, commissions, marketing, analytics, KYC, moderation. Not production-signed (debug-keystore release config, see 00a_signing_key_rescue.md).",
+    "governanceDocs": [
+      "docs/governance/mobile-governance.md",
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/production-runtime-governance.md",
+      "docs/governance/deployment-governance.md",
+      "docs/governance/observability-infrastructure-governance.md",
+      "docs/governance/incident-response-governance.md",
+      "docs/governance/sre-governance.md",
+      "docs/governance/queue-provider-governance.md",
+      "docs/governance/security-operations-governance.md",
+      "docs/governance/deployment-pipeline-governance.md",
+      "docs/governance/runtime-observability-governance.md",
+      "docs/governance/operational-dashboard-governance.md",
+      "docs/governance/runtime-manifest-governance.md",
+      "docs/governance/operational-evidence-governance.md"
+    ]
+  },
+  "allowedDependencies": {
+    "workspacePackages": [
+      "letbuyy_core",
+      "letbuyy_models",
+      "letbuyy_ui_kit"
+    ],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
+  "deploymentAuthority": {
+    "platform": "Mobile app stores",
+    "config": [
+      "apps/admin_app/pubspec.yaml"
+    ]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/mobile.schema.json",
+    "template": "config/env/templates/mobile.dart-defines.example",
+    "secretStore": "mobile CI dart-define environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "redacted mobile admin operation logs and backend-correlated request IDs",
+    "audit": "admin mutations must be audit-correlated through backend APIs"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business service-local event helpers; delegate workflows to service-owned workflow adapters and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through service-owned read planners adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume service-owned read planners query layers and API responses; page-level read aggregation must migrate to service-owned read planners.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
+  },
+  "orchestrationAuthority": "No durable business service-local event helpers; routes and pages delegate workflows to service-owned workflow adapters and read composition to service-owned read planners.",
+  "eventAuthority": "No durable event ownership; may propagate correlation metadata and render event-derived state received from service APIs.",
+  "workflowAuthority": "Workflows, use cases, sequencing, and cross-domain coordination are owned by service-owned workflow adapters, not this runtime.",
+  "queryAuthority": "Consumes service-owned read planners query layers and service API responses; does not own aggregation pipelines or projection assembly.",
+  "compositionAuthority": "Owns actor-specific rendering, routing, presentation adapters, and runtime composition only.",
+  "executionOwnership": "Routing, rendering, runtime adapters, presentation transport, and runtime hooks only.",
+  "queueOwnership": "No queue execution ownership; durable queue production and consumption delegate to service execution containers and queue workers.",
+  "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved service-owned read planners or service API boundaries.",
+  "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
+  "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, and retries delegate to services, service-owned workflow adapters, and service-local event helpers.",
+  "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers.",
+  "telemetryOwnership": "No durable telemetry pipeline ownership; propagates request and correlation metadata while trace, metric, log, and span persistence delegate to service runtimes and service runtime governance contracts.",
+  "cacheOwnership": "No durable cache coordination ownership; app fetch/cache hints delegate invalidation and projection cache policy to service-owned read planners, service-owned read planners, and service execution containers.",
+  "auditOwnership": "No execution audit ownership; privileged actions and durable execution audit trails delegate to service runtimes and service runtime governance contracts.",
+  "operationalOwnership": "No operational runtime ownership; deployment, recovery, diagnostics, and control-plane execution delegate to service runtimes and service runtime governance contracts.",
+  "telemetryExecutionOwnership": "No telemetry execution ownership; apps propagate trace and request metadata while service runtimes execute spans, metrics, and structured log persistence.",
+  "queueExecutionOwnership": "No queue execution ownership; durable queue inspection, recovery, redrive, retry, and dead-letter operations delegate to queue worker and API service runtimes.",
+  "auditExecutionOwnership": "No audit execution ownership; runtime audit persistence and operational security telemetry delegate to backend service runtimes.",
+  "cacheExecutionOwnership": "No cache execution ownership; cache invalidation, consistency checks, idempotency invalidation, and lifecycle metrics delegate to service-owned read planners, service-owned read planners, and service runtimes.",
+  "diagnosticsOwnership": "May surface user-safe diagnostics returned by service APIs; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
+  "operationalControlPlaneOwnership": "No operational control-plane ownership; workflow, queue, provider resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes.",
+  "deploymentOwnership": "Owns presentation runtime deployment participation for Admin App; deploys through provider promotion gates and delegates infrastructure execution to service runtimes.",
+  "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
+  "queueProviderOwnership": "Delegates production queue provider execution to services/api-gateway producers and services/queue-workers consumers.",
+  "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
+  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
+  "securityOwnership": "Uses provider environment stores and authenticated service APIs; no service-role or provider secrets may enter client runtime.",
+  "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
+  "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
+  "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data."
+}

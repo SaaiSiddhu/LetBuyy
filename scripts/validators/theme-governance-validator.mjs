@@ -95,7 +95,7 @@ if (/\.replace\(/.test(sanitizerFunction)) {
 if (!/outputEscape:\s*'escape'/.test(themeRenderer)) {
   failures.push('LiquidJS renderer must enable outputEscape auto-escaping');
 }
-const frozenReactSectionCount = [...noNewReactSectionsValidator.matchAll(/apps\/customer-web\/src\/components\/sections\/[^"]+\.tsx/g)].length;
+const frozenReactSectionCount = [...noNewReactSectionsValidator.matchAll(/apps\/customer_web\/src\/components\/sections\/[^"]+\.tsx/g)].length;
 if (frozenReactSectionCount !== 20) {
   failures.push(`React section freeze validator must enumerate 20 frozen sections; found ${frozenReactSectionCount}`);
 }

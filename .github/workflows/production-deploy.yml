@@ -403,11 +403,11 @@ jobs:
             project_id: PRODUCTION_MARKETING_PROJECT_ID
           - app: identity-platform
             project_id: PRODUCTION_IDENTITY_PROJECT_ID
-          - app: merchant-control-plane
+          - app: merchant_web
             project_id: PRODUCTION_MERCHANT_PROJECT_ID
-          - app: storefront-runtime
+          - app: customer_web
             project_id: PRODUCTION_STOREFRONT_PROJECT_ID
-          - app: platform-console
+          - app: admin_web
             project_id: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID
     steps:
       - uses: actions/checkout@v4

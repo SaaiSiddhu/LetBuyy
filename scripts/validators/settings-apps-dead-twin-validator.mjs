@@ -13,7 +13,7 @@ reporter.assert(
   `${runtimeTwin} is an archived dead twin and must not return to runtime source`,
 );
 
-const archiveTwin = "docs/archive/dead-code/merchant-web/settings-apps/AppsSettingsContent.tsx";
+const archiveTwin = "docs/archive/dead-code/merchant-control-plane/settings-apps/AppsSettingsContent.tsx";
 reporter.assert(
   trackedFiles.includes(archiveTwin),
   "archived AppsSettingsContent twin must remain under docs/archive/dead-code for provenance",

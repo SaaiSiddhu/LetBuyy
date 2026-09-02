@@ -9,6 +9,7 @@ import {
   forbiddenRuntimeSubtrees,
   frozenAppRoots,
   getTrackedFiles,
+  phase2AppRoots,
   reservedMobileRuntimeRoots,
   root,
   startsWithPrefix,
@@ -18,6 +19,7 @@ const reporter = createReporter("Runtime validator");
 const trackedFiles = getTrackedFiles();
 
 const allowedAppRoots = new Set([...canonicalAppRoots, ...frozenAppRoots, ...reservedMobileRuntimeRoots]);
+const allowedPhase2Roots = new Set(phase2AppRoots);
 const appEntries = fs.readdirSync(path.join(root, "apps"), { withFileTypes: true });
 const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 
@@ -40,6 +42,16 @@ for (const entry of appEntries) {
       if (!mobileEntry.isDirectory()) continue;
       const mobileRoot = `apps/mobile/${mobileEntry.name}`;
       reporter.assert(allowedAppRoots.has(mobileRoot), `Unexpected mobile app runtime root: ${mobileRoot}`);
+    }
+    continue;
+  }
+
+  if (entry.name === "phase_2") {
+    const phase2Entries = fs.readdirSync(path.join(root, "apps/phase_2"), { withFileTypes: true });
+    for (const phase2Entry of phase2Entries) {
+      if (!phase2Entry.isDirectory()) continue;
+      const phase2Root = `apps/phase_2/${phase2Entry.name}`;
+      reporter.assert(allowedPhase2Roots.has(phase2Root), `Unexpected phase_2 app runtime root: ${phase2Root}`);
     }
     continue;
   }

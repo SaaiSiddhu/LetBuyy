@@ -184,13 +184,13 @@ jobs:
           - app: identity-platform
             project_id: STAGING_IDENTITY_PROJECT_ID
             app_url: https://accounts-staging.letbuyy.com
-          - app: merchant-control-plane
+          - app: merchant_web
             project_id: STAGING_MERCHANT_PROJECT_ID
             app_url: https://admin-staging.letbuyy.com
-          - app: storefront-runtime
+          - app: customer_web
             project_id: STAGING_STOREFRONT_PROJECT_ID
             app_url: https://store-staging.letbuyy.com
-          - app: platform-console
+          - app: admin_web
             project_id: STAGING_PLATFORM_CONSOLE_PROJECT_ID
             app_url: https://console-staging.letbuyy.com
     steps:

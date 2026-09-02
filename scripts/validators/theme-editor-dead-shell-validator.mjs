@@ -29,7 +29,7 @@ for (const component of archivedComponents) {
     `theme editor dead shell component ${component}.tsx must stay out of active source`,
   );
   reporter.assert(
-    exists(`docs/archive/dead-code/merchant-web/theme-editor/components/${component}.tsx`),
+    exists(`docs/archive/dead-code/merchant-control-plane/theme-editor/components/${component}.tsx`),
     `theme editor dead shell component ${component}.tsx must be preserved in the archive`,
   );
 }
@@ -40,7 +40,7 @@ for (const hook of archivedHooks) {
     `theme editor dead shell hook ${hook}.ts must stay out of active source`,
   );
   reporter.assert(
-    exists(`docs/archive/dead-code/merchant-web/theme-editor/hooks/${hook}.ts`),
+    exists(`docs/archive/dead-code/merchant-control-plane/theme-editor/hooks/${hook}.ts`),
     `theme editor dead shell hook ${hook}.ts must be preserved in the archive`,
   );
 }

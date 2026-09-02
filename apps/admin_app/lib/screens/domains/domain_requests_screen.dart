@@ -173,7 +173,7 @@ class _DomainRequestsScreenState extends State<DomainRequestsScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${request.subdomain}.letbuyy.store is now connected!'),
+            content: Text('${request.subdomain}.letbuyy.com is now connected!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -197,7 +197,7 @@ class _DomainRequestsScreenState extends State<DomainRequestsScreen>
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Reject ${request.subdomain}.letbuyy.store?'),
+            Text('Reject ${request.subdomain}.letbuyy.com?'),
             const SizedBox(height: 16),
             TextField(
               controller: notesController,

@@ -30,11 +30,14 @@ for (const [path, text] of activeGovernanceDocs) {
   );
 }
 
+// Note: apps/admin_web (underscore) is the real directory name established by
+// the six-app-model rename (Phase M, Stage 3) - this regex previously expected
+// a dash ("admin-web"), which no live path has ever used. Corrected 2026-09-02.
 reporter.assert(
   /GATE-OPS-SURVIVOR/.test(legacyPlan)
-    && /\| LEG-022 \| `apps\/admin-web`[\s\S]*\| \*\*KEEP\*\*/.test(legacyPlan)
+    && /\| LEG-022 \| `apps\/admin_web`[\s\S]*\| \*\*KEEP\*\*/.test(legacyPlan)
     && /\| LEG-023 \| `apps\/platform-operations-portal`[\s\S]*\| \*\*MIGRATE-then-DELETE\*\*/.test(legacyPlan),
-  "Legacy plan must record GATE-OPS-SURVIVOR with admin-web KEEP and platform-operations-portal MIGRATE-then-DELETE",
+  "Legacy plan must record GATE-OPS-SURVIVOR with admin_web KEEP and platform-operations-portal MIGRATE-then-DELETE",
 );
 
 for (const id of ["LEG-079", "LEG-080", "LEG-081", "LEG-082", "LEG-083"]) {

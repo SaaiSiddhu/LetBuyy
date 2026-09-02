@@ -1,8 +1,10 @@
 import path from "node:path";
 import {
+  compatibilityBridgeRoots,
   createReporter,
   listWorkspaceFiles,
   readFile,
+  startsWithPrefix,
   textExtensions,
 } from "./governance-common.mjs";
 
@@ -51,6 +53,7 @@ function isAllowedToken(token) {
 const offenders = [];
 for (const file of listWorkspaceFiles(scanRoots)) {
   if (file === "scripts/validators/platform-domain-literal-validator.mjs") continue;
+  if (compatibilityBridgeRoots.some((prefix) => startsWithPrefix(file, prefix))) continue;
   if (!textExtensions.has(path.extname(file))) continue;
 
   const text = readFile(file);

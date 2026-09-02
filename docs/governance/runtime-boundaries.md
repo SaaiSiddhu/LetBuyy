@@ -12,6 +12,8 @@
 - `apps/admin_web`: platform super admin.
 - `apps/platform-operations-portal`: employee support and operations.
 - `apps/merchant_app`: Flutter merchant builder and store management.
+- `apps/customer_app`: Flutter buyer-facing marketplace app; shipped Play Store production identity `com.letbuyy.letbuyy`.
+- `apps/admin_app`: Flutter platform-operator app; not production-signed (debug-keystore release config).
 
 ## Reserved Mobile Roots
 

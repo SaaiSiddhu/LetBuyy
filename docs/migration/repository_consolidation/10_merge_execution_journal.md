@@ -25,7 +25,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S5 | Packages, services, backend (structural only) | **COMPLETE** | (this checkpoint) |
 | S6 | Workspace and configuration repair | **COMPLETE** | (this checkpoint) |
 | S7 | Stale path eradication | **COMPLETE** | (this checkpoint) |
-| S8 | Verification | PENDING | — |
+| S8 | Verification | **COMPLETE** | (this checkpoint) |
 | S9 | Remove nested trees, certify | PENDING | — |
 
 ---
@@ -386,5 +386,36 @@ Before staging, built the commit pathspec programmatically: `git diff --name-onl
 **Proves:** every governance document in the live authority chain (`CLAUDE.md`, `AGENTS.md`, the 6 `GOVERNANCE_REWRITE_2026_06_10/` docs, the 19 `docs/governance/*` docs), every manifest-cited governance reference, the live skill definition, and the structural path citations in the three actionable tracking registries now reference the current app paths. `--plan` still enumerates 111/1/112 cleanly after every edit in this stage.
 
 **Does not prove:** that the ~380-file HISTORICAL category contains zero load-bearing references — that classification was made at the directory/category level using date-stamped naming and known citation sources, not a full per-file open-and-read pass, and is disclosed as such. Does not prove `EXECUTION_LEDGER.md`/the backlog registries' narrative prose is fully internally consistent after this stage's partial edit (structural citations changed, prose describing the same events left with the old names) — a reader comparing the two within one row could notice the mismatch; judged an acceptable, disclosed trade-off against rewriting historical narrative.
+
+---
+
+## S8 — Verification
+
+**Verdict: COMPLETE.** Full detail in `12_final_verification.md`; this entry summarizes the process and the two real mistakes this stage caught in itself.
+
+### `pnpm install` reconciliation
+
+`--frozen-lockfile` failed (lockfile referenced old package names). Ran `pnpm install --no-frozen-lockfile` (the explicit override, respecting `.npmrc`'s `frozen-lockfile=true` default policy rather than changing it) — hit one unrelated pre-existing peer-dependency mismatch (`wrangler` vs. `@cloudflare/workers-types`, nothing to do with any rename), resolved with pnpm's own suggested one-time `--config.strict-peer-dependencies=false`. Lockfile regenerated clean (0 old-name references); a subsequent plain `--frozen-lockfile` run now succeeds with no override needed. Checkpoint `0d896270`.
+
+### Per-runtime verification — see `12_final_verification.md` for the full table
+
+`customer_web`/`merchant_web`/`identity-platform`/`api-gateway` all reproduced their `09` baseline failures **exactly** (same file, same line, same rule/count) — confirmed via direct comparison, not assumed. `admin_web`/`marketing-site`/`queue-workers`/`mobile-bff`/`webhook-service` all fully green, matching baseline.
+
+### Two real regressions found in this phase's own earlier work, and fixed — checkpoint `5a091980`
+
+1. **Stage 6's own `pubspec.yaml` workspace-list edit broke Dart pub resolution for the entire workspace**, including the previously-green `apps/merchant_app`, because `apps/customer_app`/`apps/admin_app`/`apps/phase_2/*`'s shared-package path-dependencies don't exist in this repository (Stage 5's deliberate `D0_BLOCKED` deferral). Reproduced (`flutter test` failed at dependency resolution, not at a test), root-caused, and fixed by removing all four from the workspace member list — `apps/merchant_app` is now the workspace's sole Flutter member.
+2. **A genuine Stage-3 regression**: `apps/merchant_app/test/mobile_services_test.dart` hardcoded 3 levels of `../` to reach the repo root, correct for the app's old 3-levels-deep location (`apps/mobile/merchant-app/`), broken since Stage 3 moved it to 2-levels-deep (`apps/merchant_app/`). Found via a real test failure ("Missing source file"), not by inspection. Fixed all 5 occurrences; verified 172/172 tests pass, exactly matching baseline. One adjacent match checked and correctly left alone (a Dart-internal relative import, unaffected by the app's repo location).
+
+### A real, previously-undiscovered security finding — checkpoint `5a091980` (same commit as above)
+
+Investigating `environment-validator`'s real-gate failure surfaced **two hardcoded Razorpay test-mode key IDs** Phase 0's original file-scoped credential sweep never caught: `apps/customer_app/lib/screens/checkout/payment_method_screen.dart:269` and `services/compatibility/firebase_bridge/src/razorpayService.ts:21` (the latter a fallback for unset Firebase Functions config, matching Razorpay's own widely-published sample key). Both contained using the established `--dart-define`/environment-variable fail-loud pattern from Phases 0.5–0.7. **Disclosed mistake, not hidden:** a `Read` tool call on the second file displayed its value in tool output before the fix — the third such incident this session (the other two were in Stage 3: `key.properties`, and this same file's own earlier read). Not repeated after being caught. Neither value is live/production-authenticating (test-mode key IDs, not the more sensitive `key_secret`), and neither was newly introduced by this phase — both were already committed in System A's own history; this phase's own verification is what surfaced them. Flagged for the owner to add to `00c`'s rotation list, even though test-mode.
+
+### The real governance gate — this checkpoint — 25 new failures → 6, across 7 iterative fix rounds
+
+Full root-cause table in `12_final_verification.md`. Summary: **21 of the 25 initial new failures were genuinely fixed**, root-caused individually rather than mechanically silenced — missing manifests authored (not stubbed), a `phase2AppRoots`/`compatibilityBridgeRoots` classification pair added to `governance-common.mjs` (mirroring the Stage 2 `toolingRoots` pattern), manifest-lineage checksums regenerated, **3 production/staging deploy workflows that would have silently deployed to nonexistent directories fixed** (a genuine, deploy-breaking defect this verification pass caught, not just a validator nag), one validator's own regex corrected for a naming-convention mismatch, and 3 validators' own hardcoded archive-path references reverted where Stage 6's mechanical sweep had incorrectly renamed a reference to the (correctly, deliberately) untouched protected archive.
+
+**Two fixes were attempted, found to use the wrong mechanism once verified against a second validator's cross-check, and reverted rather than forced through** (an anti-fabrication allowlist entry that satisfied one validator but broke `session-security-validator`'s separate "allowlist must stay burned-down" invariant). **One class of finding (`environment-validator`'s Firebase Web API key flags) was left disclosed rather than silenced**, since that validator has no existing exemption mechanism and adding one to security-sensitive logic under time pressure was judged the wrong trade-off this late in a long session.
+
+**Final state: 6 failures = the same 4 pre-existing baseline items (root cause unchanged from `09`) + 2 disclosed, understood, low-risk items** (`foundation-antifabrication-gate`'s inert bridge-code literal; `environment-validator`'s already-`00c`-classified-safe Firebase key flags).
 
 ---

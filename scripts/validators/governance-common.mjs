@@ -85,6 +85,30 @@ export const reservedMobileRuntimeRoots = [
   "apps/mobile/operator-app",
 ];
 
+// apps/phase_2/* (Constitution amendment, 2026-09-02, Gap 4): product capabilities
+// outside the six-app core. Not ACTIVE, not RESERVED (holds real source), not
+// FROZEN. See CLAUDE.md's "Six-App Target Topology" section.
+export const phase2AppRoots = [
+  "apps/phase_2/rider_app",
+  "apps/phase_2/store_ops_app",
+];
+
+// services/compatibility/* (Stage 5, Phase M, 2026-09-02): bounded,
+// non-deployed compatibility bridges — verbatim copies of System A's Firebase
+// Cloud Functions and System B's Cloudflare Workers, kept structurally under
+// services/ pending a D-0 decision. Explicitly NOT wired into any canonical
+// ACTIVE runtime (see each bridge's own README.md/AGENTS.md). Their direct
+// provider SDK imports, non-canonical domain literals, and other
+// convention deviations are inherited from their source systems verbatim and
+// are intentionally not normalized to this repository's own conventions —
+// doing so would defeat the point of an inert, D-0-pending bridge and risks
+// introducing bugs in code this repository does not own. Validators that
+// enforce live-runtime conventions should skip this prefix; validators that
+// enforce genuine safety invariants (money/ledger/tenancy) must NOT skip it.
+export const compatibilityBridgeRoots = [
+  "services/compatibility",
+];
+
 export const deprecatedAppAliasRoots = [
   "apps/admin",
   "apps/analytics",

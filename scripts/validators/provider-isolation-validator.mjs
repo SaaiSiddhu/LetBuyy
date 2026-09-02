@@ -13,7 +13,22 @@ import {
 
 const reporter = createReporter("Provider isolation validator");
 const files = [...new Set([...getTrackedFiles(), ...listWorkspaceFiles()])].sort();
-const allowedProviderRoots = new Set(["packages/infrastructure", "packages/lcis-adapters"]);
+const allowedProviderRoots = new Set([
+  "packages/infrastructure",
+  "packages/lcis-adapters",
+  // services/compatibility/* — bounded, non-deployed bridges (Stage 5, Phase M,
+  // 2026-09-02); verbatim copies of foreign systems, not wired into any
+  // canonical ACTIVE runtime. See governance-common.mjs's compatibilityBridgeRoots.
+  // rootForFile() only returns the first two path segments for services/*, so
+  // "services/compatibility" covers every source-file check; packageRootForManifest()
+  // returns the literal package.json's own dirname, so the four package roots are
+  // also listed for the manifest-dependency check.
+  "services/compatibility",
+  "services/compatibility/firebase_bridge",
+  "services/compatibility/agrimore_bridge/api-gateway",
+  "services/compatibility/agrimore_bridge/media-gateway",
+  "services/compatibility/agrimore_bridge/realtime-gateway",
+]);
 
 const providerPackagePrefixes = [
   "@supabase/supabase-js",

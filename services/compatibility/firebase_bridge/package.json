@@ -3,6 +3,7 @@
   "description": "Cloud Functions for LetBuyy",
   "version": "1.0.0",
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "lint": "eslint --ext .js,.ts src/",
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",

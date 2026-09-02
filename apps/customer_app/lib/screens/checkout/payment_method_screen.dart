@@ -265,8 +265,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     final itemCount = cartProvider.items.length;
 
     // Open professional Razorpay checkout with custom branding
+    const razorpayKeyId = String.fromEnvironment('RAZORPAY_KEY_ID');
+    if (razorpayKeyId.isEmpty) {
+      throw StateError(
+        'RAZORPAY_KEY_ID is unset. Build with '
+        '--dart-define=RAZORPAY_KEY_ID=<value>. Never fall back to a '
+        'default, an empty string, or a hardcoded key.',
+      );
+    }
     final options = {
-      'key': 'rzp_test_RrSsugo1yIfjkZ',
+      'key': razorpayKeyId,
       'amount': (finalTotal * 100).toInt(), // Amount in paise
       'currency': 'INR',
       'name': 'LetBuyy',

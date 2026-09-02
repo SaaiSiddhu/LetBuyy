@@ -11,67 +11,67 @@ const trackedFiles = getTrackedFiles();
 const archivedFiles = [
   [
     "apps/customer_web/src/app/store/[subdomain]/product/[productId]/add-to-cart-button.tsx",
-    "docs/archive/dead-code/customer-web/app/product/add-to-cart-button.tsx",
+    "docs/archive/dead-code/storefront-runtime/app/product/add-to-cart-button.tsx",
   ],
   [
     "apps/customer_web/src/components/ui/reveal.tsx",
-    "docs/archive/dead-code/customer-web/components/ui/reveal.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/ui/reveal.tsx",
   ],
   [
     "apps/customer_web/src/components/ui/badge.tsx",
-    "docs/archive/dead-code/customer-web/components/ui/badge.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/ui/badge.tsx",
   ],
   [
     "apps/customer_web/src/components/policy-page.tsx",
-    "docs/archive/dead-code/customer-web/components/policy-page.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/policy-page.tsx",
   ],
   [
     "apps/customer_web/src/components/layout/floating-header.tsx",
-    "docs/archive/dead-code/customer-web/components/layout/floating-header.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/layout/floating-header.tsx",
   ],
   [
     "apps/customer_web/src/components/cart-icon.tsx",
-    "docs/archive/dead-code/customer-web/components/cart-icon.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/cart-icon.tsx",
   ],
   [
     "apps/customer_web/src/components/wishlist/wishlist-button.tsx",
-    "docs/archive/dead-code/customer-web/components/wishlist/wishlist-button.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/wishlist/wishlist-button.tsx",
   ],
   [
     "apps/customer_web/src/components/coming-soon/components/shared/email-signup.tsx",
-    "docs/archive/dead-code/customer-web/components/coming-soon/shared/email-signup.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/email-signup.tsx",
   ],
   [
     "apps/customer_web/src/components/coming-soon/components/shared/powered-by.tsx",
-    "docs/archive/dead-code/customer-web/components/coming-soon/shared/powered-by.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/powered-by.tsx",
   ],
   [
     "apps/customer_web/src/components/coming-soon/components/shared/animated-background.tsx",
-    "docs/archive/dead-code/customer-web/components/coming-soon/shared/animated-background.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/animated-background.tsx",
   ],
   [
     "apps/customer_web/src/components/coming-soon/components/shared/countdown-timer.tsx",
-    "docs/archive/dead-code/customer-web/components/coming-soon/shared/countdown-timer.tsx",
+    "docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/countdown-timer.tsx",
   ],
   [
     "apps/merchant_web/src/components/plans/PlanBillingTimeline.tsx",
-    "docs/archive/dead-code/merchant-web/components/plans/PlanBillingTimeline.tsx",
+    "docs/archive/dead-code/merchant-control-plane/components/plans/PlanBillingTimeline.tsx",
   ],
   [
     "apps/merchant_web/src/components/plans/PlanCard.tsx",
-    "docs/archive/dead-code/merchant-web/components/plans/PlanCard.tsx",
+    "docs/archive/dead-code/merchant-control-plane/components/plans/PlanCard.tsx",
   ],
   [
     "apps/merchant_web/src/components/plans/ComparePlans.tsx",
-    "docs/archive/dead-code/merchant-web/components/plans/ComparePlans.tsx",
+    "docs/archive/dead-code/merchant-control-plane/components/plans/ComparePlans.tsx",
   ],
   [
     "apps/merchant_web/src/components/WelcomeScreen.tsx",
-    "docs/archive/dead-code/merchant-web/components/WelcomeScreen.tsx",
+    "docs/archive/dead-code/merchant-control-plane/components/WelcomeScreen.tsx",
   ],
   [
     "apps/merchant_web/src/components/SettingsSidebar.tsx",
-    "docs/archive/dead-code/merchant-web/components/SettingsSidebar.tsx",
+    "docs/archive/dead-code/merchant-control-plane/components/SettingsSidebar.tsx",
   ],
   [
     "apps/app-marketplace/src/components/HeroSection.tsx",

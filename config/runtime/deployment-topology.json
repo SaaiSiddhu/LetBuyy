@@ -234,6 +234,48 @@
       }
     },
     {
+      "runtimeName": "Customer App",
+      "runtimeRoot": "apps/customer_app",
+      "deploymentKind": "mobile-app",
+      "platform": "mobile-distribution",
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
+      "startupOrder": 3,
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 1,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "checkName": "apps-customer-app.health",
+        "timeoutMs": 2000
+      }
+    },
+    {
+      "runtimeName": "Admin App",
+      "runtimeRoot": "apps/admin_app",
+      "deploymentKind": "mobile-app",
+      "platform": "mobile-distribution",
+      "regions": [
+        "ap-south-1",
+        "global-edge"
+      ],
+      "startupOrder": 3,
+      "scaling": {
+        "minInstances": 1,
+        "maxInstances": 1,
+        "concurrency": 100,
+        "scaleMetric": "request-rate"
+      },
+      "health": {
+        "checkName": "apps-admin-app.health",
+        "timeoutMs": 2000
+      }
+    },
+    {
       "runtimeName": "checkout-runtime",
       "runtimeRoot": "services/checkout-runtime",
       "deploymentKind": "reserved-service",

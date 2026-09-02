@@ -18,7 +18,10 @@ const db = admin.firestore();
 const getRazorpayConfig = () => {
     const config = functions.config().razorpay || {};
     return {
-        keyId: config.key_id || "rzp_test_1DP5mmOlF5G5ag",
+        // No hardcoded fallback: this bridge is explicitly not wired into any live
+        // path (see services/compatibility/firebase_bridge/README.md); a missing
+        // config value must fail loud, never silently fall back to a literal key.
+        keyId: config.key_id || "",
         keySecret: config.key_secret || "", // MUST be set in production
     };
 };
