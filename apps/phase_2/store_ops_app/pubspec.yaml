@@ -6,8 +6,6 @@ version: 0.1.0+1
 environment:
   sdk: ">=3.5.0 <4.0.0"
 
-resolution: workspace
-
 dependencies:
   quickcommerce_api:
     path: ../../../packages/dart/quickcommerce_api
