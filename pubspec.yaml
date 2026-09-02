@@ -39,6 +39,18 @@ workspace:
   - packages/dart/api_client
   - packages/dart/models
   - packages/dart/ui_kit
+  - packages/dart/quickcommerce_domain
+  - packages/dart/quickcommerce_observability
+  - packages/dart/quickcommerce_design_system
+  - packages/dart/quickcommerce_offline
+  - packages/dart/quickcommerce_api
+  - packages/dart/quickcommerce_realtime
+  - packages/dart/marketplace_core
+  - packages/dart/marketplace_ui_kit
+  - packages/dart/marketplace_models
+  - packages/dart/marketplace_services
+  - apps/customer_app
+  - apps/admin_app
 
 
 
