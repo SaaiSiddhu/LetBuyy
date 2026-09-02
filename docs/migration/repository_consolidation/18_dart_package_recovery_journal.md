@@ -14,8 +14,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S3 | Import/rename System A's four packages | COMPLETE | 3edecdc9 |
 | S4 | Import/rename System B's quick-commerce packages | COMPLETE | dbcef593 |
 | S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | 1b064dab |
-| S6 | Make each app resolve/analyze/test | COMPLETE | (this commit) |
-| S7 | Full verification | PENDING | |
+| S6 | Make each app resolve/analyze/test | COMPLETE | b1cd91b5 |
+| S7 | Full verification | COMPLETE | (this commit) |
 | S8 | Documentation and close-out | PENDING | |
 
 ## Decision log
@@ -405,3 +405,43 @@ No Android or iOS build was attempted for any app, per the brief's explicit inst
 `a3648603` (`resolution: workspace` removal for the 2 BLOCKED apps). No source code was changed this stage beyond that one structural fix — everything else was measurement.
 
 **S6 verdict: COMPLETE. 4 of 4 buildable apps resolve; `customer_app`/`admin_app` analyze with zero issues; `merchant_app` stays at its exact 172/172 baseline; `rider_app`/`store_ops_app` each resolve standalone and pass 2 of 3 test files, with the one failure fully attributed to pre-existing, unrelated scaffold debris.**
+
+---
+
+## S7 — Full verification
+
+### 7.1 — TypeScript/web runtime regression spot-check
+
+Phase N touched zero TypeScript/web files. Ran the real `typecheck` script (not assumed unchanged) for the three governed web runtimes anyway:
+
+```
+pnpm --filter @letbuyy/customer-web typecheck   -> tsc --noEmit, 0 errors
+pnpm --filter @letbuyy/merchant-web typecheck   -> tsc --noEmit, 0 errors
+pnpm --filter @letbuyy/admin-web typecheck      -> tsc --noEmit, 0 errors
+```
+
+All three unchanged from `12_final_verification.md`'s post-Phase-M green state — consistent with this phase never touching their source.
+
+### 7.2 — The real governance gate
+
+**First real run this phase** (`node scripts/validate-governance.mjs`, full output in `/tmp/phase_n_gate_output.txt`): **102 PASS / 9 FAIL** — a regression of 3 from the known-good post-Phase-M baseline (105/6). First failure by name: `foundation-antifabrication-gate.mjs` (validator 1/111, a pre-existing/known finding, unrelated to this phase — see `12_final_verification.md` §8.5).
+
+The 3 NEW failures (not in the 6-item known baseline), all traced to this phase's own changes and fixed (commit `e85e8d4d`):
+
+1. **`runtime-manifest-validator.mjs`** — `apps/{customer_app,admin_app}/runtime.manifest.json`'s `allowedDependencies.workspacePackages` still listed the pre-rename `letbuyy_{core,models,ui_kit}` names (authored by Phase M before these packages existed under those names in this repository). Updated to the real, current dependency list: `letbuyy_marketplace_{core,models,services,ui_kit}`.
+2. **`package-ownership-validator.mjs`** — all 11 new `packages/dart/{marketplace_*,quickcommerce_*}` packages lacked an `AGENTS.md`. Authored one per package from `packages/dart/core/AGENTS.md`'s established template, each with a package-specific Migration Notes section (provenance, collision status where relevant, the `quickcommerce_core` BLOCKED-from-workspace note).
+3. **`stale-artifact-validator.mjs`** — flagged `packages/dart/marketplace_ui_kit/lib/src/themes/app_theme.dart.broken` (the stray, uncompiled, unimported file inherited from System A, explicitly noted-but-left-alone in the Stage 3 journal entry under "Observed, not acted on"). The gate's own verdict is authoritative over that earlier conservative judgment call — deleted.
+
+**Second real run, after fixes:** **105 PASS / 6 FAIL — exact match to the known-good post-Phase-M baseline**, first failure by name still `foundation-antifabrication-gate.mjs`, and the full 6-item failure list identical to baseline: `foundation-antifabrication-gate.mjs`, `validate-design-system.mjs`, `sequential-migration-validator.mjs`, `raw-error-message-validator.mjs`, `environment-validator.mjs`, `branch-lag-guard-validator.mjs`. None of these 6 were touched, root-caused, or newly investigated by this phase — all 6 are pre-existing per `12_final_verification.md` §8.5/§7 and `17_remaining_migration_backlog.md` §7, carried forward unchanged.
+
+**`node_modules` restoration (the documented hazard):** confirmed 5 sampled `node_modules` directories deleted by the gate run (`apps/customer_web`, `apps/merchant_web`, `apps/admin_web`, `services/api-gateway`, `packages/typescript/ui`) and the root `node_modules` survived, exactly as `17_remaining_migration_backlog.md`/this phase's own brief describe. `pnpm install --frozen-lockfile` restored all 5 (18/11/13/10/17 entries respectively); `git status -- pnpm-lock.yaml` shows **zero diff** — byte-unchanged, confirmed, not merely asserted.
+
+### 7.3 — New-package governance artifacts
+
+Both required artifact classes were needed and are now present: `runtime.manifest.json` fixes for the two consuming apps (7.2 item 1) and `AGENTS.md` for all 11 new packages (7.2 item 2), following the exact pattern Phase M itself used for `apps/customer_app`/`apps/admin_app` and `packages/dart/core` respectively.
+
+### Commits this stage
+
+`e85e8d4d` (all three gate-failure fixes, in one commit — a runtime-manifest correction, 11 new `AGENTS.md` files, and one stray-file deletion, none of which stand alone as separate logical units worth splitting further).
+
+**S7 verdict: COMPLETE. Real governance gate at 105 PASS / 6 FAIL, byte-identical to the documented post-Phase-M baseline, with the interim 3-failure regression this phase itself introduced fully root-caused and closed rather than left disclosed-but-unresolved. `node_modules`/`pnpm-lock.yaml` restored and verified unchanged. All three web runtimes independently re-typechecked, not assumed.**
