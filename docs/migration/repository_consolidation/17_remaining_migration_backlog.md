@@ -9,14 +9,11 @@ Everything below is genuinely open. Nothing in this document should be read as "
 - **The `00b_topology_amendment_draft.md` Signature Block** — still unsigned (all 7 items ☐). The six-app rename was applied under the brief's explicit "apply anyway, flag it" instruction, not under a completed signature.
 - **Gap 2/Gap 3's alternative options** — this phase took `00b`'s *recommended* option in both cases (Option B for the auxiliary-tier name; Option B for the TOOLING classification). The owner may prefer Option A or C for either; nothing forecloses changing this later, but changing it now means re-touching `CLAUDE.md`, `AGENTS.md`, and `governance-common.mjs` again.
 
-## 2 — Packages never consolidated (Stage 5's `D0_BLOCKED` deferral, still blocked)
+## 2 — Packages never consolidated — CLOSED 2026-09-03 (Phase N), namespaced not merged
 
-| Package set | Needed by | Why blocked |
-|---|---|---|
-| System A's `packages/{core,models,services,ui_kit}` (4 packages) | `apps/customer_app`, `apps/admin_app` | Never verified as genuinely compatible with (vs. name-colliding against) this repository's own `packages/dart/{core,models,ui_kit}` — needs real per-package line-by-line comparison, not a rushed copy |
-| System B's 11 `packages/agrimore_*` packages | `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app` | Same reasoning; 6 of the 11 are directly required by the two phase_2 apps (`agrimore_api`, `agrimore_design_system`, `agrimore_domain`, `agrimore_observability`, `agrimore_offline`, `agrimore_realtime`) |
+**Superseded.** Phase N (`docs/migration/repository_consolidation/18_dart_package_recovery_journal.md`, `19_dart_package_recovery.md`) recovered all 11 packages this section originally described as blocked — System A's 4 (`packages/{core,models,services,ui_kit}`) and System B's 7-package transitive closure (the declared 6 plus a discovered `agrimore_core` dependency) — from the Phase M bundles, under new `marketplace_*`/`quickcommerce_*` names to avoid colliding with this repository's own `packages/dart/{core,models,ui_kit}`. **Namespacing, not the "real per-package line-by-line comparison" this row originally called for** — that comparison was done (Stage 2's collision evidence: `letbuyy_ui_kit` near-identical, `letbuyy_core` a light refactor, `letbuyy_models` genuinely different scope) but package *unification* itself remains a real, open, D0-adjacent decision. See `19_dart_package_recovery.md`'s own "D0_BLOCKED" and "Everything left unresolved" sections for what's still genuinely open (3 packages/apps BLOCKED from Dart pub workspace membership by real dependency-version conflicts, unrelated to the collision question).
 
-**Direct consequence:** `apps/customer_app`, `apps/admin_app`, `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app` are **not Dart pub workspace members** (deliberately removed from root `pubspec.yaml`'s `workspace:` list in Stage 8, after adding them broke the entire workspace's dependency resolution — see the journal). None of the four can be `flutter test`ed, `dart analyze`d, or built until this is resolved. This is the single highest-leverage remaining task for making these four apps actually verifiable.
+**Direct consequence, updated:** `apps/customer_app` and `apps/admin_app` **are** now Dart pub workspace members and both `flutter analyze` clean (zero issues). `apps/phase_2/rider_app`/`apps/phase_2/store_ops_app` remain outside the shared workspace (a `flutter_secure_storage` version conflict with `apps/merchant_app`, not a missing-package problem) but now resolve and analyze **standalone**, with 2 of 3 test files passing per app — see `19_dart_package_recovery.md` for the exact status and first errors.
 
 ## 3 — Donor capability never integrated (by design — Stage 3.4/4.1's own scope decision)
 
@@ -62,4 +59,4 @@ Per `00c_credential_exposure_and_rotation.md`, unchanged by this phase: the Razo
 
 ## 10 — Branch state
 
-`feature/claude-md-durable-architecture-memory` is now 39 commits ahead of `main` (`git rev-list --count main..HEAD`), up from 20 before this phase — Phase M alone added 19 checkpoint commits across its 9 stages. `branch-lag-guard-validator` continues to flag this — the underlying fix (fast-forward `main` per `MERGE_RUNBOOK.md`) is unchanged, pre-existing process debt, not something this phase was asked to resolve.
+`feature/claude-md-durable-architecture-memory` is now 60 commits ahead of `main` (`git rev-list --count main..HEAD`), up from 39 before Phase N — Phase N alone added 20 checkpoint commits across its 8 stages (S0–S7). `branch-lag-guard-validator` continues to flag this — the underlying fix (fast-forward `main` per `MERGE_RUNBOOK.md`) is unchanged, pre-existing process debt, not something this phase was asked to resolve.
