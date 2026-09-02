@@ -1,0 +1,329 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ============================================================
+    // 🧩 HELPER FUNCTIONS
+    // ============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isSeller(sellerId) {
+      return request.auth != null && request.auth.uid == sellerId;
+    }
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role == 'admin';
+    }
+
+    function isValidImageFile() {
+      return request.resource.size < 10 * 1024 * 1024 // 10MB
+          && request.resource.contentType.matches('image/.*');
+    }
+
+    function isValidFile() {
+      return request.resource.size < 100 * 1024 * 1024; // 100MB
+    }
+
+    function isValidKYCFile() {
+      return request.resource.size < 5 * 1024 * 1024 // 5MB max
+          && request.resource.contentType.matches('image/(jpeg|jpg|png)');
+    }
+    
+    function isValidPdfFile() {
+      return request.resource.size < 10 * 1024 * 1024 // 10MB max
+          && request.resource.contentType.matches('application/pdf');
+    }
+    
+    function isValidDocumentFile() {
+      return isValidImageFile() || isValidPdfFile();
+    }
+
+    // ============================================================
+    // 🌍 PUBLIC READ ACCESS (SAFE)
+    // ============================================================
+    match /{path=**} {
+      allow read: if true;   // Public read for all storage files
+    }
+
+    // ============================================================
+    // 📦 APK / APP UPDATES
+    // ============================================================
+    match /apks/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAdmin();
+    }
+
+    match /app_updates/{fileName} {
+      allow read: if true;
+      allow write, delete: if isAdmin();
+    }
+
+    // ============================================================
+    // 🛒 PRODUCTS
+    // ============================================================
+    match /products/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+
+    match /product_images/{productId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================================
+    // 🏷 CATEGORY ICONS & BANNERS
+    // ============================================================
+    match /category_icons/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAdmin();
+    }
+
+    match /category_banners/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAdmin();
+    }
+
+    match /banners/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // 👤 USER UPLOADS (Profile pictures, docs)
+    // ============================================================
+    match /users/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isOwner(userId) && isValidImageFile();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    match /profile_pictures/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isOwner(userId) && isValidImageFile();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ============================================================
+    // 🧾 SELLER GENERAL DOCUMENTS
+    // ============================================================
+    match /seller_documents/{sellerId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isSeller(sellerId) && isValidFile();
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+
+    // ============================================================
+    // 🔐 KYC DOCUMENTS - Enhanced Security
+    // ============================================================
+    match /kyc/{sellerId}/{fileName} {
+      // Authenticated users can view (for admin panel review)
+      allow read: if isAuthenticated();
+
+      // Only seller can upload their own KYC documents
+      allow write: if isAuthenticated() && isSeller(sellerId) && isValidKYCFile();
+
+      // Seller & Admin can delete
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+    
+    // Allow Cloud Functions to write KYC (using admin SDK)
+    match /kyc/{sellerId}/{allPaths=**} {
+      allow read: if isAuthenticated();
+    }
+
+    // ============================================================
+    // 🏬 SELLER PROFILE IMAGES
+    // ============================================================
+    match /sellers/{sellerId}/profile.jpg {
+      allow read: if true;
+      allow write: if isAuthenticated() && isSeller(sellerId) && isValidImageFile();
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+
+    match /sellers/{sellerId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isSeller(sellerId) && isValidImageFile();
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+
+    // ============================================================
+    // 🧾 ORDERS & INVOICES
+    // ============================================================
+    match /orders/{orderId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidFile();
+      allow delete: if isAdmin();
+    }
+
+    match /invoices/{orderId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidDocumentFile();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // ⭐ REVIEWS & RATINGS
+    // ============================================================
+    // Old path - keep for backwards compatibility
+    match /reviews/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isOwner(userId) && isValidImageFile();
+      allow delete: if isAuthenticated() && (isOwner(userId) || isAdmin());
+    }
+    
+    // New path structure: reviews/{productId}/{userId}/{fileName}
+    match /reviews/{productId}/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isOwner(userId) && isValidImageFile();
+      allow delete: if isAuthenticated() && (isOwner(userId) || isAdmin());
+    }
+
+    // ============================================================
+    // 💬 CHAT / SUPPORT
+    // ============================================================
+    match /chat/{chatId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidFile();
+      allow delete: if isAdmin();
+    }
+
+    match /support/{ticketId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidFile();
+      allow delete: if isAdmin();
+    }
+
+    // ============================================================
+    // 📦 RETURN & EXCHANGE EVIDENCE
+    // ============================================================
+    match /return_evidence/{returnId}/{fileName} {
+      // Anyone authenticated can read (for seller/admin review)
+      allow read: if isAuthenticated();
+      
+      // Authenticated users can upload return images
+      allow write: if isAuthenticated() && isValidImageFile();
+      
+      // Admin or original uploader can delete
+      allow delete: if isAuthenticated();
+    }
+
+    // QC (Quality Check) images uploaded by sellers/admins
+    match /qc_images/{returnId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================================
+    // 🎬 REELS (Video Content)
+    // ============================================================
+    // Reels videos uploaded by sellers
+    match /reels/{sellerId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() 
+                   && isSeller(sellerId) 
+                   && request.resource.size < 100 * 1024 * 1024  // 100MB max
+                   && request.resource.contentType.matches('video/.*');
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+    
+    // Reel thumbnails
+    match /reel_thumbnails/{sellerId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isSeller(sellerId) && isValidImageFile();
+      allow delete: if isAuthenticated() && (isSeller(sellerId) || isAdmin());
+    }
+
+    // ============================================================
+    // 🏪 STORE BUILDER - Store Assets
+    // ============================================================
+    // Store logos
+    match /stores/{storeId}/logo/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Store banners
+    match /stores/{storeId}/banner/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Store product images
+    match /stores/{storeId}/products/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Store assets (general)
+    match /stores/{storeId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+    
+    // Store hosting files (HTML, CSS, JS for deployed stores)
+    match /store_hosting/{storeId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================================
+    // 🕒 TEMP FILES
+    // ============================================================
+    match /temp/{userId}/{fileName} {
+      allow read: if isAuthenticated() && isOwner(userId);
+      allow write: if isAuthenticated() && isOwner(userId) && isValidFile();
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // ============================================================
+    // 🛡 ADMIN ONLY STORAGE
+    // ============================================================
+    match /admin/{path=**} {
+      allow read, write, delete: if isAdmin();
+    }
+
+    // ============================================================
+    // 📝 LOGS & ANALYTICS (Admin Only)
+    // ============================================================
+    match /logs/{fileName} {
+      allow read, write: if isAdmin();
+    }
+
+    // ============================================================
+    // 📤 GENERAL UPLOADS
+    // ============================================================
+    match /uploads/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && isValidImageFile();
+      allow delete: if isAuthenticated();
+    }
+
+    // ============================================================
+    // 🚫 BLOCK ANY UNKNOWN WRITE
+    // ============================================================
+    match /{otherPaths=**} {
+      allow write: if false;
+      allow delete: if false;
+    }
+  }
+}

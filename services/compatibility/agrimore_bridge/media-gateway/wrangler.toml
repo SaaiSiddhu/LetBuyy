@@ -1,0 +1,12 @@
+name = "agrimore-media-gateway"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[vars]
+APP_ENV = "local"
+MEDIA_PUBLIC_BASE_URL = "http://localhost:8789/cdn"
+
+# [SKIPPED — NEEDS HUMAN: create and bind the agrimore-media R2 bucket in the target Cloudflare account]
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "agrimore-media"

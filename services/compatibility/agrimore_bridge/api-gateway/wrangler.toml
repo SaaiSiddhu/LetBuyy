@@ -1,0 +1,38 @@
+name = "agrimore-api-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-05-24"
+compatibility_flags = ["nodejs_compat"]
+# [SKIPPED — NEEDS HUMAN: local wrangler dev requires Node.js v22+ on this machine]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[vars]
+APP_ENV = "local"
+ALLOWED_ORIGINS = "https://agrimore.in,https://admin.agrimore.in,http://localhost:3000"
+UPSTREAM_BASE_URL = "http://localhost:54321/functions/v1"
+SUPABASE_URL = "http://localhost:54321"
+SUPABASE_ANON_KEY = "placeholder-local-anon-key"
+CACHE_VERSION = "local"
+MEDIA_GATEWAY_URL = "http://localhost:8789"
+
+# [SKIPPED — NEEDS HUMAN: create a Cloudflare Queue named agrimore-outbox in the target account]
+[[queues.producers]]
+binding = "OUTBOX_QUEUE"
+queue = "agrimore-outbox"
+
+[[queues.consumers]]
+queue = "agrimore-outbox"
+max_batch_size = 10
+max_batch_timeout = 5
+max_retries = 5
+
+# [SKIPPED — NEEDS HUMAN: create this Hyperdrive config with the direct Supabase Postgres URL, not the pooled URL]
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "REPLACE_WITH_CLOUDFLARE_HYPERDRIVE_ID"
+localConnectionString = "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+[triggers]
+crons = ["*/1 * * * *"]
