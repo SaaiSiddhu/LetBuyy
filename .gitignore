@@ -206,10 +206,3 @@ graphify-out/launch-command-center.json
 
 # S1/W4 render-parity harness — temp per-run React section copies with mocked Next.js imports.
 apps/storefront-runtime/src/__liquid_parity_harness__/
-
-# 2026-08-29 repository consolidation Phase 0 — temporary migration staging for two
-# nested, separate git repositories (System A: Firebase LetBuyy marketplace; System B:
-# Agrimore donor nested inside it). ~32 GB, not submodules, will be removed after
-# consolidation. This line only prevents an accidental `git add -A`/`git add .` from
-# committing it — it does NOT protect against `git clean -fdx`, which remains banned.
-/Ecommerce/
