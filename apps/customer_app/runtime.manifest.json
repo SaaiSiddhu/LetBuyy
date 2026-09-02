@@ -30,9 +30,10 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
-      "letbuyy_core",
-      "letbuyy_models",
-      "letbuyy_ui_kit"
+      "letbuyy_marketplace_core",
+      "letbuyy_marketplace_models",
+      "letbuyy_marketplace_services",
+      "letbuyy_marketplace_ui_kit"
     ],
     "runtimeImports": []
   },
