@@ -1,0 +1,222 @@
+// lib/models/payment_config_model.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// Helper to safely parse timestamps (handles Firestore Timestamp and String)
+DateTime? _parseTimestamp(dynamic value) {
+  if (value == null) return null;
+  if (value is Timestamp) return value.toDate();
+  if (value is String) {
+    try {
+      return DateTime.parse(value);
+    } catch (_) {
+      return null;
+    }
+  }
+  if (value is DateTime) return value;
+  return null;
+}
+
+/// Payment mode for store payments
+enum PaymentMode { 
+  shared,      // Uses Letbuyy's shared Razorpay account
+  ownAccount   // Uses seller's own Razorpay account (Professional only)
+}
+
+/// Model for store payment configuration
+/// Primarily used by Professional plan users who connect their own Razorpay
+class PaymentConfigModel {
+  final String storeId;
+  final PaymentMode mode;
+  
+  // Razorpay keys (encrypted, only for ownAccount mode)
+  final String? razorpayKeyId;      // Encrypted public key
+  final String? razorpayKeySecret;  // Encrypted secret key
+  
+  // Validation status
+  final bool verified;
+  final DateTime? verifiedAt;
+  final String? verificationError;
+  
+  // Test mode for sandbox testing
+  final bool testMode;
+  
+  // Webhook configuration
+  final String? webhookSecret;
+  final bool webhookConfigured;
+  
+  // Connection metadata
+  final DateTime? connectedAt;
+  final DateTime? lastUsedAt;
+  final String? razorpayAccountId;  // Razorpay account identifier
+  final String? businessName;       // Business name from Razorpay
+
+  const PaymentConfigModel({
+    required this.storeId,
+    this.mode = PaymentMode.shared,
+    this.razorpayKeyId,
+    this.razorpayKeySecret,
+    this.verified = false,
+    this.verifiedAt,
+    this.verificationError,
+    this.testMode = false,
+    this.webhookSecret,
+    this.webhookConfigured = false,
+    this.connectedAt,
+    this.lastUsedAt,
+    this.razorpayAccountId,
+    this.businessName,
+  });
+
+  // ============================================================
+  // FACTORY: From Firestore
+  // ============================================================
+  factory PaymentConfigModel.fromMap(Map<String, dynamic> map, String storeId) {
+    return PaymentConfigModel(
+      storeId: storeId,
+      mode: _parseMode(map['mode']),
+      razorpayKeyId: map['razorpayKeyId'],
+      razorpayKeySecret: map['razorpayKeySecret'],
+      verified: map['verified'] ?? false,
+      verifiedAt: _parseTimestamp(map['verifiedAt']),
+      verificationError: map['verificationError'],
+      testMode: map['testMode'] ?? false,
+      webhookSecret: map['webhookSecret'],
+      webhookConfigured: map['webhookConfigured'] ?? false,
+      connectedAt: _parseTimestamp(map['connectedAt']),
+      lastUsedAt: _parseTimestamp(map['lastUsedAt']),
+      razorpayAccountId: map['razorpayAccountId'],
+      businessName: map['businessName'],
+    );
+  }
+
+  // ============================================================
+  // TO FIRESTORE
+  // ============================================================
+  Map<String, dynamic> toMap() {
+    return {
+      'mode': mode.name,
+      'razorpayKeyId': razorpayKeyId,
+      'razorpayKeySecret': razorpayKeySecret,
+      'verified': verified,
+      'verifiedAt': verifiedAt != null ? Timestamp.fromDate(verifiedAt!) : null,
+      'verificationError': verificationError,
+      'testMode': testMode,
+      'webhookSecret': webhookSecret,
+      'webhookConfigured': webhookConfigured,
+      'connectedAt': connectedAt != null ? Timestamp.fromDate(connectedAt!) : null,
+      'lastUsedAt': lastUsedAt != null ? Timestamp.fromDate(lastUsedAt!) : null,
+      'razorpayAccountId': razorpayAccountId,
+      'businessName': businessName,
+    };
+  }
+
+  // ============================================================
+  // COMPUTED PROPERTIES
+  // ============================================================
+  
+  /// Check if using own Razorpay account
+  bool get isOwnAccount => mode == PaymentMode.ownAccount;
+
+  /// Check if payment config is ready to use
+  bool get isReady => mode == PaymentMode.shared || 
+      (mode == PaymentMode.ownAccount && verified);
+
+  /// Get status display text
+  String get statusText {
+    if (mode == PaymentMode.shared) {
+      return 'Using Letbuyy Payment Gateway';
+    }
+    if (verified) {
+      return 'Connected to ${businessName ?? 'Your Razorpay Account'}';
+    }
+    if (verificationError != null) {
+      return 'Connection Failed: $verificationError';
+    }
+    return 'Not Connected';
+  }
+
+  /// Get commission message
+  String getCommissionMessage(double commissionPercent) {
+    if (mode == PaymentMode.ownAccount && verified) {
+      return '0% platform fee - All payments go directly to your Razorpay account';
+    }
+    return '${commissionPercent.toStringAsFixed(0)}% platform fee on each transaction';
+  }
+
+  // ============================================================
+  // HELPER: Parse Mode
+  // ============================================================
+  
+  static PaymentMode _parseMode(String? mode) {
+    switch (mode?.toLowerCase()) {
+      case 'ownaccount': 
+      case 'own_account': 
+        return PaymentMode.ownAccount;
+      default: 
+        return PaymentMode.shared;
+    }
+  }
+
+  // ============================================================
+  // COPY WITH
+  // ============================================================
+  
+  PaymentConfigModel copyWith({
+    PaymentMode? mode,
+    String? razorpayKeyId,
+    String? razorpayKeySecret,
+    bool? verified,
+    DateTime? verifiedAt,
+    String? verificationError,
+    bool? testMode,
+    String? webhookSecret,
+    bool? webhookConfigured,
+    DateTime? connectedAt,
+    DateTime? lastUsedAt,
+    String? razorpayAccountId,
+    String? businessName,
+  }) {
+    return PaymentConfigModel(
+      storeId: storeId,
+      mode: mode ?? this.mode,
+      razorpayKeyId: razorpayKeyId ?? this.razorpayKeyId,
+      razorpayKeySecret: razorpayKeySecret ?? this.razorpayKeySecret,
+      verified: verified ?? this.verified,
+      verifiedAt: verifiedAt ?? this.verifiedAt,
+      verificationError: verificationError ?? this.verificationError,
+      testMode: testMode ?? this.testMode,
+      webhookSecret: webhookSecret ?? this.webhookSecret,
+      webhookConfigured: webhookConfigured ?? this.webhookConfigured,
+      connectedAt: connectedAt ?? this.connectedAt,
+      lastUsedAt: lastUsedAt ?? this.lastUsedAt,
+      razorpayAccountId: razorpayAccountId ?? this.razorpayAccountId,
+      businessName: businessName ?? this.businessName,
+    );
+  }
+
+  // ============================================================
+  // FACTORY: Default Shared Config
+  // ============================================================
+  
+  factory PaymentConfigModel.defaultShared(String storeId) {
+    return PaymentConfigModel(
+      storeId: storeId,
+      mode: PaymentMode.shared,
+      verified: true, // Shared is always verified
+    );
+  }
+
+  // ============================================================
+  // DEBUG INFO
+  // ============================================================
+  
+  @override
+  String toString() => '''
+PaymentConfigModel(
+  storeId: $storeId,
+  mode: ${mode.name},
+  verified: $verified,
+  testMode: $testMode,
+  businessName: $businessName,
+)''';
+}
