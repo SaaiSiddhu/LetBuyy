@@ -22,7 +22,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S2 | Apply the constitutional amendment | **COMPLETE** | (this checkpoint) |
 | S3 | The six canonical apps | **COMPLETE** | (this checkpoint) |
 | S4 | Phase 2 and supporting apps | **COMPLETE** | (this checkpoint) |
-| S5 | Packages, services, backend (structural only) | PENDING | — |
+| S5 | Packages, services, backend (structural only) | **COMPLETE** | (this checkpoint) |
 | S6 | Workspace and configuration repair | PENDING | — |
 | S7 | Stale path eradication | PENDING | — |
 | S8 | Verification | PENDING | — |
@@ -273,5 +273,41 @@ Not touched this stage (no file under `apps/identity-platform` was moved, rename
 **Proves:** every runtime under `apps/` has an explicit, evidenced classification — none is unexplained. The two new `phase_2` apps are on disk with full history preserved (bundle) and are honestly marked non-production. `identity-platform`'s sole-issuer role was not weakened (it was not touched at all).
 
 **Does not prove:** that `platform-operations-portal`'s eventual merge into `admin_web` is safe — that requires the smoke-path gate ART-24 itself names, which this phase cannot run. Does not prove the two `phase_2` apps build (Stage 8 territory, and even then only if `flutter pub get`/`analyze` are run against them specifically). Does not prove the 46-file `agrimore_*` import dependency is otherwise sound — only that it was not touched.
+
+---
+
+## S5 — Packages, services, backend (structural only)
+
+**Verdict: COMPLETE**, within the deliberately narrowed scope disclosed below. The D-0 boundary was re-read in full before any action this stage.
+
+### 5.1 — Allowed structural moves executed, checkpoint `108734a6`
+
+- **`services/compatibility/firebase_bridge/`** — System A's Firebase Cloud Functions (`functions/src`, 24 real files) + Firebase project config/security rules (`firebase.json`, `firestore.rules`, `firestore.indexes.json`, `storage.rules`, `cors.json`). `node_modules/` (432 MB) and compiled `lib/` output excluded as generated/gitignored. **Corrected `07_final_path_mapping.md`'s "127 files" figure**: `git ls-files functions | grep -v lib/\|node_modules/` = 29 real tracked files; the 127 figure is not reconciled, stated plainly as a discrepancy per this engagement's practice.
+- **`services/compatibility/cloudflare_bridge/`** — System A's single-file `cloudflare-worker/storefront-proxy.js`.
+- **`services/compatibility/agrimore_bridge/`** — System B's three Cloudflare Workers (`api-gateway`, `media-gateway`, `realtime-gateway`; 50 real files). System B's own `supabase/` schema was **deliberately not duplicated** here — copying a full second Postgres schema alongside its Workers was judged out of scope for "structural only."
+
+Every bridge's `README.md` states explicitly: **not wired into any live path, not imported by `services/api-gateway` or any of the 8 canonical ACTIVE runtimes.** This is the load-bearing safety property of this whole sub-stage — these are relocations of dead-until-D-0 code, not activations.
+
+**Two rows flagged in `11_backend_consolidation.md` as constitutionally fixed regardless of D-0:** Firebase's `walletService.ts` is a mutable-balance pattern (`ANTI-R4`/`PAY-R1` forbid this as money truth under any backend); `commissionService.ts` must never compute a non-zero fee (`ART-12`, 0% permanent). Neither was modified — both copied byte-for-byte, flagged in the doc, left inert.
+
+**One row flagged as separately RESERVED-gated, not just D-0-gated:** `agrimore_bridge/media-gateway` is a real, working media backend that structurally resembles the currently-empty RESERVED `services/media-service` — activating it would need the same named-trigger + ARB approval as filling any reserved service (ART-19), independent of whatever D-0 decides.
+
+### 5.1 (continued) — package unification: deliberately NOT executed, logged as `D0_BLOCKED`
+
+Stage 5.1 permits unifying "duplicated shared packages where the duplication is genuine and the implementations are compatible." Verifying genuine duplication and compatibility between System C's `packages/dart/{core,models,ui_kit}`, System A's `packages/{core,models,services,ui_kit}`, and System B's 11 `packages/agrimore_*` packages requires line-by-line domain comparison this stage did not perform — the risk of silently merging two *actually-different* implementations under one name is exactly the kind of model decision Stage 5's own text says to stop on ("Where a structural move would force a model decision, STOP that move, record it in the journal under `D0_BLOCKED`, and continue"). **Logged as `D0_BLOCKED`, not executed.** All package source in Systems A and B remains untouched, in place, fully covered by the Stage 1 bundles. A future dedicated pass (with real per-package diffing) is the right way to execute 5.1's package-unification clause; this phase does not attempt to shortcut it.
+
+### 5.3 — The canonical model map document
+
+Written: `docs/migration/repository_consolidation/11_backend_consolidation.md` — 24 domains (identity through logistics/quick-commerce), each with Firebase/Supabase/Agrimore-current-model, proposed-canonical-model, compatibility-adapter, and migration-status columns, every row marked `D0_DEPENDENT`. Cells without direct evidence this session are marked **UNVERIFIED**, not filled in with an invented detail.
+
+### 5.4 — Money and tenancy invariants
+
+Not touched. No ledger RPC, RLS policy, tenant GUC, idempotency key, or payment-verification code was read for editing purposes or modified this stage (only referenced, by file name, in the model-map document above).
+
+### What this stage proves and does not prove
+
+**Proves:** Firebase and Agrimore backend code now live under `services/compatibility/`, structurally consistent with "backend lives under `services/`," with every bridge explicitly, verifiably unwired from the live path (no import, no route registration, no deploy config referencing them from any canonical runtime — not individually greped for zero-importer proof this stage, but no wiring was added by this stage's own edits, which is the load-bearing fact). Proves the canonical model map exists and is honest about its own evidence gaps. Proves no money/tenancy invariant was touched.
+
+**Does not prove:** that `services/compatibility/*` doesn't need its own explicit classification in `governance-common.mjs` (it is currently unclassified, similar to the pre-existing `services/lcis-api` gap found in Stage 2 — flagged here as a Stage 6 follow-up, not fixed this stage). Does not prove any package is or isn't genuinely duplicated across the three systems — that determination was explicitly deferred. Does not prove the two flagged Firebase functions (`walletService.ts`, `commissionService.ts`) have no other copies or call sites anywhere in System A beyond what was copied — only that this copy is inert.
 
 ---
