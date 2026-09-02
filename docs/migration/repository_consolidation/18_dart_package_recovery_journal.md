@@ -13,8 +13,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S2 | Collision evidence and naming decision | COMPLETE | a0330b2d |
 | S3 | Import/rename System A's four packages | COMPLETE | 3edecdc9 |
 | S4 | Import/rename System B's quick-commerce packages | COMPLETE | dbcef593 |
-| S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | (this commit) |
-| S6 | Make each app resolve/analyze/test | PENDING | |
+| S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | 1b064dab |
+| S6 | Make each app resolve/analyze/test | COMPLETE | (this commit) |
 | S7 | Full verification | PENDING | |
 | S8 | Documentation and close-out | PENDING | |
 
@@ -349,3 +349,59 @@ Added members one at a time (or as a tightly-coupled cluster where pub's own err
 `3d55966f` (`merchant_app` path fix), `64069e0b` (all 12 successful workspace additions + the 2 SDK-constraint bumps + regenerated `pubspec.lock`, with the 3 BLOCKED members and their exact errors in the commit message itself).
 
 **S5 verdict: COMPLETE — 12 of 15 candidate members added; 3 correctly and deliberately left out, each with a recorded, reproducible reason. A partially-restored workspace, not a forced green.**
+
+---
+
+## S6 — Make each app resolve, analyze, test
+
+Per app: `flutter pub get` → `flutter analyze` → `flutter test` (if a `test/` directory exists), stopping that app at its first hard failure. `dart format` was never used as evidence of anything, per this engagement's own established rule.
+
+### `apps/customer_app`
+
+- **Resolves:** yes, from the shared workspace root (Stage 5).
+- **Analyzes:** `flutter analyze apps/customer_app` → **`No issues found! (ran in 4.8s)`.** Zero issues, despite 299 rewritten imports and the full marketplace domain model surface.
+- **Tests:** no `test/` directory exists in this app — nothing to run. Not a failure; a fact about what this app never had.
+
+### `apps/admin_app`
+
+- **Resolves:** yes.
+- **Analyzes:** `No issues found! (ran in 3.2s)`.
+- **Tests:** no `test/` directory — nothing to run.
+
+### `apps/merchant_app` (regression check)
+
+- **Resolves:** yes.
+- **Analyzes:** 80 pre-existing issues (deprecation warnings — `activeColor`/`onReorder`/`value`/`pipelineOwner` — plus 2 unused-element/unused-variable warnings), all in files this phase never touched except the one path-fix commit (`3d55966f`, which changed 4 lines, none of which are near any flagged line). **Not a regression** — recorded as the honest pre-existing baseline, not fixed (out of scope; this phase only fixes rename-caused breakage).
+- **Tests: 172/172, exact baseline match** — confirmed three times across this phase (after 5.1's path fix, after the 2-app addition, and again after the full 12-member workspace settled).
+
+### `apps/phase_2/rider_app`
+
+Cannot join the shared workspace (Stage 5, BLOCKED). Removed its now-counterproductive `resolution: workspace` (see below) and tested **standalone** — Dart/Flutter can resolve a single app's own dependency graph independently of any workspace, as long as it doesn't itself declare `resolution: workspace` without being a member of one.
+
+- **Resolves:** `flutter pub get` (standalone, run from `apps/phase_2/rider_app/`) → **`Changed 124 dependencies!`, success.**
+- **Analyzes:** 2 issues, **both pre-existing and unrelated to this phase's renames**:
+  1. `analysis_options.yaml:10:10 include_file_not_found` — `include: package:flutter_lints/flutter.yaml` can't be found, because `flutter_lints` was never declared as a `dev_dependency` in this app's own `pubspec.yaml` (a gap present since Phase M's Stage 4 copy; not touched by any rename).
+  2. `test/widget_test.dart:16:35 creation_with_non_type` — `The name 'MyApp' isn't a class.` This is Flutter's default `flutter create` scaffold boilerplate test, referencing a placeholder `MyApp` widget that was **never** the app's real class (always `AgrimoreRiderApp`, now `QuickcommerceRiderApp`) — confirmed via `git log --oneline -- .../test/widget_test.dart`, which shows exactly one commit, Phase M's original establishment (`a9623d38`); this file has never been touched since, by any phase. A genuine, pre-existing dead file inherited from System B's own scaffold, not a rename casualty.
+- **Tests:** `flutter test` → **2 of 3 test files pass.** `test/app_test.dart` (renders the auth entrypoint — passes, using the renamed `QuickcommerceRiderApp` class, proving the Stage 4 rename is functionally correct) and `test/rider_delivery_flow_test.dart` (a thin wrapper — `import '../integration_test/rider_delivery_flow_test.dart' as rider_flow; void main() => rider_flow.main();` — that runs the real fake-repository state-machine test from `integration_test/`: offer → accept → pickup → deliver, using the renamed `quickcommerce_domain`/`quickcommerce_observability` packages end to end) both pass. `test/widget_test.dart` fails to compile, for the pre-existing reason above. **Honest PARTIAL, not forced green** — the failure is real, disclosed, and out of this phase's scope to fix.
+
+### `apps/phase_2/store_ops_app`
+
+Identical situation and identical findings to `rider_app` (both apps were scaffolded from the same template):
+
+- **Resolves:** standalone `flutter pub get` → `Changed 124 dependencies!`, success.
+- **Analyzes:** the same 2 pre-existing, unrelated issues (`flutter_lints` include-not-found; `test/widget_test.dart`'s dead `MyApp` reference).
+- **Tests:** 2 of 3 pass — `test/app_test.dart` (renders the store operations queue using `QuickcommerceStoreOpsApp`) and `test/store_pick_pack_flow_test.dart` (wraps `integration_test/store_pick_pack_flow_test.dart`'s real fake-repository test: queue → pick/pack → inventory adjustment, using the renamed packages) both pass; `test/widget_test.dart` fails identically.
+
+### A necessary correction discovered while running this stage
+
+Testing `rider_app` standalone first failed immediately: `Found a pubspec.yaml ... resolution 'workspace'. But found no workspace root including it in parent directories.` Stage 4.3 had added `resolution: workspace` to both apps on the (correct, at the time) assumption they'd join the shared workspace — Stage 5 then found they can't (the `flutter_secure_storage` conflict). Leaving `resolution: workspace` in place after that discovery made both apps **strictly worse off than before this phase touched them**: unable to resolve in ANY configuration, shared or standalone. Removed `resolution: workspace` from both (commit `a3648603`), which restored standalone resolution — confirmed by the successful `pub get`/`analyze`/`test` runs above.
+
+Running `pub get` standalone in both apps also regenerated `ios/Flutter/Generated.xcconfig` and `flutter_export_environment.sh` — both files literally headed `// This is a generated file; do not edit or check into version control.` The regenerated content (this machine's real path) is arguably more correct than what Phase M committed (the original developer's `/Users/saai_sidd/Git/Agrimore/...` path), but committing either version is out of this phase's scope and both files' own header says not to track them at all — reverted to the pre-existing committed content via `git show HEAD:<path>` + overwrite (not `git checkout --`, learned from the Stage 4 incident). Also left uncommitted, deliberately: both apps' freshly-generated `pubspec.lock` (this repository's own convention, confirmed against `apps/merchant_app` and `packages/dart/core`, doesn't track per-app/per-package lockfiles outside the shared root).
+
+No Android or iOS build was attempted for any app, per the brief's explicit instruction. No `flutter` command was run against a device or simulator.
+
+### Commits this stage
+
+`a3648603` (`resolution: workspace` removal for the 2 BLOCKED apps). No source code was changed this stage beyond that one structural fix — everything else was measurement.
+
+**S6 verdict: COMPLETE. 4 of 4 buildable apps resolve; `customer_app`/`admin_app` analyze with zero issues; `merchant_app` stays at its exact 172/172 baseline; `rider_app`/`store_ops_app` each resolve standalone and pass 2 of 3 test files, with the one failure fully attributed to pre-existing, unrelated scaffold debris.**
