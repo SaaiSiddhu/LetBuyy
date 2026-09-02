@@ -7,7 +7,7 @@ function read(path) {
 }
 
 test('merchant control plane retries query-cost limited session reads', () => {
-  const session = read('apps/merchant-control-plane/src/lib/auth/session.ts');
+  const session = read('apps/merchant_web/src/lib/auth/session.ts');
 
   assert.match(session, /QUERY_COST_RATE_LIMITED/);
   assert.match(session, /QUERY_COST_RETRY_DELAYS_MS/);
@@ -21,7 +21,7 @@ test('merchant control plane retries query-cost limited session reads', () => {
 });
 
 test('merchant store layout degrades optional store switcher list on query-cost limits', () => {
-  const layout = read('apps/merchant-control-plane/src/app/[store]/layout.tsx');
+  const layout = read('apps/merchant_web/src/app/[store]/layout.tsx');
 
   assert.match(layout, /isQueryCostRateLimited/);
   assert.match(layout, /getUserStores\(user\.id\)\.catch/);

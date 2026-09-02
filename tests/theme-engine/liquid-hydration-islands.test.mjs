@@ -3,8 +3,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const THEME_BUNDLE_SOURCE = readFileSync('packages/theme-engine/src/theme-bundle.ts', 'utf8');
-const COMPOSITION_SOURCE = readFileSync('apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx', 'utf8');
-const ISLAND_SOURCE = readFileSync('apps/storefront-runtime/src/lib/theme-engine/liquid-hydration-islands.tsx', 'utf8');
+const COMPOSITION_SOURCE = readFileSync('apps/customer_web/src/lib/theme-engine/composition-engine.tsx', 'utf8');
+const ISLAND_SOURCE = readFileSync('apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx', 'utf8');
 
 test('Liquid bundle contract publishes hydration island tags', () => {
   assert.match(THEME_BUNDLE_SOURCE, /export const LIQUID_HYDRATION_ISLANDS/);

@@ -29,7 +29,7 @@
 //     section_definitions / block_definitions are never touched here.
 //
 // KNOWN PRODUCTION BUG (tracked, NOT fixed in Phase V):
-//   StorefrontRouteType (apps/storefront-runtime/src/lib/theme-engine/types.ts)
+//   StorefrontRouteType (apps/customer_web/src/lib/theme-engine/types.ts)
 //   uses underscore form for customer routes ('customer_account', 'customer_orders', …)
 //   while the canonical bundle keys use slash form ('customers/account', 'customers/orders', …).
 //   resolveTemplateKey() in template-resolver.ts returns the route type unchanged,
@@ -246,7 +246,7 @@ export const TEMPLATE_TYPE_REGISTRY: Readonly<Record<string, TemplateTypeEntry>>
   // KNOWN BUG: StorefrontRouteType uses underscore form (customer_account, …)
   // but resolveTemplateKey returns the route type unchanged, so the bundle's
   // slash-key templates are currently unreachable in production.
-  // See: apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts.
+  // See: apps/customer_web/src/lib/theme-engine/template-resolver.ts.
 
   /** Customer login form. */
   'customers/login': {

@@ -285,7 +285,7 @@ const ATTACK_VECTOR_PATTERNS: ReadonlyArray<{
   {
     vector: 'admin-targeting selector',
     pattern:
-      /(?:^|[\s,{}>~+])\s*(body|html|:root|\[data-letbuyy-admin\]|\.merchant-control-plane)\s*(?:[{,>~+\s]|$)/i,
+      /(?:^|[\s,{}>~+])\s*(body|html|:root|\[data-letbuyy-admin\]|\.merchant-web)\s*(?:[{,>~+\s]|$)/i,
     message:
       'Selectors targeting body, html, :root, or admin elements are blocked. Scope to .lb-theme descendants instead.',
   },

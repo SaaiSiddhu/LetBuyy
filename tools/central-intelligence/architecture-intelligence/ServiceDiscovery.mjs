@@ -13,11 +13,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '../../..');
 
 const CANONICAL_RUNTIMES = [
-  'storefront-runtime',
-  'merchant-control-plane',
+  'customer-web',
+  'merchant-web',
   'identity-platform',
   'marketing-site',
-  'platform-console',
+  'admin-web',
   'api-gateway',
   'queue-workers',
   'webhook-service',

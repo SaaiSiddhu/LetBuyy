@@ -91,7 +91,7 @@ export interface ThemeUninstalledEvent {
 
 /**
  * Emitted when a merchant or storefront visitor opens a theme preview.
- * Emission point: storefront-runtime preview render path (apps/storefront-runtime/src/proxy.ts
+ * Emission point: customer-web preview render path (apps/customer_web/src/proxy.ts
  *   or a future preview-specific route).
  */
 export interface ThemePreviewOpenedEvent {
@@ -249,7 +249,7 @@ export function describeThemeEventEmissionPoints(): ThemeEventEmissionPoint[] {
     {
       event: 'theme.preview.opened',
       emissionPoint:
-        'apps/storefront-runtime/src/proxy.ts — preview render path, or a future dedicated preview route',
+        'apps/customer_web/src/proxy.ts — preview render path, or a future dedicated preview route',
       implemented: false,
     },
   ];

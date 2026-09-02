@@ -2,7 +2,7 @@
 // (docs/evidence/liquid-parity/S1-render-parity.json): 6 React-only gaps (A1-A6), 4 settings neither
 // engine honoured (B1-B4), and 1 harness prop-contract crash (C1). Structural guard for the pieces
 // that live in Next.js app-layer files this suite cannot import (React section behavior, harness
-// fixes) — those are proven instead by apps/storefront-runtime/scripts/liquid-parity-harness.mjs,
+// fixes) — those are proven instead by apps/customer_web/scripts/liquid-parity-harness.mjs,
 // re-run as part of this phase's verification (docs/evidence/liquid-parity/S3-render-parity.json).
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -143,7 +143,7 @@ test('B4: app-block-slot "slot" is never rendered as visible page content', asyn
 });
 
 test('B4: the parity harness documents the "slot" exclusion with a justification, not a general loosening', () => {
-  const src = readFileSync(new URL('../../../apps/storefront-runtime/scripts/liquid-parity-harness.mjs', import.meta.url), 'utf8');
+  const src = readFileSync(new URL('../../../apps/customer_web/scripts/liquid-parity-harness.mjs', import.meta.url), 'utf8');
   assert.match(src, /PARITY_EXCLUDED_SETTINGS/);
   assert.match(src, /'app-block-slot': new Set\(\['slot'\]\)/);
   assert.match(src, /does NOT loosen the general/);
@@ -240,17 +240,17 @@ test('A6: skills-section renders no "General" heading when there are no skill bl
 // re-executed standalone from this package). ───────────────────────────────────────────────────
 
 test('C1: banner-carousel.tsx is confirmed NOT a standalone registered section (renderer-registry has no entry for it)', () => {
-  const registry = readFileSync(new URL('../../../apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx', import.meta.url), 'utf8');
+  const registry = readFileSync(new URL('../../../apps/customer_web/src/lib/theme-engine/renderer-registry.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(registry, /banner-carousel/, 'if this ever gains a registry entry, the harness fixture-vs-component diagnosis must be re-checked');
 });
 
 test('C1: hero.tsx is confirmed the sole real caller, and only invokes BannerCarousel with banners.length > 1', () => {
-  const hero = readFileSync(new URL('../../../apps/storefront-runtime/src/components/sections/hero.tsx', import.meta.url), 'utf8');
+  const hero = readFileSync(new URL('../../../apps/customer_web/src/components/sections/hero.tsx', import.meta.url), 'utf8');
   assert.match(hero, /banners && banners\.length > 1/);
 });
 
 test('C1: the harness fixes the fixture (prop translation), not the component, and proves zero/one/many banners render', () => {
-  const src = readFileSync(new URL('../../../apps/storefront-runtime/scripts/liquid-parity-harness.mjs', import.meta.url), 'utf8');
+  const src = readFileSync(new URL('../../../apps/customer_web/scripts/liquid-parity-harness.mjs', import.meta.url), 'utf8');
   assert.match(src, /REACT_PROPS_OVERRIDES/);
   assert.match(src, /HARNESS FIXTURE bug, not a defensive-coding/);
   assert.match(src, /verifyBannerCarouselSurvivesBannerCounts/);

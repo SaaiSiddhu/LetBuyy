@@ -6,7 +6,7 @@ set -uo pipefail
 # repo root (this file lives in scripts/dev/)
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-PORTS=(9001 9002 9009)   # merchant-control-plane, identity-platform, @letbuyy/ui storybook
+PORTS=(9001 9002 9009)   # merchant-web, identity-platform, @letbuyy/ui storybook
 
 echo "▶ Killing ports: ${PORTS[*]}"
 for p in "${PORTS[@]}"; do
@@ -24,6 +24,6 @@ node scripts/dev/setup-local-env.mjs
 
 echo "▶ Starting: merchant (9001) + identity (9002) + storybook (9009)"
 exec pnpm exec turbo run dev --concurrency=25 \
-  --filter=@letbuyy/merchant-control-plane \
+  --filter=@letbuyy/merchant-web \
   --filter=@letbuyy/identity-platform \
   --filter=@letbuyy/ui

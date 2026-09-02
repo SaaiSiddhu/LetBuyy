@@ -21,11 +21,11 @@ const REPO_ROOT = resolve(__dirname, '../../..');
 // Canonical layer assignments for known entries
 const LAYER_MAP = {
   // edge layer
-  'storefront-runtime':       'edge',
-  'merchant-control-plane':   'edge',
+  'customer-web':       'edge',
+  'merchant-web':   'edge',
   'identity-platform':        'edge',
   'marketing-site':           'edge',
-  'platform-console':         'edge',
+  'admin-web':         'edge',
   // frozen/other apps still classify
   'app-marketplace':          'edge',
   'developer-portal':         'edge',

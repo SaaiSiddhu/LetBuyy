@@ -212,14 +212,14 @@ export class TaskIntelligenceService {
       });
     }
 
-    // ── 5: ui — one task per domain (merchant-control-plane screen) ──────────────
+    // ── 5: ui — one task per domain (merchant-web screen) ──────────────
     const uiTaskIds: string[] = [];
     for (const domain of domains) {
       const id = taskId('ui', domain);
       uiTaskIds.push(id);
       tasks.push({
         id,
-        title: `UI: merchant-control-plane screen for domain "${domain}" (@letbuyy/ui + --lb-* tokens)`,
+        title: `UI: merchant-web screen for domain "${domain}" (@letbuyy/ui + --lb-* tokens)`,
         layer: 'ui',
         domain,
         dependsOn: [taskId('proxy', domain)],
@@ -228,7 +228,7 @@ export class TaskIntelligenceService {
         agentType: LAYER_AGENT.ui,
         evidence: [
           this.ev.reuse('lcis-execution', 'eis.analyze', `domain in affected.domains: ${domain}`),
-          this.ev.domain(domain, 'ui task — merchant-control-plane layer'),
+          this.ev.domain(domain, 'ui task — merchant-web layer'),
         ],
       });
     }

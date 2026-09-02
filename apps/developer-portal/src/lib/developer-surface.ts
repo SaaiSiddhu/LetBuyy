@@ -381,7 +381,7 @@ export const gatewayRouteGroups: GatewayRouteGroup[] = [
     mount: "/v1/internal/console",
     access: "Internal token",
     routeCount: 9,
-    scope: "Internal console bootstrap and platform-console helper endpoints.",
+    scope: "Internal console bootstrap and admin-web helper endpoints.",
     source: "services/api-gateway/src/index.ts:183 + routes/internal-console.ts"
   },
   {

@@ -8,10 +8,10 @@ const customersRouteSource = readFileSync(new URL('../routes/customers.ts', impo
 const customerPaginationSource = readFileSync(new URL('../lib/customer-pagination.ts', import.meta.url), 'utf8');
 const dartTypesSource = readFileSync(new URL('../../../../packages/dart/api_client/lib/src/types.dart', import.meta.url), 'utf8');
 const dartClientSource = readFileSync(new URL('../../../../packages/dart/api_client/lib/src/api_client.dart', import.meta.url), 'utf8');
-const productServiceSource = readFileSync(new URL('../../../../apps/mobile/merchant-app/lib/services/product_service.dart', import.meta.url), 'utf8');
-const orderServiceSource = readFileSync(new URL('../../../../apps/mobile/merchant-app/lib/services/order_service.dart', import.meta.url), 'utf8');
-const customerServiceSource = readFileSync(new URL('../../../../apps/mobile/merchant-app/lib/services/customer_service.dart', import.meta.url), 'utf8');
-const cacheServiceSource = readFileSync(new URL('../../../../apps/mobile/merchant-app/lib/services/cache_service.dart', import.meta.url), 'utf8');
+const productServiceSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/product_service.dart', import.meta.url), 'utf8');
+const orderServiceSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/order_service.dart', import.meta.url), 'utf8');
+const customerServiceSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/customer_service.dart', import.meta.url), 'utf8');
+const cacheServiceSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/cache_service.dart', import.meta.url), 'utf8');
 
 function summary(index: number): CommerceCustomerSummary {
     const padded = String(index).padStart(3, '0');

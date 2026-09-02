@@ -12,8 +12,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const PICKER = 'apps/merchant-control-plane/src/components/theme-editor/ExperiencePicker.tsx';
-const EDITOR = 'apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx';
+const PICKER = 'apps/merchant_web/src/components/theme-editor/ExperiencePicker.tsx';
+const EDITOR = 'apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx';
 const ONBOARDING = 'apps/identity-platform/src/app/onboarding/page.tsx';
 const STORES = 'services/api-gateway/src/routes/stores.ts';
 

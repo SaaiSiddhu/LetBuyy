@@ -58,7 +58,7 @@ reporter.assert(!appStoreShared.includes('AUTH_SECRET'), 'app-store shared platf
 
 for (const file of [
   'apps/identity-platform/src/lib/api/client.ts',
-  'apps/storefront-runtime/src/lib/api/client.ts',
+  'apps/customer_web/src/lib/api/client.ts',
 ]) {
   assertIncludes(file, 'createLetbuyyInternalAppHeaders', `${file} must use shared JTI app header signer`);
   assertNotIncludes(file, 'hmacSha256Hex', `${file} must not hand-roll internal app signatures`);
@@ -66,7 +66,7 @@ for (const file of [
 }
 
 for (const file of [
-  'apps/merchant-control-plane/src/lib/api/client.ts',
+  'apps/merchant_web/src/lib/api/client.ts',
   'apps/app-marketplace/src/lib/api/client.ts',
   'apps/theme-marketplace/src/lib/api/client.ts',
   'apps/platform-operations-portal/src/lib/api/client.ts',
@@ -124,7 +124,7 @@ const twoFactorRoute = readFile('services/api-gateway/src/routes/two-factor.ts')
 reporter.assert(twoFactorRoute.includes('env.TOTP_ENCRYPTION_KEY'), 'TOTP encryption must use the dedicated TOTP key');
 reporter.assert(!twoFactorRoute.includes('env.AUTH_SECRET || env.INTERNAL_API_SECRET'), 'TOTP encryption must not share auth/internal secrets');
 
-const consoleAuth = readFile('apps/platform-console/src/lib/console-auth-server.ts');
+const consoleAuth = readFile('apps/admin_web/src/lib/console-auth-server.ts');
 for (const fragment of [
   'PLATFORM_CONSOLE_TOTP_SECRETS',
   'getConsoleTotpSecretForPrincipal',

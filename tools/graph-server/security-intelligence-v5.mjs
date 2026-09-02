@@ -33,7 +33,7 @@ export function buildSecurityIntelligenceV5() {
 
   // trust boundaries (where a request crosses a privilege level)
   const trustBoundaries = [
-    { from: 'public internet', to: 'storefront-runtime', control: 'Turnstile + customer HS256 session' },
+    { from: 'public internet', to: 'customer-web', control: 'Turnstile + customer HS256 session' },
     { from: 'customer session', to: 'money RPCs', control: 'server-authoritative totals + SECURITY DEFINER RPC (no client amounts)' },
     { from: 'merchant session', to: 'refunds/payouts', control: 'ES256 + step-up HMAC second factor' },
     { from: 'gateway service-role', to: 'tenant tables', control: 'verifySiteOwnership BEFORE service-role DB access' },

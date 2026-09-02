@@ -8,11 +8,11 @@ const rateLimitSource = readFileSync('services/api-gateway/src/middleware/rateLi
 const securitySource = readFileSync('services/api-gateway/src/middleware/security.ts', 'utf8');
 const commerceCoreSource = readFileSync('packages/commerce-core/src/index.ts', 'utf8');
 const apiClientSource = readFileSync('packages/typescript/api-client/src/index.ts', 'utf8');
-const storefrontLoginRouteSource = readFileSync('apps/storefront-runtime/src/app/api/customer/login/route.ts', 'utf8');
-const customerServiceSource = readFileSync('apps/storefront-runtime/src/lib/customer-service.ts', 'utf8');
-const accountSheetSource = readFileSync('apps/storefront-runtime/src/components/account/account-bottom-sheet.tsx', 'utf8');
-const reviewsApiRouteSource = readFileSync('apps/storefront-runtime/src/app/api/reviews/route.ts', 'utf8');
-const productReviewsSource = readFileSync('apps/storefront-runtime/src/components/product/product-reviews.tsx', 'utf8');
+const storefrontLoginRouteSource = readFileSync('apps/customer_web/src/app/api/customer/login/route.ts', 'utf8');
+const customerServiceSource = readFileSync('apps/customer_web/src/lib/customer-service.ts', 'utf8');
+const accountSheetSource = readFileSync('apps/customer_web/src/components/account/account-bottom-sheet.tsx', 'utf8');
+const reviewsApiRouteSource = readFileSync('apps/customer_web/src/app/api/reviews/route.ts', 'utf8');
+const productReviewsSource = readFileSync('apps/customer_web/src/components/product/product-reviews.tsx', 'utf8');
 
 function blockAfter(marker, length = 2_500) {
   const start = storefrontRouteSource.indexOf(marker);

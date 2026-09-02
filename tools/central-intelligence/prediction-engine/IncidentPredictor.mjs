@@ -37,7 +37,7 @@ const DOMAIN_META = {
   checkout: {
     moneyPath: true, tenantPath: false,
     spofs: ['create_checkout_order', 'checkout-signing-secret'],
-    description: 'Embedded in storefront-runtime; cart→order→payment funnel',
+    description: 'Embedded in customer-web; cart→order→payment funnel',
   },
   orders: {
     moneyPath: true, tenantPath: false,

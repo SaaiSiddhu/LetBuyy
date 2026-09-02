@@ -18,9 +18,9 @@ const retiredProductionDomain = ["letbuyy", "store"].join(".");
 const expectedApps = [
   "apps/marketing-site",
   "apps/identity-platform",
-  "apps/merchant-control-plane",
-  "apps/storefront-runtime",
-  "apps/platform-console",
+  "apps/merchant_web",
+  "apps/customer_web",
+  "apps/admin_web",
 ];
 
 const expectedWorkers = [

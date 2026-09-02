@@ -55,12 +55,12 @@ const authSource = readFile('services/api-gateway/src/middleware/auth.ts');
 const rbacSource = readFile('services/api-gateway/src/middleware/rbac.ts');
 const verifierRegistrySource = readFile('services/api-gateway/src/identity-foundation/auth-verifier-registry.ts');
 reporter.assert(
-  !authSource.includes('platform-console@letbuyy.local') && !authSource.includes("name: 'platform-console-token'"),
-  'auth middleware must not synthesize a static platform-console super-admin principal',
+  !authSource.includes('admin-web@letbuyy.local') && !authSource.includes("name: 'admin-web-token'"),
+  'auth middleware must not synthesize a static admin-web super-admin principal',
 );
 reporter.assert(
-  !rbacSource.includes('isPlatformConsoleTokenRequest') && !verifierRegistrySource.includes('platform-console-token'),
-  'RBAC/verifier registry must not preserve platform-console token god-mode bypasses',
+  !rbacSource.includes('isPlatformConsoleTokenRequest') && !verifierRegistrySource.includes('admin-web-token'),
+  'RBAC/verifier registry must not preserve admin-web token god-mode bypasses',
 );
 reporter.assert(
   rbacSource.includes('Roles are resolved from server-side persistence') && !rbacSource.includes('const userRole = auth.user.role'),

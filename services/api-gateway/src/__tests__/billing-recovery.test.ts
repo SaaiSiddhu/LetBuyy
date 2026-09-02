@@ -13,9 +13,9 @@ test('subscription failed-payment recovery is a real gateway and mobile contract
     const sharedTypes = repositorySource('packages/shared-types/src/index.ts');
     const tsClient = repositorySource('packages/typescript/api-client/src/index.ts');
     const dartClient = repositorySource('packages/dart/api_client/lib/src/api_client.dart');
-    const mobileService = repositorySource('apps/mobile/merchant-app/lib/services/subscription_service.dart');
-    const billingScreen = repositorySource('apps/mobile/merchant-app/lib/screens/settings/billing_screen.dart');
-    const mobileTest = repositorySource('apps/mobile/merchant-app/test/mobile_services_test.dart');
+    const mobileService = repositorySource('apps/merchant_app/lib/services/subscription_service.dart');
+    const billingScreen = repositorySource('apps/merchant_app/lib/screens/settings/billing_screen.dart');
+    const mobileTest = repositorySource('apps/merchant_app/test/mobile_services_test.dart');
 
     assert.match(billingCore, /RecoverSubscriptionPaymentSchema/);
     assert.match(sharedTypes, /SubscriptionRecoveryResultSchema/);

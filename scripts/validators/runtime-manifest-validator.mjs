@@ -187,7 +187,7 @@ for (const runtimeRoot of [...reservedServiceRoots, ...reservedMobileRuntimeRoot
   );
 }
 
-const platformConsole = readJson("apps/platform-console/runtime.manifest.json");
+const platformConsole = readJson("apps/admin_web/runtime.manifest.json");
 reporter.assert(
   platformConsole?.actorType?.includes("platform-operator"),
   "Platform Console manifest must classify platform-operator authority",

@@ -50,7 +50,7 @@ const ISSUER_DEFS: readonly IssuerDef[] = [
     detail:
       'Customer session tokens — HS256 symmetric HMAC. ' +
       'Issued by identity-platform via issueCustomerSession(). ' +
-      'Consumers: storefront-runtime, merchant-control-plane customer auth.',
+      'Consumers: customer-web, merchant-web customer auth.',
   },
   {
     issuer: 'merchant-identity',
@@ -59,7 +59,7 @@ const ISSUER_DEFS: readonly IssuerDef[] = [
     detail:
       'Merchant identity tokens — ES256 asymmetric ECDSA. ' +
       'Issued by identity-platform; verified via LETBUYY_IDENTITY_PUBLIC_JWKS. ' +
-      'Consumers: api-gateway verifySiteOwnership, merchant-control-plane.',
+      'Consumers: api-gateway verifySiteOwnership, merchant-web.',
   },
   {
     issuer: 'step-up',

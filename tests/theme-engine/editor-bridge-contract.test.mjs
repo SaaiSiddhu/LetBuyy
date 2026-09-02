@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const CENTER_PANEL = 'apps/merchant-control-plane/src/components/theme-editor/CenterPanel.tsx';
-const BRIDGE = 'apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx';
-const FRAME = 'apps/storefront-runtime/src/lib/theme-engine/editor-preview-section-frame.tsx';
+const CENTER_PANEL = 'apps/merchant_web/src/components/theme-editor/CenterPanel.tsx';
+const BRIDGE = 'apps/customer_web/src/app/preview/storefront-preview-bridge.tsx';
+const FRAME = 'apps/customer_web/src/lib/theme-engine/editor-preview-section-frame.tsx';
 const PROTOCOL = 'packages/theme-engine/src/editor-bridge-protocol.ts';
 const PROTOCOL_INDEX = 'packages/theme-engine/src/index.ts';
 

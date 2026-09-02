@@ -936,7 +936,7 @@ export const ARTICLES: Article[] = [
     relatedSlugs: ['building-first-letbuyy-store', 'introduction-to-apps', 'how-themes-work'],
   },
   {
-    slug: 'merchant-control-plane-guide',
+    slug: 'merchant-web-guide',
     category: 'platform',
     title: 'The Merchant Control Plane: Your Commerce OS Dashboard',
     subtitle: 'Master every module — from products and orders to AI and analytics.',

@@ -38,7 +38,7 @@
     },
     {
       "type": "SERVICE",
-      "description": "A runtime process in the LetBuyy topology: api-gateway, storefront-runtime, merchant-control-plane, identity-platform, queue-workers, webhook-service, or mobile-bff."
+      "description": "A runtime process in the LetBuyy topology: api-gateway, customer-web, merchant-web, identity-platform, queue-workers, webhook-service, or mobile-bff."
     },
     {
       "type": "QUEUE",

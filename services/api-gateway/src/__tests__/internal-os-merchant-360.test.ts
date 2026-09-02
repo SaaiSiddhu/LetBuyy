@@ -80,10 +80,10 @@ test('merchant 360 API client exposes typed internal-console methods', () => {
 });
 
 test('merchant 360 console surfaces replace placeholders with real links and actions', () => {
-    const searchPageSource = repositorySource('apps/platform-console/src/app/(dashboard)/merchants/page.tsx');
-    const detailPageSource = repositorySource('apps/platform-console/src/app/(dashboard)/merchants/[id]/page.tsx');
-    const storesPageSource = repositorySource('apps/platform-console/src/app/(dashboard)/stores/page.tsx');
-    const layoutSource = repositorySource('apps/platform-console/src/app/(dashboard)/layout.tsx');
+    const searchPageSource = repositorySource('apps/admin_web/src/app/(dashboard)/merchants/page.tsx');
+    const detailPageSource = repositorySource('apps/admin_web/src/app/(dashboard)/merchants/[id]/page.tsx');
+    const storesPageSource = repositorySource('apps/admin_web/src/app/(dashboard)/stores/page.tsx');
+    const layoutSource = repositorySource('apps/admin_web/src/app/(dashboard)/layout.tsx');
 
     assert.match(searchPageSource, /\/internal\/console\/merchants\/search/);
     assert.match(searchPageSource, /href=\{`\/merchants\/\$\{row\.id\}`\}/);

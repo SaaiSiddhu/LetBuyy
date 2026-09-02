@@ -225,7 +225,7 @@ function makeStubEaos(overrides: EaosStubOverrides = {}): OrchestrationEngine {
   return engine as OrchestrationEngine;
 }
 
-async function analyze(overrides: EaosStubOverrides = {}, files = ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx']): Promise<PrReport> {
+async function analyze(overrides: EaosStubOverrides = {}, files = ['apps/merchant_web/src/app/[store]/orders/page.tsx']): Promise<PrReport> {
   resetEngine();
   return analyzeWithExecution(
     { changedFiles: files },

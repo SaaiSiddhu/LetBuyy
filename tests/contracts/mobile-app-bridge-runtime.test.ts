@@ -30,10 +30,10 @@ test('mobile app bridge sessions expose a signed host policy', () => {
 });
 
 test('merchant mobile app runs installed apps in a WebView bridge host', () => {
-  const service = read('apps/mobile/merchant-app/lib/services/app_marketplace_service.dart');
-  const screen = read('apps/mobile/merchant-app/lib/screens/apps/app_bridge_runtime_screen.dart');
-  const appsScreen = read('apps/mobile/merchant-app/lib/screens/apps/apps_screen.dart');
-  const blockedService = read('apps/mobile/merchant-app/lib/services/platform_blocked_service.dart');
+  const service = read('apps/merchant_app/lib/services/app_marketplace_service.dart');
+  const screen = read('apps/merchant_app/lib/screens/apps/app_bridge_runtime_screen.dart');
+  const appsScreen = read('apps/merchant_app/lib/screens/apps/apps_screen.dart');
+  const blockedService = read('apps/merchant_app/lib/services/platform_blocked_service.dart');
 
   assert.match(service, /class AppBridgeRuntimeSessionContract/);
   assert.match(service, /createEmbeddedAppBridgeRuntime/);
@@ -49,6 +49,6 @@ test('merchant mobile app runs installed apps in a WebView bridge host', () => {
   assert.match(appsScreen, /LaunchMode\.externalApplication/);
   assert.doesNotMatch(blockedService, /S-027/);
   assert.doesNotMatch(blockedService, /MOBILE_EMBEDDED_APP_BRIDGE_RUNTIME/);
-  assert.equal(existsSync(join(repoRoot, 'apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart')), false);
-  assert.equal(existsSync(join(repoRoot, 'apps/mobile/merchant-app/lib/screens/parity/merchant_feature_screen.dart')), false);
+  assert.equal(existsSync(join(repoRoot, 'apps/merchant_app/lib/screens/parity/merchant_feature_definitions.dart')), false);
+  assert.equal(existsSync(join(repoRoot, 'apps/merchant_app/lib/screens/parity/merchant_feature_screen.dart')), false);
 });

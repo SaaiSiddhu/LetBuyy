@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const COLLECTION_PROXY = 'apps/merchant-control-plane/src/app/api/stores/[store]/collections/[collectionId]/route.ts';
+const COLLECTION_PROXY = 'apps/merchant_web/src/app/api/stores/[store]/collections/[collectionId]/route.ts';
 
 test('Collections: the edit/delete proxy exists and delegates to the api-client (no more 404)', () => {
   assert.ok(existsSync(resolve(ROOT, COLLECTION_PROXY)), 'collections/[collectionId]/route.ts must exist');
@@ -22,16 +22,16 @@ test('Collections: the edit/delete proxy exists and delegates to the api-client 
 });
 
 test('AISidebar: the appearance todo links to the real /:store/appearance page (not the 404 settings path)', () => {
-  const sidebar = read('apps/merchant-control-plane/src/components/AISidebar.tsx');
+  const sidebar = read('apps/merchant_web/src/components/AISidebar.tsx');
   assert.match(sidebar, /link: `\/\$\{store\}\/appearance`/);
   assert.doesNotMatch(sidebar, /\/\$\{store\}\/settings\/appearance/);
 });
 
 // ---- Phase 4.5 ----
 
-const CUSTOMER_DETAIL_PROXY = 'apps/merchant-control-plane/src/app/api/stores/[store]/customers/[email]/route.ts';
-const CUSTOMER_NOTES_PROXY = 'apps/merchant-control-plane/src/app/api/stores/[store]/customers/[email]/notes/route.ts';
-const CUSTOMER_DETAIL_PAGE = 'apps/merchant-control-plane/src/app/[store]/customers/[email]/page.tsx';
+const CUSTOMER_DETAIL_PROXY = 'apps/merchant_web/src/app/api/stores/[store]/customers/[email]/route.ts';
+const CUSTOMER_NOTES_PROXY = 'apps/merchant_web/src/app/api/stores/[store]/customers/[email]/notes/route.ts';
+const CUSTOMER_DETAIL_PAGE = 'apps/merchant_web/src/app/[store]/customers/[email]/page.tsx';
 
 test('Customers: the detail proxy exists, is ownership-checked, and loads the real customer by email', () => {
   assert.ok(existsSync(resolve(ROOT, CUSTOMER_DETAIL_PROXY)), 'customers/[email]/route.ts must exist');
@@ -57,26 +57,26 @@ test('Customers: the detail page is real (consumes the proxy, no hardcoded custo
   // fetches the real proxy endpoints
   assert.match(page, /\/api\/stores\/\$\{encodeURIComponent\(store\)\}\/customers\/\$\{encodeURIComponent\(email\)\}/);
   // list rows navigate to the detail page (email-encoded)
-  const list = read('apps/merchant-control-plane/src/app/[store]/customers/page.tsx');
+  const list = read('apps/merchant_web/src/app/[store]/customers/page.tsx');
   assert.match(list, /customers\/\$\{encodeURIComponent\(/);
 });
 
 test('Shipping: the rate-edit PATCH proxy exists and delegates to shipping.rates.update', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts');
   assert.match(proxy, /export async function PATCH/);
   assert.match(proxy, /shipping\.rates\.update\(/);
   assert.match(proxy, /export async function DELETE/); // unchanged
 });
 
 test('Analytics: revenueByMonth is wired to the real revenue series (not a hardcoded empty array)', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/analytics/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/analytics/route.ts');
   assert.match(proxy, /analytics\.revenue\(/);
   assert.match(proxy, /revenueByMonth,/); // populated from the aggregation, not `revenueByMonth: []`
   assert.doesNotMatch(proxy, /revenueByMonth:\s*\[\]/);
 });
 
 test('Staff: the products:read permission has a human label in the catalog', () => {
-  const roles = read('apps/merchant-control-plane/src/lib/staff/roles.ts');
+  const roles = read('apps/merchant_web/src/lib/staff/roles.ts');
   assert.match(roles, /key:\s*'products:read'.*label:/s);
 });
 
@@ -107,34 +107,34 @@ test('Staff RBAC: products write routes are wired to the staff guard', () => {
 // ---- Phase 4.75 — new merchant UI (real, wired, nav-linked) ----
 
 test('Orders: the detail proxy (GET + PATCH) and detail page are real and the list rows are clickable', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/orders/[orderId]/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/orders/[orderId]/route.ts');
   assert.match(proxy, /export async function GET/);
   assert.match(proxy, /orders\.get\(/);
   assert.match(proxy, /export async function PATCH/);
   assert.match(proxy, /orders\.update\(/);
   assert.match(proxy, /resolveOwnedStoreId/);
-  const list = read('apps/merchant-control-plane/src/app/[store]/orders/page.tsx');
+  const list = read('apps/merchant_web/src/app/[store]/orders/page.tsx');
   assert.match(list, /orders\/\$\{encodeURIComponent\(/);
 });
 
 test('Customers: the segmentation page + proxies consume the real /segments endpoints (no fabricated DELETE)', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/customers/segments/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/customers/segments/route.ts');
   assert.match(proxy, /customers\.segments\.(list|create)\(/);
-  const preview = read('apps/merchant-control-plane/src/app/api/stores/[store]/customers/segments/preview/route.ts');
+  const preview = read('apps/merchant_web/src/app/api/stores/[store]/customers/segments/preview/route.ts');
   assert.match(preview, /customers\.segments\.preview\(/);
-  assert.ok(existsSync(resolve(ROOT, 'apps/merchant-control-plane/src/app/[store]/customers/segments/page.tsx')));
+  assert.ok(existsSync(resolve(ROOT, 'apps/merchant_web/src/app/[store]/customers/segments/page.tsx')));
 });
 
 test('Marketing: the campaigns page + proxies consume the real email-campaign endpoints', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/marketing/campaigns/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/marketing/campaigns/route.ts');
   assert.match(proxy, /marketing\.emailCampaigns\.(list|create)\(/);
-  const send = read('apps/merchant-control-plane/src/app/api/stores/[store]/marketing/campaigns/[id]/send/route.ts');
+  const send = read('apps/merchant_web/src/app/api/stores/[store]/marketing/campaigns/[id]/send/route.ts');
   assert.match(send, /marketing\.emailCampaigns\.send\(/);
-  assert.ok(existsSync(resolve(ROOT, 'apps/merchant-control-plane/src/app/[store]/marketing/page.tsx')));
+  assert.ok(existsSync(resolve(ROOT, 'apps/merchant_web/src/app/[store]/marketing/page.tsx')));
 });
 
 test('Navigation: the new segments + campaigns pages are linked (no dead navigation)', () => {
-  const nav = read('apps/merchant-control-plane/src/components/merchantNavigation.ts');
+  const nav = read('apps/merchant_web/src/components/merchantNavigation.ts');
   assert.match(nav, /path: 'customers\/segments'/);
   assert.match(nav, /path: 'marketing', label: 'Campaigns'/);
 });

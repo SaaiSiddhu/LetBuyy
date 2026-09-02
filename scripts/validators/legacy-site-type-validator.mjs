@@ -84,10 +84,10 @@ reporter.assert(
 );
 
 for (const file of [
-  "apps/merchant-control-plane/src/app/launching-soon/page.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+  "apps/merchant_web/src/app/launching-soon/page.tsx",
+  "apps/customer_web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -101,11 +101,11 @@ for (const file of [
 }
 
 for (const file of [
-  "apps/storefront-runtime/src/components/coming-soon/components/store/store-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
-  "apps/storefront-runtime/src/components/coming-soon/components/blog/blog-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/store/store-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+  "apps/customer_web/src/components/coming-soon/components/blog/blog-coming-soon.tsx",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -158,7 +158,7 @@ reporter.assert(
   "developer portal must mark portfolio/resume API surfaces as legacy-gated",
 );
 
-const merchantNavigation = readFile("apps/merchant-control-plane/src/components/merchantNavigation.ts");
+const merchantNavigation = readFile("apps/merchant_web/src/components/merchantNavigation.ts");
 reporter.assert(
   !merchantNavigation.includes("ats-score") && !merchantNavigation.includes("PDF export"),
   "merchant resume navigation must not expose deleted ATS/PDF-export stub routes",

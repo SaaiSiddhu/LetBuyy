@@ -16,7 +16,7 @@
 // renderer and does not touch DOMPurify config, the FORBID lists, or outputEscape. See
 // docs/evidence/liquid-parity/S1-security-performance-evidence.md for the dedicated security pass.
 //
-// Run: npx tsx --tsconfig apps/storefront-runtime/tsconfig.json apps/storefront-runtime/scripts/liquid-parity-harness.mjs
+// Run: npx tsx --tsconfig apps/customer_web/tsconfig.json apps/customer_web/scripts/liquid-parity-harness.mjs
 // (the explicit --tsconfig is required: without it tsx does not reliably pick up this app's
 // react-jsx automatic runtime or its `@/*` path mapping for files reached via dynamic import())
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -30,7 +30,7 @@ import { LiquidRenderer } from '../../../packages/theme-engine/src/theme-rendere
 import { DEFAULT_THEME_SETTINGS } from '../../../packages/theme-engine/src/index.ts';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-const STOREFRONT_ROOT = join(REPO_ROOT, 'apps/storefront-runtime');
+const STOREFRONT_ROOT = join(REPO_ROOT, 'apps/customer_web');
 const SECTIONS_DIR = join(STOREFRONT_ROOT, 'src/components/sections');
 const HARNESS_DIR = join(STOREFRONT_ROOT, 'src/__liquid_parity_harness__');
 const MOCKS_DIR = join(REPO_ROOT, 'scripts/liquid-parity/mocks');
@@ -248,7 +248,7 @@ const REACT_PROPS_OVERRIDES = {
 async function renderReactSide(reactFile, settings, blocks, productsOverride = []) {
   const srcPath = join(SECTIONS_DIR, reactFile);
   if (!existsSync(srcPath)) {
-    return { ok: false, reason: `React section file not found: apps/storefront-runtime/src/components/sections/${reactFile}` };
+    return { ok: false, reason: `React section file not found: apps/customer_web/src/components/sections/${reactFile}` };
   }
   const source = readFileSync(srcPath, 'utf8');
   mkdirSync(HARNESS_DIR, { recursive: true });

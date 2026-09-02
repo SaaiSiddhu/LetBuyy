@@ -93,7 +93,7 @@ async function createIncident(formData: FormData) {
             affected_regions: csvValues(formData.get('affected_regions')),
             customer_impact: customerImpact,
             reason,
-            metadata: { source: 'platform-console.incident-command' },
+            metadata: { source: 'admin-web.incident-command' },
         },
     });
 
@@ -118,7 +118,7 @@ async function updateIncidentStatus(formData: FormData) {
         body: {
             status,
             summary,
-            details: { source: 'platform-console.incident-command' },
+            details: { source: 'admin-web.incident-command' },
         },
     });
 
@@ -145,7 +145,7 @@ async function addIncidentEvent(formData: FormData) {
             event_type: eventType,
             summary,
             reason,
-            details: { source: 'platform-console.incident-command' },
+            details: { source: 'admin-web.incident-command' },
         },
     });
 
@@ -233,7 +233,7 @@ async function createOncallSchedule(formData: FormData) {
             active: formData.get('active') !== 'false',
             paging_adapter: 'dry_run',
             escalation_tiers: [],
-            metadata: { source: 'platform-console.incident-command' },
+            metadata: { source: 'admin-web.incident-command' },
             reason,
         },
     });
@@ -265,7 +265,7 @@ async function createPostmortem(formData: FormData) {
             timeline: [],
             contributing_factors: [],
             action_items: csvValues(formData.get('action_items')).map((item) => ({ item, status: 'open' })),
-            metadata: { source: 'platform-console.incident-command' },
+            metadata: { source: 'admin-web.incident-command' },
             reason,
         },
     });

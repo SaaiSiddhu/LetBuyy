@@ -1,5 +1,5 @@
 /**
- * Phase T — Nested Block Children: static-contract tests for the merchant-control-plane.
+ * Phase T — Nested Block Children: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, prop signatures, depth
  * constants, recursive render, ARIA attributes, design-ratchet compliance) without
@@ -32,7 +32,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const BLOCK_CHILD_ROW = `${MCP_BASE}/components/theme-editor/BlockChildRow.tsx`;
 const SECTION_TREE_PANEL = `${MCP_BASE}/components/theme-editor/SectionTreePanel.tsx`;
 

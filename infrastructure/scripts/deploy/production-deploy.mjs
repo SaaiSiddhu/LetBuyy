@@ -120,12 +120,12 @@ if (shouldRun("apps")) {
   if (execute) requireEnv(["VERCEL_TOKEN", "VERCEL_ORG_ID"]);
   const appRoots = [
     "apps/identity-platform",
-    "apps/merchant-control-plane",
-    "apps/storefront-runtime",
+    "apps/merchant_web",
+    "apps/customer_web",
     "apps/app-marketplace",
     "apps/theme-marketplace",
     "apps/marketing-site",
-    "apps/platform-console",
+    "apps/admin_web",
     "apps/platform-operations-portal",
   ];
 

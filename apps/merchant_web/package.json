@@ -1,5 +1,5 @@
 {
-  "name": "@letbuyy/merchant-control-plane",
+  "name": "@letbuyy/merchant-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/localization/theme-localization.test.mjs tests/app-platform/app-bridge.test.mjs apps/merchant-control-plane/tests/theme-library-q.test.mjs apps/merchant-control-plane/tests/theme-editor-r.test.mjs apps/merchant-control-plane/tests/theme-editor-s.test.mjs apps/merchant-control-plane/tests/theme-editor-t.test.mjs apps/merchant-control-plane/tests/theme-editor-u.test.mjs apps/merchant-control-plane/tests/theme-editor-v.test.mjs apps/merchant-control-plane/tests/theme-editor-w.test.mjs apps/merchant-control-plane/tests/theme-editor-x.test.mjs apps/merchant-control-plane/tests/theme-editor-y.test.mjs apps/merchant-control-plane/tests/theme-editor-z.test.mjs apps/merchant-control-plane/tests/theme-editor-aa.test.mjs apps/merchant-control-plane/tests/theme-editor-ab.test.mjs apps/merchant-control-plane/tests/theme-editor-ac.test.mjs"
+    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/localization/theme-localization.test.mjs tests/app-platform/app-bridge.test.mjs apps/merchant_web/tests/theme-library-q.test.mjs apps/merchant_web/tests/theme-editor-r.test.mjs apps/merchant_web/tests/theme-editor-s.test.mjs apps/merchant_web/tests/theme-editor-t.test.mjs apps/merchant_web/tests/theme-editor-u.test.mjs apps/merchant_web/tests/theme-editor-v.test.mjs apps/merchant_web/tests/theme-editor-w.test.mjs apps/merchant_web/tests/theme-editor-x.test.mjs apps/merchant_web/tests/theme-editor-y.test.mjs apps/merchant_web/tests/theme-editor-z.test.mjs apps/merchant_web/tests/theme-editor-aa.test.mjs apps/merchant_web/tests/theme-editor-ab.test.mjs apps/merchant_web/tests/theme-editor-ac.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

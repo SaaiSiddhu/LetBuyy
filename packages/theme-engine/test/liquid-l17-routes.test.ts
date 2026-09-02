@@ -1,6 +1,6 @@
 // L17 — Routes Drop Parity (Phase E, LANE-A, E6; base-path-prefixed as of T1/W1).
 // Extends buildLiquidScope() routes object with Shopify-convention account URLs.
-// All new URLs are backed by existing storefront-runtime pages or API routes:
+// All new URLs are backed by existing customer-web pages or API routes:
 //   account_url: /store/[subdomain]/account/page.tsx (existing)
 //   account_login_url: /store/[subdomain]/customers/login/page.tsx (created in E8/LANE-B)
 //   account_register_url: /store/[subdomain]/customers/register (existing)

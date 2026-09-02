@@ -3,7 +3,7 @@
   "rolloutVersion": 1,
   "featureFlags": {
     "sdk": "packages/shared-types/src/index.ts",
-    "adminControlPlane": "apps/platform-console operations surfaces backed by /v1/operations",
+    "adminControlPlane": "apps/admin_web operations surfaces backed by /v1/operations",
     "runtimeEvaluation": "deterministic tenant, actor, environment, internal, and percentage evaluation",
     "scopes": [
       "tenant",

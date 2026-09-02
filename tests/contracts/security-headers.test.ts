@@ -6,10 +6,10 @@ const nextConfigModules = [
   ['developer-portal', '../../apps/developer-portal/next.config.ts'],
   ['identity-platform', '../../apps/identity-platform/next.config.ts'],
   ['marketing-site', '../../apps/marketing-site/next.config.ts'],
-  ['merchant-control-plane', '../../apps/merchant-control-plane/next.config.ts'],
-  ['platform-console', '../../apps/platform-console/next.config.ts'],
+  ['merchant-web', '../../apps/merchant_web/next.config.ts'],
+  ['admin-web', '../../apps/admin_web/next.config.ts'],
   ['platform-operations-portal', '../../apps/platform-operations-portal/next.config.ts'],
-  ['storefront-runtime', '../../apps/storefront-runtime/next.config.ts'],
+  ['customer-web', '../../apps/customer_web/next.config.ts'],
   ['theme-marketplace', '../../apps/theme-marketplace/next.config.ts'],
 ] as const;
 

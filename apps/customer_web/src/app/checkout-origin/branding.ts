@@ -7,7 +7,7 @@
 //
 // T8 — this file used to emit exactly 2 CSS variables (--primary, --accent-color). checkout-
 // client.tsx's own utility classes (.text-theme, .text-theme-secondary, .text-theme-muted,
-// .bg-surface, .card-theme, .card-theme-secondary — apps/storefront-runtime/src/app/globals.css:
+// .bg-surface, .card-theme, .card-theme-secondary — apps/customer_web/src/app/globals.css:
 // 71-120) read TEN MORE (--text, --text-secondary, --text-muted, --text-hint, --text-inverse,
 // --surface, --surface-hover, --border-color, --card-bg, --card-bg-secondary, --card-text,
 // --card-text-muted, --card-border) that nothing on the checkout-origin tree ever set — every
@@ -15,7 +15,7 @@
 // inherited value, which upstream of any color-setting ancestor is whatever the platform default
 // happens to be. The fix is not "set --text too" — it is a COMPLETE, self-contained token layer,
 // computed with the exact same isDark-branching formula
-// apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx:177-211 already uses for the real
+// apps/customer_web/src/app/store/[subdomain]/layout.tsx:177-211 already uses for the real
 // storefront, so checkout looks visually consistent with the merchant's own theme rather than
 // inventing a second design language. globals.css's `.text-theme-*`/`.bg-surface`/`.card-theme*`
 // utility classes are KEPT (not replaced with checkout-owned classes): they are neutral,
@@ -220,7 +220,7 @@ const NEUTRAL = {
 
 // A merchant with no branding row AND no resolved theme settings gets the neutral LetBuyy
 // default — never a fabricated logo or an inferred colour. `theme` is the store's own already-
-// resolved ThemeSettings (apps/storefront-runtime/src/lib/store-service.ts's mapSupabaseToStore
+// resolved ThemeSettings (apps/customer_web/src/lib/store-service.ts's mapSupabaseToStore
 // — the SAME data the merchant's real storefront renders from, no second configuration step);
 // `input` is the store_branding row, which layers a checkout-specific override on top where a
 // merchant has explicitly set one via PUT /stores/:storeId/branding.
@@ -272,7 +272,7 @@ export function sanitizeBranding(
 // object React serializes itself — never a raw <style> block, and never string-concatenated
 // into one), so a value that somehow survived sanitization still can't break out of a property
 // value the way it could inside interpolated CSS text. The derivation formulas for the
-// isDark-branched values are the SAME ones apps/storefront-runtime/src/app/store/[subdomain]/
+// isDark-branched values are the SAME ones apps/customer_web/src/app/store/[subdomain]/
 // layout.tsx:190-201 uses for the real storefront (header/footer-specific and <input>-specific
 // variables are intentionally omitted — checkout renders neither theme chrome nor uses those
 // tokens, confirmed by grepping checkout-client.tsx's own var()/utility-class usage).

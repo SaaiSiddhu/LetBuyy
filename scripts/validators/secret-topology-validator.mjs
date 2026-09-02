@@ -5,7 +5,7 @@ const reporter = createReporter("Secret topology validator");
 const stagingDeploy = readFile(".github/workflows/staging-deploy.yml");
 const productionDeploy = readFile(".github/workflows/production-deploy.yml");
 const setSecrets = readFile("scripts/github/set-secrets.mjs");
-const consoleSession = readFile("apps/platform-console/src/lib/console-session.ts");
+const consoleSession = readFile("apps/admin_web/src/lib/console-session.ts");
 
 // --- set-secrets.mjs: shared INTERNAL_API_SECRET must be retired ---
 reporter.assert(
@@ -81,7 +81,7 @@ reporter.assert(
 // --- console-session.ts: AUTH_SECRET fallback must be removed ---
 reporter.assert(
   !consoleSession.includes("process.env.AUTH_SECRET"),
-  "apps/platform-console/src/lib/console-session.ts must not use process.env.AUTH_SECRET as a fallback (different security domain)"
+  "apps/admin_web/src/lib/console-session.ts must not use process.env.AUTH_SECRET as a fallback (different security domain)"
 );
 
 reporter.finish("Secret topology: per-caller secrets, keyring provisioning, console session isolation checked");

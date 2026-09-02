@@ -8,11 +8,11 @@ import {
 
 const reporter = createReporter("Cookie realm validator");
 
-const storefrontFiles = listWorkspaceFiles(["apps/storefront-runtime/src"])
+const storefrontFiles = listWorkspaceFiles(["apps/customer_web/src"])
   .filter((file) => sourceExtensions.has(path.extname(file)) && !file.endsWith(".d.ts"));
 const platformCookieFiles = [
   "apps/identity-platform/src/lib/auth/cookies.ts",
-  "apps/merchant-control-plane/src/app/api/auth/logout/route.ts",
+  "apps/merchant_web/src/app/api/auth/logout/route.ts",
 ];
 
 for (const file of storefrontFiles) {

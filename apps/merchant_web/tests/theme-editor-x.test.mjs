@@ -105,7 +105,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const CONTROLS_DIR = `${MCP_BASE}/components/theme-editor/controls`;
 const RENDERER = `${MCP_BASE}/components/theme-editor/SchemaFormRenderer.tsx`;
 
@@ -114,7 +114,7 @@ const MEDIA_LIBRARY = `${CONTROLS_DIR}/MediaLibrary.tsx`;
 const IMAGE_PICKER = `${CONTROLS_DIR}/ImagePickerControl.tsx`;
 const VIDEO_CONTROL = `${CONTROLS_DIR}/VideoControl.tsx`;
 const CSS_MODULE = `${CONTROLS_DIR}/controls.module.css`;
-const PKG_JSON = 'apps/merchant-control-plane/package.json';
+const PKG_JSON = 'apps/merchant_web/package.json';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FILE EXISTENCE

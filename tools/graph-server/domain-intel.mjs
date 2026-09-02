@@ -50,14 +50,14 @@ const LABEL = Object.fromEntries(DOMAINS.map((d) => [d.key, d.label]));
 
 // Domain → primary product surface (Vercel apps) — repository topology (CLAUDE.md runtime map).
 const DOMAIN_APPS = {
-  merchant: ['merchant-control-plane'], products: ['merchant-control-plane'], collections: ['merchant-control-plane'],
-  inventory: ['merchant-control-plane'], orders: ['merchant-control-plane', 'storefront-runtime'], shipping: ['merchant-control-plane'],
-  gst: ['merchant-control-plane'], discounts: ['merchant-control-plane'], 'gift-cards': ['merchant-control-plane', 'storefront-runtime'],
-  payments: ['merchant-control-plane', 'storefront-runtime'], refunds: ['merchant-control-plane'], payouts: ['merchant-control-plane'],
-  analytics: ['merchant-control-plane'], themes: ['merchant-control-plane', 'storefront-runtime'],
-  storefront: ['storefront-runtime'], identity: ['identity-platform'], authentication: ['identity-platform'],
-  authorization: ['identity-platform', 'platform-console'], operations: ['platform-console'],
-  marketplace: ['app-marketplace'], developer: ['developer-portal'], notifications: ['merchant-control-plane'],
+  merchant: ['merchant-web'], products: ['merchant-web'], collections: ['merchant-web'],
+  inventory: ['merchant-web'], orders: ['merchant-web', 'customer-web'], shipping: ['merchant-web'],
+  gst: ['merchant-web'], discounts: ['merchant-web'], 'gift-cards': ['merchant-web', 'customer-web'],
+  payments: ['merchant-web', 'customer-web'], refunds: ['merchant-web'], payouts: ['merchant-web'],
+  analytics: ['merchant-web'], themes: ['merchant-web', 'customer-web'],
+  storefront: ['customer-web'], identity: ['identity-platform'], authentication: ['identity-platform'],
+  authorization: ['identity-platform', 'admin-web'], operations: ['admin-web'],
+  marketplace: ['app-marketplace'], developer: ['developer-portal'], notifications: ['merchant-web'],
 };
 
 // Domain → Cloudflare queues (wrangler producers). EVENT_QUEUE = generic outbox emitter.

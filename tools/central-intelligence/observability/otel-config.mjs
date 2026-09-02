@@ -24,8 +24,8 @@ export const SERVICE_NAMES = /** @type {const} */ ({
   WEBHOOK_SERVICE: 'webhook-service',
   MOBILE_BFF: 'mobile-bff',
   IDENTITY_PLATFORM: 'identity-platform',
-  MERCHANT_CONTROL_PLANE: 'merchant-control-plane',
-  STOREFRONT_RUNTIME: 'storefront-runtime',
+  MERCHANT_CONTROL_PLANE: 'merchant-web',
+  STOREFRONT_RUNTIME: 'customer-web',
   MARKETING_SITE: 'marketing-site',
 });
 

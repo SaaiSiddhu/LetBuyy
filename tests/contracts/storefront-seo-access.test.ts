@@ -14,10 +14,10 @@ function read(relativePath: string): string {
 }
 
 test('storefront SEO uses access state as the indexability source', () => {
-  const seo = read('apps/storefront-runtime/src/lib/seo.ts');
-  const robots = read('apps/storefront-runtime/src/app/robots.ts');
-  const sitemap = read('apps/storefront-runtime/src/app/sitemap.ts');
-  const layout = read('apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx');
+  const seo = read('apps/customer_web/src/lib/seo.ts');
+  const robots = read('apps/customer_web/src/app/robots.ts');
+  const sitemap = read('apps/customer_web/src/app/sitemap.ts');
+  const layout = read('apps/customer_web/src/app/store/[subdomain]/layout.tsx');
 
   assert.match(seo, /function isStorefrontIndexable/);
   assert.match(seo, /accessMode \|\| 'public'/);
@@ -31,8 +31,8 @@ test('storefront SEO uses access state as the indexability source', () => {
 });
 
 test('active custom domains become canonical and .store subdomains redirect', () => {
-  const seo = read('apps/storefront-runtime/src/lib/seo.ts');
-  const proxy = read('apps/storefront-runtime/src/proxy.ts');
+  const seo = read('apps/customer_web/src/lib/seo.ts');
+  const proxy = read('apps/customer_web/src/proxy.ts');
 
   assert.match(seo, /customDomainStatus === 'active'/);
   assert.match(proxy, /parsed\.kind === 'subdomain'/);

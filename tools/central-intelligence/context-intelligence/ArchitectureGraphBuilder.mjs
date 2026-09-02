@@ -34,9 +34,9 @@ const LAYER_MAP = {
   'letbuyy-mobile-bff': 'gateway',
   'marketing-site': 'edge',
   'identity-platform': 'edge',
-  'merchant-control-plane': 'edge',
-  'storefront-runtime': 'edge',
-  'platform-console': 'edge',
+  'merchant-web': 'edge',
+  'customer-web': 'edge',
+  'admin-web': 'edge',
 };
 
 /**

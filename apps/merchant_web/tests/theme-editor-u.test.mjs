@@ -1,5 +1,5 @@
 /**
- * Phase U — Control parity: static-contract tests for the merchant-control-plane.
+ * Phase U — Control parity: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, import patterns,
  * ARIA / a11y markers, design-ratchet compliance, sanitize-law compliance)
@@ -43,7 +43,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const CONTROLS_DIR = `${MCP_BASE}/components/theme-editor/controls`;
 const RENDERER = `${MCP_BASE}/components/theme-editor/SchemaFormRenderer.tsx`;
 const THEME_SCHEMAS = `${MCP_BASE}/lib/theme-schemas.ts`;

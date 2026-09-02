@@ -23,7 +23,7 @@ const exists = (p) => existsSync(resolve(ROOT, p));
 // ─── Freeze: storefront install route ────────────────────────────────────────
 
 test('K5/freeze: storefront install route returns HTTP 410 Gone (permanently frozen)', () => {
-  const src = read('apps/storefront-runtime/src/app/api/themes/install/route.ts');
+  const src = read('apps/customer_web/src/app/api/themes/install/route.ts');
   // The route must return a 410 response — never a 200/201/404.
   assert.match(src, /status:\s*410/, 'route must carry { status: 410 }');
   // Must declare a POST handler (not GET/PUT) so only install attempts are blocked.
@@ -36,7 +36,7 @@ test('K5/freeze: storefront install route returns HTTP 410 Gone (permanently fro
 });
 
 test('K5/freeze: storefront install route has no bypass path (no early-return 200)', () => {
-  const src = read('apps/storefront-runtime/src/app/api/themes/install/route.ts');
+  const src = read('apps/customer_web/src/app/api/themes/install/route.ts');
   // Only one exported function — no GET/PUT/PATCH that could be mistaken for an install path.
   assert.doesNotMatch(src, /export\s+async\s+function\s+GET\b/);
   assert.doesNotMatch(src, /export\s+async\s+function\s+PUT\b/);

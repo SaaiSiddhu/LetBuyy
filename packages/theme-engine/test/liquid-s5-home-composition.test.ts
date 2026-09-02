@@ -241,7 +241,7 @@ test('W3: every setting TYPE used across templates.index sections already has a 
     }
   }
   const renderer = readFileSync(
-    new URL('../../../apps/merchant-control-plane/src/components/theme-editor/SchemaFormRenderer.tsx', import.meta.url),
+    new URL('../../../apps/merchant_web/src/components/theme-editor/SchemaFormRenderer.tsx', import.meta.url),
     'utf8',
   );
   const missing: string[] = [];

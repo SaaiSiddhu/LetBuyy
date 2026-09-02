@@ -173,7 +173,7 @@ async function buildStoreThemeCheckoutHealthSection() {
 
   // Store health (structural)
   lines.push('### Storefront');
-  lines.push('- Runtime: `apps/storefront-runtime` (Next.js, Cloudflare Workers) — structural status CONNECTED');
+  lines.push('- Runtime: `apps/customer_web` (Next.js, Cloudflare Workers) — structural status CONNECTED');
   lines.push('- Liquid canary: OFF by default (`THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false`) — CONNECTED');
   lines.push('- React hybrid: ON by default — CONNECTED');
   lines.push('- Live store error rate: **NOT CONNECTED** (source: Cloudflare Analytics Engine)');
@@ -221,7 +221,7 @@ async function buildStoreThemeCheckoutHealthSection() {
   } else {
     lines.push('- Checkout health: **NOT CONNECTED** (source: V1 LCIS /api/customer-journey @ localhost:3333)');
   }
-  lines.push('- Checkout embedding: `storefront-runtime` (not yet centralized) — CONNECTED structural fact');
+  lines.push('- Checkout embedding: `customer-web` (not yet centralized) — CONNECTED structural fact');
   lines.push('- Branding tokens reaching checkout: MISSING (audit finding — gap)');
   lines.push('- COD + Razorpay: supported (server-side HMAC verified) — CONNECTED');
   lines.push('- Cart abandonment recovery: NOT IMPLEMENTED — CONNECTED structural gap');
@@ -284,7 +284,7 @@ async function buildMerchantRecommendationsSection(recEngine) {
     lines.push('\n### Structural Recommendations (always CONNECTED)');
     lines.push('1. [P0] Implement `apply_preset` API in theme engine before launch (merchant onboarding blocker)');
     lines.push('2. [P0] Resolve H8/H9 (Razorpay Route + step-up HMAC enforcement) before October 1 GA');
-    lines.push('3. [P1] Add branding token propagation to checkout (storefront-runtime → checkout context)');
+    lines.push('3. [P1] Add branding token propagation to checkout (customer-web → checkout context)');
     lines.push('4. [P1] Build customer detail page in merchant control plane (Phase-4 gap)');
     lines.push('5. [P1] Enforce RBAC for merchant staff accounts at the API level (not just UI)');
     lines.push('6. [P2] Auto-assign theme during merchant onboarding (`letbuyy-core` alias, packages/theme-engine)');

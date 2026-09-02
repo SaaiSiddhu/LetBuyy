@@ -1,5 +1,5 @@
 /**
- * Phase Y — App Block Slot Editor: static-contract tests for the merchant-control-plane.
+ * Phase Y — App Block Slot Editor: static-contract tests for the merchant-web.
  *
  * Verifies source-level contracts (file existence, import patterns, ARIA/a11y
  * markers, design-ratchet compliance, tenancy law, RISK-DUAL-N01 isolation,
@@ -86,11 +86,11 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const PROXY_ROUTE = `${MCP_BASE}/app/api/stores/[store]/themes/app-blocks/route.ts`;
 const APP_BLOCK_PANEL = `${MCP_BASE}/components/theme-editor/AppBlockSlotPanel.tsx`;
 const CSS_MODULE = `${MCP_BASE}/components/theme-editor/controls/controls.module.css`;
-const PKG_JSON = 'apps/merchant-control-plane/package.json';
+const PKG_JSON = 'apps/merchant_web/package.json';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FILE EXISTENCE

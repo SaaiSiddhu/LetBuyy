@@ -1,5 +1,5 @@
 {
-  "name": "@letbuyy/platform-console",
+  "name": "@letbuyy/admin-web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/platform-console-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
+    "test": "cd ../.. && node --test tests/federation/admin-web-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

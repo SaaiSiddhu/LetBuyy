@@ -6,15 +6,15 @@ import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const rendererRegistrySource = readFileSync(
-    join(testDir, '../../apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx'),
+    join(testDir, '../../apps/customer_web/src/lib/theme-engine/renderer-registry.tsx'),
     'utf8',
 );
 const storeServiceSource = readFileSync(
-    join(testDir, '../../apps/storefront-runtime/src/lib/store-service.ts'),
+    join(testDir, '../../apps/customer_web/src/lib/store-service.ts'),
     'utf8',
 );
 const compositionEngineSource = readFileSync(
-    join(testDir, '../../apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx'),
+    join(testDir, '../../apps/customer_web/src/lib/theme-engine/composition-engine.tsx'),
     'utf8',
 );
 

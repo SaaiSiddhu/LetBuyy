@@ -1377,7 +1377,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         // T5/W1 — which linklist (built by navToLinklists from the merchant's real
         // control-plane navigation) populates the primary nav when no explicit `link` blocks are
         // configured. There is no link_list-picker control in SchemaFormRenderer yet (checked
-        // apps/merchant-control-plane/src/components/theme-editor/controls/ — only the types in
+        // apps/merchant_web/src/components/theme-editor/controls/ — only the types in
         // ThemeBundleSettingFieldSchema exist: text/textarea/richtext/color/image/select/toggle/
         // range/number/url/radio), so this is a `select` over the three fixed handles
         // navToLinklists actually produces — an accurate, if coarse, interim per the phase brief.
@@ -1525,7 +1525,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
       body: [
         '<section class="lb-product-detail" data-section-id="{{ section.id }}">',
         // T6/W3 — a real, visible breadcrumb (the JSON-LD structured-data breadcrumb already ships
-        // separately from apps/storefront-runtime's own page component, see buildBreadcrumbJsonLd in
+        // separately from apps/customer_web's own page component, see buildBreadcrumbJsonLd in
         // lib/seo.ts — this is the on-page, clickable counterpart Dawn also ships). Every href through
         // store_url, matching the rest of this bundle's convention.
         '  <nav class="lb-product-detail__breadcrumb" aria-label="Breadcrumb">',
@@ -3871,7 +3871,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
       // rich-content.liquid only carries title/richtext body, and neither the theme-registry.ts
       // React section-schema model nor this portable ThemeBundleSettingFieldSchema declares a
       // video-typed field for any EXISTING section. The Phase-U VideoControl/VideoUrlControl
-      // (apps/merchant-control-plane/.../controls/) are wired for a DIFFERENT, parallel type system
+      // (apps/merchant_web/.../controls/) are wired for a DIFFERENT, parallel type system
       // (theme-registry.ts's ExtendedFieldType, the React/JSON-contract editor model) that this
       // portable Liquid bundle's ThemeBundleSettingFieldSchema enum does not include — deliberately
       // NOT reused here. Instead the video URL is a plain `url`-typed setting, a type ALREADY in

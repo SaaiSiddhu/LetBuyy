@@ -16,10 +16,10 @@ const allowedTokenAuthorities = [
 
 const forbiddenMobileTokenAuthorities = [
   "packages/typescript/ui/src/mobile-tokens.ts",
-  "apps/mobile/merchant-app/lib/theme/letbuyy_color_tokens.dart",
-  "apps/mobile/merchant-app/lib/theme/light_theme_colors.dart",
-  "apps/mobile/merchant-app/lib/theme/dark_theme_colors.dart",
-  "apps/mobile/merchant-app/lib/theme/store_admin_colors.dart",
+  "apps/merchant_app/lib/theme/letbuyy_color_tokens.dart",
+  "apps/merchant_app/lib/theme/light_theme_colors.dart",
+  "apps/merchant_app/lib/theme/dark_theme_colors.dart",
+  "apps/merchant_app/lib/theme/store_admin_colors.dart",
 ];
 
 const tokenAuthorityPattern =

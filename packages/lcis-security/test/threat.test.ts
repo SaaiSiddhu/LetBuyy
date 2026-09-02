@@ -117,7 +117,7 @@ const DB_INTEL_FIXTURE = {
       hasIdempotency: false,
       forUpdate: false,
       money: true,
-      callers: ['apps/storefront-runtime'],
+      callers: ['apps/customer_web'],
     },
     {
       name: 'complete_refund',
@@ -128,7 +128,7 @@ const DB_INTEL_FIXTURE = {
       hasIdempotency: true,
       forUpdate: true,
       money: true,
-      callers: ['apps/merchant-control-plane'],
+      callers: ['apps/merchant_web'],
     },
   ],
   policies: [
@@ -172,7 +172,7 @@ const DOMAIN_INTEL_FIXTURE = {
       rpcs: ['create_checkout_order'],
       tables: ['store_orders'],
       queues: [],
-      apps: ['apps/merchant-control-plane'],
+      apps: ['apps/merchant_web'],
       workers: [],
       secrets: [],
       owners: ['@commerce-team'],

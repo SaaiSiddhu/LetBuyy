@@ -92,8 +92,8 @@ test('IRT-6: the primary verifier is unchanged by the reuse (regression check)',
   assert.equal(normalizeCustomerSessionId('bad\x00id'), null);
 });
 
-test('IRT-6: all three storefront-runtime mint paths (login/register/set-password) round-trip through the tightened legacy verifier', async () => {
-  // login, register, and set-password (apps/storefront-runtime/src/app/api/
+test('IRT-6: all three customer-web mint paths (login/register/set-password) round-trip through the tightened legacy verifier', async () => {
+  // login, register, and set-password (apps/customer_web/src/app/api/
   // customer/{login,register,set-password}/route.ts) all call the SAME
   // createSession() -> createHostOnlyShopperIdentityProvider() ->
   // createCustomerSessionToken() chain with a customer.id/customer.storeId

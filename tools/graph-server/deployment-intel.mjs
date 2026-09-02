@@ -28,10 +28,10 @@ export function buildDeploymentIntel(infra, di) {
 
   // subdomains derived from the proxy host-routing model + Vercel app topology (CLAUDE.md).
   const subdomains = [
-    { host: '{store}.letbuyy.com + custom domains', app: 'storefront-runtime', via: 'proxy.ts host routing' },
-    { host: 'merchant / app console', app: 'merchant-control-plane', via: 'Vercel' },
+    { host: '{store}.letbuyy.com + custom domains', app: 'customer-web', via: 'proxy.ts host routing' },
+    { host: 'merchant / app console', app: 'merchant-web', via: 'Vercel' },
     { host: 'identity / auth', app: 'identity-platform', via: 'Vercel' },
-    { host: 'platform ops', app: 'platform-console', via: 'Vercel' },
+    { host: 'platform ops', app: 'admin-web', via: 'Vercel' },
     { host: 'marketing (www)', app: 'marketing-site', via: 'Vercel' },
     { host: 'api gateway (/v1)', app: 'services/api-gateway', via: 'Cloudflare Worker (letbuyy-api)' },
   ].filter((x) => s.vercelApps.includes(x.app) || /worker|gateway/i.test(x.via));

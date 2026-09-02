@@ -1,4 +1,4 @@
-// V1 LB-7: storefront-runtime proxy for store shipping rates.
+// V1 LB-7: customer-web proxy for store shipping rates.
 // Proxies POST /v1/shipping/rates on the gateway using the internal API secret so
 // the storefront checkout can display real merchant-configured rates.
 // The caller (checkout-client.tsx) passes { store_id, pincode, subtotal_minor }.

@@ -51,7 +51,7 @@ test('Wave 5 scope exiles marketing and forbids local workspace implementations'
     assert.deepEqual(baseline.scope.exiledApps, ['apps/marketing-site']);
 
     for (const file of [
-        'apps/platform-console/src/components/_local-ui/console-workspace.tsx',
+        'apps/admin_web/src/components/_local-ui/console-workspace.tsx',
         'apps/platform-operations-portal/src/components/_local-ui/ops-workspace.tsx',
     ]) {
         const text = readFileSync(join(ROOT, file), 'utf8');

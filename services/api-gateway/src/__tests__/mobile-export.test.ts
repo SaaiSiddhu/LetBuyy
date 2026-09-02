@@ -13,19 +13,19 @@ const dartClientSource = readFileSync(
     'utf8',
 );
 const orderServiceSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/services/order_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/services/order_service.dart', import.meta.url),
     'utf8',
 );
 const customerServiceSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/services/customer_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/services/customer_service.dart', import.meta.url),
     'utf8',
 );
 const ordersScreenSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/screens/orders/orders_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/screens/orders/orders_screen.dart', import.meta.url),
     'utf8',
 );
 const customersScreenSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/screens/customers/customers_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/screens/customers/customers_screen.dart', import.meta.url),
     'utf8',
 );
 

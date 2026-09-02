@@ -41,11 +41,11 @@ const serviceRuntimes = [
 const webApps = [
   { name: "marketing-site", cwd: "apps/marketing-site", url: "http://127.0.0.1:3000" },
   { name: "identity-platform", cwd: "apps/identity-platform", url: "http://127.0.0.1:3001" },
-  { name: "merchant-control-plane", cwd: "apps/merchant-control-plane", url: "http://127.0.0.1:3002" },
-  { name: "storefront-runtime", cwd: "apps/storefront-runtime", url: "http://127.0.0.1:3003" },
+  { name: "merchant-web", cwd: "apps/merchant_web", url: "http://127.0.0.1:3002" },
+  { name: "customer-web", cwd: "apps/customer_web", url: "http://127.0.0.1:3003" },
   { name: "app-marketplace", cwd: "apps/app-marketplace", url: "http://127.0.0.1:3004" },
   { name: "theme-marketplace", cwd: "apps/theme-marketplace", url: "http://127.0.0.1:3005" },
-  { name: "platform-console", cwd: "apps/platform-console", url: "http://127.0.0.1:3010" },
+  { name: "admin-web", cwd: "apps/admin_web", url: "http://127.0.0.1:3010" },
   { name: "platform-operations-portal", cwd: "apps/platform-operations-portal", url: "http://127.0.0.1:3011" },
 ];
 
@@ -62,8 +62,8 @@ const localSecrets = {
   CUSTOMER_SESSION_SECRET: localValue("customer-session"),
   CSRF_SECRET: localValue("csrf"),
   INTERNAL_API_SECRET: localValue("internal-api"),
-  PLATFORM_CONSOLE_API_TOKEN: localValue("platform-console-token"),
-  PLATFORM_CONSOLE_SESSION_SECRET: localValue("platform-console-session"),
+  PLATFORM_CONSOLE_API_TOKEN: localValue("admin-web-token"),
+  PLATFORM_CONSOLE_SESSION_SECRET: localValue("admin-web-session"),
   PLATFORM_CONSOLE_ALLOWED_EMAILS: "ops@letbuyy.local,partner@letbuyy.local",
   PLATFORM_CONSOLE_DEV_MFA_CODE: "123456",
   PAYMENT_CONFIG_ENCRYPTION_KEY: localHex32(),
@@ -412,7 +412,7 @@ VALUES
     '{}'::jsonb,
     '{}'::jsonb,
     '{}'::jsonb,
-    '{"renderer":"storefront-runtime","version":"1.0.0"}'::jsonb
+    '{"renderer":"customer-web","version":"1.0.0"}'::jsonb
   ),
   (
     '00000000-0000-4000-8000-000000000301',
@@ -445,7 +445,7 @@ VALUES
     '{}'::jsonb,
     '{}'::jsonb,
     '{}'::jsonb,
-    '{"renderer":"storefront-runtime","version":"1.0.0"}'::jsonb
+    '{"renderer":"customer-web","version":"1.0.0"}'::jsonb
   )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,

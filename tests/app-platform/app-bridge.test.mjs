@@ -8,10 +8,10 @@ import { readAppStoreRouteSource, readStorefrontRouteSource } from '../helpers/a
 const APP_ENGINE_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
 const EXTENSION_HOST_SOURCE = 'packages/shared-types/src/app-platform.ts';
-const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
-const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
-const CHECKOUT_CLIENT_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx';
-const CHECKOUT_PAGE_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/page.tsx';
+const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant_web/src/components/apps/EmbeddedAppBridgeClient.tsx';
+const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant_web/src/app/[store]/apps/[installationId]/page.tsx';
+const CHECKOUT_CLIENT_SOURCE = 'apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx';
+const CHECKOUT_PAGE_SOURCE = 'apps/customer_web/src/app/store/[subdomain]/checkout/page.tsx';
 const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
 
 function createZodStub() {
@@ -260,7 +260,7 @@ test('WS13 X3 checkout UI extension registry stays typed but buyer checkout does
   assert.match(storefrontRouteSource, /\.eq\('status', 'enabled'\)/);
 
   assert.equal(
-    existsSync('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
+    existsSync('apps/customer_web/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
     false,
     'checkout iframe host must stay deleted until ARB re-scopes checkout extensions',
   );

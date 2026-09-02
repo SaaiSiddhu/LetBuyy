@@ -32,8 +32,8 @@ test('domain boundary validator rejects app-local API ownership drift', () => {
 });
 
 test('storefront auto-create no longer accepts client-controlled order stats', () => {
-  const route = read('apps/storefront-runtime/src/app/api/customer/auto-create/route.ts');
-  const checkout = read('apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx');
+  const route = read('apps/customer_web/src/app/api/customer/auto-create/route.ts');
+  const checkout = read('apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx');
 
   assert.doesNotMatch(route, /orderTotal|order_total|orderId|updateCustomerStats|@\/lib\/customer-service/);
   assert.match(route, /createStorefrontApiClient\(\)\.storefront\.findOrCreateCustomer/);

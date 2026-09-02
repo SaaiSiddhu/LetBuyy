@@ -1,5 +1,5 @@
 /**
- * Phase R — Theme Editor shell: static-contract tests for the merchant-control-plane.
+ * Phase R — Theme Editor shell: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, import patterns,
  * ARIA attributes, conflict-detection code, extraction completeness) without
@@ -24,7 +24,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const EDITOR_PAGE = `${MCP_BASE}/app/[store]/online-store/themes/[themeId]/editor/page.tsx`;
 const CONFLICT_DIALOG = `${MCP_BASE}/components/theme-editor/ConflictDialog.tsx`;
 const SECTION_TREE_PANEL = `${MCP_BASE}/components/theme-editor/SectionTreePanel.tsx`;

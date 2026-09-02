@@ -12,7 +12,7 @@
 // WCAG AA contrast fallback and the font-family injection guard from the same phase, without a
 // browser — cheap enough to run on every change instead of only once in a session transcript.
 //
-// Run: npx tsx --tsconfig apps/storefront-runtime/tsconfig.json --test src/app/checkout-origin/branding.test.ts
+// Run: npx tsx --tsconfig apps/customer_web/tsconfig.json --test src/app/checkout-origin/branding.test.ts
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -43,7 +43,7 @@ function compositeRgbaOverHex(rgba: string, backgroundHex: string): string {
 }
 
 // Every custom property checkout-client.tsx's .text-theme-*/.bg-surface/.card-theme* utility
-// classes read (apps/storefront-runtime/src/app/globals.css:71-120), plus the two the button/
+// classes read (apps/customer_web/src/app/globals.css:71-120), plus the two the button/
 // accent inline styles use directly. A var() that resolves empty computes as the inherited value
 // on an inherited property (color) — the exact shape of bug #1 above.
 const CONSUMED_CUSTOM_PROPERTIES = [

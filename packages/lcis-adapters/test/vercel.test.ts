@@ -44,7 +44,7 @@ const MOCK_PROJECTS = {
   projects: [
     {
       id: 'proj_storefront',
-      name: 'storefront-runtime',
+      name: 'customer-web',
       framework: 'nextjs',
       buildCommand: 'pnpm build',
       outputDirectory: '.next',
@@ -53,7 +53,7 @@ const MOCK_PROJECTS = {
     },
     {
       id: 'proj_merchant',
-      name: 'merchant-control-plane',
+      name: 'merchant-web',
       framework: null, // no framework — triggers build-drift
       buildCommand: null,
       outputDirectory: null,
@@ -82,7 +82,7 @@ const MOCK_DEPLOYMENTS = {
   deployments: [
     {
       uid: 'dep_ready_new',
-      name: 'storefront-runtime',
+      name: 'customer-web',
       url: 'storefront-abc.vercel.app',
       state: 'READY',
       createdAt: RECENT_AT,
@@ -90,7 +90,7 @@ const MOCK_DEPLOYMENTS = {
     },
     {
       uid: 'dep_error',
-      name: 'merchant-control-plane',
+      name: 'merchant-web',
       url: 'merchant-xyz.vercel.app',
       state: 'ERROR',
       createdAt: RECENT_AT - 3600000,
@@ -106,7 +106,7 @@ const MOCK_DEPLOYMENTS = {
     },
     {
       uid: 'dep_old',
-      name: 'storefront-runtime',
+      name: 'customer-web',
       url: 'storefront-old.vercel.app',
       state: 'READY',
       createdAt: STALE_AT - 1000,
@@ -259,7 +259,7 @@ test('(11) build-drift finding for projects without framework set', async () => 
   const v = await a.verify();
   const drift = v.findings.filter((f) => f.kind === 'build-drift');
   assert.ok(drift.length >= 1, 'should detect build-drift for projects with null framework');
-  assert.match(drift[0]!.detail, /merchant-control-plane/);
+  assert.match(drift[0]!.detail, /merchant-web/);
 });
 
 test('(12) domain-drift finding for unverified domains', async () => {

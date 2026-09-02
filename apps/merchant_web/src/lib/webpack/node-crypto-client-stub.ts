@@ -1,6 +1,6 @@
 // Client-only stub for `node:crypto`.
 //
-// Mirrors apps/storefront-runtime/src/lib/webpack/node-crypto-client-stub.ts —
+// Mirrors apps/customer_web/src/lib/webpack/node-crypto-client-stub.ts —
 // same root cause, different app. theme-engine's barrel re-exports
 // `theme-packager` (index.ts:41) and `theme-publish` (index.ts:46), and
 // theme-packager imports `node:crypto` for build-time bundle checksums. The

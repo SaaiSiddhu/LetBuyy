@@ -37,10 +37,10 @@ reporter.assert(
 );
 
 for (const file of [
-  "apps/merchant-control-plane/src/app/[store]/orders/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/settings/billing/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/settings/plan/page.tsx",
-  "apps/platform-console/src/lib/console-api.ts",
+  "apps/merchant_web/src/app/[store]/orders/page.tsx",
+  "apps/merchant_web/src/app/[store]/settings/billing/page.tsx",
+  "apps/merchant_web/src/app/[store]/settings/plan/page.tsx",
+  "apps/admin_web/src/lib/console-api.ts",
   "apps/platform-operations-portal/src/app/(dashboard)/operations/onboarding/page.tsx",
   "apps/app-marketplace/src/app/(store)/apps/[slug]/page.tsx",
 ]) {

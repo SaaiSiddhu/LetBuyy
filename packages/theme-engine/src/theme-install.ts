@@ -5,7 +5,7 @@
 // persistence of any kind.
 //
 // INSTALLATION PERSISTENCE IS GATEWAY-OWNED:
-//   The storefront install route (apps/storefront-runtime/src/app/api/themes/install/route.ts)
+//   The storefront install route (apps/customer_web/src/app/api/themes/install/route.ts)
 //   permanently returns 410 Gone by design — it guards against direct client-side writes.
 //   Actual persistence flows through the api-gateway (services/api-gateway) via
 //   theme-execution.adapter.ts (buildReleaseArtifacts, theme_releases table) and

@@ -8,8 +8,8 @@ import {
 
 const reporter = createReporter("Storefront access gate validator");
 
-const proxy = readFile("apps/storefront-runtime/src/proxy.ts");
-const orderRoute = readFile("apps/storefront-runtime/src/app/api/orders/route.ts");
+const proxy = readFile("apps/customer_web/src/proxy.ts");
+const orderRoute = readFile("apps/customer_web/src/app/api/orders/route.ts");
 
 for (const fragment of [
   "resolveStorefrontHost",
@@ -50,7 +50,7 @@ reporter.assert(
   "preview checkout must block real order creation",
 );
 
-for (const file of listWorkspaceFiles(["apps/storefront-runtime/src"]).filter((candidate) => sourceExtensions.has(path.extname(candidate)))) {
+for (const file of listWorkspaceFiles(["apps/customer_web/src"]).filter((candidate) => sourceExtensions.has(path.extname(candidate)))) {
   const source = readFile(file);
   reporter.assert(
     !/\.from\(\s*["'](?:sites|site_preview_links|site_gate_attempts)["']\s*\)[\s\S]{0,400}\.(?:insert|update|upsert|delete)\s*\(/.test(source),

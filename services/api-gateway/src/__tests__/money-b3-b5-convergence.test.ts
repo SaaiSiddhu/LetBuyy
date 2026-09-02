@@ -8,11 +8,11 @@ const internalConsoleMoneySource = readFileSync(
     'utf8',
 );
 const consoleLayoutSource = readFileSync(
-    new URL('../../../../apps/platform-console/src/app/(dashboard)/layout.tsx', import.meta.url),
+    new URL('../../../../apps/admin_web/src/app/(dashboard)/layout.tsx', import.meta.url),
     'utf8',
 );
 const consolePageSource = readFileSync(
-    new URL('../../../../apps/platform-console/src/app/(dashboard)/money-reconciliation/page.tsx', import.meta.url),
+    new URL('../../../../apps/admin_web/src/app/(dashboard)/money-reconciliation/page.tsx', import.meta.url),
     'utf8',
 );
 const canonicalLedgerValidator = readFileSync(
@@ -28,7 +28,7 @@ const giftCardCheckoutMigration = readFileSync(
     'utf8',
 );
 
-test('B4 exposes an audited platform-console break-resolution queue for money ledger mismatches', () => {
+test('B4 exposes an audited admin-web break-resolution queue for money ledger mismatches', () => {
     assert.match(internalConsoleSource, /router\.route\('\/money', internalConsoleMoneyRouter\)/);
     assert.match(internalConsoleMoneySource, /router\.get\('\/reconciliation'/);
     assert.match(internalConsoleMoneySource, /money_ledger_site_reconciliations/);

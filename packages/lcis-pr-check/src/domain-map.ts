@@ -75,7 +75,7 @@ export const PATH_DOMAIN_RULES: PathDomainRule[] = [
   { patterns: ['/themes/', 'theme-engine', 'liquid', 'preset', 'themeregistry', 'theme_registry'], domain: 'themes' },
 
   // ── Storefront ───────────────────────────────────────────────────────
-  { patterns: ['storefront-runtime', 'storefront', '/blogs/', '/pages/', 'proxy.ts', 'custom-domain'], domain: 'storefront' },
+  { patterns: ['customer-web', 'storefront', '/blogs/', '/pages/', 'proxy.ts', 'custom-domain'], domain: 'storefront' },
 
   // ── Marketplace ──────────────────────────────────────────────────────
   { patterns: ['app-marketplace', 'marketplace', 'extension-install', 'app_listing'], domain: 'marketplace' },
@@ -84,33 +84,33 @@ export const PATH_DOMAIN_RULES: PathDomainRule[] = [
   { patterns: ['developer-portal', 'oauth_client', 'api_key', 'developer'], domain: 'developer' },
 
   // ── Operations ───────────────────────────────────────────────────────
-  { patterns: ['feature_flag', 'incident', 'audit_log', 'platform-console', 'operations'], domain: 'operations' },
+  { patterns: ['feature_flag', 'incident', 'audit_log', 'admin-web', 'operations'], domain: 'operations' },
 ];
 
 /** Canonical service names used to populate affectedServices from domain keys */
 export const DOMAIN_TO_SERVICES: Record<string, string[]> = {
   payments: ['api-gateway', 'queue-workers', 'webhook-service'],
-  orders: ['api-gateway', 'storefront-runtime', 'queue-workers'],
+  orders: ['api-gateway', 'customer-web', 'queue-workers'],
   refunds: ['api-gateway', 'queue-workers'],
   payouts: ['api-gateway', 'queue-workers'],
   'gift-cards': ['api-gateway'],
   inventory: ['api-gateway', 'queue-workers'],
-  products: ['api-gateway', 'merchant-control-plane'],
-  collections: ['api-gateway', 'merchant-control-plane'],
-  discounts: ['api-gateway', 'storefront-runtime'],
-  shipping: ['api-gateway', 'storefront-runtime'],
+  products: ['api-gateway', 'merchant-web'],
+  collections: ['api-gateway', 'merchant-web'],
+  discounts: ['api-gateway', 'customer-web'],
+  shipping: ['api-gateway', 'customer-web'],
   gst: ['api-gateway'],
   authentication: ['identity-platform', 'api-gateway'],
   authorization: ['api-gateway', 'identity-platform'],
   identity: ['identity-platform', 'api-gateway'],
-  merchant: ['identity-platform', 'merchant-control-plane', 'api-gateway'],
+  merchant: ['identity-platform', 'merchant-web', 'api-gateway'],
   notifications: ['queue-workers', 'webhook-service'],
   analytics: ['queue-workers', 'api-gateway'],
-  themes: ['storefront-runtime', 'merchant-control-plane'],
-  storefront: ['storefront-runtime'],
+  themes: ['customer-web', 'merchant-web'],
+  storefront: ['customer-web'],
   marketplace: ['app-marketplace'],
   developer: ['developer-portal', 'api-gateway'],
-  operations: ['platform-console', 'api-gateway'],
+  operations: ['admin-web', 'api-gateway'],
 };
 
 /** Map a single file path to its primary domain key (or null if no rule matches). */

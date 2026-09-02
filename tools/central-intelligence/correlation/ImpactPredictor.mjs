@@ -195,7 +195,7 @@ class ImpactPredictor {
     // 4. Known topology for super-high-blast symbols
     if (isSharedService(component)) {
       for (const svc of [
-        'storefront-runtime', 'merchant-control-plane', 'identity-platform',
+        'customer-web', 'merchant-web', 'identity-platform',
         'services/api-gateway', 'services/queue-workers', 'services/webhook-service',
       ]) services.add(svc);
     }

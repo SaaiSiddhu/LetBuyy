@@ -184,8 +184,8 @@ class IncidentReasoner {
       affected.add('orders / order_items');
     }
     if (domain === 'identity') {
-      affected.add('merchant-control-plane (auth gate)');
-      affected.add('storefront-runtime (customer sessions)');
+      affected.add('merchant-web (auth gate)');
+      affected.add('customer-web (customer sessions)');
     }
 
     return [...affected].slice(0, 8);

@@ -11,11 +11,11 @@ const wranglerSource = readFileSync(new URL('../../wrangler.toml', import.meta.u
 const appEngineSource = readFileSync(new URL('../../../../packages/shared-types/src/app-platform.ts', import.meta.url), 'utf8');
 const sharedTypesSource = readFileSync(new URL('../../../../packages/shared-types/src/index.ts', import.meta.url), 'utf8');
 const mobileAiServiceSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/services/ai_studio_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/services/ai_studio_service.dart', import.meta.url),
     'utf8'
 );
 const mobileEditorSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/screens/editor/section_editor_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/screens/editor/section_editor_screen.dart', import.meta.url),
     'utf8'
 );
 const tsClientSource = readFileSync(new URL('../../../../packages/typescript/api-client/src/index.ts', import.meta.url), 'utf8');

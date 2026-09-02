@@ -49,7 +49,7 @@ for (const fragment of [
   reporter.assert(mobileBffTest.includes(fragment), `mobile BFF test missing: ${fragment}`);
 }
 
-const mobileAuthService = readFile('apps/mobile/merchant-app/lib/services/store_auth_service.dart');
+const mobileAuthService = readFile('apps/merchant_app/lib/services/store_auth_service.dart');
 for (const fragment of [
   'mobileBffBaseUrl',
   '_exchangeTurnstileWithBff(token)',
@@ -69,12 +69,12 @@ for (const fragment of [
   reporter.assert(identityTurnstile.includes(fragment), `identity Turnstile proof verifier missing: ${fragment}`);
 }
 assertIncludes(
-  'apps/mobile/merchant-app/lib/main.dart',
+  'apps/merchant_app/lib/main.dart',
   'mobileBffBaseUrl: AppConfig.bffBaseUrl',
   'merchant mobile app must inject the mobile BFF base URL into auth service',
 );
 assertIncludes(
-  'apps/mobile/merchant-app/test/mobile_services_test.dart',
+  'apps/merchant_app/test/mobile_services_test.dart',
   'lb-mobile-turnstile-v1.proof.signature',
   'merchant mobile tests must prove BFF Turnstile proof is sent to identity instead of the consumed provider token',
 );
@@ -104,7 +104,7 @@ reporter.assert(!checkoutPaymentRoute.includes('evaluateCheckoutAppFunctions'), 
 reporter.assert(!checkoutPaymentRoute.includes('CHECKOUT_FUNCTION_VALIDATION'), 'CAP-C13 checkout payment route must not depend on app-function validation errors');
 reporter.assert(checkoutPaymentRoute.includes('extensionFunctions: []'), 'CAP-C13 checkout response must expose an empty compatibility extensionFunctions array');
 reporter.assert(
-  !exists('apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
+  !exists('apps/customer_web/src/components/checkout-extensions/CheckoutExtensionHost.tsx'),
   'CAP-C13 checkout extension iframe host must stay deleted unless ARB re-scopes checkout extensions',
 );
 reporter.assert(!capabilityBacklog.includes('| CAP-C13 |'), 'CAP-C13 must not remain an open capability gap after checkout Wasm retirement');
@@ -185,8 +185,8 @@ const skipped = readFile('SKIPPED_HUMAN_DECISIONS.md');
 for (const skipId of ['SKIP-W7-MOBILE-TURNSTILE-SECRET', 'SKIP-W7-WHATSAPP-LIVE-CREDS']) {
   reporter.assert(skipped.includes(skipId), `SKIPPED_HUMAN_DECISIONS.md missing ${skipId}`);
 }
-if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) {
-  const merchantEditorPublishRoute = readFile('apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/route.ts');
+if (exists('apps/merchant_app/lib/widgets/editor/website_preview.dart')) {
+  const merchantEditorPublishRoute = readFile('apps/merchant_web/src/app/api/themes/[themeId]/editor/route.ts');
   for (const fragment of [
     'readPublishTemplateConfig',
     'body.liquidBundle',
@@ -196,7 +196,7 @@ if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) 
     reporter.assert(merchantEditorPublishRoute.includes(fragment), `CAP-C12 merchant editor publish route missing: ${fragment}`);
   }
 
-  const merchantEditorPage = readFile('apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+  const merchantEditorPage = readFile('apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
   for (const fragment of [
     'const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)',
     'templateConfig,',
@@ -212,7 +212,7 @@ if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) 
     reporter.assert(themeExecutionAdapter.includes(fragment), `CAP-C12 theme execution publish path missing: ${fragment}`);
   }
 
-  const mobileThemeService = readFile('apps/mobile/merchant-app/lib/services/theme_service.dart');
+  const mobileThemeService = readFile('apps/merchant_app/lib/services/theme_service.dart');
   for (const fragment of [
     'Map<String, dynamic>? templateConfig',
     'Map<String, dynamic>? liquidBundle',
@@ -221,7 +221,7 @@ if (exists('apps/mobile/merchant-app/lib/widgets/editor/website_preview.dart')) 
     reporter.assert(mobileThemeService.includes(fragment), `CAP-C12 mobile theme publish service missing: ${fragment}`);
   }
 
-  const mobileThemeScreen = readFile('apps/mobile/merchant-app/lib/screens/customize/theme_screen.dart');
+  const mobileThemeScreen = readFile('apps/merchant_app/lib/screens/customize/theme_screen.dart');
   reporter.assert(
     mobileThemeScreen.includes('_editorPayload?.templateConfig') && mobileThemeScreen.includes('templateConfig: templateConfig'),
     'CAP-C12 mobile theme screen must pass canonical template config into publish',
@@ -310,9 +310,9 @@ for (const fragment of [
 reporter.assert(!capabilityBacklog.includes('| CAP-C14 |'), 'CAP-C14 must not remain an open capability gap after invite/contact queue wiring');
 reporter.assert(!skippedHumanDecisions.includes('SKIP-CAP-TRANSACTIONAL-EMAILS'), 'CAP-C14 queue wiring is repo-side complete, so its skipped-human seam must not remain open');
 
-const aiSidebar = readFile('apps/merchant-control-plane/src/components/AISidebar.tsx');
-const headerBar = readFile('apps/merchant-control-plane/src/components/HeaderBar.tsx');
-const merchantGlobals = readFile('apps/merchant-control-plane/src/app/globals.css');
+const aiSidebar = readFile('apps/merchant_web/src/components/AISidebar.tsx');
+const headerBar = readFile('apps/merchant_web/src/components/HeaderBar.tsx');
+const merchantGlobals = readFile('apps/merchant_web/src/app/globals.css');
 for (const fragment of [
   'AI-powered suggestions are coming soon',
   'AI-powered responses are coming soon',

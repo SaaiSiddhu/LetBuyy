@@ -70,11 +70,11 @@ const authCore = loadAuthCore();
 test('merchant apps accept and reject the same lb_session values identically', () => {
   const appSurfaces = [
     'identity-platform',
-    'merchant-control-plane',
-    'storefront-runtime',
+    'merchant-web',
+    'customer-web',
     'app-marketplace',
     'theme-marketplace',
-    'platform-console',
+    'admin-web',
     'platform-operations-portal',
   ];
   const cases = [
@@ -344,14 +344,14 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
   const sharedAuthFiles = [
     'apps/identity-platform/src/lib/api/client.ts',
     'apps/identity-platform/src/proxy.ts',
-    'apps/merchant-control-plane/src/lib/api/client.ts',
-    'apps/merchant-control-plane/src/proxy.ts',
+    'apps/merchant_web/src/lib/api/client.ts',
+    'apps/merchant_web/src/proxy.ts',
     'apps/app-marketplace/src/lib/api/client.ts',
     'apps/app-marketplace/src/proxy.ts',
     'apps/theme-marketplace/src/lib/api/client.ts',
-    'apps/storefront-runtime/src/lib/session.ts',
-    'apps/platform-console/src/lib/console-session.ts',
-    'apps/platform-console/src/proxy.ts',
+    'apps/customer_web/src/lib/session.ts',
+    'apps/admin_web/src/lib/console-session.ts',
+    'apps/admin_web/src/proxy.ts',
     'apps/platform-operations-portal/src/proxy.ts',
   ];
 
@@ -367,7 +367,7 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
 });
 
 test('storefront exposes customer federation redemption through the shared verifier', () => {
-  const source = readFileSync('apps/storefront-runtime/src/lib/session.ts', 'utf8');
+  const source = readFileSync('apps/customer_web/src/lib/session.ts', 'utf8');
 
   assert.match(source, /createSessionFromFederationToken/);
   assert.match(source, /redeemCustomerFederationToken/);

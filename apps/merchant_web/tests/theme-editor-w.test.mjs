@@ -1,6 +1,6 @@
 /**
  * Phase W — Dynamic Sources + Resource Search: static-contract tests for the
- * merchant-control-plane.
+ * merchant-web.
  *
  * These tests assert source-level contracts (file existence, import patterns,
  * ARIA/a11y markers, design-ratchet compliance, tenancy law, debounce pattern,
@@ -66,14 +66,14 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const CONTROLS_DIR = `${MCP_BASE}/components/theme-editor/controls`;
 const RENDERER = `${MCP_BASE}/components/theme-editor/SchemaFormRenderer.tsx`;
 
 const RESOURCE_PICKER = `${CONTROLS_DIR}/ResourcePickerControl.tsx`;
 const CSS_MODULE = `${CONTROLS_DIR}/controls.module.css`;
 const PROXY_ROUTE = `${MCP_BASE}/app/api/stores/[store]/resource-search/route.ts`;
-const PKG_JSON = 'apps/merchant-control-plane/package.json';
+const PKG_JSON = 'apps/merchant_web/package.json';
 
 // ── File existence ─────────────────────────────────────────────────────────────
 

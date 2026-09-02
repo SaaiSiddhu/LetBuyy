@@ -93,23 +93,23 @@
     },
     {
       "runtimeName": "Storefront Runtime",
-      "runtimeRoot": "apps/storefront-runtime",
+      "runtimeRoot": "apps/customer_web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/storefront-runtime/vercel.json"
+        "apps/customer_web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Merchant Control Plane",
-      "runtimeRoot": "apps/merchant-control-plane",
+      "runtimeRoot": "apps/merchant_web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/merchant-control-plane/vercel.json"
+        "apps/merchant_web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
@@ -126,23 +126,23 @@
     },
     {
       "runtimeName": "Platform Console",
-      "runtimeRoot": "apps/platform-console",
+      "runtimeRoot": "apps/admin_web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/platform-console/vercel.json"
+        "apps/admin_web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Mobile Merchant App",
-      "runtimeRoot": "apps/mobile/merchant-app",
+      "runtimeRoot": "apps/merchant_app",
       "environment": "production",
       "status": "active",
       "deploymentKind": "mobile-app",
       "deploymentManifests": [
-        "apps/mobile/merchant-app/pubspec.yaml"
+        "apps/merchant_app/pubspec.yaml"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },

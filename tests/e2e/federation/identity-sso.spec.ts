@@ -16,20 +16,20 @@ test.describe('J1 Identity SSO federation', () => {
 
     await Promise.all([
       requireSurface(request, federationUrls.identity, 'identity-platform'),
-      requireSurface(request, federationUrls.merchant, 'merchant-control-plane'),
+      requireSurface(request, federationUrls.merchant, 'merchant-web'),
       requireSurface(request, federationUrls.appMarketplace, 'app-marketplace'),
       requireSurface(request, federationUrls.themeMarketplace, 'theme-marketplace'),
-      requireSurface(request, federationUrls.platformConsole, 'platform-console'),
+      requireSurface(request, federationUrls.platformConsole, 'admin-web'),
       requireSurface(request, federationUrls.operationsPortal, 'platform-operations-portal'),
     ]);
 
     await installMerchantSessionCookie(page);
 
     await openSurface(page, testInfo, `${federationUrls.identity}/lookup?return_to=${encodeURIComponent(federationUrls.appMarketplace)}`, 'j1-identity-lookup');
-    await openSurface(page, testInfo, `${federationUrls.merchant}/${demo.storeSubdomain}`, 'j1-merchant-control-plane');
+    await openSurface(page, testInfo, `${federationUrls.merchant}/${demo.storeSubdomain}`, 'j1-merchant-web');
     await openSurface(page, testInfo, federationUrls.appMarketplace, 'j1-app-marketplace');
     await openSurface(page, testInfo, federationUrls.themeMarketplace, 'j1-theme-marketplace');
-    await openSurface(page, testInfo, federationUrls.platformConsole, 'j1-platform-console');
+    await openSurface(page, testInfo, federationUrls.platformConsole, 'j1-admin-web');
     await openSurface(page, testInfo, federationUrls.operationsPortal, 'j1-operations-portal');
 
     const partnerDenied = await request.get(`${federationUrls.gateway}/v1/operations/marketplace-reviews?limit=1`, {

@@ -28,7 +28,7 @@ const checks = [
   },
   {
     id: 'SEC-C2',
-    file: 'apps/platform-console/src/lib/console-session.ts',
+    file: 'apps/admin_web/src/lib/console-session.ts',
     mustContain: ["APP_ENV === 'production'", "VERCEL_ENV === 'production'"],
     desc: 'console session secret prod-gate must check APP_ENV and VERCEL_ENV, not NODE_ENV alone',
   },
@@ -50,7 +50,7 @@ const checks = [
 const forbidden = [
   {
     id: 'SEC-C2-literal-default',
-    file: 'apps/platform-console/src/lib/console-session.ts',
+    file: 'apps/admin_web/src/lib/console-session.ts',
     // The literal may exist only inside the non-production branch. Fail if the prod
     // gate reverts to NODE_ENV-only (i.e. APP_ENV/VERCEL_ENV checks removed).
     mustNotMatch: /if \(process\.env\.NODE_ENV === 'production'\) \{\s*\n\s*return isSafeSecret/,

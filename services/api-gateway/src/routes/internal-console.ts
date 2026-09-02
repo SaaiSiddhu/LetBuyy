@@ -399,7 +399,7 @@ async function writeConsoleAudit(c: AppContext, input: {
         metadata: {
             ...(input.metadata || {}),
             reason: input.reason || null,
-            source: 'platform-console',
+            source: 'admin-web',
         },
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,
@@ -1370,7 +1370,7 @@ router.patch('/employees/:id/permissions', async (c) => {
         metadata: {
             reason: parsed.data.reason,
             scopes: parsed.data.scopes,
-            source: 'platform-console',
+            source: 'admin-web',
         },
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,

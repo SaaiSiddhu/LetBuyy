@@ -274,7 +274,7 @@ function emitProductViewedEvent(
                 product_slug: input.product.slug || undefined,
                 sample_rate: sampleRate,
                 sample_weight: sampleWeight,
-                source: 'storefront-runtime',
+                source: 'customer-web',
             },
         },
         attempts: 0,

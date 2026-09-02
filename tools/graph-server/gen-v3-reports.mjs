@@ -67,15 +67,15 @@ ${stamp}`);
 // ---- customer-journey-intelligence.md (Phase 5) ----
 {
   const J = [
-    ['Landing', ['storefront'], 'marketing-site / storefront-runtime'],
-    ['Storefront', ['storefront'], 'storefront-runtime'],
-    ['Product', ['products', 'collections'], 'storefront-runtime'],
-    ['Cart', ['orders'], 'storefront-runtime'],
-    ['Checkout', ['orders', 'discounts', 'gst', 'shipping'], 'storefront-runtime'],
-    ['Payment', ['payments', 'gift-cards'], 'storefront-runtime → api-gateway'],
+    ['Landing', ['storefront'], 'marketing-site / customer-web'],
+    ['Storefront', ['storefront'], 'customer-web'],
+    ['Product', ['products', 'collections'], 'customer-web'],
+    ['Cart', ['orders'], 'customer-web'],
+    ['Checkout', ['orders', 'discounts', 'gst', 'shipping'], 'customer-web'],
+    ['Payment', ['payments', 'gift-cards'], 'customer-web → api-gateway'],
     ['Order', ['orders', 'inventory'], 'api-gateway → queue-workers'],
-    ['Refund', ['refunds'], 'merchant-control-plane'],
-    ['Tracking', ['shipping', 'notifications'], 'storefront-runtime'],
+    ['Refund', ['refunds'], 'merchant-web'],
+    ['Tracking', ['shipping', 'notifications'], 'customer-web'],
   ];
   const byKey = Object.fromEntries(di.domains.map((d) => [d.key, d]));
   const rows = J.map(([stage, ds, app]) => {

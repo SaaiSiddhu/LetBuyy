@@ -6,7 +6,7 @@ import { getSupabaseAdmin, success } from '../lib/supabase';
 // INTERNAL/SUPER-ADMIN founding administration + recovery operations. Mounted under
 // /internal/* behind the internal perimeter (internal API secret). Every mutating
 // op records the actor (X-Admin-User-Id) and emits an event via the underlying RPC.
-// The platform-console admin UI proxies here.
+// The admin-web admin UI proxies here.
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;

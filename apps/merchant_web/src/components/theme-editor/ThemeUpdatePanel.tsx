@@ -47,11 +47,11 @@
  * and role as appropriate.
  *
  * Foreign WIP isolation — does NOT import from:
- *   - apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
- *   - apps/merchant-control-plane/src/components/theme-editor/ExperiencePicker.tsx
- *   - apps/merchant-control-plane/src/app/globals.css
+ *   - apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx
+ *   - apps/merchant_web/src/components/theme-editor/ExperiencePicker.tsx
+ *   - apps/merchant_web/src/app/globals.css
  *   - packages/api-client/src/index.ts (@letbuyy/api-client)
- *   - apps/merchant-control-plane/src/app/[store]/settings/localization/page.tsx
+ *   - apps/merchant_web/src/app/[store]/settings/localization/page.tsx
  */
 
 import { useState, useCallback, useId } from 'react'

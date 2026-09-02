@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
 }
 
 // T6/W4/W5 — this route no longer renders the checkout form. checkout.<root> (see
-// apps/storefront-runtime/src/app/checkout-origin/checkout/page.tsx) is now the one live
+// apps/customer_web/src/app/checkout-origin/checkout/page.tsx) is now the one live
 // checkout surface: it verifies a signed handoff server-side and carries no merchant theme CSS.
 // This page's only remaining job is to mint that handoff for whatever cart is in the browser
 // right now and hand the shopper off to it — it must never render the old themed checkout form

@@ -71,7 +71,7 @@ const migrationSql = `-- 200 — Attach the letbuyy-core Liquid bundle. Canary s
 -- liquidRenderingCanary anywhere. resolveThemeLiquidRenderingEnabled()
 -- (packages/theme-engine/src/theme-governance.ts:144-181) only returns true when an EXPLICIT
 -- rendererEngine/canary signal is present; a bundle with neither renders through the frozen React fast
--- path, unchanged. apps/storefront-runtime/src/lib/store-service.ts's liquidRenderingCanary default is
+-- path, unchanged. apps/customer_web/src/lib/store-service.ts's liquidRenderingCanary default is
 -- \`undefined\` (not \`false\`) specifically so it does not short-circuit a later per-theme opt-in — this
 -- migration does not touch that default either. THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.status stays
 -- 'deferred'. Flipping letbuyy-core to Liquid is a separate, later, ARB-ratified act.

@@ -1275,7 +1275,7 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
                     appDeveloperId: developer.id,
                     actorId: customUser.id,
                     automatedChecks: buildMarketplaceAutomatedChecks({
-                        source: 'platform-console.app_submission',
+                        source: 'admin-web.app_submission',
                         checks: [
                             {
                                 name: 'built_for_letbuyy_quality_gate',

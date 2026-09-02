@@ -8,11 +8,11 @@ import { formatInrCurrency } from '../../packages/typescript/ui/src/formatting';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const currencyFiles = [
-    'apps/merchant-control-plane/src/app/[store]/customers/page.tsx',
-    'apps/merchant-control-plane/src/app/[store]/analytics/page.tsx',
-    'apps/merchant-control-plane/src/app/[store]/dashboard/page.tsx',
-    'apps/merchant-control-plane/src/app/[store]/dashboard/DashboardClient.tsx',
-    'apps/merchant-control-plane/src/app/[store]/products/gift-cards/page.tsx',
+    'apps/merchant_web/src/app/[store]/customers/page.tsx',
+    'apps/merchant_web/src/app/[store]/analytics/page.tsx',
+    'apps/merchant_web/src/app/[store]/dashboard/page.tsx',
+    'apps/merchant_web/src/app/[store]/dashboard/DashboardClient.tsx',
+    'apps/merchant_web/src/app/[store]/products/gift-cards/page.tsx',
     'apps/app-marketplace/src/app/(store)/apps/[slug]/page.tsx',
 ];
 

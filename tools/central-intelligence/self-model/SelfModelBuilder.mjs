@@ -398,12 +398,12 @@ class SelfModelBuilder {
 
     // Canonical runtime topology from CLAUDE.md
     const canonicalRuntimes = [
-      'apps/storefront-runtime',
-      'apps/merchant-control-plane',
+      'apps/customer_web',
+      'apps/merchant_web',
       'apps/identity-platform',
       'apps/marketing-site',
-      'apps/platform-console',
-      'apps/mobile/merchant-app',
+      'apps/admin_web',
+      'apps/merchant_app',
       'services/api-gateway',
       'services/mobile-bff',
       'services/webhook-service',
@@ -663,7 +663,7 @@ class SelfModelBuilder {
       { step: 2, name: 'Validation Gate',      description: 'validate-governance.mjs runs (107 validators); build gate (pnpm --filter <app> build); two-lane merge rule checked' },
       { step: 3, name: 'Migration Gate',       description: 'hasMigrateGate=true: Supabase migrations applied before worker deploy; schema validated against RLS policies' },
       { step: 4, name: 'Worker Deploy',        description: 'wrangler deploy for letbuyy-api, letbuyy-queue-workers, letbuyy-webhook, letbuyy-mobile-bff via GitHub Actions' },
-      { step: 5, name: 'Vercel Deploy',        description: 'Vercel deploys: marketing-site, identity-platform, merchant-control-plane, storefront-runtime, platform-console' },
+      { step: 5, name: 'Vercel Deploy',        description: 'Vercel deploys: marketing-site, identity-platform, merchant-web, customer-web, admin-web' },
       { step: 6, name: 'Health Probe',         description: 'Post-deploy health probes; deployment-state.json updated; LCIS re-reads runtime topology' },
       { step: 7, name: 'Merchant Visibility',  description: 'All tenants share the same schema/workers — a deploy is instant for all merchants simultaneously' },
     ];
@@ -680,7 +680,7 @@ class SelfModelBuilder {
       {
         domain: 'api-gateway',
         failurePoint: 'letbuyy-api worker crash / CPU limit',
-        cascade: ['All /v1/* routes 503', 'merchant-control-plane loses all data APIs', 'storefront checkout fails', 'queue producers fail (EVENT_QUEUE, ANALYTICS_QUEUE)', 'webhook-service cannot call gateway'],
+        cascade: ['All /v1/* routes 503', 'merchant-web loses all data APIs', 'storefront checkout fails', 'queue producers fail (EVENT_QUEUE, ANALYTICS_QUEUE)', 'webhook-service cannot call gateway'],
         affectedDomains: ['all — gateway is single bottleneck'],
         recoveryPath: 'Cloudflare auto-restarts Worker; wrangler rollback to prior version',
       },

@@ -15,25 +15,25 @@ for (const required of [
   "services/api-gateway/src/routes/shipping-labels.ts",
   "services/api-gateway/src/routes/stores.ts",
   "services/mobile-bff/src/index.ts",
-  "apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/settings/billing/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/settings/shipping/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/orders/page.tsx",
-  "apps/mobile/merchant-app/lib/screens/money/money_screen.dart",
-  "apps/mobile/merchant-app/lib/screens/settings/billing_screen.dart",
-  "apps/mobile/merchant-app/lib/screens/orders/order_detail_screen.dart",
-  "apps/mobile/merchant-app/lib/screens/dashboard/home_screen.dart",
+  "apps/merchant_web/src/app/[store]/settings/payments/page.tsx",
+  "apps/merchant_web/src/app/[store]/settings/billing/page.tsx",
+  "apps/merchant_web/src/app/[store]/settings/shipping/page.tsx",
+  "apps/merchant_web/src/app/[store]/orders/page.tsx",
+  "apps/merchant_app/lib/screens/money/money_screen.dart",
+  "apps/merchant_app/lib/screens/settings/billing_screen.dart",
+  "apps/merchant_app/lib/screens/orders/order_detail_screen.dart",
+  "apps/merchant_app/lib/screens/dashboard/home_screen.dart",
 ]) {
   reporter.assert(readFile(required).includes("provider_mode"), `${required} must expose provider_mode honesty evidence`);
 }
 
 for (const required of [
-  // Phase U1: ProviderModeBadge moved from apps/merchant-control-plane's own
+  // Phase U1: ProviderModeBadge moved from apps/merchant_web's own
   // component tree into the canonical @letbuyy/ui package (UX-R9 forbids a
   // forked/local copy of an exported primitive) -- assert the CANONICAL
   // location, not the deleted local file.
   "packages/typescript/ui/src/feedback.tsx",
-  "apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart",
+  "apps/merchant_app/lib/widgets/shared/provider_mode_badge.dart",
 ]) {
   reporter.assert(readFile(required).includes("ProviderModeBadge"), `${required} must implement a visible provider mode badge`);
 }
@@ -42,10 +42,10 @@ reporter.assert(
   "packages/typescript/ui/src/index.ts must export ProviderModeBadge from the canonical package",
 );
 for (const consumer of [
-  "apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/settings/shipping/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/orders/page.tsx",
-  "apps/merchant-control-plane/src/components/billing/BillingPaymentMethods.tsx",
+  "apps/merchant_web/src/app/[store]/settings/payments/page.tsx",
+  "apps/merchant_web/src/app/[store]/settings/shipping/page.tsx",
+  "apps/merchant_web/src/app/[store]/orders/page.tsx",
+  "apps/merchant_web/src/components/billing/BillingPaymentMethods.tsx",
 ]) {
   const source = readFile(consumer);
   reporter.assert(
@@ -69,7 +69,7 @@ const taxRoute = readFile("services/api-gateway/src/routes/tax.ts");
 const queueWorker = readFile("services/queue-workers/src/platform-queue-consumer.ts");
 const themesRoute = readFile("services/api-gateway/src/routes/themes.ts") + (exists("services/api-gateway/src/routes/themes/theme-purchase-routes.ts") ? "\n" + readFile("services/api-gateway/src/routes/themes/theme-purchase-routes.ts") : "");
 const storePaymentConfig = readFile("services/api-gateway/src/lib/store-payment-config.ts");
-const merchantPaymentsPage = readFile("apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx");
+const merchantPaymentsPage = readFile("apps/merchant_web/src/app/[store]/settings/payments/page.tsx");
 const notificationCore = readFile("packages/notification-core/src/index.ts");
 const emailRoute = readFile("services/api-gateway/src/routes/email.ts");
 const aiRoute = readFile("services/api-gateway/src/routes/ai.ts");
@@ -79,10 +79,10 @@ const analyticsRoute = readFile("services/api-gateway/src/routes/analytics.ts");
 const billingCore = readFile("packages/billing-core/src/index.ts");
 const billingRoute = readFile("services/api-gateway/src/routes/billing.ts");
 // Phase U1: canonical location is packages/typescript/ui/src/feedback.tsx
-// (the deleted local apps/merchant-control-plane copy is gone by design).
+// (the deleted local apps/merchant_web copy is gone by design).
 const providerModeBadge = readFile("packages/typescript/ui/src/feedback.tsx");
-const mobileProviderModeBadge = readFile("apps/mobile/merchant-app/lib/widgets/shared/provider_mode_badge.dart");
-const mobileRazorpayConnectScreen = readFile("apps/mobile/merchant-app/lib/screens/subscription/connect_razorpay_screen.dart");
+const mobileProviderModeBadge = readFile("apps/merchant_app/lib/widgets/shared/provider_mode_badge.dart");
+const mobileRazorpayConnectScreen = readFile("apps/merchant_app/lib/screens/subscription/connect_razorpay_screen.dart");
 const paymentsPackage = readFile("packages/payments/src/index.ts");
 const paymentsRoute = readFile("services/api-gateway/src/routes/payments.ts");
 const paymentSupport = readFile("services/api-gateway/src/lib/payment-route-support.ts");
@@ -354,7 +354,7 @@ reporter.assert(!exists("packages/infrastructure/upi-adapter/index.ts"), "retire
 reporter.assert(!readFile("packages/infrastructure/src/index.ts").includes("upi-adapter"), "infrastructure barrel must not export retired native UPI scaffold adapter");
 reporter.assert(!readFile("packages/infrastructure/package.json").includes("upi-adapter"), "infrastructure package must not expose retired native UPI scaffold adapter");
 
-const routes = readFile("apps/mobile/merchant-app/lib/app/routes.dart");
+const routes = readFile("apps/merchant_app/lib/app/routes.dart");
 reporter.assert(!routes.includes("MerchantFeatureDefinitions"), "mobile routes must not depend on the parity feature catalog");
 reporter.assert(!routes.includes("MerchantFeatureScreen"), "mobile routes must not render parity feature screens");
 

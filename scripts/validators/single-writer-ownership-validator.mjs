@@ -31,12 +31,12 @@ const ownershipRules = [
     tables: ["outbox_events", "sites", "site_domain_reviews", "domain_orders"],
   },
   {
-    root: "apps/storefront-runtime/src",
+    root: "apps/customer_web/src",
     owner: "services/api-gateway",
     tables: ["sites", "site_preview_links", "site_gate_attempts", "site_domain_reviews", "domain_orders"],
   },
   {
-    root: "apps/merchant-control-plane/src",
+    root: "apps/merchant_web/src",
     owner: "services/api-gateway",
     tables: ["site_preview_links", "site_gate_attempts", "site_domain_reviews", "domain_orders"],
   },

@@ -14,32 +14,32 @@ reporter.assert(
   "cms-core must own the canonical slugifyCmsTitle helper",
 );
 
-const merchantPackage = readJson("apps/merchant-control-plane/package.json");
+const merchantPackage = readJson("apps/merchant_web/package.json");
 reporter.assert(
   merchantPackage?.dependencies?.["@letbuyy/cms-core"] === "workspace:*",
-  "merchant-control-plane must declare @letbuyy/cms-core before importing CMS helpers",
+  "merchant-web must declare @letbuyy/cms-core before importing CMS helpers",
 );
 
-const merchantManifest = readJson("apps/merchant-control-plane/runtime.manifest.json");
+const merchantManifest = readJson("apps/merchant_web/runtime.manifest.json");
 reporter.assert(
   merchantManifest?.allowedDependencies?.workspacePackages?.includes("@letbuyy/cms-core"),
-  "merchant-control-plane runtime manifest must allow @letbuyy/cms-core",
+  "merchant-web runtime manifest must allow @letbuyy/cms-core",
 );
 
 const localSlugifyOffenders = trackedFiles.filter((file) => {
-  if (!file.startsWith("apps/merchant-control-plane/src/")) return false;
+  if (!file.startsWith("apps/merchant_web/src/")) return false;
   if (!/\.(?:ts|tsx)$/.test(file)) return false;
   return /\b(?:function|const)\s+slugify\b/.test(readFile(file));
 });
 reporter.assert(
   localSlugifyOffenders.length === 0,
-  `merchant-control-plane must import slugifyCmsTitle instead of declaring local slugify helpers: ${localSlugifyOffenders.join(", ")}`,
+  `merchant-web must import slugifyCmsTitle instead of declaring local slugify helpers: ${localSlugifyOffenders.join(", ")}`,
 );
 
 for (const file of [
-  "apps/merchant-control-plane/src/app/[store]/posts/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/pages/page.tsx",
-  "apps/merchant-control-plane/src/app/[store]/online-store/pages/page.tsx",
+  "apps/merchant_web/src/app/[store]/posts/page.tsx",
+  "apps/merchant_web/src/app/[store]/pages/page.tsx",
+  "apps/merchant_web/src/app/[store]/online-store/pages/page.tsx",
 ]) {
   reporter.assert(
     readFile(file).includes("slugifyCmsTitle as slugify"),

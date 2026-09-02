@@ -126,7 +126,7 @@ class OperationalReasoner {
       hypothesis: `Operational question "${question.slice(0, 80)}": Structural topology is CONNECTED; live telemetry values are NOT CONNECTED until provider adapters (Cloudflare Analytics Engine / Supabase) are wired.`,
       evidence,
       confidence,
-      mostLikelyAffected: ['api-gateway', 'queue-workers', 'storefront-runtime', 'merchant-control-plane'],
+      mostLikelyAffected: ['api-gateway', 'queue-workers', 'customer-web', 'merchant-web'],
       recommendedInvestigation: [
         `1. Check live ops: \`curl ${V1_BASE}/api/operations\`.`,
         `2. Wire telemetry: set CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN in .env.local.`,

@@ -15,7 +15,7 @@ function read(relativePath: string): string {
 
 test('shopper identity is behind auth-core provider seam and remains host-only', () => {
   const auth = read('packages/auth-core/src/index.ts');
-  const session = read('apps/storefront-runtime/src/lib/session.ts');
+  const session = read('apps/customer_web/src/lib/session.ts');
   const cookieValidator = read('scripts/validators/cookie-realm-validator.mjs');
 
   assert.match(auth, /interface ShopperIdentityProvider/);

@@ -7,9 +7,17 @@ environment:
   sdk: '^3.11.0'
 
 # ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
-# New structure: apps/mobile/*, packages/dart/*
+# New structure: six-app model roots + packages/dart/*
+# Updated 2026-09-02 (Phase M, Stage 6): apps/mobile/merchant-app renamed to
+# apps/merchant_app in Stage 3; apps/customer_app and apps/admin_app
+# established the same stage; apps/phase_2/* added in Stage 4. See CLAUDE.md's
+# "Six-App Target Topology" section.
 workspace:
-  - apps/mobile/merchant-app
+  - apps/merchant_app
+  - apps/customer_app
+  - apps/admin_app
+  - apps/phase_2/rider_app
+  - apps/phase_2/store_ops_app
   - packages/dart/core
   - packages/dart/api_client
   - packages/dart/models
@@ -28,7 +36,7 @@ melos:
   scripts:
     # Run apps
     run:builder:
-      run: cd apps/mobile/merchant-app && flutter run
+      run: cd apps/merchant_app && flutter run
       description: Run the Builder (Store Builder) app
     
     run:super_admin:

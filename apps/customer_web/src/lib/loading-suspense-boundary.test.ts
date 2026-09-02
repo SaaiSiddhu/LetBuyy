@@ -30,7 +30,7 @@
 // runner glob-matches bracketed path segments as character classes and silently finds zero
 // tests when a .test.ts file is placed inside a [subdomain]-style directory.
 //
-// Run: npx tsx --tsconfig apps/storefront-runtime/tsconfig.json --test src/lib/loading-suspense-boundary.test.ts
+// Run: npx tsx --tsconfig apps/customer_web/tsconfig.json --test src/lib/loading-suspense-boundary.test.ts
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { existsSync, readdirSync } from 'node:fs';

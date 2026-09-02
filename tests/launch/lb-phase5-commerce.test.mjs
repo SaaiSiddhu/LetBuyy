@@ -18,19 +18,19 @@ test('PO: api-client exposes the existing gateway PO/supplier/location routes (t
 });
 
 test('PO: merchant proxies exist, are ownership-checked, and delegate to the api-client', () => {
-  const list = read('apps/merchant-control-plane/src/app/api/stores/[store]/purchase-orders/route.ts');
+  const list = read('apps/merchant_web/src/app/api/stores/[store]/purchase-orders/route.ts');
   assert.match(list, /export async function GET/);
   assert.match(list, /export async function POST/);
   assert.match(list, /resolveOwnedStoreId/);
   assert.match(list, /inventory\.purchaseOrders\.(list|create)\(/);
-  const receive = read('apps/merchant-control-plane/src/app/api/stores/[store]/purchase-orders/[id]/receive/route.ts');
+  const receive = read('apps/merchant_web/src/app/api/stores/[store]/purchase-orders/[id]/receive/route.ts');
   assert.match(receive, /inventory\.purchaseOrders\.receive\(/);
-  assert.ok(has('apps/merchant-control-plane/src/app/api/stores/[store]/suppliers/route.ts'));
-  assert.ok(has('apps/merchant-control-plane/src/app/api/stores/[store]/inventory-locations/route.ts'));
+  assert.ok(has('apps/merchant_web/src/app/api/stores/[store]/suppliers/route.ts'));
+  assert.ok(has('apps/merchant_web/src/app/api/stores/[store]/inventory-locations/route.ts'));
 });
 
 test('PO: the page is REAL (consumes proxies, no stub/coming-soon text)', () => {
-  const page = read('apps/merchant-control-plane/src/app/[store]/products/purchase-orders/page.tsx');
+  const page = read('apps/merchant_web/src/app/[store]/products/purchase-orders/page.tsx');
   assert.match(page, /\/api\/stores\/\$\{[^}]+\}\/purchase-orders/);
   // the dead stub language must be gone
   assert.doesNotMatch(page, /not available yet|coming soon|BackendNeededPane/i);
@@ -40,7 +40,7 @@ test('PO: the page is REAL (consumes proxies, no stub/coming-soon text)', () => 
 
 test('PO: reuses the existing backend — no new migration was added for it', () => {
   // The PO tables/RPCs predate Phase 5; the vertical must not ship its own migration.
-  const page = read('apps/merchant-control-plane/src/app/[store]/products/purchase-orders/page.tsx');
+  const page = read('apps/merchant_web/src/app/[store]/products/purchase-orders/page.tsx');
   // UI must not write money/inventory tables directly — it calls proxies only.
   assert.doesNotMatch(page, /\.from\(['"]purchase_orders['"]\)/);
 });
@@ -57,33 +57,33 @@ test('5.5 api-client: transfers + inventory history/reserve/commit/release expos
 });
 
 test('5.5 Transfers: proxies (list/create/ship/receive) ownership-checked + delegate; page is real', () => {
-  const list = read('apps/merchant-control-plane/src/app/api/stores/[store]/transfers/route.ts');
+  const list = read('apps/merchant_web/src/app/api/stores/[store]/transfers/route.ts');
   assert.match(list, /resolveOwnedStoreId/);
   assert.match(list, /inventory\.transfers\.(list|create)\(/);
-  assert.match(read('apps/merchant-control-plane/src/app/api/stores/[store]/transfers/[id]/ship/route.ts'), /inventory\.transfers\.ship\(/);
-  assert.match(read('apps/merchant-control-plane/src/app/api/stores/[store]/transfers/[id]/receive/route.ts'), /inventory\.transfers\.receive\(/);
-  const page = read('apps/merchant-control-plane/src/app/[store]/products/transfers/page.tsx');
+  assert.match(read('apps/merchant_web/src/app/api/stores/[store]/transfers/[id]/ship/route.ts'), /inventory\.transfers\.ship\(/);
+  assert.match(read('apps/merchant_web/src/app/api/stores/[store]/transfers/[id]/receive/route.ts'), /inventory\.transfers\.receive\(/);
+  const page = read('apps/merchant_web/src/app/[store]/products/transfers/page.tsx');
   assert.match(page, /\/api\/stores\/\$\{[^}]+\}\/transfers/);
   assert.doesNotMatch(page, /not available yet|coming soon|BackendNeededPane/i);
 });
 
 test('5.5 Inventory history: proxy delegates to inventory.history; page consumes it (no fabrication)', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/inventory/history/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/inventory/history/route.ts');
   assert.match(proxy, /resolveOwnedStoreId/);
   assert.match(proxy, /inventory\.history\(/);
-  const page = read('apps/merchant-control-plane/src/app/[store]/products/inventory-history/page.tsx');
+  const page = read('apps/merchant_web/src/app/[store]/products/inventory-history/page.tsx');
   assert.match(page, /\/api\/stores\/\$\{[^}]+\}\/inventory\/history/);
 });
 
 test('5.5 Vendors + Locations: pages consume the existing proxies', () => {
-  const vendors = read('apps/merchant-control-plane/src/app/[store]/products/suppliers/page.tsx');
+  const vendors = read('apps/merchant_web/src/app/[store]/products/suppliers/page.tsx');
   assert.match(vendors, /\/api\/stores\/\$\{[^}]+\}\/suppliers/);
-  const locations = read('apps/merchant-control-plane/src/app/[store]/products/locations/page.tsx');
+  const locations = read('apps/merchant_web/src/app/[store]/products/locations/page.tsx');
   assert.match(locations, /\/api\/stores\/\$\{[^}]+\}\/inventory-locations/);
 });
 
 test('5.5 Navigation: the new commerce pages are linked (no dead navigation)', () => {
-  const nav = read('apps/merchant-control-plane/src/components/merchantNavigation.ts');
+  const nav = read('apps/merchant_web/src/components/merchantNavigation.ts');
   for (const p of ['products/inventory-history', 'products/suppliers', 'products/locations']) {
     assert.match(nav, new RegExp(`path: '${p.replace(/\//g, '\\/')}'`), `${p} must be in nav`);
   }
@@ -102,11 +102,11 @@ test('5.75 Notifications: api-client + proxies + ops page are real', () => {
   const c = read('packages/typescript/api-client/src/index.ts');
   assert.match(c, /preferences:\s*\{[\s\S]*\/notifications\/preferences/);
   assert.match(c, /deliveryLogs:\s*\([^)]*\)\s*=>/);
-  const prefProxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/notifications/preferences/route.ts');
+  const prefProxy = read('apps/merchant_web/src/app/api/stores/[store]/notifications/preferences/route.ts');
   assert.match(prefProxy, /resolveOwnedStoreId/);
   assert.match(prefProxy, /notifications\.preferences\.(list|update)\(/);
-  assert.ok(has('apps/merchant-control-plane/src/app/api/stores/[store]/notifications/delivery-logs/route.ts'));
-  const page = read('apps/merchant-control-plane/src/app/[store]/settings/notifications/page.tsx');
+  assert.ok(has('apps/merchant_web/src/app/api/stores/[store]/notifications/delivery-logs/route.ts'));
+  const page = read('apps/merchant_web/src/app/[store]/settings/notifications/page.tsx');
   assert.match(page, /\/api\/stores\/\$\{[^}]+\}\/notifications\/preferences/);
 });
 
@@ -116,10 +116,10 @@ test('5.75 Payment: toggles are functional (write path persists the booleans, no
   assert.match(stores, /'cod_enabled'/);
   assert.match(stores, /'online_payment_enabled'/);
   // merchant proxy persists via PATCH
-  const proxy = read('apps/merchant-control-plane/src/app/api/stores/[store]/payment-config/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/stores/[store]/payment-config/route.ts');
   assert.match(proxy, /export async function PATCH/);
   // page wires real toggles (not display-only)
-  const page = read('apps/merchant-control-plane/src/app/[store]/settings/payments/page.tsx');
+  const page = read('apps/merchant_web/src/app/[store]/settings/payments/page.tsx');
   assert.match(page, /payment-config/);
 });
 
@@ -134,7 +134,7 @@ test('5.9 Smart Collections: pure evaluator + 35 unit tests + gateway route regi
   assert.match(idx, /smart-collections/); // registered
   const c = read('packages/typescript/api-client/src/index.ts');
   assert.match(c, /smartCollections\b/);
-  assert.ok(has('apps/merchant-control-plane/src/app/[store]/products/smart-collections/page.tsx'));
+  assert.ok(has('apps/merchant_web/src/app/[store]/products/smart-collections/page.tsx'));
 });
 
 test('5.9 Reservation explorer + Receipt history: additive GETs + proxies + pages (real, no fabrication)', () => {
@@ -144,10 +144,10 @@ test('5.9 Reservation explorer + Receipt history: additive GETs + proxies + page
   const c = read('packages/typescript/api-client/src/index.ts');
   assert.match(c, /reservations:\s*\{/);
   assert.match(c, /receipts:\s*\{/);
-  assert.ok(has('apps/merchant-control-plane/src/app/api/stores/[store]/inventory/reservations/route.ts'));
-  assert.ok(has('apps/merchant-control-plane/src/app/api/stores/[store]/inventory/receipts/route.ts'));
-  assert.ok(has('apps/merchant-control-plane/src/app/[store]/products/reservations/page.tsx'));
-  assert.ok(has('apps/merchant-control-plane/src/app/[store]/products/receipts/page.tsx'));
+  assert.ok(has('apps/merchant_web/src/app/api/stores/[store]/inventory/reservations/route.ts'));
+  assert.ok(has('apps/merchant_web/src/app/api/stores/[store]/inventory/receipts/route.ts'));
+  assert.ok(has('apps/merchant_web/src/app/[store]/products/reservations/page.tsx'));
+  assert.ok(has('apps/merchant_web/src/app/[store]/products/receipts/page.tsx'));
 });
 
 test('5.9 Analytics: real aggregation only (counts from real tables; missing-table → empty, not fabricated)', () => {
@@ -161,7 +161,7 @@ test('5.9 Analytics: real aggregation only (counts from real tables; missing-tab
 });
 
 test('5.9 Navigation: smart-collections + reservations + receipts are linked (no dead nav)', () => {
-  const nav = read('apps/merchant-control-plane/src/components/merchantNavigation.ts');
+  const nav = read('apps/merchant_web/src/components/merchantNavigation.ts');
   for (const p of ['products/smart-collections', 'products/reservations', 'products/receipts']) {
     assert.match(nav, new RegExp(`path: '${p.replace(/\//g, '\\/')}'`), `${p} must be in nav`);
   }
@@ -177,7 +177,7 @@ test('5C Analytics: commerce-analytics endpoints are real aggregation (missing-t
   assert.match(idx, /commerce-analytics/);
   const c = read('packages/typescript/api-client/src/index.ts');
   assert.match(c, /commerceAnalytics\b/);
-  assert.ok(has('apps/merchant-control-plane/src/app/[store]/products/operations-dashboard/page.tsx'));
+  assert.ok(has('apps/merchant_web/src/app/[store]/products/operations-dashboard/page.tsx'));
 });
 
 test('5C Automation engine: pure rule evaluator core exists (logic verified, persistence blueprinted)', () => {
@@ -198,15 +198,15 @@ test('5C Audit engine: pure variance/reconcile core exists (logic verified, sche
 });
 
 test('5C Navigation: operations dashboard linked (no dead nav)', () => {
-  const nav = read('apps/merchant-control-plane/src/components/merchantNavigation.ts');
+  const nav = read('apps/merchant_web/src/components/merchantNavigation.ts');
   assert.match(nav, /path: 'products\/operations-dashboard'/);
 });
 
 test('5C Invite acceptance: public proxy forwards to the real gateway endpoint (pre-auth, no ownership check) + page consumes it without a dead link', () => {
-  const proxy = read('apps/merchant-control-plane/src/app/api/employees/accept-invite/route.ts');
+  const proxy = read('apps/merchant_web/src/app/api/employees/accept-invite/route.ts');
   assert.match(proxy, /\/employees\/auth\/accept-invite/);          // real gateway endpoint
   assert.doesNotMatch(proxy, /resolveOwnedStoreId/);                 // pre-auth: no store ownership
-  const page = read('apps/merchant-control-plane/src/app/accept-invite/page.tsx');
+  const page = read('apps/merchant_web/src/app/accept-invite/page.tsx');
   assert.match(page, /\/api\/employees\/accept-invite/);            // consumes the proxy
   assert.doesNotMatch(page, /href="\/login"/);                      // no dead link (merchant app has no /login)
 });

@@ -15,18 +15,18 @@ const allowedShellAuthorities = new Set([
 
 const shellDefinitionPattern = /\b(export\s+default\s+function|export\s+function|function|const)\s+(AdminShell|Sidebar|HeaderBar)\b/;
 const offenders = [];
-if (existsSync("apps/merchant-control-plane/src/components/Sidebar.tsx")) {
-  offenders.push("apps/merchant-control-plane/src/components/Sidebar.tsx: local merchant sidebar must stay deleted; use @letbuyy/ui AppNavigation");
+if (existsSync("apps/merchant_web/src/components/Sidebar.tsx")) {
+  offenders.push("apps/merchant_web/src/components/Sidebar.tsx: local merchant sidebar must stay deleted; use @letbuyy/ui AppNavigation");
 }
 
-const merchantShell = readFileSync("apps/merchant-control-plane/src/components/AdminShell.tsx", "utf8");
+const merchantShell = readFileSync("apps/merchant_web/src/components/AdminShell.tsx", "utf8");
 if (!merchantShell.includes("<AppNavigation")) {
-  offenders.push("apps/merchant-control-plane/src/components/AdminShell.tsx: merchant shell must compose @letbuyy/ui AppNavigation");
+  offenders.push("apps/merchant_web/src/components/AdminShell.tsx: merchant shell must compose @letbuyy/ui AppNavigation");
 }
 
-const merchantNavigation = readFileSync("apps/merchant-control-plane/src/components/merchantNavigation.ts", "utf8");
+const merchantNavigation = readFileSync("apps/merchant_web/src/components/merchantNavigation.ts", "utf8");
 if (!merchantNavigation.includes("label: 'Money'") || !merchantNavigation.includes("path: 'settings/billing'")) {
-  offenders.push("apps/merchant-control-plane/src/components/merchantNavigation.ts: merchant IA must expose first-class Money navigation to settings/billing");
+  offenders.push("apps/merchant_web/src/components/merchantNavigation.ts: merchant IA must expose first-class Money navigation to settings/billing");
 }
 
 for (const entry of phaseBEntries(["apps", "packages"])) {

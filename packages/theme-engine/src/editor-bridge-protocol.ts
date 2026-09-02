@@ -1,5 +1,5 @@
 // Editor-bridge postMessage protocol constants.
-// Both apps (merchant-control-plane CenterPanel, storefront-runtime preview bridge) must import from here.
+// Both apps (merchant-web CenterPanel, customer-web preview bridge) must import from here.
 // Do not inline these strings in either app — the contract test asserts both sides use this module.
 
 /** Legacy name emitted by CenterPanel for backward compatibility with older preview iframes. */

@@ -87,7 +87,7 @@ async function createIncident(formData: FormData) {
             affected_regions: csvValues(formData.get('affected_regions')),
             customer_impact: customerImpact,
             reason,
-            metadata: { source: 'platform-console.incidents-center' },
+            metadata: { source: 'admin-web.incidents-center' },
         },
     });
 
@@ -121,7 +121,7 @@ async function updateIncidentStatus(formData: FormData) {
         body: {
             status,
             summary,
-            details: { source: 'platform-console.incidents-center' },
+            details: { source: 'admin-web.incidents-center' },
         },
     });
 

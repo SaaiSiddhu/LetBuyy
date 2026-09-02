@@ -107,7 +107,7 @@ test('public storefront resolver only exposes published stores by handle', () =>
 });
 
 test('merchant publish proxy requires session and encodes store ids', () => {
-    const routeSource = repositorySource('apps/merchant-control-plane/src/app/api/themes/publish/route.ts');
+    const routeSource = repositorySource('apps/merchant_web/src/app/api/themes/publish/route.ts');
 
     assert.match(routeSource, /const api = createMerchantApiClient\(\)/);
     assert.match(routeSource, /api\.stores\.publish\(storeId\)/);
@@ -115,7 +115,7 @@ test('merchant publish proxy requires session and encodes store ids', () => {
 });
 
 test('storefront proxy rewrites resolved store hosts into store routes', () => {
-    const proxySource = repositorySource('apps/storefront-runtime/src/proxy.ts');
+    const proxySource = repositorySource('apps/customer_web/src/proxy.ts');
 
     assert.match(proxySource, /normalizeRequestHost\(req\.headers\.get\('x-forwarded-host'\) \|\| req\.headers\.get\('host'\)\)/);
     assert.match(proxySource, /resolveStorefrontHost\(host,\s*process\.env\.NEXT_PUBLIC_STORE_ROOT_DOMAIN\)/);

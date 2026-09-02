@@ -12,7 +12,7 @@ const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
 const orderRisk = read('services/api-gateway/src/routes/order-risk.ts');
 const orders = read('services/api-gateway/src/routes/orders.ts');
-const proxy = read('apps/storefront-runtime/src/app/api/orders/route.ts');
+const proxy = read('apps/customer_web/src/app/api/orders/route.ts');
 const apiClient = read('packages/typescript/api-client/src/index.ts');
 const gatewayCheckout = read('services/api-gateway/src/routes/storefront/checkout-payment-routes.ts');
 

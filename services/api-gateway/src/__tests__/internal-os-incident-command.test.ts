@@ -79,7 +79,7 @@ test('incident command routes are mounted with scope guards, reason capture, pag
 
 test('api client and platform console expose the incident command surface without unavailable placeholders', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const operationsPage = repositorySource('apps/platform-console/src/app/(dashboard)/operations/page.tsx');
+    const operationsPage = repositorySource('apps/admin_web/src/app/(dashboard)/operations/page.tsx');
 
     for (const method of [
         'runtimeOverview',

@@ -8,10 +8,10 @@ import {
 
 const reporter = createReporter("Merchant domains settings validator");
 
-const page = readFile("apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx");
-const wizard = readFile("apps/merchant-control-plane/src/components/domains/ConnectDomainWizard.tsx");
-const detail = readFile("apps/merchant-control-plane/src/components/domains/DomainDetailView.tsx");
-const client = readFile("apps/merchant-control-plane/src/lib/domains/client.ts");
+const page = readFile("apps/merchant_web/src/app/[store]/settings/domains/page.tsx");
+const wizard = readFile("apps/merchant_web/src/components/domains/ConnectDomainWizard.tsx");
+const detail = readFile("apps/merchant_web/src/components/domains/DomainDetailView.tsx");
+const client = readFile("apps/merchant_web/src/lib/domains/client.ts");
 const combined = `${page}\n${wizard}\n${detail}\n${client}`;
 
 for (const fragment of [

@@ -712,7 +712,7 @@ export function registerStorefrontPublicRoutes(
                             country,
                             sample_rate: sampleRate,
                             sample_weight: sampleWeight,
-                            source_runtime: 'storefront-runtime',
+                            source_runtime: 'customer-web',
                         },
                     },
                     idempotency_key: analyticsBeaconIdempotencyKey(store.id, beacon),

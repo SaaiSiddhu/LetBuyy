@@ -77,7 +77,7 @@ test('theme uploads create a review record and include it in theme.submitted pay
   assert.match(route, /createMarketplaceReviewRecord\(db/);
   assert.match(route, /submissionType: 'theme'/);
   assert.match(route, /resourceId: themePackageId/);
-  assert.match(route, /source: 'platform-console\.theme_submission'/);
+  assert.match(route, /source: 'admin-web\.theme_submission'/);
   assert.match(route, /reviewId: reviewRecord\.id/);
   assert.match(route, /\.\.\.\(input\.reviewId \? \{ review_id: input\.reviewId \} : \{\}\)/);
   assert.match(route, /success\(\{ \.\.\.uploadRecord, review_record: reviewRecord \}\)/);

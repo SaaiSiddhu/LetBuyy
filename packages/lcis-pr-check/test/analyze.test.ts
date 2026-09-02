@@ -92,15 +92,15 @@ describe('filePathToDomain heuristics', () => {
   });
 
   it('maps orders page → orders', () => {
-    assert.equal(filePathToDomain('apps/merchant-control-plane/src/app/[store]/orders/page.tsx'), 'orders');
+    assert.equal(filePathToDomain('apps/merchant_web/src/app/[store]/orders/page.tsx'), 'orders');
   });
 
   it('maps inventory page → inventory', () => {
-    assert.equal(filePathToDomain('apps/merchant-control-plane/src/app/[store]/products/inventory/page.tsx'), 'inventory');
+    assert.equal(filePathToDomain('apps/merchant_web/src/app/[store]/products/inventory/page.tsx'), 'inventory');
   });
 
-  it('maps storefront-runtime → storefront', () => {
-    assert.equal(filePathToDomain('apps/storefront-runtime/src/proxy.ts'), 'storefront');
+  it('maps customer-web → storefront', () => {
+    assert.equal(filePathToDomain('apps/customer_web/src/proxy.ts'), 'storefront');
   });
 
   it('maps theme-engine → themes', () => {
@@ -331,9 +331,9 @@ describe('analyzePr — cross-domain PR', () => {
     report = await analyzePr(
       {
         changedFiles: [
-          'apps/merchant-control-plane/src/app/[store]/orders/page.tsx',
-          'apps/merchant-control-plane/src/app/[store]/products/inventory/page.tsx',
-          'apps/storefront-runtime/src/proxy.ts',
+          'apps/merchant_web/src/app/[store]/orders/page.tsx',
+          'apps/merchant_web/src/app/[store]/products/inventory/page.tsx',
+          'apps/customer_web/src/proxy.ts',
         ],
       },
       makeStubEngine(),
@@ -516,7 +516,7 @@ describe('renderJson', () => {
   it('produces valid JSON', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     const json = renderJson(report);
@@ -540,7 +540,7 @@ describe('renderSummary', () => {
   it('contains LCIS PR Summary heading', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     const summary = renderSummary(report);
@@ -581,7 +581,7 @@ describe('evidence trail', () => {
   it('evidence entries have non-empty ref', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     for (const e of report.evidence) {

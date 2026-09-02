@@ -70,6 +70,6 @@ test('reserved mobile roots are absent from deployment and production topology',
     assert.equal(productionRoots.has(root), false);
   }
 
-  assert.equal(deploymentRoots.has('apps/mobile/merchant-app'), true);
-  assert.equal(productionRoots.has('apps/mobile/merchant-app'), true);
+  assert.equal(deploymentRoots.has('apps/merchant_app'), true);
+  assert.equal(productionRoots.has('apps/merchant_app'), true);
 });

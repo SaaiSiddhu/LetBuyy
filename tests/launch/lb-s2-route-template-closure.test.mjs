@@ -14,11 +14,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 const exists = (p) => existsSync(resolve(ROOT, p));
 
-const RESOLVER = 'apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts';
-const COMPOSITION = 'apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx';
-const TYPES = 'apps/storefront-runtime/src/lib/theme-engine/types.ts';
-const PROXY = 'apps/storefront-runtime/src/proxy.ts';
-const STORE_ROOT = 'apps/storefront-runtime/src/app/store/[subdomain]';
+const RESOLVER = 'apps/customer_web/src/lib/theme-engine/template-resolver.ts';
+const COMPOSITION = 'apps/customer_web/src/lib/theme-engine/composition-engine.tsx';
+const TYPES = 'apps/customer_web/src/lib/theme-engine/types.ts';
+const PROXY = 'apps/customer_web/src/proxy.ts';
+const STORE_ROOT = 'apps/customer_web/src/app/store/[subdomain]';
 
 // ─── W1: the resolver no longer fabricates a wrong page on a template miss ───────────────────
 
@@ -113,7 +113,7 @@ test('W1: the Liquid render-FAILURE -> React fallback safety net is untouched (n
 });
 
 test('W1: preview/editor-mode callers are unaffected (a real merchant preview still always requests the index/customers-account template which always exists in a valid bundle)', () => {
-  const preview = read('apps/storefront-runtime/src/app/preview/page.tsx');
+  const preview = read('apps/customer_web/src/app/preview/page.tsx');
   const layout = read(`${STORE_ROOT}/layout.tsx`);
   const accountLayout = read(`${STORE_ROOT}/account/layout.tsx`);
   // S6/W2 — preview/page.tsx now resolves a `routeContext` variable (demo-only, `route_type`-gated
@@ -169,7 +169,7 @@ test('W2: customers/register/page.tsx never mints a session or touches the custo
 
 test('W2: the register form posts to the EXISTING /api/customer/register route, not a new one', () => {
   assert.ok(
-    exists('apps/storefront-runtime/src/app/api/customer/register/route.ts'),
+    exists('apps/customer_web/src/app/api/customer/register/route.ts'),
     'the register API route must already exist — this phase does not add a new auth path',
   );
   const registerSection = read('packages/theme-engine/examples/letbuyy-core-liquid/files/sections/customer-register.liquid');
@@ -177,7 +177,7 @@ test('W2: the register form posts to the EXISTING /api/customer/register route, 
 });
 
 test('W2: the search route matches the exact path + query param the lb-search island already submits to', () => {
-  const island = read('apps/storefront-runtime/src/lib/theme-engine/liquid-hydration-islands.tsx');
+  const island = read('apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx');
   assert.match(island, /destination\.searchParams\.set\('search', query\)/);
   const searchSection = read('packages/theme-engine/examples/letbuyy-core-liquid/files/sections/search-box.liquid');
   assert.match(searchSection, /data-search-url="\/search"/);
@@ -213,7 +213,7 @@ test('W2: the contact POST handler is wired AFTER the password/offline/preview a
 test('W3: the CMS catch-all already renders through resolveStorefrontTemplate (Liquid `page` template is reachable)', () => {
   const src = read(`${STORE_ROOT}/[...path]/page.tsx`);
   assert.match(src, /ContentResourceRenderer/);
-  const renderer = read('apps/storefront-runtime/src/components/content/content-resource-renderer.tsx');
+  const renderer = read('apps/customer_web/src/components/content/content-resource-renderer.tsx');
   assert.match(renderer, /resolveStorefrontTemplate\(store, \{/);
   assert.match(renderer, /templateKey: resource\.assignedTemplateKey \|\| undefined,/);
 });
@@ -304,7 +304,7 @@ test('W4: every shipped Liquid template resolves through a route, or is a record
 });
 
 test('W4: React section registry stays frozen — no page.tsx in this phase adds a components/sections file', () => {
-  const sectionsDir = resolve(ROOT, 'apps/storefront-runtime/src/components/sections');
+  const sectionsDir = resolve(ROOT, 'apps/customer_web/src/components/sections');
   if (!existsSync(sectionsDir)) return; // registry may live elsewhere; the count validator is authoritative
   const count = readdirSync(sectionsDir).filter((f) => f.endsWith('.tsx')).length;
   assert.equal(count, 20, 'the frozen React section count must stay at 20 — this phase adds pages, not sections');

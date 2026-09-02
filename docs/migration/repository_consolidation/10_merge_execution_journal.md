@@ -23,7 +23,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S3 | The six canonical apps | **COMPLETE** | (this checkpoint) |
 | S4 | Phase 2 and supporting apps | **COMPLETE** | (this checkpoint) |
 | S5 | Packages, services, backend (structural only) | **COMPLETE** | (this checkpoint) |
-| S6 | Workspace and configuration repair | PENDING | — |
+| S6 | Workspace and configuration repair | **COMPLETE** | (this checkpoint) |
 | S7 | Stale path eradication | PENDING | — |
 | S8 | Verification | PENDING | — |
 | S9 | Remove nested trees, certify | PENDING | — |
@@ -309,5 +309,43 @@ Not touched. No ledger RPC, RLS policy, tenant GUC, idempotency key, or payment-
 **Proves:** Firebase and Agrimore backend code now live under `services/compatibility/`, structurally consistent with "backend lives under `services/`," with every bridge explicitly, verifiably unwired from the live path (no import, no route registration, no deploy config referencing them from any canonical runtime — not individually greped for zero-importer proof this stage, but no wiring was added by this stage's own edits, which is the load-bearing fact). Proves the canonical model map exists and is honest about its own evidence gaps. Proves no money/tenancy invariant was touched.
 
 **Does not prove:** that `services/compatibility/*` doesn't need its own explicit classification in `governance-common.mjs` (it is currently unclassified, similar to the pre-existing `services/lcis-api` gap found in Stage 2 — flagged here as a Stage 6 follow-up, not fixed this stage). Does not prove any package is or isn't genuinely duplicated across the three systems — that determination was explicitly deferred. Does not prove the two flagged Firebase functions (`walletService.ts`, `commissionService.ts`) have no other copies or call sites anywhere in System A beyond what was copied — only that this copy is inert.
+
+---
+
+## S6 — Workspace and configuration repair
+
+**Verdict: COMPLETE**, for the four Stage-3-renamed app paths (`apps/storefront-runtime`→`apps/customer_web`, `apps/merchant-control-plane`→`apps/merchant_web`, `apps/mobile/merchant-app`→`apps/merchant_app`, `apps/platform-console`→`apps/admin_web`). Documentation-only stale references (dated `.md` evidence/audit files, `docs/` research snapshots) are **explicitly deferred to Stage 7**, which has the right "active vs. historical" methodology for them — Stage 6 was scoped to functional config, workspace files, and source/test/tooling code.
+
+### Method: the same mechanical, exact-string sed substitution proven safe in Phase 7/8 of this engagement
+
+Four `apps/`-prefixed path substitutions + three bare dash-name substitutions (`storefront-runtime`→`customer-web`, `merchant-control-plane`→`merchant-web`, `platform-console`→`admin-web`, applied only after the `apps/`-prefixed forms, so short-name label strings, npm package names, and derived `checkName`/`intake_surface`-style identifiers all update consistently with their path).
+
+### What was fixed, checkpoint (next commit)
+
+1. **`scripts/validators/governance-common.mjs`** — `canonicalAppRoots` updated to the 8 current names (adds `apps/customer_app`, `apps/customer_web`, `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, `apps/merchant_web`; removes the 4 old names). `forbiddenRuntimeSubtrees`'s `apps/storefront-runtime/consumer-storefront` correctly became `apps/customer_web/consumer-storefront` as a side effect of the same substitution — verified this is the desired outcome, not an accident.
+2. **40 validator files** (`scripts/validators/*.mjs`) with independent hardcoded literals beyond the shared array (e.g. `mobile-topology-honesty-validator.mjs`, `beta-readiness-validator.mjs`, `api-client-runtime-base-validator.mjs`) — 231 occurrences fixed. Every touched `.mjs` file passed `node --check` afterward (115/115 validators still parse).
+3. **9 config/workflow files** from `00b`'s §61 sweep — `config/vercel/projects.json`, `config/runtime/{deployment,production}-topology.json`, `config/env/staging-production-secret-matrix.json`, `config/env/ownership/runtime-env-ownership.json`, `config/governance/web-v1-scope-registry.json`, `config/eslint/boundary-baseline.json`, `.github/workflows/{ci,mobile-merchant-release}.yml` — all JSON re-validated with `JSON.parse` after editing, all valid. **Confirmed the secret-matrix file behaves exactly as `00b` predicted**: the repo-side app-path→short-name mapping updated (`apps/merchant_web`→`merchant-web`), but the actual external GitHub-secret env-var name (`MERCHANT_CONTROL_PLANE_INTERNAL_SECRET`) was correctly left untouched — my substitution patterns only matched dash-separated names, not the underscore-separated ALL-CAPS env-var literal, so the PENDING EXTERNAL cascade `00b` flagged is exactly what happened, verified by direct inspection, not assumed.
+4. **The six apps' own self-referencing `runtime.manifest.json`/`package.json`** (7 files: `merchant_app`, `merchant_web`×2, `customer_web`×2, `admin_web`×2) — `runtimeRoot`, `sourceAuthority`, `deploymentAuthority.config`, npm `"name"` fields, and cross-app prose references (e.g. `merchant_web`'s manifest mentioning "platform-console operations UI") all updated.
+5. **Root `package.json`** and the three renamed apps' own **`vercel.json`** — `turbo build --filter=@letbuyy/<old-name>` build commands updated to the new npm package names (`@letbuyy/customer-web`, `@letbuyy/merchant-web`, `@letbuyy/admin-web`). Checked for any other package importing the old npm names first (`grep -rl "@letbuyy/merchant-control-plane\|..."`) — found only these 4 files, all fixed.
+6. **Root `pubspec.yaml`** (Melos/Flutter workspace) — `workspace:` list updated from `apps/mobile/merchant-app` to `apps/merchant_app`, with `apps/customer_app`, `apps/admin_app`, `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app` added (all real Flutter apps established this phase that weren't Melos workspace members before). The `run:builder` script's `cd` target fixed to match.
+7. **252 remaining functional files** (application source under the renamed apps' own `src/`, `services/api-gateway/src/__tests__/*`, `packages/theme-engine/*`, `tests/*`, `tools/*`, `infrastructure/scripts/*`) — every remaining active-code/test reference to the four old path strings, found via a repo-wide grep excluding `node_modules`, `.git`, `docs/archive`, `Ecommerce/`, and — deliberately — `docs/` (deferred to Stage 7) and `pnpm-lock.yaml` (see below).
+
+### `pnpm-lock.yaml` — deliberately NOT hand-edited
+
+The lockfile records resolved workspace-package paths and integrity metadata; hand-editing it with `sed` risks producing an internally-inconsistent lockfile that only `pnpm install` can correctly regenerate. **Left as-is, flagged**: a real (non-`--frozen-lockfile`) `pnpm install` is needed to reconcile it with the renamed workspace paths, appropriately left for Stage 8 (or a dedicated follow-up) rather than hand-patched here.
+
+### A real mistake caught mid-sweep, and how it was handled
+
+The sed sweep's target-file search (`grep -rl` for the old path strings) mechanically matched `apps/identity-platform/src/app/layout.tsx` — **one of the pre-existing dirty files belonging to another session** (confirmed via `comm -12` against the known 24-file dirty list, carried forward from this conversation's own start-of-session `git status`). The sed had changed a stale path reference inside *their own code comment* (`apps/merchant-control-plane` → `apps/merchant_web`) — a small, correct, in-isolation-desirable fix, but touching any part of a file that belongs to another session's uncommitted work violates this phase's standing rule ("Never commit them... treat a dirty worktree as user-owned"). **Reverted my own edit's effect on this one file only** (`sed` the substring back), confirmed via `git diff` that the file is now byte-for-byte identical to its state before this stage touched anything — their theming work (`surface="admin"`, `forcedTheme="light"`, the style-tag simplification) is completely untouched, comment included. This is the *only* collision found: `comm -12` between the sweep's full target-file list and the known-dirty-file list found exactly one match, and it is now resolved.
+
+### Building a clean commit pathspec around 25 files that must never be committed
+
+Before staging, built the commit pathspec programmatically: `git diff --name-only` (337 files, everything different from `HEAD`) minus the 24 known pre-existing dirty files minus `00b_topology_amendment_draft.md` (Phase 2B's own still-uncommitted edit) minus the 13 `apps/merchant_web` files carrying the other session's restored edit (Stage 3's merchant_web incident — confirmed via `comm -12` that **none** of these 13 were actually touched by this stage's sweep; they only appear in `git diff --name-only` because they are still genuinely modified relative to `HEAD`, which is the correct, intended state left by Stage 3's fix) = **299 files**, all and only this stage's own work.
+
+### What this stage proves and does not prove
+
+**Proves:** every validator, config file, app self-manifest, and 252 functional source/test files that referenced one of the four renamed app paths now reference the new path; `--plan` still enumerates 111/1/112 cleanly; every touched `.mjs`/`.json` file is syntactically/structurally valid (`.tsx`/`.ts` files were spot-checked via `git diff` review instead, since `node --check` cannot parse TypeScript/JSX syntax at all — confirmed this is a tooling limitation unrelated to the edits, not a real failure); exactly one collision with another session's dirty work occurred and was fully, verifiably undone, touching nothing else in that file.
+
+**Does not prove:** that any app actually builds/typechecks/lints after these substitutions — an exact-string path rename does not by itself prove a Next.js route tree, a Vercel deployment target, or a Flutter package still resolves; that is Stage 8's job. Does not prove the `pnpm-lock.yaml` inconsistency (left deliberately unfixed) doesn't currently block `pnpm install --frozen-lockfile` — likely it does, until a real `pnpm install` regenerates it. Does not prove the `docs/`-scoped stale references (deferred to Stage 7) are complete or exhaustive — only that they were not silently edited by this stage's mechanical sweep.
 
 ---

@@ -7,19 +7,19 @@ import {
 const reporter = createReporter("Settings apps dead twin validator");
 const trackedFiles = getTrackedFiles();
 
-const runtimeTwin = "apps/merchant-control-plane/src/app/[store]/settings/apps/AppsSettingsContent.tsx";
+const runtimeTwin = "apps/merchant_web/src/app/[store]/settings/apps/AppsSettingsContent.tsx";
 reporter.assert(
   !trackedFiles.includes(runtimeTwin),
   `${runtimeTwin} is an archived dead twin and must not return to runtime source`,
 );
 
-const archiveTwin = "docs/archive/dead-code/merchant-control-plane/settings-apps/AppsSettingsContent.tsx";
+const archiveTwin = "docs/archive/dead-code/merchant-web/settings-apps/AppsSettingsContent.tsx";
 reporter.assert(
   trackedFiles.includes(archiveTwin),
   "archived AppsSettingsContent twin must remain under docs/archive/dead-code for provenance",
 );
 
-const settingsPage = readFile("apps/merchant-control-plane/src/app/[store]/settings/apps/page.tsx");
+const settingsPage = readFile("apps/merchant_web/src/app/[store]/settings/apps/page.tsx");
 reporter.assert(
   settingsPage.includes("import { AppsSettingsClient } from './AppsSettingsClient'"),
   "settings apps page must render the live AppsSettingsClient implementation",

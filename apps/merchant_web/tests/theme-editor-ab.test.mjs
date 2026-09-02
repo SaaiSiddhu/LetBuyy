@@ -97,7 +97,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`)
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src'
+const MCP_BASE = 'apps/merchant_web/src'
 
 // ── File paths ─────────────────────────────────────────────────────────────────
 
@@ -106,7 +106,7 @@ const PREVIEW_PROXY   = `${MCP_BASE}/app/api/themes/[themeId]/update-preview/rou
 const UPDATE_PROXY    = `${MCP_BASE}/app/api/themes/[themeId]/update/route.ts`
 const UPDATE_PAGE     = `${MCP_BASE}/app/[store]/online-store/themes/update/page.tsx`
 const UPDATE_CLIENT   = `${MCP_BASE}/app/[store]/online-store/themes/update/UpdatePageClient.tsx`
-const PKG_JSON        = 'apps/merchant-control-plane/package.json'
+const PKG_JSON        = 'apps/merchant_web/package.json'
 
 // Foreign WIP files — must not be imported or modified.
 const EDITOR_PAGE     = `${MCP_BASE}/app/[store]/online-store/themes/[themeId]/editor/page.tsx`

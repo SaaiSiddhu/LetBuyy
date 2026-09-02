@@ -28,7 +28,7 @@ export const OrderItemInput = z.object({
 
 // T10/W3 — the single source of truth for the storefront cart-line wire shape. Before this, the
 // gateway (services/api-gateway/src/routes/storefront/cart-routes.ts) and the React storefront
-// client (apps/storefront-runtime/src/context/cart-context.tsx) each hand-declared their own
+// client (apps/customer_web/src/context/cart-context.tsx) each hand-declared their own
 // local type for the SAME request body, and drifted: the client's local `CartLineInput` carried
 // an extra `unit_price` field the gateway's `.strict()` Zod schema had never accepted, so every
 // cart write from the React (non-Liquid) storefront renderer 400'd, silently, from day one of
@@ -762,7 +762,7 @@ export function normalizeIndianStateCode(value: string | number | null | undefin
 // T13/W1 — canonical Indian GST state list, shared with the storefront checkout client so a
 // customer's address always produces a real `stateCode` (IndianStateCodeSchema: 01-38 or 97),
 // never a free-text state name. A parallel, static copy of this same data already exists at
-// apps/merchant-control-plane/src/lib/india/gst-states.ts (app-local, apps must not import
+// apps/merchant_web/src/lib/india/gst-states.ts (app-local, apps must not import
 // apps, so it cannot be reused directly) -- this is the shared, package-level source of truth
 // going forward; consolidating the merchant app onto this export is a follow-on cleanup, not
 // done here to stay out of another session's in-flight settings/taxes work.

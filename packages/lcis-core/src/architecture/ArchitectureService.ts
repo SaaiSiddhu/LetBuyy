@@ -145,8 +145,8 @@ const KNOWN_CRITICAL = new Set([
 
 /** CANONICAL_RUNTIMES — from tools/central-intelligence/architecture-intelligence/ServiceDiscovery.mjs lines 15–24 */
 const CANONICAL_RUNTIMES = new Set([
-  'storefront-runtime', 'merchant-control-plane', 'identity-platform',
-  'marketing-site', 'platform-console', 'api-gateway', 'queue-workers',
+  'customer-web', 'merchant-web', 'identity-platform',
+  'marketing-site', 'admin-web', 'api-gateway', 'queue-workers',
   'webhook-service', 'mobile-bff',
 ]);
 
@@ -157,11 +157,11 @@ const FROZEN_APPS = new Set([
 
 /** LAYER_MAP — from LayerDiscovery.mjs lines 22–54 */
 const LAYER_MAP: Record<string, LayerName> = {
-  'storefront-runtime': 'edge',
-  'merchant-control-plane': 'edge',
+  'customer-web': 'edge',
+  'merchant-web': 'edge',
   'identity-platform': 'edge',
   'marketing-site': 'edge',
-  'platform-console': 'edge',
+  'admin-web': 'edge',
   'api-gateway': 'gateway',
   'mobile-bff': 'gateway',
   'queue-workers': 'async',

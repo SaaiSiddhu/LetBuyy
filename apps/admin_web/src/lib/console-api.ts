@@ -67,7 +67,7 @@ export async function fetchConsoleApi<T>(
         baseUrl: consoleApiBaseUrl(),
         token,
         headers: {
-            'X-Request-ID': `platform-console-${Date.now()}`,
+            'X-Request-ID': `admin-web-${Date.now()}`,
         },
         fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }),
     });

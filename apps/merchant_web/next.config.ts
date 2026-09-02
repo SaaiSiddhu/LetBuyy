@@ -80,7 +80,7 @@ const nextConfig: NextConfig = {
       config.resolve.fallback = { ...(config.resolve.fallback || {}), jsdom: false };
 
       // Same barrel problem one layer deeper, and identical to the fix in
-      // apps/storefront-runtime/next.config.ts: theme-engine's index re-exports
+      // apps/customer_web/next.config.ts: theme-engine's index re-exports
       // theme-packager, which imports `node:crypto` for build-time bundle
       // checksums. The theme editor page value-imports from that barrel, so
       // webpack must build every `export *` target and hits the node: request.

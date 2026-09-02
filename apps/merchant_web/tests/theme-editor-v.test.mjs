@@ -1,5 +1,5 @@
 /**
- * Phase V — Template Switcher: static-contract tests for the merchant-control-plane.
+ * Phase V — Template Switcher: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, prop shapes, ARIA/a11y
  * markers, design-ratchet compliance, RISK-DUAL-N01 isolation) without spinning up
@@ -44,7 +44,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const SWITCHER = `${MCP_BASE}/components/theme-editor/TemplateSwitcherPanel.tsx`;
 
 // ── File existence ─────────────────────────────────────────────────────────────

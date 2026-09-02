@@ -80,8 +80,8 @@ test('collection updates and deletes verify collection ownership before mutation
 });
 
 test('merchant product proxies resolve the URL store to sites.id before worker calls', () => {
-    const listRoute = repositorySource('apps/merchant-control-plane/src/app/api/stores/[store]/products/route.ts');
-    const itemRoute = repositorySource('apps/merchant-control-plane/src/app/api/stores/[store]/products/[productId]/route.ts');
+    const listRoute = repositorySource('apps/merchant_web/src/app/api/stores/[store]/products/route.ts');
+    const itemRoute = repositorySource('apps/merchant_web/src/app/api/stores/[store]/products/[productId]/route.ts');
 
     assert.match(listRoute, /resolveOwnedStoreId\(decodeURIComponent\(store\)\)/);
     assert.match(listRoute, /store_id:\s*resolved\.storeId/);

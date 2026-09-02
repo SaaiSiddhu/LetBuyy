@@ -11,14 +11,14 @@
 
 /** Next.js apps (dirname under apps/ -> http port). `next dev -p <port>`. */
 export const APP_PORTS = {
-  "storefront-runtime": 9000,
-  "merchant-control-plane": 9001,
+  "customer-web": 9000,
+  "merchant-web": 9001,
   "identity-platform": 9002,
   "app-marketplace": 9003,
   "developer-portal": 9004,
   "theme-marketplace": 9005,
   "marketing-site": 9006,
-  "platform-console": 9007,
+  "admin-web": 9007,
   "platform-operations-portal": 9008,
 };
 

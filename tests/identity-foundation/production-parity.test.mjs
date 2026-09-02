@@ -61,8 +61,8 @@ test('gateway auth middleware keeps the legacy branch order snapshot', () => {
   const internalIdentity = registry.indexOf("name: 'internal-identity-hmac'");
   const supabase = registry.indexOf("name: 'supabase-bearer'");
 
-  assert.equal(registry.includes("name: 'platform-console-token'"), false);
-  assert.equal(source.includes('platform-console@letbuyy.local'), false);
+  assert.equal(registry.includes("name: 'admin-web-token'"), false);
+  assert.equal(source.includes('admin-web@letbuyy.local'), false);
   assert.ok(internalSession > -1);
   assert.ok(internalIdentity > internalSession);
   assert.ok(supabase > internalIdentity);

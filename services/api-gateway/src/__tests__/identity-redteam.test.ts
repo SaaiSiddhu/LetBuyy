@@ -182,7 +182,7 @@ test('IRT-2a: a valid customer-realm session token presented to the merchant ver
     assert.equal(result.ok, false, 'IRT-2a: a customer-realm token must never validate as a merchant session');
 });
 
-test('IRT-2b: a valid operator/platform-console session token presented to the merchant verifier is rejected', async () => {
+test('IRT-2b: a valid operator/admin-web session token presented to the merchant verifier is rejected', async () => {
     const { publicKey } = await generateMerchantKeyPair();
     const gatewayEnv = env({ LETBUYY_IDENTITY_PUBLIC_JWKS: await jwksEnvValue(publicKey) });
 
@@ -193,7 +193,7 @@ test('IRT-2b: a valid operator/platform-console session token presented to the m
     assert.equal(typeof operatorToken, 'string', 'sanity check: token minting must succeed before the attack can proceed');
     const result = await validateIdentityIssuedMerchantSessionToken(gatewayEnv, operatorToken as string, USER_ID);
 
-    assert.equal(result.ok, false, 'IRT-2b: an operator/platform-console token must never validate as a merchant session');
+    assert.equal(result.ok, false, 'IRT-2b: an operator/admin-web token must never validate as a merchant session');
 });
 
 test('IRT-2c: a valid merchant-realm ES256 token presented to the customer verifier is rejected', async () => {

@@ -1,6 +1,6 @@
 // Storefront SSR integration + regression contracts — Phase I QA.
 //
-// Covers genuine gaps not addressed by the existing storefront-runtime test files:
+// Covers genuine gaps not addressed by the existing customer-web test files:
 //   • E8 (login no-JS): the login route mirrors the D10 register pattern (dual content-type,
 //     303 redirect, same-origin guard) + the Liquid login form carries a hidden storeId field.
 //   • F5 fallback_reason: pinned to only fire on Liquid plan failures (not React plans);
@@ -25,7 +25,7 @@ function read(path) {
 // ============================================================
 
 test('E8 login route accepts application/x-www-form-urlencoded (isFormPost + formData path)', () => {
-  const src = read('apps/storefront-runtime/src/app/api/customer/login/route.ts');
+  const src = read('apps/customer_web/src/app/api/customer/login/route.ts');
 
   // Dual content-type detection.
   assert.match(src, /isFormPost/);
@@ -37,7 +37,7 @@ test('E8 login route accepts application/x-www-form-urlencoded (isFormPost + for
 });
 
 test('E8 login form errors return a 303 redirect (not raw JSON) from the form path', () => {
-  const src = read('apps/storefront-runtime/src/app/api/customer/login/route.ts');
+  const src = read('apps/customer_web/src/app/api/customer/login/route.ts');
 
   // Error responses for form submissions must be redirects (303), not JSON.
   assert.match(src, /NextResponse\.redirect/);
@@ -45,7 +45,7 @@ test('E8 login form errors return a 303 redirect (not raw JSON) from the form pa
 });
 
 test('E8 login form redirect is same-origin only', () => {
-  const src = read('apps/storefront-runtime/src/app/api/customer/login/route.ts');
+  const src = read('apps/customer_web/src/app/api/customer/login/route.ts');
 
   // The referer-based redirect target must be validated against the request origin.
   // An open-redirect vulnerability would let an attacker set the referer to an external site.
@@ -53,7 +53,7 @@ test('E8 login form redirect is same-origin only', () => {
 });
 
 test('E8 login route extracts storeId from the form body (not hardcoded)', () => {
-  const src = read('apps/storefront-runtime/src/app/api/customer/login/route.ts');
+  const src = read('apps/customer_web/src/app/api/customer/login/route.ts');
 
   // storeId must be required — the gateway call needs the tenant ID.
   assert.match(src, /form\.get\('storeId'\)/);
@@ -91,7 +91,7 @@ test('E8 Liquid login form carries hidden storeId field (shop.id) for no-JS tena
 // ============================================================
 
 test('F5 fallback_reason is conditioned on both liquidHtml===null AND plan.rendererEngine===liquid', () => {
-  const src = read('apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx');
+  const src = read('apps/customer_web/src/lib/theme-engine/composition-engine.tsx');
 
   // The ternary must gate on BOTH conditions so React plans (which also yield liquidHtml===null)
   // do not emit a misleading 'renderer_returned_null' in monitoring.
@@ -105,7 +105,7 @@ test('F5 fallback_reason is conditioned on both liquidHtml===null AND plan.rende
 });
 
 test('F5 lb:canary:render:fallback is emitted exactly once (inside the catch block, never at top level)', () => {
-  const src = read('apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx');
+  const src = read('apps/customer_web/src/lib/theme-engine/composition-engine.tsx');
 
   // Count occurrences — must be exactly one.
   const hits = (src.match(/lb:canary:render:fallback/g) ?? []).length;
@@ -128,7 +128,7 @@ test('F5 lb:canary:render:fallback is emitted exactly once (inside the catch blo
 // ============================================================
 
 test('F5 isLiquidFallback is set only from plan.rendererEngine so React plans skip chrome injection', () => {
-  const src = read('apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx');
+  const src = read('apps/customer_web/src/lib/theme-engine/composition-engine.tsx');
 
   // Derivation must be from the plan's declared renderer engine.
   assert.match(src, /isLiquidFallback = plan\.rendererEngine === 'liquid'/);
@@ -203,7 +203,7 @@ test('lb-logout no-JS fallback submit button is nested inside lb-logout (not an 
 test('lb-logout performLogout reads data-logout-url (not a hardcoded path)', () => {
   // Using a hardcoded URL would break stores with custom domain routing.
   // The logout URL must come from the Liquid drop (routes.account_logout_url).
-  const src = read('apps/storefront-runtime/src/lib/theme-engine/liquid-hydration-islands.tsx');
+  const src = read('apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx');
 
   // Island must read the URL from the dataset attribute.
   assert.match(src, /this\.dataset\.logoutUrl/);

@@ -59,8 +59,8 @@ for (const file of ["config/env/production.env.example", "config/env/production.
 }
 
 const forbiddenEmptyProofDirs = [
-  "apps/merchant-control-plane/src/app/codex-theme-editor-empty-proof",
-  "apps/merchant-control-plane/src/app/__codex-theme-editor-empty-proof",
+  "apps/merchant_web/src/app/codex-theme-editor-empty-proof",
+  "apps/merchant_web/src/app/__codex-theme-editor-empty-proof",
 ];
 
 for (const dir of forbiddenEmptyProofDirs) {

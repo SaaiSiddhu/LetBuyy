@@ -71,7 +71,7 @@ test('domain event contracts name producers and consumers for cross-app federati
   const source = read(EVENT_CORE);
 
   assert.match(source, /producer: 'identity-platform'/);
-  assert.match(source, /producer: 'platform-console'/);
+  assert.match(source, /producer: 'admin-web'/);
   assert.match(source, /producer: 'platform-operations-portal'/);
   assert.match(source, /producer: 'app-marketplace'/);
   assert.match(source, /producer: 'theme-marketplace'/);

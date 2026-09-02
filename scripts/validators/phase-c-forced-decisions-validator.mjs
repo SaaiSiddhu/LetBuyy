@@ -32,9 +32,9 @@ for (const [path, text] of activeGovernanceDocs) {
 
 reporter.assert(
   /GATE-OPS-SURVIVOR/.test(legacyPlan)
-    && /\| LEG-022 \| `apps\/platform-console`[\s\S]*\| \*\*KEEP\*\*/.test(legacyPlan)
+    && /\| LEG-022 \| `apps\/admin-web`[\s\S]*\| \*\*KEEP\*\*/.test(legacyPlan)
     && /\| LEG-023 \| `apps\/platform-operations-portal`[\s\S]*\| \*\*MIGRATE-then-DELETE\*\*/.test(legacyPlan),
-  "Legacy plan must record GATE-OPS-SURVIVOR with platform-console KEEP and platform-operations-portal MIGRATE-then-DELETE",
+  "Legacy plan must record GATE-OPS-SURVIVOR with admin-web KEEP and platform-operations-portal MIGRATE-then-DELETE",
 );
 
 for (const id of ["LEG-079", "LEG-080", "LEG-081", "LEG-082", "LEG-083"]) {

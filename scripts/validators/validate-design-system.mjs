@@ -74,7 +74,7 @@ const appSourceFiles = walk(APPS_DIR, ['.tsx', '.ts']).filter((f) => !isExiledAp
 const tsxSurfaceFiles = appSourceFiles.filter((f) => f.endsWith('.tsx'));
 const layoutFiles = appSourceFiles.filter((f) => /\/app\/layout\.tsx$/.test(rel(f)));
 const localWorkspaceFiles = [
-    join(ROOT, 'apps', 'platform-console', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
+    join(ROOT, 'apps', 'admin-web', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
     join(ROOT, 'apps', 'platform-operations-portal', 'src', 'components', '_local-ui', 'ops-workspace.tsx'),
 ].filter(existsSync);
 const darkModeReachabilityTargets = [
@@ -84,8 +84,8 @@ const darkModeReachabilityTargets = [
         patterns: [/setTheme\(/, /useAuthTheme/],
     },
     {
-        surface: 'storefront-runtime',
-        files: ['apps/storefront-runtime/src/app/storefront-landing.tsx'],
+        surface: 'customer-web',
+        files: ['apps/customer_web/src/app/storefront-landing.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
@@ -109,8 +109,8 @@ const darkModeReachabilityTargets = [
         patterns: [/function ThemeToggle\(/, /setTheme\(/],
     },
     {
-        surface: 'platform-console',
-        files: ['apps/platform-console/src/app/(dashboard)/layout.tsx'],
+        surface: 'admin-web',
+        files: ['apps/admin_web/src/app/(dashboard)/layout.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {

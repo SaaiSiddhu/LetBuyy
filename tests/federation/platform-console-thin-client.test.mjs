@@ -6,11 +6,11 @@ function read(path) {
   return readFileSync(path, 'utf8');
 }
 
-test('platform-console auth routes do not own a Supabase auth client', () => {
-  const authServer = read('apps/platform-console/src/lib/console-auth-server.ts');
-  const loginRoute = read('apps/platform-console/src/app/api/console-auth/login/route.ts');
-  const callbackRoute = read('apps/platform-console/src/app/api/console-auth/callback/route.ts');
-  const logoutRoute = read('apps/platform-console/src/app/api/console-auth/logout/route.ts');
+test('admin-web auth routes do not own a Supabase auth client', () => {
+  const authServer = read('apps/admin_web/src/lib/console-auth-server.ts');
+  const loginRoute = read('apps/admin_web/src/app/api/console-auth/login/route.ts');
+  const callbackRoute = read('apps/admin_web/src/app/api/console-auth/callback/route.ts');
+  const logoutRoute = read('apps/admin_web/src/app/api/console-auth/logout/route.ts');
 
   for (const source of [authServer, loginRoute, callbackRoute, logoutRoute]) {
     assert.doesNotMatch(source, /supabase|createSupabaseServerClient|identity-runtime-adapter|runtime-composition/i);
@@ -21,23 +21,23 @@ test('platform-console auth routes do not own a Supabase auth client', () => {
   assert.match(callbackRoute, /readConsoleMagicLinkToken/);
 });
 
-test('platform-console depends on auth-core without runtime-composition', () => {
-  const packageJson = JSON.parse(read('apps/platform-console/package.json'));
+test('admin-web depends on auth-core without runtime-composition', () => {
+  const packageJson = JSON.parse(read('apps/admin_web/package.json'));
   assert.equal(packageJson.dependencies['@letbuyy/api-client'], 'workspace:*');
   assert.equal(packageJson.dependencies['@letbuyy/api-types'], undefined);
   assert.equal(packageJson.dependencies['@letbuyy/auth-core'], 'workspace:*');
   assert.equal(packageJson.dependencies['@letbuyy/runtime-composition'], undefined);
 
-  const manifest = read('apps/platform-console/runtime.manifest.json');
+  const manifest = read('apps/admin_web/runtime.manifest.json');
   assert.match(manifest, /"@letbuyy\/api-client"/);
   assert.doesNotMatch(manifest, /"@letbuyy\/api-types"/);
   assert.match(manifest, /"@letbuyy\/auth-core"/);
   assert.doesNotMatch(manifest, /runtime-composition/);
 
-  const consoleApi = read('apps/platform-console/src/lib/console-api.ts');
+  const consoleApi = read('apps/admin_web/src/lib/console-api.ts');
   assert.match(consoleApi, /createLetbuyyApiClient/);
   assert.doesNotMatch(consoleApi, /await fetch\(/);
 
-  const session = read('apps/platform-console/src/lib/console-session.ts');
+  const session = read('apps/admin_web/src/lib/console-session.ts');
   assert.match(session, /@letbuyy\/auth-core/);
 });

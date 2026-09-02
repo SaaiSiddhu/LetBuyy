@@ -15,10 +15,10 @@ function read(relativePath: string): string {
 
 test('gateway returns apex MX warning and UI/mobile surfaces it', () => {
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
-  const wizardPath = join(repoRoot, 'apps/merchant-control-plane/src/components/domains/ConnectDomainWizard.tsx');
-  const merchant = existsSync(wizardPath) ? readFileSync(wizardPath, 'utf8') : read('apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx');
-  const mobileScreen = read('apps/mobile/merchant-app/lib/screens/settings/domain_settings_screen.dart');
-  const mobileService = read('apps/mobile/merchant-app/lib/services/custom_domains.dart');
+  const wizardPath = join(repoRoot, 'apps/merchant_web/src/components/domains/ConnectDomainWizard.tsx');
+  const merchant = existsSync(wizardPath) ? readFileSync(wizardPath, 'utf8') : read('apps/merchant_web/src/app/[store]/settings/domains/page.tsx');
+  const mobileScreen = read('apps/merchant_app/lib/screens/settings/domain_settings_screen.dart');
+  const mobileService = read('apps/merchant_app/lib/services/custom_domains.dart');
 
   assert.match(route, /apex_mx_warning: dnsSnapshot\.mx\.length > 0/);
   assert.match(merchant, /apex_mx_warning|apexMxWarning/);

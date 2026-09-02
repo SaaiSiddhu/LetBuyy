@@ -1,6 +1,6 @@
 /**
  * Phase Z — Theme Markets & Localization: static-contract tests for Lane B
- * (merchant-control-plane translation editor UI).
+ * (merchant-web translation editor UI).
  *
  * Verifies source-level contracts (file existence, import patterns, ARIA/a11y
  * markers, design-ratchet compliance, India-first invariants, RISK-DUAL-N01
@@ -69,7 +69,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 
 const LOCALE_SWITCHER        = `${MCP_BASE}/components/theme-locale/LocaleSwitcher.tsx`;
 const TRANSLATION_KEY_LIST   = `${MCP_BASE}/components/theme-locale/TranslationKeyList.tsx`;
@@ -79,7 +79,7 @@ const TRANSLATIONS_PAGE      = `${MCP_BASE}/app/[store]/online-store/themes/[the
 const PROXY_TRANSLATIONS     = `${MCP_BASE}/app/api/stores/[store]/localization/translations/route.ts`;
 const PROXY_TRANSLATION_ID   = `${MCP_BASE}/app/api/stores/[store]/localization/translations/[translationId]/route.ts`;
 const CSS_MODULE             = `${MCP_BASE}/components/theme-locale/theme-locale.module.css`;
-const PKG_JSON               = 'apps/merchant-control-plane/package.json';
+const PKG_JSON               = 'apps/merchant_web/package.json';
 
 // Foreign WIP files — must NOT be touched.
 const EDITOR_PAGE_TSX        = `${MCP_BASE}/app/[store]/online-store/themes/[themeId]/editor/page.tsx`;
@@ -182,7 +182,7 @@ test('phase-z: TranslationEditorClient passes defaultLocale=DEFAULT_ADMIN_LOCALE
 
 test('phase-z: admin-locales.ts defines DEFAULT_ADMIN_LOCALE as en-IN', () => {
     assert.match(
-        read('apps/merchant-control-plane/src/lib/i18n/admin-locales.ts'),
+        read('apps/merchant_web/src/lib/i18n/admin-locales.ts'),
         /DEFAULT_ADMIN_LOCALE\s*=\s*['"]en-IN['"]/,
         'admin-locales.ts must define DEFAULT_ADMIN_LOCALE as en-IN',
     );

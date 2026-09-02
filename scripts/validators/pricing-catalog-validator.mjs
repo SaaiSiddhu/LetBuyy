@@ -93,7 +93,7 @@ for (const file of migrationFiles) {
 // many tier-keyed comparison rows inline.
 const pricingComponents = getTrackedFiles().filter(
   (f) =>
-    /apps\/(merchant-control-plane|marketing-site)\/src\//.test(f) &&
+    /apps\/(merchant-web|marketing-site)\/src\//.test(f) &&
     /(pricing|plan|compare)/i.test(f) &&
     (f.endsWith(".tsx") || f.endsWith(".ts")),
 );

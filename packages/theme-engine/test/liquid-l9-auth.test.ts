@@ -1,5 +1,5 @@
 // L9 — Customer Registration (engine templates only). Liquid customers/login + customers/register render.
-// D10: LB-12 is CLOSED (2026-06-19). POST /api/customer/register proxy route now exists in storefront-runtime.
+// D10: LB-12 is CLOSED (2026-06-19). POST /api/customer/register proxy route now exists in customer-web.
 // Login posts to /api/customer/login; register posts to /api/customer/register (both same-origin proxies).
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -57,11 +57,11 @@ test('L9: auth pages are sanitized (no active content) — auth surface, highest
 // ============================================================================
 
 test('D10 /api/customer/register proxy route exists and exports POST handler', () => {
-  // Verify the storefront-runtime route file exists and wires to the gateway correctly.
+  // Verify the customer-web route file exists and wires to the gateway correctly.
   // This is a static contract test — read-only source inspection, no network calls.
   const routePath = resolve(
     import.meta.dirname ?? __dirname,
-    '../../../apps/storefront-runtime/src/app/api/customer/register/route.ts',
+    '../../../apps/customer_web/src/app/api/customer/register/route.ts',
   );
   let routeSource: string;
   try {

@@ -1,5 +1,5 @@
 /**
- * Phase S — Live Preview Inspector: static-contract tests for the merchant-control-plane.
+ * Phase S — Live Preview Inspector: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, import patterns,
  * postMessage security, hover/scroll message protocol, overlay component) without
@@ -28,7 +28,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 const CENTER_PANEL = `${MCP_BASE}/components/theme-editor/CenterPanel.tsx`;
 const INSPECTOR_OVERLAY = `${MCP_BASE}/components/theme-editor/PreviewInspectorOverlay.tsx`;
 const PROTOCOL = 'packages/theme-engine/src/editor-bridge-protocol.ts';

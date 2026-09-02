@@ -5,7 +5,7 @@ import test from 'node:test';
 const FEDERATED_PROXY_FILES = [
   'apps/app-marketplace/src/proxy.ts',
   'apps/theme-marketplace/src/proxy.ts',
-  'apps/platform-console/src/proxy.ts',
+  'apps/admin_web/src/proxy.ts',
   'apps/platform-operations-portal/src/proxy.ts',
 ];
 

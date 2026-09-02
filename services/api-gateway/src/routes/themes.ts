@@ -735,7 +735,7 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
         partnerUserId: customUser.id,
         actorId: customUser.id,
         automatedChecks: buildMarketplaceAutomatedChecks({
-            source: 'platform-console.theme_submission',
+            source: 'admin-web.theme_submission',
             checks: [
                 {
                     name: 'bundle_schema_validation',

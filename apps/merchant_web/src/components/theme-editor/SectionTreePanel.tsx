@@ -4,7 +4,7 @@
  * SectionTreePanel — Phase R editor shell.
  *
  * Extracted from the inline SectionTree/TreeGroup/TreeSection functions in
- * apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx.
+ * apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx.
  *
  * Additions vs the former inline version:
  *   • role="tree" on the template-section list container (ARIA tree widget).

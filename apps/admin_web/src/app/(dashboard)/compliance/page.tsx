@@ -107,10 +107,10 @@ async function createDataSubjectRequest(formData: FormData) {
             source: String(formData.get('source') || 'manual'),
             reason,
             request_payload: {
-                intake_surface: 'platform-console.compliance',
+                intake_surface: 'admin-web.compliance',
             },
             metadata: {
-                created_from: 'platform-console',
+                created_from: 'admin-web',
             },
             actor_id: session.userId || null,
             actor_email: session.email,
@@ -139,7 +139,7 @@ async function updateDataSubjectRequest(formData: FormData) {
             fulfillment_summary: optionalString(formData.get('fulfillment_summary')),
             reason,
             metadata: {
-                updated_from: 'platform-console',
+                updated_from: 'admin-web',
             },
             actor_id: session.userId || null,
             actor_email: session.email,

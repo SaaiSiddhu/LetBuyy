@@ -107,15 +107,15 @@ for (const [activeFile, archiveFile] of Object.entries(archivedSchemaFacades)) {
   reporter.assert(exists(archiveFile), `Archived schema facade must preserve forensic provenance: ${archiveFile}`);
 }
 
-reporter.assert(!exists("apps/storefront-runtime/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
-const storefrontSourceFiles = listWorkspaceFiles(["apps/storefront-runtime/src"]).filter((file) => /\.(ts|tsx)$/.test(file));
+reporter.assert(!exists("apps/customer_web/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
+const storefrontSourceFiles = listWorkspaceFiles(["apps/customer_web/src"]).filter((file) => /\.(ts|tsx)$/.test(file));
 for (const file of storefrontSourceFiles) {
   reporter.assert(!readFile(file).includes("@/types/store"), `Storefront source must import domain contracts directly, not through @/types/store: ${file}`);
 }
 reporter.assert(
-  readFile("apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/theme-engine") &&
-    readFile("apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/commerce-core") &&
-    readFile("apps/storefront-runtime/src/lib/store-service.ts").includes("@letbuyy/tenant-core"),
+  readFile("apps/customer_web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/theme-engine") &&
+    readFile("apps/customer_web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/commerce-core") &&
+    readFile("apps/customer_web/src/lib/store-service.ts").includes("@letbuyy/tenant-core"),
   "Storefront runtime must consume extracted domain contracts directly from owning packages",
 );
 
@@ -186,20 +186,20 @@ const appApiRoutes = listWorkspaceFiles(["apps"])
 function classifyAppApiRoute(file) {
   if (file.startsWith("apps/identity-platform/src/app/api/auth/")) return "app-local-auth";
   if (file.startsWith("apps/identity-platform/src/app/api/email/")) return "identity-gateway-proxy";
-  if (file.startsWith("apps/platform-console/src/app/api/console-auth/")) return "app-local-operator-auth";
-  if (file.startsWith("apps/platform-console/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/admin_web/src/app/api/console-auth/")) return "app-local-operator-auth";
+  if (file.startsWith("apps/admin_web/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/platform-operations-portal/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/developer-portal/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/marketing-site/src/app/api/")) return "gateway-proxy";
-  if (file === "apps/merchant-control-plane/src/app/api/auth/logout/route.ts") return "app-local-session";
-  if (file.startsWith("apps/merchant-control-plane/src/app/api/")) return "gateway-proxy";
+  if (file === "apps/merchant_web/src/app/api/auth/logout/route.ts") return "app-local-session";
+  if (file.startsWith("apps/merchant_web/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/app-marketplace/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/theme-marketplace/src/app/api/")) return "gateway-proxy";
-  if (file === "apps/storefront-runtime/src/app/api/customer/session/route.ts") return "app-local-session";
-  if (file === "apps/storefront-runtime/src/app/api/customer/logout/route.ts") return "app-local-session";
-  if (file === "apps/storefront-runtime/src/app/api/seed/route.ts") return "blocked-local-safety";
-  if (file === "apps/storefront-runtime/src/app/api/themes/install/route.ts") return "blocked-local-safety";
-  if (file.startsWith("apps/storefront-runtime/src/app/api/")) return "gateway-proxy";
+  if (file === "apps/customer_web/src/app/api/customer/session/route.ts") return "app-local-session";
+  if (file === "apps/customer_web/src/app/api/customer/logout/route.ts") return "app-local-session";
+  if (file === "apps/customer_web/src/app/api/seed/route.ts") return "blocked-local-safety";
+  if (file === "apps/customer_web/src/app/api/themes/install/route.ts") return "blocked-local-safety";
+  if (file.startsWith("apps/customer_web/src/app/api/")) return "gateway-proxy";
   return null;
 }
 
@@ -210,9 +210,9 @@ for (const file of appApiRoutes) {
   routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
 }
 
-// T8/W0 — 189 as of apps/storefront-runtime/src/app/api/store/[subdomain]/search-suggest/
+// T8/W0 — 189 as of apps/customer_web/src/app/api/store/[subdomain]/search-suggest/
 // route.ts (T5, commit 68ed4b29): a thin gateway-proxy read route, already correctly classified
-// by the existing `apps/storefront-runtime/src/app/api/` catch-all above — this bump is the
+// by the existing `apps/customer_web/src/app/api/` catch-all above — this bump is the
 // deliberate maintenance action the classification check above expects, not a workaround.
 reporter.assert(appApiRoutes.length === 189, `App-local API route inventory changed without updating P4-4 classification: expected 189, found ${appApiRoutes.length}`);
 
@@ -221,7 +221,7 @@ function appLocalOwnershipForFile(file) {
     return classifyAppApiRoute(file);
   }
   if (file.startsWith("apps/identity-platform/src/lib/")) return "app-local-auth";
-  if (file === "apps/platform-console/src/lib/console-auth-server.ts") return "app-local-operator-auth";
+  if (file === "apps/admin_web/src/lib/console-auth-server.ts") return "app-local-operator-auth";
   return null;
 }
 
@@ -256,9 +256,9 @@ reporter.assert(
 );
 
 const allowedOrderPresentationAdapters = new Set([
-  "apps/storefront-runtime/src/app/api/orders/check/route.ts",
-  "apps/storefront-runtime/src/app/api/orders/login/route.ts",
-  "apps/storefront-runtime/src/app/api/orders/set-password/route.ts",
+  "apps/customer_web/src/app/api/orders/check/route.ts",
+  "apps/customer_web/src/app/api/orders/login/route.ts",
+  "apps/customer_web/src/app/api/orders/set-password/route.ts",
 ]);
 const appRoutesUsingOrderService = appApiRoutes.filter((file) => readFile(file).includes("@/lib/order-service"));
 for (const file of appRoutesUsingOrderService) {
@@ -270,11 +270,11 @@ for (const file of appRoutesUsingOrderService) {
 reporter.assert(appRoutesUsingOrderService.length === allowedOrderPresentationAdapters.size, "Classified storefront order lookup adapter inventory changed; update P4-4 ownership governance");
 
 const mobileMerchantModelFacades = [
-  "apps/mobile/merchant-app/lib/models/order_model.dart",
-  "apps/mobile/merchant-app/lib/models/store_auth_request_model.dart",
-  "apps/mobile/merchant-app/lib/models/store_model.dart",
-  "apps/mobile/merchant-app/lib/models/store_theme_model.dart",
-  "apps/mobile/merchant-app/lib/models/theme_editor_models.dart",
+  "apps/merchant_app/lib/models/order_model.dart",
+  "apps/merchant_app/lib/models/store_auth_request_model.dart",
+  "apps/merchant_app/lib/models/store_model.dart",
+  "apps/merchant_app/lib/models/store_theme_model.dart",
+  "apps/merchant_app/lib/models/theme_editor_models.dart",
 ];
 
 for (const file of mobileMerchantModelFacades) {

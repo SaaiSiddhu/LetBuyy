@@ -6,8 +6,8 @@
  * proven in app-platform-killswitch.test.ts for the /v1/app-store + /v1/app mounts and
  * in app-platform-seam-killswitch.test.ts for the storefront + operator seams) are
  * load-bearing. This file proves the UIs do not *present* the frozen capability either:
- *   - merchant-control-plane: the three App Bridge / marketplace entry pages
- *   - platform-console: marketplace-governance (app listing approval) and the developer
+ *   - merchant-web: the three App Bridge / marketplace entry pages
+ *   - admin-web: marketplace-governance (app listing approval) and the developer
  *     back office (moderation, partner payouts, disputes)
  * all 404 unless the same explicit positive opt-in is set.
  *
@@ -20,21 +20,21 @@ import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
 
-const FLAG_SOURCE = 'apps/merchant-control-plane/src/lib/app-platform-flag.ts';
-const CONSOLE_FLAG_SOURCE = 'apps/platform-console/src/lib/app-platform-flag.ts';
+const FLAG_SOURCE = 'apps/merchant_web/src/lib/app-platform-flag.ts';
+const CONSOLE_FLAG_SOURCE = 'apps/admin_web/src/lib/app-platform-flag.ts';
 const FLAG_SOURCES = [FLAG_SOURCE, CONSOLE_FLAG_SOURCE];
 const GUARDED_PAGES = [
-    'apps/merchant-control-plane/src/app/[store]/apps/page.tsx',
-    'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx',
-    'apps/merchant-control-plane/src/app/[store]/settings/apps/page.tsx',
+    'apps/merchant_web/src/app/[store]/apps/page.tsx',
+    'apps/merchant_web/src/app/[store]/apps/[installationId]/page.tsx',
+    'apps/merchant_web/src/app/[store]/settings/apps/page.tsx',
 ];
 // The OPERATOR plane of the same frozen seam. These drive
 // /v1/operations/marketplace-reviews (writes marketplace_apps.status = published) and
 // /v1/operations/developers (app_developers moderation, partner payout release), both of
 // which the gateway now 404s.
 const CONSOLE_GUARDED_PAGES = [
-    'apps/platform-console/src/app/(dashboard)/marketplace-governance/page.tsx',
-    'apps/platform-console/src/app/(dashboard)/developers/page.tsx',
+    'apps/admin_web/src/app/(dashboard)/marketplace-governance/page.tsx',
+    'apps/admin_web/src/app/(dashboard)/developers/page.tsx',
 ];
 const DEPLOY_WORKFLOWS = [
     '.github/workflows/production-deploy.yml',
@@ -137,7 +137,7 @@ test('every App Bridge / marketplace page guards before it does anything else', 
     }
 });
 
-test('the platform-console operator pages guard before they fetch or render', () => {
+test('the admin-web operator pages guard before they fetch or render', () => {
     for (const page of CONSOLE_GUARDED_PAGES) {
         const source = readFileSync(page, 'utf8');
         assert.match(
@@ -168,7 +168,7 @@ test('the platform-console operator pages guard before they fetch or render', ()
     }
 });
 
-test('the platform-console flag is an exact mirror of the merchant one', () => {
+test('the admin-web flag is an exact mirror of the merchant one', () => {
     const strip = (text) => text.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\s+/g, ' ').trim();
     assert.equal(
         strip(readFileSync(CONSOLE_FLAG_SOURCE, 'utf8')),

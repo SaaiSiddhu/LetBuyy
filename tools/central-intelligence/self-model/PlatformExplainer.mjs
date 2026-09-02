@@ -76,7 +76,7 @@ class PlatformExplainer {
 
     const domainCount   = domainIntel?.summary?.domains ?? 22;
     const workerCount   = infraIntel?.summary?.workers ?? 4;
-    const vercelApps    = infraIntel?.summary?.vercelApps ?? ['marketing-site', 'identity-platform', 'merchant-control-plane', 'storefront-runtime', 'platform-console'];
+    const vercelApps    = infraIntel?.summary?.vercelApps ?? ['marketing-site', 'identity-platform', 'merchant-web', 'customer-web', 'admin-web'];
     const tableCount    = domainIntel?.summary?.classifiedTables ?? '330+';
     const rpcCount      = domainIntel?.summary?.classifiedRpcs ?? '137+';
     const providers     = infraIntel?.summary?.providers ?? ['Supabase', 'Razorpay', 'Cloudflare', 'Vercel', 'Resend', 'Turnstile'];
@@ -86,11 +86,11 @@ class PlatformExplainer {
       summary: `LetBuyy is a multi-tenant India-first commerce platform. Merchants create stores at {store}.letbuyy.com or on custom domains. Each store shares the same backend infrastructure but is isolated by site_id at the database layer via RLS policies. The platform handles the full commerce lifecycle: product discovery → cart → checkout → payment → fulfilment → refunds, with India-specific requirements (GST, COD, INR, GSTIN).`,
       components: {
         runtimes: [
-          { name: 'storefront-runtime',         role: 'Customer-facing store (React + optional Liquid canary)',  technology: 'Next.js on Vercel' },
-          { name: 'merchant-control-plane',      role: 'Merchant dashboard (products, orders, analytics)',        technology: 'Next.js on Vercel' },
+          { name: 'customer-web',         role: 'Customer-facing store (React + optional Liquid canary)',  technology: 'Next.js on Vercel' },
+          { name: 'merchant-web',      role: 'Merchant dashboard (products, orders, analytics)',        technology: 'Next.js on Vercel' },
           { name: 'identity-platform',           role: 'Auth — merchant signup/login (ES256 JWT)',               technology: 'Next.js on Vercel' },
           { name: 'marketing-site',              role: 'Public marketing site + pricing + blog',                 technology: 'Next.js on Vercel' },
-          { name: 'platform-console',            role: 'Operator/admin console',                                technology: 'Next.js on Vercel' },
+          { name: 'admin-web',            role: 'Operator/admin console',                                technology: 'Next.js on Vercel' },
           { name: 'services/api-gateway',        role: 'Canonical backend API (/v1/*); all tenants share this', technology: 'Cloudflare Worker (Hono)' },
           { name: 'services/queue-workers',      role: 'Async event processing (analytics, search, notifications, crons)', technology: 'Cloudflare Worker' },
           { name: 'services/webhook-service',    role: 'Outbound webhook delivery to merchant endpoints',        technology: 'Cloudflare Worker' },
@@ -119,13 +119,13 @@ class PlatformExplainer {
         externalProviders: providers,
       },
       steps: [
-        'Customer visits {store}.letbuyy.com — storefront-runtime serves the store page (React default, Liquid canary off)',
-        'Customer browses products → adds to cart → reaches checkout (embedded in storefront-runtime)',
+        'Customer visits {store}.letbuyy.com — customer-web serves the store page (React default, Liquid canary off)',
+        'Customer browses products → adds to cart → reaches checkout (embedded in customer-web)',
         'Checkout calls api-gateway /v1/checkout → create_checkout_order RPC validates totals/tax/shipping from DB',
         'Customer pays via Razorpay or COD → api-gateway verifies Razorpay webhook signature server-side',
         'confirm_order_payment_with_ledger RPC credits the canonical ledger; inventory decremented; order confirmed',
         'Queue workers process analytics event, search index update, notification email (async via queues)',
-        'Merchant sees the order in merchant-control-plane dashboard',
+        'Merchant sees the order in merchant-web dashboard',
         'Merchant fulfils → ships → optionally refunds via complete_order_refund RPC',
         'Gift cards: issued via issue_gift_card RPC; balance is a ledger projection (no mutable column)',
         'GST invoice generated server-side; immutable once created',
@@ -149,7 +149,7 @@ class PlatformExplainer {
 
     const interactions = [
       {
-        from: 'storefront-runtime / merchant-control-plane / platform-console',
+        from: 'customer-web / merchant-web / admin-web',
         to: 'api-gateway',
         mechanism: 'HTTP proxy via /api/* same-origin routes → /v1/* on api-gateway',
         note: 'Browser never calls gateway directly (CORS + CSP path-match)',
@@ -191,10 +191,10 @@ class PlatformExplainer {
         note: 'Mobile BFF translates mobile requests to gateway API calls',
       },
       {
-        from: 'storefront-runtime',
+        from: 'customer-web',
         to: 'identity-platform',
         mechanism: 'Redirect + cookie exchange for customer auth (HS256 customer session)',
-        note: 'storefront-runtime sets customer session cookie; identity-platform issues it',
+        note: 'customer-web sets customer session cookie; identity-platform issues it',
       },
     ];
 
@@ -208,7 +208,7 @@ class PlatformExplainer {
       summary: `The 9 runtimes (5 Vercel Next.js apps + 4 Cloudflare Workers) interact through HTTP proxies, Cloudflare Service Bindings, Cloudflare Queues, and a shared Supabase Postgres database. The api-gateway is the central hub — all web apps proxy to it; queue-workers and webhook-service are downstream consumers.`,
       components: {
         centralHub: 'api-gateway (letbuyy-api Cloudflare Worker)',
-        edgeApps: ['storefront-runtime', 'merchant-control-plane', 'identity-platform', 'marketing-site', 'platform-console'],
+        edgeApps: ['customer-web', 'merchant-web', 'identity-platform', 'marketing-site', 'admin-web'],
         workerServices: ['letbuyy-api', 'letbuyy-queue-workers', 'letbuyy-webhook', 'letbuyy-mobile-bff'],
         dataPlane: 'Supabase Postgres (shared schema, tenant isolation via site_id + RLS)',
       },

@@ -75,9 +75,9 @@ test('internal console exposes rollup-backed executive analytics endpoints with 
 });
 
 test('console analytics, revenue, and dashboard pages consume rollups instead of unavailable placeholders', () => {
-    const analyticsPage = repositorySource('apps/platform-console/src/app/(dashboard)/analytics/page.tsx');
-    const revenuePage = repositorySource('apps/platform-console/src/app/(dashboard)/revenue/page.tsx');
-    const dashboardPage = repositorySource('apps/platform-console/src/app/(dashboard)/dashboard/page.tsx');
+    const analyticsPage = repositorySource('apps/admin_web/src/app/(dashboard)/analytics/page.tsx');
+    const revenuePage = repositorySource('apps/admin_web/src/app/(dashboard)/revenue/page.tsx');
+    const dashboardPage = repositorySource('apps/admin_web/src/app/(dashboard)/dashboard/page.tsx');
 
     for (const page of [analyticsPage, revenuePage, dashboardPage]) {
         assert.match(page, /\/internal\/console\/analytics\/mrr/);

@@ -64,7 +64,7 @@ test('custom-domain tables remain api-gateway single-writer owned', () => {
 
   assert.match(validator, /site_preview_links/);
   assert.match(validator, /site_gate_attempts/);
-  assert.match(validator, /apps\/storefront-runtime\/src/);
+  assert.match(validator, /apps\/customer-web\/src/);
   assert.match(validator, /services\/api-gateway/);
 });
 
@@ -72,8 +72,8 @@ test('custom-domain health exposes DNS, SSL, and renewal state to mobile', () =>
   const sharedTypes = read('packages/shared-types/src/index.ts');
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
   const stores = read('services/api-gateway/src/routes/stores.ts');
-  const mobileService = read('apps/mobile/merchant-app/lib/services/custom_domains.dart');
-  const mobileScreen = read('apps/mobile/merchant-app/lib/screens/settings/domain_settings_screen.dart');
+  const mobileService = read('apps/merchant_app/lib/services/custom_domains.dart');
+  const mobileScreen = read('apps/merchant_app/lib/screens/settings/domain_settings_screen.dart');
 
   assert.match(sharedTypes, /CustomDomainHealthSchema/);
   assert.match(route, /readCustomDomainHealth\(c\.env/);

@@ -96,6 +96,6 @@
   "productionOwnership": "Frozen app is not a production runtime; production topology must keep it frozen/not-deployed.",
   "deploymentPipelineOwnership": "No deployment pipeline ownership while frozen; no Vercel project, vercel.json, or auto-deploy shape is allowed.",
   "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
-  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data.",
-  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data."
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data."
 }

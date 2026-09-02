@@ -38,7 +38,7 @@ test.describe('J2 App Store lifecycle federation', () => {
     await requireRealStack(request);
     await installMerchantSessionCookie(page);
 
-    await openSurface(page, testInfo, `${federationUrls.platformConsole}/partners`, 'j2-platform-console-partner');
+    await openSurface(page, testInfo, `${federationUrls.platformConsole}/partners`, 'j2-admin-web-partner');
     await openSurface(page, testInfo, `${federationUrls.operationsPortal}/operations`, 'j2-ops-review-queue');
     await openSurface(page, testInfo, federationUrls.appMarketplace, 'j2-app-marketplace');
 

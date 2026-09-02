@@ -159,11 +159,11 @@ export type DomainEventType = (typeof DOMAIN_EVENT_TYPES)[number];
 export type DomainEventProducer =
   | 'api-gateway'
   | 'identity-platform'
-  | 'platform-console'
+  | 'admin-web'
   | 'platform-operations-portal'
   | 'app-marketplace'
   | 'theme-marketplace'
-  | 'storefront-runtime'
+  | 'customer-web'
   | 'queue-workers'
   | 'webhook-service';
 
@@ -471,7 +471,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
   'order.created': {
     eventType: 'order.created',
     schemaVersion: 1,
-    producer: 'storefront-runtime',
+    producer: 'customer-web',
     consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
     aggregateType: 'order',
     payloadSchema: OrderPayloadSchema,
@@ -536,7 +536,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
   'app.submitted': {
     eventType: 'app.submitted',
     schemaVersion: 1,
-    producer: 'platform-console',
+    producer: 'admin-web',
     consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'app',
     payloadSchema: AppReviewPayloadSchema,
@@ -576,7 +576,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
   'theme.submitted': {
     eventType: 'theme.submitted',
     schemaVersion: 1,
-    producer: 'platform-console',
+    producer: 'admin-web',
     consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'theme',
     payloadSchema: ThemeReviewPayloadSchema,

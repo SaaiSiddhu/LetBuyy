@@ -24,7 +24,7 @@ test.describe('J3 Theme Store lifecycle federation', () => {
     await requireRealStack(request);
     await installMerchantSessionCookie(page);
 
-    await openSurface(page, testInfo, `${federationUrls.platformConsole}/themes`, 'j3-platform-console-theme-submit');
+    await openSurface(page, testInfo, `${federationUrls.platformConsole}/themes`, 'j3-admin-web-theme-submit');
     await openSurface(page, testInfo, `${federationUrls.operationsPortal}/operations`, 'j3-ops-theme-review');
     await openSurface(page, testInfo, `${federationUrls.themeMarketplace}/themes`, 'j3-theme-marketplace-list');
 

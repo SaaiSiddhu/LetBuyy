@@ -54,13 +54,23 @@ export const ignoredDirectoryNames = new Set([
   "temp",
 ]);
 
+// Updated 2026-09-02 (Phase M, Stage 6): the former apps/storefront-runtime,
+// apps/merchant-control-plane, apps/mobile/merchant-app, and
+// apps/platform-console are now apps/customer_web, apps/merchant_web,
+// apps/merchant_app, and apps/admin_web respectively (renamed on disk,
+// Stage 3). apps/customer_app and apps/admin_app are new additions
+// established the same stage (no prior ACTIVE/SUPPORTING classification to
+// rename from). See CLAUDE.md's "Six-App Target Topology" section and
+// docs/migration/repository_consolidation/10_merge_execution_journal.md.
 export const canonicalAppRoots = [
-  "apps/storefront-runtime",
-  "apps/merchant-control-plane",
+  "apps/customer_web",
+  "apps/merchant_web",
   "apps/identity-platform",
   "apps/marketing-site",
-  "apps/platform-console",
-  "apps/mobile/merchant-app",
+  "apps/admin_web",
+  "apps/merchant_app",
+  "apps/customer_app",
+  "apps/admin_app",
 ];
 
 export const frozenAppRoots = [
@@ -91,7 +101,7 @@ export const forbiddenRuntimeRoots = [
 ];
 
 export const forbiddenRuntimeSubtrees = [
-  "apps/storefront-runtime/consumer-storefront",
+  "apps/customer_web/consumer-storefront",
 ];
 
 export const canonicalServiceRoots = [

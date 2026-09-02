@@ -18,12 +18,12 @@ function read(relativePath: string): string {
 }
 
 test('settings apps route renders the live client and the old content twin is archived', () => {
-    const page = read('apps/merchant-control-plane/src/app/[store]/settings/apps/page.tsx');
+    const page = read('apps/merchant_web/src/app/[store]/settings/apps/page.tsx');
 
     assert.match(page, /AppsSettingsClient/);
-    assert.equal(existsSync(path('apps/merchant-control-plane/src/app/[store]/settings/apps/AppsSettingsContent.tsx')), false);
+    assert.equal(existsSync(path('apps/merchant_web/src/app/[store]/settings/apps/AppsSettingsContent.tsx')), false);
     assert.equal(
-        existsSync(path('docs/archive/dead-code/merchant-control-plane/settings-apps/AppsSettingsContent.tsx')),
+        existsSync(path('docs/archive/dead-code/merchant-web/settings-apps/AppsSettingsContent.tsx')),
         true,
     );
 });

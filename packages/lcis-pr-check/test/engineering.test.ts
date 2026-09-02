@@ -334,7 +334,7 @@ describe('analyzeWithEngineering — six engineering dimensions present', () => 
   before(async () => {
     resetEngine();
     report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined,
       undefined,
@@ -589,7 +589,7 @@ describe('analyzeWithEngineering — complexity band mapping', () => {
   it('moderate → engineering-complexity WARN', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ complexityBand: 'moderate' }),
@@ -641,7 +641,7 @@ describe('analyzeWithEngineering — risk level mapping', () => {
   it('medium → engineering-risk WARN', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ riskLevel: 'medium' }),

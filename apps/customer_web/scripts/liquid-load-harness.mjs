@@ -30,7 +30,7 @@
 //
 // Run (server must already be up — see docs/evidence/liquid-load/S6-load-summary.md for the exact
 // command used to start it):
-//   node apps/storefront-runtime/scripts/liquid-load-harness.mjs \
+//   node apps/customer_web/scripts/liquid-load-harness.mjs \
 //     --base-url=http://localhost:3939 --rps=10 --duration=15 --warmup-requests=5 --trials=3 \
 //     --surfaces=index,product,collection \
 //     --out=docs/evidence/liquid-load/S7-load-results.json

@@ -9,7 +9,7 @@ const ci = readFile(".github/workflows/ci.yml");
 const mergeSafety = ci.split("  merge-safety-gate:")[1]?.split("\n  governance:")[0] || "";
 for (const fragment of [
   "subosito/flutter-action@v2",
-  "working-directory: apps/mobile/merchant-app",
+  "working-directory: apps/merchant_app",
   "run: flutter pub get",
   "run: flutter analyze",
   "run: flutter test",

@@ -10,10 +10,10 @@ const webApps = [
     'apps/app-marketplace',
     'apps/identity-platform',
     'apps/marketing-site',
-    'apps/merchant-control-plane',
-    'apps/platform-console',
+    'apps/merchant_web',
+    'apps/admin_web',
     'apps/platform-operations-portal',
-    'apps/storefront-runtime',
+    'apps/customer_web',
     'apps/theme-marketplace',
 ];
 

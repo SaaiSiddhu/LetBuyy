@@ -1,5 +1,5 @@
 /**
- * Phase Q — Theme Library workspace: static-contract tests for the merchant-control-plane.
+ * Phase Q — Theme Library workspace: static-contract tests for the merchant-web.
  *
  * These tests assert source-level contracts (file existence, import patterns,
  * proxy tenancy law, destructive-action guards, state handling) without
@@ -24,7 +24,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant-control-plane/src';
+const MCP_BASE = 'apps/merchant_web/src';
 
 // ── Proxy route existence ──────────────────────────────────────────────────────
 

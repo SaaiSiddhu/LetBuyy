@@ -198,22 +198,22 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, sandbox-fi
 
 test('storefront runtime no longer owns payment route handlers', () => {
     const removedRoutes = [
-        'apps/storefront-runtime/src/app/api/payments/paypal/capture/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/paypal/create/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/paypal/webhook/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/razorpay/create/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/razorpay/verify/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/stripe/checkout/route.ts',
-        'apps/storefront-runtime/src/app/api/payments/stripe/webhook/route.ts',
+        'apps/customer_web/src/app/api/payments/paypal/capture/route.ts',
+        'apps/customer_web/src/app/api/payments/paypal/create/route.ts',
+        'apps/customer_web/src/app/api/payments/paypal/webhook/route.ts',
+        'apps/customer_web/src/app/api/payments/razorpay/create/route.ts',
+        'apps/customer_web/src/app/api/payments/razorpay/verify/route.ts',
+        'apps/customer_web/src/app/api/payments/stripe/checkout/route.ts',
+        'apps/customer_web/src/app/api/payments/stripe/webhook/route.ts',
     ];
 
     for (const route of removedRoutes) {
         assert.throws(() => repositorySource(route), /ENOENT/);
     }
 
-    const checkoutClient = repositorySource('apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx');
-    const paypalReturn = repositorySource('apps/storefront-runtime/src/app/store/[subdomain]/checkout/paypal-return/page.tsx');
-    const browserClient = repositorySource('apps/storefront-runtime/src/lib/api/browser-client.ts');
+    const checkoutClient = repositorySource('apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx');
+    const paypalReturn = repositorySource('apps/customer_web/src/app/store/[subdomain]/checkout/paypal-return/page.tsx');
+    const browserClient = repositorySource('apps/customer_web/src/lib/api/browser-client.ts');
 
     assert.doesNotMatch(checkoutClient, /\/api\/payments/);
     assert.doesNotMatch(paypalReturn, /\/api\/payments/);
@@ -237,7 +237,7 @@ test('gateway no longer owns an authenticated Stripe checkout route (Phase M1, D
     // above); this closes the corresponding gateway-side handler the prior test's
     // ENOENT list did not cover, per PROMPTS.md CANONICAL-* handoff W2.
     assert.throws(
-        () => repositorySource('apps/storefront-runtime/src/app/api/payments/stripe/checkout/route.ts'),
+        () => repositorySource('apps/customer_web/src/app/api/payments/stripe/checkout/route.ts'),
         /ENOENT/,
     );
 

@@ -531,7 +531,7 @@ test('AffectedSummary literal: valid shape with all required fields', () => {
     systems: ['api:orders', 'rpc:create_checkout_order', 'table:orders'],
     byLayer: { api: 1, rpc: 1, table: 1 },
     domains: ['orders', 'payments'],
-    deployments: ['deployment:storefront-runtime'],
+    deployments: ['deployment:customer-web'],
   };
   assert.equal(affected.systems.length, 3);
   assert.equal(affected.domains.length, 2);

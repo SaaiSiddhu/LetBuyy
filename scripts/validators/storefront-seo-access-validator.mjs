@@ -5,11 +5,11 @@ import {
 
 const reporter = createReporter("Storefront SEO access validator");
 
-const proxy = readFile("apps/storefront-runtime/src/proxy.ts");
-const seo = readFile("apps/storefront-runtime/src/lib/seo.ts");
-const robots = readFile("apps/storefront-runtime/src/app/robots.ts");
-const sitemap = readFile("apps/storefront-runtime/src/app/sitemap.ts");
-const layout = readFile("apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx");
+const proxy = readFile("apps/customer_web/src/proxy.ts");
+const seo = readFile("apps/customer_web/src/lib/seo.ts");
+const robots = readFile("apps/customer_web/src/app/robots.ts");
+const sitemap = readFile("apps/customer_web/src/app/sitemap.ts");
+const layout = readFile("apps/customer_web/src/app/store/[subdomain]/layout.tsx");
 
 reporter.assert(seo.includes("isStorefrontIndexable"), "SEO helper must expose a single storefront indexability predicate");
 reporter.assert(

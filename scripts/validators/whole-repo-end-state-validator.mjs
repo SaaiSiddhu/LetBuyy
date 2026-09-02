@@ -270,7 +270,7 @@ for (const runbook of [
 }
 
 const mediaResidueChecks = [
-  ["apps/storefront-runtime/next.config.ts", /firebasestorage\.googleapis\.com|storage\.googleapis\.com/],
+  ["apps/customer_web/next.config.ts", /firebasestorage\.googleapis\.com|storage\.googleapis\.com/],
   ["apps/theme-marketplace/next.config.ts", /firebasestorage\.googleapis\.com|storage\.googleapis\.com/],
   ["packages/infrastructure/storage-adapter/index.ts", /firebase-storage/],
 ];

@@ -98,7 +98,7 @@ const MOCK_DEPLOYMENTS_UNREADY = {
       status: { replicas: 3, readyReplicas: 3, availableReplicas: 3 },
     },
     {
-      metadata: { name: 'storefront-runtime', namespace: 'letbuyy-prod', uid: 'dep-2', creationTimestamp: FIXED_CREATED },
+      metadata: { name: 'customer-web', namespace: 'letbuyy-prod', uid: 'dep-2', creationTimestamp: FIXED_CREATED },
       status: { replicas: 2, readyReplicas: 0, availableReplicas: 0 },
     },
   ],
@@ -293,8 +293,8 @@ test('(15) checks: deployment-unready (high) fires when readyReplicas < replicas
   const v = await a.verify();
   const depFindings = v.findings.filter((f) => f.kind === 'deployment-unready');
   assert.ok(depFindings.length >= 1, 'should detect at least 1 unready deployment');
-  const unready = depFindings.find((f) => f.subject.includes('storefront-runtime'));
-  assert.ok(unready, 'storefront-runtime should be flagged');
+  const unready = depFindings.find((f) => f.subject.includes('customer-web'));
+  assert.ok(unready, 'customer-web should be flagged');
   assert.equal(unready!.severity, 'high');
   assert.match(unready!.detail, /0\/2 ready/);
   assert.ok(unready!.evidence.length > 0);

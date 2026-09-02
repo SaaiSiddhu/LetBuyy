@@ -12,8 +12,8 @@ import path from 'node:path';
 // proxy.ts itself — verified live by `next build` reporting "ƒ Proxy (Middleware)".
 
 const repoRoot = process.cwd();
-const middlewarePath = path.join(repoRoot, 'apps/storefront-runtime/src/middleware.ts');
-const proxyPath = path.join(repoRoot, 'apps/storefront-runtime/src/proxy.ts');
+const middlewarePath = path.join(repoRoot, 'apps/customer_web/src/middleware.ts');
+const proxyPath = path.join(repoRoot, 'apps/customer_web/src/proxy.ts');
 
 test('LB-1: storefront proxy.ts exists (the Next 16 middleware entry point)', () => {
   assert.doesNotThrow(() => readFileSync(proxyPath, 'utf8'));

@@ -24,13 +24,13 @@ reporter.assert(
 );
 
 const baseWrapperFiles = [
-  "apps/merchant-control-plane/src/lib/api/client.ts",
-  "apps/storefront-runtime/src/lib/api/client.ts",
-  "apps/storefront-runtime/src/lib/api/browser-client.ts",
+  "apps/merchant_web/src/lib/api/client.ts",
+  "apps/customer_web/src/lib/api/client.ts",
+  "apps/customer_web/src/lib/api/browser-client.ts",
   "apps/identity-platform/src/lib/api/client.ts",
   "apps/app-marketplace/src/lib/api/client.ts",
   "apps/theme-marketplace/src/lib/api/client.ts",
-  "apps/platform-console/src/lib/console-api.ts",
+  "apps/admin_web/src/lib/console-api.ts",
   "apps/platform-operations-portal/src/lib/api/client.ts",
   "apps/marketing-site/src/app/[locale]/create/page.tsx",
 ];
@@ -56,8 +56,8 @@ for (const file of baseWrapperFiles) {
 }
 
 for (const file of [
-  "apps/merchant-control-plane/src/lib/api/client.ts",
-  "apps/storefront-runtime/src/lib/api/client.ts",
+  "apps/merchant_web/src/lib/api/client.ts",
+  "apps/customer_web/src/lib/api/client.ts",
 ]) {
   const source = readFile(file);
   reporter.assert(

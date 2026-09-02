@@ -237,9 +237,9 @@ export async function writeConsoleAuditLog(input: {
         });
 
         if (response.error) {
-            console.error('[platform-console] audit API failed:', response.error);
+            console.error('[admin-web] audit API failed:', response.error);
         }
     } catch (error) {
-        console.error('[platform-console] audit API failed:', error instanceof Error ? error.message : 'unknown');
+        console.error('[admin-web] audit API failed:', error instanceof Error ? error.message : 'unknown');
     }
 }

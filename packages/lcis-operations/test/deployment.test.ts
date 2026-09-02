@@ -675,9 +675,9 @@ test('real-data: 6 subdomain facts from deployment-intelligence-v5 subdomains ar
   assert.equal(subFacts.length, 6, `expected 6 subdomain facts, got ${subFacts.length}`);
 });
 
-test('real-data: storefront-runtime subdomain fact is present', () => {
+test('real-data: customer-web subdomain fact is present', () => {
   const report = svc.generateDeploymentReport();
-  const sf = report.facts.find((f) => f.kind === 'subdomain' && f.subject === 'storefront-runtime');
-  assert.ok(sf, 'storefront-runtime subdomain fact present');
+  const sf = report.facts.find((f) => f.kind === 'subdomain' && f.subject === 'customer-web');
+  assert.ok(sf, 'customer-web subdomain fact present');
   assert.equal(sf.status, 'CONNECTED');
 });

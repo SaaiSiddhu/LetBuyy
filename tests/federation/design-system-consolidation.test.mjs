@@ -5,12 +5,12 @@ import test from 'node:test';
 
 const root = process.cwd();
 const webApps = [
-  'merchant-control-plane',
-  'storefront-runtime',
+  'merchant-web',
+  'customer-web',
   'identity-platform',
   'app-marketplace',
   'theme-marketplace',
-  'platform-console',
+  'admin-web',
   'platform-operations-portal',
 ];
 
@@ -53,11 +53,11 @@ test('all seven web apps consume the shared design-system package', () => {
 test('no app or package imports dead UI package names', () => {
   const checkedFiles = [
     'apps/identity-platform/package.json',
-    'apps/storefront-runtime/package.json',
+    'apps/customer_web/package.json',
     'apps/theme-marketplace/package.json',
     'apps/app-marketplace/package.json',
-    'apps/merchant-control-plane/package.json',
-    'apps/platform-console/package.json',
+    'apps/merchant_web/package.json',
+    'apps/admin_web/package.json',
     'apps/platform-operations-portal/package.json',
     'packages/typescript/ui/src/index.ts',
   ];

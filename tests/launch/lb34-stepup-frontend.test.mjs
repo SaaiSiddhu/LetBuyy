@@ -6,7 +6,7 @@ import { test } from 'node:test';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
-const mcpSrc = join(repoRoot, 'apps/merchant-control-plane/src');
+const mcpSrc = join(repoRoot, 'apps/merchant_web/src');
 
 function source(relativePath) {
     return readFileSync(join(mcpSrc, relativePath), 'utf8');

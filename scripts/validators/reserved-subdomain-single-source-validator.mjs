@@ -9,7 +9,7 @@ const tenantCore = readFile("packages/tenant-core/src/index.ts");
 const gatewaySchema = readFile("services/api-gateway/src/schemas/store.schema.ts");
 const gatewayAuth = readFile("services/api-gateway/src/routes/auth.ts");
 const gatewayOnboarding = readFile("services/api-gateway/src/routes/onboarding.ts");
-const storefrontSeo = readFile("apps/storefront-runtime/src/lib/seo.ts");
+const storefrontSeo = readFile("apps/customer_web/src/lib/seo.ts");
 
 for (const label of [
   "www",
@@ -61,7 +61,7 @@ reporter.assert(
 );
 reporter.assert(
   !/const\s+RESERVED_SUBDOMAINS\s*=\s*new Set\(\[/.test(storefrontSeo),
-  "storefront-runtime must not define an app-local reserved-label set",
+  "customer-web must not define an app-local reserved-label set",
 );
 
 reporter.finish("reserved storefront labels and host parsing are single-sourced in @letbuyy/tenant-core");

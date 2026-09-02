@@ -46,10 +46,10 @@ test('clients and mobile app expose metafields without the S-026 blocked seam', 
   const bff = source('services/mobile-bff/src/index.ts');
   const tsClient = source('packages/typescript/api-client/src/index.ts');
   const dartClient = source('packages/dart/api_client/lib/src/api_client.dart');
-  const routes = source('apps/mobile/merchant-app/lib/app/routes.dart');
-  const service = source('apps/mobile/merchant-app/lib/services/metafield_service.dart');
-  const screen = source('apps/mobile/merchant-app/lib/screens/settings/custom_data_screen.dart');
-  const blocked = source('apps/mobile/merchant-app/lib/services/platform_blocked_service.dart');
+  const routes = source('apps/merchant_app/lib/app/routes.dart');
+  const service = source('apps/merchant_app/lib/services/metafield_service.dart');
+  const screen = source('apps/merchant_app/lib/screens/settings/custom_data_screen.dart');
+  const blocked = source('apps/merchant_app/lib/services/platform_blocked_service.dart');
 
   assert.match(bff, /'\/v1\/metafields'/);
   assert.match(tsClient, /readonly metafields = \{/);
@@ -63,5 +63,5 @@ test('clients and mobile app expose metafields without the S-026 blocked seam', 
   assert.match(routes, /path:\s*'\/features\/custom-data'/);
   assert.match(screen, /Custom Data/);
   assert.doesNotMatch(blocked, /MOBILE_CUSTOM_DATA|S-026/);
-  assert.equal(existsSync('apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart'), false);
+  assert.equal(existsSync('apps/merchant_app/lib/screens/parity/merchant_feature_definitions.dart'), false);
 });

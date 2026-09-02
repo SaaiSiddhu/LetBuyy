@@ -19,15 +19,15 @@ const dartClientSource = readFileSync(
     'utf8',
 );
 const mobileServiceSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/services/marketing_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/services/marketing_service.dart', import.meta.url),
     'utf8',
 );
 const mobileScreenSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/screens/marketing/email_campaigns_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/screens/marketing/email_campaigns_screen.dart', import.meta.url),
     'utf8',
 );
 const mobileRoutesSource = readFileSync(
-    new URL('../../../../apps/mobile/merchant-app/lib/app/routes.dart', import.meta.url),
+    new URL('../../../../apps/merchant_app/lib/app/routes.dart', import.meta.url),
     'utf8',
 );
 

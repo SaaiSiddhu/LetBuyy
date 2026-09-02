@@ -1,15 +1,15 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Merchant Control Plane",
-  "runtimeRoot": "apps/merchant-control-plane",
+  "runtimeRoot": "apps/merchant_web",
   "actorType": [
     "merchant",
     "store-staff"
   ],
   "runtimeCategory": "next-app",
-  "runtimeClassification": "merchant-control-plane",
+  "runtimeClassification": "merchant-web",
   "ownership": {
-    "sourceAuthority": "apps/merchant-control-plane",
+    "sourceAuthority": "apps/merchant_web",
     "businessAuthority": "Merchant dashboard for store configuration, CMS, products, orders, themes, analytics, and settings.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -49,13 +49,13 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/merchant-control-plane/next.config.ts"
+      "apps/merchant_web/next.config.ts"
     ]
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
     "template": "config/env/templates/next-app.env.example",
-    "secretStore": "Vercel merchant-control-plane project environment"
+    "secretStore": "Vercel merchant-web project environment"
   },
   "observabilityAuthority": {
     "correlationId": "X-Request-ID",
@@ -101,6 +101,6 @@
   "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
   "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
   "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
-  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data.",
-  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data."
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data."
 }

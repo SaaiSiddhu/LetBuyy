@@ -179,7 +179,7 @@ describe('analyzeWithVerdicts — verdicts array structure', () => {
   before(async () => {
     resetEngine();
     report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/merchant-control-plane/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       makeStubEis(),
     );

@@ -130,7 +130,7 @@
     },
     {
       "runtimeName": "Storefront Runtime",
-      "runtimeRoot": "apps/storefront-runtime",
+      "runtimeRoot": "apps/customer_web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -145,13 +145,13 @@
         "scaleMetric": "request-rate"
       },
       "health": {
-        "checkName": "apps-storefront-runtime.health",
+        "checkName": "apps-customer-web.health",
         "timeoutMs": 2000
       }
     },
     {
       "runtimeName": "Merchant Control Plane",
-      "runtimeRoot": "apps/merchant-control-plane",
+      "runtimeRoot": "apps/merchant_web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -166,7 +166,7 @@
         "scaleMetric": "request-rate"
       },
       "health": {
-        "checkName": "apps-merchant-control-plane.health",
+        "checkName": "apps-merchant-web.health",
         "timeoutMs": 2000
       }
     },
@@ -193,7 +193,7 @@
     },
     {
       "runtimeName": "Platform Console",
-      "runtimeRoot": "apps/platform-console",
+      "runtimeRoot": "apps/admin_web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -208,13 +208,13 @@
         "scaleMetric": "request-rate"
       },
       "health": {
-        "checkName": "apps-platform-console.health",
+        "checkName": "apps-admin-web.health",
         "timeoutMs": 2000
       }
     },
     {
       "runtimeName": "Mobile Merchant App",
-      "runtimeRoot": "apps/mobile/merchant-app",
+      "runtimeRoot": "apps/merchant_app",
       "deploymentKind": "mobile-app",
       "platform": "mobile-distribution",
       "regions": [

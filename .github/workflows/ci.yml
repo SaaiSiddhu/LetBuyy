@@ -171,15 +171,15 @@ jobs:
           CI: "true"
 
       - name: Install merchant mobile Flutter dependencies
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter pub get
 
       - name: Merchant mobile analyze
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter analyze
 
       - name: Merchant mobile tests
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter test
 
   governance:
@@ -217,23 +217,23 @@ jobs:
           cache: true
 
       - name: Install Flutter dependencies
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter pub get
 
       - name: Analyze Flutter app
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter analyze
 
       - name: Run Flutter tests
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter test
 
       - name: Build Android debug APK
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter build apk --debug --dart-define-from-file=dart-defines/staging.json
 
       - name: Build iOS debug app without signing
-        working-directory: apps/mobile/merchant-app
+        working-directory: apps/merchant_app
         run: flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/staging.json
 
   build:

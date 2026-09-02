@@ -1,15 +1,15 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Mobile Merchant App",
-  "runtimeRoot": "apps/mobile/merchant-app",
+  "runtimeRoot": "apps/merchant_app",
   "actorType": [
     "merchant",
     "store-staff"
   ],
   "runtimeCategory": "flutter-app",
-  "runtimeClassification": "mobile-merchant-control-plane",
+  "runtimeClassification": "mobile-merchant-web",
   "ownership": {
-    "sourceAuthority": "apps/mobile/merchant-app",
+    "sourceAuthority": "apps/merchant_app",
     "businessAuthority": "Native merchant operations, dashboard, builder, products, themes, preview, and store management surfaces.",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
@@ -47,7 +47,7 @@
   "deploymentAuthority": {
     "platform": "Mobile app stores",
     "config": [
-      "apps/mobile/merchant-app/pubspec.yaml"
+      "apps/merchant_app/pubspec.yaml"
     ]
   },
   "environmentAuthority": {
@@ -99,6 +99,6 @@
   "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
   "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
   "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
-  "dashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data.",
-  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local fixture data."
+  "dashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data."
 }

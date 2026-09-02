@@ -51,7 +51,7 @@ const validatorCases = [
   {
     validator: "no-blanket-service-role-validator.mjs",
     fixture: {
-      path: "apps/merchant-control-plane/src/lib/bad.ts",
+      path: "apps/merchant_web/src/lib/bad.ts",
       text: "export const key = process.env.SUPABASE_SERVICE_ROLE_KEY;",
     },
     expected: /service-role/i,
@@ -107,7 +107,7 @@ const validatorCases = [
   {
     validator: "no-new-react-sections-validator.mjs",
     fixture: {
-      path: "apps/storefront-runtime/src/components/sections/new-section.tsx",
+      path: "apps/customer_web/src/components/sections/new-section.tsx",
       text: "export default function NewSection() { return null; }",
     },
     expected: /React section registry is frozen/i,
@@ -115,7 +115,7 @@ const validatorCases = [
   {
     validator: "token-source-single-validator.mjs",
     fixture: {
-      path: "apps/merchant-control-plane/src/tokens.ts",
+      path: "apps/merchant_web/src/tokens.ts",
       text: "export const tokens = { colors: { primary: '#ffffff' } };",
     },
     expected: /token\/color authority/i,
@@ -123,7 +123,7 @@ const validatorCases = [
   {
     validator: "shell-single-validator.mjs",
     fixture: {
-      path: "apps/merchant-control-plane/src/components/NewAdminShell.tsx",
+      path: "apps/merchant_web/src/components/NewAdminShell.tsx",
       text: "export function AdminShell() { return null; }",
     },
     expected: /shell\/navigation primitives/i,

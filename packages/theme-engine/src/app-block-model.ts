@@ -288,7 +288,7 @@ export const APP_BLOCK_ERROR_PLACEHOLDER_CLASS = 'lb-app-block-placeholder--erro
  *
  * Missing piece: no live app server produces app-block HTML. apps/app-marketplace and
  * apps/developer-portal are FROZEN (not deploy targets). The buildLiquidAppBlocks
- * function in storefront-runtime/composition-engine.tsx constructs first-party static
+ * function in customer-web/composition-engine.tsx constructs first-party static
  * HTML from metadata stored in app_installations / app_extension_registrations tables
  * (title, content.heading/body/cta, iframe_url). No external app server is called
  * server-side; render_mode='iframe' defers actual app content to the browser loading

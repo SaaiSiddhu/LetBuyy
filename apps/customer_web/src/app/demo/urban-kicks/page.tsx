@@ -8,7 +8,7 @@ import { isDemoRouteEnvironment } from '@/lib/demo/demo-route-gate';
 // unreachable in production. FAIL CLOSED: only an explicit, positively-confirmed non-production
 // signal allows the route through — an unset or unrecognized environment 404s, same as production.
 // Mirrors this app's existing `process.env.NODE_ENV === 'production'` convention
-// (apps/storefront-runtime/src/proxy.ts) plus Vercel's own VERCEL_ENV, the real signal a Vercel
+// (apps/customer_web/src/proxy.ts) plus Vercel's own VERCEL_ENV, the real signal a Vercel
 // preview deployment sets — no new feature-flag system is introduced.
 export default function UrbanKicksDemoShortcut() {
     if (!isDemoRouteEnvironment()) {

@@ -171,7 +171,7 @@ function fullTrace(entity) {
     queues: dom?.queues || [], workers: dom?.workers || [],
     emails: dom && /payment|order|refund|ship|notif/.test(dom.key) ? 'NOTIFICATION_QUEUE → Resend (transactional)' : 'n/a',
     analytics: 'ANALYTICS_QUEUE → analytics_event_stream (rollups)',
-    merchantDashboard: dom ? `merchant-control-plane → ${dom.label}` : 'merchant-control-plane',
+    merchantDashboard: dom ? `merchant-web → ${dom.label}` : 'merchant-web',
     owner: dom?.owners || ['@saai-sidd'],
     note: 'Structural trace (repository truth). Row-level values are live (Supabase) — NOT CONNECTED.',
   };
@@ -594,15 +594,15 @@ function aiOps() {
 
 // ---- v3: customer-journey (Phase 5) + secret intelligence (Phase 10), computed from loaded intel ----
 const JOURNEY = [
-  { stage: 'Landing', domains: ['storefront'], app: 'marketing-site / storefront-runtime' },
-  { stage: 'Storefront', domains: ['storefront'], app: 'storefront-runtime' },
-  { stage: 'Product', domains: ['products', 'collections'], app: 'storefront-runtime' },
-  { stage: 'Cart', domains: ['orders'], app: 'storefront-runtime' },
-  { stage: 'Checkout', domains: ['orders', 'discounts', 'gst', 'shipping'], app: 'storefront-runtime' },
-  { stage: 'Payment', domains: ['payments', 'gift-cards'], app: 'storefront-runtime → api-gateway' },
+  { stage: 'Landing', domains: ['storefront'], app: 'marketing-site / customer-web' },
+  { stage: 'Storefront', domains: ['storefront'], app: 'customer-web' },
+  { stage: 'Product', domains: ['products', 'collections'], app: 'customer-web' },
+  { stage: 'Cart', domains: ['orders'], app: 'customer-web' },
+  { stage: 'Checkout', domains: ['orders', 'discounts', 'gst', 'shipping'], app: 'customer-web' },
+  { stage: 'Payment', domains: ['payments', 'gift-cards'], app: 'customer-web → api-gateway' },
   { stage: 'Order', domains: ['orders', 'inventory'], app: 'api-gateway → queue-workers' },
-  { stage: 'Refund', domains: ['refunds'], app: 'merchant-control-plane' },
-  { stage: 'Tracking', domains: ['shipping', 'notifications'], app: 'storefront-runtime' },
+  { stage: 'Refund', domains: ['refunds'], app: 'merchant-web' },
+  { stage: 'Tracking', domains: ['shipping', 'notifications'], app: 'customer-web' },
 ];
 function customerJourney() {
   if (!domainIntel) return { error: 'domain-intel.json missing — run pnpm graph:domain' };
@@ -819,8 +819,8 @@ const atlasCache = new Map();
 // ---- community profiling: derive a human-readable name + what-it-is from the graph ----
 const WS_NAMES = {
   'services/api-gateway': 'API Gateway', 'services/queue-workers': 'Queue Workers', 'services/webhook-service': 'Webhook Service', 'services/mobile-bff': 'Mobile BFF',
-  'apps/merchant-control-plane': 'Merchant Control Plane', 'apps/storefront-runtime': 'Storefront Runtime', 'apps/identity-platform': 'Identity Platform', 'apps/platform-console': 'Platform Console', 'apps/marketing-site': 'Marketing Site', 'apps/app-marketplace': 'App Marketplace', 'apps/theme-marketplace': 'Theme Marketplace', 'apps/developer-portal': 'Developer Portal', 'apps/platform-operations-portal': 'Ops Portal',
-  'apps/mobile/merchant-app': 'Merchant Mobile App',
+  'apps/merchant_web': 'Merchant Control Plane', 'apps/customer_web': 'Storefront Runtime', 'apps/identity-platform': 'Identity Platform', 'apps/admin_web': 'Platform Console', 'apps/marketing-site': 'Marketing Site', 'apps/app-marketplace': 'App Marketplace', 'apps/theme-marketplace': 'Theme Marketplace', 'apps/developer-portal': 'Developer Portal', 'apps/platform-operations-portal': 'Ops Portal',
+  'apps/merchant_app': 'Merchant Mobile App',
   'packages/theme-engine': 'Theme Engine', 'packages/shared-types': 'Shared Types', 'packages/commerce-core': 'Commerce Core', 'packages/checkout-core': 'Checkout Core', 'packages/auth-core': 'Auth Core', 'packages/identity-core': 'Identity Core', 'packages/session-core': 'Session Core', 'packages/permission-core': 'Permission Core', 'packages/infrastructure': 'Infrastructure', 'packages/notification-core': 'Notification Core', 'packages/event-core': 'Event Core', 'packages/billing-core': 'Billing Core', 'packages/tenant-core': 'Tenant Core', 'packages/cms-core': 'CMS Core', 'packages/audit-core': 'Audit Core',
   'packages/typescript/ui': 'UI Design System', 'packages/typescript/api-client': 'API Client', 'packages/typescript/api-types': 'API Types',
   'packages/dart/models': 'Dart Models', 'packages/dart/core': 'Dart Core', 'packages/dart/api_client': 'Dart API Client', 'packages/dart/ui_kit': 'Dart UI Kit',

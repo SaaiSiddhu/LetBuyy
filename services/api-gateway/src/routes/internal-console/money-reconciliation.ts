@@ -98,7 +98,7 @@ function resolutionRecord(input: MoneyReconciliationResolveInput, row: DbRecord,
         suspense_ledger_transaction_id: input.suspense_ledger_transaction_id || null,
         variance_minor: numberValue(row.variance_minor),
         resolved_at: now,
-        source: 'platform-console',
+        source: 'admin-web',
     };
 }
 
@@ -122,7 +122,7 @@ async function writeConsoleAudit(c: AppContext, input: {
         metadata: {
             ...(input.metadata || {}),
             reason: input.reason || null,
-            source: 'platform-console',
+            source: 'admin-web',
         },
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,

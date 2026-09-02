@@ -563,7 +563,7 @@ function buildLiquidRootTokenBlock(bundle: LiquidThemePackageBundle): string {
 //   • LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG is NOT modified (DOMPurify already allows <style>).
 // T2a-fix/W2/CAP-C19 — CSS Cascade Layers name. The base token block + LIQUID_THEME_BASE_CSS are
 // wrapped in this named layer (below) so that when a consuming app ALSO ships its own unlayered
-// CSS for the same .lb-* component classes (e.g. storefront-runtime's liquid-theme.css — 89
+// CSS for the same .lb-* component classes (e.g. customer-web's liquid-theme.css — 89
 // overlapping selectors were measured between the two, an exhaustive selector-by-selector
 // reconciliation was judged out of scope for this fix), the unlayered app CSS always wins
 // regardless of specificity or DOM/precedence insertion order — per-spec, ANY unlayered rule
@@ -1308,7 +1308,7 @@ function buildLiquidScope(
       return { ...grouped, ...flat, ...filterBlockedSettingsKeys(asRecord(input.liquidContext?.settings)) };
     })(),
     // T1/W1 — the routes drop, now base-path-aware. Every real storefront page under Liquid lives at
-    // /store/{subdomain}/... (see apps/storefront-runtime/src/app/store/[subdomain]/**) — that path
+    // /store/{subdomain}/... (see apps/customer_web/src/app/store/[subdomain]/**) — that path
     // is directly, unconditionally reachable on ANY host, confirmed by reading proxy.ts: /store/<sub>
     // is the internal rewrite TARGET (`rewriteToStore`), and proxy.ts explicitly skips its access
     // gate for requests that already start with /store/ ("reached as a URL instead of as a rewrite...

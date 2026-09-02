@@ -63,7 +63,7 @@ type ServerCart = {
 // extra key to this type fails TypeScript's excess-property check at the call site below.
 type CartLineInput = StorefrontCartLineInput;
 
-// T6/W2 — exported so the checkout-origin route tree (apps/storefront-runtime/src/app/
+// T6/W2 — exported so the checkout-origin route tree (apps/customer_web/src/app/
 // checkout-origin/**, which is NEVER wrapped by this file's CartProvider — see
 // app/store/[subdomain]/layout.tsx, the only place CartProvider mounts) can read via
 // useContext directly (never throws on a missing provider, unlike useCart()) and fall back to

@@ -93,8 +93,8 @@
   "productionOwnership": "Reserved/not-implemented root; no production deployment is owned by this root. Production execution currently delegates to services/api-gateway or services/queue-workers until human-approved extraction.",
   "deploymentPipelineOwnership": "Reserved/not-implemented root; no active deployment pipeline is owned by this root. Current deployment pipeline gates cover services/api-gateway, services/webhook-service, and services/queue-workers.",
   "telemetryInfrastructureOwnership": "Reserved/not-implemented root; does not own active telemetry infrastructure integration. Current telemetry infrastructure integration delegates to implemented runtimes.",
-  "dashboardOwnership": "Reserved/not-implemented root; does not own active operational dashboard projections. Current dashboard projection exposure delegates to implemented runtimes and platform-console.",
-  "operationalDashboardOwnership": "Reserved/not-implemented root; does not own active operational dashboard projections. Current dashboard projection exposure delegates to implemented runtimes and platform-console.",
+  "dashboardOwnership": "Reserved/not-implemented root; does not own active operational dashboard projections. Current dashboard projection exposure delegates to implemented runtimes and admin-web.",
+  "operationalDashboardOwnership": "Reserved/not-implemented root; does not own active operational dashboard projections. Current dashboard projection exposure delegates to implemented runtimes and admin-web.",
   "implementationStatus": {
     "status": "reserved-not-implemented",
     "sourceState": "manifest-and-agents-only",
