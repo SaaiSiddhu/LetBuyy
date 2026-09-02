@@ -17,7 +17,7 @@ LetBuyy has three runtime classes:
 - Each canonical app and service runtime must have `runtime.manifest.json` describing actor type, category, classification, ownership, allowed dependencies, deployment authority, environment authority, and observability authority.
 - Runtime names must describe operational responsibility, not implementation detail.
 - Only canonical app roots may exist under `apps/`; alias roots and placeholder app roots are governance failures.
-- Storefront source authority belongs under `apps/storefront-runtime/src`; nested storefront runtimes are forbidden.
+- Storefront source authority belongs under `apps/customer_web/src`; nested storefront runtimes are forbidden.
 
 ## Control Plane And Data Plane
 

@@ -1,6 +1,6 @@
 # Platform Console
 
-`apps/platform-console` is the canonical super-admin control plane for LetBuyy platform governance.
+`apps/admin_web` is the canonical super-admin control plane for LetBuyy platform governance.
 
 ## Ownership
 

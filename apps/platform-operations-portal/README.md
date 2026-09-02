@@ -6,7 +6,7 @@
 
 - Owns support, moderation, store operations, user assistance, marketing operations, and invite workflows for platform employees.
 - Must enforce least-privilege RBAC, MFA, audit logging, reason capture, and production access controls before live use.
-- Must not absorb super-admin governance surfaces that belong in `apps/platform-console`.
+- Must not absorb super-admin governance surfaces that belong in `apps/admin_web`.
 
 ## Runtime Boundary
 

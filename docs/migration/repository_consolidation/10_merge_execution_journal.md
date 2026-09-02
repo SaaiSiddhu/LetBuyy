@@ -24,7 +24,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S4 | Phase 2 and supporting apps | **COMPLETE** | (this checkpoint) |
 | S5 | Packages, services, backend (structural only) | **COMPLETE** | (this checkpoint) |
 | S6 | Workspace and configuration repair | **COMPLETE** | (this checkpoint) |
-| S7 | Stale path eradication | PENDING | — |
+| S7 | Stale path eradication | **COMPLETE** | (this checkpoint) |
 | S8 | Verification | PENDING | — |
 | S9 | Remove nested trees, certify | PENDING | — |
 
@@ -347,5 +347,44 @@ Before staging, built the commit pathspec programmatically: `git diff --name-onl
 **Proves:** every validator, config file, app self-manifest, and 252 functional source/test files that referenced one of the four renamed app paths now reference the new path; `--plan` still enumerates 111/1/112 cleanly; every touched `.mjs`/`.json` file is syntactically/structurally valid (`.tsx`/`.ts` files were spot-checked via `git diff` review instead, since `node --check` cannot parse TypeScript/JSX syntax at all — confirmed this is a tooling limitation unrelated to the edits, not a real failure); exactly one collision with another session's dirty work occurred and was fully, verifiably undone, touching nothing else in that file.
 
 **Does not prove:** that any app actually builds/typechecks/lints after these substitutions — an exact-string path rename does not by itself prove a Next.js route tree, a Vercel deployment target, or a Flutter package still resolves; that is Stage 8's job. Does not prove the `pnpm-lock.yaml` inconsistency (left deliberately unfixed) doesn't currently block `pnpm install --frozen-lockfile` — likely it does, until a real `pnpm install` regenerates it. Does not prove the `docs/`-scoped stale references (deferred to Stage 7) are complete or exhaustive — only that they were not silently edited by this stage's mechanical sweep.
+
+---
+
+## S7 — Stale path eradication
+
+**Verdict: COMPLETE**, in the sense the stage defines: every ACTIVE reference fixed, every remaining hit classified as historical with a reason, per its own instruction ("For each remaining hit, record in the journal whether it is active (fixed) or historical (left, with reason)"). This is not a claim that literally every byte referencing an old path anywhere in the repository was changed — see the explicit HISTORICAL classes below.
+
+### Full re-scan: 713 markdown files referenced the four old app paths or `Ecommerce/LetBuyy`/`/Projects/Ecommerce`
+
+273 already under `docs/archive/` — untouched, correctly historical by the stage's own rule. 440 outside `docs/archive/` — classified below.
+
+### ACTIVE — fixed this stage (mechanical sed, same proven pattern as Stage 6)
+
+- **`CLAUDE.md`, `AGENTS.md`** — a first occurrence Stage 3/6 missed (the "Canonical topology — exactly 8 active runtimes" summary table near the top of `CLAUDE.md`, and `AGENTS.md`'s own `ARCH-R1` table/`ARCH-R10` prose) — found via a fresh grep, fixed with explicit "(formerly `apps/old-name`)" annotations so the historical name stays discoverable without being live.
+- **`GOVERNANCE_REWRITE_2026_06_10/` — 5 files beyond the Constitution** (`LETBUYY_CANONICAL_SYSTEMS.md`, `LETBUYY_FOUNDATION_ROADMAP.md`, `LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md`, `LETBUYY_FINAL_ARCHITECTURE_SCORECARD.md`, `LETBUYY_UI_UX_GOVERNANCE.md`) — classified ACTIVE because `CLAUDE.md:3` names this whole directory as live authority ("the canonical governance rewrite documents"), not a dated snapshot, regardless of its 2026-06-10-dated name.
+- **`docs/governance/*.md` — 19 files** — classified ACTIVE because the six apps' own `runtime.manifest.json` (`governanceDocs` field) point directly at these files as the governance rules each runtime must follow; a stale path inside a rule a manifest cites as authoritative is a real defect, not historical color.
+- **`.agents/skills/letbuyy-cto-handoff/SKILL.md`** — a live, agent-invoked skill definition.
+- **The renamed/established apps' own `README.md`/`AGENTS.md`** (`apps/admin_web`, `apps/merchant_web`, `apps/merchant_app`, `apps/customer_web`, `apps/platform-operations-portal` — 6 files) and **`packages/typescript/ui/DENSITY_RECONSTRUCTION_REPORT.md`**.
+- **`docs/ai-infrastructure/{graphify-queries,repository-map,graphify-report}.md`** — `CLAUDE.md`'s own AI-infrastructure section cites `graphify-queries.md` as a live query guide; fixed the `apps/`-prefixed structural paths in all three (a handful of bare dash-name occurrences remain in the latter two, which are Graphify-tool-generated reports that regenerate on the next `graphify update .` run — not hand-chased further).
+- **`CAPABILITY_BACKLOG.md`, `SKIPPED_HUMAN_DECISIONS.md`, `EXECUTABLE_HUMAN_REQUIRED.md`** — the **structural `path:line` citations only** (e.g. `apps/platform-console/src/app/(dashboard)/money-reconciliation/page.tsx:1` → `apps/admin_web/...`) were fixed, since a stale citation in a live, actionable tracking registry is a real defect (a future reader following the citation would fail to find the file). The **narrative prose** in these same files (long technical descriptions of past investigations, e.g. "apps/{storefront-runtime,merchant-control-plane,...}" appearing inside a sentence describing what was true at the time of that finding) was **deliberately left untouched** — see HISTORICAL below.
+
+### HISTORICAL — left, with reason
+
+- **`EXECUTION_LEDGER.md`** (100 remaining occurrences) — explicitly named in this stage's own brief as qualifying ("commit-hash-cited ledgers like `EXECUTION_LEDGER.md` qualify"). Every row cites a specific commit SHA and describes what that commit changed *at that time*; rewriting old path names here would make the ledger describe something other than what the cited commit actually did. Left entirely as originally written.
+- **`CAPABILITY_BACKLOG.md`/`SKIPPED_HUMAN_DECISIONS.md`/`EXECUTABLE_HUMAN_REQUIRED.md`'s narrative prose** (structural citations already fixed above) — same reasoning as `EXECUTION_LEDGER.md`, extended to these three live-but-narrative registries: each row is a detailed, dated account of an investigation as it happened, and a bare-word path mention embedded in that prose (as opposed to a `path:line` citation) is quoting the state of the world at that time, not asserting a current fact.
+- **`docs/migration/repository_consolidation/00*.md`–`07*.md` (this engagement's own evidence documents) + this journal's own earlier entries** — every one of these documents 00-07 correctly cites `Ecommerce/LetBuyy/apps/storefront-runtime`-class paths because that is where those apps genuinely were *when each phase measured them*. Rewriting them to describe the post-Stage-3 state would falsify the evidence record this whole engagement depends on for its own "re-verify, don't trust a stale citation" discipline. Left untouched, including this journal's own Stage 0–6 entries above this line.
+- **The new apps'/bridges' own provenance `README.md` files** (`apps/customer_app`, `apps/admin_app`, `apps/phase_2/{rider_app,store_ops_app}`, `services/compatibility/{firebase_bridge,agrimore_bridge}` — 7 files) — these deliberately cite `Ecommerce/LetBuyy/...` as the **historical source path**, exactly as intended; a provenance note is supposed to name where something came from, not the destination it now lives at.
+- **Two `ios/Flutter/flutter_export_environment.sh` files** (`apps/customer_app`, `apps/admin_app`) — Flutter/Xcode-generated build artifacts (absolute local paths baked in by the last `flutter build`/`pod install` run in System A), regenerated automatically the next time either app's iOS target is built; not hand-edited.
+- **~380 files under `docs/{storefront-theme-platform,storefront-liquid-discovery,merchant-system-discovery,launch,research,v1-execution,theme-system-current-state,design-intelligence,checkout-research,launch-readiness,v1,theme-research,auth,theme-discovery,graphify,evidence,lcis-master,central-intelligence,lcis-v2,env-setup,seo,lcis-operations,lcis-governance,lcis-engineering,lcis-consolidation,implementation,graph,final-v1-certification}/` + `LAUNCH_READINESS_2026_06_12/` + `reports/`** — dated research, discovery, audit, and certification snapshots (most carry an explicit date in their own directory or file name, e.g. `LAUNCH_READINESS_2026_06_12`, `docs/research/2026-08-16-...`). Classified HISTORICAL as a category: these describe findings as of a specific investigation date, not live specifications a runtime or validator depends on. **Not individually opened and verified file-by-file this stage** — a category-level classification, disclosed as such rather than claimed as an exhaustive per-file audit. If any single file in this set turns out to be load-bearing (imported by a script, cited by a validator, or referenced from a `runtime.manifest.json`), that would be a mis-classification worth flagging in a future pass — none was found to be during this stage's work (the load-bearing set was identified via the `runtime.manifest.json`/`CLAUDE.md`/skill citations checked above, not by reading all ~380 files).
+
+### `Ecommerce/LetBuyy` / `/Projects/Ecommerce` references outside `docs/archive/`
+
+18 files, all already accounted for above: the 10 `docs/migration/repository_consolidation/00`–`07`.md evidence documents (historical, correct as written) and the 7 new provenance READMEs + 2 build-artifact `.sh` files (intentional/regenerable). No fix needed or applied.
+
+### What this stage proves and does not prove
+
+**Proves:** every governance document in the live authority chain (`CLAUDE.md`, `AGENTS.md`, the 6 `GOVERNANCE_REWRITE_2026_06_10/` docs, the 19 `docs/governance/*` docs), every manifest-cited governance reference, the live skill definition, and the structural path citations in the three actionable tracking registries now reference the current app paths. `--plan` still enumerates 111/1/112 cleanly after every edit in this stage.
+
+**Does not prove:** that the ~380-file HISTORICAL category contains zero load-bearing references — that classification was made at the directory/category level using date-stamped naming and known citation sources, not a full per-file open-and-read pass, and is disclosed as such. Does not prove `EXECUTION_LEDGER.md`/the backlog registries' narrative prose is fully internally consistent after this stage's partial edit (structural citations changed, prose describing the same events left with the old names) — a reader comparing the two within one row could notice the mismatch; judged an acceptable, disclosed trade-off against rewriting historical narrative.
 
 ---

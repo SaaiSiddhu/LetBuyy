@@ -268,7 +268,7 @@ Every completion%/score above measures the **working tree**; **live readiness is
 6. **Shared `AUTH_SECRET` reuse** — the forgery *surface* is code-proven; the live secret reuse is not inspectable from source.
 7. **Performance figures** — all latency/round-trip counts are *code-estimated*, not measured (no profiler, no live traffic).
 8. **Live DNS / `.store` vs `.com` routing** — asserted from config; live DNS state UNVERIFIED.
-9. **The ops-console survivor** (`platform-console` vs `platform-operations-portal`) is an **ARB decision, not a code fact**.
+9. **The ops-console survivor** (`admin-web` vs `platform-operations-portal`) is an **ARB decision, not a code fact**.
 10. **`legacy/firebase` git-tracked LOC** (37 reported vs empty from the Linux mount) — on-disk LOC confirmed; classification unchanged; proof = `git ls-files legacy/` from the macOS root.
 
 *End of DOC 07 — Final Architecture Scorecard + Closing Deliverable. Scores measure the working tree at `stepup/main` @ `5cf9e64e` (dirty), 2026-06-10; live readiness is gated on the deploy meta-blocker. This document scores and closes; the Constitution (DOC 01) and Canonical Systems registry (DOC 03) hold the authority it reports against. No repo code was modified.*

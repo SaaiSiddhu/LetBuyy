@@ -6,7 +6,7 @@ The storefront runtime remains the shopper-facing rendering runtime. Phase 2 est
 
 ## Boundaries
 
-- Rendering runtime: `apps/storefront-runtime`.
+- Rendering runtime: `apps/customer_web`.
 - Storefront query contracts: versioned `/v1/storefront/*` API gateway responses and `@letbuyy/shared-types` DTOs.
 - Theme composition contracts: `packages/theme-engine/src/execution-runtime.ts`.
 - Checkout workflow contracts: `packages/checkout-core` plus API gateway checkout execution adapters.

@@ -6,30 +6,30 @@ This document records app-local API route authority for the P4 product remediati
 
 - `gateway-proxy`: a Next route may translate browser/session/query shape and call the canonical `/v1` Hono gateway through `@letbuyy/api-client` or a local API-client wrapper. It must not perform database writes, provider mutations, price/payment/inventory calculations, or domain state transitions.
 - `app-local-auth`: identity-platform auth routes may own account UI/session flow and call the auth gateway boundary. They remain the canonical merchant identity UI surface.
-- `app-local-operator-auth`: platform-console auth routes may own operator login/MFA UI flow. Operations RBAC still belongs to gateway/console service boundaries.
+- `app-local-operator-auth`: admin-web auth routes may own operator login/MFA UI flow. Operations RBAC still belongs to gateway/console service boundaries.
 - `app-local-session`: a route may create, read, or clear browser cookies for the app-local UI session only.
 - `blocked-local-safety`: a route intentionally rejects unsafe local behavior, such as storefront seed/theme install mutation endpoints.
 
 ## Current Classification
 
-- `apps/merchant-control-plane/src/app/api/**`: `gateway-proxy`, except `api/auth/logout`, which is `app-local-session`.
-- `apps/storefront-runtime/src/app/api/customer/session` and `api/customer/logout`: `app-local-session`.
-- `apps/storefront-runtime/src/app/api/seed` and `api/themes/install`: `blocked-local-safety`.
-- Other `apps/storefront-runtime/src/app/api/**`: `gateway-proxy`.
+- `apps/merchant_web/src/app/api/**`: `gateway-proxy`, except `api/auth/logout`, which is `app-local-session`.
+- `apps/customer_web/src/app/api/customer/session` and `api/customer/logout`: `app-local-session`.
+- `apps/customer_web/src/app/api/seed` and `api/themes/install`: `blocked-local-safety`.
+- Other `apps/customer_web/src/app/api/**`: `gateway-proxy`.
 - `apps/identity-platform/src/app/api/auth/**`: `app-local-auth`.
 - `apps/identity-platform/src/app/api/email/**`: `gateway-proxy`.
 - `apps/app-marketplace/src/app/api/**`: `gateway-proxy`.
 - `apps/theme-marketplace/src/app/api/**`: `gateway-proxy`.
-- `apps/platform-console/src/app/api/console-auth/**`: `app-local-operator-auth`.
+- `apps/admin_web/src/app/api/console-auth/**`: `app-local-operator-auth`.
 
 ## Inventory Changes
 
-- 2026-06-12 (V1-LAUNCH-B2): inventory 115 → 123. Eight `gateway-proxy` routes added under `apps/merchant-control-plane/src/app/api/stores/[store]/` for the LB-3/LB-4 money flows: `security/step-up`, `security/two-factor` (+ `enroll`, `verify`, `disable`), `orders/[orderId]/refund`, `payouts`, `payouts/[payoutId]/settle`. All translate the merchant session and call the canonical `/v1` gateway (step-up challenges, 2FA, payment refund, payout settle); none performs database writes or provider mutations locally.
-- 2026-06-12 (V1-LAUNCH-LB6): inventory 123 → 124. One `gateway-proxy` route added: `apps/merchant-control-plane/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts`. Supports GET (list assigned products) and PUT (replace assignment set) for collection-product management; proxies to the canonical `/v1/products/collections/:id/products` gateway endpoints via `createMerchantApiClient().products.collections.listProducts/replaceProducts`; no database writes or domain mutations locally.
+- 2026-06-12 (V1-LAUNCH-B2): inventory 115 → 123. Eight `gateway-proxy` routes added under `apps/merchant_web/src/app/api/stores/[store]/` for the LB-3/LB-4 money flows: `security/step-up`, `security/two-factor` (+ `enroll`, `verify`, `disable`), `orders/[orderId]/refund`, `payouts`, `payouts/[payoutId]/settle`. All translate the merchant session and call the canonical `/v1` gateway (step-up challenges, 2FA, payment refund, payout settle); none performs database writes or provider mutations locally.
+- 2026-06-12 (V1-LAUNCH-LB6): inventory 123 → 124. One `gateway-proxy` route added: `apps/merchant_web/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts`. Supports GET (list assigned products) and PUT (replace assignment set) for collection-product management; proxies to the canonical `/v1/products/collections/:id/products` gateway endpoints via `createMerchantApiClient().products.collections.listProducts/replaceProducts`; no database writes or domain mutations locally.
 
-- 2026-06-12 (V1-LAUNCH-B5): inventory 124 → 127. Three `gateway-proxy` routes added for LB-7 shipping: `apps/storefront-runtime/src/app/api/shipping/rates` (public rate quote pass-through for buyer checkout), `apps/merchant-control-plane/src/app/api/stores/[store]/shipping/rates` (POST create), and `.../shipping/rates/[rateId]` (DELETE). All call the canonical `/v1` gateway; no local writes.
-- 2026-06-13 (V1-LAUNCH-LB12): inventory 127 → 128. One `gateway-proxy` route added: `apps/storefront-runtime/src/app/api/customer/register/route.ts` (LB-12 shopper registration). POST proxies to the canonical `/v1/storefront/customer/register` gateway endpoint via `createStorefrontApiClient().storefront.registerCustomer`, then re-mints the HS256 customer session locally (`createSession`) — mirrors `/customer/login`. No database writes or provider mutations locally; no identity-platform/ES256 involvement.
-- 2026-06-13 (V1-LAUNCH-LB11): inventory 128 → 129. One `gateway-proxy` route added: `apps/merchant-control-plane/src/app/api/stores/[store]/gift-cards/[id]/route.ts` (LB-11 gift card lifecycle). GET (audit trail) proxies to `/v1/products/gift-cards/:id/transactions` and PATCH (fraud hold/disable/reactivate) to `/v1/products/gift-cards/:id/status` via `createMerchantApiClient().products.giftCards.transactions/setStatus`. All gift-card balance mutations route through canonical `gift_card_accounts` RPCs in the gateway; no database writes or provider mutations locally.
+- 2026-06-12 (V1-LAUNCH-B5): inventory 124 → 127. Three `gateway-proxy` routes added for LB-7 shipping: `apps/customer_web/src/app/api/shipping/rates` (public rate quote pass-through for buyer checkout), `apps/merchant_web/src/app/api/stores/[store]/shipping/rates` (POST create), and `.../shipping/rates/[rateId]` (DELETE). All call the canonical `/v1` gateway; no local writes.
+- 2026-06-13 (V1-LAUNCH-LB12): inventory 127 → 128. One `gateway-proxy` route added: `apps/customer_web/src/app/api/customer/register/route.ts` (LB-12 shopper registration). POST proxies to the canonical `/v1/storefront/customer/register` gateway endpoint via `createStorefrontApiClient().storefront.registerCustomer`, then re-mints the HS256 customer session locally (`createSession`) — mirrors `/customer/login`. No database writes or provider mutations locally; no identity-platform/ES256 involvement.
+- 2026-06-13 (V1-LAUNCH-LB11): inventory 128 → 129. One `gateway-proxy` route added: `apps/merchant_web/src/app/api/stores/[store]/gift-cards/[id]/route.ts` (LB-11 gift card lifecycle). GET (audit trail) proxies to `/v1/products/gift-cards/:id/transactions` and PATCH (fraud hold/disable/reactivate) to `/v1/products/gift-cards/:id/status` via `createMerchantApiClient().products.giftCards.transactions/setStatus`. All gift-card balance mutations route through canonical `gift_card_accounts` RPCs in the gateway; no database writes or provider mutations locally.
 
 ## Enforcement
 
@@ -37,8 +37,8 @@ App-local API routes and their app-local `src/lib` support files must not import
 
 The only remaining classified legacy presentation adapter is the storefront order lookup trio:
 
-- `apps/storefront-runtime/src/app/api/orders/check/route.ts`
-- `apps/storefront-runtime/src/app/api/orders/login/route.ts`
-- `apps/storefront-runtime/src/app/api/orders/set-password/route.ts`
+- `apps/customer_web/src/app/api/orders/check/route.ts`
+- `apps/customer_web/src/app/api/orders/login/route.ts`
+- `apps/customer_web/src/app/api/orders/set-password/route.ts`
 
 These routes may import `@/lib/order-service` only while the storefront order-history UI expects the current camelCase presentation model. They must still call the worker through the typed storefront API client and must not access the database directly.

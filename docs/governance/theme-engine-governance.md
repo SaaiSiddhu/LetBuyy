@@ -5,8 +5,8 @@
 ## Current Authority
 
 - Theme contracts, section/block schemas, templates, releases, and hydration contracts: `packages/theme-engine`.
-- Live storefront rendering modules: `apps/storefront-runtime/src/lib/theme-engine`.
-- Section React components: `apps/storefront-runtime/src/components/sections`.
+- Live storefront rendering modules: `apps/customer_web/src/lib/theme-engine`.
+- Section React components: `apps/customer_web/src/components/sections`.
 - Theme marketplace DTOs, filters, purchases, reviews, and installation contracts: `packages/theme-engine`.
 - Theme discovery and acquisition runtime composition: `apps/theme-marketplace`.
 

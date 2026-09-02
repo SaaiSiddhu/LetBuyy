@@ -94,9 +94,9 @@ These are the operative rules that make this registry enforceable. They are norm
 | 23 | **Theme Runtime (renderer)** | **Liquid / portable-theme (OS-2.0-shaped) renderer** — the ecosystem winner | CANONICAL | React section-registry renderer → **FROZEN first, deleted-or-kept at Wave 6 by perf data (NOT deleted for completeness)** | 1→4(→6) | A5; DEC-1; SHOP-015; LEG-044 |
 | 24 | **Theme Engine** | `@letbuyy/theme-engine` = the contract/schema/validator/bundle source of truth; its renderer classes un-orphaned to become the live Liquid renderer | CANONICAL | storefront `RUNTIME_SECTION_SCHEMAS` re-declaration; storefront compose fork; `theme_editor_drafts` legacy draft | 2→4 | A5; DEC-3/5/9; LEG-045/046/047 |
 | 25 | **Theme Editor (web + Flutter)** | Both editors CANONICAL and renderer-agnostic — survive the renderer swap untouched; gain web drag-reorder + lint panel | CANONICAL (protect) | mislabeled "AI hooks" (deterministic stubs → **rename** to "Smart defaults", not delete) | 1→4 | A5; DEC-7; THEME-006/011 |
-| 26 | **Storefront Runtime** | ONE `storefront-runtime` (Next.js/Vercel SSR/ISR + Worker Cache) hosting the Liquid renderer; the 3-tier KV-versioned cache kept | CANONICAL | `runtime-composition` (unwire then SAFE_DELETE); headless Hydrogen/Oxygen tier (FROZEN — not built) | 2→4 | A6; SHOP §3; LEG-008; TOPO-005 |
-| 27 | **Merchant OS (control plane)** | `apps/merchant-control-plane` operator-first (Orders/Money/Customers primary) on one `@letbuyy/ui` + `AppNavigation` shell + systemic provider-mode honesty badge | CANONICAL | `AdminShell`/`Sidebar`/`HeaderBar` fork; per-app `--lb-*` redefs; the non-surviving ops console | 3(→4) | A7/A8; SHOP-007; UIUX-009 |
-| 28 | **Mobile** | `apps/mobile/merchant-app` (Flutter); `ThemeData` re-pointed at the generated token bridge; release signing fixed; provider-mode badge | CANONICAL | TD-5 parity catalog (`merchant_feature_*`, 974 LOC); duplicate `LetbuyyColorTokens`; debug-keystore config (→fix); `packages/dart/services` phantom | 2→4 | A7/A8; MOB-001…022; LEG-072/073 |
+| 26 | **Storefront Runtime** | ONE `customer-web` (Next.js/Vercel SSR/ISR + Worker Cache) hosting the Liquid renderer; the 3-tier KV-versioned cache kept | CANONICAL | `runtime-composition` (unwire then SAFE_DELETE); headless Hydrogen/Oxygen tier (FROZEN — not built) | 2→4 | A6; SHOP §3; LEG-008; TOPO-005 |
+| 27 | **Merchant OS (control plane)** | `apps/merchant_web` operator-first (Orders/Money/Customers primary) on one `@letbuyy/ui` + `AppNavigation` shell + systemic provider-mode honesty badge | CANONICAL | `AdminShell`/`Sidebar`/`HeaderBar` fork; per-app `--lb-*` redefs; the non-surviving ops console | 3(→4) | A7/A8; SHOP-007; UIUX-009 |
+| 28 | **Mobile** | `apps/merchant_app` (Flutter); `ThemeData` re-pointed at the generated token bridge; release signing fixed; provider-mode badge | CANONICAL | TD-5 parity catalog (`merchant_feature_*`, 974 LOC); duplicate `LetbuyyColorTokens`; debug-keystore config (→fix); `packages/dart/services` phantom | 2→4 | A7/A8; MOB-001…022; LEG-072/073 |
 | 29 | **Analytics** | Analytics-read module in `api-gateway` + rollup jobs in `queue-workers` + a real `mobile-bff` composite (`/v1/dashboard`) | CANONICAL | `analytics-pipeline` service stays FROZEN-empty; its fabricated `production` topology entry | 1→3 | A9; PLT-009/014; PERF-001/002 |
 | 30 | **Notifications** | WhatsApp-first notifications router in the monolith (→ SMS → email → push) + send jobs in `queue-workers`; multi-ESP failover; preferences/suppression/consent | CANONICAL (build, P1) | `notification-service` stays FROZEN-empty; its fabricated `production` topology entry | 3 | A9; V1 §3/§16; R-2 |
 | 31 | **WhatsApp** | A scoped `channel=whatsapp` commerce module: order-lifecycle utility messages + COD-confirm (reply-to-confirm) + opt-in consent ledger; BSP/Meta adapter mocked | CANONICAL (scoped, P1) | full in-WhatsApp commerce stack (catalog→cart→in-thread checkout, broadcasts, inbox) → FROZEN | 3 | A1/A9; V1 §11; R-7 |
@@ -246,19 +246,19 @@ These are the operative rules that make this registry enforceable. They are norm
 
 ### 3.6 Storefront cluster — Storefront Runtime
 
-#### Storefront Runtime — Winner: ONE `storefront-runtime` (Next.js/Vercel SSR/ISR + Worker Cache) hosting the Liquid renderer; the 3-tier KV-versioned cache kept.
+#### Storefront Runtime — Winner: ONE `customer-web` (Next.js/Vercel SSR/ISR + Worker Cache) hosting the Liquid renderer; the 3-tier KV-versioned cache kept.
 - **Reason.** Shopify runs two runtimes (Hydrogen/Oxygen + Liquid) for two populations LetBuyy does not have; a headless tier is the same class of error as activating the reserved services. The 3-tier KV-versioned cache is the audited strong point — keep it. `runtime-composition` (a rejected/dormant package) is wired into the storefront page and must be unwired first.
 - **Migration Path.** Unwire then delete `runtime-composition` (Wave 2 — it is on the production read path, unwire FIRST); host the Liquid renderer in the one runtime (Wave 4); keep the cache untouched.
 - **Deletion Plan.** DOC 04: `LEG-008` `runtime-composition` = `DELETE_AFTER_MIGRATION` (`DEL-008`, Wave 2c, unwire then SAFE_DELETE). The headless Hydrogen/Oxygen tier = FROZEN (a written-down deferred seam, not built).
 
 ### 3.7 Merchant OS / Mobile / Design System cluster
 
-#### Merchant OS — Winner: `apps/merchant-control-plane` operator-first (Orders/Money/Customers primary) on one `@letbuyy/ui` + `AppNavigation` shell + a systemic provider-mode honesty badge.
+#### Merchant OS — Winner: `apps/merchant_web` operator-first (Orders/Money/Customers primary) on one `@letbuyy/ui` + `AppNavigation` shell + a systemic provider-mode honesty badge.
 - **Reason.** Operator-first IA + a Polaris-grade token core are load-bearing UX patterns worth copying; LetBuyy has the token core (the hard part) but not the governance + adoption. The honesty badge is a V1-specific trust control (a stub must never read as `success`) with no Shopify analog — and it is missing.
 - **Migration Path.** Finish the operator-first IA; adopt `AppNavigation`; add a first-class Money node; ship the honesty badge.
-- **Deletion Plan.** DOC 04: `AdminShell`/`Sidebar`/`HeaderBar` fork + per-app `--lb-*` redefs = LEGACY (Wave 4-5). The non-surviving ops console is `apps/platform-operations-portal`; it is `DELETE_AFTER_MIGRATION` after the thin ops sliver is smoked in `apps/platform-console`. Final ARB signature is recorded as skipped-human, but the repository decision is fixed by `GATE-OPS-SURVIVOR`.
+- **Deletion Plan.** DOC 04: `AdminShell`/`Sidebar`/`HeaderBar` fork + per-app `--lb-*` redefs = LEGACY (Wave 4-5). The non-surviving ops console is `apps/platform-operations-portal`; it is `DELETE_AFTER_MIGRATION` after the thin ops sliver is smoked in `apps/admin_web`. Final ARB signature is recorded as skipped-human, but the repository decision is fixed by `GATE-OPS-SURVIVOR`.
 
-#### Mobile — Winner: `apps/mobile/merchant-app` (Flutter); `ThemeData` re-pointed at the generated token bridge; release signing fixed; provider-mode badge.
+#### Mobile — Winner: `apps/merchant_app` (Flutter); `ThemeData` re-pointed at the generated token bridge; release signing fixed; provider-mode badge.
 - **Reason.** The Flutter app is the best-finished surface (3.1/5, strong theme editor, login works on prod) — but it is a de-facto separate design system (`ThemeData` bypasses the bridge) and has a debug-keystore release blocker. The TD-5 parity catalog (974 LOC, routed) is dead weight.
 - **Migration Path.** Fix release signing; re-point `ThemeData` at the generated bridge; delete the TD-5 catalog; reconcile the color classes.
 - **Deletion Plan.** DOC 04: `LEG-072` TD-5 parity catalog (`DEL-072`, Wave 3, remove route then files), `LEG-073` `packages/dart/services` phantom = DEAD SAFE_DELETE (`DEL-073`, Wave 2), duplicate `LetbuyyColorTokens` + 4 mobile color classes = LEGACY, debug-keystore config = DEAD → fix.
@@ -328,11 +328,11 @@ graph TB
     end
 
     subgraph APPS["Vercel apps (Next.js read/admin)"]
-        SF["storefront-runtime<br/>SSR/ISR — hosts LIQUID renderer<br/>+ hosted checkout.letbuyy.com origin"]
-        MCP["merchant-control-plane<br/>operator-first IA · @letbuyy/ui · AppNavigation · honesty badge"]
+        SF["customer-web<br/>SSR/ISR — hosts LIQUID renderer<br/>+ hosted checkout.letbuyy.com origin"]
+        MCP["merchant-web<br/>operator-first IA · @letbuyy/ui · AppNavigation · honesty badge"]
         IDP["identity-platform<br/>SOLE asymmetric token ISSUER (all 3 realms)"]
         MKT["marketing-site"]
-        OPS["platform-console<br/>(thin ops sliver — ONE survivor)"]
+        OPS["admin-web<br/>(thin ops sliver — ONE survivor)"]
     end
 
     subgraph MOBILE["Flutter"]

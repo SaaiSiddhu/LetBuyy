@@ -51,33 +51,33 @@ LetBuyy already owns a **Polaris-grade token engine** (`packages/typescript/ui/s
 
 ## 3. Surface × Category deep analysis — current → 10/10 target → governing rule
 
-> Five surfaces (Merchant Control Plane · Storefront · Checkout · Operations · Mobile Merchant App) across ten categories (Typography · Spacing · Component consistency · Navigation · Dark Mode · Light Mode · Accessibility · Responsiveness · Information Architecture · Visual hierarchy). For each cell: **Current** (forensic evidence/score, `path:line`) → **10/10 Target** → **Governing rule** (the UX-R rule from §13 that binds it). Surfaces are analyzed in priority order; the four other web apps (`platform-console`, `platform-operations-portal`, `theme-marketplace`, `developer-portal`, `app-marketplace`, `identity-platform`, `marketing-site`) are covered under §3.D (Operations cluster) and §3.K (cross-app supplement) so every one of the nine web apps + the Flutter app is addressed.
+> Five surfaces (Merchant Control Plane · Storefront · Checkout · Operations · Mobile Merchant App) across ten categories (Typography · Spacing · Component consistency · Navigation · Dark Mode · Light Mode · Accessibility · Responsiveness · Information Architecture · Visual hierarchy). For each cell: **Current** (forensic evidence/score, `path:line`) → **10/10 Target** → **Governing rule** (the UX-R rule from §13 that binds it). Surfaces are analyzed in priority order; the four other web apps (`admin-web`, `platform-operations-portal`, `theme-marketplace`, `developer-portal`, `app-marketplace`, `identity-platform`, `marketing-site`) are covered under §3.D (Operations cluster) and §3.K (cross-app supplement) so every one of the nine web apps + the Flutter app is addressed.
 
 The forensic per-app ×9 scoring matrix this analysis is built on (`UI_UX_GOVERNANCE_AUDIT.md` §3):
 
 | App | Spacing | Type | Layout | Responsive | DarkMode | Comp | A11y | Nav | Hier | **Avg** |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| merchant-control-plane | 5 | 6 | 6 | 7 | 6 | 6 | 8 | 8 | 7 | **6.6** |
+| merchant-web | 5 | 6 | 6 | 7 | 6 | 6 | 8 | 8 | 7 | **6.6** |
 | platform-operations-portal | 9 | 9 | 8 | 6 | 7 | 6 | 5 | 7 | 6 | **7.0** |
-| platform-console | 9 | 9 | 8 | 6 | 6 | 6 | 4 | 7 | 6 | **6.8** |
+| admin-web | 9 | 9 | 8 | 6 | 6 | 6 | 4 | 7 | 6 | **6.8** |
 | theme-marketplace | 7 | 7 | 7 | 7 | 6 | 6 | 6 | 5 | 6 | **6.3** |
 | developer-portal | 8 | 6 | 7 | 5 | 5 | 5 | 3 | 5 | 6 | **5.6** |
 | app-marketplace | 4 | 4 | 5 | 5 | 5 | 5 | 7 | 4 | 6 | **5.0** |
 | identity-platform | 4 | 4 | 5 | 5 | 4 | 5 | 5 | — | 6 | **4.8** |
-| storefront-runtime | 3 | 3 | 4 | 6 | 4 | 4 | 5 | 4 | 6 | **4.3** |
+| customer-web | 3 | 3 | 4 | 6 | 4 | 4 | 5 | 4 | 6 | **4.3** |
 | marketing-site | 2 | 2 | 4 | 7 | 2 | 4 | 4 | 4 | 6 | **3.9** |
-| mobile/merchant-app | 2 | 1 | 3 | 6 | 7 | 4 | 5 | 6 | 6 | **4.4** |
+| merchant_app | 2 | 1 | 3 | 6 | 7 | 4 | 5 | 6 | 6 | **4.4** |
 | **PLATFORM AVG** | **4.8** | **5.1** | **5.6** | **6.0** | **5.2** | **5.0** | **4.8** | **5.3** | **6.1** | **5.4 / 10** |
 
 ---
 
-### 3.A — MERCHANT CONTROL PLANE (`apps/merchant-control-plane`, avg 6.6 — the primary OS)
+### 3.A — MERCHANT CONTROL PLANE (`apps/merchant_web`, avg 6.6 — the primary OS)
 
 The highest-value surface. Deepest `@letbuyy/ui` adoption (~74 import files), best accessibility on the platform, genuinely operator-first IA — but carries the single largest drift store and has not adopted the canonical shell.
 
 | Category | Current state (evidence) | 10/10 target | Governing rule |
 |---|---|---|---|
-| **Typography** | Consumes type tokens in components, but `globals.css` carries a large share of the platform's raw `font-size:px`; merchant is one of the 3 apps owning ~80% of raw px. (`apps/merchant-control-plane/src/app/globals.css`; baseline `rawPxFontSize:536`.) Score 6. | All type via `var(--lb-font-size-*)`/`--lb-font-*`; Polaris-style hierarchy through weight+size+position; **tabular numerals on every money/quantity column** (orders, payouts, inventory). | UX-R7, UX-R20 |
+| **Typography** | Consumes type tokens in components, but `globals.css` carries a large share of the platform's raw `font-size:px`; merchant is one of the 3 apps owning ~80% of raw px. (`apps/merchant_web/src/app/globals.css`; baseline `rawPxFontSize:536`.) Score 6. | All type via `var(--lb-font-size-*)`/`--lb-font-*`; Polaris-style hierarchy through weight+size+position; **tabular numerals on every money/quantity column** (orders, payouts, inventory). | UX-R7, UX-R20 |
 | **Spacing** | Scored 5 purely on raw-px density: **2,210 raw px** in a **10,335-line** `globals.css`. The 12-step `--lb-space-*` scale (`tokens.ts:672-800`) is excellent and unused where it matters most. | `globals.css` reduced to a thin reset + token-derived aliases; all padding/margin/gap on `var(--lb-space-*)`. | UX-R6 |
 | **Component consistency** | Strong `@letbuyy/ui` adoption, but StatusBadge re-derived locally (part of the 5× platform pattern) and 112 app-local `--lb-*`/alias redefinitions shadow canonical tokens (most now derive via `color-mix()`, `globals.css:50-59`). Score 6. | Zero local StatusBadge re-derivation (exported `Badge`/`StatusVariant` only); zero app-local `--lb-*` redefinition outside `@letbuyy/ui`. | UX-R9, UX-R3 |
 | **Navigation** | **8/10** and operator-first, but **forks the shell** — uses `AdminShell`/`Sidebar`/`HeaderBar`/`AISidebar` + `merchantNavigation.ts` instead of `AppNavigation`. Active state is real (`isNavPathActive`) but hand-maintained. | Adopts `AppNavigation` (1st migration target, §6) preserving operator-first IA + command palette + `g o`/`g p`/`g c` shortcuts; inherits canonical width + `aria-current` for free. | UX-R10, UX-R11 |
@@ -92,7 +92,7 @@ The highest-value surface. Deepest `@letbuyy/ui` adoption (~74 import files), be
 
 ---
 
-### 3.B — STOREFRONT (`apps/storefront-runtime`, avg 4.3 — the buyer surface, worst-drift app)
+### 3.B — STOREFRONT (`apps/customer_web`, avg 4.3 — the buyer surface, worst-drift app)
 
 A deliberately bespoke buyer runtime that renders each merchant's chosen colors. The governing insight: **per-store dynamic theming is a legitimate, blessed axis — it is NOT drift.** The fix is to distinguish it from genuine hardcodes, not to force admin `--lb-*` onto merchant-themed surfaces.
 
@@ -133,7 +133,7 @@ Per the canonical architecture (`_GOVERNANCE_SPINE.md` S4), checkout is served f
 
 ---
 
-### 3.D — OPERATIONS CLUSTER (`platform-operations-portal` 7.0, `platform-console` 6.8 — the clean twins + the staff OS)
+### 3.D — OPERATIONS CLUSTER (`platform-operations-portal` 7.0, `admin-web` 6.8 — the clean twins + the staff OS)
 
 The platform's top scorers on CSS discipline (37/38-line stylesheets) and the **only two apps that adopted `AppNavigation`** — the proof that the canonical shell works.
 
@@ -145,7 +145,7 @@ The platform's top scorers on CSS discipline (37/38-line stylesheets) and the **
 | **Navigation** | **7/10 — canonical `AppNavigation` adopted** (`(dashboard)/layout.tsx:1`) → route-computed active state, `aria-current`, canonical width for free. The reference implementation. | Hold; this is the template the other 7 apps copy. | UX-R10 |
 | **Dark Mode** | 6–7/10 — provider wired, **no toggle** (system-only). | Toggle added → dark reachable. | UX-R13 |
 | **Light Mode** | Clean on `--lb-*`. | Hold. | UX-R12 |
-| **Accessibility** | **The weak spot: console 4/10, ops 5/10.** Nav a11y now good (shell supplies `aria-current`), but **non-nav surfaces are bare** — `platform-console` = **1 `aria-*`, 0 `role`** in the whole app outside the shell (`UIUX-006`). | Roles/labels on every data table + panel + form, reusing DS `Table`/`Badge`. | UX-R15, UX-R16 |
+| **Accessibility** | **The weak spot: console 4/10, ops 5/10.** Nav a11y now good (shell supplies `aria-current`), but **non-nav surfaces are bare** — `admin-web` = **1 `aria-*`, 0 `role`** in the whole app outside the shell (`UIUX-006`). | Roles/labels on every data table + panel + form, reusing DS `Table`/`Badge`. | UX-R15, UX-R16 |
 | **Responsiveness** | 6/10 Tailwind-first. | Breakpoint preset. | UX-R18 |
 | **Information Architecture** | 6–7/10; staff-ops IA via `NAV_SECTIONS`. | Operator-first staff IA; clear separation of console (platform) vs ops (operations). | UX-R19 |
 | **Visual hierarchy** | 6/10. | Data-dense, Polaris-density tables; clear scan order. | UX-R20 |
@@ -154,7 +154,7 @@ The platform's top scorers on CSS discipline (37/38-line stylesheets) and the **
 
 ---
 
-### 3.E — MOBILE MERCHANT APP (`apps/mobile/merchant-app`, avg 4.4 — Flutter, 71k lines, a de-facto separate DS)
+### 3.E — MOBILE MERCHANT APP (`apps/merchant_app`, avg 4.4 — Flutter, 71k lines, a de-facto separate DS)
 
 The most-built surface in the repo with the strongest *rendered* dark mode — but effectively a **separate, un-tokenized design system**: the generated, in-sync bridge feeds screen code but **not the `ThemeData` that actually colors the app.**
 
@@ -333,13 +333,13 @@ A money-surface **truth** requirement, not polish (V1 §1 Principle 4 / §10; FR
 
 | App | Today | Target | Order | Note |
 |---|---|---|---|---|
-| platform-console | **AppNavigation** ✓ | keep | done | reference impl |
+| admin-web | **AppNavigation** ✓ | keep | done | reference impl |
 | platform-operations-portal | **AppNavigation** ✓ | keep | done | reference impl |
-| merchant-control-plane | `AdminShell`/`Sidebar`/`HeaderBar`+`merchantNavigation.ts` | **AppNavigation** | **1st (highest value)** | preserves operator-first IA + palette + shortcuts; folds in the Money node; gains active-state/`aria-current`/canonical width free |
+| merchant-web | `AdminShell`/`Sidebar`/`HeaderBar`+`merchantNavigation.ts` | **AppNavigation** | **1st (highest value)** | preserves operator-first IA + palette + shortcuts; folds in the Money node; gains active-state/`aria-current`/canonical width free |
 | theme-marketplace | `navbar.tsx` + dashboard `layout.tsx` | AppNavigation (dashboard) + keep marketing navbar | 2nd | token the glassy chrome |
 | developer-portal | `_local-ui/PortalChrome.tsx` | AppNavigation | 3rd | also fixes its 0-role a11y |
 | app-marketplace | `Header.tsx` mega-menu | AppNavigation for app surfaces + shared marketing kit | 4th | extract `MarketingHeader`/`Footer` |
-| storefront-runtime | `dynamic-header.tsx` + `account/layout.tsx` | AppNavigation for **account** shell; buyer chrome stays per-store | 5th | token the nav chrome |
+| customer-web | `dynamic-header.tsx` + `account/layout.tsx` | AppNavigation for **account** shell; buyer chrome stays per-store | 5th | token the nav chrome |
 | marketing-site | `Header.tsx` mega-menu | shared marketing kit (not the admin shell) | special | un-exile after token migration |
 | identity-platform | — (auth flow) | n/a | n/a | a11y pass on auth forms instead |
 

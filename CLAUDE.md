@@ -17,11 +17,11 @@
 | `services/mobile-bff` | Composite/fan-in BFF for the Flutter merchant application |
 | `apps/identity-platform` | **Sole canonical asymmetric token issuer** for the customer, merchant and operator realms; realm privileges strictly separated |
 | `services/webhook-service` | Provider callback ingress + signed, deduplicated outbound webhooks |
-| `apps/storefront-runtime` | Buyer storefront, Liquid-first renderer, hosted `checkout.letbuyy.com` origin |
-| `apps/merchant-control-plane` | Merchant web operating system |
+| `apps/customer_web` (formerly `apps/storefront-runtime`) | Buyer storefront, Liquid-first renderer, hosted `checkout.letbuyy.com` origin |
+| `apps/merchant_web` (formerly `apps/merchant-control-plane`) | Merchant web operating system |
 | `apps/marketing-site` | Public marketing and pricing surface |
 
-Supporting, **non-extractable** surfaces: `apps/mobile/merchant-app`, `apps/platform-console` — they authorize no further backend extraction. Reserved services and mobile roots stay **empty** until a named trigger and human approval. Frozen/deprecated marketplace, portal and duplicate roots are **never** production topology. Apps must not import apps; services must not import apps; packages must not import apps or services — cross-runtime behavior moves through contracts, APIs, queues or public package exports.
+Supporting, **non-extractable** surfaces: `apps/merchant_app` (formerly `apps/mobile/merchant-app`), `apps/admin_web` (formerly `apps/platform-console`) — they authorize no further backend extraction. Reserved services and mobile roots stay **empty** until a named trigger and human approval. Frozen/deprecated marketplace, portal and duplicate roots are **never** production topology. Apps must not import apps; services must not import apps; packages must not import apps or services — cross-runtime behavior moves through contracts, APIs, queues or public package exports.
 
 **Design law.** Modular monolith with explicit internal domain boundaries. Never create a microservice merely to make a domain look scalable — a domain is extracted only after measured pressure proves independent scaling or isolation is necessary **and** the ARB approves. The synchronous path performs only work required for a correct result; email, WhatsApp, webhooks, analytics and rollups run asynchronously. Runtime instances are **stateless**: process memory, Cloudflare isolate globals, KV, caches, D1 and Durable Objects must never become an accidental second authority for orders, money, inventory or tenant data. **Postgres is the canonical transactional commerce authority**; caches and projections are disposable and rebuildable.
 
@@ -95,7 +95,7 @@ Roots are **not** one undifferentiated list. Four classes, with different rules:
 - `apps/app-marketplace`
 - `apps/developer-portal`
 - `apps/theme-marketplace`
-- `apps/platform-operations-portal` (pending consolidation into `apps/platform-console`)
+- `apps/platform-operations-portal` (pending consolidation into `apps/admin_web` (formerly `apps/platform-console`))
 
 Capability owners for reserved concerns are the implemented active runtimes until a **named trigger plus human approval** authorizes activation. Adding a runtime, or filling a reserved root, requires ARB approval and any necessary constitutional amendment **before** source is created.
 
@@ -111,7 +111,7 @@ Do not recreate or reference deprecated app aliases as active topology:
 - `apps/storefront`
 - `apps/analytics`
 - `apps/mobile/operator-team-app`
-- `apps/storefront-runtime/consumer-storefront`
+- `apps/customer_web/consumer-storefront` (formerly `apps/storefront-runtime/consumer-storefront`)
 
 **Carve-out (Constitution amendment, 2026-09-02):** `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, and `apps/merchant_web` are approved six-app-model names, not instances of the deprecated `apps/admin`/`apps/merchant` aliases above — the prohibition names only the exact historical paths `apps/admin` and `apps/merchant`, never any of the four `_app`/`_web`-suffixed names. `scripts/validators/governance-common.mjs:203`'s `startsWithPrefix()` already treats this boundary correctly (`"apps/admin_app".startsWith("apps/admin/")` is `false`); this sentence closes a prose ambiguity, not a code defect.
 
@@ -141,7 +141,7 @@ Run `node scripts/validate-governance.mjs` after topology, import, package, envi
 A multi-tenant India-first commerce platform. Core entities: **site** (the tenant/store, `site_id` everywhere), **store_customers** + **customer_credentials**, **products / collections / inventory**, **orders + order_items** (`*_minor bigint` money), **payment_transactions / refunds / payouts** (canonical ledger), **gift_card_accounts + gift_card_ledger_entries + gift_card_redemptions**, **shipping_rates**, GST invoices, **themes** (Liquid/React render).
 
 ## Subdomains & runtimes
-`{store}.letbuyy.com` + custom domains → `storefront-runtime` (`src/proxy.ts` host routing). Merchant UI → `merchant-control-plane`. Auth → `identity-platform`. Ops → `platform-console`. All proxy into the canonical `services/api-gateway` (`/v1`, Hono). Async via `queue-workers`; webhooks via `webhook-service`.
+`{store}.letbuyy.com` + custom domains → `customer_web` (formerly `storefront-runtime`; `src/proxy.ts` host routing). Merchant UI → `merchant_web` (formerly `merchant-control-plane`). Auth → `identity-platform`. Ops → `admin_web` (formerly `platform-console`). All proxy into the canonical `services/api-gateway` (`/v1`, Hono). Async via `queue-workers`; webhooks via `webhook-service`.
 
 ## Money, payments, COD, GST (hard rules)
 - **Canonical ledger only:** money mutations are `SECURITY DEFINER` Postgres RPCs (`create_checkout_order`, `confirm_order_payment_with_ledger`, `complete_order_refund`, `issue_gift_card`, `set_gift_card_status`, `restore_gift_card_on_refund`) called via `db.rpc`. **Never** `.from(money_table).insert/update` in TS (`canonical-ledger-only-validator`).

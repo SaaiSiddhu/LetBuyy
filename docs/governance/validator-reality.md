@@ -21,8 +21,8 @@ Merchant-mobile readiness is tracked by executable Flutter tests, current govern
 
 Wave gates must include the product-facing checks, not only repository governance:
 
-- `flutter analyze apps/mobile/merchant-app`
-- `flutter test apps/mobile/merchant-app`
+- `flutter analyze apps/merchant_app`
+- `flutter test apps/merchant_app`
 - the touched TypeScript/service gates from the active wave
 - `node scripts/validate-governance.mjs`
 - a leak audit proving no merchant-visible screen renders `SKIP_NEEDS_HUMAN_*`, `SKIP-NEEDS-BACKEND`, `S-0NN`, or backend-contract wording

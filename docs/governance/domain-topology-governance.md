@@ -40,11 +40,11 @@ independent certificate / nameserver lifecycles.
 |---|---|---|---|---|
 | `letbuyy.com`, `www.letbuyy.com` | `apps/marketing-site` | Vercel | Public | Marketing/pricing/conversion. **Must not host auth pages** (AGENTS auth rule) — login links redirect to `accounts.`. |
 | `accounts.letbuyy.com` | `apps/identity-platform` | Vercel | Public | **Canonical auth owner.** Login, signup, OTP, password, OAuth callback, store selection, session issuance. |
-| `admin.letbuyy.com` | `apps/merchant-control-plane` | Vercel | Auth-gated | Per-store merchant dashboard, CMS, products, orders, settings, themes, analytics. |
+| `admin.letbuyy.com` | `apps/merchant_web` | Vercel | Auth-gated | Per-store merchant dashboard, CMS, products, orders, settings, themes, analytics. |
 | `apps.letbuyy.com` | `apps/app-marketplace` | Vercel | Public + partner-gated | App marketplace storefront + partner app submission/review. |
 | `themes.letbuyy.com` | `apps/theme-marketplace` | Vercel | Public + partner-gated | Theme catalog, detail, acquisition. |
 | `developer.letbuyy.com` | `apps/developer-portal` | Vercel | Public docs + partner dash | API reference, SDK quick-starts, partner dashboard shell. |
-| `console.letbuyy.com` | `apps/platform-console` | Vercel | **Internal-restricted** | Super-admin. Email allowlist + 2FA/TOTP + IP/VPN + audit (AGENTS console rule). |
+| `console.letbuyy.com` | `apps/admin_web` | Vercel | **Internal-restricted** | Super-admin. Email allowlist + 2FA/TOTP + IP/VPN + audit (AGENTS console rule). |
 | `team.letbuyy.com` | `apps/platform-operations-portal` | Vercel | **Internal-restricted** | Employee support/ops portal. Same hardening as console. |
 | `api.letbuyy.com` | `services/api-gateway` | Cloudflare Workers | Public API | Sole Commerce API backend. Hono `/v1`. Proxied (orange-cloud). |
 | `webhooks.letbuyy.com` | `services/webhook-service` | Cloudflare Workers | Provider callbacks | Signature-verified provider webhooks. Proxied. |
@@ -53,8 +53,8 @@ independent certificate / nameserver lifecycles.
 
 | Host | Runtime root | Hosting | Exposure | Notes |
 |---|---|---|---|---|
-| `{merchant}.letbuyy.com` | `apps/storefront-runtime` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.com`. |
-| `<merchant-custom-domain>` | `apps/storefront-runtime` | Vercel custom domains | Public shopper | Merchant brings own domain via CNAME (see §7). |
+| `{merchant}.letbuyy.com` | `apps/customer_web` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.com`. |
+| `<merchant-custom-domain>` | `apps/customer_web` | Vercel custom domains | Public shopper | Merchant brings own domain via CNAME (see §7). |
 | `letbuyy.com`, `www.letbuyy.com` | — | Cloudflare redirect | Public | **Decision (§14):** recommend 301 → `letbuyy.com`. Apex is not a tenant. |
 
 > Naming reminder (AGENTS): database tables use `sites`; URLs/UI say `store`. The host label
@@ -68,18 +68,18 @@ flowchart TB
   subgraph COM["letbuyy.com — control plane (trusted)"]
     MKT["letbuyy.com → marketing-site"]
     ACC["accounts → identity-platform (AUTH OWNER)"]
-    ADM["admin → merchant-control-plane"]
+    ADM["admin → merchant-web"]
     APPS["apps → app-marketplace"]
     THM["themes → theme-marketplace"]
     DEV["developer → developer-portal"]
-    CON["console → platform-console (internal)"]
+    CON["console → admin-web (internal)"]
     TEAM["team → platform-operations-portal (internal)"]
     API["api → api-gateway (Workers)"]
     WH["webhooks → webhook-service (Workers)"]
   end
   subgraph STORE["letbuyy.com — storefronts (untrusted merchant surface)"]
-    SF["*.letbuyy.com → storefront-runtime"]
-    CD["custom domains → storefront-runtime"]
+    SF["*.letbuyy.com → customer-web"]
+    CD["custom domains → customer-web"]
   end
   MKT --> ACC --> ADM
   ADM --> API
@@ -101,7 +101,7 @@ Two **independent** session realms. They never share a cookie scope.
 | Realm | Issued by | Cookie `Domain` | Scope rule | Env secret |
 |---|---|---|---|---|
 | Platform (merchant/staff/partner) | `accounts.letbuyy.com` | `.letbuyy.com` | Shared across `admin/apps/themes/developer/console/team` for SSO | `SESSION_SECRET` |
-| Storefront (shopper) | storefront-runtime | **host-only** (no `Domain` attr) | Bound to the exact storefront host so one store can't read another | `CUSTOMER_SESSION_SECRET` |
+| Storefront (shopper) | customer-web | **host-only** (no `Domain` attr) | Bound to the exact storefront host so one store can't read another | `CUSTOMER_SESSION_SECRET` |
 
 Hard rules:
 
@@ -116,7 +116,7 @@ Hard rules:
   redirect flow (`accounts` → app), `SameSite=Strict` for everything that doesn't cross a
   redirect (AGENTS cookie rule). Document any `Lax` exception inline where it's set.
 - `COOKIE_DOMAIN` env is set **per app**: `.letbuyy.com` for platform apps; **empty/unset**
-  for storefront-runtime so the framework emits host-only cookies.
+  for customer-web so the framework emits host-only cookies.
 - Console/team are internal — prefer a **separate, non-SSO** session (or a distinct cookie
   name) so an ops session is never reusable on merchant apps, on top of allowlist + 2FA.
 
@@ -133,7 +133,7 @@ except redirects."_).
    redirects back.
 3. `admin/apps/themes/developer` read the shared cookie; no re-login. Store selection and
    `switch` happen in `identity-platform` (existing `/api/auth/stores`, `/api/auth/switch`).
-4. Shoppers authenticate **only** within storefront-runtime against the storefront host; that
+4. Shoppers authenticate **only** within customer-web against the storefront host; that
    session grants **no** merchant/admin privileges and lives in the `.store` realm.
 
 ## 5. Edge routing & hosting
@@ -174,11 +174,11 @@ resource "cloudflare_record" "com_www" {
 locals {
   com_vercel_hosts = {
     accounts  = "identity-platform"
-    admin     = "merchant-control-plane"
+    admin     = "merchant-web"
     apps      = "app-marketplace"
     themes    = "theme-marketplace"
     developer = "developer-portal"
-    console   = "platform-console"
+    console   = "admin-web"
     team      = "platform-operations-portal"
   }
 }
@@ -229,14 +229,14 @@ auto-provision the cert:
 | Vercel project | Production domain |
 |---|---|
 | identity-platform | `accounts.letbuyy.com` |
-| merchant-control-plane | `admin.letbuyy.com` |
+| merchant-web | `admin.letbuyy.com` |
 | app-marketplace | `apps.letbuyy.com` |
 | theme-marketplace | `themes.letbuyy.com` |
 | developer-portal | `developer.letbuyy.com` |
-| platform-console | `console.letbuyy.com` |
+| admin-web | `console.letbuyy.com` |
 | platform-operations-portal | `team.letbuyy.com` |
 | marketing-site | `letbuyy.com`, `www.letbuyy.com` |
-| storefront-runtime | `*.letbuyy.com` (wildcard) **+** merchant custom domains |
+| customer-web | `*.letbuyy.com` (wildcard) **+** merchant custom domains |
 
 ### 5.4 Cloudflare Workers routes
 
@@ -247,12 +247,12 @@ patterns to the new hosts (`api.letbuyy.com/*`, `webhooks.letbuyy.com/*`). Keep 
 ### 5.5 Storefront wildcard → tenant rewrite (already built; host source changes)
 
 Storefront-runtime already resolves tenants from the host label and rewrites to
-`/store/[subdomain]` (`apps/storefront-runtime/src/app/store/[subdomain]/...`,
+`/store/[subdomain]` (`apps/customer_web/src/app/store/[subdomain]/...`,
 `src/app/api/store-lookup`, identity `validate-subdomain`). The split changes only the **host
 the middleware trusts**:
 
 ```ts
-// apps/storefront-runtime/src/middleware.ts  (canonical host resolution — illustrative)
+// apps/customer_web/src/middleware.ts  (canonical host resolution — illustrative)
 const host = req.headers.get("host")!.toLowerCase();
 const STORE_ROOT = "letbuyy.com";
 
@@ -280,7 +280,7 @@ subdomains in the create-store validator so a merchant can't claim a system labe
 
 ## 7. Custom merchant domains (already a feature — canonical flow)
 
-Surfaces exist: `apps/merchant-control-plane/src/app/[store]/settings/domains/page.tsx`,
+Surfaces exist: `apps/merchant_web/src/app/[store]/settings/domains/page.tsx`,
 mobile `custom_domains.dart` / `domain_settings_screen.dart`. Canonical activation sequence
 (AGENTS custom-domain rule):
 
@@ -313,7 +313,7 @@ mobile `custom_domains.dart` / `domain_settings_screen.dart`. Canonical activati
 These names already exist in the scan; the split formalizes their values. Names only — **never
 commit values** (AGENTS env rule). Owned under `config/env/` per `environment-governance.md`.
 
-| Variable | letbuyy.com apps | storefront-runtime |
+| Variable | letbuyy.com apps | customer-web |
 |---|---|---|
 | `NEXT_PUBLIC_API_URL` / `API_URL` | `https://api.letbuyy.com` | `https://api.letbuyy.com` |
 | `NEXT_PUBLIC_ACCOUNTS_URL` / `ACCOUNTS_URL` | `https://accounts.letbuyy.com` | `https://accounts.letbuyy.com` |

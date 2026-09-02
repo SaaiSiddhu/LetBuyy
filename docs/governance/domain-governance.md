@@ -27,7 +27,7 @@ API worker schema files under `services/api-gateway/src/schemas` are compatibili
 
 Service route files must not define reusable Zod schemas inline. Billing, commerce, inventory, review, CMS, onboarding, AI, and theme payload schemas now live in package-owned surfaces and are consumed by the API gateway through package imports or schema facades.
 
-Mobile merchant model contracts that are reused across Flutter screens belong to `packages/dart/models`, not `apps/mobile/merchant-app/lib/models`. The app-local model files remain only as compatibility facades over `package:letbuyy_models/merchant_contracts.dart`.
+Mobile merchant model contracts that are reused across Flutter screens belong to `packages/dart/models`, not `apps/merchant_app/lib/models`. The app-local model files remain only as compatibility facades over `package:letbuyy_models/merchant_contracts.dart`.
 
 ## Database Naming Rule
 

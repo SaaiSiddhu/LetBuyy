@@ -34,7 +34,7 @@
 | Swift / Kotlin / Python / Shell | 80 / 27 / 6 / 10 |
 
 ### Services / workspaces discovered (top, by node count)
-`apps/mobile` (5,134), `services/api-gateway` (3,623), `packages/dart` (1,865), `apps/merchant-control-plane` (1,293), `packages/typescript` (1,282), `packages/shared-types` (1,086), `apps/storefront-runtime` (910), `packages/theme-engine` (464), `apps/identity-platform` / `apps/platform-console` (443 each), `services/queue-workers` (393), `packages/checkout-core` (259), `packages/auth-core` (254), `packages/commerce-core` (179), `services/webhook-service` (175).
+`apps/mobile` (5,134), `services/api-gateway` (3,623), `packages/dart` (1,865), `apps/merchant_web` (1,293), `packages/typescript` (1,282), `packages/shared-types` (1,086), `apps/customer_web` (910), `packages/theme-engine` (464), `apps/identity-platform` / `apps/admin_web` (443 each), `services/queue-workers` (393), `packages/checkout-core` (259), `packages/auth-core` (254), `packages/commerce-core` (179), `services/webhook-service` (175).
 
 ### API routes & pages discovered
 - **140** `route.ts` API route files (Next app proxies + gateway).

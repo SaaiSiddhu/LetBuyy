@@ -34,7 +34,7 @@ nested storefront runtime -> source authority
 - Apps may import their own `@/` alias and shared packages.
 - Apps must not import sibling apps, app internals, app components, or app route handlers.
 - App-local API routes are app-boundary adapters. Durable business decisions belong in services or packages before reuse.
-- Apps must not import deprecated alias roots or `apps/storefront-runtime/consumer-storefront`.
+- Apps must not import deprecated alias roots or `apps/customer_web/consumer-storefront`.
 
 ## Package Rules
 

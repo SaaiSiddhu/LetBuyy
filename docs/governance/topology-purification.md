@@ -8,16 +8,16 @@ LetBuyy uses one canonical runtime map. Transitional aliases, placeholder app ro
 
 Active app runtimes are:
 
-- `apps/storefront-runtime`
-- `apps/merchant-control-plane`
+- `apps/customer_web`
+- `apps/merchant_web`
 - `apps/identity-platform`
 - `apps/app-marketplace`
 - `apps/developer-portal`
 - `apps/theme-marketplace`
 - `apps/marketing-site`
-- `apps/platform-console`
+- `apps/admin_web`
 - `apps/platform-operations-portal`
-- `apps/mobile/merchant-app`
+- `apps/merchant_app`
 
 Reserved mobile roots are not active app runtimes and must remain manifest-and-AGENTS-only until human-approved activation governance adds real gateway-wired source, tests, and deployment config:
 
@@ -38,7 +38,7 @@ The following paths are retired and must not be recreated:
 - `apps/storefront`
 - `apps/analytics`
 - `apps/mobile/operator-team-app`
-- `apps/storefront-runtime/consumer-storefront`
+- `apps/customer_web/consumer-storefront`
 
 References to these paths are valid only inside archived historical documents under `docs/archive/` or in validator forbidden-path lists.
 
@@ -52,13 +52,13 @@ References to these paths are valid only inside archived historical documents un
 
 ## Storefront Runtime Policy
 
-`apps/storefront-runtime` is the sole storefront runtime root. Coming-soon rendering lives under `apps/storefront-runtime/src/components/coming-soon`. Theme previews, tenant pages, checkout, cart, customer accounts, and policy routes live under the canonical storefront app tree.
+`apps/customer_web` is the sole storefront runtime root. Coming-soon rendering lives under `apps/customer_web/src/components/coming-soon`. Theme previews, tenant pages, checkout, cart, customer accounts, and policy routes live under the canonical storefront app tree.
 
 Nested `consumer-storefront` trees are forbidden because they create duplicate source authority and confuse import graph ownership.
 
 ## Platform Operations Policy
 
-`apps/platform-console` owns privileged super-admin governance. `apps/platform-operations-portal` owns employee support and operations workflows. `apps/mobile/operator-app` is the only reserved native operator companion root and is not active until activation governance lands.
+`apps/admin_web` owns privileged super-admin governance. `apps/platform-operations-portal` owns employee support and operations workflows. `apps/mobile/operator-app` is the only reserved native operator companion root and is not active until activation governance lands.
 
 Employee mobile scaffolds must not be added unless a new canonical runtime is approved and validators are updated before source is committed.
 

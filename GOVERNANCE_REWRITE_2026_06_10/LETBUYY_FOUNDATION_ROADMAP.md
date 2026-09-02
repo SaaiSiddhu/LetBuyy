@@ -366,7 +366,7 @@ With **2–3 parallel squads** on the Constitution §13 map, beta is **~4–6 mo
 
 **Risks**
 - **R4.1 — Token cutover ordering (Critical).** Dropping HS256 before the old-token drain completes locks out valid tokens. *Mitigation:* staged D0(key-provision)→D1(dual-issue)→D2(drain)→D3(drop HS256, gated on **zero** legacy-HS256 verifications)→D4(rotation proof); verifier-pin and issuer-alg deploy as independently-revertible changes; a rollback drill is mandatory before D3.
-- **R4.2 — The collapse is a cross-service contract change.** identity-platform + api-gateway + webhook-service + platform-console + auth-core all verify tokens. *Mitigation:* dual-verify window; rollback = re-widen the verifier (never revert the issuer); contract fixtures gate the cutover.
+- **R4.2 — The collapse is a cross-service contract change.** identity-platform + api-gateway + webhook-service + admin-web + auth-core all verify tokens. *Mitigation:* dual-verify window; rollback = re-widen the verifier (never revert the issuer); contract fixtures gate the cutover.
 - **R4.3 — Deleting legacy `/auth/*` must not orphan a session.** *Mitigation:* deprecate→delete only after the sole issuer serves (the deletion itself is P5/Wave 5, gated on the V-SMOKE issuer-only proof).
 
 **Deliverables**
@@ -398,7 +398,7 @@ With **2–3 parallel squads** on the Constitution §13 map, beta is **~4–6 mo
 - **R5.2 — Cookie-domain flip can break SSO (High).** *Mitigation:* couple the `COOKIE_DOMAIN` flip to identity D-07; `.store` 301s as the fallback; the migration is a single revertible PR.
 - **R5.3 — Dropping a table with a live RPC/ops writer (UNVERIFIED).** *Mitigation:* `pg_stat_user_tables` write-count proof before any DROP — the hard gate (§5.4).
 - **R5.4 — Deleting a money/auth bridge before zero-drift.** *Mitigation:* no money system deleted until the reconciliation harness proves zero drift on the path it replaces; no auth bridge deleted until the sole-issuer V-SMOKE is green.
-- **R5.5 — Ops-console consolidation must not remain conditional.** *Mitigation:* `GATE-OPS-SURVIVOR` resolves the repository default to `platform-console`; final ARB signature is tracked as skipped-human before deleting the non-survivor.
+- **R5.5 — Ops-console consolidation must not remain conditional.** *Mitigation:* `GATE-OPS-SURVIVOR` resolves the repository default to `admin-web`; final ARB signature is tracked as skipped-human before deleting the non-survivor.
 
 **Deliverables**
 - **Domain migration + canonical-path routing** — one PR migrating wrangler routes to `api.letbuyy.com`/`webhooks.letbuyy.com` + Vercel domains to `letbuyy.com` with `.store` 301s; the base `letbuyy.com` DNS zone is canonical here, while the `checkout.` record is provisioned inside P8 so checkout does not depend on a later phase; a validator banning `letbuyy.store` literals; cookies scoped per-app; gate public order-create behind the signed hosted-origin handoff; retire legacy app-local checkout/Stripe/PayPal handlers from the live path. *(W-03; ISSUE-063/192/103/205/227.)*

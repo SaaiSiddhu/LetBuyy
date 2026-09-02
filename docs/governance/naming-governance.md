@@ -4,8 +4,8 @@
 
 Runtime names must describe platform responsibility:
 
-- Use `storefront-runtime`, not `storefront app`.
-- Use `merchant-control-plane`, not `admin`.
+- Use `customer-web`, not `storefront app`.
+- Use `merchant-web`, not `admin`.
 - Use `identity-platform`, not `accounts`.
 - Use `api-gateway`, not `api worker`.
 - Use `webhook-service`, not `webhooks worker`.

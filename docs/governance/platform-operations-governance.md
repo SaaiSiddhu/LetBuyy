@@ -4,11 +4,11 @@
 
 Platform operations are split between:
 
-- `apps/platform-console`: super admin governance and platform control.
+- `apps/admin_web`: super admin governance and platform control.
 - `apps/platform-operations-portal`: employee support, moderation, and operational workflows.
 - `apps/mobile/operator-app`: reserved/not-implemented native operator companion root. It is manifest-and-AGENTS-only until a human-approved native operator scope adds real gateway-wired source, tests, deployment config, and governance approval.
 
-`apps/platform-console` and `apps/platform-operations-portal` must not collapse into one ambiguous internal app. The console owns platform-level governance and privileged administration; the operations portal owns employee workflows with narrower permissions and stronger action audit.
+`apps/admin_web` and `apps/platform-operations-portal` must not collapse into one ambiguous internal app. The console owns platform-level governance and privileged administration; the operations portal owns employee workflows with narrower permissions and stronger action audit.
 
 The retired `apps/mobile/operator-team-app` scaffold must not be recreated. Future native operator work belongs in `apps/mobile/operator-app` only after activation governance; active employee team workflows belong in the web operations portal.
 

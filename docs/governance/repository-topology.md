@@ -8,14 +8,14 @@ LetBuyy is governed as a multi-runtime commerce platform, not as a collection of
 
 ```text
 apps/
-  storefront-runtime/
-  merchant-control-plane/
+  customer-web/
+  merchant-web/
   identity-platform/
   app-marketplace/
   developer-portal/
   theme-marketplace/
   marketing-site/
-  platform-console/
+  admin-web/
   platform-operations-portal/
   mobile/
     shopper-app/
@@ -102,16 +102,16 @@ docs/
 
 | Runtime | Actor | Canonical root | Current responsibility |
 |---|---|---|---|
-| Storefront runtime | Shoppers | `apps/storefront-runtime` | Public tenant storefronts, customer accounts, cart, checkout, policies, theme previews |
-| Merchant control plane | Merchants | `apps/merchant-control-plane` | Merchant dashboard, CMS, products, orders, settings, themes, analytics |
+| Storefront runtime | Shoppers | `apps/customer_web` | Public tenant storefronts, customer accounts, cart, checkout, policies, theme previews |
+| Merchant control plane | Merchants | `apps/merchant_web` | Merchant dashboard, CMS, products, orders, settings, themes, analytics |
 | Identity platform | Merchants and operators | `apps/identity-platform` | Login, signup, onboarding, store selection, password and OTP flows |
 | App marketplace | Partners and merchants | `apps/app-marketplace` | App catalog, developer submission, app install workflows |
 | Developer portal | Partners and developers | `apps/developer-portal` | API, OAuth, webhook, SDK, and developer dashboard documentation |
 | Theme marketplace | Partners and merchants | `apps/theme-marketplace` | Theme catalog, purchases, acquisition and install workflows |
 | Marketing site | Public visitors | `apps/marketing-site` | Public marketing and pricing surface |
-| Platform console | Platform operators | `apps/platform-console` | Super admin platform operations |
+| Platform console | Platform operators | `apps/admin_web` | Super admin platform operations |
 | Platform operations portal | Platform employees | `apps/platform-operations-portal` | Employee support, moderation, marketing operations, and invite workflows |
-| Mobile merchant app | Merchants | `apps/mobile/merchant-app` | Flutter merchant builder and store management |
+| Mobile merchant app | Merchants | `apps/merchant_app` | Flutter merchant builder and store management |
 | Mobile shopper app | Reserved | `apps/mobile/shopper-app` | Reserved/not-implemented native shopper root; manifest-and-AGENTS only |
 | Mobile operator app | Reserved | `apps/mobile/operator-app` | Reserved/not-implemented native operator companion; manifest-and-AGENTS only |
 | API gateway | All actors through contracts | `services/api-gateway` | Hono `/v1` API, auth, tenant context, domain services |
@@ -140,7 +140,7 @@ docs/
 - Deprecated runtime aliases are forbidden and must not coexist with canonical runtimes.
 - The forbidden app alias roots are `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.
 - `apps/mobile/operator-team-app` is retired; employee operations belong in `apps/platform-operations-portal`, and future native operator work belongs in reserved `apps/mobile/operator-app` only after activation governance.
-- `apps/storefront-runtime/consumer-storefront` is retired; storefront source authority belongs under `apps/storefront-runtime/src`.
+- `apps/customer_web/consumer-storefront` is retired; storefront source authority belongs under `apps/customer_web/src`.
 - Every app/service runtime must include `runtime.manifest.json`.
 - Runtime-local `node_modules`, generated output, and local build caches are not topology and must not survive governance validation.
 - New app roots require a governance doc update, validator update, CI enforcement, and an ownership decision before source is added.

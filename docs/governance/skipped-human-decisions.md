@@ -10,7 +10,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Decision.** `validate:design-system` baselines the ~2,800 pre-existing CSS drift violations (`scripts/validators/design-system-baseline.json`) and fails only on *increases*; the new theme invariants (single provider/key, no `theme="auto"`, no bespoke providers) are enforced at **zero**.
 **Reason.** Flipping raw-color/spacing/typography rules to hard-fail immediately would fail CI on thousands of existing violations, breaking the "stay green" rule.
 **Impact.** New drift is blocked platform-wide today; existing drift is quarantined and can only decrease.
-**Recommendation.** Schedule the CSS burn-down (largest first: `merchant-control-plane` 10,335-line globals.css, `app-marketplace` 7,475, `marketing-site` 5,143). Each PR lowers the baseline via `pnpm run validate:design-system:update`.
+**Recommendation.** Schedule the CSS burn-down (largest first: `merchant-web` 10,335-line globals.css, `app-marketplace` 7,475, `marketing-site` 5,143). Each PR lowers the baseline via `pnpm run validate:design-system:update`.
 
 ## D2 — Stylelint config and binary ✅ RESOLVED (2026-06-10)
 **Status.** Closed. `stylelint@17.13.0` and `stylelint-config-standard@40.0.0` are installed at the workspace root, `pnpm-lock.yaml` is updated, `.stylelintrc.cjs` is the active config, and both CI governance workflows run `pnpm run lint:css`.
@@ -30,19 +30,19 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Verified.** `@letbuyy/ui` + `identity-platform` `tsc --noEmit` clean; `validate:design-system` passes.
 
 ## D5 — `_local-ui` workspace twins not deleted
-**Decision.** `platform-console/.../_local-ui/console-workspace.tsx` and `platform-operations-portal/.../_local-ui/ops-workspace.tsx` (the 63-line-diff twins) were **not** deleted. The canonical `StatusBadge` + `statusToBadgeVariant` were promoted to `@letbuyy/ui` as the replacement for the 5× status-pill fork, and `AppNavigation` now covers the sidebar duplication.
+**Decision.** `admin-web/.../_local-ui/console-workspace.tsx` and `platform-operations-portal/.../_local-ui/ops-workspace.tsx` (the 63-line-diff twins) were **not** deleted. The canonical `StatusBadge` + `statusToBadgeVariant` were promoted to `@letbuyy/ui` as the replacement for the 5× status-pill fork, and `AppNavigation` now covers the sidebar duplication.
 **Reason.** The twins are imported by **18 pages**; deleting them requires migrating all 18, exceeding a safe single-pass blast radius.
 **Impact.** The two sidebars are de-duplicated (via `AppNavigation`); the workspace grammar (MetricGrid/Panel/ModuleCard) duplication remains.
 **Recommendation.** Promote the workspace grammar into `@letbuyy/ui` (it overlaps existing `MetricCard`/`Card`/`EmptyState`) and migrate the 18 importers (mechanical import-path change), then delete both `_local-ui` files.
 
 ## D6 — Navigation migration scoped to console + ops
-**Decision.** Migrated `platform-console` and `platform-operations-portal` to `AppNavigation`. `merchant-control-plane` and the marketing/storefront headers were not migrated.
+**Decision.** Migrated `admin-web` and `platform-operations-portal` to `AppNavigation`. `merchant-web` and the marketing/storefront headers were not migrated.
 **Reason.** Console/ops were the clearest, bounded wins (byte-identical twins, server layouts). Merchant's shell is a larger system (`Sidebar.tsx` + `merchantNavigation.ts` + `HeaderBar` + `CommandPalette`); marketing/storefront are a legitimately different "marketing nav" pattern.
 **Impact.** 2 of 10 hand-rolled navs eliminated; active-state correctness added to both; one canonical width.
-**Recommendation.** Migrate `merchant-control-plane` next onto `AppNavigation`; define a separate shared `MarketingHeader` for marketing/app-marketplace/storefront.
+**Recommendation.** Migrate `merchant-web` next onto `AppNavigation`; define a separate shared `MarketingHeader` for marketing/app-marketplace/storefront.
 
 ## D6A — Merchant shell migrated to `AppNavigation` ✅ RESOLVED (2026-06-10)
-**Status.** Closed for merchant. `apps/merchant-control-plane/src/components/AdminShell.tsx` now composes `@letbuyy/ui` `AppNavigation`, the local `Sidebar.tsx` fork is deleted, and the `shell-single` validator fails if the fork returns or the merchant shell drops `AppNavigation`.
+**Status.** Closed for merchant. `apps/merchant_web/src/components/AdminShell.tsx` now composes `@letbuyy/ui` `AppNavigation`, the local `Sidebar.tsx` fork is deleted, and the `shell-single` validator fails if the fork returns or the merchant shell drops `AppNavigation`.
 **Also.** Merchant IA now exposes a first-class Money node routing to `settings/billing`.
 **Verified.** `node scripts/validators/shell-single-validator.mjs` passes.
 
@@ -57,7 +57,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Verified.** `node scripts/validators/token-source-single-validator.mjs`, `node scripts/generators/generate-mobile-tokens.mjs --check`, and `node scripts/generators/generate-design-tokens.mjs --check` pass.
 
 ## D8 — Operations apps default theme changed
-**Decision.** `platform-console` changed from **hardcoded** `theme="dark"` to `defaultTheme="dark"` (still dark, now user-toggleable). `platform-operations-portal` default set to `dark` (was OS/`auto`) for sibling consistency.
+**Decision.** `admin-web` changed from **hardcoded** `theme="dark"` to `defaultTheme="dark"` (still dark, now user-toggleable). `platform-operations-portal` default set to `dark` (was OS/`auto`) for sibling consistency.
 **Reason.** The mandate requires light/dark/system to work in every app; the two sibling operations tools should agree (resolves audit finding THEME-3).
 **Impact.** Console is no longer locked to dark (users can choose); ops defaults dark instead of following OS.
 **Recommendation.** Confirm with the operations team that `dark` is the desired default for both (vs `system`).
