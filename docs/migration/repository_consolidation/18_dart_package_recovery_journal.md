@@ -10,8 +10,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 091e979c |
 | S1 | Recover packages from bundles | COMPLETE | 6d12bfc6 |
-| S2 | Collision evidence and naming decision | COMPLETE | (this commit) |
-| S3 | Import/rename System A's four packages | PENDING | |
+| S2 | Collision evidence and naming decision | COMPLETE | a0330b2d |
+| S3 | Import/rename System A's four packages | COMPLETE | (this commit) |
 | S4 | Import/rename System B's quick-commerce packages | PENDING | |
 | S5 | Workspace membership and path repair | PENDING | |
 | S6 | Make each app resolve/analyze/test | PENDING | |
@@ -213,3 +213,45 @@ Adopting the Phase N brief's proposed target names as-is — no deviation, no al
 Existing `packages/dart/*` names: `letbuyy_core`, `letbuyy_models`, `letbuyy_ui_kit`, `letbuyy_api_client`. Existing app names in the root `workspace:` list: `letbuyy_store` (`apps/merchant_app`), `letbuyy_workspace` (root). None of the 11 new names (`letbuyy_marketplace_{core,models,services,ui_kit}`, `quickcommerce_{api,core,design_system,domain,observability,offline,realtime}`) collide with any existing name, with each other, or with `letbuyy_marketplace` (`apps/customer_app`'s own `name:`) or `letbuyy_admin` (`apps/admin_app`'s own `name:`) — checked directly by string comparison, no overlap.
 
 **S2 verdict: COMPLETE.**
+
+---
+
+## S3 — Import and rename System A's four packages
+
+### Copy
+
+`rsync -a --exclude='.git' --exclude='build' --exclude='.dart_tool' --exclude='node_modules' --exclude='coverage'` from the scratch clone into `packages/dart/marketplace_{core,models,services,ui_kit}/`. Post-copy dart-file counts matched Stage 1's recorded counts exactly (27/52/51/23) and no excluded directory leaked through (checked directly).
+
+### Rename mechanics (per package)
+
+1. `name:` in `pubspec.yaml` — anchored `^name: letbuyy_X$` → `name: letbuyy_marketplace_X`.
+2. Internal dependency keys/paths — anchored `^  letbuyy_X:$` → `  letbuyy_marketplace_X:`, and `^    path: ../X$` → `    path: ../marketplace_X` (4-space indent, distinguishing these from the *unrelated* 2-space-indented `path: any` third-party `path` pub package dependency in `marketplace_services`'s own pubspec — verified indentation byte-by-byte with `sed -n l` before writing the pattern, so the third-party dep was never touched).
+3. `marketplace_core`'s bare `letbuyy_ui_kit: any` (no `path:`, the pre-existing `core ↔ ui_kit` circular reference noted in Stage 1) → `letbuyy_marketplace_ui_kit: any`.
+4. Internal `package:letbuyy_X/` import URIs across each package's own `lib/` — anchored on the full URI prefix including the trailing slash, `sed 's|package:letbuyy_core/|package:letbuyy_marketplace_core/|g'` (and the models/ui_kit equivalents), never a bare substring match. Before: 10 (core) + 42 (models, aggregate across all 4 packages) + 0 (services — nothing self-referenced it) + 4 (ui_kit) occurrences; after: 0 old-name references remained, and the corresponding new-name counts matched exactly (10/42/4).
+5. Renamed each package's top-level library file to match its new name: `letbuyy_core.dart`→`letbuyy_marketplace_core.dart` (and the models/services/ui_kit equivalents).
+
+### A gap the first sed pass missed, caught before committing
+
+Step 4's `package:letbuyy_core/` substitution rewrote the *package-name* portion of each import URI but not the *trailing filename* portion when a file imported the sibling package's own top-level entry point (e.g. `import 'package:letbuyy_core/letbuyy_core.dart';` became `import 'package:letbuyy_marketplace_core/letbuyy_core.dart';` — a URI pointing at a filename that no longer existed after step 5's rename). Found via a direct grep for `letbuyy_marketplace_X/letbuyy_X.dart` patterns across the four packages: 39 occurrences across `marketplace_core`, `marketplace_services`, and `marketplace_ui_kit`. Fixed with a second anchored pass (`letbuyy_marketplace_core/letbuyy_core.dart` → `letbuyy_marketplace_core/letbuyy_marketplace_core.dart`, etc.); a broad final grep for any remaining un-namespaced old top-level filename reference (across all four packages) returned zero. The same two-pass fix was applied to `apps/customer_app`/`apps/admin_app` in the next step, this time correctly on the first pass since the gap was already known.
+
+### Provenance READMEs (Stage 3.4)
+
+Authored `README.md` for all four packages, following the style of Phase M's `apps/customer_app/README.md` — source system/path/HEAD SHA, bundle filename + SHA-256, original package name, and (for `marketplace_core`/`marketplace_models`/`marketplace_ui_kit`) a pointer to the Stage 2 collision evidence so a future unification phase doesn't have to rediscover it.
+
+### `letbuyy_marketplace_services` — bounded compatibility header (Stage 3.7)
+
+Added a doc comment to `lib/letbuyy_marketplace_services.dart`'s `library;` directive stating: BOUNDED COMPATIBILITY PACKAGE, not the canonical service layer, Firebase-coupled, disposition D0_BLOCKED pending D-0, not to be extended or used as a template. Mirrored in the package's `README.md`.
+
+### `apps/customer_app`/`apps/admin_app` pubspec + import rewrites (Stage 3.5/3.6)
+
+Both apps sit at `apps/<app>/` (two levels deep from repo root) — verified by direct path arithmetic, not assumed. Updated both `pubspec.yaml`s' four dependency blocks from `../../packages/{core,models,services,ui_kit}` (nonexistent) to `../../packages/dart/marketplace_{core,models,services,ui_kit}` (the new location), with matching `letbuyy_marketplace_*` dependency keys. Rewrote every `package:letbuyy_{core,models,services,ui_kit}/` import in `lib/` (no `test/` or `tool/` directory exists in either app): **customer_app — 299 occurrences before, 299 after (0 old-name remaining); admin_app — 218 before, 218 after (0 old-name remaining).** The commit diff is exactly symmetric (533 insertions / 533 deletions across 238 files) — confirms pure line-for-line text substitution, no logic touched.
+
+### Observed, not acted on
+
+`packages/dart/marketplace_ui_kit/lib/src/themes/app_theme.dart.broken` — a stray `.broken`-suffixed file present in System A's own source at `be716ae` (not created by this phase, not a `.dart` file so excluded from all dart-file counts, not imported by anything). Copied over verbatim as inherited source; not deleted (outside the brief's exclusion list of `.git`/`build`/`.dart_tool`/`node_modules`/`coverage`, and deleting inherited-but-inert source content is not "renaming," so left alone rather than making an unrequested cleanup call).
+
+### Commits this stage
+
+`b2558ba1` (`marketplace_core`), `6fd28f7f` (`marketplace_models`), `bd698052` (`marketplace_services`), `5aa2407f` (`marketplace_ui_kit`), `889ca97b` (`customer_app`/`admin_app` rewrites). Each verified with `git diff --cached --name-status` before commit (all `create mode` for the four package commits — new content, not a rename within this repo's own history, so `A` not `R` is correct and expected; all `M` for the app-rewrite commit) — no pre-existing dirty file or unrelated path was swept into any of the five commits.
+
+**S3 verdict: COMPLETE.**
