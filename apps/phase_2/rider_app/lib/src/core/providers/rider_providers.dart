@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:agrimore_api/agrimore_api.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_observability/agrimore_observability.dart';
-import 'package:agrimore_offline/agrimore_offline.dart';
-import 'package:agrimore_realtime/agrimore_realtime.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_observability/quickcommerce_observability.dart';
+import 'package:quickcommerce_offline/quickcommerce_offline.dart';
+import 'package:quickcommerce_realtime/quickcommerce_realtime.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +41,7 @@ final riderSessionStoreProvider = Provider<RiderSessionStore>((ref) {
 final riderOfflineStoreProvider = Provider<OfflineStore>((ref) {
   final executor = LazyDatabase(() async {
     final directory = await getApplicationSupportDirectory();
-    final file = File(p.join(directory.path, 'agrimore_rider.sqlite'));
+    final file = File(p.join(directory.path, 'quickcommerce_rider.sqlite'));
     return NativeDatabase.createInBackground(file);
   });
   final store = DriftOfflineStore(executor);
@@ -49,8 +49,8 @@ final riderOfflineStoreProvider = Provider<OfflineStore>((ref) {
   return store;
 });
 
-final riderApiClientProvider = Provider<AgrimoreApiClient>((ref) {
-  return AgrimoreApiClient(
+final riderApiClientProvider = Provider<QuickcommerceApiClient>((ref) {
+  return QuickcommerceApiClient(
     environment: ref.watch(riderEnvironmentProvider).toApiEnvironment(),
     authTokenProvider: ref.watch(riderSessionStoreProvider),
     logger: ref.watch(riderLoggerProvider),

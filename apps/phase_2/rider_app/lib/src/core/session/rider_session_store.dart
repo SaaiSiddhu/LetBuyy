@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:agrimore_api/agrimore_api.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_realtime/agrimore_realtime.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_realtime/quickcommerce_realtime.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract interface class RiderSessionStore
@@ -15,7 +15,7 @@ abstract interface class RiderSessionStore
 final class SecureRiderSessionStore implements RiderSessionStore {
   const SecureRiderSessionStore(this._storage);
 
-  static const _sessionKey = 'agrimore.rider.session.v1';
+  static const _sessionKey = 'quickcommerce.rider.session.v1';
   final FlutterSecureStorage _storage;
 
   @override

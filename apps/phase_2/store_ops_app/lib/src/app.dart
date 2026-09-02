@@ -1,21 +1,21 @@
-import 'package:agrimore_design_system/agrimore_design_system.dart';
+import 'package:quickcommerce_design_system/quickcommerce_design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/router/store_router.dart';
 
-class AgrimoreStoreOpsApp extends ConsumerWidget {
-  const AgrimoreStoreOpsApp({super.key});
+class QuickcommerceStoreOpsApp extends ConsumerWidget {
+  const QuickcommerceStoreOpsApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'Agrimore Store Ops',
+      title: 'Quickcommerce Store Ops',
       debugShowCheckedModeBanner: false,
-      theme: AgrimoreTheme.light(),
-      darkTheme: AgrimoreTheme.dark(),
-      highContrastTheme: AgrimoreTheme.highContrastLight(),
-      highContrastDarkTheme: AgrimoreTheme.highContrastDark(),
+      theme: QuickcommerceTheme.light(),
+      darkTheme: QuickcommerceTheme.dark(),
+      highContrastTheme: QuickcommerceTheme.highContrastLight(),
+      highContrastDarkTheme: QuickcommerceTheme.highContrastDark(),
       themeMode: ThemeMode.system,
       routerConfig: ref.watch(storeRouterProvider),
     );

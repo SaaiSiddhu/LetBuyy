@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:agrimore_domain/agrimore_domain.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/data/store_ops_repositories.dart';

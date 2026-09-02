@@ -7,7 +7,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(
       const ProviderScope(
-        child: AgrimoreRiderApp(),
+        child: QuickcommerceRiderApp(),
       ),
     );
 

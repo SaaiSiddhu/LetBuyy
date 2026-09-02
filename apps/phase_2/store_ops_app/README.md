@@ -23,11 +23,14 @@ canonical — never a bespoke store-ops-only backend.
   identifier and is explicitly out of scope for this phase to rename. If/when
   this app is promoted toward production, renaming the package ID is a
   separate, deliberate decision with its own external-platform cutover.
-- **Internal `agrimore_*` package imports, not yet de-branded:** this app
-  still imports the shared `packages/agrimore_*` Dart packages by their
-  current names (not yet moved into this repository's `packages/dart/` — that
-  is Stage 5 work). A full internal rebrand sweep is deferred until those
-  shared packages have a final home and name.
+- **Internal package imports, de-branded (Phase N):** this app now imports
+  the shared packages from this repository's `packages/dart/quickcommerce_*`
+  (moved and renamed from System B's `packages/agrimore_*` — see
+  `docs/migration/repository_consolidation/18_dart_package_recovery_journal.md`
+  Stage 4). Internal class names, display strings, and local storage/file
+  labels were renamed `Agrimore` → `Quickcommerce` to match; the Android
+  `applicationId`/`namespace` above was deliberately left unchanged (see
+  above) and is tracked as PENDING EXTERNAL in the journal.
 
 ## Provenance
 

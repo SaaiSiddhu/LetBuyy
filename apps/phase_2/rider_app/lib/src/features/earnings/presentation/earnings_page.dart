@@ -1,5 +1,5 @@
-import 'package:agrimore_design_system/agrimore_design_system.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
+import 'package:quickcommerce_design_system/quickcommerce_design_system.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -1,4 +1,4 @@
-import 'package:agrimore_domain/agrimore_domain.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:store_ops_app/src/core/data/store_ops_repositories.dart';
@@ -13,7 +13,7 @@ void main() {
           storeQueueRepositoryProvider
               .overrideWithValue(_FakeStoreQueueRepository()),
         ],
-        child: const AgrimoreStoreOpsApp(),
+        child: const QuickcommerceStoreOpsApp(),
       ),
     );
     await tester.pump();

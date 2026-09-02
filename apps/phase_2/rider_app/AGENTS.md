@@ -16,4 +16,4 @@ Purpose: Local operating rules for `apps/phase_2/rider_app`. Hand-authored, subo
 ## Migration Notes
 
 - Established 2026-09-02 (Phase M, Stage 4) by cross-repository copy from System B (`Ecommerce/LetBuyy/Agrimore/apps/rider_app`) — see `README.md` for full provenance.
-- Not yet a Dart pub workspace member (its `packages/agrimore_*` dependencies are not yet consolidated into this repository) — see the root `pubspec.yaml` comment.
+- 2026-09-03 (Phase N, Stage 4): its `packages/agrimore_*` dependencies were recovered from the Phase M bundle, renamed to `packages/dart/quickcommerce_*`, and this app's own imports repointed at them — see `docs/migration/repository_consolidation/18_dart_package_recovery_journal.md`. Dart pub workspace membership itself is decided in that journal's Stage 5, not assumed here.

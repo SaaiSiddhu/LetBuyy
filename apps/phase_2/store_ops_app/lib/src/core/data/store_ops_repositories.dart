@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:agrimore_api/agrimore_api.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_observability/agrimore_observability.dart';
-import 'package:agrimore_realtime/agrimore_realtime.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_observability/quickcommerce_observability.dart';
+import 'package:quickcommerce_realtime/quickcommerce_realtime.dart';
 
 abstract interface class StoreQueueRepository {
   Future<Result<List<StoreQueueItem>, AppFailure>> listQueue(EntityId storeId);
@@ -87,12 +87,12 @@ final class StoreInventoryCommand {
 
 final class ApiStoreQueueRepository implements StoreQueueRepository {
   ApiStoreQueueRepository({
-    required AgrimoreApiClient api,
+    required QuickcommerceApiClient api,
     required RealtimeClient realtimeClient,
   })  : _api = api,
         _realtimeClient = realtimeClient;
 
-  final AgrimoreApiClient _api;
+  final QuickcommerceApiClient _api;
   final RealtimeClient _realtimeClient;
 
   @override

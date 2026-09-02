@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:agrimore_api/agrimore_api.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_observability/agrimore_observability.dart';
-import 'package:agrimore_realtime/agrimore_realtime.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_observability/quickcommerce_observability.dart';
+import 'package:quickcommerce_realtime/quickcommerce_realtime.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,8 +19,8 @@ final storeTraceFactoryProvider =
     Provider<TraceFactory>((ref) => TraceFactory());
 final storeLoggerProvider = Provider<StructuredLogger>((ref) => _StoreLogger());
 
-final storeApiClientProvider = Provider<AgrimoreApiClient>((ref) {
-  return AgrimoreApiClient(
+final storeApiClientProvider = Provider<QuickcommerceApiClient>((ref) {
+  return QuickcommerceApiClient(
     environment: ref.watch(storeEnvironmentProvider).toApiEnvironment(),
     authTokenProvider: const EmptyApiAuthTokenProvider(),
     logger: ref.watch(storeLoggerProvider),

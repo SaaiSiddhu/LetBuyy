@@ -1,4 +1,4 @@
-import 'package:agrimore_api/agrimore_api.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
 
 final class StoreEnvironment {
   const StoreEnvironment({

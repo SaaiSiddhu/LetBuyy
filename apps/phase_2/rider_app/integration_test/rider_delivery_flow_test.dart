@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_observability/agrimore_observability.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_observability/quickcommerce_observability.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rider_app/src/features/assignment/presentation/assignment_controller.dart';
 import 'package:rider_app/src/features/delivery/presentation/active_delivery_controller.dart';

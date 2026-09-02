@@ -1,22 +1,22 @@
 import 'dart:async';
 
-import 'package:agrimore_api/agrimore_api.dart';
-import 'package:agrimore_domain/agrimore_domain.dart';
-import 'package:agrimore_observability/agrimore_observability.dart';
-import 'package:agrimore_realtime/agrimore_realtime.dart';
+import 'package:quickcommerce_api/quickcommerce_api.dart';
+import 'package:quickcommerce_domain/quickcommerce_domain.dart';
+import 'package:quickcommerce_observability/quickcommerce_observability.dart';
+import 'package:quickcommerce_realtime/quickcommerce_realtime.dart';
 
 import '../session/rider_session_store.dart';
 
 final class RiderAuthRepository implements AuthRepository {
   RiderAuthRepository({
-    required AgrimoreApiClient api,
+    required QuickcommerceApiClient api,
     required RiderSessionStore sessionStore,
     required TraceFactory traceFactory,
   })  : _api = api,
         _sessionStore = sessionStore,
         _traceFactory = traceFactory;
 
-  final AgrimoreApiClient _api;
+  final QuickcommerceApiClient _api;
   final RiderSessionStore _sessionStore;
   final TraceFactory _traceFactory;
   final StreamController<AuthSession?> _sessions =
@@ -98,7 +98,7 @@ final class RiderAuthRepository implements AuthRepository {
 
 final class ApiRiderRepository implements RiderRepository {
   ApiRiderRepository({
-    required AgrimoreApiClient api,
+    required QuickcommerceApiClient api,
     required RealtimeClient realtimeClient,
     required RiderSessionStore sessionStore,
     required TraceFactory traceFactory,
@@ -107,7 +107,7 @@ final class ApiRiderRepository implements RiderRepository {
         _sessionStore = sessionStore,
         _traceFactory = traceFactory;
 
-  final AgrimoreApiClient _api;
+  final QuickcommerceApiClient _api;
   final RealtimeClient _realtimeClient;
   final RiderSessionStore _sessionStore;
   final TraceFactory _traceFactory;
@@ -191,12 +191,12 @@ final class ApiRiderRepository implements RiderRepository {
 
 final class ApiRiderDeliveryRepository implements DeliveryRepository {
   ApiRiderDeliveryRepository({
-    required AgrimoreApiClient api,
+    required QuickcommerceApiClient api,
     required RealtimeClient realtimeClient,
   })  : _api = api,
         _realtimeClient = realtimeClient;
 
-  final AgrimoreApiClient _api;
+  final QuickcommerceApiClient _api;
   final RealtimeClient _realtimeClient;
 
   @override

@@ -6,19 +6,21 @@ version: 0.1.0+1
 environment:
   sdk: ">=3.4.0 <4.0.0"
 
+resolution: workspace
+
 dependencies:
-  agrimore_api:
-    path: ../../packages/agrimore_api
-  agrimore_design_system:
-    path: ../../packages/agrimore_design_system
-  agrimore_domain:
-    path: ../../packages/agrimore_domain
-  agrimore_observability:
-    path: ../../packages/agrimore_observability
-  agrimore_offline:
-    path: ../../packages/agrimore_offline
-  agrimore_realtime:
-    path: ../../packages/agrimore_realtime
+  quickcommerce_api:
+    path: ../../../packages/dart/quickcommerce_api
+  quickcommerce_design_system:
+    path: ../../../packages/dart/quickcommerce_design_system
+  quickcommerce_domain:
+    path: ../../../packages/dart/quickcommerce_domain
+  quickcommerce_observability:
+    path: ../../../packages/dart/quickcommerce_observability
+  quickcommerce_offline:
+    path: ../../../packages/dart/quickcommerce_offline
+  quickcommerce_realtime:
+    path: ../../../packages/dart/quickcommerce_realtime
   dio: ^5.9.2
   drift: ^2.24.0
   flutter:
