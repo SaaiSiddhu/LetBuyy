@@ -46,6 +46,64 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
+  apps/admin_web:
+    dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
+      lucide-react:
+        specifier: ^0.562.0
+        version: 0.562.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.1.18
+      '@types/node':
+        specifier: ^20
+        version: 20.19.33
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.2(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.3.0
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/app-marketplace:
     dependencies:
       '@letbuyy/api-client':
@@ -112,6 +170,94 @@ importers:
       tailwindcss:
         specifier: ^4
         version: 4.1.18
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  apps/customer_web:
+    dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../../packages/checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../../packages/cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../packages/commerce-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../../packages/tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../../packages/theme-engine
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
+      '@vercel/speed-insights':
+        specifier: ^1.3.1
+        version: 1.3.1(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      framer-motion:
+        specifier: ^12.23.26
+        version: 12.34.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      jose:
+        specifier: ^6.1.3
+        version: 6.1.3
+      jsdom:
+        specifier: ^29.1.1
+        version: 29.1.1
+      lucide-react:
+        specifier: ^0.562.0
+        version: 0.562.0(react@19.2.3)
+      next:
+        specifier: 16.1.6
+        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.1
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.1.18
+      '@types/node':
+        specifier: ^20
+        version: 20.19.33
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      eslint:
+        specifier: ^9
+        version: 9.39.2(jiti@2.6.1)
+      eslint-config-next:
+        specifier: 16.1.6
+        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+      tailwindcss:
+        specifier: ^4
+        version: 4.3.0
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -281,7 +427,7 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/merchant-control-plane:
+  apps/merchant_web:
     dependencies:
       '@letbuyy/api-client':
         specifier: workspace:*
@@ -334,65 +480,7 @@ importers:
         version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       tailwindcss:
         specifier: ^4
-        version: 4.1.18
-      typescript:
-        specifier: ^5
-        version: 5.9.3
-
-  apps/platform-console:
-    dependencies:
-      '@letbuyy/api-client':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-client
-      '@letbuyy/auth-core':
-        specifier: workspace:*
-        version: link:../../packages/auth-core
-      '@letbuyy/shared-types':
-        specifier: workspace:*
-        version: link:../../packages/shared-types
-      '@letbuyy/ui':
-        specifier: workspace:*
-        version: link:../../packages/typescript/ui
-      lucide-react:
-        specifier: ^0.562.0
-        version: 0.562.0(react@19.2.3)
-      next:
-        specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-dom:
-        specifier: 19.2.3
-        version: 19.2.3(react@19.2.3)
-      server-only:
-        specifier: ^0.0.1
-        version: 0.0.1
-      zod:
-        specifier: ^4.3.6
-        version: 4.3.6
-    devDependencies:
-      '@tailwindcss/postcss':
-        specifier: ^4
-        version: 4.1.18
-      '@types/node':
-        specifier: ^20
-        version: 20.19.33
-      '@types/react':
-        specifier: ^19
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19
-        version: 19.2.3(@types/react@19.2.14)
-      eslint:
-        specifier: ^9
-        version: 9.39.2(jiti@2.6.1)
-      eslint-config-next:
-        specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4
-        version: 4.1.18
+        version: 4.3.0
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -423,94 +511,6 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
-    devDependencies:
-      '@tailwindcss/postcss':
-        specifier: ^4
-        version: 4.1.18
-      '@types/node':
-        specifier: ^20
-        version: 20.19.33
-      '@types/react':
-        specifier: ^19
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: ^19
-        version: 19.2.3(@types/react@19.2.14)
-      eslint:
-        specifier: ^9
-        version: 9.39.2(jiti@2.6.1)
-      eslint-config-next:
-        specifier: 16.1.6
-        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
-      tailwindcss:
-        specifier: ^4
-        version: 4.1.18
-      typescript:
-        specifier: ^5
-        version: 5.9.3
-
-  apps/storefront-runtime:
-    dependencies:
-      '@letbuyy/api-client':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-client
-      '@letbuyy/auth-core':
-        specifier: workspace:*
-        version: link:../../packages/auth-core
-      '@letbuyy/checkout-core':
-        specifier: workspace:*
-        version: link:../../packages/checkout-core
-      '@letbuyy/cms-core':
-        specifier: workspace:*
-        version: link:../../packages/cms-core
-      '@letbuyy/commerce-core':
-        specifier: workspace:*
-        version: link:../../packages/commerce-core
-      '@letbuyy/shared-types':
-        specifier: workspace:*
-        version: link:../../packages/shared-types
-      '@letbuyy/tenant-core':
-        specifier: workspace:*
-        version: link:../../packages/tenant-core
-      '@letbuyy/theme-engine':
-        specifier: workspace:*
-        version: link:../../packages/theme-engine
-      '@letbuyy/ui':
-        specifier: workspace:*
-        version: link:../../packages/typescript/ui
-      '@vercel/speed-insights':
-        specifier: ^1.3.1
-        version: 1.3.1(next@16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
-      framer-motion:
-        specifier: ^12.23.26
-        version: 12.34.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      jose:
-        specifier: ^6.1.3
-        version: 6.1.3
-      jsdom:
-        specifier: ^29.1.1
-        version: 29.1.1
-      lucide-react:
-        specifier: ^0.562.0
-        version: 0.562.0(react@19.2.3)
-      next:
-        specifier: 16.1.6
-        version: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react:
-        specifier: 19.2.3
-        version: 19.2.3
-      react-dom:
-        specifier: 19.2.3
-        version: 19.2.3(react@19.2.3)
-      server-only:
-        specifier: ^0.0.1
-        version: 0.0.1
-      tailwind-merge:
-        specifier: ^3.4.0
-        version: 3.4.1
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -8318,7 +8318,7 @@ snapshots:
     dependencies:
       uncrypto: 0.1.3
 
-  '@vercel/speed-insights@1.3.1(next@16.1.6(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+  '@vercel/speed-insights@1.3.1(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
     optionalDependencies:
       next: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
