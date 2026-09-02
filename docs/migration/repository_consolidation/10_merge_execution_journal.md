@@ -21,7 +21,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 | S1 | History preservation | **COMPLETE** | (this checkpoint) |
 | S2 | Apply the constitutional amendment | **COMPLETE** | (this checkpoint) |
 | S3 | The six canonical apps | **COMPLETE** | (this checkpoint) |
-| S4 | Phase 2 and supporting apps | PENDING | — |
+| S4 | Phase 2 and supporting apps | **COMPLETE** | (this checkpoint) |
 | S5 | Packages, services, backend (structural only) | PENDING | — |
 | S6 | Workspace and configuration repair | PENDING | — |
 | S7 | Stale path eradication | PENDING | — |
@@ -237,5 +237,41 @@ All six apps established. `apps/` in System C now contains: `customer_app`, `cus
 `node scripts/validate-governance.mjs --plan` re-run after all six moves: exit 0, 111 selected + 1 not_applicable = 112 of 115, unchanged — `--plan` only enumerates validators, so it does not yet expose that `governance-common.mjs`'s path arrays reference the old (now-nonexistent) names; that will only surface when the real gate runs (Stage 8) or once Stage 6 fixes the references, whichever comes first. `CLAUDE.md`'s Canonical Runtime Map updated in place to describe the actual current topology (old names struck through and mapped to new ones) rather than left stale.
 
 **What Stage 3 proves and does not prove:** proves all six app slots have a survivor established on disk, with full history for the three System-C-native ones (`customer_web`/`merchant_app`/`merchant_web`, clean `git mv`, `R100`) and full provenance-documented cross-repo history for the two System-A-sourced ones (`customer_app`/`admin_app`, bundle-backed); proves `customer_app`'s Play Store production identity is byte-for-byte unchanged; proves no donor tree was deleted and no pre-existing dirty file from another session was committed (after the merchant_web incident was fully corrected). **Does not prove** any of the six apps still builds/typechecks/lints after the move (Stage 8) or that the config/validator references to the old names are fixed (Stage 6) or that any donor capability has been integrated (explicitly out of scope this stage, recorded as backlog).
+
+---
+
+## S4 — Phase 2 and supporting apps
+
+**Verdict: COMPLETE.**
+
+### 4.1 — `apps/phase_2/rider_app` and `apps/phase_2/store_ops_app` — checkpoint `a9623d38`
+
+Cross-repository copy from System B (`Ecommerce/LetBuyy/Agrimore/apps/{rider_app,store_ops_app}` @ `20548b8938e2baa9c85b1e8f4ecc1f701999e331`), 74 + 71 files, no `.gitignore` exclusions this time (System B's `.gitignore` pattern for these two apps didn't exclude `key.properties`/`gradlew` the way System A's did — neither app appears to have committed release-signing material at all, consistent with them being pre-release quick-commerce apps).
+
+**De-branding, scoped:** `pubspec.yaml` `name:` fields were already generic (`rider_app`, `store_ops_app`, not `agrimore_rider_app`) and `android:label` was already generic — no change needed there. Only the `pubspec.yaml` `description:` fields explicitly said "Agrimore enterprise..." — updated to LetBuyy quick-commerce framing (pure prose, zero external-identifier risk). **Explicitly left unrenamed, logged as PENDING EXTERNAL in each app's new `README.md`:** `applicationId`/`namespace` (`com.agrimore.rider_app`, `com.agrimore.store_ops_app` — external, potentially-already-deployed identifiers, out of this phase's scope to rename) and the 46 files (grep count, case-insensitive `agrimore`) that still import the shared `packages/agrimore_*` Dart packages by their current names — those packages haven't moved yet (Stage 5), so rebranding these apps' imports ahead of that would break their build. Both apps got a `README.md` stating: NOT production-ready, unassigned owner, `D0_DEPENDENT` backend target, per Stage 4.1's explicit requirement that these apps "must carry a documented readiness status, an owner, and target integrations, and must never be represented as production-ready."
+
+### 4.2 — Classification of every remaining `apps/` runtime
+
+| Runtime | Classification | Reasoning | Action this stage |
+|---|---|---|---|
+| `apps/identity-platform` | **Keep as a justified supporting runtime** | Sole asymmetric token issuer target (ART-05/IDN-R1); Constitution-designated ACTIVE; extremely high blast radius to relocate (every runtime verifies against it) | None — not moved. Stays a top-level `apps/` entry, not physically placed under the `apps/auxiliary/` grouping this phase authorized-but-did-not-execute (see S2) |
+| `apps/marketing-site` | **Keep as a justified supporting runtime** | Constitution-designated ACTIVE public marketing surface; live Next.js app, fully green in `09` (typecheck/lint/test/build all PASS) | None — not moved, same reasoning as `identity-platform` |
+| `apps/app-marketplace` | **Defer under explicit incubator (FROZEN)** | ART-22: de-deployed, reconsidered only at ≈5,000 merchants + real developer demand; the OAuth2/PKCE install-flow seam is kept | None — already correctly FROZEN, not touched |
+| `apps/developer-portal` | **Defer under explicit incubator (FROZEN)** | Same ART-22 trigger as `app-marketplace` | None — already correctly FROZEN, not touched |
+| `apps/theme-marketplace` | **Defer under explicit incubator (FROZEN)** | Same ecosystem-demand trigger (ART-17's third-party-author/app-blocks reopening) | None — already correctly FROZEN, not touched |
+| `apps/platform-operations-portal` | **Merge into `apps/admin_web` (constitutionally pre-decided, gate not yet cleared)** | ART-24: explicitly named "the fold-then-delete loser," MIGRATE-then-DELETE into the console survivor (now `apps/admin_web`, formerly `platform-console`) — but gated on "the refund, maker-checker payout, dispute-log, and KYC-queue smoke path," which requires a live smoke test this phase cannot run (no deploy, no live provider contact permitted) | None — classification recorded, actual merge/delete deferred until the smoke-path gate can be run for real; **not** executed this stage since doing so would touch money/payout-adjacent code without the required proof |
+| `apps/mobile/{shopper-app,operator-app}` | **RESERVED, confirmed still empty** | Constitutional RESERVED tier, must stay empty until a named trigger + human approval | None — re-verified still exactly `runtime.manifest.json` + `AGENTS.md`, untouched |
+
+**"No unexplained folder may remain under `apps/`" — checked.** Every entry under `apps/` as of this stage (`admin_app`, `admin_web`, `app-marketplace`, `customer_app`, `customer_web`, `developer-portal`, `identity-platform`, `marketing-site`, `merchant_app`, `merchant_web`, `mobile/`, `phase_2/`, `platform-operations-portal`, `theme-marketplace`) now has an explicit classification, either from Stage 3 (the six) or the table above.
+
+### 4.3 — `identity-platform`'s realm-separation role
+
+Not touched this stage (no file under `apps/identity-platform` was moved, renamed, or edited). Its sole-issuer role and realm separation are therefore unchanged by construction, not merely asserted.
+
+### What this stage proves and does not prove
+
+**Proves:** every runtime under `apps/` has an explicit, evidenced classification — none is unexplained. The two new `phase_2` apps are on disk with full history preserved (bundle) and are honestly marked non-production. `identity-platform`'s sole-issuer role was not weakened (it was not touched at all).
+
+**Does not prove:** that `platform-operations-portal`'s eventual merge into `admin_web` is safe — that requires the smoke-path gate ART-24 itself names, which this phase cannot run. Does not prove the two `phase_2` apps build (Stage 8 territory, and even then only if `flutter pub get`/`analyze` are run against them specifically). Does not prove the 46-file `agrimore_*` import dependency is otherwise sound — only that it was not touched.
 
 ---
