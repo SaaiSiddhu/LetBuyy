@@ -1,0 +1,17 @@
+name: quickcommerce_api
+description: API contracts and client boundary for the Quickcommerce enterprise rebuild.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  quickcommerce_domain:
+    path: ../quickcommerce_domain
+  quickcommerce_observability:
+    path: ../quickcommerce_observability
+  dio: ^5.9.2
+
+dev_dependencies:
+  test: ^1.25.8

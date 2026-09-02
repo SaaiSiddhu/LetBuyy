@@ -1,0 +1,14 @@
+name: quickcommerce_domain
+description: Pure Dart domain contracts for the Quickcommerce enterprise rebuild.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  quickcommerce_core:
+    path: ../quickcommerce_core
+
+dev_dependencies:
+  test: ^1.25.8
