@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/app_router.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import '../../providers/auth_provider.dart' as app_auth;
 import '../../providers/seller_provider.dart';
 import '../../utils/performance_utils.dart';

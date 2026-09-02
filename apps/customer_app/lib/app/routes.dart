@@ -28,7 +28,7 @@ import '../screens/support/support_conversations_screen.dart';
 import '../screens/reels/reels_feed_screen.dart';
 import '../screens/reels/saved_reels_screen.dart'; // ✅ NEW
 import '../screens/shop/seller_profile_screen.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/search/visual_search_screen.dart';
 import '../screens/loyalty/loyalty_screen.dart';

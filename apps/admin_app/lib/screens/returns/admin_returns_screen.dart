@@ -8,8 +8,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../../app/themes/app_colors.dart';
 
 class AdminReturnsScreen extends StatefulWidget {

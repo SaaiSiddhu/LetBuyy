@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class ProfileMenuItem extends StatelessWidget {
   final IconData icon;

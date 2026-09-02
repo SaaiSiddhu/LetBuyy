@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:confetti/confetti.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 import '../shop/mobile_shop_screen.dart';
 import '../orders/order_details_screen.dart';

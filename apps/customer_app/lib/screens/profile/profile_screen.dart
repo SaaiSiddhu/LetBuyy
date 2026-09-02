@@ -9,13 +9,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
 import '../../providers/auth_provider.dart' as app_auth;
 import '../../widgets/auth_gate.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../../widgets/premium_scaffold.dart';
 
 class ProfileScreen extends StatefulWidget {

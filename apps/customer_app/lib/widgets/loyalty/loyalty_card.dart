@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 class LoyaltyCard extends StatelessWidget {
   final bool compact;

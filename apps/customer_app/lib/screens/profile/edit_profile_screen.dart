@@ -8,9 +8,9 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import '../../../providers/auth_provider.dart' as app_auth;
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
 
 class EditProfileScreen extends StatefulWidget {

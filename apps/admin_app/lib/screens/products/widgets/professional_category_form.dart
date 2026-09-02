@@ -4,7 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 /// Professional image upload card with drag, zoom, and crop preview
 class ProfessionalImageUploadCard extends StatefulWidget {

@@ -7,8 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
 /// Advanced Voice Search Modal with animated visualizer

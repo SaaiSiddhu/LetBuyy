@@ -1,7 +1,7 @@
 // lib/screens/chat/widgets/typing_indicator.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class TypingIndicator extends HookWidget {
   const TypingIndicator({super.key});

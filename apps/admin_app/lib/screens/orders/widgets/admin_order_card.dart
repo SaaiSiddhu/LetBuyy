@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_models/letbuyy_models.dart'; // ✅ ADDED: For strong typing
-import 'package:letbuyy_services/letbuyy_services.dart'; // ✅ ADDED: For theming
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart'; // ✅ ADDED: For strong typing
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart'; // ✅ ADDED: For theming
 
 class AdminOrderCard extends StatelessWidget {
   final OrderModel order; // ✅ Changed from dynamic to OrderModel

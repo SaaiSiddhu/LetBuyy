@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'product_card_horizontal.dart';
 import 'quick_reply_chip.dart';
 import 'typing_indicator.dart';

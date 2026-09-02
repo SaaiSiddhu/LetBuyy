@@ -1,9 +1,9 @@
 // lib/screens/chat/chat_history_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import '../../widgets/premium_scaffold.dart'; 
 
 class ChatHistoryScreen extends StatefulWidget {

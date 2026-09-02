@@ -1,7 +1,7 @@
 // lib/screens/user/shop/widgets/product_image_carousel.dart
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart'; // ✅ KEEP THIS
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class ProductImageCarousel extends StatefulWidget {
   final List<String> images;

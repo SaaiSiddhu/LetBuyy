@@ -11,9 +11,9 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 import '../shop/widgets/product_card.dart';
 import '../shop/widgets/sort_bottom_sheet.dart';

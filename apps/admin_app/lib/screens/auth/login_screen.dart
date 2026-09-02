@@ -15,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 
 import '../../app/app_router.dart';
 import '../../app/themes/app_colors.dart';

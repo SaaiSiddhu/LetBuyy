@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'message_bubble.dart';
 import 'order_card_renderer.dart';
 

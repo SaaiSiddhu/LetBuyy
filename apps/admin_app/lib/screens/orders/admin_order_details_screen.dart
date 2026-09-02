@@ -14,9 +14,9 @@ import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'widgets/order_status_updater.dart';
 
 class AdminOrderDetailsScreen extends StatefulWidget {

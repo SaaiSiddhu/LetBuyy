@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import '../../../providers/auth_provider.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import '../../../app/app_router.dart';
 import 'fee_configuration_screen.dart';
 

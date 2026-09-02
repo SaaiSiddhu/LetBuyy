@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 // ✅ Corrected Relative Imports
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'add_edit_app_update_dialog.dart';
 import 'app_update_card.dart';
 

@@ -10,9 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Assume these exist in your project, otherwise replace with standard imports
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 
 // --- MODELS ---
 

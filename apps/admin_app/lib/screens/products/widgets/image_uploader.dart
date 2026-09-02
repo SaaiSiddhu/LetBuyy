@@ -7,9 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 class ImageUploader extends StatefulWidget {
   final List<String> imageUrls;

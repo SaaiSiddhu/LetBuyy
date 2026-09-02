@@ -14,14 +14,14 @@ dependencies:
     sdk: flutter
   
   # Internal packages
-  letbuyy_core:
-    path: ../../packages/core
-  letbuyy_models:
-    path: ../../packages/models
-  letbuyy_services:
-    path: ../../packages/services
-  letbuyy_ui_kit:
-    path: ../../packages/ui_kit
+  letbuyy_marketplace_core:
+    path: ../../packages/dart/marketplace_core
+  letbuyy_marketplace_models:
+    path: ../../packages/dart/marketplace_models
+  letbuyy_marketplace_services:
+    path: ../../packages/dart/marketplace_services
+  letbuyy_marketplace_ui_kit:
+    path: ../../packages/dart/marketplace_ui_kit
 
   # State Management
   provider: ^6.1.2

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart'; // ✅ Using shared Cyan theme
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart'; // ✅ Using shared Cyan theme
 import 'package:provider/provider.dart';
 import 'package:letbuyy_admin/providers/auth_provider.dart';
 

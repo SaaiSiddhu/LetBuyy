@@ -2,7 +2,7 @@
 // Amazon/Flipkart-style expandable accordion section
 
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class ExpandableSection extends StatefulWidget {
   final String title;

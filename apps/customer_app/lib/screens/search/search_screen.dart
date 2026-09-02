@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'mobile_search_screen.dart';
 import 'web_search_screen.dart';
 import 'desktop_search_screen.dart';

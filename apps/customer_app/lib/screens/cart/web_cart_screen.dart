@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'widgets/cart_item_card.dart';
 import 'widgets/cart_summary.dart';
 import 'widgets/empty_cart.dart';

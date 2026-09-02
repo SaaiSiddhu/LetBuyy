@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Provider for inline sponsored products in marketplace

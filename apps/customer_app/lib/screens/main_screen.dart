@@ -8,14 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 // --- Theme & Routes ---
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
 // --- Providers ---
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
 // --- Screen Imports ---
 import 'home/home_screen.dart';

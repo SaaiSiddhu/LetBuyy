@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/auth_gate.dart';
 import 'mobile_cart_screen.dart';

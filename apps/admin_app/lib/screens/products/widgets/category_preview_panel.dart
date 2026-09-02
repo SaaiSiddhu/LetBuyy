@@ -4,7 +4,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 /// Preview panel that shows exactly how the category will appear in the marketplace
 class CategoryPreviewPanel extends StatelessWidget {

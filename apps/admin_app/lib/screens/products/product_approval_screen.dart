@@ -8,10 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
-import 'package:letbuyy_services/letbuyy_services.dart'; // ✅ For ThemeProvider
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart'; // ✅ For ThemeProvider
 
 class ProductApprovalScreen extends StatefulWidget {
   const ProductApprovalScreen({super.key});

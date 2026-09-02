@@ -1,4 +1,4 @@
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 // apps/marketplace/lib/screens/support/support_conversations_screen.dart
 // 📬 SUPPORT CONVERSATIONS SCREEN
 // Shows user's chat history with support team
@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
-import 'package:letbuyy_services/letbuyy_services.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../../providers/auth_provider.dart';
 import 'support_chat_screen.dart';
 import '../../widgets/premium_scaffold.dart';

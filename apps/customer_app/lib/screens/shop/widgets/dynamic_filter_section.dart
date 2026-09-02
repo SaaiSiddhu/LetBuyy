@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 /// A widget that displays dynamically aggregated attribute filters
 class DynamicFilterSection extends StatelessWidget {

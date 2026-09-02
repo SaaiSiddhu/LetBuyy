@@ -12,8 +12,8 @@ import 'package:http/http.dart' as http;
 
 // App Imports
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
-import 'package:letbuyy_core/letbuyy_core.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import '../../providers/auth_provider.dart';
 

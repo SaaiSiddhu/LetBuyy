@@ -1,7 +1,7 @@
 // lib/screens/chat/widgets/product_card_horizontal.dart
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class ProductCardHorizontal extends StatelessWidget {
   final Map<String, dynamic> product;
