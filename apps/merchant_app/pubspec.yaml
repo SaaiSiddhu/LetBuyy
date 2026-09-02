@@ -15,13 +15,13 @@ dependencies:
   
   # Internal packages
   letbuyy_core:
-    path: ../../../packages/dart/core
+    path: ../../packages/dart/core
   letbuyy_api_client:
-    path: ../../../packages/dart/api_client
+    path: ../../packages/dart/api_client
   letbuyy_models:
-    path: ../../../packages/dart/models
+    path: ../../packages/dart/models
   letbuyy_ui_kit:
-    path: ../../../packages/dart/ui_kit
+    path: ../../packages/dart/ui_kit
 
   # State Management
   provider: ^6.1.2
