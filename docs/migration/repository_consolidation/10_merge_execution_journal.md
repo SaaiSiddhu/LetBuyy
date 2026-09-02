@@ -19,7 +19,7 @@ continues from there. **Do not redo a COMPLETE stage.**
 |---|---|---|---|
 | S0 | Preflight and resume detection | **COMPLETE** | (journal-only commit, see below) |
 | S1 | History preservation | **COMPLETE** | (this checkpoint) |
-| S2 | Apply the constitutional amendment | PENDING | — |
+| S2 | Apply the constitutional amendment | **COMPLETE** | (this checkpoint) |
 | S3 | The six canonical apps | PENDING | — |
 | S4 | Phase 2 and supporting apps | PENDING | — |
 | S5 | Packages, services, backend (structural only) | PENDING | — |
@@ -131,5 +131,52 @@ No mismatch occurred at any point — the stage's own hard-stop condition ("a re
 **Proves:** both nested repositories' complete commit history (all local branches, tags, and the `origin` remote-tracking ref) is captured in a verified, non-corrupt bundle outside the repository tree; every currently-uncommitted tracked change and every currently-untracked file in both repositories is captured in a form proven byte-for-byte reconstructible; the credential-containment edits (Phase 0.5–0.7's `--dart-define` rewrites) are included in these patches since they are part of each repo's current uncommitted diff. **From this point forward, deleting `.git` or the working tree in either A or B is recoverable**, which is the precondition Stage 9 requires before any deletion.
 
 **Does not prove:** that the bundles or copies are safe from a *whole-machine* loss (disk failure, accidental deletion of the home directory) — everything above is on the same physical disk as the repositories themselves. The brief's "ideally... at least two locations (local + one off-machine copy)" from `05_safety_and_recovery_plan.md` was **not** executed this stage — no off-machine copy was made (would require contacting an external service, out of scope for this phase's tools). **This is a residual, disclosed risk**, not a blocker for this phase's own acceptance criteria (which only require the on-disk recovery proof), but the CTO should independently copy `~/LetBuyy-history-preservation-2026-08-29/` off this machine before Stage 9 runs.
+
+---
+
+## S2 — Apply the constitutional amendment
+
+**Verdict: COMPLETE.** `00b_topology_amendment_draft.md` read in full this stage (220 lines). Its Signature Block (7 items) is **unsigned (all ☐)** — confirmed by direct read. Per this stage's explicit instruction ("If the signature block is NOT completed, apply the amendment anyway but record in the journal that it is applied under the owner's standing six-app decision... and flag it for signature in the final summary. Do not block the phase on it"), the amendment was applied. **Flagged here and will be flagged again in the final report: the owner's formal signature on `00b` is still outstanding.**
+
+### Gap resolutions taken (00b's recommended option in each case, per this stage's instruction)
+
+| Gap | Option taken | Alternative(s) not taken |
+|---|---|---|
+| 1 — deprecated-alias carve-out | The carve-out sentence, verbatim in spirit, added to `CLAUDE.md`'s Deprecated Runtime Policy and root `AGENTS.md`'s `ARCH-R10` | N/A — only one form offered |
+| 2 — SUPPORTING term collision | **Option B** — renamed the *new* directory, not the existing tier. Chosen name: **`apps/auxiliary/`** (picked from Option B's three examples — `auxiliary`/`platform`/`other` — `platform` rejected as too close to `apps/platform-console`/`apps/platform-operations-portal`; `other` rejected as too vague for a constitutional document) | Option A (rename the existing SUPPORTING tier to PLATFORM/EMBEDDED — would touch `CLAUDE.md`, this document, `04`, `07`, and any validator storing the literal "SUPPORTING," not swept); Option C (keep both, disambiguate forever) |
+| 3 — `services/lcis-api` / LCIS tooling | **Option B** — new TOOLING classification, zero files moved. Added `toolingRoots` export to `governance-common.mjs` (`services/lcis-api`, `tools/graph-server`, `tools/central-intelligence`, all 19 `packages/lcis-*`, enumerated and re-confirmed via `ls -d packages/lcis-*` this session — matches 00b's corrected count of 19, not the original brief's 14) | Option A (relocate `services/lcis-api` to `tools/lcis-api` — real `git mv` + unmeasured reference-breakage risk) |
+| 4 — new structural tiers | Both `apps/phase_2/*` and `apps/auxiliary/` defined in `CLAUDE.md` as neither ACTIVE/RESERVED/FROZEN, explicitly not subject to the RESERVED-must-stay-empty rule | N/A — only one form offered |
+
+### Files amended (Class-A constitutional change, executed under this Phase M brief's explicit, itemized instruction)
+
+1. **`GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`** — appended a new `## 16. Amendment Log` section after §15 Sign-off, using the Constitution's own §14-defined amendment mechanism (named trigger, what changes, what does not, execution status, signature status, evidence). **Deliberately did not rewrite any existing Article's body text** (ART-01…ART-24, the Never-Build List, Rules R-1…R-23) — a surgical append preserves every existing citation/cross-reference elsewhere in the repo (validators, other docs) that might reference specific Article text or line numbers, and keeps the change reviewable as a single, dated, self-contained diff. The amendment explicitly states it does **not** touch ART-04's actual runtime/service topology, the scale envelope, the Never-Build List, or any money/tenancy/identity/checkout/theme Article or Rule — scoped strictly to `apps/*` naming and grouping, consistent with Stage 5's later prohibition on backend model decisions.
+2. **`CLAUDE.md`** — added the Gap 1 carve-out sentence to the Deprecated Runtime Policy section; added a new `## Six-App Target Topology` section, explicitly labeled "authorized, not yet executed" and explicitly noting the Canonical Runtime Map above it still describes the **current, live** topology (no confusion between authorized-destination and current-state).
+3. **Root `AGENTS.md`** — added the same carve-out note to `ARCH-R10`, with a pointer to `CLAUDE.md` and `00b` for the full target-topology text (root `AGENTS.md` stays the operating-rules layer; the fuller narrative lives in `CLAUDE.md` and the amendment draft, avoiding duplicating the same prose in three places).
+4. **`scripts/validators/governance-common.mjs`** — added one new export, `toolingRoots` (Gap 3), immediately after `canonicalRuntimeRoots`. **Purely additive:** no existing array was modified, no validator currently imports or enforces against it — this stage establishes the classification only, consistent with 00b's Option B description ("zero risk of breaking a path reference... no source file moves").
+
+### What was deliberately NOT done this stage, and why
+
+**The 359-occurrence config/manifest path-string sweep (00b's §61) was NOT mechanically executed this stage.** Reasoning: those 359 occurrences are references to the *current* runtime path names (e.g. `apps/merchant-control-plane`), destined to become the *new* six-app names (e.g. `apps/merchant_web`) — but Stage 3 (the actual `git mv` of application directories) has not run yet at this point in the phase. Rewriting the config/manifest path strings now, before the directories physically move, would point every one of those 18 files at paths that do not exist on disk — breaking path-existence checks (e.g. `production-topology.json`'s sibling-manifest-file checks) and very likely failing this very stage's own acceptance bar, `--plan` enumerating cleanly (§2.4, verified below). This is also the reading consistent with `00b`'s own amendment text (point 6): "must be updated in the **same change series** that performs the rename... must not land before `governance-common.mjs`'s canonical arrays are updated" — i.e. config-update and rename are meant to move together, not config-first. **Deferred to Stage 3 (the app moves) / Stage 6 (workspace and configuration repair)**, where it belongs, and will be executed there against the real post-rename paths.
+
+**Count re-verification, discrepancy disclosed:** re-ran a pattern-based sweep of the same 18 files this session (script in the transcript, matching both full paths and short runtime names). Result: **406**, not 00b's reported 359. The gap is most likely because my regex is cruder — it counts every substring match (e.g. any occurrence of "identity-platform" anywhere in a file, including inside unrelated devDependency names or comments), where 00b's original count came from manually opening each file and counting only meaningful path/label fields. Spot check: `config/governance/web-v1-scope-registry.json` (my 94 vs 00b's 66) and `apps/merchant-control-plane/package.json` (my 14 vs 00b's 2) show the largest gaps, consistent with over-counting via broad substring matching. **Not reconciled — stated plainly per this engagement's established pattern, not silently accepted or silently overridden.** Since neither total is being acted on mechanically this stage (the sweep itself is deferred, per above), this discrepancy is not currently load-bearing; whichever stage executes the real rename must re-count against the actual file contents at that time, not trust either number here.
+
+**`config/env/staging-production-secret-matrix.json`'s external cascade** — recorded here as **PENDING EXTERNAL**, not attempted: this file's app-path → environment-variable-name mapping (e.g. `apps/merchant-control-plane` → `MERCHANT_CONTROL_PLANE_INTERNAL_SECRET`) will, when the rename executes, need a corresponding rename of the *actual secret variable* in whatever external platform holds it (Cloudflare/Vercel dashboards) — this repository has no access to those and this phase does not attempt it, per the phase's explicit tool boundary (no contacting Cloudflare/Vercel/etc.).
+
+### 2.2 — RESERVED roots
+
+No RESERVED root was filled, emptied, or otherwise touched this stage. No-op, confirmed by scope (only the four files listed above were edited).
+
+### 2.4 — Required check
+
+```
+$ node scripts/validate-governance.mjs --plan
+```
+Exit code **0**. **111 SELECTED + 1 NOT_APPLICABLE = 112 of 115** files enumerated — identical to the pre-amendment baseline recorded in `09_pre_restructure_build_baseline.md` and every prior phase of this engagement. `--plan` enumerates cleanly after this stage's edits.
+
+### What this stage proves and does not prove
+
+**Proves:** the Constitution, `CLAUDE.md`, and root `AGENTS.md` now formally authorize the six-app target topology, the Gap 1–4 resolutions (Option B in both cases), and the TOOLING classification, as a dated, evidenced, self-contained amendment that does not alter any money/tenancy/identity/checkout/theme law and does not resolve D-0–D-7 or survivor selection. `--plan` still enumerates all 115 validator files with the same 111/1/3-skipped-missing profile as before — the amendment did not break governance-file discovery.
+
+**Does not prove:** that the real (non-`--plan`) governance gate still passes — not run this stage, deferred to Stage 8 per the overall plan. Does not prove the 359 (or 406) config/manifest occurrences are individually correct or complete — that sweep is deferred, not verified against a rename that hasn't happened. Does not constitute ARB ratification in the human sense the Constitution's own §12 describes — this amendment is applied under the explicit, itemized delegation in the Phase M brief, with the outstanding `00b` signature disclosed, not a substitute for it.
 
 ---

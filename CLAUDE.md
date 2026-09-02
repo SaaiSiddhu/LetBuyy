@@ -109,7 +109,19 @@ Do not recreate or reference deprecated app aliases as active topology:
 - `apps/mobile/operator-team-app`
 - `apps/storefront-runtime/consumer-storefront`
 
+**Carve-out (Constitution amendment, 2026-09-02):** `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, and `apps/merchant_web` are approved six-app-model names, not instances of the deprecated `apps/admin`/`apps/merchant` aliases above — the prohibition names only the exact historical paths `apps/admin` and `apps/merchant`, never any of the four `_app`/`_web`-suffixed names. `scripts/validators/governance-common.mjs:203`'s `startsWithPrefix()` already treats this boundary correctly (`"apps/admin_app".startsWith("apps/admin/")` is `false`); this sentence closes a prose ambiguity, not a code defect.
+
 Historical references may remain only under `docs/archive/`.
+
+## Six-App Target Topology (Constitution amendment, 2026-09-02 — authorized, not yet executed)
+
+> The Canonical Runtime Map above still describes the **current, live** topology. Nothing below has been renamed on disk; Stage 3 of the repository-consolidation merge executes it. This section records what the amendment **authorizes as the destination**, per `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (Gaps 1–4), applied under the owner's standing six-app product/channel decision. **The owner's Signature Block in `00b` is not yet completed** — this amendment proceeds under the original brief's explicit instruction to apply it anyway and flag the missing signature, not to block on it.
+
+- **Six product-facing app roots** (target names; each maps from an existing ACTIVE/SUPPORTING runtime, survivor TBD per `04_application_survivor_scorecard.md` — not decided by this amendment): `apps/customer_app`, `apps/customer_web`, `apps/merchant_app`, `apps/merchant_web`, `apps/admin_app`, `apps/admin_web`.
+- **`apps/phase_2/*`** — holds product capabilities not yet part of the six-app core (currently `rider_app`, `store_ops_app`, donor-only from System B). Not ACTIVE, not RESERVED (holds real source — RESERVED's "must stay empty" rule does not apply here), not FROZEN. Authorizes no new backend service; any backend work routes through the D-0-selected canonical backend.
+- **The auxiliary tier** (Gap 2, Option B) — `apps/auxiliary/` is the chosen name for the directory grouping non-six-app-model runtimes (`marketing-site`, `identity-platform`-class). This is a **directory grouping, not a new authority tier**: membership does not change a runtime's ACTIVE/RESERVED/FROZEN status. The existing constitutional **SUPPORTING** tier (`apps/mobile/merchant-app`, `apps/platform-console`) is unchanged and keeps its name — Option A (renaming the existing tier) and Option C (keep both names, disambiguate forever) were considered and not chosen; see `00b` for the full menu.
+- **TOOLING classification** (Gap 3, Option B) — `services/lcis-api`, `tools/graph-server`, `tools/central-intelligence`, and all 19 `packages/lcis-*` packages are the Central Intelligence System's own dev-time tooling: non-deployed, non-commerce, named in none of the four topology classes above. Recorded as the `toolingRoots` export in `scripts/validators/governance-common.mjs`. Option A (relocating `services/lcis-api` under `tools/`) was considered and not chosen — zero files moved, classification-only.
+- **Neither `apps/phase_2/*` nor `apps/auxiliary/` is subject to the RESERVED-must-stay-empty rule.** Conflating "not one of the six core names" with "must be empty" is a category error this amendment exists to prevent.
 
 ## Required Validation
 

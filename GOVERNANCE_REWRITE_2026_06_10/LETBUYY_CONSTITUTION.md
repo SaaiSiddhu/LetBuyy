@@ -468,4 +468,30 @@ The following are carried forward from the evidence base as **UNVERIFIED**. They
 >
 > This Constitution **absorbs and supersedes** `V1` + `FREEZE` (now Articles ART-01…ART-24), **revokes the constitutional claims of the generated `AGENTS.md`** (a map, not law), and **rejects the maximalist 1M-merchant plan** (archived). It is the single authoritative statement of **what LetBuyy is.** Nothing overrides it. It changes only by ARB amendment at a named, evidenced trigger.
 
-*End of the LetBuyy Constitution. Status: RATIFIED, SUPREME, 2026-06-10. Authority hierarchy position: 1 (apex). Evidence pinned at `stepup/main` @ `5cf9e64e`.*
+---
+
+## 16. Amendment Log
+
+Per §14.1, each entry below records a ratified amendment as a dated, self-contained change: the named trigger, exactly what changes, and — critically — what does not.
+
+### Amendment 1 — Six-App Target Topology and Structural Tiers (2026-09-02)
+
+**Named trigger.** The owner's explicit, evidenced business decision that LetBuyy, the Firebase LetBuyy app, the Start_Up platform, and Agrimore are **one product** — Marketplace, Storefront, and Quick-commerce are channels, not companies — issued as a standing decision governing the repository-consolidation program ("LETBUYY REPOSITORY CONSOLIDATION — PHASE M", 2026-09-02). This is a named business-model decision, not anticipation of future scale, and satisfies §14.1.2's trigger requirement.
+
+**What changes.**
+1. The canonical **application-layer naming and grouping** admits six product-facing roots as the target destination: `apps/customer_app`, `apps/customer_web`, `apps/merchant_app`, `apps/merchant_web`, `apps/admin_app`, `apps/admin_web`. These supersede the specific `apps/*` path names in `CLAUDE.md`'s Canonical Runtime Map wherever they eventually conflict, once executed.
+2. **Deprecated-alias carve-out:** `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, `apps/merchant_web` are declared approved six-app-model names, not instances of the deprecated `apps/admin`/`apps/merchant` aliases (ART-10 of `LETBUYY_AGENTS_V2.md` / `governance-common.mjs`'s `deprecatedAppAliasRoots`). The path-matching helper (`startsWithPrefix()`) was already boundary-safe; this closes a prose ambiguity only.
+3. **Two new structural tiers**, neither ACTIVE, RESERVED, nor FROZEN, and neither subject to the RESERVED "must stay empty" rule: `apps/phase_2/*` (product capabilities outside the six-app core, e.g. `rider_app`/`store_ops_app`) and `apps/auxiliary/` (a directory grouping for real, governed, non-six-app-name runtimes such as `marketing-site` and `identity-platform` — an organizational label, not an authority tier; the existing SUPPORTING tier, §"Canonical Runtime Map" of `CLAUDE.md`, keeps its name and its two members unchanged).
+4. **TOOLING classification:** `services/lcis-api`, `tools/graph-server`, `tools/central-intelligence`, and the 19 `packages/lcis-*` packages are recognized as dev-time tooling for the Central Intelligence System — non-deployed, non-commerce, previously unnamed in any governing document. Recorded as `governance-common.mjs`'s `toolingRoots` export.
+
+**What does NOT change.** This amendment is scoped strictly to `apps/*` naming and grouping. It does **not** alter: ART-04's actual runtime/service topology (the modular monolith + four satellites remains exactly as defined — no service is added, extracted, or removed); the scale envelope (§6); the Never-Build List (§10); any money, tenancy, identity, checkout, or theme Article (ART-05, ART-08…ART-18) or Rule (R-1…R-23); the winner-selection registry; or any backend/data-model decision. It does **not** resolve founder decisions D-0 (canonical backend) through D-7, does not select a survivor codebase for any of the six product slots, and does not decide the fee or merchant-of-record model — all remain explicitly open.
+
+**Execution status.** As of this amendment's date, **no directory has been renamed on disk.** The six names, the two new tiers, and the TOOLING classification are authorized destinations; a subsequent, separately-checkpointed stage of the same repository-consolidation program performs the actual `git mv` operations, together with the config/validator path-string updates the rename requires (a rename must never land without its config update in the same change, per this Article's own governance principle, ART-02/R-18).
+
+**Signature status — disclosed, not concealed.** The formal Signature Block in `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (7 items: the six names, the carve-out, Gap 2/3 resolutions, Gap 4 tiers, the config-sweep obligation, and explicit non-approval of D-0–D-7/survivor/fee) is **not yet completed** as of this amendment. This amendment is applied under the owner's standing six-app decision from the originating Phase M brief, which explicitly directs: "If the signature block is NOT completed, apply the amendment anyway but record in the journal that it is applied under the owner's standing six-app decision... and flag it for signature in the final summary. Do not block the phase on it." The outstanding signature is flagged here as a genuine gap, for the owner's formal sign-off, not silently treated as closed.
+
+**Evidence.** `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (the full amendment draft, Gaps 1–4, the 359-occurrence config sweep, Blast Radius and Rollback sections); `docs/migration/repository_consolidation/04_application_survivor_scorecard.md` and `07_final_path_mapping.md` (survivor evidence, not a verdict); `docs/migration/repository_consolidation/09_pre_restructure_build_baseline.md` (pre-amendment build baseline, for attributing any future regression); `docs/migration/repository_consolidation/10_merge_execution_journal.md` (this amendment's own execution record, Stage 2).
+
+---
+
+*End of the LetBuyy Constitution. Status: RATIFIED, SUPREME, 2026-06-10, amended 2026-09-02 (Amendment 1, §16). Authority hierarchy position: 1 (apex). Evidence pinned at `stepup/main` @ `5cf9e64e`.*

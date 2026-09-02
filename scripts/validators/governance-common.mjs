@@ -115,6 +115,36 @@ export const canonicalRuntimeRoots = [
   ...canonicalServiceRoots,
 ];
 
+// TOOLING class (Constitution amendment, 2026-09-02, Gap 3 / Option B): the Central
+// Intelligence System's own implementation — dev-time tooling, non-deployed,
+// non-commerce. Named here so it is never misclassified as governed commerce
+// infrastructure by a rule that assumes "everything under services/ or packages/ is
+// backend." Not wired into any enforcement path in this change; classification only.
+export const toolingRoots = [
+  "services/lcis-api",
+  "tools/graph-server",
+  "tools/central-intelligence",
+  "packages/lcis-adapters",
+  "packages/lcis-business",
+  "packages/lcis-cli",
+  "packages/lcis-core",
+  "packages/lcis-decision",
+  "packages/lcis-engineering",
+  "packages/lcis-execution",
+  "packages/lcis-governance",
+  "packages/lcis-live",
+  "packages/lcis-mcp",
+  "packages/lcis-operations",
+  "packages/lcis-orchestration",
+  "packages/lcis-performance",
+  "packages/lcis-pr-check",
+  "packages/lcis-quality",
+  "packages/lcis-rootcause",
+  "packages/lcis-security",
+  "packages/lcis-tracking",
+  "packages/lcis-twin",
+];
+
 export const domainPackageRoots = [
   "packages/commerce-core",
   "packages/checkout-core",
