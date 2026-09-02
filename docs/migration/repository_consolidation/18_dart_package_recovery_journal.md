@@ -8,8 +8,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
-| S0 | Preflight and resume | COMPLETE | (this commit) |
-| S1 | Recover packages from bundles | PENDING | |
+| S0 | Preflight and resume | COMPLETE | 091e979c |
+| S1 | Recover packages from bundles | COMPLETE | (this commit) |
 | S2 | Collision evidence and naming decision | PENDING | |
 | S3 | Import/rename System A's four packages | PENDING | |
 | S4 | Import/rename System B's quick-commerce packages | PENDING | |
@@ -105,3 +105,69 @@ letbuyy_ui_kit:     path: ../../../packages/dart/ui_kit
 Created `~/letbuyy-pkg-recovery-scratch/` (outside the repository), empty, for Stage 1 bundle clones.
 
 **S0 verdict: COMPLETE.**
+
+---
+
+## S1 — Recover the packages from the bundles
+
+Bundles treated as read-only throughout; nothing under `~/LetBuyy-history-preservation-2026-08-29/` was modified.
+
+### Clones
+
+```
+$ git clone ~/LetBuyy-history-preservation-2026-08-29/system-A-letbuyy.bundle ~/letbuyy-pkg-recovery-scratch/system-A
+$ git -C ~/letbuyy-pkg-recovery-scratch/system-A rev-parse HEAD
+be716ae18b5f1e25e1266f963ab5c0907928db26   (matches CTO baseline exactly)
+
+$ git clone ~/LetBuyy-history-preservation-2026-08-29/system-B-agrimore.bundle ~/letbuyy-pkg-recovery-scratch/system-B
+$ git -C ~/letbuyy-pkg-recovery-scratch/system-B rev-parse HEAD
+20548b8938e2baa9c85b1e8f4ecc1f701999e331   (matches CTO baseline exactly, branch foundation-rebuild)
+```
+
+Both clones are outside the repository (`~/letbuyy-pkg-recovery-scratch/`), never registered as a repo submodule/worktree, and their own `.git` directories will never be copied into the repository (Stage 3/4 will exclude them explicitly).
+
+### System A — `packages/{core,models,services,ui_kit}` (the declared four; no others present under `packages/`)
+
+| Package | `name:` | dart files | pubspec sha256 |
+|---|---|---|---|
+| `core` | `letbuyy_core` | 27 | `08bb251b1a546b4faf46cccfdf9e24523d180d2e6bde8ac08a243d9920c503ea` |
+| `models` | `letbuyy_models` | 52 | `708d8e66d0fc611a9c9c4be092b074c01197204100d3a61ade294631e2bb8b2f` |
+| `services` | `letbuyy_services` | 51 | `4fb7900a3e8ce29f4644f5c37cc97f65c75f76aa63bee3a7f658307096543055` |
+| `ui_kit` | `letbuyy_ui_kit` | 23 | `9ecfafb974af3303f9cc0880aaaf69cfb7624c4ffa1b79b8fed60f1d8baa0878` |
+
+Internal dependency edges (all `path:`-based except one, noted): `models → core`; `services → core, models`; `ui_kit → core, models`; **`core → ui_kit` via a bare version constraint (`letbuyy_ui_kit: any`, no `path:`)** — this is a genuine circular dependency (`core ↔ ui_kit`) already present in System A's own source, directly contradicting `core`'s own pubspec comment ("Core should NOT depend on other internal packages ... to avoid circular dependencies. It is the foundation layer."). This is inherited source, not introduced by this phase, and resolving the circularity would be an architectural change beyond renaming — **out of scope, carried forward as-is, flagged here and in the Stage 8 report.** Dart pub workspaces can resolve mutual workspace-member dependencies at the package-graph level (no `path:` required within a workspace — name-based resolution against `resolution: workspace` members), so this is not expected to block `pub get`; it may still surface as an analyzer/import cycle if `core`'s code actually imports `ui_kit` symbols, to be confirmed in Stage 6.
+
+`services` also declares three bare `any`-constraint third-party deps with no version pin (`crypto: any`, `url_launcher: any` — duplicate of the pinned `url_launcher: ^6.3.1` above it, `video_player: any`, `package_info_plus: any` — duplicate of pinned `^8.1.2`-class entry in `core`, `path: any`) plus `letbuyy_ui_kit: any`. Pre-existing sloppiness in System A's own pubspec, not touched beyond the package-name rename (touching version constraints would be scope creep beyond "make it resolvable via rename").
+
+`services` is unambiguously Firebase-coupled (`firebase_core`, `firebase_auth`, `cloud_firestore`, `cloud_functions`, `firebase_storage`, `firebase_messaging`, `firebase_analytics`, plus `razorpay_flutter`, `google_sign_in`) — confirms the brief's D0_BLOCKED framing; will get the bounded-compatibility header comment in Stage 3.7.
+
+### System B — declared six, plus one transitive addition
+
+Declared by both `phase_2` apps: `agrimore_api`, `agrimore_design_system`, `agrimore_domain`, `agrimore_observability`, `agrimore_offline`, `agrimore_realtime`. Walked every one of their pubspecs for `path:` dependencies:
+
+- `agrimore_api → agrimore_domain, agrimore_observability`
+- `agrimore_design_system → agrimore_domain`
+- `agrimore_domain → agrimore_core` ← **not one of the declared six. Added to the closure.**
+- `agrimore_observability → agrimore_domain`
+- `agrimore_offline → agrimore_domain`
+- `agrimore_realtime → agrimore_domain, agrimore_observability`
+
+`agrimore_core`'s own pubspec has zero internal `path:` dependencies (only pub.dev packages: `equatable`, `intl`, `uuid`, `crypto`, `hive`) — the closure terminates here. **`agrimore_services`, `agrimore_testing`, `agrimore_ui` (present in System B's `packages/` but not referenced by any of the seven above) are confirmed NOT part of the closure and will NOT be imported.**
+
+| Package | `name:` | dart files | pubspec sha256 |
+|---|---|---|---|
+| `agrimore_api` | `agrimore_api` | 6 | `a01f7124ec3291688d47b0b0b285de892cb8bd33eaffaaad70f0a9ef37858166` |
+| `agrimore_core` **(closure addition)** | `agrimore_core` | 23 | `03e9d7ab4ac1c137ce1723e8f82186ca376184e19e1dc282a91f6cbdb07586e4` |
+| `agrimore_design_system` | `agrimore_design_system` | 17 | `7edc1f324b2bcbb73df7744ef148c2e8732c42ed1ea2a841496920e5f8cc13f3` |
+| `agrimore_domain` | `agrimore_domain` | 28 | `c3b74ebe6fdf34b84a9755ee886fa67f9362fc2fdf1857cd3c94d1844eaaad6f` |
+| `agrimore_observability` | `agrimore_observability` | 4 | `e8a7c45692d3a7755b5d16c73e36841e4f408c9106b3d660fef466230bd4d6b3` |
+| `agrimore_offline` | `agrimore_offline` | 4 | `23a94c4ba7cabb0f49f42bd7b6e0beffd47810d22d91489897ec31ffa8c53d28` |
+| `agrimore_realtime` | `agrimore_realtime` | 3 | `dfaecc630959e4e52e98c162da60f9b3ba22816af755ed7128a7bdcbd9a307b8` |
+
+**Total closure: 7 System B packages (6 declared + 1 transitive), 11 packages total this phase (4 + 7).**
+
+### Exclusions confirmed
+
+Neither clone's copy step (Stage 3/4) will include `.git`, `build/`, `.dart_tool/`, `node_modules/`, or `coverage/` — verified none of the 11 source package directories currently contain a checked-in `build/`/`.dart_tool/`/`coverage/` (both source repos' own `.gitignore` excludes these; only fresh local pub-get/build artifacts would create them, and neither clone has been built).
+
+**S1 verdict: COMPLETE.**
