@@ -52,6 +52,8 @@ workspace:
   - apps/customer_app
   - apps/admin_app
   - packages/dart/quickcommerce_core
+  - apps/phase_2/rider_app
+  - apps/phase_2/store_ops_app
 
 
 
