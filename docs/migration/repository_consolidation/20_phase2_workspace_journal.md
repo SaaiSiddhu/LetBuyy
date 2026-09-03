@@ -12,8 +12,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Confirm both conflicts | COMPLETE | 75017a24 |
 | S2 | Resolve flutter_secure_storage | COMPLETE | a8bfd8c9 |
 | S3 | Resolve quickcommerce_core | COMPLETE | 41eec308 |
-| S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | (this commit) |
-| S5 | Verification | PENDING | |
+| S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | a31cea8c |
+| S5 | Verification | COMPLETE | (this commit) |
 | S6 | Documentation | PENDING | |
 
 ---
@@ -299,3 +299,77 @@ Both apps' registrant files gained a `PathProviderPlugin` registration under uni
 `84263494`.
 
 **S4 verdict: COMPLETE.**
+
+---
+
+## S5 — Verification
+
+### 5.1 — `flutter pub get` at the workspace root
+
+**PASS.** `Got dependencies!`, no errors.
+
+### 5.2 — Per app: analyze + test
+
+| App | `flutter analyze` | `flutter test` |
+|---|---|---|
+| `apps/merchant_app` | **PASS** — 80 pre-existing issues (deprecations, 2 unused-var/element warnings), byte-identical set to the Phase N baseline, none new | **PASS — 172/172**, exact baseline match |
+| `apps/customer_app` | **PASS — No issues found!** | NOT RUN — no `test/` directory exists in this app (a fact, not a gap) |
+| `apps/admin_app` | **PASS — No issues found!** | NOT RUN — same reason |
+| `apps/phase_2/rider_app` (now a real workspace member, not standalone) | **PASS — 1 issue** (`test/widget_test.dart:16:35`, `The name 'MyApp' isn't a class` — pre-existing scaffold boilerplate, see below). Note: the `flutter_lints` include-not-found warning present when this app was analyzed *standalone* in Phase N is now gone — as a workspace member, `flutter_lints` resolves through the shared workspace's unified package config even though `rider_app` itself never declared it as a dependency | **PARTIAL — 2 of 3 test files pass** (`test/app_test.dart`, `test/rider_delivery_flow_test.dart`); `test/widget_test.dart` fails to compile for the same pre-existing reason |
+| `apps/phase_2/store_ops_app` | **PASS — 1 issue**, identical shape to `rider_app` | **PARTIAL — 2 of 3 pass**, identical shape |
+
+**The pre-existing `test/widget_test.dart` failure in both `phase_2` apps is confirmed unchanged and out of scope** — Flutter's default `flutter create` scaffold boilerplate (`await tester.pumpWidget(const MyApp())`, referencing a placeholder class that was never either app's real class), present since Phase M's original establishment commit (`a9623d38`), untouched by any phase since. Recorded, not fixed, per the brief's own explicit instruction.
+
+### 5.3 — Every `packages/dart` member analyzed directly (not inferred from consuming apps)
+
+This is a genuinely new check this phase performs that Phase N's own Stage 6 never did — Phase N only analyzed the *consuming apps*, never each package in isolation. Running it surfaced two real, pre-existing defects (both mechanical consequences of Phase N's copy, not of this phase's dependency work):
+
+| Package | First run | After fix |
+|---|---|---|
+| `packages/dart/core`, `api_client`, `models`, `ui_kit` | No issues found! | (unchanged, already clean) |
+| `packages/dart/quickcommerce_{domain,observability,design_system,offline,api,realtime,core}` (all 7) | No issues found! | (unchanged, already clean) |
+| `packages/dart/marketplace_core` | 3 issues (an `analysis_options.yaml` include-not-found warning + 2 `deprecated_member_use` info) | **No issues found!** |
+| `packages/dart/marketplace_models` | 1 issue (same include-not-found warning) | **No issues found!** |
+| `packages/dart/marketplace_services` | 16 issues (same include-not-found warning class, plus unused-field/variable/element warnings — genuine pre-existing code-quality findings in the untouched source, not fixed, not related to either conflict) | Reduced to the same warnings only once the include resolved correctly — **No issues found!** (the workspace's own root `analysis_options.yaml` apparently applies a looser rule set than whatever fallback applies when the include target is missing) |
+| `packages/dart/marketplace_ui_kit` | **20 issues, 17 of them real compile ERRORS** — first by name: `error • Target of URI doesn't exist: '../../letbuyy_ui_kit.dart' ... packages/dart/marketplace_ui_kit/lib/src/widgets/custom_app_bar.dart:2:8 • uri_does_not_exist` | **No issues found!** |
+
+**Root cause 1 (the 17 errors in `marketplace_ui_kit`):** three files (`custom_app_bar.dart`, `custom_bottom_nav.dart`, `glass_container.dart`) each had a stale *relative* import, `'../../letbuyy_ui_kit.dart'` — left over from Phase N's Stage 3 rename sweep, which only fixed `package:`-URI-style imports and never checked for this relative-URI variant. Fixed to `'../../letbuyy_marketplace_ui_kit.dart'`, matching the actual (Phase N-renamed) library filename.
+
+**Root cause 2 (the include-not-found warning in `marketplace_core`/`models`/`services`/`ui_kit`, all four):** each `analysis_options.yaml` declared `include: ../../analysis_options.yaml` (2 levels up) — copied verbatim from System A's own repo, where `packages/<name>/` was one directory level shallower than this repository's `packages/dart/<name>/`. Off by exactly the depth difference introduced by the `dart/` nesting this repo uses. Corrected to `../../../analysis_options.yaml` (3 levels), matching `packages/dart/core`'s own already-correct pattern.
+
+**Both fixed** (commit `c87d9f00`) — see that commit and the corresponding source diff for the exact one-line-per-file changes. Neither fix touched a dependency version, added/removed a package, or touched workspace membership; both are pure import/config-path corrections, squarely inside "complete a mechanical consequence of prior work," not scope creep into new functionality. Re-verified after the fix: all four `marketplace_*` packages analyze with zero issues; `apps/customer_app`/`apps/admin_app` (both consumers) re-confirmed clean; `apps/merchant_app` re-confirmed 172/172.
+
+### 5.4 — The real governance gate
+
+```
+$ node scripts/validate-governance.mjs
+...
+TOTALS: PASS=105 FAIL=6 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
+Governance gate lane FAILED with 6 problem(s):
+- foundation-antifabrication-gate.mjs: FAIL (exit 1)
+- validate-design-system.mjs: FAIL (exit 1)
+- sequential-migration-validator.mjs: FAIL (exit 1)
+- raw-error-message-validator.mjs: FAIL (exit 1)
+- environment-validator.mjs: FAIL (exit 1)
+- branch-lag-guard-validator.mjs: FAIL (exit 1)
+```
+
+**105 PASS / 6 FAIL — exact match to the known-good baseline, on the first run this phase** (unlike Phase N, which needed 2 rounds). First failure by name: `foundation-antifabrication-gate.mjs` (validator 1/111), identical to baseline. All 6 failures are the same 6 pre-existing/known ones — none newly caused by this phase's dependency-conflict resolution or the two package-fix commits.
+
+**`node_modules` restoration:** confirmed all 5 sampled directories (`apps/{customer,merchant,admin}_web`, `services/api-gateway`, `packages/typescript/ui`) deleted by the gate run, then restored via `pnpm install --frozen-lockfile`. `git status -- pnpm-lock.yaml` — **zero diff, byte-unchanged.**
+
+### 5.5 — TypeScript regression spot-check
+
+```
+pnpm --filter @letbuyy/customer-web typecheck  -> tsc --noEmit, 0 errors
+pnpm --filter @letbuyy/merchant-web typecheck  -> tsc --noEmit, 0 errors
+pnpm --filter @letbuyy/admin-web typecheck     -> tsc --noEmit, 0 errors
+```
+
+All three unchanged from `12_final_verification.md`'s post-Phase-M green state and Phase N's own re-check — this phase touched zero TypeScript/web files.
+
+### Commits this stage
+
+`c87d9f00` (the two discovered-and-fixed package defects — the only source changes Stage 5 itself produced; everything else was measurement).
+
+**S5 verdict: COMPLETE.**
