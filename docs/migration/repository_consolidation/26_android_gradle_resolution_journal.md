@@ -11,7 +11,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight, baseline reconciliation, rollback reference | COMPLETE | (this commit) |
 | S1 | Determine empirically which files Gradle evaluates | COMPLETE | (this commit) |
 | S2 | The applicationId divergence | COMPLETE | (this commit) |
-| S3 | Delete the dead duplicates | PENDING | |
+| S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
 | S4 | Align the toolchain | PENDING | |
 | S5 | The stray gradle.properties, and a real APK | PENDING | |
 | S6 | Verification | PENDING | |
@@ -238,3 +238,46 @@ Only admin_app has a real `applicationId` divergence between its two live-candid
 `namespace` and `applicationId` are two different Gradle/AGP concerns — `namespace` controls where the generated `R`/`BuildConfig` Java/Kotlin classes resolve (must match the physical package directory), `applicationId` controls the Play Store / installed-package identity (can be anything). admin_app's `namespace 'com.letbuyy.letbuyy'` correctly matches its physical `kotlin/com/letbuyy/letbuyy/` source directory — changing it to `com.letbuyy.admin` without also physically moving every Kotlin file to a new package directory would break compilation. The app's own README already documents this as a known, accepted leftover. **Not touched, per that prior decision and this stage's own confirming evidence.**
 
 **S2 verdict: COMPLETE. admin_app's applicationId divergence resolved with three independent, agreeing evidence sources — no blocker, no ambiguity.**
+
+---
+
+## S3 — Delete the dead duplicates
+
+Every file below carries an S1-proven DEAD verdict (the three `.kts` files per app) or is dead by definition (`.backup`, evaluated by nothing). Deleted one at a time, with an explicit literal absolute path (`rm /full/path/to/file` — no variables, no wildcards, no `find -delete`), each preceded by a recorded hash/line-count/identity snapshot and followed immediately by a fresh `./gradlew --dry-run help` run plus a re-read of the surviving live `app/build.gradle`'s `applicationId`, asserted against the Stage 0 record.
+
+### customer_app (4 files, in deletion order)
+
+| File | Lines | SHA-256 (matched Stage 0 record before deletion) | namespace / applicationId (pre-deletion) |
+|---|---|---|---|
+| `app/build.gradle.kts` | 153 | `a05e109a4d81b1171165f51f9a7dac9f10cd056c7cbc20e618a82ec11659608a` | `com.letbuyy.letbuyy` / `com.letbuyy.letbuyy` |
+| `build.gradle.kts` (root) | 24 | `6a26dba2cb8dfba1e74f540b0d17a89d96c1301d3c3bfda14348bed257fddcba` | n/a (no identity fields) |
+| `settings.gradle.kts` | 52 | `6daf905fb1cef2268bdb5366abb5108a2b55d9a20fc6d1de06bf08fe9b06769e` | n/a |
+| `app/build.gradle.kts.backup` | 47 | `9312de6baf0d966c0609ca37948a85e2e0a437d63e60434a1735845d86abb23e` | `com.agrimate.agrimate` / `com.agrimate.agrimate` |
+
+After each of the 4 deletions: `./gradlew --dry-run help` → `BUILD SUCCESSFUL in 1s, 4 actionable tasks: 4 up-to-date` every time. `app/build.gradle`'s `applicationId "com.letbuyy.letbuyy"` re-read and confirmed unchanged after every single deletion — never differed from the Stage 0 record at any point. `app/build.gradle`'s own SHA-256 also re-verified unchanged (`e7af5ec9...`) after the root `build.gradle.kts` deletion, as an extra check.
+
+Final state: exactly one Gradle file per level survives — `build.gradle` (root), `settings.gradle`, `app/build.gradle`.
+
+### admin_app (4 files, in deletion order — `app/build.gradle.kts` first, since it is the file carrying the wrong, customer_app identity and the highest-priority deletion)
+
+| File | Lines | SHA-256 (matched Stage 0 record before deletion) | namespace / applicationId (pre-deletion) |
+|---|---|---|---|
+| `app/build.gradle.kts` | 153 | `a05e109a4d81b1171165f51f9a7dac9f10cd056c7cbc20e618a82ec11659608a` (byte-identical to customer_app's own file) | `com.letbuyy.letbuyy` / **`com.letbuyy.letbuyy`** (the wrong value) |
+| `build.gradle.kts` (root) | 24 | `6a26dba2cb8dfba1e74f540b0d17a89d96c1301d3c3bfda14348bed257fddcba` | n/a |
+| `settings.gradle.kts` | 52 | `6daf905fb1cef2268bdb5366abb5108a2b55d9a20fc6d1de06bf08fe9b06769e` | n/a |
+| `app/build.gradle.kts.backup` | 47 | `9312de6baf0d966c0609ca37948a85e2e0a437d63e60434a1735845d86abb23e` | `com.agrimate.agrimate` / `com.agrimate.agrimate` |
+
+After deleting `app/build.gradle.kts` — the dangerous file — both apps were re-checked (not just admin_app): admin_app's surviving `app/build.gradle` reads `applicationId "com.letbuyy.admin"` (correct), and customer_app's own `app/build.gradle` was independently re-read in the same command and still reads `applicationId "com.letbuyy.letbuyy"` (unaffected, as expected — these are separate Gradle projects — but checked anyway given the stakes). After all 4 deletions: `BUILD SUCCESSFUL` every time, `applicationId` confirmed `com.letbuyy.admin` throughout, never `com.letbuyy.letbuyy`.
+
+Final state: exactly one Gradle file per level survives — `build.gradle` (root), `settings.gradle`, `app/build.gradle`.
+
+### Final identity confirmation, both apps, after all 8 deletions
+
+```
+$ grep -n 'applicationId "com' apps/admin_app/android/app/build.gradle
+32:        applicationId "com.letbuyy.admin"
+$ grep -n 'applicationId "com' apps/customer_app/android/app/build.gradle
+32:        applicationId "com.letbuyy.letbuyy"
+```
+
+**S3 verdict: COMPLETE. All 8 dead files deleted (4 per app), each individually recorded and each followed by a real Gradle configuration success plus an applicationId assertion. Neither app's identity ever moved from its Stage 0 recorded value at any point during deletion.**
