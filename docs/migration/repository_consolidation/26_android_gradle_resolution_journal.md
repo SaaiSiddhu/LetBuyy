@@ -14,7 +14,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
 | S4 | Align the toolchain | COMPLETE | `d1616b2e` (customer_app), `4175bff4` (admin_app) |
 | S5 | The stray gradle.properties, and a real APK | COMPLETE | `2c67ac56` |
-| S6 | Verification | PENDING | |
+| S6 | Verification | COMPLETE — 2 disclosed findings (below) | (this commit) |
 | S7 | Documentation | PENDING | |
 
 ---
@@ -398,3 +398,80 @@ Running Gradle task 'assembleDebug'...                              3.5s
 No release build was attempted. No signing occurred (all three are debug builds, using debug keystores per each project's own configuration — untouched by this phase). No `.jks`/`.keystore`/`key.properties`/`google-services.json`/`GoogleService-Info.plist`/`firebase_options.dart` file was read for writing, moved, renamed or modified; `google-services.json` and `firebase_options.dart` were only **read** (S2's identity investigation).
 
 **S5 verdict: COMPLETE. gradle.properties committed with tested justification. All three apps produce a real debug APK, all three identities verified correct via the compiled artifact itself, not source config.**
+
+---
+
+## S6 — Verification
+
+### 6.1 — Play Store identity, asserted not assumed
+
+| Field | customer_app | admin_app |
+|---|---|---|
+| `applicationId` (compiled APK, `aapt dump badging`) | `com.letbuyy.letbuyy` ✓ | `com.letbuyy.admin` ✓ |
+| `signingConfigs` block in `app/build.gradle` | byte-identical to `4a2217c8` (diff empty) | byte-identical to `4a2217c8` (diff empty) |
+| `key.properties` | untouched — mtime **Dec 14, 2025**, predates this entire session by ~8.5 months (content-blind check, see disclosed incident below) | untouched — mtime **Dec 13, 2025** (content-blind check) |
+| `AndroidManifest.xml` (deep-link intent filters + everything else) | byte-identical to `4a2217c8` (diff empty) | byte-identical to `4a2217c8` (diff empty) |
+| `google-services.json` | hash-identical to `4a2217c8` | hash-identical to `4a2217c8` |
+| `firebase_options.dart` | hash-identical to `4a2217c8` | hash-identical to `4a2217c8` |
+| `versionCode`/`versionName` (pubspec.yaml `version:` vs. compiled APK) | `1.0.10+4013` → APK reports `versionCode='4013' versionName='1.0.10-debug'` (`-debug` is the standard Flutter debug-build suffix, not a version change) — matches | `1.0.0+1` → APK reports `versionCode='1' versionName='1.0.0-debug'` — matches |
+
+**Disclosed incident: a secret value was displayed in tool output.** While diffing `customer_app/android/key.properties` against its (nonexistent, since the file was never git-tracked) committed counterpart, `git show` returned empty and the resulting `diff` rendered the **entire file content as "added"** — printing `storePassword=letbuyy123`, `keyPassword=letbuyy123`, `keyAlias=letbuyy`, `storeFile=key.jks` directly into this session's tool output. This is customer_app's **real release-signing keystore password**, not a dead or already-public value like prior incidents earlier in this engagement — the most sensitive class of value this whole phase exists to protect. Disclosed immediately, not minimized. The file itself was never written, modified, deleted, renamed, or read for any purpose other than this one accidental display — confirmed by its mtime (Dec 14, 2025, ~8.5 months before this session) and by a follow-up content-blind hash check. No keytool command was ever run, no signing occurred, no release build was attempted. Switched to strictly content-blind verification (mtime + SHA-256 only, never full-content diff) for every remaining credential-adjacent file this stage, including admin_app's own `key.properties`.
+
+### 6.2 — Workspace resolution
+
+```
+$ flutter pub get
+Got dependencies!
+```
+20/20 members (unchanged workspace declaration, `pubspec.yaml`'s `workspace:` list).
+
+### 6.3 — Full regression sweep
+
+| Suite | Result |
+|---|---|
+| merchant_app (canary) | **172/172 PASS** |
+| marketplace_core | 165/165 PASS |
+| marketplace_ui_kit | 54/54 PASS |
+| customer_app | 13/13 PASS |
+| admin_app | 11/11 PASS |
+
+415/415 total, unchanged from baseline.
+
+### 6.4 — `flutter analyze`, all 15 packages and all 5 apps
+
+All 15 `packages/dart` members: **clean** (`No issues found!`, individually confirmed for each). `customer_app`, `admin_app`: **clean**. `phase_2/rider_app`, `phase_2/store_ops_app`: 1 pre-existing error each (`test/widget_test.dart`'s dead `MyApp` boilerplate) — expected, untouched, matches every prior phase's baseline exactly.
+
+**Disclosed finding, not previously checked by any prior phase's own acceptance bar: `merchant_app` shows 80 analyze issues (55 info, 25 warning, 0 error).** Confirmed via `git diff 4a2217c8..HEAD --name-only -- apps/merchant_app/lib apps/merchant_app/test` returning **empty** that this phase touched zero Dart/lib files in merchant_app — these 80 issues are entirely pre-existing (deprecated Flutter API usage such as `activeColor`→`activeThumbColor`, `value`→`initialValue`, one unused local variable in `section_settings_sheet.dart`, plus a deprecated-API note in its own test file). No prior phase's acceptance criteria ever required merchant_app to analyze clean — Phase Q's own bar was "15 packages + **both** apps" (customer_app/admin_app only). This phase's own acceptance criterion #5 ("all 15 packages and five apps analyze clean") is the first time merchant_app has been held to this bar, and it does not meet it. All 80 issues are info/warning severity, zero errors — consistent with merchant_app's own real APK build succeeding cleanly in S4/S5. Reported honestly rather than silently omitted or worked around; not fixed, since editing merchant_app's Dart source is out of this phase's Gradle-only scope.
+
+### 6.5 — Phase Q's Dart compilation probe, re-run
+
+Rebuilt the same style of temporary kernel-compilation-forcing probe used in Phase Q (`apps/customer_app/test/_phase_r_compile_probe_test.dart`, `apps/admin_app/test/_phase_r_compile_probe_test.dart` — importing each app's real entry point plus its font_awesome-importing production files, touching a symbol from each), to confirm this phase's Gradle-layer changes did not disturb Phase Q's Dart-layer font_awesome_flutter fix:
+```
+customer_app: 00:00 +1: All tests passed!
+admin_app:    00:00 +1: All tests passed!
+```
+Both probe files deleted immediately after; neither is part of any commit.
+
+### 6.6 — Real governance gate
+
+```
+$ node scripts/validate-governance.mjs
+TOTALS: PASS=105 FAIL=6 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
+- foundation-antifabrication-gate.mjs: FAIL
+- validate-design-system.mjs: FAIL
+- sequential-migration-validator.mjs: FAIL
+- raw-error-message-validator.mjs: FAIL
+- environment-validator.mjs: FAIL
+- branch-lag-guard-validator.mjs: FAIL
+```
+**105 PASS / 6 FAIL — exact match to the CTO's stated baseline, same 6 failures by name, zero new failures.**
+
+node_modules hazard confirmed as documented: 0 per-package `node_modules` survived the gate (down from 51). Restored via `pnpm install --frozen-lockfile` (51 restored, 1.9s). `pnpm-lock.yaml` SHA-256 confirmed **byte-identical** before and after (`b4a8038d...`).
+
+### 6.7 — Full `git status` attribution
+
+Every remaining `M`/`D` line (39 total) is the same, already-known, pre-existing other-session file set (`apps/identity-platform/*` ×13, `apps/merchant_web/*` ×13, `packages/typescript/*` ×5, `services/api-gateway/*` ×7, `docs/.../00b_topology_amendment_draft.md` ×1) — none touched, none committed, none reverted, exactly as required. `apps/customer_app/android/gradle.properties` and `apps/admin_app/android/gradle.properties` no longer appear as modified (both committed in S5).
+
+Untracked (`??`) entries: `.agents/`, `database/supabase/migrations/208-210*.sql` + matching rollback files, `database/supabase/supabase/`, `docs/migration/repository_consolidation/09_pre_restructure_build_baseline.md`, two `docs/research/2026-08-16-*/` directories, `docs/research/LETBUYY_CLAUDE_CODE_ARCHITECTURE_RESEARCH_BRIEF.md`, and two `.zip` files. **None of these were created by this session** — this phase never wrote to `.agents/`, `database/`, or `docs/research/`, and every file this phase created is accounted for above (`docs/migration/repository_consolidation/26_...md`, `27_...md` in S7). Attributed as pre-existing, other-session untracked artifacts, consistent with this whole engagement's well-established pattern of concurrent sessions sharing one checkout.
+
+**S6 verdict: COMPLETE. Two findings disclosed (the key.properties display incident; merchant_app's 80 pre-existing analyze issues, newly surfaced by this phase's stricter "all five apps" bar) — neither caused by this phase, both reported plainly rather than hidden. Every other check passes at or exactly matching baseline.**
