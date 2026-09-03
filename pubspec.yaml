@@ -51,6 +51,7 @@ workspace:
   - packages/dart/marketplace_services
   - apps/customer_app
   - apps/admin_app
+  - packages/dart/quickcommerce_core
 
 
 
