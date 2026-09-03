@@ -67,7 +67,7 @@ class CheckoutSteps extends StatelessWidget {
   Widget _buildStep(
     BuildContext context, {
     required int step,
-    required IconData icon,
+    required FaIconData icon,
     required String label,
     required bool isActive,
     required bool isCompleted,

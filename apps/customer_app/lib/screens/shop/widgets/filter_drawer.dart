@@ -181,14 +181,14 @@ class _FilterDrawerState extends State<FilterDrawer> {
     // 1. Price (always first)
     _sections.add(_FilterSection(
       title: 'Price',
-      icon: FontAwesomeIcons.indianRupeeSign,
+      icon: FontAwesomeIcons.indianRupeeSign.data,
       type: _FilterType.price,
     ));
 
     // 2. Rating
     _sections.add(_FilterSection(
       title: 'Rating',
-      icon: FontAwesomeIcons.star,
+      icon: FontAwesomeIcons.star.data,
       type: _FilterType.rating,
     ));
 
@@ -196,7 +196,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
     if (_availableDiscounts.isNotEmpty) {
       _sections.add(_FilterSection(
         title: 'Discount',
-        icon: FontAwesomeIcons.percent,
+        icon: FontAwesomeIcons.percent.data,
         type: _FilterType.discount,
       ));
     }
@@ -204,7 +204,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
     // 4. Deals toggle (always show)
     _sections.add(_FilterSection(
       title: 'Deals',
-      icon: FontAwesomeIcons.fire,
+      icon: FontAwesomeIcons.fire.data,
       type: _FilterType.deals,
     ));
 
@@ -227,20 +227,20 @@ class _FilterDrawerState extends State<FilterDrawer> {
 
   IconData _getAttributeIcon(String key) {
     final k = key.toLowerCase();
-    if (k.contains('color') || k.contains('colour')) return FontAwesomeIcons.palette;
-    if (k.contains('size')) return FontAwesomeIcons.ruler;
-    if (k.contains('ram') || k.contains('memory')) return FontAwesomeIcons.memory;
-    if (k.contains('storage') || k.contains('disk')) return FontAwesomeIcons.hardDrive;
-    if (k.contains('material') || k.contains('fabric')) return FontAwesomeIcons.shirt;
-    if (k.contains('screen') || k.contains('display')) return FontAwesomeIcons.display;
-    if (k.contains('processor') || k.contains('cpu')) return FontAwesomeIcons.microchip;
-    if (k.contains('battery')) return FontAwesomeIcons.batteryFull;
-    if (k.contains('brand')) return FontAwesomeIcons.tag;
-    if (k.contains('weight')) return FontAwesomeIcons.weightScale;
-    if (k.contains('connectivity') || k.contains('wifi')) return FontAwesomeIcons.wifi;
-    if (k.contains('camera')) return FontAwesomeIcons.camera;
-    if (k.contains('type') || k.contains('category')) return FontAwesomeIcons.layerGroup;
-    return FontAwesomeIcons.sliders;
+    if (k.contains('color') || k.contains('colour')) return FontAwesomeIcons.palette.data;
+    if (k.contains('size')) return FontAwesomeIcons.ruler.data;
+    if (k.contains('ram') || k.contains('memory')) return FontAwesomeIcons.memory.data;
+    if (k.contains('storage') || k.contains('disk')) return FontAwesomeIcons.hardDrive.data;
+    if (k.contains('material') || k.contains('fabric')) return FontAwesomeIcons.shirt.data;
+    if (k.contains('screen') || k.contains('display')) return FontAwesomeIcons.display.data;
+    if (k.contains('processor') || k.contains('cpu')) return FontAwesomeIcons.microchip.data;
+    if (k.contains('battery')) return FontAwesomeIcons.batteryFull.data;
+    if (k.contains('brand')) return FontAwesomeIcons.tag.data;
+    if (k.contains('weight')) return FontAwesomeIcons.weightScale.data;
+    if (k.contains('connectivity') || k.contains('wifi')) return FontAwesomeIcons.wifi.data;
+    if (k.contains('camera')) return FontAwesomeIcons.camera.data;
+    if (k.contains('type') || k.contains('category')) return FontAwesomeIcons.layerGroup.data;
+    return FontAwesomeIcons.sliders.data;
   }
 
   @override
@@ -300,7 +300,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
-            child: const Icon(FontAwesomeIcons.filter, color: Colors.white, size: 16),
+            child: Icon(FontAwesomeIcons.filter.data, color: Colors.white, size: 16),
           ),
           const SizedBox(width: 14),
           Expanded(

@@ -554,7 +554,7 @@ class _HoverableLinkState extends State<_HoverableLink> {
 
 // Social Icon Button with hover effect
 class _SocialIconButton extends StatefulWidget {
-  final IconData icon;
+  final FaIconData icon;
   const _SocialIconButton({required this.icon});
 
   @override

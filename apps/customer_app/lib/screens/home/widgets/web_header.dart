@@ -325,7 +325,7 @@ class _WebHeaderState extends State<WebHeader> {
                       onTap: _showAddressSelectorPopup, // ✅ FIXED: Method now exists
                       child: Row(
                         children: [
-                          Icon(FontAwesomeIcons.locationDot, size: 13, color: colors.subText),
+                          Icon(FontAwesomeIcons.locationDot.data, size: 13, color: colors.subText),
                           const SizedBox(width: 6),
                           Text(
                             "Deliver to: $displayText",
@@ -339,14 +339,14 @@ class _WebHeaderState extends State<WebHeader> {
                 const Spacer(),
                 _HeaderLink(
                   text: 'My Profile',
-                  icon: FontAwesomeIcons.user,
+                  icon: FontAwesomeIcons.user.data,
                   colors: colors,
                   onTap: () => _navigate(context, const ProfileScreen()), // ✅ FIXED: _navigate exists
                 ),
                 _verticalDivider(colors), // ✅ FIXED: _verticalDivider exists
                 _HeaderLink(
                   text: 'My Orders',
-                  icon: FontAwesomeIcons.boxOpen,
+                  icon: FontAwesomeIcons.boxOpen.data,
                   colors: colors,
                   onTap: () => _navigate(context, const OrdersScreen()),
                 ),
@@ -355,7 +355,7 @@ class _WebHeaderState extends State<WebHeader> {
                   builder: (context, wishlist, _) {
                     return _HeaderLink(
                       text: 'Wishlist (${wishlist.itemCount})',
-                      icon: FontAwesomeIcons.solidHeart,
+                      icon: FontAwesomeIcons.solidHeart.data,
                       colors: colors,
                       accentColor: AppColors.error,
                       onTap: () => _navigate(context, const WishlistScreen()),
@@ -390,7 +390,7 @@ class _WebHeaderState extends State<WebHeader> {
                   child: Image.asset(
                     'assets/icons/logo_icon.png',
                     height: 48,
-                    errorBuilder: (ctx, e, st) => Icon(FontAwesomeIcons.bagShopping, size: 36, color: colors.accent),
+                    errorBuilder: (ctx, e, st) => Icon(FontAwesomeIcons.bagShopping.data, size: 36, color: colors.accent),
                   ),
                 ),
                 const SizedBox(width: 36),
@@ -430,7 +430,7 @@ class _WebHeaderState extends State<WebHeader> {
                             Padding(
                               padding: const EdgeInsets.only(left: 18, right: 10),
                               child: Icon(
-                                FontAwesomeIcons.magnifyingGlass,
+                                FontAwesomeIcons.magnifyingGlass.data,
                                 size: 16,
                                 color: _searchFocusNode.hasFocus
                                     ? colors.accent
@@ -514,7 +514,7 @@ class _WebHeaderState extends State<WebHeader> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _ActionIcon(
-                      icon: FontAwesomeIcons.robot,
+                      icon: FontAwesomeIcons.robot.data,
                       label: 'AI Chat',
                       colors: colors,
                       onTap: () => _navigate(context, const AIChatScreen()),
@@ -522,7 +522,7 @@ class _WebHeaderState extends State<WebHeader> {
                     ),
                     const SizedBox(width: 20),
                     _ActionIcon(
-                      icon: FontAwesomeIcons.bell,
+                      icon: FontAwesomeIcons.bell.data,
                       label: 'Alerts',
                       colors: colors,
                       badgeCount: 2,
@@ -532,7 +532,7 @@ class _WebHeaderState extends State<WebHeader> {
                     Consumer<CartProvider>(
                       builder: (context, cart, _) {
                         return _ActionIcon(
-                          icon: FontAwesomeIcons.cartShopping,
+                          icon: FontAwesomeIcons.cartShopping.data,
                           label: 'Cart',
                           colors: colors,
                           badgeCount: cart.itemCount,

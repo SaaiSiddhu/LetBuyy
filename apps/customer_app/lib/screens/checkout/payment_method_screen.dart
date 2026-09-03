@@ -1407,7 +1407,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  Widget _buildPaymentBadge(IconData icon, String label, bool isDark) {
+  Widget _buildPaymentBadge(FaIconData icon, String label, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(

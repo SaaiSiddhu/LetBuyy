@@ -317,7 +317,7 @@ class _AdminOrderDetailsScreenState extends State<AdminOrderDetailsScreen> {
     return _buildCardSection(
       isDark: isDark,
       title: 'Order Info',
-      icon: FontAwesomeIcons.hashtag,
+      icon: FontAwesomeIcons.hashtag.data,
       trailing: IconButton(
         onPressed: () {
           Clipboard.setData(ClipboardData(text: order.orderNumber));
@@ -479,7 +479,7 @@ class _AdminOrderDetailsScreenState extends State<AdminOrderDetailsScreen> {
               Flexible(
                 child: TextButton.icon(
                   onPressed: () => _openWhatsApp(a.phone),
-                  icon: Icon(FontAwesomeIcons.whatsapp, size: 18, color: AppColors.success),
+                  icon: Icon(FontAwesomeIcons.whatsapp.data, size: 18, color: AppColors.success),
                   label: Text('WhatsApp', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.w600)),
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

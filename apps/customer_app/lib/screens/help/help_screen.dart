@@ -364,7 +364,7 @@ class _HelpScreenState extends State<HelpScreen> with TickerProviderStateMixin {
             },
           ),
           _ContactOption(
-            icon: FontAwesomeIcons.whatsapp,
+            icon: FontAwesomeIcons.whatsapp.data,
             title: 'Chat on WhatsApp',
             subtitle: '+91 8610787151',
             onTap: () {

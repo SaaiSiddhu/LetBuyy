@@ -193,7 +193,7 @@ class WebMobileFooter extends StatelessWidget {
     );
   }
 
-  Widget _socialIcon(IconData icon) {
+  Widget _socialIcon(FaIconData icon) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       padding: const EdgeInsets.all(10),
