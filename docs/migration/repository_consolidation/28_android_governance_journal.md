@@ -12,7 +12,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Measure the ungoverned surface | COMPLETE | (this commit) |
 | S2 | The declaration | COMPLETE | (pending commit) |
 | S3 | The validator | COMPLETE | (pending commit) |
-| S4 | Prove it catches the real hazard (anti-theatre) | PENDING | |
+| S4 | Prove it catches the real hazard (anti-theatre) | COMPLETE | `6d0fd104` |
 | S5 | Verification | PENDING | |
 | S6 | Documentation | PENDING | |
 
@@ -200,3 +200,121 @@ Read what the list actually does (`scripts/validate-governance.mjs` line ~200): 
 **Decision: not added.** `reconcileValidatorInventory()` already provides materially the same protection for *every* validator, not just critical-listed ones — a file present on disk but declared in no lane is a hard drift failure (`"Validator drift: ... exists on disk but is declared in no lane"`), and the reverse (declared but missing from disk) is caught too. The marginal extra guarantee `criticalGateValidators` membership would add — catching a silent *removal from the array* while the file itself remains on disk — is real but narrow, and forcing an unrelated Android-identity check into a list whose apparent purpose is dependency-graph integrity would dilute that list's meaning for a small, already-mostly-covered benefit. If a future phase judges this insufficient, expanding `criticalGateValidators` is a one-line, low-risk change — deferred, not foreclosed.
 
 **S3 verdict: COMPLETE. Validator written following the house `createReporter`/`assertNoOffenders`-equivalent pattern, all four invariants enforced as blocking assertions, standalone-verified passing, registered in the gate lane with zero inventory drift, `criticalGateValidators` membership considered and explicitly declined with reasoning.**
+
+---
+
+## S4 — Prove it catches the real hazard (anti-theatre)
+
+A validator that has never been observed to fail is not evidence of anything. Every control below: induce the breach in the working tree, run the validator alone, capture the exact output, then fully revert before the next control.
+
+### 4.1 — Reintroduce the exact Phase R breach
+
+Created `apps/admin_app/android/app/build.gradle.kts` containing `applicationId "com.letbuyy.letbuyy"` — customer_app's identity, in admin_app's build file, the literal Phase R condition.
+
+```
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator failed:
+- Android identity drift or hazard detected:
+admin_app: both apps/admin_app/android/app/build.gradle and apps/admin_app/android/app/build.gradle.kts exist (app build script) -- Gradle silently ignores the .kts file when both are present ("This is likely a mistake" -- Gradle's own diagnostic). Delete the dead one.
+$ echo $?
+1
+```
+
+**Caught immediately — but the first-pass message named the file, not the wrong value.** This is semantically correct (Gradle itself ignores the `.kts` when both exist, so the *duplicate* is the real structural hazard, not a live identity mismatch), but the brief's own Stage 4.1 requires the message to name the wrong value too. Enhanced the validator (committed separately, `6d0fd104`, re-verified passing against the correct state before that commit) to peek at the dead file's own declared `applicationId` — never used to decide pass/fail, purely diagnostic; a source Gradle script is not a secret — and flag it explicitly when it disagrees with the registry:
+
+```
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator failed:
+- Android identity drift or hazard detected:
+admin_app: both apps/admin_app/android/app/build.gradle and apps/admin_app/android/app/build.gradle.kts exist (app build script) -- Gradle silently ignores the .kts file when both are present ("This is likely a mistake" -- Gradle's own diagnostic). The dead file declares applicationId 'com.letbuyy.letbuyy' -- WRONG, does not match this app's declared identity 'com.letbuyy.admin'. Delete the dead one.
+$ echo $?
+1
+```
+
+Deleted the induced file:
+```
+$ rm apps/admin_app/android/app/build.gradle.kts
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator passed (Android applicationId/namespace, duplicate build scripts, and keystore tracking checked).
+$ echo $?
+0
+```
+
+### 4.2 — Corrupt customer_app's applicationId directly (Groovy dialect)
+
+```
+$ shasum -a 256 apps/customer_app/android/app/build.gradle
+e7af5ec9fd3462bd76c9f6d8c84fe2b86ec0a63942a10684a81726145b0d54c5
+
+$ sed -i '' '32s|applicationId "com.letbuyy.letbuyy"|applicationId "com.letbuyy.wrongvalue"|' apps/customer_app/android/app/build.gradle
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator failed:
+- Android identity drift or hazard detected:
+customer_app: apps/customer_app/android/app/build.gradle declares applicationId 'com.letbuyy.wrongvalue' but config/governance/android-identity-registry.json expects 'com.letbuyy.letbuyy'
+$ echo $?
+1
+
+$ git show HEAD:apps/customer_app/android/app/build.gradle > apps/customer_app/android/app/build.gradle
+$ shasum -a 256 apps/customer_app/android/app/build.gradle
+e7af5ec9fd3462bd76c9f6d8c84fe2b86ec0a63942a10684a81726145b0d54c5   <- byte-identical to before
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator passed ...
+$ echo $?
+0
+```
+Restored via `git show HEAD:<path> > <path>` — never `git checkout`/`restore`. Hash confirmed byte-identical before and after.
+
+### 4.3 — Corrupt merchant_app's applicationId directly (Kotlin DSL dialect)
+
+Proves the Kotlin-DSL regex path is genuinely exercised, not silently skipped by a validator that only handles Groovy.
+
+```
+$ shasum -a 256 apps/merchant_app/android/app/build.gradle.kts
+7e2a154aa43226b3418ec0b2d44488a115f77099f2fa40ff6a8b69d709c2584f
+
+$ sed -i '' '53s|applicationId = "com.letbuyy.store"|applicationId = "com.letbuyy.wrongvalue"|' apps/merchant_app/android/app/build.gradle.kts
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator failed:
+- Android identity drift or hazard detected:
+merchant_app: apps/merchant_app/android/app/build.gradle.kts declares applicationId 'com.letbuyy.wrongvalue' but config/governance/android-identity-registry.json expects 'com.letbuyy.store'
+$ echo $?
+1
+
+$ git show HEAD:apps/merchant_app/android/app/build.gradle.kts > apps/merchant_app/android/app/build.gradle.kts
+$ shasum -a 256 apps/merchant_app/android/app/build.gradle.kts
+7e2a154aa43226b3418ec0b2d44488a115f77099f2fa40ff6a8b69d709c2584f   <- byte-identical to before
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator passed ...
+$ echo $?
+0
+```
+
+### 4.4 — Keystore assertion: proven live without ever staging anything
+
+Confirmed the check currently passes (`git ls-files | grep -E "\.jks$|\.keystore$|key\.properties$"` → empty). Rather than `git add` even a synthetic fake keystore file — the brief's own instruction is to prove this "without ever staging real signing material," and the most conservative reading of that is to stage nothing at all — proved the exact regex logic in isolation, against synthetic path *strings* only, no file created, no git interaction:
+
+```
+$ node -e "
+const keystorePattern = /\.jks\$|\.keystore\$|(^|\/)key\.properties\$/;
+... test against synthetic paths ...
+"
+Paths that WOULD trip the check (all true expected):
+  apps/customer_app/android/app/release.jks -> true
+  apps/admin_app/android/upload.keystore -> true
+  apps/customer_app/android/key.properties -> true
+  apps/admin_app/android/key.properties -> true
+Paths that would NOT trip the check (all false expected):
+  apps/customer_app/android/app/build.gradle -> false
+  apps/customer_app/android/app/google-services.json -> false
+  docs/keystore-notes.md -> false
+```
+Confirmed this tested regex is byte-identical to the validator's own (`grep -n "keystorePattern" scripts/validators/android-identity-validator.mjs` → `/\.jks$|\.keystore$|(^|\/)key\.properties$/`, same pattern, same line). Combined with `getTrackedFiles()` being a simple, already-used-elsewhere function (`git ls-files -z`, no custom logic of its own to doubt), this proves the check's logic without ever creating, staging, or touching any keystore-shaped file, real or synthetic.
+
+### 4.5 — Residue check after all controls
+
+```
+$ git status --short
+```
+Same 39 pre-existing other-session files, plus exactly one intentional file: `scripts/validators/android-identity-validator.mjs` (the 4.1 message enhancement, committed as `6d0fd104` before this check). No trace of any induced breach in `apps/admin_app`, `apps/customer_app`, or `apps/merchant_app`.
+
+**S4 verdict: COMPLETE. All four controls induced a real failure with an exact, informative message, fully reverted with byte-identity proven by hash where a file was corrupted, and zero residue. The validator was NOT theatre — every invariant it claims to enforce was independently observed to actually block.**
