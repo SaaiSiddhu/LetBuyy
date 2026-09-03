@@ -10,7 +10,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 |---|---|---|---|
 | S0 | Preflight, baseline reconciliation, rollback reference | COMPLETE | (this commit) |
 | S1 | Determine empirically which files Gradle evaluates | COMPLETE | (this commit) |
-| S2 | The applicationId divergence | PENDING | |
+| S2 | The applicationId divergence | COMPLETE | (this commit) |
 | S3 | Delete the dead duplicates | PENDING | |
 | S4 | Align the toolchain | PENDING | |
 | S5 | The stray gradle.properties, and a real APK | PENDING | |
@@ -202,3 +202,39 @@ This closes Phase 0's open blocker (`01_source_inventory.md` line 24: "I did not
 **Restoration confirmed**: every marker was removed and every touched file's SHA-256 re-verified against the Stage 0 rollback-reference table — all six customer_app files and four admin_app files are byte-identical to their pre-Stage-1 state. `git status` on both apps' `android/` trees shows only the already-known, pre-existing `gradle.properties` diff.
 
 **S1 verdict: COMPLETE. Every candidate file has a verdict backed by real Gradle output, for both apps independently. Phase 0's blocker closed.**
+
+---
+
+## S2 — The applicationId divergence
+
+### 2.1 — Full table (from S0, reproduced here for the record)
+
+| App | File | namespace | applicationId |
+|---|---|---|---|
+| customer_app | `app/build.gradle` (LIVE) | `com.letbuyy.letbuyy` | `com.letbuyy.letbuyy` |
+| customer_app | `app/build.gradle.kts` (DEAD) | `com.letbuyy.letbuyy` | `com.letbuyy.letbuyy` |
+| customer_app | `app/build.gradle.kts.backup` (dead by definition) | `com.agrimate.agrimate` | `com.agrimate.agrimate` |
+| admin_app | `app/build.gradle` (LIVE) | `com.letbuyy.letbuyy` | **`com.letbuyy.admin`** |
+| admin_app | `app/build.gradle.kts` (DEAD) | `com.letbuyy.letbuyy` | **`com.letbuyy.letbuyy`** |
+| admin_app | `app/build.gradle.kts.backup` (dead by definition) | `com.agrimate.agrimate` | `com.agrimate.agrimate` |
+
+Only admin_app has a real `applicationId` divergence between its two live-candidate files (customer_app's `.gradle`/`.kts` pair agree with each other, byte-for-byte identical in the fields that matter).
+
+### 2.2 — Which value is correct for admin_app: three independent sources agree
+
+1. **Firebase client registration** (decisive, from S0): `apps/admin_app/lib/firebase_options.dart`'s live Android config declares `appId: '1:468123057306:android:efd958435543696f187323'`. Cross-referencing `apps/admin_app/android/app/google-services.json`'s `client[].client_info` array (read via `python3 -c "import json; ..."`, mapping every `mobilesdk_app_id` to its `package_name`) shows this exact `appId` is registered to `package_name: "com.letbuyy.admin"` — not `com.letbuyy.letbuyy` (which has its own, different, registered `appId` in the same file). The app's own compiled-in Firebase configuration only matches one of the two candidate `applicationId` values.
+2. **Physical Kotlin source path**: `apps/admin_app/android/app/src/main/kotlin/com/letbuyy/letbuyy/MainActivity.kt` — the real source tree sits under `com/letbuyy/letbuyy`, matching `namespace 'com.letbuyy.letbuyy'` (present, correctly, in **both** the live and dead file) and confirming `namespace` is unrelated to which `applicationId` is correct; it is a compile-path concern, not a Play Store identity concern. `customer_app/android/app/src/main/kotlin/com/letbuyy/letbuyy/MainActivity.kt` sits at the identical path — the same shared-template scaffolding, symmetric between both apps.
+3. **The app's own README, written by a prior phase** — `apps/admin_app/README.md:1-6`, quoted in full:
+   > `# apps/admin_app`
+   >
+   > Platform-operator mobile app. `applicationId` `com.letbuyy.admin` (note: the Android `namespace` field still reads `com.letbuyy.letbuyy`, a leftover from the shared Flutter template this app, `marketplace`, and `seller` were all scaffolded from — recorded, not changed, by this move).
+
+   This is a **pre-existing, already-documented decision from an earlier phase**, not new information — it independently confirms both halves of this stage's conclusion: `com.letbuyy.admin` is correct, and `namespace` staying `com.letbuyy.letbuyy` is intentional, already recorded, not a bug to fix now.
+
+**Conclusion**: `com.letbuyy.admin` (found only in the LIVE `app/build.gradle`) is the correct `applicationId`. `com.letbuyy.letbuyy` (found only in the DEAD `app/build.gradle.kts`, byte-identical to customer_app's own file — confirming it is a mis-copy, not an independently-chosen value) is wrong. Three independent sources agree; none conflict. This is not the "two non-identical values both plausibly identify a real registered application" stop condition — one value has a real Firebase registration and a documented provenance note behind it, the other has neither.
+
+### 2.3 — namespace vs applicationId: legitimate divergence, not touched
+
+`namespace` and `applicationId` are two different Gradle/AGP concerns — `namespace` controls where the generated `R`/`BuildConfig` Java/Kotlin classes resolve (must match the physical package directory), `applicationId` controls the Play Store / installed-package identity (can be anything). admin_app's `namespace 'com.letbuyy.letbuyy'` correctly matches its physical `kotlin/com/letbuyy/letbuyy/` source directory — changing it to `com.letbuyy.admin` without also physically moving every Kotlin file to a new package directory would break compilation. The app's own README already documents this as a known, accepted leftover. **Not touched, per that prior decision and this stage's own confirming evidence.**
+
+**S2 verdict: COMPLETE. admin_app's applicationId divergence resolved with three independent, agreeing evidence sources — no blocker, no ambiguity.**
