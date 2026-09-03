@@ -12,8 +12,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Map the testable surface | COMPLETE | d3073d58 |
 | S2 | Establish the harness | COMPLETE | ca16401d |
 | S3 | marketplace_core tests | COMPLETE (189 tests) | 79c11790 |
-| S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | (this commit) |
-| S5 | App-level Firebase-free files | PENDING | |
+| S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | c556f278 |
+| S5 | App-level Firebase-free files | COMPLETE (18 tests, 1 file blocked) | (this commit) |
 | S6 | Anti-theatre proof + full verification | PENDING | |
 | S7 | Documentation | PENDING | |
 
@@ -314,3 +314,51 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 `8973948b` (9 widgets + AppTheme, 44 tests), `afc26852` (CustomTextField, 10 tests).
 
 **S4 verdict: COMPLETE.**
+
+---
+
+## S5 — App-level Firebase-free files (18 tests; 1 file genuinely blocked, not by Firebase)
+
+- `apps/customer_app/test/premium_scaffold_test.dart` (6): body always renders; `appBar`/`bottomNavigationBar`/FAB pass through; `backgroundColor` defaults to the ambient theme's `scaffoldBackgroundColor` and an explicit value overrides it; `resizeToAvoidBottomInset` pinned to its documented-as-deliberate `true`.
+- `apps/admin_app/test/loading_overlay_test.dart` (3): admin_app's own (byte-identical) copy of `marketplace_ui_kit`'s `LoadingOverlay` widget — same real `isLoading`-gated spinner/text visibility.
+- `apps/customer_app/lib/utils/web_optimizations.dart` and `apps/admin_app/lib/utils/performance_utils.dart` were already covered in Stage 2 (8 tests each).
+
+### A significant finding, unrelated to Firebase: `unified_search_header.dart` cannot be compiled into a test at all
+
+Stage 1 confirmed `unified_search_header.dart` is Firebase-free by a full read of its own source. Writing its test and running it produced a **compilation failure**, not a test failure:
+
+```
+../../../.pub-cache/hosted/pub.dev/font_awesome_flutter-10.12.0/lib/src/icon_data.dart:71:28:
+Error: The class 'IconData' can't be extended outside of its library because it's a final class.
+class IconDataThin extends IconData {
+...
+(repeated for IconDataDuotone, IconDataSharpThin, IconDataSharpLight, IconDataSharpRegular, IconDataSharpSolid)
+```
+
+**Root cause, traced fully:** `unified_search_header.dart` itself directly imports `apps/customer_app/lib/app/routes.dart`, which (to build the app's route table) transitively imports the app's screen graph. 12 real screens (`web_header.dart`, `web_footer.dart`, `web_mobile_footer.dart`, `filter_drawer.dart`, `product_share_widget.dart`, `sort_bottom_sheet.dart`, `checkout_steps.dart`, `mobile_search_screen.dart`, `payment_method_screen.dart`, `coupon_selection_screen.dart`, `cart_item_card.dart`, `mobile_cart_screen.dart`, `help_screen.dart`) import `package:font_awesome_flutter`, a **direct dependency of both `apps/customer_app` and `apps/admin_app`** (`^10.7.0`, resolving to the locked `10.12.0` — confirmed via `grep -n "^  font_awesome_flutter:" -A4 pubspec.lock`). That version's `IconData` subclasses (`IconDataThin`, `IconDataDuotone`, etc.) were written against an older Flutter API — this Flutter SDK (3.44.8) has since sealed `IconData` as `final`, which the package's own source violates. A newer, presumably-fixed version (`11.0.0`) is already sitting in this machine's pub cache, but the app's `^10.7.0` constraint caps resolution below it.
+
+**Why this matters beyond this one test file:** `flutter analyze apps/customer_app` reports **"No issues found!"** — static analysis does not catch this, because `font_awesome_flutter` is an already-published, pre-compiled dependency that analysis mostly trusts rather than re-verifying against the current SDK. But `flutter test` invokes the *real* frontend compiler against the *real* reachable dependency graph, and that compiler does fail. `flutter test`/`flutter run`/`flutter build` all route through the same compilation step for this reachable code, so **this is measured evidence — not proof, since no build was attempted per the brief's own instruction — that `apps/customer_app` (and potentially `apps/admin_app`, which also depends on the same locked version and has 2 files using it: `icon_picker_helper.dart`, `admin_order_details_screen.dart`) may not currently compile into a running app at all**, independent of anything this phase touched.
+
+**Not fixed.** Bumping `font_awesome_flutter` past `^10.7.0` would very plausibly resolve this, but changing a dependency version is explicitly prohibited by this phase's hard rule, and doing so silently would also be exactly the kind of "test coverage phase quietly fixes production code" scope creep this whole engagement's operating principles warn against. The broken test file was written, confirmed to fail at compilation (not silently skipped), and then deleted rather than left in the repository in a non-compiling state. `apps/customer_app`'s and `apps/admin_app`'s own harnesses are otherwise proven working (Stage 2, and the 18 tests above) — this is not the "flutter test cannot run at all" stop condition; it is a real, scoped, disclosed blocker on this one source file and everything that imports `routes.dart`.
+
+```
+$ flutter test apps/customer_app/test
+...
+00:00 +13: All tests passed!
+
+$ flutter test apps/admin_app/test
+...
+00:00 +11: All tests passed!
+
+$ flutter analyze apps/customer_app / apps/admin_app
+No issues found! / No issues found!
+
+$ cd apps/merchant_app && flutter test 2>&1 | tail -3
+00:04 +172: All tests passed!
+```
+
+### Commits this stage
+
+`d0d3dd91`.
+
+**S5 verdict: COMPLETE — every genuinely testable in-scope file covered; the one blocked file (`unified_search_header.dart`) is disclosed with a fully traced root cause, not silently skipped.**
