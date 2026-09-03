@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../../letbuyy_ui_kit.dart';
+import '../../letbuyy_marketplace_ui_kit.dart';
 
 class GlassContainer extends StatelessWidget {
   final Widget child;
