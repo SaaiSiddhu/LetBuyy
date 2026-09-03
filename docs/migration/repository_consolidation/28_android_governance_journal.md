@@ -11,7 +11,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight, baseline reconciliation | COMPLETE | (this commit) |
 | S1 | Measure the ungoverned surface | COMPLETE | (this commit) |
 | S2 | The declaration | COMPLETE | (pending commit) |
-| S3 | The validator | PENDING | |
+| S3 | The validator | COMPLETE | (pending commit) |
 | S4 | Prove it catches the real hazard (anti-theatre) | PENDING | |
 | S5 | Verification | PENDING | |
 | S6 | Documentation | PENDING | |
@@ -144,3 +144,59 @@ Initially wrote `merchant_app.shipped: false` by analogy with admin_app's `debug
 `buildScriptDialect` is recorded explicitly per app so the validator (Stage 3) has a declared, not inferred, signal for which regex form to expect — removing any temptation to guess dialect from file extension alone. Validated as well-formed JSON (`python3 -c "import json; json.load(...)"`).
 
 **S2 verdict: COMPLETE. Declaration lives at `config/governance/android-identity-registry.json`, chosen over `runtime.manifest.json` specifically to avoid a strict, `additionalProperties:false`, actively-enforced 380-line schema shared across all 5 runtimes. Populated from fresh measurement; one unverified assumption caught and corrected before commit.**
+
+---
+
+## S3 — The validator
+
+### API surface, read before writing
+
+Read `governance-common.mjs`'s exports used: `createReporter` (`.assert()` blocks, `.advisory()` is non-blocking by declaration per its own doc comment — used `.assert()` exclusively, since an identity drift must block), `getTrackedFiles()` (line 252, `git ls-files -z` filtered to files that still exist on disk — path strings only), `readJson`/`readFile` (both extension-agnostic, confirmed in S1). Confirmed the `fs`/`path` + `root`-export pattern for existence checks (`fs.existsSync(path.join(root, relPath))`) is an accepted house idiom by reading `provider-evidence-validator.mjs`, which imports `node:fs`/`node:path` directly alongside the shared helpers — not inventing a new pattern.
+
+### Regex forms — proven against real file content, not assumed
+
+Re-confirmed via `grep` that all three apps have exactly one clean `applicationId`/`namespace` declaration each (no `productFlavors`, no ambiguity) before writing any regex:
+```
+customer_app: namespace 'com.letbuyy.letbuyy'   /  applicationId "com.letbuyy.letbuyy"
+admin_app:    namespace 'com.letbuyy.letbuyy'   /  applicationId "com.letbuyy.admin"
+merchant_app: namespace = "com.letbuyy.store"   /  applicationId = "com.letbuyy.store"
+```
+Two dialect patterns, selected per-app from the registry's own `buildScriptDialect` field (a declared signal, not inferred from file extension):
+- `groovy`: `/namespace\s+'([^']+)'/`, `/applicationId\s+"([^"]+)"/` — no `=`, single-quoted namespace.
+- `kotlin`: `/namespace\s*=\s*"([^"]+)"/`, `/applicationId\s*=\s*"([^"]+)"/` — `=`, double-quoted.
+
+Checked for a false-positive risk before trusting the applicationId regex: customer_app/admin_app's files also contain `"${applicationId}.fileprovider"` (Groovy string interpolation referencing the variable, not declaring it). The regex `applicationId\s+"` requires whitespace directly after the word `applicationId`, which `${applicationId}` (immediately followed by `}`) can never satisfy — confirmed safe by inspection, not just trusted.
+
+### Enforced invariants (all as `reporter.assert`, none as `reporter.advisory` — an identity drift must block)
+
+1. **Duplicate `.gradle`/`.gradle.kts` pairs** at all three levels (root build script, settings script, app build script) per app, driven entirely by the registry's own `gradleRoot` field — no hardcoded paths beyond what the declaration already names.
+2. **`applicationId`/`namespace` match** the registry's declared values exactly, via the dialect-selected regex above. A missing app script, or a regex that fails to match at all (meaning the file's shape changed), is itself an offender — not treated as "nothing to check."
+3. **`google-services.json` cross-reference** (the beyond-minimum addition from S1): for every app with a non-null `googleServicesJson` path in the registry, parses the file (safe — a public Firebase client manifest, not a secret, already established as such multiple times across this engagement) and asserts the declared `applicationId` appears among `client[].client_info.android_client_info.package_name`.
+4. **Keystore/`key.properties` git-tracking** — `getTrackedFiles()` filtered by `/\.jks$|\.keystore$|(^|\/)key\.properties$/`, path-only. **File content is never read for this check** — confirmed by inspection of the validator's own source: the keystore branch only ever calls `getTrackedFiles()` (returns path strings) and a regex test on the path string itself, never `readFile`/`readJson` on a matched path.
+
+### Standalone verification, before registration
+
+```
+$ node scripts/validators/android-identity-validator.mjs
+Android identity validator passed (Android applicationId/namespace, duplicate build scripts, and keystore tracking checked).
+$ echo $?
+0
+```
+Passes cleanly against the current, correct repository state — expected, since nothing has changed the Gradle files since Phase R and S2's registry was measured from the same state.
+
+### Registration
+
+Added `"android-identity-validator.mjs"` to `scripts/validate-governance.mjs`'s `validators` array (gate lane), placed immediately after `mobile-topology-honesty-validator.mjs` — its closest thematic sibling (mobile-app governance), not appended arbitrarily at the end. Confirmed with `--plan`:
+```
+$ node scripts/validate-governance.mjs --plan | grep -i "android-identity\|drift"
+  SELECTED  android-identity-validator.mjs (required)
+```
+No drift complaint from `reconcileValidatorInventory()` — the file is declared in exactly one lane and exists on disk, satisfying both directions of its check.
+
+### `criticalGateValidators` — deliberately NOT added, reasoning recorded
+
+Read what the list actually does (`scripts/validate-governance.mjs` line ~200): for each name in `criticalGateValidators`, assert it is still present in the main `validators` array — nothing more. It is a narrow, cohesive group of 5 JS/TS dependency/import-hygiene validators (`dependency-manifest-validator.mjs`, `undeclared-import-validator.mjs`, `package-export-validator.mjs`, `dependency-graph-validator.mjs`, `circular-import-validator.mjs`) — a different domain from Android identity governance.
+
+**Decision: not added.** `reconcileValidatorInventory()` already provides materially the same protection for *every* validator, not just critical-listed ones — a file present on disk but declared in no lane is a hard drift failure (`"Validator drift: ... exists on disk but is declared in no lane"`), and the reverse (declared but missing from disk) is caught too. The marginal extra guarantee `criticalGateValidators` membership would add — catching a silent *removal from the array* while the file itself remains on disk — is real but narrow, and forcing an unrelated Android-identity check into a list whose apparent purpose is dependency-graph integrity would dilute that list's meaning for a small, already-mostly-covered benefit. If a future phase judges this insufficient, expanding `criticalGateValidators` is a one-line, low-risk change — deferred, not foreclosed.
+
+**S3 verdict: COMPLETE. Validator written following the house `createReporter`/`assertNoOffenders`-equivalent pattern, all four invariants enforced as blocking assertions, standalone-verified passing, registered in the gate lane with zero inventory drift, `criticalGateValidators` membership considered and explicitly declined with reasoning.**
