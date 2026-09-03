@@ -14,8 +14,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S3 | marketplace_core tests | COMPLETE (189 tests) | 79c11790 |
 | S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | c556f278 |
 | S5 | App-level Firebase-free files | COMPLETE (18 tests, 1 file blocked) | 2241ccb8 |
-| S6 | Anti-theatre proof + full verification | COMPLETE | (this commit) |
-| S7 | Documentation | PENDING | |
+| S6 | Anti-theatre proof + full verification | COMPLETE | 49af75fb |
+| S7 | Documentation | COMPLETE | (this commit) |
 
 ---
 
@@ -432,3 +432,23 @@ $ git diff 00e8840c..HEAD --name-only -- '*pubspec.yaml'
 `09198114` (removal of the 3 dead-code test files — the only source change Stage 6 itself produced; everything else was measurement and the anti-theatre proof's temporary, fully-restored edits).
 
 **S6 verdict: COMPLETE. Anti-theatre proof genuine for all 5 sampled tests. Governance gate at the exact known-good baseline after root-causing and resolving a real, high-value discovery — not just a green checkmark chased for its own sake.**
+
+---
+
+## S7 — Documentation
+
+Wrote `docs/migration/repository_consolidation/23_app_test_coverage.md` — the full close-out document: the testable-surface map with every file's verdict, every test file with what it proves, final counts (243 tests across 4 targets), the anti-theatre proof with failing output for all 5 sampled tests, the `DEFERRED_NEEDS_MOCKING` list, an explicit (empty) `BEHAVIOUR_UNCLEAR` list, both real findings at the same prominence as the passing tests, and an explicit statement of what this coverage does not prove.
+
+Added §11 to `17_remaining_migration_backlog.md` and updated §10's branch-ahead-of-main count (88, up from 72).
+
+### Commits this stage
+
+`249a1a78`.
+
+**S7 verdict: COMPLETE.**
+
+---
+
+## Phase P — final summary
+
+All 7 stages COMPLETE. 16 commits total (`84f8dfa8` through this journal's own closing commit). **243 new tests**, all confirmed genuinely load-bearing via a direct anti-theatre proof on 5 samples, added across `apps/customer_app` (13), `apps/admin_app` (11), `packages/dart/marketplace_core` (165), and `packages/dart/marketplace_ui_kit` (54) — zero new dependencies, `git diff 00e8840c..HEAD --name-only -- '*pubspec.yaml'` confirmed empty. `apps/merchant_app` stayed at 172/172 throughout. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline, after root-causing and resolving one real interim regression (not just silencing it). Two significant, previously-undiscovered findings — a likely compile blocker in `customer_app`/`admin_app` unrelated to this phase, and a live duplicate of institutionally-archived dead code in `marketplace_core` — were traced to their root cause and left unfixed, exactly as this phase's rules require. Zero application source was modified. Full detail for every claim above is in this journal's own stage-by-stage entries; `23_app_test_coverage.md` is the reader-facing summary.
