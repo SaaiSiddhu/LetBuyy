@@ -8,8 +8,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
-| S0 | Preflight and resume | COMPLETE | (this commit) |
-| S1 | Confirm both conflicts | PENDING | |
+| S0 | Preflight and resume | COMPLETE | 3cef650f |
+| S1 | Confirm both conflicts | COMPLETE | (this commit) |
 | S2 | Resolve flutter_secure_storage | PENDING | |
 | S3 | Resolve quickcommerce_core | PENDING | |
 | S4 | Workspace membership | PENDING | |
@@ -69,3 +69,103 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 Current resolved `flutter_secure_storage` version in the shared workspace (which `apps/merchant_app` participates in): **9.2.4**, matching its own `^9.2.4` constraint exactly. Current `merchant_app` test count: **172/172**, confirmed by an actual run before any change this phase — not assumed from the CTO's baseline.
 
 **S0 verdict: COMPLETE.**
+
+---
+
+## S1 — Confirm both conflicts myself
+
+### 1.1 — Conflict 1 reproduced
+
+Added `apps/phase_2/rider_app` to the root `workspace:` list (without `resolution: workspace` in its own pubspec, matching its actual current state):
+
+```
+$ flutter pub get
+apps/phase_2/rider_app/pubspec.yaml is included in the workspace from ./pubspec.yaml,
+but does not have `resolution: workspace`.
+```
+
+This reproduces the exact Phase M incident the brief cites (a member without `resolution: workspace` breaks the workspace) — a real, verified re-confirmation, not assumed. Added `resolution: workspace` to `rider_app/pubspec.yaml` and re-ran:
+
+```
+$ flutter pub get
+Resolving dependencies...
+Because rider_app depends on flutter_secure_storage ^10.0.0 and letbuyy_store depends
+on flutter_secure_storage ^9.2.4, version solving failed.
+Failed to update packages.
+```
+
+**Verbatim, matches the CTO's report exactly.** Reverted both files (root `workspace:` list, `rider_app/pubspec.yaml`'s `resolution:` key) and re-ran `flutter pub get` — resolves cleanly, `git diff --stat` on both files empty, confirming a clean revert.
+
+### 1.2 — Conflict 2 reproduced
+
+Same procedure with `packages/dart/quickcommerce_core` (which also currently has no `resolution:` key). Without it: identical "included in the workspace... but does not have `resolution: workspace`" error. With `resolution: workspace` added:
+
+```
+$ flutter pub get
+Resolving dependencies...
+Note: matcher is pinned to version 0.12.19 by flutter_test from the flutter SDK.
+Note: test_api is pinned to version 0.7.11 by flutter_test from the flutter SDK.
+
+Because test >=1.31.2 depends on analyzer >=13.0.0 <15.0.0 and test >=1.31.1 <1.31.2
+depends on test_api 0.7.12, test >=1.31.1 requires analyzer >=13.0.0 <15.0.0 or
+test_api 0.7.12.
+And because test >=1.30.0 <1.31.0 depends on test_api 0.7.10 and no versions of test
+match >1.31.0 <1.31.1, test >=1.30.0 <1.31.0-∞ or >1.31.0 requires analyzer
+>=13.0.0 <15.0.0 or test_api 0.7.10 or 0.7.12.
+And because test >=1.28.0 <1.30.0 depends on matcher >=0.12.16 <0.12.19 and
+test >=1.25.13 <1.28.0 depends on matcher >=0.12.16 <0.12.18, test >=1.25.13 <1.31.0-∞
+or >1.31.0 requires analyzer >=13.0.0 <15.0.0 or test_api 0.7.10 or 0.7.12 or
+matcher >=0.12.16 <0.12.19.
+And because test >=1.24.3 <1.25.13 depends on matcher >=0.12.16 <0.12.17 and every
+version of flutter_test from sdk depends on matcher 0.12.19, if
+test >=1.24.3 <1.31.0-∞ or >1.31.0 and flutter_test from sdk then
+analyzer >=13.0.0 <15.0.0 or test_api 0.7.10 or 0.7.12.
+And because letbuyy_store depends on flutter_test from sdk which depends on
+test_api 0.7.11, test >=1.24.3 <1.31.0-∞ or >1.31.0 requires
+analyzer >=13.0.0 <15.0.0.
+And because test 1.31.0 depends on analyzer >=8.0.0 <13.0.0 and
+hive_generator >=2.0.1 depends on analyzer >=4.6.0 <7.0.0, test >=1.24.3 is
+incompatible with hive_generator >=2.0.1.
+So, because quickcommerce_core depends on hive_generator ^2.0.1 and
+letbuyy_api_client depends on test ^1.25.8, version solving failed.
+Failed to update packages.
+```
+
+Verbatim, matches Phase N's Stage 5 finding. Reverted both files; `flutter pub get` resolves cleanly; `git diff --stat` empty on both.
+
+### 1.3 — `store_ops_app`'s `flutter_secure_storage` usage: confirmed genuinely unused
+
+```
+$ grep -rn "FlutterSecureStorage" apps/phase_2/store_ops_app/{lib,test,integration_test}
+(zero hits)
+$ grep -rn "flutter_secure_storage" apps/phase_2/store_ops_app/{lib,test,integration_test}
+(zero hits)
+$ grep -n "flutter_secure_storage" apps/phase_2/store_ops_app/pubspec.yaml
+27:  flutter_secure_storage: ^10.0.0
+```
+
+Declared, never imported, never used anywhere in this app's own source. Confirmed by direct search, not assumed from the CTO's report.
+
+### `rider_app`'s and `merchant_app`'s actual call sites (needed for Stage 2's verification)
+
+`rider_app` (2 files, matching the CTO's count): `apps/phase_2/rider_app/lib/src/core/providers/rider_providers.dart` (`const FlutterSecureStorage()`, bare constructor) and `apps/phase_2/rider_app/lib/src/core/session/rider_session_store.dart` (`.read(key:)`, `.write(key:, value:)`, `.delete(key:)`). `merchant_app` (1 real usage file, matching the CTO's count — a second file, `test/mobile_services_test.dart`, only mocks/references it in test setup): `apps/merchant_app/lib/services/store_auth_service.dart` — `const FlutterSecureStorage()` (bare), `.read(key:)`, `.write(key:, value:)`, `.delete(key:)`. **Neither app constructs `AndroidOptions`/`IOSOptions`/any platform-options class, and neither calls `.containsKey()`** (confirmed by grep — every `containsKey` hit in both apps is an unrelated `Map.containsKey`, not this package's method) — the smallest possible API surface: bare constructor + `read`/`write`/`delete` with only the `key`/`value` named params.
+
+Compared this surface directly against both locally-cached package versions (`$HOME/.pub-cache/hosted/pub.dev/flutter_secure_storage-{9.2.4,10.3.1}/lib/flutter_secure_storage.dart`, read source, not documentation/memory): both versions declare an identical shape for the four members actually used — `const FlutterSecureStorage({iOptions = ..., aOptions = ..., ...all-default platform options})`, `Future<String?> read({required String key, ...optional platform-options})`, `Future<void> write({required String key, required String? value, ...optional platform-options})`, `Future<void> delete({required String key, ...optional platform-options})`. Since neither app passes any of the optional platform-options parameters, this specific call surface is source-compatible across both major versions — strong evidence (not proof; Stage 2.2 will confirm with a real `flutter analyze`) that downgrading `rider_app` to `^9.2.4` is safe.
+
+### 1.4 — `quickcommerce_core`: no Hive codegen dependency exists
+
+```
+$ grep -rn "part '.*\.g\.dart'" packages/dart/quickcommerce_core/lib   -> zero hits
+$ grep -rn "@HiveType\|@HiveField" packages/dart/quickcommerce_core/lib -> zero hits
+$ find packages/dart/quickcommerce_core -name "*.g.dart"                -> zero hits
+$ grep -rln "package:hive" packages/dart/quickcommerce_core/lib         -> zero hits
+$ grep -rn "hive\|Hive" packages/dart/quickcommerce_core/lib            -> zero hits (even broader sweep)
+```
+
+**Confirmed: `hive` (the runtime package, declared in `dependencies:`) and `hive_generator`/`build_runner` (declared in `dev_dependencies:`) are entirely unused in this package's source — not merely code-generation that never ran, but the runtime API itself is never imported.** `hive_generator` is unambiguously dead weight, exactly matching Stage 3.1's "no annotations found" branch. (Whether `hive`/`build_runner` themselves are also worth removing is a broader cleanup than this conflict requires — not touched, since the solver error names only `hive_generator` as the direct cause.)
+
+### 1.5 — `merchant_app` at 172/172 before any change
+
+Already confirmed in S0 with a real run, re-confirmed implicitly by every revert-and-reresolve cycle above never touching `merchant_app`'s own files.
+
+**S1 verdict: COMPLETE.**
