@@ -46,7 +46,7 @@ class RazorpayCustomService {
     String? preferredUpiApp,
   }) {
     var options = {
-      'key': 'rzp_live_RZMIepwnzTqjsH', // Your Razorpay key
+      'key': String.fromEnvironment('RAZORPAY_KEY_ID'),
       'amount': (amount * 100).toInt(), // Amount in paise
       'name': 'Agrimate',
       'description': 'Order Payment',

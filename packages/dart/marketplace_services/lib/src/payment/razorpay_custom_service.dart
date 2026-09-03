@@ -35,8 +35,8 @@ class AdvancedRazorpayService {
   final void Function(bool)? onPaymentStateChange; // loading state
 
   AdvancedRazorpayService({
-    this.testKeyId = "rzp_test_FakeKey123456",
-    this.testKeySecret = "FakeSecretKey987654",
+    this.testKeyId = const String.fromEnvironment('RAZORPAY_TEST_KEY_ID'),
+    this.testKeySecret = const String.fromEnvironment('RAZORPAY_TEST_KEY_SECRET'),
     this.themeColor = AppColors.primary,
     this.logoAsset,
     this.onSuccess,
