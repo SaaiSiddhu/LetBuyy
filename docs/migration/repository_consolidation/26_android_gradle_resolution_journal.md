@@ -12,7 +12,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Determine empirically which files Gradle evaluates | COMPLETE | (this commit) |
 | S2 | The applicationId divergence | COMPLETE | (this commit) |
 | S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
-| S4 | Align the toolchain | PENDING | |
+| S4 | Align the toolchain | COMPLETE | `d1616b2e` (customer_app), `4175bff4` (admin_app) |
 | S5 | The stray gradle.properties, and a real APK | PENDING | |
 | S6 | Verification | PENDING | |
 | S7 | Documentation | PENDING | |
@@ -281,3 +281,84 @@ $ grep -n 'applicationId "com' apps/customer_app/android/app/build.gradle
 ```
 
 **S3 verdict: COMPLETE. All 8 dead files deleted (4 per app), each individually recorded and each followed by a real Gradle configuration success plus an applicationId assertion. Neither app's identity ever moved from its Stage 0 recorded value at any point during deletion.**
+
+---
+
+## S4 — Align the toolchain
+
+### 4.1 — Is merchant_app's version set genuinely proven?
+
+```
+$ cd apps/merchant_app && flutter build apk --debug
+...
+Running Gradle task 'assembleDebug'...                             88.3s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+```
+
+**Yes — genuinely proven, not assumed.** `apps/merchant_app/build/app/outputs/flutter-apk/app-debug.apk`, 179 MB. Confirmed its real live versions directly from source (not trusted from the CTO's brief): `gradle-wrapper.properties` → Gradle **8.14**; `settings.gradle.kts` plugins block → AGP **8.11.1**, Kotlin **2.2.20**. Exact match to the CTO's stated figures — this is the one app in the whole brief whose baseline figures needed no correction. merchant_app has no Gradle duplication (only `.kts` files exist), so there is no live/dead ambiguity to resolve here.
+
+### 4.2/4.3 — customer_app: one variable at a time
+
+First re-confirmed the Phase Q failure still reproduces on the current (post-S3, pre-alignment) tree:
+```
+$ cd apps/customer_app && flutter build apk --debug
+...
+e: .../jetified-android-maps-utils-4.1.0-api.jar!/META-INF/library_release.kotlin_module Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.3.0, expected version is 2.1.0.
+...
+Execution failed for task ':google_maps_flutter_android:compileDebugKotlin'.
+BUILD FAILED in 18s
+```
+Identical failure to Phase Q's. Flutter's own "Fix" hint now correctly names the live `settings.gradle` (not a dead `.kts`) as the place to change the Kotlin version — confirming S3's deletions didn't disturb anything.
+
+Changed one variable at a time, rebuilding after each:
+
+| Step | Change | Result |
+|---|---|---|
+| 1 | `gradle-wrapper.properties`: `8.12` → `8.14` (AGP/Kotlin untouched) | Same failure — identical `google_maps_flutter_android:compileDebugKotlin` error, `BUILD FAILED in 39s` |
+| 2 | `settings.gradle` plugins block: AGP `8.9.1` → `8.11.1` (Kotlin still `2.1.0`) | Same failure again, `BUILD FAILED in 20s` |
+| 3 | `settings.gradle` plugins block: Kotlin `2.1.0` → `2.2.20` | **`✓ Built build/app/outputs/flutter-apk/app-debug.apk`** — fixed |
+
+**The Kotlin plugin version was the actual cause** — Gradle/AGP version alone never touched it; both intermediate builds failed with the byte-identical Kotlin-metadata-mismatch error. This lands exactly on the full merchant_app-matching set (Gradle 8.14/AGP 8.11.1/Kotlin 2.2.20); no smaller subset was tested in isolation (only cumulatively), so this is reported as "the full merchant_app set works," not "the provably-minimal fix" — the brief's own stop condition ("if the mismatch resolves before you reach the full merchant_app set, STOP there") did not trigger, since it resolved only once all three matched merchant_app.
+
+Root `build.gradle`'s own `ext.kotlin_version = '2.1.0'` (buildscript-block, old style) was **left unchanged** and the build still succeeded — confirming (consistent with S1's own finding) that `settings.gradle`'s `plugins{}` block, not the old buildscript classpath declaration, is what Gradle actually resolves the applied Kotlin/AGP version from. A residual, cosmetic "Kotlin version (2.1.0) will soon be dropped" warning still appears post-fix — this reads `ext.kotlin_version`, a value this stage deliberately left untouched since changing it is not necessary for the build to succeed and touching more than needed increases risk for no benefit.
+
+**Strongest possible identity verification** — read the actual compiled APK's embedded manifest (not source config) via `aapt dump badging`:
+```
+$ aapt dump badging apps/customer_app/build/app/outputs/flutter-apk/app-debug.apk
+package: name='com.letbuyy.letbuyy' versionCode='4013' versionName='1.0.10-debug' ...
+```
+`com.letbuyy.letbuyy`, exactly as required. APK: `apps/customer_app/build/app/outputs/flutter-apk/app-debug.apk`, 240 MB.
+
+### 4.4 — admin_app: did it even need the fix?
+
+`google_maps_flutter` is declared only by `customer_app` (confirmed: `grep -n "google_maps_flutter" apps/admin_app/pubspec.yaml apps/customer_app/pubspec.yaml` → one hit, customer_app only). Tested admin_app's build **before** touching its toolchain at all:
+```
+$ cd apps/admin_app && flutter build apk --debug
+...
+Warning: Flutter support for your project's Gradle version (8.12.0) will soon be dropped...
+Warning: Flutter support for your project's Android Gradle Plugin version (8.9.1) will soon be dropped...
+Warning: Flutter support for your project's Kotlin version (2.1.0) will soon be dropped...
+Running Gradle task 'assembleDebug'...                             37.9s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+```
+**admin_app already built successfully on its unaligned toolchain** — it has no dependency that triggers the Kotlin-metadata mismatch. `aapt dump badging` on this pre-alignment APK confirmed `package: name='com.letbuyy.admin' versionCode='1' versionName='1.0.0-debug'`.
+
+Aligned anyway, per Stage 4.1's explicit instruction ("you should align the other two apps to it") — this is a proactive consistency/future-proofing change, not a bug fix, and is reported as such rather than implying admin_app was broken. Applied the full proven set directly (Gradle 8.14, AGP 8.11.1, Kotlin 2.2.20) rather than repeating the one-variable-at-a-time diagnostic (already established the causal variable via customer_app; admin_app has no failure symptom to diagnose). Rebuilt to confirm the alignment itself introduced no regression:
+```
+$ cd apps/admin_app && flutter build apk --debug
+...
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+$ aapt dump badging apps/admin_app/build/app/outputs/flutter-apk/app-debug.apk
+package: name='com.letbuyy.admin' versionCode='1' versionName='1.0.0-debug' ...
+```
+Identity, versionCode and versionName all unchanged after alignment. APK: `apps/admin_app/build/app/outputs/flutter-apk/app-debug.apk`, 240 MB (up from 231 MB pre-alignment — larger due to full recompilation against the newer Kotlin/AGP versions, not a functional concern).
+
+### Side effect noted for Stage 5: gradle.properties auto-modified again
+
+Both admin_app build attempts (before AND after alignment) printed `Upgrading gradle.properties` — Flutter's Android migrator added the same two lines (`android.builtInKotlin=false`, `android.newDsl=false`) to `apps/admin_app/android/gradle.properties` that it already added to `customer_app`'s during Phase Q. This is systematic Flutter tooling behavior triggered by any build attempt on this Gradle/AGP generation, not something this session did deliberately. Both files' disposition is decided together in S5.
+
+### Scope discipline
+
+`git diff 4a2217c8..HEAD --name-only -- '*pubspec.yaml'` → **empty**. Zero Dart/Flutter package versions changed, anywhere, this entire phase.
+
+**S4 verdict: COMPLETE. customer_app required all three toolchain changes to build (Kotlin was the actual cause, confirmed by isolating each variable); admin_app never needed them but was aligned per instruction, with its pre- and post-alignment builds both independently verified successful and identity-unchanged.**
