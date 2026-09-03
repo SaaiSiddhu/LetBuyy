@@ -9,8 +9,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 3cef650f |
-| S1 | Confirm both conflicts | COMPLETE | (this commit) |
-| S2 | Resolve flutter_secure_storage | PENDING | |
+| S1 | Confirm both conflicts | COMPLETE | 75017a24 |
+| S2 | Resolve flutter_secure_storage | COMPLETE | (this commit) |
 | S3 | Resolve quickcommerce_core | PENDING | |
 | S4 | Workspace membership | PENDING | |
 | S5 | Verification | PENDING | |
@@ -169,3 +169,27 @@ $ grep -rn "hive\|Hive" packages/dart/quickcommerce_core/lib            -> zero 
 Already confirmed in S0 with a real run, re-confirmed implicitly by every revert-and-reresolve cycle above never touching `merchant_app`'s own files.
 
 **S1 verdict: COMPLETE.**
+
+---
+
+## S2 — Resolve `flutter_secure_storage`
+
+Applied the risk ordering exactly; stopped at option 2 (never touched `apps/merchant_app`).
+
+**Option 1 — remove `store_ops_app`'s unused declaration.** Removed `flutter_secure_storage: ^10.0.0` from `apps/phase_2/store_ops_app/pubspec.yaml`. `flutter pub get` (standalone) correctly dropped it and its 5 platform packages (`flutter_secure_storage_darwin/linux/platform_interface/web/windows`) — proof it was genuinely unused, not just declared-and-unreferenced-by-grep. `flutter analyze`: same 2 pre-existing issues as the Phase N baseline (`flutter_lints` include-not-found, `widget_test.dart`'s dead `MyApp` reference), no new ones. `flutter test`: 2/3 pass, same as baseline.
+
+**Option 2 — align `rider_app` down to `^9.2.4`.** Changed `apps/phase_2/rider_app/pubspec.yaml`'s constraint from `^10.0.0` to `^9.2.4`, matching `apps/merchant_app` exactly. Pre-verified in Stage 1 that the actual call surface (bare constructor, `read`/`write`/`delete` with only `key`/`value`, no platform-options, no `containsKey`) is identical in shape between the two package versions' real cached source. `flutter pub get` (standalone): `Changed 12 dependencies!`, resolved to 9.2.4 correctly (`ffi_leak_tracker`, `flutter_secure_storage_darwin` dropped — the v10-only Darwin split package). `flutter analyze`: same 2 pre-existing issues, no new ones — **confirms the call-site compatibility hypothesis was correct, not just plausible.** `flutter test`: 2/3 pass, identical to baseline (`app_test.dart` and `rider_delivery_flow_test.dart` pass, `widget_test.dart` fails for the pre-existing, unrelated reason).
+
+**Option 3 (widening `apps/merchant_app`'s constraint) was never needed** — options 1+2 fully resolved the conflict. `apps/merchant_app/pubspec.yaml` was not touched this stage.
+
+**No opportunistic upgrade performed.** No `flutter pub upgrade` run. The only dependency-graph changes are the ones the conflict required.
+
+### A side effect worth recording: `GeneratedPluginRegistrant.m`
+
+`flutter pub get` in both apps regenerated `ios/Runner/GeneratedPluginRegistrant.m`. Unlike `ios/Flutter/Generated.xcconfig`/`flutter_export_environment.sh` (Phase N, deliberately not committed — those files' own header says "do not... check into version control" and their content is machine-path-specific), this file's header says only "Generated file. Do not edit" — a different convention. Its content is portable (plugin class names and `#import`/`registerWithRegistrar:` calls derived from the actual dependency graph, not this machine's filesystem) and is standard practice to commit in Flutter projects. Diff content verified directly: `store_ops_app`'s correctly drops the `FlutterSecureStorageDarwinPlugin` registration entirely; `rider_app`'s correctly switches from the v10-only `flutter_secure_storage_darwin`/`FlutterSecureStorageDarwinPlugin` to v9's bundled `flutter_secure_storage`/`FlutterSecureStoragePlugin`. Committed alongside the pubspec change it reflects.
+
+### Commits this stage
+
+`bb7ccb4e`.
+
+**S2 verdict: COMPLETE.**
