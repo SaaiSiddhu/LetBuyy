@@ -11,8 +11,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight and resume | COMPLETE | 3cef650f |
 | S1 | Confirm both conflicts | COMPLETE | 75017a24 |
 | S2 | Resolve flutter_secure_storage | COMPLETE | a8bfd8c9 |
-| S3 | Resolve quickcommerce_core | COMPLETE | (this commit) |
-| S4 | Workspace membership | PENDING | |
+| S3 | Resolve quickcommerce_core | COMPLETE | 41eec308 |
+| S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | (this commit) |
 | S5 | Verification | PENDING | |
 | S6 | Documentation | PENDING | |
 
@@ -241,3 +241,61 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 `2167d206`.
 
 **S3 verdict: COMPLETE.**
+
+---
+
+## S4 — Workspace membership, one member at a time
+
+### 4.1 — `resolution: workspace` added before workspace-list membership
+
+Added `resolution: workspace` to `apps/phase_2/rider_app/pubspec.yaml` and `apps/phase_2/store_ops_app/pubspec.yaml`, each **before** adding either to the root `workspace:` list — the exact ordering the Phase M incident (cited in the brief) requires; reversing it breaks the entire Flutter workspace, not just the new member.
+
+### 4.2/4.3 — Added one at a time, `flutter pub get` + `apps/merchant_app` full test suite after each
+
+Path depths independently re-verified before each addition (`apps/phase_2/<app>/` is 3 levels deep → `../../../packages/dart/<pkg>`), not assumed from Phase N's own prior fix.
+
+| Added | `flutter pub get` | `apps/merchant_app` test count |
+|---|---|---|
+| `packages/dart/quickcommerce_core` (Stage 3) | Succeeded | 172/172 |
+| `apps/phase_2/rider_app` | Succeeded — pub auto-deleted its now-stray standalone `pubspec.lock`/`.dart_tool/package_config.json` (`"See https://dart.dev/go/workspaces-stray-files"`), a legitimate, expected cleanup of files this repo doesn't track anyway | 172/172 |
+| `apps/phase_2/store_ops_app` | Succeeded, same stray-file auto-cleanup | 172/172 |
+
+No member needed to be removed and re-recorded BLOCKED — all three joined cleanly on the first attempt, because Stages 2 and 3 had already resolved the actual conflicts before this stage began.
+
+### Final workspace membership: 20 of 20 candidates
+
+```
+workspace:
+  - apps/merchant_app
+  - packages/dart/core
+  - packages/dart/api_client
+  - packages/dart/models
+  - packages/dart/ui_kit
+  - packages/dart/quickcommerce_domain
+  - packages/dart/quickcommerce_observability
+  - packages/dart/quickcommerce_design_system
+  - packages/dart/quickcommerce_offline
+  - packages/dart/quickcommerce_api
+  - packages/dart/quickcommerce_realtime
+  - packages/dart/marketplace_core
+  - packages/dart/marketplace_ui_kit
+  - packages/dart/marketplace_models
+  - packages/dart/marketplace_services
+  - apps/customer_app
+  - apps/admin_app
+  - packages/dart/quickcommerce_core
+  - apps/phase_2/rider_app
+  - apps/phase_2/store_ops_app
+```
+
+Zero BLOCKED members remain from Phase N's list of 3.
+
+### `GeneratedPluginRegistrant.m` picked up `path_provider_foundation` correctly
+
+Both apps' registrant files gained a `PathProviderPlugin` registration under unified workspace resolution (previously resolved standalone, where this apparently wasn't being surfaced the same way). Verified the diff is a correct addition, not a corruption; committed for the same reason as Stage 2's registrant changes (portable, reproducible, standard-practice-to-commit content, unlike the machine-path-specific `ios/Flutter/Generated.xcconfig`-class files).
+
+### Commits this stage
+
+`84263494`.
+
+**S4 verdict: COMPLETE.**
