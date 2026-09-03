@@ -11,11 +11,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight | COMPLETE | (this commit) |
 | S1 | Re-contain the three literal-carrying files (Part A) | COMPLETE | `aedfd9eb` |
 | S2 | Investigate the two flagged-but-clean files; environment-validator before/after | COMPLETE — 2 additional real secrets found, contained | `1aa27719` |
-| S3 | Part B evidence — the four-option table | PENDING | |
-| S4 | Part B execution — migrate all 15 font_awesome_flutter sites | PENDING | |
-| S5 | Remove unused font_awesome_flutter declarations (ui_kit, marketplace_ui_kit) | PENDING | |
-| S6 | Prove compilation + full regression sweep + governance gate | PENDING | |
-| S7 | Documentation | PENDING | |
+| S3 | Part B evidence — the four-option table | COMPLETE | (folded into S4's commit) |
+| S4 | Part B execution — migrate all 15 font_awesome_flutter sites | COMPLETE | `02ad9b68` |
+| S5 | Remove unused font_awesome_flutter declarations (ui_kit, marketplace_ui_kit) | COMPLETE | `4fa55ead` |
+| S6 | Prove compilation + full regression sweep + governance gate | COMPLETE — real build blocked by unrelated pre-existing Android toolchain issue; probe fallback used, before/after captured | (this commit) |
+| S7 | Documentation | COMPLETE | (this commit) |
 
 ---
 
@@ -141,3 +141,108 @@ services/compatibility/firebase_bridge/src/adminAuth.ts
 12 Firebase-client-identifier files (public per Google's documented model, already classified as non-secrets in `00c_credential_exposure_and_rotation.md` and re-confirmed in `12_final_verification.md`) + `adminAuth.ts` (same class, TypeScript, out of this Dart-focused phase's scope) + `custom_payment_service.dart` (the confirmed public-sample false positive above). **The validator does not fully pass** — it was never going to, given these known, pre-existing, already-classified false positives with no exemption mechanism in the validator's own source. This is a validator-tuning question for a later phase, exactly as the brief anticipated.
 
 **S2 verdict: COMPLETE — scope expanded beyond the brief's 3 named files by measured evidence (2 additional real secrets found and contained), 2 disclosed process incidents (both assessed low-severity, both non-repeating after correction). Checkpoint: `1aa27719`.**
+
+---
+
+## S3 — Part B evidence: the four-option table
+
+Re-measured every figure in the CTO's scope claim before touching anything; all matched exactly: 15 files (13 customer_app, 2 admin_app), 79 distinct `FontAwesomeIcons` symbols, 45 `FaIcon(` call sites, 25 `Icon(FontAwesomeIcons.x)` call sites, 0 explicit `IconData x = FontAwesomeIcons...` variables, 14/15 files reference `IconData` in a signature/type, 4 pubspecs declare `^10.7.0` (customer_app, admin_app, ui_kit, marketplace_ui_kit), resolves to 10.12.0, ui_kit/marketplace_ui_kit have zero imports despite declaring it.
+
+| Option | Measured evidence | Verdict |
+|---|---|---|
+| **1 — bump to `^11.0.0`** | Verified via an isolated scratch pubspec (`/tmp/faf-probe`, outside the real workspace) rather than trusting the CTO's own framing: 11.0.0 has **zero** `extends IconData` sites (10.12.0 has exactly 10 — confirmed by name: `IconDataBrands/Solid/Regular/Light/Duotone/Thin/SharpThin/SharpLight/SharpRegular/SharpSolid`). `FontAwesomeIcons` constants are now a standalone `final class FaIconData`, unrelated to `IconData` by inheritance, but **wraps a real `IconData` via a `.data` getter** — a fact the CTO's brief didn't mention and which changes the real risk profile favourably. `FaIcon extends Icon` unchanged. All 79 used symbols exist unchanged in 11.0.0 (zero rename risk — cross-checked against the FA 7.1.0→7.2.0 icon-set bump the CHANGELOG also documents). SDK requirement (`>=3.9.0`/flutter `>=3.27.0`) satisfied by the installed toolchain and both apps' own `sdk: '^3.10.0'`. **CHOSEN.** |
+| **2 — pin Flutter SDK below the final-`IconData` change** | Confirmed 11 of the workspace's pubspecs declare `sdk: flutter` — one shared SDK version across the entire pub workspace; pinning freezes all 20 members, not just the 2 apps that need this fix. Rejected: trades a bounded, already-solved problem (Option 1 exists and works) for an unbounded one (indefinitely blocking every future Flutter upgrade for the whole repo). |
+| **3 — drop the dependency, vendor 79 icons as hand-authored `IconData` constants** | No shortcut available — confirmed via the same symbol/call-site count as Option 1's evidence gathering; would require vendoring font assets, pubspec asset declarations, and 79 codepoint constants by hand. Rejected: highest churn, and Option 1 already eliminates the ongoing dependency risk this option exists to avoid, for a fraction of the cost. |
+| **4 — fork/patch font_awesome 10.x** | Confirmed via `grep -rn "dependency_overrides"` across every pubspec in the repo: **zero existing precedent** for this pattern here. Rejected: would introduce the repo's first `dependency_overrides`/git-dependency, an ongoing maintenance burden for every future contributor, with no advantage over Option 1 now that a real, compatible upstream fix exists. |
+
+Real per-app churn, measured via `flutter analyze`'s own error list immediately after the pubspec bump (not predicted): **75 errors in customer_app, 7 in admin_app**, spanning all 15 font_awesome-importing files. This is the number Stage S4 actually fixed against — not a guess.
+
+**S3 verdict: COMPLETE. Option 1 chosen; evidence is stronger in its favour than the CTO's own framing anticipated (the `.data` bridge means zero sites needed a rendered-behaviour change).**
+
+---
+
+## S4 — Part B execution: migrate all 15 font_awesome_flutter sites
+
+Bumped `apps/customer_app/pubspec.yaml` and `apps/admin_app/pubspec.yaml` from `^10.7.0` to `^11.0.0`. `flutter pub get` at the workspace root failed at first (`marketplace_ui_kit` still declared `^10.7.0`, and the unified pub workspace solves font_awesome_flutter as exactly one version across all 20 members) — resolved by removing the two unused declarations (see S5) in the same working-tree pass, though committed separately.
+
+Two fix shapes were used, chosen **per site** to preserve exact rendered behaviour — never picked for convenience over correctness:
+
+1. **Retype `IconData` → `FaIconData`** where a helper's `icon` parameter is used exclusively with `FontAwesomeIcons` values and rendered via `FaIcon` (never `Icon`). Zero rendering change: `FaIcon` already required `FaIconData`-shaped data for these call sites to be correct. 11 functions/classes: `_buildStatItem` (coupon_selection_screen), `_buildDeliveryOption`/`_priceRow` (mobile_cart_screen), `_buildQuantityButton` (cart_item_card), `_buildPaymentBadge` (payment_method_screen), `_buildStep` (checkout_steps), `_SocialIconButton` (web_footer), `_socialIcon` (web_mobile_footer), `sort_bottom_sheet`'s `_buildSortOption`.
+2. **Append `.data`** where a `FontAwesomeIcons` value flows into Flutter's own `Icon` widget — directly, or via a class/parameter that's *also* used with real `Icons.x` values (mixed usage, so the class stays `IconData`-typed). `FaIconData.data` is font_awesome_flutter's own maintainer-documented compatibility bridge (the 11.0.0 CHANGELOG documents the identical pattern for `find.byIcon(FontAwesomeIcons.foo.data)`) and returns the exact same wrapped `IconData` (same codePoint/fontFamily/fontPackage) the old literal API exposed directly — not a behavioural change, a type-correct unwrap. ~30 sites: `_ContactOption` (help_screen, 1 of 4 call sites), `_HeaderLink`/`_ActionIcon`/3 direct `Icon()` calls (web_header), `_FilterSection` + `_getAttributeIcon`'s 13 returns + 1 direct `Icon()` call (filter_drawer), `_ShareOption` (product_share_widget, 5 sites), `icon_picker_helper.dart`'s `kAppIcons` map (5 entries), `admin_order_details_screen.dart` (1 `_buildCardSection` call + 1 direct `Icon()` call).
+
+One incidental fix, unrelated to font_awesome itself: `icon_picker_helper.dart`'s `kAppIcons` map was declared `const`; `.data` field access on a const `FaIconData` is not itself const-evaluable in this Dart version (`const_eval_property_access`), so the map's modifier was changed `const` → `final`. No observable behaviour change — the map's contents, keys, and lookup semantics are identical; only the theoretical (and here, unused) guarantee of true compile-time immutability is relaxed. Same issue hit once more in `filter_drawer.dart:303` (a single `const Icon(...)` call) — fixed by dropping `const` from that one widget instantiation, again with no observable difference.
+
+Zero sites were left unmigrated. Nothing required a genuine rendered-behaviour trade-off — the `.data` bridge covered every case B1's evidence gathering worried might force one.
+
+**S4 verdict: COMPLETE. Checkpoint: `02ad9b68`.**
+
+---
+
+## S5 — Remove unused font_awesome_flutter declarations
+
+Verified (not assumed) via `grep -rl "package:font_awesome_flutter" packages/dart/ui_kit/lib packages/dart/marketplace_ui_kit/lib` returning empty for both — zero imports in either package despite both declaring the dependency at `^10.7.0`. Removed the declaration line from both `pubspec.yaml`s. This was also load-bearing for S4's `pub get` to succeed at all (the unified workspace solver requires one font_awesome_flutter version across all 20 members), but is committed separately per this phase's own separate-concerns instruction, since it is a pure unused-dependency removal, not a functional migration.
+
+**S5 verdict: COMPLETE. Checkpoint: `4fa55ead`.**
+
+---
+
+## S6 — Prove compilation, full regression, governance gate
+
+### 6.1 — Real build attempt
+
+`cd apps/customer_app && flutter build apk --debug` was attempted (Android SDK present, licenses partially unaccepted per `flutter doctor`). It failed — but at `google_maps_flutter_android:compileDebugKotlin`, a **native Android/Kotlin Gradle compilation stage**, downstream of and unrelated to the Dart/font_awesome_flutter fix (a pre-existing Kotlin-Gradle-plugin version mismatch: `google_maps_flutter_android`'s transitive Kotlin metadata is version 2.3.0, the project's Kotlin Gradle plugin expects 2.1.0). This is a real, pre-existing Android toolchain problem this phase did not cause and is out of scope to fix (Phase Q is scoped to font_awesome_flutter only). **This attempt is inconclusive for the Dart-compilation question** — not a pass, not a fail for what Stage 6 is trying to prove. Per the brief's own instruction ("If the Android toolchain is unavailable, say so explicitly and use the fallback"), fell back to 6.2.
+
+### 6.2 — Kernel-compilation-forcing probe (the fallback actually used)
+
+Built one temporary test per app (`_phase_q_compile_probe_test.dart`, deleted after use, never committed):
+- **customer_app**: imports the real `letbuyy_marketplace/main.dart` entry point plus 3 font_awesome-importing production screens (`mobile_cart_screen.dart`, `payment_method_screen.dart`, `filter_drawer.dart`), touches a symbol from each.
+- **admin_app**: imports `letbuyy_admin/main.dart` plus **both** of admin_app's font_awesome-importing files (`admin_order_details_screen.dart`, `icon_picker_helper.dart`) — admin_app only has 2 such files total, not the "at least three" the brief anticipated, so both (the maximum available) were used instead, noted explicitly rather than silently substituting.
+
+Genuine before/after was captured by temporarily reverting all 18 modified files to their committed HEAD state (`git show HEAD:<path> > <path>` per file, the brief's own sanctioned pattern — never `git checkout`/`restore`/`stash`), saving the uncommitted diff to a patch file first (`git diff ... > patch`, restored via `git apply`), running `flutter pub get` to re-resolve to 10.12.0, running both probes (captured failure), then restoring via `git apply` and re-resolving to 11.0.0 (captured pass):
+
+**Before (10.12.0, unfixed) — both apps, identical failure:**
+```
+Compilation failed for testPath=.../test/_phase_q_compile_probe_test.dart:
+.../font_awesome_flutter-10.12.0/lib/src/icon_data.dart:6:30: Error: The class 'IconData' can't be extended outside of its library because it's a final class.
+class IconDataBrands extends IconData {
+...(9 more, identical pattern: Solid, Regular, Light, Duotone, Thin, SharpThin, SharpLight, SharpRegular, SharpSolid)
+00:00 +0 -1: Some tests failed.
+```
+Exactly 10 distinct `extends IconData` errors — matching the CTO's own independently-reproduced count precisely.
+
+**After (11.0.0, fixed) — both apps:**
+```
+customer_app: 00:00 +1: All tests passed!
+admin_app:    00:00 +1: All tests passed!
+```
+
+Both probe files deleted immediately after the after-pass was captured; neither is part of any commit.
+
+### 6.3 — Full regression sweep
+
+| Check | Result |
+|---|---|
+| `flutter pub get` (workspace root) | PASS — 20/20 members resolve |
+| `flutter test` merchant_app (canary) | **172/172 PASS** — unaffected, matches baseline exactly |
+| `flutter test` marketplace_core | 165/165 PASS |
+| `flutter test` marketplace_ui_kit | 54/54 PASS |
+| `flutter test` customer_app | 13/13 PASS |
+| `flutter test` admin_app | 11/11 PASS |
+| `flutter analyze` — all 15 `packages/dart` members | 15/15 clean |
+| `flutter analyze` customer_app | clean |
+| `flutter analyze` admin_app | clean |
+| `flutter analyze` phase_2/rider_app, phase_2/store_ops_app | 1 pre-existing error each (dead `widget_test.dart` `MyApp` boilerplate) — expected, untouched, matches baseline exactly |
+
+415/415 total tests across the 5 suites, unchanged from baseline. No suite count moved.
+
+### 6.4 — Real governance gate
+
+Ran `node scripts/validate-governance.mjs` (real gate, not `--plan`). Result: **105 PASS / 6 FAIL** — exact match to the CTO's stated baseline. The 6 failures, by name: `foundation-antifabrication-gate.mjs`, `validate-design-system.mjs`, `sequential-migration-validator.mjs`, `raw-error-message-validator.mjs`, `environment-validator.mjs`, `branch-lag-guard-validator.mjs` — all 6 are the same pre-existing set documented in `17_remaining_migration_backlog.md` §7 before this phase started (`environment-validator.mjs`'s failure is the confirmed-benign `custom_payment_service.dart` public-sample false positive from S2, plus the pre-existing Firebase-client-identifier and `adminAuth.ts` false positives — see S2 above). **Zero new failures.**
+
+Confirmed the documented node_modules hazard fired exactly as described: root `node_modules` survived, all per-package `node_modules` under `apps/`, `packages/`, `services/` were deleted (0 found post-gate, down from 51). Restored via `pnpm install --frozen-lockfile` (51 per-package `node_modules` restored, 2.5s — pnpm's content-addressed store makes this fast). `pnpm-lock.yaml` SHA-256 confirmed **byte-identical** before and after (`b4a8038d...`).
+
+### 6.5 — Scope discipline
+
+`git diff 9420221c..HEAD --name-only -- '*pubspec.yaml'` → exactly 4 files: `apps/admin_app/pubspec.yaml`, `apps/customer_app/pubspec.yaml`, `packages/dart/marketplace_ui_kit/pubspec.yaml`, `packages/dart/ui_kit/pubspec.yaml`. All 4 are font_awesome_flutter-only changes (2 version bumps, 2 unused-declaration removals) — confirmed via full `git diff` content review, not just the file list. No other pubspec anywhere in the repo was touched.
+
+**S6 verdict: COMPLETE. Real build inconclusive (unrelated pre-existing Android/Kotlin toolchain issue); probe fallback fully proves the Dart-level fix with genuine before-failure/after-pass evidence. Full regression clean. Gate matches baseline exactly, zero new failures. Scope discipline confirmed.**
