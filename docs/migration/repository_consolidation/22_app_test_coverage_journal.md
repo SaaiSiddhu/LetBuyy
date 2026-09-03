@@ -9,8 +9,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 84f8dfa8 |
-| S1 | Map the testable surface | COMPLETE | (this commit) |
-| S2 | Establish the harness | PENDING | |
+| S1 | Map the testable surface | COMPLETE | d3073d58 |
+| S2 | Establish the harness | COMPLETE | (this commit) |
 | S3 | marketplace_core tests | PENDING | |
 | S4 | marketplace_ui_kit tests | PENDING | |
 | S5 | App-level Firebase-free files | PENDING | |
@@ -195,3 +195,35 @@ Legend: **PURE** = deterministic function/class, no widget tree, trivially testa
 8. Everything else in the WIDGET/STATEFUL tier, in the order listed in the tables above
 
 **S1 verdict: COMPLETE.**
+
+---
+
+## S2 — Establish the harness and prove it runs
+
+Created `apps/customer_app/test/` and `apps/admin_app/test/` — neither existed before this stage. One real test file per app, picking the highest-value **PURE** file from Stage 1's app-level ranking for each (the only PURE-classified file in each app's in-scope set, so no ranking ambiguity):
+
+- `apps/customer_app/test/web_optimizations_test.dart` — 8 tests covering `WebOptimizations`. Real assertions: `animationDuration`/`optionalDuration` pass values through unchanged off-web; `conditionalAnimate` actually invokes its callback (not just "doesn't crash"); `repaintBoundary` wraps correctly; and specifically that `imageCacheWidth` does **not** apply its 400px cap off-web — a genuinely counter-intuitive fact given the class's own doc comment, and exactly the kind of assertion the anti-theatre rule wants (derived from reading the code's actual branching, not from running it and copying the output).
+- `apps/admin_app/test/performance_utils_test.dart` — 8 tests covering `PerformanceUtils`. Real assertions: the off-mobile-web default values; `adjustDuration`'s actual multiply-and-round arithmetic; `startAnimationIfAllowed`'s conditional controller invocation, verified via a hand-written fake controller (`_FakeAnimationController`) matching this repo's existing no-mocking-framework convention, not a placeholder assertion.
+
+Both explicitly document, in a file-level comment, that `kIsWeb`/mobile-web branches are unreachable under a plain VM `flutter test` run — an honest limit, not silently ignored.
+
+```
+$ flutter test apps/customer_app/test
+...
+00:00 +8: All tests passed!
+
+$ flutter test apps/admin_app/test
+...
+00:00 +8: All tests passed!
+
+$ cd apps/merchant_app && flutter test 2>&1 | tail -3
+00:04 +172: All tests passed!
+```
+
+**Both harnesses run and pass. `apps/merchant_app` unaffected: still 172/172.** Neither test file is named `widget_test.dart`, per the brief's explicit instruction.
+
+### Commits this stage
+
+`1fb67d6a`.
+
+**S2 verdict: COMPLETE.**
