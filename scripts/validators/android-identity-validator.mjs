@@ -70,8 +70,17 @@ if (!registry || typeof registry.apps !== "object" || registry.apps === null) {
     ];
     for (const level of levels) {
       if (exists(level.groovy) && exists(level.kts)) {
+        // Peek at what the dead .kts file itself declares, purely for a more
+        // actionable message -- this is never used to decide pass/fail, and
+        // the file is not a secret (a source-code Gradle script).
+        const deadText = readFile(level.kts);
+        const deadAppId = deadText.match(dialectPatterns.kotlin.applicationId)?.[1]
+          ?? deadText.match(dialectPatterns.groovy.applicationId)?.[1];
+        const deadValueNote = deadAppId
+          ? ` The dead file declares applicationId '${deadAppId}'${deadAppId !== expected.applicationId ? ` -- WRONG, does not match this app's declared identity '${expected.applicationId}'` : ""}.`
+          : "";
         offenders.push(
-          `${appName}: both ${level.groovy} and ${level.kts} exist (${level.label}) -- Gradle silently ignores the .kts file when both are present ("This is likely a mistake" -- Gradle's own diagnostic). Delete the dead one.`,
+          `${appName}: both ${level.groovy} and ${level.kts} exist (${level.label}) -- Gradle silently ignores the .kts file when both are present ("This is likely a mistake" -- Gradle's own diagnostic).${deadValueNote} Delete the dead one.`,
         );
       }
     }
