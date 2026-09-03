@@ -13,8 +13,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S2 | Resolve flutter_secure_storage | COMPLETE | a8bfd8c9 |
 | S3 | Resolve quickcommerce_core | COMPLETE | 41eec308 |
 | S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | a31cea8c |
-| S5 | Verification | COMPLETE | (this commit) |
-| S6 | Documentation | PENDING | |
+| S5 | Verification | COMPLETE | 022e01e1 |
+| S6 | Documentation | COMPLETE | (this commit) |
 
 ---
 
@@ -373,3 +373,25 @@ All three unchanged from `12_final_verification.md`'s post-Phase-M green state a
 `c87d9f00` (the two discovered-and-fixed package defects — the only source changes Stage 5 itself produced; everything else was measurement).
 
 **S5 verdict: COMPLETE.**
+
+---
+
+## S6 — Documentation
+
+Wrote `docs/migration/repository_consolidation/21_phase2_workspace_resolution.md` — both conflicts with verbatim solver errors, resolution chosen and options rejected, the exact `flutter_secure_storage` version pub selected (9.2.4) with every call site checked, the final 20/20 workspace membership list, per-app/per-package analyze/test status with first errors, and the two mid-stream pre-existing-defect fixes disclosed as separate from the two named conflicts (not folded in as if they were part of the original scope).
+
+Updated `17_remaining_migration_backlog.md` §2 — extended the Phase N "CLOSED, namespaced not merged" note with the Phase O workspace-membership closure, correcting the previously-accurate-but-now-stale claim that the `phase_2` apps remain outside the shared workspace. Updated §10's branch-ahead-of-main count (72, up from 60).
+
+Added a superseding note to `19_dart_package_recovery.md` (Phase N's own close-out document) pointing at this phase's resolution of every "BLOCKED from workspace membership" claim it made — without rewriting Phase N's own historical narrative, which remains an accurate record of what was true when Phase N ended.
+
+### Commits this stage
+
+`ca2d4b05`.
+
+**S6 verdict: COMPLETE.**
+
+---
+
+## Phase O — final summary
+
+All 6 stages (S0–S5 substantive work, S6 documentation) COMPLETE. 12 commits total (`3cef650f` through this journal's own closing commit). Both dependency conflicts resolved without ever touching `apps/merchant_app`'s dependency constraints — 172/172 confirmed unchanged at every checkpoint. All 20 of 20 candidate Dart pub workspace members are now real members; zero remain BLOCKED. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline on the first run this phase. Two pre-existing, mechanical defects in `packages/dart/marketplace_ui_kit` (found via a genuinely new verification step — direct package-level analysis, which Phase N never performed) were found and fixed, disclosed as separate from the two named conflicts. No dependency was added, removed, or upgraded beyond what the two conflicts required. D-0 was never touched. Nothing pushed, deployed, or rotated. Full detail for every claim above is in this journal's own stage-by-stage entries; `21_phase2_workspace_resolution.md` is the reader-facing summary.
