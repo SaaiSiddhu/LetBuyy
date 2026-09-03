@@ -14,7 +14,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
 | S4 | Align the toolchain | COMPLETE | `d1616b2e` (customer_app), `4175bff4` (admin_app) |
 | S5 | The stray gradle.properties, and a real APK | COMPLETE | `2c67ac56` |
-| S6 | Verification | COMPLETE — 2 disclosed findings (below) | (this commit) |
+| S6 | Verification | COMPLETE — 3 disclosed findings (below) | `df2063c4` |
 | S7 | Documentation | PENDING | |
 
 ---
@@ -468,10 +468,12 @@ TOTALS: PASS=105 FAIL=6 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
 
 node_modules hazard confirmed as documented: 0 per-package `node_modules` survived the gate (down from 51). Restored via `pnpm install --frozen-lockfile` (51 restored, 1.9s). `pnpm-lock.yaml` SHA-256 confirmed **byte-identical** before and after (`b4a8038d...`).
 
+**Third disclosed finding: the gate's cleanup sweep is broader than the brief's own documented hazard.** The brief warns only about `node_modules` deletion. Reading `scripts/governance/validator-orchestrator.mjs`'s actual `GENERATED_DIRECTORY_NAMES` set (line 458) shows it also includes `.next`, `.turbo`, `dist`, `.dart_tool`, and **`build`** — meaning the gate run in this stage also deleted every Flutter `build/` directory repo-wide, including the three debug APKs produced in S5. Discovered when a post-gate sanity re-check for this stage's own final report tried to re-read `apps/customer_app/build/app/outputs/flutter-apk/app-debug.apk` and found the entire `build/` directory gone. This is not a Phase R regression — it's inherent, undocumented-by-the-brief behavior of the gate's own existing cleanup logic, triggered by simply running the gate at all, in the sequence this phase's own stages required (build APKs in S5, then run the gate in S6). Corrective action: rebuilt all three APKs one final time, after the gate had already run, so nothing further deletes them. All three rebuilt APKs are **byte-size-identical** to their S5 counterparts (`187660205`/`240828129`/`241996811` bytes respectively — the build is fully reproducible) and `aapt`-reconfirmed with unchanged identities. This is now the final, currently-existing artifact set (see S5's table, values unchanged) — no further gate run is planned after this point in the phase.
+
 ### 6.7 — Full `git status` attribution
 
 Every remaining `M`/`D` line (39 total) is the same, already-known, pre-existing other-session file set (`apps/identity-platform/*` ×13, `apps/merchant_web/*` ×13, `packages/typescript/*` ×5, `services/api-gateway/*` ×7, `docs/.../00b_topology_amendment_draft.md` ×1) — none touched, none committed, none reverted, exactly as required. `apps/customer_app/android/gradle.properties` and `apps/admin_app/android/gradle.properties` no longer appear as modified (both committed in S5).
 
 Untracked (`??`) entries: `.agents/`, `database/supabase/migrations/208-210*.sql` + matching rollback files, `database/supabase/supabase/`, `docs/migration/repository_consolidation/09_pre_restructure_build_baseline.md`, two `docs/research/2026-08-16-*/` directories, `docs/research/LETBUYY_CLAUDE_CODE_ARCHITECTURE_RESEARCH_BRIEF.md`, and two `.zip` files. **None of these were created by this session** — this phase never wrote to `.agents/`, `database/`, or `docs/research/`, and every file this phase created is accounted for above (`docs/migration/repository_consolidation/26_...md`, `27_...md` in S7). Attributed as pre-existing, other-session untracked artifacts, consistent with this whole engagement's well-established pattern of concurrent sessions sharing one checkout.
 
-**S6 verdict: COMPLETE. Two findings disclosed (the key.properties display incident; merchant_app's 80 pre-existing analyze issues, newly surfaced by this phase's stricter "all five apps" bar) — neither caused by this phase, both reported plainly rather than hidden. Every other check passes at or exactly matching baseline.**
+**S6 verdict: COMPLETE. Three findings disclosed (the key.properties display incident; merchant_app's 80 pre-existing analyze issues, newly surfaced by this phase's stricter "all five apps" bar; the gate's undocumented-by-the-brief `build/`-directory sweep, corrected by a final rebuild) — none caused by a Phase R regression, all reported plainly rather than hidden. Every other check passes at or exactly matching baseline.**
