@@ -13,7 +13,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S2 | The applicationId divergence | COMPLETE | (this commit) |
 | S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
 | S4 | Align the toolchain | COMPLETE | `d1616b2e` (customer_app), `4175bff4` (admin_app) |
-| S5 | The stray gradle.properties, and a real APK | PENDING | |
+| S5 | The stray gradle.properties, and a real APK | COMPLETE | `2c67ac56` |
 | S6 | Verification | PENDING | |
 | S7 | Documentation | PENDING | |
 
@@ -362,3 +362,39 @@ Both admin_app build attempts (before AND after alignment) printed `Upgrading gr
 `git diff 4a2217c8..HEAD --name-only -- '*pubspec.yaml'` → **empty**. Zero Dart/Flutter package versions changed, anywhere, this entire phase.
 
 **S4 verdict: COMPLETE. customer_app required all three toolchain changes to build (Kotlin was the actual cause, confirmed by isolating each variable); admin_app never needed them but was aligned per instruction, with its pre- and post-alignment builds both independently verified successful and identity-unchanged.**
+
+---
+
+## S5 — The stray gradle.properties, and a real APK
+
+### 5.1 — gradle.properties disposition: tested, not assumed
+
+`apps/customer_app/android/gradle.properties` carried 2 uncommitted lines (`android.builtInKotlin=false`, `android.newDsl=false`) since Phase Q. During this phase's own build attempts, the identical 2 lines were auto-added to `apps/admin_app/android/gradle.properties` too — the same Flutter Android migrator behavior, triggered fresh.
+
+Tested whether they're actually necessary: reverted customer_app's file to its true committed (flag-less) state via `git show HEAD:apps/customer_app/android/gradle.properties > apps/customer_app/android/gradle.properties`, then ran `flutter build apk --debug` again. Result: build succeeded (`✓ Built build/app/outputs/flutter-apk/app-debug.apk`), but the build's own output printed `Upgrading gradle.properties` **twice** and silently re-added the identical two lines during that very build. This is decisive: the flags are not an optional, one-time artifact — Flutter's own tooling unconditionally rewrites them on every `flutter build` invocation for this SDK/AGP generation, regardless of the file's starting state. Restoring the file (`git show HEAD:<path> > <path>`) would be pointless — the very next build reintroduces the same two lines. Leaving it permanently uncommitted is worse (permanent, recurring working-tree drift for the same reason). **Committed both files** (`2c67ac56`), each with an explanation citing this exact test.
+
+### 5.2 — Real APK build, all three apps, final committed state
+
+```
+$ cd apps/merchant_app && flutter build apk --debug   # exit code 0
+Running Gradle task 'assembleDebug'...                             15.4s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+
+$ cd apps/customer_app && flutter build apk --debug   # exit code 0
+Running Gradle task 'assembleDebug'...                              3.8s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+
+$ cd apps/admin_app && flutter build apk --debug      # exit code 0
+Running Gradle task 'assembleDebug'...                              3.5s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+```
+
+| App | APK path | Size | `aapt dump badging` (first line) |
+|---|---|---|---|
+| merchant_app | `apps/merchant_app/build/app/outputs/flutter-apk/app-debug.apk` | 179 MB (187,660,205 bytes) | `package: name='com.letbuyy.store' versionCode='1' versionName='1.0.0'` |
+| customer_app | `apps/customer_app/build/app/outputs/flutter-apk/app-debug.apk` | 240 MB (240,828,129 bytes) | `package: name='com.letbuyy.letbuyy' versionCode='4013' versionName='1.0.10-debug'` |
+| admin_app | `apps/admin_app/build/app/outputs/flutter-apk/app-debug.apk` | 231 MB (241,996,811 bytes) | `package: name='com.letbuyy.admin' versionCode='1' versionName='1.0.0-debug'` |
+
+No release build was attempted. No signing occurred (all three are debug builds, using debug keystores per each project's own configuration — untouched by this phase). No `.jks`/`.keystore`/`key.properties`/`google-services.json`/`GoogleService-Info.plist`/`firebase_options.dart` file was read for writing, moved, renamed or modified; `google-services.json` and `firebase_options.dart` were only **read** (S2's identity investigation).
+
+**S5 verdict: COMPLETE. gradle.properties committed with tested justification. All three apps produce a real debug APK, all three identities verified correct via the compiled artifact itself, not source config.**
