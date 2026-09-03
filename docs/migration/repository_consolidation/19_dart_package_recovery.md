@@ -4,6 +4,8 @@
 
 Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/claude-md-durable-architecture-memory`. Started `HEAD 5c930d2d` (2026-09-03), full stage-by-stage detail in `18_dart_package_recovery_journal.md` — this document is the close-out summary, not a replacement for the journal.
 
+> **Superseded 2026-09-03 (Phase O).** Every "BLOCKED from Dart pub workspace membership" claim below (`packages/dart/quickcommerce_core`, `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app`) was resolved the same day — see `20_phase2_workspace_journal.md` and `21_phase2_workspace_resolution.md`. This document is left exactly as Phase N wrote it (an accurate record of what was true when Phase N ended); it is not the current state. `letbuyy_marketplace_services`'s D0_BLOCKED status (unrelated to workspace membership) is unchanged and still current.
+
 ## What this phase did
 
 Four of the six product apps (`customer_app`, `admin_app`, `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app`) could not build or test because Phase M deleted the source trees holding their shared Dart packages, without copying those packages in. This phase recovered the packages from Phase M's own bundles, **namespaced** (not merged) the three that collide by name with this repository's existing packages, and made every app resolve/analyze/test as far as a genuinely blocked dependency graph allows — without merging a single package and without answering D-0.
