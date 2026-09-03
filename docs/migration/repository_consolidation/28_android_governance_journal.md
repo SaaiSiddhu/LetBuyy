@@ -14,7 +14,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S3 | The validator | COMPLETE | (pending commit) |
 | S4 | Prove it catches the real hazard (anti-theatre) | COMPLETE | `6d0fd104` |
 | S5 | Verification | COMPLETE | (pending commit) |
-| S6 | Documentation | PENDING | |
+| S6 | Documentation | COMPLETE | `7e5ec7ef` |
 
 ---
 
