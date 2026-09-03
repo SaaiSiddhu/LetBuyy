@@ -10,8 +10,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 3cef650f |
 | S1 | Confirm both conflicts | COMPLETE | 75017a24 |
-| S2 | Resolve flutter_secure_storage | COMPLETE | (this commit) |
-| S3 | Resolve quickcommerce_core | PENDING | |
+| S2 | Resolve flutter_secure_storage | COMPLETE | a8bfd8c9 |
+| S3 | Resolve quickcommerce_core | COMPLETE | (this commit) |
 | S4 | Workspace membership | PENDING | |
 | S5 | Verification | PENDING | |
 | S6 | Documentation | PENDING | |
@@ -193,3 +193,51 @@ Applied the risk ordering exactly; stopped at option 2 (never touched `apps/merc
 `bb7ccb4e`.
 
 **S2 verdict: COMPLETE.**
+
+---
+
+## S3 — Resolve `quickcommerce_core`
+
+Stage 1.4 already confirmed zero `@HiveType`/`@HiveField` annotations, zero `part '*.g.dart'` directives, zero `.g.dart` files, and zero `package:hive` imports anywhere in this package's source — `hive_generator` is unambiguous dead weight, matching Stage 3.1's "no annotations found" branch exactly. Removed `hive_generator: ^2.0.1` from `dev_dependencies:`.
+
+**Deliberately kept `build_runner: ^2.4.13` and `hive: ^2.2.3`.** Neither is named in the solver's own conflict chain (`"quickcommerce_core depends on hive_generator ^2.0.1 and letbuyy_api_client depends on test ^1.25.8"` — Stage 1.2's captured error), and removing either would be a broader cleanup than "what this conflict requires" (the brief's own explicit constraint, Stage 2.4/3 — applied here too even though it's literally stated under Stage 2). Tested first with only `hive_generator` removed, before considering anything else: **sufficient on its own.**
+
+Added `resolution: workspace` (matching every other `packages/dart/*` member) and added `packages/dart/quickcommerce_core` to the root `workspace:` list:
+
+```
+$ flutter pub get
+...
+These packages are no longer being depended on:
+- quickcommerce_core 1.0.0 from path packages/dart/quickcommerce_core
+Changed 8 dependencies!
+```
+
+(The "no longer being depended on ... from path" line is pub's own phrasing for the transition from plain-path-dependency to workspace-member resolution — informational, not an error.)
+
+### 3.4 — Confirmed `quickcommerce_domain` (its only dependant) still resolves and analyzes
+
+```
+$ flutter analyze packages/dart/quickcommerce_domain
+Analyzing quickcommerce_domain...
+No issues found! (ran in 0.5s)
+
+$ flutter analyze packages/dart/quickcommerce_core
+Analyzing quickcommerce_core...
+No issues found! (ran in 0.3s)
+```
+
+### Regression check
+
+```
+$ cd apps/merchant_app && flutter test 2>&1 | tail -3
+...
+00:04 +172: All tests passed!
+```
+
+**172/172, unchanged.**
+
+### Commits this stage
+
+`2167d206`.
+
+**S3 verdict: COMPLETE.**
