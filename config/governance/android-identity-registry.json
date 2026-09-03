@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "artifactClass": "GOVERNANCE_CONFIG_NOT_AUTHORITY",
+  "authorityNote": "This file is machine-readable governance CONFIG. It is NOT a governance authority and it outranks nothing. Authority order remains: GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md (supreme) > AGENTS.md > nested AGENTS.md > LETBUYY_CANONICAL_SYSTEMS.md. Where this file and any of those disagree, those win and the disagreement is a defect in this file.",
+  "baselineSha": "ba0de035354b577bafdad2f1cc278d4e08983560",
+  "baselineBranch": "feature/claude-md-durable-architecture-memory",
+  "recordedOn": "2026-09-04",
+  "recordedBy": "Phase S — Android identity governance",
+  "enforcedBy": "scripts/validators/android-identity-validator.mjs",
+  "purpose": "Declare the expected Android applicationId and namespace for every native-Android Flutter app, in a file that is NOT generated from and does NOT live beside the Gradle files it governs. Changing a shipped identity now requires a reviewable diff to TWO files, not a silent edit to one. This exists because apps/admin_app/android/app/build.gradle.kts carried applicationId \"com.letbuyy.letbuyy\" — the customer app's shipped identity — undetected through Phase 0 and fourteen further phases, found only by a human diffing two files by hand. See docs/migration/repository_consolidation/27_android_gradle_resolution.md.",
+  "honestyContract": [
+    "com.letbuyy.letbuyy (customer_app) is a SHIPPED Play Store production identity. Its signingConfig references a real release keystore (apps/customer_app/android/key.properties, untracked, storeFile=key.jks). This is the one value in this file that cannot be changed and re-issued if it is ever lost or altered.",
+    "com.letbuyy.admin (admin_app) is NOT a shipped identity. Its release signingConfig points at debug.keystore (apps/admin_app/android/key.properties) — strong evidence it has never shipped a signed release. See docs/migration/00a_signing_key_rescue.md and admin_app's own README.md.",
+    "com.letbuyy.store (merchant_app) is declared in Kotlin DSL (build.gradle.kts), not Groovy — this is the only one of the three apps that is. A check that assumes Groovy syntax will silently pass merchant_app while verifying nothing.",
+    "namespace and applicationId are independent Gradle/AGP concerns and may legitimately differ. admin_app's namespace is com.letbuyy.letbuyy (matching its real physical Kotlin source path at android/app/src/main/kotlin/com/letbuyy/letbuyy/) while its applicationId is com.letbuyy.admin. This is documented, intentional scaffolding leftover, not a defect — do not 'fix' it to match applicationId.",
+    "This registry does not declare versionCode or versionName. Those change on every release by design; asserting an exact value here would need editing on every release cycle and would be a worse validator than none.",
+    "This registry does not declare signingConfig key material or any keystore/key.properties content. The validator enforces only that no such file is TRACKED IN GIT (a path-level check) — it never reads, prints, diffs or hashes their contents. See the disclosed incident in docs/migration/repository_consolidation/27_android_gradle_resolution.md where a diff against a non-existent tracked counterpart printed a real keystore password."
+  ],
+  "apps": {
+    "customer_app": {
+      "gradleRoot": "apps/customer_app/android",
+      "buildScriptDialect": "groovy",
+      "applicationId": "com.letbuyy.letbuyy",
+      "namespace": "com.letbuyy.letbuyy",
+      "shipped": true,
+      "shippedNote": "Play Store production identity. Real release signingConfig (not debug).",
+      "googleServicesJson": "apps/customer_app/android/app/google-services.json",
+      "measuredAt": "apps/customer_app/android/app/build.gradle:13,32 (HEAD ba0de035)"
+    },
+    "admin_app": {
+      "gradleRoot": "apps/admin_app/android",
+      "buildScriptDialect": "groovy",
+      "applicationId": "com.letbuyy.admin",
+      "namespace": "com.letbuyy.letbuyy",
+      "shipped": false,
+      "shippedNote": "Never shipped a signed release — release signingConfig points at debug.keystore.",
+      "googleServicesJson": "apps/admin_app/android/app/google-services.json",
+      "measuredAt": "apps/admin_app/android/app/build.gradle:13,32 (HEAD ba0de035)"
+    },
+    "merchant_app": {
+      "gradleRoot": "apps/merchant_app/android",
+      "buildScriptDialect": "kotlin",
+      "applicationId": "com.letbuyy.store",
+      "namespace": "com.letbuyy.store",
+      "shipped": "unknown",
+      "shippedNote": "Uses a different, environment-variable-driven signing setup (releaseKeystorePath in build.gradle.kts, no key.properties file at all — unlike customer_app/admin_app). Shipped status was NOT determined this phase; recorded honestly as unknown rather than guessed. Out of Phase S's scope beyond recording the currently-declared applicationId/namespace.",
+      "googleServicesJson": null,
+      "measuredAt": "apps/merchant_app/android/app/build.gradle.kts:37,53 (HEAD ba0de035)"
+    }
+  }
+}

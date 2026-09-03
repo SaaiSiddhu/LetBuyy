@@ -10,7 +10,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 |---|---|---|---|
 | S0 | Preflight, baseline reconciliation | COMPLETE | (this commit) |
 | S1 | Measure the ungoverned surface | COMPLETE | (this commit) |
-| S2 | The declaration | PENDING | |
+| S2 | The declaration | COMPLETE | (pending commit) |
 | S3 | The validator | PENDING | |
 | S4 | Prove it catches the real hazard (anti-theatre) | PENDING | |
 | S5 | Verification | PENDING | |
@@ -95,3 +95,52 @@ count: 5
 **Decision: read the known paths explicitly, not via `phaseBEntries`/`listWorkspaceFiles` at all.** The probe proves `phaseBEntries` *could* be made to see Gradle files with a custom `filePattern` (since `listWorkspaceFiles` itself is extension-agnostic) — so extending the shared `sourceExtensions`/`textExtensions` sets is genuinely unnecessary, not just avoidable. But the validator's own scope is exactly 3 fixed app directories (`apps/customer_app`, `apps/admin_app`, `apps/merchant_app`) — using the shared workspace-wide walker for a 3-path, fixed-location check adds indirection without benefit. Reading the known paths directly via `readFile()` (itself extension-agnostic, confirmed by reading its source) is simpler, has zero blast radius on any other validator, and matches the brief's own recommended option.
 
 **S1 verdict: COMPLETE. Zero governance existed; the extension trap is real but avoidable without touching shared code; 4 invariants chosen for enforcement (applicationId, namespace, duplicate-file detection, keystore path-tracking) plus one beyond-minimum addition (google-services.json cross-reference); 3 candidates explicitly excluded with reasons (versionCode/versionName, signingConfig wiring, AndroidManifest permissions).**
+
+---
+
+## S2 — The declaration
+
+### Where it lives, and why
+
+Investigated both candidates before choosing:
+
+- **`apps/<app>/runtime.manifest.json`** — read all three in full. Each is enormous (dozens of required-looking fields covering ownership, execution, orchestration, telemetry, deployment authority). Checked whether the schema is actually enforced (2.3's explicit question): `grep -rln "runtime-manifest.schema.json" scripts/validators/*.mjs` → `architecture-validator.mjs`, confirmed live, not dormant. Read `config/runtime/runtime-manifest.schema.json` (380 lines) and found `"additionalProperties": false` at the **top level** (line 6) — meaning a new structured field (e.g. an `androidIdentity` object) would be **rejected outright** unless the 380-line schema is also edited, and that schema governs all 5 runtime manifests in the repo, not just the 3 apps this phase cares about. High blast radius, real risk of breaking `architecture-validator.mjs` for unrelated runtimes. Rejected.
+- **`config/governance/<name>.json`** — read both existing files (`web-v1-scope-registry.json`, `anti-fabrication-allowlist.json`) as house-style precedent. **No external JSON schema constrains this location at all** — each file is free-form, read and interpreted entirely by its own validator. Checked whether any OTHER validator scans the directory generically (`grep -rln "config/governance" scripts/validators/*.mjs`) and found exactly 3 hits, all referencing `anti-fabrication-allowlist.json` by its **exact literal path**, never the directory as a whole — a new file here is invisible to every existing validator until I wire one to read it. Zero blast radius.
+
+**Chosen: `config/governance/android-identity-registry.json`.** Followed `web-v1-scope-registry.json`'s established header shape closely (`schemaVersion`, `artifactClass: "GOVERNANCE_CONFIG_NOT_AUTHORITY"`, `authorityNote`, `baselineSha`, `baselineBranch`, `recordedOn`, `recordedBy`, `enforcedBy`, `purpose`, `honestyContract`) for consistency with the one other file that plays the same "ratchet registry" role in this codebase.
+
+### Values populated from fresh measurement, not transcribed
+
+```
+$ grep -n "namespace\|applicationId" apps/customer_app/android/app/build.gradle
+13:    namespace 'com.letbuyy.letbuyy'
+32:        applicationId "com.letbuyy.letbuyy"
+
+$ grep -n "namespace\|applicationId" apps/admin_app/android/app/build.gradle
+13:    namespace 'com.letbuyy.letbuyy'
+32:        applicationId "com.letbuyy.admin"
+
+$ grep -n "namespace\|applicationId" apps/merchant_app/android/app/build.gradle.kts
+37:    namespace = "com.letbuyy.store"
+53:        applicationId = "com.letbuyy.store"
+```
+All three match Phase R's own findings exactly (expected — nothing has touched these files since). `google-services.json` presence/client lists also re-measured fresh: customer_app's file lists exactly one client (`com.letbuyy.letbuyy`); admin_app's lists three, shared across the whole Firebase project (`com.letbuyy.admin`, `com.letbuyy.letbuyy`, `com.letbuyy.seller`); `merchant_app` has **no** `google-services.json` at all (`ls` confirms `No such file or directory`) — recorded as `null` in the registry, not omitted, so the validator can distinguish "no file, nothing to check" from "file exists but wasn't measured."
+
+### The shipped/unshipped asymmetry — one correction made honestly
+
+Initially wrote `merchant_app.shipped: false` by analogy with admin_app's `debug.keystore` evidence. Before committing, checked merchant_app's own signing structure (content-blind — paths and structure only, no secret values): **it has no `key.properties` file at all**; its `build.gradle.kts` instead reads a `releaseKeystorePath` (implying an environment-variable- or CI-injected path, not a static file) gated by a `releaseSigningReady` boolean. This is a genuinely different signing mechanism from customer_app/admin_app's `key.properties`-file pattern, and I have no evidence either way about whether merchant_app has shipped a signed release. **Corrected to `shipped: "unknown"`**, with a note explaining why, rather than asserting an unverified `false` — a real-time example of not transcribing an assumption into a declaration meant to be trusted later.
+
+### Registry structure
+
+```json
+{
+  "apps": {
+    "customer_app":  { "applicationId": "com.letbuyy.letbuyy", "namespace": "com.letbuyy.letbuyy", "buildScriptDialect": "groovy", "shipped": true,      "googleServicesJson": "apps/customer_app/android/app/google-services.json" },
+    "admin_app":     { "applicationId": "com.letbuyy.admin",   "namespace": "com.letbuyy.letbuyy", "buildScriptDialect": "groovy", "shipped": false,     "googleServicesJson": "apps/admin_app/android/app/google-services.json" },
+    "merchant_app":  { "applicationId": "com.letbuyy.store",   "namespace": "com.letbuyy.store",   "buildScriptDialect": "kotlin", "shipped": "unknown", "googleServicesJson": null }
+  }
+}
+```
+`buildScriptDialect` is recorded explicitly per app so the validator (Stage 3) has a declared, not inferred, signal for which regex form to expect — removing any temptation to guess dialect from file extension alone. Validated as well-formed JSON (`python3 -c "import json; json.load(...)"`).
+
+**S2 verdict: COMPLETE. Declaration lives at `config/governance/android-identity-registry.json`, chosen over `runtime.manifest.json` specifically to avoid a strict, `additionalProperties:false`, actively-enforced 380-line schema shared across all 5 runtimes. Populated from fresh measurement; one unverified assumption caught and corrected before commit.**
