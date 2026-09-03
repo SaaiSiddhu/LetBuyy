@@ -10,8 +10,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 |---|---|---|---|
 | S0 | Preflight and resume | COMPLETE | 84f8dfa8 |
 | S1 | Map the testable surface | COMPLETE | d3073d58 |
-| S2 | Establish the harness | COMPLETE | (this commit) |
-| S3 | marketplace_core tests | PENDING | |
+| S2 | Establish the harness | COMPLETE | ca16401d |
+| S3 | marketplace_core tests | COMPLETE (189 tests) | (this commit) |
 | S4 | marketplace_ui_kit tests | PENDING | |
 | S5 | App-level Firebase-free files | PENDING | |
 | S6 | Anti-theatre proof + full verification | PENDING | |
@@ -227,3 +227,49 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 `1fb67d6a`.
 
 **S2 verdict: COMPLETE.**
+
+---
+
+## S3 — `packages/dart/marketplace_core` tests (189 tests, 9 files)
+
+Created `packages/dart/marketplace_core/test/` (flat layout, one `<subject>_test.dart` per source file, matching `packages/dart/api_client`/`models`'s existing convention).
+
+| File | Tests | Covers |
+|---|---|---|
+| `validators_test.dart` | 55 | Every `Validators.validate*` function — India phone/pincode formats, password complexity, Luhn credit-card checksum (real valid/invalid pair), `DateTime.now()`-safe expiry-date boundaries |
+| `price_formatter_test.dart` | 39 | en_IN lakh/crore currency grouping (expected strings derived from the Indian numbering convention, not from running the formatter), GST math, discount math including the markup-not-discount edge case, free-delivery thresholds |
+| `date_formatter_test.dart` | 28 | Fixed-date formatting, a weekday-name cross-check against `DateTime.weekday` (not a hardcoded calendar fact), `*Now()`-relative functions built from real `DateTime.now()` offsets computed at test-run time |
+| `breakpoints_test.dart` | 8 | Every documented breakpoint boundary |
+| `size_config_test.dart` | 9 | Block-size math, responsive text/padding/margin/grid-column steps |
+| `responsive_helper_test.dart` | 7 | `getValue`'s three-tier branching via a real `pumpWidget` + `MediaQuery` |
+| `responsive_test.dart` | 11 | `Responsive`/`PlatformResponsive` widgets' actual child-selection behaviour; `PlatformResponsive`'s real behaviour on this host (native macOS — the web-size branches are unreachable from a VM `flutter test` run, documented not faked) |
+| `exceptions_test.dart` | 25 | Every `AppException` subtype's stable `code`, `toString()` override, inheritance chain |
+| `failures_test.dart` | 25 | `Equatable`-based equality (real `==` behavior, not assumed), default vs. overridable codes |
+| `web_utils_test.dart` | 7 | `WebUtils`' pure geometry math via a hand-written `FlutterView` fake |
+
+### A finding: `Breakpoints`, `ResponsiveHelper`, `SizeConfig` are never exported and never used
+
+While writing `breakpoints_test.dart`/`size_config_test.dart`/`responsive_helper_test.dart`, importing them via the package's own barrel (`package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart`) failed with `Undefined name`. The barrel (`lib/letbuyy_marketplace_core.dart`) exports `src/responsive/responsive.dart` only — not `breakpoints.dart`, `responsive_helper.dart`, or `size_config.dart`. Confirmed via `grep -rn "Breakpoints\|ResponsiveHelper\|SizeConfig" apps/customer_app/lib apps/admin_app/lib packages/dart/marketplace_core/lib packages/dart/marketplace_ui_kit/lib` that **nothing in this repository actually uses any of these three classes** — the only hits are an unrelated code comment. These three files are genuinely dead code from the public API's perspective: real, non-trivial, deterministic logic, exported nowhere, called by nothing. Tested anyway via their internal `src/` import path, since the behavior is real and this phase tests existing behavior rather than judging what should be deleted or wired up — that's a decision for whoever owns this package next, not a test-coverage phase. Recorded here, not fixed.
+
+### Deliberately not covered this stage (WIDGET/STATEFUL tier, lower priority, time-budgeted out)
+
+`src/utils/snackbar_helper.dart`, `src/utils/dialog_helper.dart`, `src/services/shared_preferences_service.dart`, `src/web/keyboard_handler.dart`, `src/web/web_scaffold.dart` were classified WIDGET/STATEFUL and confirmed testable without new dependencies in Stage 1, but were not reached this stage — Stage 3's time budget went to the higher-value PURE tier first (money, dates, validation, error hierarchies), per the brief's own stated priority order, and Stage 4/5's widget-heavy work took priority for the remainder of the session. Listed explicitly here, not silently dropped — a real gap for a follow-on pass, not a `DEFERRED_NEEDS_MOCKING` (nothing about them needs a new dependency; they were simply not gotten to).
+
+```
+$ flutter test packages/dart/marketplace_core/test
+...
+00:00 +189: All tests passed!
+
+$ flutter analyze packages/dart/marketplace_core
+Analyzing marketplace_core...
+No issues found! (ran in 0.9s)
+
+$ cd apps/merchant_app && flutter test 2>&1 | tail -3
+00:04 +172: All tests passed!
+```
+
+### Commits this stage
+
+`8114a1c3` (validators/formatters/responsive, 157 tests), `2b935596` (exceptions/failures/web_utils, 32 tests).
+
+**S3 verdict: COMPLETE (for the PURE tier; WIDGET/STATEFUL helpers explicitly deferred, listed above, not silently dropped).**
