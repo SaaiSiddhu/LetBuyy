@@ -11,8 +11,8 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight and resume | COMPLETE | 84f8dfa8 |
 | S1 | Map the testable surface | COMPLETE | d3073d58 |
 | S2 | Establish the harness | COMPLETE | ca16401d |
-| S3 | marketplace_core tests | COMPLETE (189 tests) | (this commit) |
-| S4 | marketplace_ui_kit tests | PENDING | |
+| S3 | marketplace_core tests | COMPLETE (189 tests) | 79c11790 |
+| S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | (this commit) |
 | S5 | App-level Firebase-free files | PENDING | |
 | S6 | Anti-theatre proof + full verification | PENDING | |
 | S7 | Documentation | PENDING | |
@@ -273,3 +273,44 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 `8114a1c3` (validators/formatters/responsive, 157 tests), `2b935596` (exceptions/failures/web_utils, 32 tests).
 
 **S3 verdict: COMPLETE (for the PURE tier; WIDGET/STATEFUL helpers explicitly deferred, listed above, not silently dropped).**
+
+---
+
+## S4 — `packages/dart/marketplace_ui_kit` tests (64 tests, 9 files)
+
+Covers all 10 non-empty widgets found in Stage 1 (9 of 10 tested; `update_dialog.dart` reclassified out of scope mid-stage, see below) plus `AppTheme`.
+
+| File | Tests | Real behaviour asserted |
+|---|---|---|
+| `custom_button_test.dart` | 9 | Tap invokes callback; `isLoading` AND null-`onPressed` both actually block the tap (not just set a disabled flag); every `ButtonType` renders its real Material widget class |
+| `custom_bottom_nav_test.dart` | 4 | Label renders ONLY for the selected item; active/inactive icon selection; tap reports the correct index |
+| `custom_app_bar_test.dart` | 5 | `isGlass` toggling the `BackdropFilter` wrapper; `preferredSize` |
+| `custom_text_field_test.dart` | 10 | Typed text reaches both `onChanged` and a supplied controller; `errorText`/`helperText` surfaced through the real `InputDecoration`; `obscureText`/`enabled` asserted via `EditableText`/behavioural effect since `TextFormField` doesn't expose them as public fields (a real Flutter-API gotcha, not assumed) |
+| `empty_state_test.dart` | 7 | Both `EmptyState` and `EmptyStateAdvanced`; the advanced variant's button requires BOTH `buttonText` AND `onButtonPressed` (verified the AND, not just one side) |
+| `error_view_test.dart` | 3 | Retry button presence and callback wiring |
+| `glass_container_test.dart` | 7 | The light/dark theme branch (the exact branch Phase N's own stray-import fix touched) |
+| `loading_overlay_test.dart` | 4 | Spinner/`loadingText` visibility gated correctly by `isLoading` |
+| `app_theme_test.dart` | 5 | Light vs. dark `ThemeData` genuinely differ in scaffold background and app-bar foreground color — not just "both non-null" |
+
+### A Stage 1 classification gap, caught and corrected mid-stage
+
+While preparing to test `update_dialog.dart` (the 10th non-empty widget), found it imports `letbuyy_marketplace_models` for its `AppUpdateModel` constructor parameter — and `app_update_model.dart` directly `import 'package:cloud_firestore/cloud_firestore.dart'`. This is the exact same transitive-Firebase pattern Stage 1 traced for `customer_app/lib/widgets/mandatory_update_dialog.dart` (which uses the same `AppUpdateModel`) — but Stage 1's classification table marked `marketplace_ui_kit/update_dialog.dart` as plain WIDGET without re-running that trace on it. **Corrected here: `update_dialog.dart` is reclassified OUT of scope**, for consistency with the same rule applied everywhere else. Not tested.
+
+```
+$ flutter test packages/dart/marketplace_ui_kit/test
+...
+00:01 +54: All tests passed!
+
+$ flutter analyze packages/dart/marketplace_ui_kit
+Analyzing marketplace_ui_kit...
+No issues found! (ran in 1.2s)
+
+$ cd apps/merchant_app && flutter test 2>&1 | tail -3
+00:04 +172: All tests passed!
+```
+
+### Commits this stage
+
+`8973948b` (9 widgets + AppTheme, 44 tests), `afc26852` (CustomTextField, 10 tests).
+
+**S4 verdict: COMPLETE.**
