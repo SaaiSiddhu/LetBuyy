@@ -13,7 +13,7 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S2 | The declaration | COMPLETE | (pending commit) |
 | S3 | The validator | COMPLETE | (pending commit) |
 | S4 | Prove it catches the real hazard (anti-theatre) | COMPLETE | `6d0fd104` |
-| S5 | Verification | PENDING | |
+| S5 | Verification | COMPLETE | (pending commit) |
 | S6 | Documentation | PENDING | |
 
 ---
@@ -318,3 +318,90 @@ $ git status --short
 Same 39 pre-existing other-session files, plus exactly one intentional file: `scripts/validators/android-identity-validator.mjs` (the 4.1 message enhancement, committed as `6d0fd104` before this check). No trace of any induced breach in `apps/admin_app`, `apps/customer_app`, or `apps/merchant_app`.
 
 **S4 verdict: COMPLETE. All four controls induced a real failure with an exact, informative message, fully reverted with byte-identity proven by hash where a file was corrupted, and zero residue. The validator was NOT theatre — every invariant it claims to enforce was independently observed to actually block.**
+
+---
+
+## S5 — Verification
+
+### 5.1 — Gate run before any build
+
+`pnpm-lock.yaml` SHA-256 confirmed unchanged from Phase R's own record (`b4a8038d...`) before running.
+```
+$ node scripts/validate-governance.mjs
+...
+discovered on disk    : 116 .mjs modules
+selected for this run : 112
+[ 54/112] PASS           android-identity-validator.mjs (64ms)
+...
+TOTALS: PASS=106 FAIL=6 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
+Governance gate lane FAILED with 6 problem(s):
+- foundation-antifabrication-gate.mjs: FAIL (exit 1)
+- validate-design-system.mjs: FAIL (exit 1)
+- sequential-migration-validator.mjs: FAIL (exit 1)
+- raw-error-message-validator.mjs: FAIL (exit 1)
+- environment-validator.mjs: FAIL (exit 1)
+- branch-lag-guard-validator.mjs: FAIL (exit 1)
+```
+node_modules hazard confirmed as documented (Phase R): 0 per-package `node_modules` survived (down from 51). Restored via `pnpm install --frozen-lockfile` (2.1s). `pnpm-lock.yaml` SHA-256 confirmed byte-identical after (`b4a8038d...`).
+
+### 5.2 — The gate counts moved exactly as predicted
+
+| | Before (Phase R baseline) | After (this phase) |
+|---|---|---|
+| PASS | 105 | **106** |
+| FAIL | 6 | 6 |
+| Selected | 111 | **112** |
+| On disk | 115 | **116** |
+
+Exactly `+1` PASS, `+1` selected, `+1` on disk, `0` change to FAIL — precisely the shape the brief itself predicted ("Adding one gate-lane validator should give 106 PASS / 6 FAIL over 112 selected, 116 on disk"). `android-identity-validator.mjs` appears explicitly as `PASS` in both the live progress line and the summary table — not merely inferred from the aggregate delta.
+
+### 5.3 — The six pre-existing failures, confirmed unchanged by name
+
+`foundation-antifabrication-gate.mjs`, `validate-design-system.mjs`, `sequential-migration-validator.mjs`, `raw-error-message-validator.mjs`, `environment-validator.mjs`, `branch-lag-guard-validator.mjs` — identical set, identical order, to Phase R's own gate run. No seventh failure introduced.
+
+### 5.4 — Full regression
+
+| Check | Result |
+|---|---|
+| `flutter pub get` (workspace root) | PASS — resolves cleanly |
+| `flutter test` merchant_app (canary) | **172/172 PASS** |
+| `flutter test` marketplace_core | 165/165 PASS |
+| `flutter test` marketplace_ui_kit | 54/54 PASS |
+| `flutter test` customer_app | 13/13 PASS |
+| `flutter test` admin_app | 11/11 PASS |
+| `flutter analyze` — all 15 `packages/dart` members | 15/15 clean |
+| `flutter analyze` customer_app | clean |
+| `flutter analyze` admin_app | clean |
+
+415/415 total tests, unchanged. `merchant_app`'s own 80 pre-existing analyze issues (Phase R, disclosed, 0 errors) were **not** re-checked or touched this phase — out of Stage 5.4's own explicit scope ("expected, not yours, do not fix them in this phase").
+
+### 5.5 — Identity untouched by everything above
+
+```
+$ git diff 72ec82f9..HEAD -- 'apps/*/android/app/build.gradle' 'apps/*/android/app/build.gradle.kts'
+(empty)
+```
+Confirmed empty — this phase adds governance; it changes zero app identity, at any point, across every stage.
+
+### 5.6 — Optional real APK rebuild — performed
+
+Rebuilt all three debug APKs, after the gate had already run (so nothing further deletes them):
+```
+merchant_app EXIT: 0
+customer_app EXIT: 0
+admin_app EXIT: 0
+
+$ aapt dump badging apps/merchant_app/build/app/outputs/flutter-apk/app-debug.apk | head -1
+package: name='com.letbuyy.store' versionCode='1' versionName='1.0.0' ...
+$ aapt dump badging apps/customer_app/build/app/outputs/flutter-apk/app-debug.apk | head -1
+package: name='com.letbuyy.letbuyy' versionCode='4013' versionName='1.0.10-debug' ...
+$ aapt dump badging apps/admin_app/build/app/outputs/flutter-apk/app-debug.apk | head -1
+package: name='com.letbuyy.admin' versionCode='1' versionName='1.0.0-debug' ...
+```
+All three identities confirmed unchanged, matching both the registry and Phase R's own record exactly.
+
+### 5.7 — Full `git status` attribution
+
+Identical to every prior phase's own attribution: the same 39 pre-existing other-session `M`/`D` files, and the same untracked artifacts (`.agents/`, migration SQL 208-210 + rollbacks, `docs/research/*`, two `.zip` files) — none created or touched by this phase. Everything this phase itself produced is already committed: `config/governance/android-identity-registry.json`, `scripts/validators/android-identity-validator.mjs`, the one-line registration in `scripts/validate-governance.mjs`, and `docs/migration/repository_consolidation/28_android_governance_journal.md`.
+
+**S5 verdict: COMPLETE. Gate moved by exactly the predicted delta, six pre-existing failures unchanged by name, full regression at exact baseline, identity byte-diff empty across the whole phase, three real APKs rebuilt and identity-verified, every changed path attributed.**
