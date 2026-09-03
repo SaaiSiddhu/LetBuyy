@@ -295,7 +295,7 @@ class AIChatService {
     String msg,
     List<ChatMessage>? history,
   ) async {
-    final apiKey = 'AIzaSyDNtM3uIFUWmQ1234567890abcdefghijk';
+    const apiKey = String.fromEnvironment('GEMINI_API_KEY');
     if (apiKey.trim().isEmpty) {
       dev.log('❌ API key missing');
       return ChatMessage.ai(

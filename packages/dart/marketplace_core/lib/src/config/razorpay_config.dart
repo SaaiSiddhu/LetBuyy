@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 
 class RazorpayConfig {
   // ✅ LIVE KEYS
-  static const String keyId = 'rzp_live_RfCwI1SDSVoN0b';
-  static const String keySecret = 'K02v4uSZjPBElHGj7FO4a60g';
+  static const String keyId = String.fromEnvironment('RAZORPAY_KEY_ID');
+  static const String keySecret = String.fromEnvironment('RAZORPAY_KEY_SECRET');
   
   static const String appName = 'AgriMate';
   static const String currency = 'INR';
