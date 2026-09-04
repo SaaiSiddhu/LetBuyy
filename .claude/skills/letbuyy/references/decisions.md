@@ -17,29 +17,57 @@ supersession — never silently reopen a closed question. **Authority order:** C
 | **D-UIUX** | uiux lane scope = canonical apps only (`customer_web`, `merchant_web`, `admin_web`, `identity-platform`, `merchant_app` via the token bridge); donor apps, `phase_2/*`, `marketing-site` and FROZEN apps are HOLD. **Canonical first:** if no proper canonical system exists for a surface, make it canonical (references + gates) before rolling it out across the codebase. | Decided. `references/uiux.md` + `references/uiux/*.md` are the canonical set; `uiux/CANONICALIZATION_PROGRAMME.md` is the rollout plan (phases, not this GOV-3 phase). |
 | D-AGRIMORE-STANDALONE | Is the standalone `Projects/Clients/Agrimore*` in scope? | Default **NO** (different programme, `agrimore-cto-handoff`). Not asked; assumption stated. |
 
-## 2. Founder decisions D-0…D-7 — OPEN_FOUNDER_DECISION (never resolve silently)
+## 2. Founder decisions D-0…D-7 — recorded 2026-09-04 (OWNER_DECISION unless marked OPEN)
 
-State each as **open**, **provisionally recommended**, or **owner-approved with evidence**. Isolate
-decision-dependent work, let unrelated work proceed, recommend a safe default, never decide money,
-legal, custody, commission or merchant-of-record policy. Full option analysis:
-`docs/migration/repository_consolidation/11_backend_consolidation.md` (every row `D0_DEPENDENT`) and
-the retired handoff skill's `unified-product-architecture.md` (kept beside the personal stub).
+The owner answered D-0, D-1, D-3, D-4, D-5, D-6 and D-7 in chat on 2026-09-04, in the session that
+produced the seller-app gap analysis; phase GOV-4 recorded them here. D-2 stays **OPEN** for counsel.
+A recorded decision is cited, never re-litigated; a phase that needs one changed writes a new owner
+question in §6 instead. The option analysis that led here: `docs/migration/repository_consolidation/
+11_backend_consolidation.md` (every row was `D0_DEPENDENT` before this record) and the retired handoff
+skill's `unified-product-architecture.md` (kept beside the personal stub). None of the chosen options
+needs a Constitution amendment: 0% fee, no custody, the sole issuer, eight runtimes and ART-24 all stand.
 
-| ID | Question | Status · safe default while open |
+| ID | Question | Decision · consequence |
 |---|---|---|
-| **D-0** | Canonical backend: (A) canonical commerce OS extended with a marketplace channel — audit-recommended, gated on a verification spike · (B) new build on the Agrimore schema · (C) extend Firebase — rejected on client-authoritative money | **OPEN — gates architecture.** Say so in every architecture verdict. Default: build nothing that assumes A or B; `services/compatibility/*` stays inert; no data migration script targets a schema. |
-| **D-1** | 0% transaction fee (Constitution, `commission-bps-zero-validator`) vs the ≤10% + platform fee the live marketplace charges today | **OPEN — a real contradiction.** Default: the repository stays at 0%; a change is Constitution-amendment territory; no ledger posting work that assumes a fee. |
-| **D-2** | Is LetBuyy merchant-of-record? | **OPEN** (today split by plan as an emergent property). Needs counsel. Default: no GST-invoicing or refund-liability design that assumes an answer. |
-| **D-3** | Multi-merchant cart at Phase 1 launch | **OPEN.** Recommended default: build the parent purchase + child order model, launch single-merchant-per-checkout behind a flag. The model exists in **none** of the three lineages. |
-| **D-4** | Admin survivor (`admin_web` vs `admin_app` vs the retired `admin-web`) | **OPEN**, contingent on D-0. `platform-operations-portal` → `admin_web` is constitutionally pre-decided (ART-24) but its smoke gate is uncleared. |
-| **D-5** | Campaign credits prepaid vs postpaid | **OPEN.** Default: prepaid only at launch. |
-| **D-6** | Subscription plan → channel entitlement mapping | **OPEN.** Default: grandfather existing subscribers into storefront, price marketplace separately, offer a bundle. |
-| **D-7** | KYC provider and operating model (only OCR exists; extraction ≠ verification) | **OPEN.** Default: licensed KYC/AML vendor before onboarding at scale; documents private with signed reads. |
+| **D-0** | Canonical backend | **A — extend the canonical commerce OS** (`services/api-gateway`, the ledger, RLS tenancy, GST, the storefront runtime) with a marketplace channel; the shipped `customer_app` UI moves onto the canonical API; Firebase becomes read-only during cutover, then retires. Options B (Agrimore schema) and C (extend Firebase) are closed. `services/compatibility/*` stays inert until the phase that replaces each function lands; no data-migration script targets a schema before MKT-0 defines it. |
+| **D-1** | Transaction fee | **0% on both channels, permanent** (Constitution §6 unchanged; `commission-bps-zero-validator` stays). Revenue = plans, ad campaigns, credits, logistics. The seller app's commission engine (category rate + tier modifier + plan rate + ₹20/order platform fee + GST on fees) is **not ported**; existing marketplace sellers are re-contracted. |
+| **D-2** | Is LetBuyy merchant-of-record? | **OPEN — needs counsel.** Default unchanged: no GST-invoicing, refund-liability, bank-account custody or settlement design that assumes an answer. |
+| **D-3** | Multi-merchant cart at Phase 1 launch | **Build the parent purchase + child order model now; launch single-merchant-per-checkout behind a flag.** One code path: a storefront checkout is a purchase with exactly one child. |
+| **D-4** | Admin survivor | **`admin_web` is the one admin.** `admin_app`'s moderation queues (listings, campaigns, deals, KYC) are ported into it; `admin_app` retires after the port. ART-24 (`platform-operations-portal` → `admin_web`) stands; its smoke gate is still uncleared. |
+| **D-5** | Campaign credits | **Prepaid only.** Credits are a non-withdrawable, non-transferable service entitlement with their own ledger liability account, funded by a Razorpay purchase, never from sales payable. |
+| **D-6** | Plan → channel entitlement mapping | **Grandfather existing subscribers on both sides at their current price and limits; price storefront-only, marketplace-only and a bundle for new merchants.** No forced migration on cutover day. |
+| **D-7** | KYC provider and operating model | **Licensed KYC/AML vendor before onboarding at scale** — PAN, Aadhaar offline/DigiLocker, bank penny-drop and GSTIN behind one adapter; documents private in R2 with short-lived signed reads; admin review only for exceptions. Vendor choice and cost are a follow-up owner item (D-KYC-VENDOR, §6). |
 
-Lower-blast-radius open items: marketplace web in Phase 1 · which loyalty/deals/reels/AI-chat features
-survive · search provider · storefront theme survivor · domain strategy · retention periods ·
-quick-commerce launch city and dark-store model · the `00b_topology_amendment_draft.md` Signature
-Block (all 7 items unsigned; the six-app rename was applied under the brief's apply-anyway instruction).
+Still open, lower blast radius: marketplace web in Phase 1 · loyalty points (customer-side) · search
+provider · storefront theme survivor · domain strategy · retention periods · quick-commerce launch city
+and dark-store model · the `00b_topology_amendment_draft.md` Signature Block (all 7 items unsigned; the
+six-app rename was applied under the brief's apply-anyway instruction).
+
+### 2a. Seller-feature survival and retirements — OWNER_DECISION 2026-09-04
+
+Measured against the System A bundle (`be716ae`): seller app 96,098 lines / 171 files, Firestore-direct,
+23 Cloud Functions; `merchant_app` 71,812 / 153, gateway-only. Everything below is a **decision about
+scope**, never evidence that a port exists.
+
+| Survives into `merchant_app` | Rule |
+|---|---|
+| Reels + reel boosts | media through the existing media route to R2; a boost is a campaign (D-5) |
+| Flash deals with admin approval | a scheduled product discount plus listing moderation; never a price the client asserts |
+| Seller ↔ admin support chat | a new conversation table plus an `admin_web` inbox |
+| Performance tiers and penalties, **non-monetary** | late-dispatch, cancellation and RTO tracking feed ranking, badges and suspension — never a deduction (D-1); bonuses become credits, never cash |
+| Ports with an existing canonical backend | product extras (bulk edit/export, drafts, HSN/GST, category attributes), order-fulfilment UI (pack, ship, courier, AWB, label, RTO, SLA), dashboard charts, bank/tax settings screens |
+| Ports that need new canonical backend first | listing moderation (`channel_listing`), ad campaigns + the prepaid credit ledger, the KYC wizard on `merchant_kyc_documents` + the vendor adapter, bank details (blocked by D-2) |
+
+| Retired outright | Why |
+|---|---|
+| Seller auth (email/password, Google sign-in, email verification, password reset) | `apps/identity-platform` is the sole issuer |
+| System A store builder, `deployStore`, `serveStore`, `domainMapping` | superseded by `sites.subdomain` + `apps/customer_web` |
+| Seller AI chat (Gemini) | superseded by `merchant_app` AI Studio + `ai_credits` |
+| The mutable seller wallet (`walletBalance`/`pendingAmount`, ₹500 minimum, ₹2,000 weekly cap, auto payouts) | custody and a mutable balance are forbidden; earnings become a derived view over `payout_statements` + `wallet_ledger_entries` |
+| Commission engine, penalties as deductions, cash bonuses | D-1 |
+
+Unanswered: on the survival question the owner also ticked "Something else" without text —
+**D-FEAT-EXTRA** (§6). Nothing is scoped for it until the owner names it.
 
 ## 3. Constitutional rules that bind every phase — CONSTITUTIONAL_DECISION
 
@@ -132,6 +160,8 @@ is evidence that code exists.**
 | D-WORKTREES | the 6 legacy `.claude/worktrees/*` + 11 orphan `agent-*` dirs (9.1 GB) | never remove without the owner |
 | D-MIGRATIONS-208 | migrations 208–210 are untracked in the primary checkout (another session's stale-FK cleanup) and red the gate for everyone | the migration owner commits them with rollbacks; GOV-3 does not touch them |
 | D-DEPLOY-1 | when the deploy lanes are retargeted to `staging`/`main` with verified cloud targets and secrets | dispatch-only until then |
-| D-UX-DONORS | when `customer_app`/`admin_app` leave HOLD (after D-0/D-4) | HOLD; a11y/safety regressions reviewed, never re-skinned |
+| D-UX-DONORS | when `customer_app`/`admin_app` leave HOLD (D-0 = A and D-4 = `admin_web` were decided 2026-09-04; HOLD lifts per port phase, never wholesale) | HOLD; a11y/safety regressions reviewed, never re-skinned |
 | D-AGENTS-DEPLOY-R1 | `AGENTS.md` DEPLOY-R1/TEST-R8 now read `staging`; the surrounding prose still describes the 30-commit lag history — rewrite the rule text? | literal retarget only (GOV-3); prose is historical |
 | D-CODEOWNERS | `.github/CODEOWNERS` names four retired app paths | CI-1 |
+| D-FEAT-EXTRA | on the 2026-09-04 seller-feature survival question the owner also ticked "Something else" without text — which feature? | nothing scoped for it; ask before MER-* contracts are written |
+| D-KYC-VENDOR | which licensed KYC/AML vendor, and at what cost per verification (D-7 chose the model, not the vendor) | build the adapter seam; no vendor SDK until named |
