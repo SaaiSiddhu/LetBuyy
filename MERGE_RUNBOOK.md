@@ -1,15 +1,16 @@
 # MERGE RUNBOOK - local one-reality promotion and human remote seams
 
-This runbook is current for the foundation stepup convergence. It replaces the old `develop`/UI-stream merge instructions and must not be used to resurrect archived Codex mission prompts.
+This runbook governs local branch alignment and the human remote seam. It must not be used to resurrect archived Codex mission prompts. **Since 2026-09-04 (OWNER_DECISION D-BRANCH) the operating procedure for merges and promotions is `.claude/skills/letbuyy/references/merge.md` and `promote.md`; this runbook keeps the guardrails, the divergence classification and the human seam, which still apply unchanged.**
 
-## Current local reality
+## Current local reality (2026-09-04, phase GOV-3)
 
-- Canonical branch: `stepup/main`.
-- Local deploy branch: `main`.
-- Required local invariant: `git rev-list --count main..stepup/main` returns `0`.
-- Remote promotion remains human-controlled and is recorded in `SKIPPED_HUMAN_DECISIONS.md` as `SKIP-PROD-DEPLOY-PROMOTION` and `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE`.
-- Launch readiness remains blocked by `CAPABILITY_BACKLOG.md`; convergence completion is not a production launch claim.
-- 2026-08-23: integration work accumulated on `feature/claude-md-durable-architecture-memory` was promoted locally, fast-forward only, to `stepup/main` and then to `main` (both now `1edaea7158a293fd38af25a8430e110a3dc9d2ce`). `stepup/main` remains the canonical integration branch named by CI, staging deploy, the branch-lag monitor, and this validator's default — the feature branch was a temporary work surface, not a replacement for it.
+- Branch model: `letbuyy/<phase>` → `--no-ff` merge into `develop` (inside the `develop` worktree) → fast-forward-only promotion `develop` → `staging` → `main`. `main` never receives a merge commit or a direct commit.
+- Environment branches were levelled at `823aa5ee1aa0d8acf35d711b7f24b49a0b332761` on 2026-09-04: `develop` and `staging` created there; `main` fast-forwarded from `1fda6486` with `git fetch . <sha>:main` (reflog reads `fast-forward`). Nothing is deployed anywhere.
+- Required local invariant: `git merge-base --is-ancestor main staging && git merge-base --is-ancestor staging develop` (equivalently `git rev-list --count staging..main` = `0` and `git rev-list --count develop..staging` = `0`). Enforced by `scripts/validators/branch-lag-guard-validator.mjs` (local mode) and `branch-dispositions-validator.mjs`; the deploy-time pair (`main` not behind `origin/staging`) by the enforce mode in `production-deploy.yml` and `branch-lag-monitor.yml`.
+- `stepup/main` (`08c6f872`) is a **preserved alias** of the former integration branch: never advanced, never deleted, listed as `LEGACY_INTEGRATED` in `docs/active/BRANCH_DISPOSITIONS.md` — the only branch-disposition authority. `feature/claude-md-durable-architecture-memory` is the primary checkout's frozen work surface; commits after `823aa5ee` on it are unintegrated until merged through a phase branch.
+- Remote promotion remains human-controlled and is recorded in `SKIPPED_HUMAN_DECISIONS.md` as `SKIP-PROD-DEPLOY-PROMOTION` and `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE`; the owner's word is required in the same message before any push of `staging` or `main`, and the harness denies agent pushes.
+- Launch readiness remains blocked by `CAPABILITY_BACKLOG.md`; a levelled branch chain is not a production launch claim.
+- History (2026-08-23): integration work on the feature branch was promoted locally, fast-forward only, to `stepup/main` and then to `main` (both `1edaea71` at the time). That model is superseded by the one above.
 
 ## Non-negotiable guardrails
 

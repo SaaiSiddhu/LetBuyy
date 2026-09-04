@@ -188,7 +188,18 @@ for (const actionId of [
   reporter.assert(ledger.includes(actionId), `EXECUTION_LEDGER.md missing completion row ${actionId}`);
 }
 
-reporter.assert(readFile(".gitignore").includes(".claude/"), ".claude/ must stay gitignored");
+// OWNER_DECISION D-HOME (2026-09-04): .claude/ stays gitignored — settings, worktrees, commands, launch config —
+// EXCEPT the tracked operating skill at .claude/skills/letbuyy/ (the only re-included path).
+const gitignore = readFile(".gitignore");
+reporter.assert(
+  gitignore.includes(".claude/*") && gitignore.includes("!.claude/skills/") && gitignore.includes(".claude/skills/*") && gitignore.includes("!.claude/skills/letbuyy/"),
+  ".gitignore must ignore .claude/* and re-include only .claude/skills/letbuyy/ (D-HOME)",
+);
+reporter.assert(!/^\.claude\/$/m.test(gitignore), ".gitignore must not blanket-ignore .claude/ (that would hide the tracked operating skill)");
+reporter.assert(
+  !gitignore.split("\n").some((line) => /^!\.claude\/(?!skills\/$|skills\/letbuyy\/$)/.test(line.trim())),
+  ".gitignore must not re-include any .claude/ path other than skills/ and skills/letbuyy/",
+);
 
 const skipped = readFile("SKIPPED_HUMAN_DECISIONS.md");
 const skippedIds = [...skipped.matchAll(/^\| (SKIP-[^| ]+) \|/gm)].map((match) => match[1]);

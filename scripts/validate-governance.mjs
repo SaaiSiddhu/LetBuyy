@@ -174,6 +174,7 @@ const validators = [
   "meta-no-theater-validator.mjs",
   "phase-c-forced-decisions-validator.mjs",
   "branch-lag-guard-validator.mjs",
+  "branch-dispositions-validator.mjs",
   "deploy-matrix-topology-validator.mjs",
   "topology-json-antifabrication-validator.mjs",
   "no-scan-generated-agents-validator.mjs",

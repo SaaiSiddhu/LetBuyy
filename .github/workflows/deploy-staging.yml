@@ -1,8 +1,9 @@
 name: Deploy Staging
 
 on:
-  push:
-    branches: [stepup/main]
+  # The push trigger (formerly stepup/main) was removed on 2026-09-04 (OWNER_DECISION D-DEPLOY, phase GOV-3).
+  # Under develop -> staging -> main this lane will be retargeted to push on `staging` by a DEPLOY-1
+  # phase once the staging targets are verified; until then it is dispatch-only.
   workflow_dispatch:
 
 permissions:

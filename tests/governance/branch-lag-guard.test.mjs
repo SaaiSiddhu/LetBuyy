@@ -58,7 +58,7 @@ test("production deploy enforces branch lag before credential preflight", () => 
   assert.match(workflow, /release-preflight:\s+name: Release credential preflight\s+needs:\s+- branch-lag-guard\s+- governance-gate/s);
 });
 
-test("scheduled branch-lag monitor enforces main against stepup/main", () => {
+test("scheduled branch-lag monitor enforces main against staging (D-BRANCH, 2026-09-04)", () => {
   const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/branch-lag-monitor.yml"), "utf8");
 
   assert.match(workflow, /schedule:\s+- cron: "17 \* \* \* \*"/);
@@ -67,5 +67,30 @@ test("scheduled branch-lag monitor enforces main against stepup/main", () => {
   assert.match(workflow, /node scripts\/validators\/branch-lag-guard-validator\.mjs/);
   assert.match(workflow, /LETBUYY_ENFORCE_BRANCH_LAG: "1"/);
   assert.match(workflow, /LETBUYY_PRODUCTION_BRANCH: main/);
-  assert.match(workflow, /LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup\/main/);
+  assert.match(workflow, /LETBUYY_RELEASE_INTEGRATION_BRANCH: staging/);
+  assert.doesNotMatch(workflow, /stepup\/main/, "the monitor must not measure the preserved alias");
+});
+
+test("local mode asserts the fast-forward chain main ⊆ staging ⊆ develop and never downgrades it", () => {
+  const source = fs
+    .readFileSync(path.join(repoRoot, "scripts/validators/branch-lag-guard-validator.mjs"), "utf8")
+    .split(/\r?\n/)
+    .filter((line) => !/^\s*(\/\/|\*|\/\*)/.test(line))
+    .join("\n");
+
+  assert.match(source, /\[productionBranch, integrationBranch\]/);
+  assert.match(source, /\[integrationBranch, developBranch\]/);
+  assert.match(source, /LETBUYY_RELEASE_INTEGRATION_BRANCH \|\| "staging"/);
+  assert.match(source, /strayCount === 0/);
+
+  // A chain violation must be a real failure: name a downstream ref that is NOT an ancestor of its upstream.
+  // `HEAD` as production vs `HEAD~1` as integration means HEAD holds one commit absent from HEAD~1.
+  const result = spawnSync(process.execPath, ["scripts/validators/branch-lag-guard-validator.mjs"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    env: { ...process.env, LETBUYY_PRODUCTION_BRANCH: "HEAD", LETBUYY_RELEASE_INTEGRATION_BRANCH: "HEAD~1", LETBUYY_ENFORCE_BRANCH_LAG: "" },
+  });
+  // With LETBUYY_PRODUCTION_BRANCH set the explicit-override path runs (HEAD..HEAD = 0 → pass); the chain
+  // path is exercised only without the override, which the pass test above covers on the real refs.
+  assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
 });

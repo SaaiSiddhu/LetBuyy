@@ -1,9 +1,13 @@
 name: Production deploy
 
 on:
-  push:
-    branches:
-      - main
+  # The push-to-main trigger was removed on 2026-09-04 (OWNER_DECISION D-DEPLOY, phase GOV-3):
+  # nothing is deployed yet, the Vercel project IDs are placeholders, and a green gate plus present
+  # secrets on a main push would migrate the production database and deploy four Workers.
+  # Production deploys are dispatched by the owner until a DEPLOY-1 phase retargets this lane with
+  # verified cloud targets. Branch model: develop -> staging -> main, fast-forward only
+  # (.claude/skills/letbuyy/references/promote.md). The branch-lag guard below measures main against
+  # staging (the former stepup/main role).
   workflow_dispatch:
 
 permissions:
@@ -34,7 +38,7 @@ jobs:
         env:
           LETBUYY_ENFORCE_BRANCH_LAG: "1"
           LETBUYY_PRODUCTION_BRANCH: main
-          LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main
+          LETBUYY_RELEASE_INTEGRATION_BRANCH: staging
 
   governance-gate:
     name: Governance gate

@@ -29,7 +29,8 @@ test("ci.yml gates the Web V1 integration branch on pull_request and push", () =
   const push = triggerBlock.slice(triggerBlock.indexOf("push:"));
 
   for (const [eventName, block] of [["pull_request", pullRequest], ["push", push]]) {
-    for (const branch of ["main", "stepup/main", "codex/web-v1-integration"]) {
+    // `staging` gates since D-BRANCH (2026-09-04); `stepup/main` is retained as a fail-safe like `develop` was.
+    for (const branch of ["main", "staging", "stepup/main", "codex/web-v1-integration"]) {
       assert.ok(
         block.includes(`- ${branch}`),
         `ci.yml ${eventName} trigger must cover ${branch}`,

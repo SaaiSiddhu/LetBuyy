@@ -69,14 +69,18 @@ for (const fragment of [
 const productionRollout = readFile(".github/workflows/production-rollout.yml");
 const productionDeployWorkflow = readFile(".github/workflows/production-deploy.yml");
 const workflowFiles = getTrackedFiles().filter((file) => file.startsWith(".github/workflows/") && file.endsWith(".yml") && exists(file));
-const productionPushDeployWorkflows = workflowFiles.filter((file) => {
+const PRODUCTION_DEPLOY_VERBS = /(wrangler deploy --env production|vercel@latest deploy[\s\S]{0,120}--prod|supabase@latest db push[\s\S]{0,160}PRODUCTION_DB_CONNECTION_STRING|Smoke test production|Smoke Test Production)/;
+// A production deploy workflow both carries a production deploy verb AND targets the `production` environment
+// (`vercel deploy --prod` also appears in the staging lane, where it publishes to a staging project).
+const productionDeployWorkflows = workflowFiles.filter((file) => {
   const text = readFile(file);
-  return (
-    text.includes("push:") &&
-    text.includes("main") &&
-    /(wrangler deploy --env production|vercel@latest deploy[\s\S]{0,120}--prod|supabase@latest db push[\s\S]{0,160}PRODUCTION_DB_CONNECTION_STRING|Smoke test production|Smoke Test Production)/.test(text)
-  );
+  return PRODUCTION_DEPLOY_VERBS.test(text) && text.includes("environment: production");
 });
+// OWNER_DECISION D-DEPLOY (2026-09-04): the production lane is reachable only from `main` (push) or manual
+// dispatch, and until a DEPLOY-1 phase retargets it with verified cloud targets it carries no push trigger
+// at all. The invariant that survives both states: only production-deploy.yml may deploy production, it
+// must be dispatchable, it never runs on pull_request, and a push trigger — when present — is restricted to main.
+const productionPushDeployWorkflows = productionDeployWorkflows.filter((file) => /^\s*push:\s*$/m.test(readFile(file)));
 
 function indexOf(source, fragment) {
   const index = source.indexOf(fragment);
@@ -86,9 +90,26 @@ function indexOf(source, fragment) {
 
 reporter.assert(!exists(".github/workflows/deploy-production.yml"), "Legacy deploy-production.yml must stay retired; production deploys use one gated path");
 reporter.assert(
-  productionPushDeployWorkflows.length === 1 && productionPushDeployWorkflows[0] === ".github/workflows/production-deploy.yml",
-  `Exactly one push-to-main production deploy workflow is allowed; found ${productionPushDeployWorkflows.join(", ") || "none"}`,
+  productionDeployWorkflows.length === 1 && productionDeployWorkflows[0] === ".github/workflows/production-deploy.yml",
+  `Exactly one production deploy workflow is allowed; found ${productionDeployWorkflows.join(", ") || "none"}`,
 );
+reporter.assert(
+  productionPushDeployWorkflows.every((file) => file === ".github/workflows/production-deploy.yml"),
+  `Only production-deploy.yml may deploy production on a push; found push triggers in ${productionPushDeployWorkflows.join(", ")}`,
+);
+const productionTriggerBlock = productionDeployWorkflow.slice(
+  productionDeployWorkflow.indexOf("\non:"),
+  productionDeployWorkflow.indexOf("\npermissions:"),
+);
+reporter.assert(/^\s*workflow_dispatch:/m.test(productionTriggerBlock), "Production deploy workflow must be dispatchable (workflow_dispatch)");
+reporter.assert(!/^\s*pull_request:/m.test(productionTriggerBlock), "Production deploy workflow must never run on pull_request");
+if (/^\s*push:\s*$/m.test(productionTriggerBlock)) {
+  const pushBranches = [...productionTriggerBlock.matchAll(/^\s+- (\S+)\s*$/gm)].map((match) => match[1]);
+  reporter.assert(
+    pushBranches.length > 0 && pushBranches.every((branch) => branch === "main"),
+    `Production deploy push trigger, when present, must be restricted to main (found: ${pushBranches.join(", ") || "none"})`,
+  );
+}
 reporter.assert(
   productionDeployWorkflow.includes("group: production-release-production"),
   "Production deploy workflow must use the shared production release concurrency group",

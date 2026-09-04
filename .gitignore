@@ -91,7 +91,10 @@ functions/lib/
 all.env
 .dev.vars
 **/.dev.vars
-.claude/
+.claude/*
+!.claude/skills/
+.claude/skills/*
+!.claude/skills/letbuyy/
 .dart-defines.local
 **/.dart-defines.local
 

@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# gate.sh — the deterministic gate battery for /letbuyy. Prints a table (name | exit | seconds | first failure line)
+# and writes every log under $LETBUYY_GATE_OUT (default ~/.letbuyy/gate/<branch>-<sha>-<ts>/).
+#
+# Usage: bash .claude/skills/letbuyy/scripts/gate.sh [--quick|--baseline|--security|--ui|--mobile|--full] [--flutter-build] [--real-db] [--gate-real] [--build]
+#   (default)      typecheck · lint · governance --plan (inventory drift, SAFE) · the FULL validator sweep (every gate-lane validator run
+#                  individually, SAFE — no artefact cleanup) · contract tests · gateway unit tests (all 94 suites) · tests/governance + tests/ci
+#   --quick        typecheck + lint only
+#   --baseline     same as default, labelled BASELINE (run on the untouched branch before building)
+#   --security     default + tests/security + tests/auth + the d2 RLS red-team + wave-4 session security
+#   --ui           default + @letbuyy/ui validate:ui + design-system ratchet + token parity checks + lint:css
+#   --mobile       default + flutter analyze + flutter test for merchant_app (canary 172), customer_app, admin_app
+#   --full         security + ui + mobile + every tests/*/*.test.mjs + every runtime's own test script
+#   --flutter-build  adds flutter build apk --debug + aapt dump badging per app (run AFTER any --gate-real: the real lane deletes build/)
+#   --real-db      adds pnpm run test:governance (starts the ephemeral Postgres helper) — only when LETBUYY_EXECUTABLE_PG_CONTAINER
+#                  names an isolated throwaway container; otherwise SKIP with the reason
+#   --gate-real    the REAL lane `node scripts/validate-governance.mjs --lane=gate`: DELETES node_modules/.next/.turbo/dist/.dart_tool/
+#                  build/coverage/.cache/.wrangler/.vercel/.symlinks under apps|packages|services; reinstall afterwards
+#   --build        adds `pnpm run build` (turbo build of the non-frozen apps; slow)
+#
+# Rules encoded here (see references/hazards.md):
+#  - runs from a git worktree root; refuses the primary checkout unless LETBUYY_ALLOW_PRIMARY=1
+#  - never runs a generator, never resets a database, never touches another worktree, never pushes
+#  - exit code = number of failed checks (0 = all green); ambient reds still count — attribute them in the report
+set -uo pipefail
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+[ -n "$ROOT" ] || { echo "gate.sh: not inside a git worktree" >&2; exit 2; }
+PRIMARY="/Users/saai_siddharth/Projects/Start_Up/LetBuyy"
+if [ "$ROOT" = "$PRIMARY" ] && [ "${LETBUYY_ALLOW_PRIMARY:-0}" != "1" ]; then
+  echo "gate.sh: refusing to run in the primary checkout ($PRIMARY) — use a phase worktree (LETBUYY_ALLOW_PRIMARY=1 overrides)" >&2; exit 2
+fi
+cd "$ROOT"
+MODE=default; FLUTTER_BUILD=0; REAL_DB=0; GATE_REAL=0; BUILD=0
+for a in "$@"; do case "$a" in
+  --quick) MODE=quick;; --baseline) MODE=baseline;; --security) MODE=security;; --ui) MODE=ui;; --mobile) MODE=mobile;; --full) MODE=full;;
+  --flutter-build) FLUTTER_BUILD=1;; --real-db) REAL_DB=1;; --gate-real) GATE_REAL=1;; --build) BUILD=1;;
+  -h|--help) sed -n '2,24p' "$0"; exit 0;;
+  *) echo "gate.sh: unknown flag $a" >&2; exit 2;; esac; done
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"; SHA="$(git rev-parse --short HEAD)"; TS="$(date +%Y%m%d-%H%M%S)"
+OUT="${LETBUYY_GATE_OUT:-$HOME/.letbuyy/gate/$(echo "$BRANCH" | tr '/' '_')-$SHA-$TS}"; mkdir -p "$OUT"
+[ -d node_modules ] || echo "WARNING: node_modules missing — a fresh worktree lies in both directions; run pnpm install --frozen-lockfile first"
+echo "gate.sh mode=$MODE flutter-build=$FLUTTER_BUILD real-db=$REAL_DB gate-real=$GATE_REAL build=$BUILD  root=$ROOT  branch=$BRANCH  sha=$SHA  dirty=$(git status --porcelain | wc -l | tr -d ' ')  untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ')"
+echo "logs → $OUT"
+FAILS=0; ROWS=()
+run() { # run <name> <command…>
+  local name="$1"; shift; local log="$OUT/$(echo "$name" | tr ' /:' '___').log"; local start=$SECONDS
+  ( "$@" ) >"$log" 2>&1; local rc=$?; local secs=$((SECONDS-start))
+  local first=""; if [ $rc -ne 0 ]; then first="$(grep -E '^✖ |^not ok |failed:|error TS[0-9]+|RATCHET regression|ELIFECYCLE|^- ' "$log" | grep -vE '✔|✓|^ok |failing tests:' | head -1 | cut -c1-110 || true)"; FAILS=$((FAILS+1)); fi
+  ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "$name" "$rc" "$secs" "$first")")
+  printf '  %-40s exit=%s (%ss)\n' "$name" "$rc" "$secs"
+}
+skip() { ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "$1" SKIP 0 "$2")"); echo "  $1 SKIPPED ($2)"; }
+sweep() { # every gate-lane validator, individually (safe: no artefact cleanup). Row = pass/total; first failing names listed.
+  local start=$SECONDS; local names; names="$(node -e '
+    const s=require("fs").readFileSync("scripts/validate-governance.mjs","utf8");
+    const m=s.match(/const validators = \[([\s\S]*?)\];/); if(!m){process.exit(3)}
+    console.log([...m[1].matchAll(/"([^"]+\.mjs)"/g)].map(x=>x[1]).join("\n"))')"
+  local total=0 pass=0 failed=""; mkdir -p "$OUT/validators"
+  for v in $names; do total=$((total+1))
+    if node "scripts/validators/$v" >"$OUT/validators/${v%.mjs}.log" 2>&1; then pass=$((pass+1)); else failed="$failed ${v%-validator.mjs}"; fi
+  done
+  local secs=$((SECONDS-start)); local rc=$((total-pass)); [ $rc -eq 0 ] || FAILS=$((FAILS+1))
+  ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "validators:sweep ($pass/$total pass)" "$rc" "$secs" "$(echo $failed | cut -c1-110)")")
+  printf '  %-40s exit=%s (%ss) failed:%s\n' "validators:sweep" "$rc" "$secs" "$failed"
+  echo "$failed" | tr ' ' '\n' | grep -q '^stale-artifact$' && echo "  note: stale-artifact-validator fails by method when run individually (no orchestrator cleanup) — confirm its offender list is 100% generated dirs"
+  return 0
+}
+# ---- core
+run typecheck            pnpm run typecheck
+run lint                 pnpm run lint
+if [ "$MODE" != quick ]; then
+  run governance:plan      node scripts/validate-governance.mjs --lane=gate --plan
+  sweep
+  run test:contracts       pnpm run test:contracts
+  run test:unit:gateway    pnpm run test:unit:gateway
+  run tests:governance     bash -c 'node --test --test-concurrency=1 tests/governance/*.test.mjs'
+  run tests:ci             bash -c 'node --test tests/ci/*.test.mjs'
+fi
+if [ "$MODE" = security ] || [ "$MODE" = full ]; then
+  run tests:security+auth  bash -c 'node --test tests/security/*.test.mjs tests/auth/*.test.mjs'
+  run tests:wave4-session  pnpm exec tsx --test tests/governance/foundation-wave4-session-security.test.ts
+fi
+if [ "$MODE" = ui ] || [ "$MODE" = full ]; then
+  run ui:validate          pnpm --filter @letbuyy/ui run validate:ui
+  run ui:design-system     node scripts/validators/validate-design-system.mjs
+  run ui:design-tokens     node scripts/generators/generate-design-tokens.mjs --check
+  run ui:mobile-tokens     node scripts/generators/generate-mobile-tokens.mjs --check
+  if [ -x node_modules/.bin/stylelint ]; then run ui:lint-css pnpm run lint:css; else skip ui:lint-css "stylelint binary missing"; fi
+fi
+if [ "$MODE" = mobile ] || [ "$MODE" = full ]; then
+  if command -v flutter >/dev/null 2>&1; then
+    for app in merchant_app customer_app admin_app; do
+      run "flutter:$app:analyze" bash -c "cd apps/$app && flutter analyze"
+      run "flutter:$app:test"    bash -c "cd apps/$app && flutter test"
+    done
+  else skip flutter "flutter not on PATH"; fi
+fi
+if [ "$MODE" = full ]; then
+  run tests:all            bash -c 'node --test --test-concurrency=1 tests/*/*.test.mjs'
+  for f in @letbuyy/queue-workers @letbuyy/webhook-service @letbuyy/mobile-bff @letbuyy/identity-platform @letbuyy/customer-web @letbuyy/merchant-web @letbuyy/admin-web @letbuyy/marketing-site @letbuyy/theme-engine; do
+    run "test:$f" pnpm --filter "$f" run test
+  done
+fi
+if [ $BUILD = 1 ]; then run build pnpm run build; fi
+if [ $REAL_DB = 1 ]; then
+  if [ -n "${LETBUYY_EXECUTABLE_PG_CONTAINER:-}" ]; then run test:governance:real-db pnpm run test:governance
+  else skip test:governance:real-db "LETBUYY_EXECUTABLE_PG_CONTAINER unset — name an isolated throwaway container first"; fi
+fi
+if [ $GATE_REAL = 1 ]; then
+  echo "WARNING: the real lane deletes generated directories under apps|packages|services; reinstall with pnpm install --frozen-lockfile afterwards"
+  run governance:REAL-LANE node scripts/validate-governance.mjs --lane=gate
+  [ -d packages/typescript/ui/node_modules ] || echo "  per-package node_modules are gone — run: pnpm install --frozen-lockfile"
+fi
+if [ $FLUTTER_BUILD = 1 ]; then
+  if command -v flutter >/dev/null 2>&1; then
+    AAPT="$(command -v aapt || ls "${ANDROID_HOME:-$HOME/Library/Android/sdk}"/build-tools/*/aapt 2>/dev/null | tail -1)"
+    for app in merchant_app customer_app admin_app; do
+      run "flutter:$app:build-apk" bash -c "cd apps/$app && flutter build apk --debug"
+      if [ -n "$AAPT" ]; then run "flutter:$app:badging" bash -c "$AAPT dump badging apps/$app/build/app/outputs/flutter-apk/app-debug.apk | grep -E '^package:'"; else skip "flutter:$app:badging" "aapt not found"; fi
+    done
+    echo "  note: flutter build writes to tracked files — run git status and attribute every change"
+  else skip flutter-build "flutter not on PATH"; fi
+fi
+{
+  echo "GATE TABLE  mode=$MODE  branch=$BRANCH  sha=$SHA  at=$TS  failed=$FAILS"
+  printf '%-40s | %4s | %6s | %s\n' name exit secs "first failure line"; printf '%s\n' "${ROWS[@]}"
+} | tee "$OUT/summary.txt"
+echo "summary → $OUT/summary.txt"
+exit $FAILS
