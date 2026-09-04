@@ -30,6 +30,7 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "letbuyy_api_client",
       "letbuyy_marketplace_core",
       "letbuyy_marketplace_models",
       "letbuyy_marketplace_services",
