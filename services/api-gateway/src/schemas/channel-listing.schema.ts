@@ -81,6 +81,28 @@ export const MarketplaceFeedQuery = z
         message: 'after_approved_at and after_id must be given together',
     });
 
+// ── Operator realm (ADM-1) ──────────────────────────────────────────────────────────────────────
+// The operator queue lists across sites (no store scope) and decides through fixed endpoints —
+// approve / reject / take-down — so `to_status` is never a client field: the route sets it.
+export const OperatorListingListQuery = z.object({
+    status: ChannelListingStatusSchema.default('pending_review'),
+    channel: ChannelListingChannelSchema.default('marketplace'),
+    site_id: uuid.optional(),
+    page: z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+export const OperatorListingDecisionSchema = z
+    .object({
+        // rbac.ts validateSensitiveReason enforces 8..1000 for reject / take-down; approve may omit it.
+        reason: z.string().trim().max(1000).optional(),
+        idempotency_key: z.string().min(1).max(200),
+    })
+    .strict();
+
+export type OperatorListingListInput = z.infer<typeof OperatorListingListQuery>;
+export type OperatorListingDecisionInput = z.infer<typeof OperatorListingDecisionSchema>;
+
 export type ListChannelListingsInput = z.infer<typeof ListChannelListingsQuery>;
 export type GetChannelListingInput = z.infer<typeof GetChannelListingQuery>;
 export type CreateChannelListingInput = z.infer<typeof CreateChannelListingSchema>;
