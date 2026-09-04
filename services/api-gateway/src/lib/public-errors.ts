@@ -59,8 +59,15 @@ export const CLIENT_ACTIONABLE_ERROR_CODES = new Set([
     'RATE_LIMIT_EXCEEDED',
     'SHIPPING_SCHEMA_MISSING',
     'TAX_SCHEMA_MISSING',
+    // Channel listings (MKT-1 / ADM-1): the messages behind these codes are fixed, generic and free of
+    // table, RPC or provider detail (routes/channel-listings.ts mapChannelListingDatabaseError), and a
+    // merchant needs them verbatim to act: "a marketplace category is required before review" is not
+    // "Request failed".
+    'TENANT_CONTEXT_MISSING',
+    'TENANT_TX_UNAVAILABLE',
     'TURNSTILE_REQUIRED',
     'UNAUTHORIZED',
+    'UNPROCESSABLE',
     'VALIDATION',
     'VALIDATION_ERROR',
 ]);
