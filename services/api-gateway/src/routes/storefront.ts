@@ -5,6 +5,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { toPublicVariant } from '../lib/public-product-view';
 import {
     cachedJson,
     storefrontRequestCacheKey,
@@ -469,15 +470,16 @@ function storefrontNumber(value: unknown): number | null {
     return null;
 }
 
+// SEC-2: the field list lives in lib/public-product-view.ts so this path and the products.variants
+// jsonb path share one definition of a public variant and cannot drift apart. sku and barcode were
+// mapped in here and reached anonymous callers on every storefront product page; nothing renders them.
 function publicProductVariantView(row: PublicProductVariantRow): Record<string, unknown> {
-    return {
+    return toPublicVariant({
         id: row.id,
         product_id: row.product_id,
         title: row.title || '',
         price: storefrontNumber(row.price) ?? 0,
         compare_price: storefrontNumber(row.compare_price),
-        sku: storefrontString(row.sku),
-        barcode: storefrontString(row.barcode),
         stock: storefrontNumber(row.inventory_qty) ?? 0,
         inventory_qty: storefrontNumber(row.inventory_qty) ?? 0,
         weight: storefrontNumber(row.weight),
@@ -487,7 +489,7 @@ function publicProductVariantView(row: PublicProductVariantRow): Record<string, 
         option3: storefrontString(row.option3),
         image_url: storefrontString(row.image_url),
         position: storefrontNumber(row.position) ?? 0,
-    };
+    });
 }
 
 async function hydratePublicProductVariants(c: AppContext, products: PublicProductRow[]): Promise<PublicProductRow[]> {

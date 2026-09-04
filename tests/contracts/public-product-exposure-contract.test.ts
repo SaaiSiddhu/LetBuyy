@@ -105,3 +105,33 @@ test('the public product projection exists and is applied before serialisation',
         );
     }
 });
+
+// ── SEC-2: the same rule, one level down ────────────────────────────────────────────────────────
+const STOREFRONT_ROUTES = 'services/api-gateway/src/routes/storefront.ts';
+
+test('the public variant shape names no stock-keeping identifier, and there is only one definition of it', () => {
+    const view = executableTs(read(PRODUCT_VIEW));
+    assert.match(view, /export const PUBLIC_VARIANT_FIELDS: ReadonlySet<string>/, 'the public variant allowlist must exist');
+    assert.match(view, /export function toPublicVariant/, 'the variant projection must exist');
+    const fields = view.slice(view.indexOf('PUBLIC_VARIANT_FIELDS'), view.indexOf('export function toPublicVariant'));
+    for (const column of MERCHANT_INTERNAL_COLUMNS) {
+        assert.ok(!fields.includes(`'${column}'`), `${column} must not be in the public variant allowlist`);
+    }
+    // One definition: the relational path must delegate rather than keep its own field map.
+    const storefront = executableTs(read(STOREFRONT_ROUTES));
+    assert.match(storefront, /return toPublicVariant\(\{/, 'publicProductVariantView must delegate to the shared projection');
+    assert.doesNotMatch(storefront, /sku: storefrontString\(row\.sku\)/, 'the relational path must not map sku itself');
+    assert.doesNotMatch(storefront, /barcode: storefrontString\(row\.barcode\)/, 'the relational path must not map barcode itself');
+});
+
+test('the product projection recurses into variants — an allowlist that stops at the top level is not a projection', () => {
+    const view = executableTs(read(PRODUCT_VIEW));
+    // This is exactly what SEC-1 missed: `variants` is on the product allowlist, so without the
+    // recursion the array (and everything migration 086 packed into it) is copied through untouched.
+    assert.match(view, /VARIANT_KEYS/, 'the variant keys must be named');
+    assert.match(view, /\.map\(\(variant\) =>/, 'toPublicProduct must map the variant projection over the array');
+    assert.ok(
+        /PUBLIC_PRODUCT_FIELDS[\s\S]{0,400}?'product_variants'/.test(view),
+        'both variant keys must be reachable from the product allowlist, or hydration output escapes the projection',
+    );
+});
