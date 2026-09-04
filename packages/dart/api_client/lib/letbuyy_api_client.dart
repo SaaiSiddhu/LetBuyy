@@ -3,4 +3,5 @@ library;
 
 export 'src/api_client.dart';
 export 'src/graphql.dart';
+export 'src/marketplace.dart';
 export 'src/types.dart';

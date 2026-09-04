@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 
 import 'graphql.dart';
 import 'types.dart';
+import 'marketplace.dart';
 
 class ApiClient {
   ApiClient({
@@ -166,6 +167,82 @@ class ApiClient {
       ),
       decoder: HealthResponse.fromJson,
     );
+  }
+
+  // ── Marketplace (CUS-1) ─────────────────────────────────────────────────────────────────────
+  // Public reads: no token is required and none is sent. The gateway fences visibility itself
+  // (migration 217's seven predicates, shared by the feed and the detail), so the client never
+  // filters — it asks and renders what it is given.
+
+  /// One page of the marketplace grid, across merchants.
+  ///
+  /// [cursor] must come from a previous page's [MarketplaceFeedPage.nextCursor]; its two halves are
+  /// sent together or not at all, because the gateway rejects a half cursor and a client that
+  /// rebuilds one from the last item drifts out of step with the server's ordering.
+  Future<MarketplaceFeedPage> marketplaceFeed({
+    String? category,
+    String? search,
+    int? limit,
+    MarketplaceFeedCursor? cursor,
+    ApiRequestOptions? options,
+  }) async {
+    final query = <String, dynamic>{
+      if (category != null && category.isNotEmpty) 'category': category,
+      if (search != null && search.isNotEmpty) 'search': search,
+      if (limit != null) 'limit': limit,
+      if (cursor != null) ...<String, dynamic>{
+        'after_approved_at': cursor.afterApprovedAt,
+        'after_id': cursor.afterId,
+      },
+    };
+    final body = await get('/storefront/marketplace/feed', query: query, options: options);
+    final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+    final data = envelope['data'];
+    final meta = envelope['meta'];
+    final items = data is List
+        ? data
+            .whereType<Map>()
+            .map((row) => MarketplaceFeedItem.fromJson(Map<String, dynamic>.from(row)))
+            .toList(growable: false)
+        : const <MarketplaceFeedItem>[];
+    return MarketplaceFeedPage(
+      items: items,
+      nextCursor: meta is Map ? MarketplaceFeedCursor.fromJson(meta['next_cursor']) : null,
+      limit: meta is Map && meta['limit'] is num ? (meta['limit'] as num).toInt() : null,
+    );
+  }
+
+  /// The live platform taxonomy. Inactive categories are never returned by the gateway.
+  Future<List<MarketplaceCategory>> marketplaceCategories({ApiRequestOptions? options}) async {
+    final body = await get('/storefront/marketplace/categories', options: options);
+    final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+    final data = envelope['data'];
+    if (data is! List) return const <MarketplaceCategory>[];
+    return data
+        .whereType<Map>()
+        .map((row) => MarketplaceCategory.fromJson(Map<String, dynamic>.from(row)))
+        .toList(growable: false);
+  }
+
+  /// One listing, or null when the marketplace fence excludes it.
+  ///
+  /// Absence is returned rather than thrown because it is an ordinary outcome here: a listing can be
+  /// rejected, taken down, hidden, or belong to an unpublished store between a shopper opening the
+  /// grid and tapping a card. A screen should show "no longer available", not an error.
+  Future<MarketplaceListingDetail?> marketplaceListing(
+    String listingId, {
+    ApiRequestOptions? options,
+  }) async {
+    try {
+      final body = await get('/storefront/marketplace/listings/$listingId', options: options);
+      final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+      final data = envelope['data'];
+      if (data is! Map) return null;
+      return MarketplaceListingDetail.fromJson(Map<String, dynamic>.from(data));
+    } on ApiException catch (error) {
+      if (error.statusCode == 404) return null;
+      rethrow;
+    }
   }
 
   Future<dynamic> get(
