@@ -45,7 +45,7 @@ FAILS=0; ROWS=()
 run() { # run <name> <command…>
   local name="$1"; shift; local log="$OUT/$(echo "$name" | tr ' /:' '___').log"; local start=$SECONDS
   ( "$@" ) >"$log" 2>&1; local rc=$?; local secs=$((SECONDS-start))
-  local first=""; if [ $rc -ne 0 ]; then first="$(grep -E 'failed:|FAILED|✖|✗ |not ok|Error:|error TS[0-9]+|ELIFECYCLE|RATCHET|missing|must ' "$log" | grep -vE '0 errors|✓|^ok ' | head -1 | cut -c1-110 || true)"; FAILS=$((FAILS+1)); fi
+  local first=""; if [ $rc -ne 0 ]; then first="$(grep -E '^✖ |^not ok |failed:|error TS[0-9]+|RATCHET regression|ELIFECYCLE|^- ' "$log" | grep -vE '✔|✓|^ok |failing tests:' | head -1 | cut -c1-110 || true)"; FAILS=$((FAILS+1)); fi
   ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "$name" "$rc" "$secs" "$first")")
   printf '  %-40s exit=%s (%ss)\n' "$name" "$rc" "$secs"
 }
