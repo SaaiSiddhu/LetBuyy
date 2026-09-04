@@ -6,6 +6,8 @@ Everything below is genuinely open. Nothing in this document should be read as "
 
 ## 1 — Founder/owner decisions still open (never relitigated by this phase)
 
+> **Superseded 2026-09-04 (GOV-4):** D-0 (= A), D-1 (= 0% on both channels), D-3, D-4, D-5, D-6 and D-7 were decided by the owner in chat and are recorded in `.claude/skills/letbuyy/references/decisions.md` §2; D-2 (merchant of record) stays open. The bullets below describe the pre-decision state and are kept as the record of what this engagement left open.
+
 - **D-0**: which backend is canonical (Supabase/Cloudflare `services/api-gateway`, Firebase, or a bounded hybrid). See `11_backend_consolidation.md`'s 24-domain map — every row is `D0_DEPENDENT`.
 - **D-1 through D-7** and the fee/merchant-of-record model for quick-commerce — never named in this engagement beyond "D-0" and the fee-model reference in `00b`; not resolved.
 - **The `00b_topology_amendment_draft.md` Signature Block** — still unsigned (all 7 items ☐). The six-app rename was applied under the brief's explicit "apply anyway, flag it" instruction, not under a completed signature.

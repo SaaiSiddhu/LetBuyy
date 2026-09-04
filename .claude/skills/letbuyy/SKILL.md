@@ -67,8 +67,9 @@ skill needs a fix. Repository truth overrides memory, audits, certifications and
    "DDL-real, wiring-dead presented as done" is this programme's named failure mode.
 8. **Constitutional constants** (Constitution §6/§10, `AGENTS.md` NEVER-R1…R7): 0% transaction fee,
    permanent · no money custody · `sites`/`site_id` is the tenant root · eight active runtimes, six
-   reserved roots stay empty · never-build list · 100→1k→10k-merchant envelope. D-0…D-7 stay OPEN
-   (`references/decisions.md`); no phase may assume an answer.
+   reserved roots stay empty · never-build list · 100→1k→10k-merchant envelope. D-0, D-1 and D-3…D-7 are
+   `OWNER_DECISION`s of 2026-09-04 (`references/decisions.md` §2); D-2 stays OPEN. No phase may assume
+   an answer to an open decision or re-open a recorded one.
 9. **Not proof of anything:** a passing compile · a Markdown assertion · a `_COMPLETE` subject · a
    test filename · a migration file existing (DDL ≠ wiring) · a validator existing (structural lint ≠
    behaviour) · a green gate never observed failing · a test on `service_role`/superuser when RLS is
@@ -168,7 +169,7 @@ why: <verified problem, path:line>
 in_scope: [...]            out_of_scope: [...]
 may_write: [exact paths or globs]        must_not_touch: [...]
 frozen_decisions: [names from decisions.md that constrain this phase]
-open_decisions: [D-0…D-7 / D-ID items this phase must NOT assume]
+open_decisions: [D-2 / D-ID / D-FEAT-EXTRA / D-KYC-VENDOR — items this phase must NOT assume]
 lanes: [security|uiux|feedback|mobile|db]          (from surface.sh on may_write)
 invariants_to_preserve: [tests/validators that must stay green, by name]
 registries_to_reconcile: [EXECUTION_LEDGER | SKIPPED_HUMAN_DECISIONS | CAPABILITY_BACKLOG | PROMPTS | tenant-tables.registry]
@@ -300,7 +301,8 @@ Lead with the verdict. Say what could not be verified before anything else.
 Lineage identified · verified against the repository, not a document's self-assertion · branch/HEAD/
 dirty-count re-measured this session and quoted with the commit · mode and lanes stated · gate results
 from real runs with counts and the first failure by name, full sweep not subset · every durable claim
-classified · D-0…D-7 listed as open where relevant · no recommendation converted into a decision · no
+classified · open decisions (D-2, D-ID, …) listed as open where relevant, recorded ones cited by date · no
+recommendation converted into a decision · no
 `TARGET` reported as `CURRENT` · a live P0 surfaced ahead of feature work · no secret value reproduced
 · no deploy performed or implied · no push to `staging`/`main` without the owner's word in this
 message · single-agent declaration present · commit identity verified if anything was committed ·
