@@ -143,6 +143,47 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
 - LCIS (`pnpm graph:ui` → :3333, `tools/central-intelligence` → :3334) is dev-time tooling: query
   it before scanning the repository, never treat its output as authority over the validators.
 
+## Ambient reds on the committed tree — measured 2026-09-04 in a clean worktree at `823aa5ee` (GOV-3 gate rehearsal)
+
+Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
+
+- **typecheck** — `@letbuyy/infrastructure#typecheck`: 29 × `TS2322` in `cashfree-adapter`,
+  `paypal-adapter`, `stripe-adapter` (`PaymentProviderName` no longer admits the retired rails;
+  `EXECUTION_LEDGER.md` PHASE-B-VERIFY already records "infrastructure typecheck still has
+  pre-existing adapter/dist failures"). Turbo: 31 successful / 49 tasks. Not a regression; a
+  deletion-gated cleanup of the dead adapters (`AGENTS.md` DEL-R2).
+- **lint** — `@letbuyy/customer-web#lint`: 921 problems / 38 errors, first in
+  `apps/customer_web/scripts/liquid-parity-harness.mjs` — identical to the Phase M baseline
+  (`12_final_verification.md`). `identity-platform` 26, `admin-web` 114, `marketing-site` 326 warnings,
+  0 errors → pass. The **dirty primary** additionally reports errors in `merchant_web`
+  (`SettingsPane.tsx`) and `identity-platform` (`resend.ts`) — other sessions' uncommitted files.
+- **validator sweep 107/113** (each run individually): `foundation-antifabrication-gate` (inert
+  `firebase_bridge/src/commissionService.ts` literal) · `environment-validator` (14 files: the Firebase
+  client config of `customer_app`/`admin_app` ×12 — public identifiers; `marketplace_services/
+  custom_payment_service.dart` — Razorpay's published sample test key id; `firebase_bridge/src/
+  adminAuth.ts` — a Firebase Web API key) · `sequential-migration-validator` (gap 207 → 211: another
+  session's **untracked** 208–210) · `tenant-isolation-validator` (the generated registry already
+  cites `208_…`/`209_…`, which are not tracked — same root cause; **do not regenerate**, that would
+  strip the other session's pending entries) · `stale-artifact-validator` (method artifact when run
+  individually; offender list 100% generated dirs) · `platform-domain-literal-validator` — GOV-3's
+  own regression (a rule sentence quoting the retired domain literal), fixed in the same phase.
+  **Green on the clean tree but red in the dirty primary:** `validate-design-system` (the primary's
+  uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`), `raw-error-message-validator`,
+  and the "untracked migration" variant of `sequential-migration`. `branch-lag-guard-validator` is
+  green after the D-BRANCH retarget.
+- **`pnpm run test:contracts`** — 202 tests, 195 pass, **7 fail**, all asserting validator source or
+  tree state against pre-rename paths: the `apps/customer-web/src` dash-form regex, the literal
+  `"apps/mobile/merchant-app"`, the retired `.store` target inside `services/compatibility/*` bridge
+  sources, storefront reserved labels, the settings apps route twin, theme-editor dead-shell and
+  TypeScript dead-source archives. Phase M rename fallout; none of the asserted files is in GOV-3's
+  diff. Owner: CI-1.
+- **`pnpm run test:unit:gateway`** — 666 tests, 654 pass, **3 fail**, the exact Phase M baseline set:
+  `razorpay payment verification validates signatures before confirming payment`, `razorpay webhook
+  verifies raw-body signatures, persists event ids, and deduplicates retries`, `storefront proxy
+  rewrites resolved store hosts into store routes`. Source-shape assertions that drifted from the code
+  they describe (`12_final_verification.md` recorded the same three); each must be re-read against the
+  route before it is called a defect or a stale check. Owner: CI-1, security lane.
+
 ## Claim protocol reality
 
 The ledger row is a lock, but **a row on an unmerged branch is invisible from `develop`** — four

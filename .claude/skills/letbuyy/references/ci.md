@@ -69,10 +69,14 @@ now asserts "exactly one production deploy workflow, reachable only from `main` 
 
 ## 3. What would be red today — attributed from local evidence (CI itself unread)
 
-| Job | Local reproduction | Class | Owner action |
+| Job | Local reproduction (clean worktree at `823aa5ee`, GOV-3 rehearsal; details in `hazards.md` § Ambient reds) | Class | Owner action |
 |---|---|---|---|
-| CI · governance | `validate-governance --lane=gate`: 6 reds at `823aa5ee` — `foundation-antifabrication-gate` (inert `firebase_bridge` literal), `validate-design-system` (identity-platform dark-mode reachability file missing — HARD invariant, not the ratchet), `sequential-migration-validator` (another session's **untracked** 208–210; gap 207→211), `raw-error-message-validator`, `environment-validator` (Firebase Web API keys = public identifiers, false positive; plus Razorpay's published sample test key), `branch-lag-guard` (retargeted by GOV-3 — re-measure) | mixed: stale check · other session's uncommitted work · validator false positive · governance debt | UX-1 (design-system red), the migration owner commits 208–210, an environment-validator exemption design |
-| CI · merge-safety-gate | `pnpm turbo typecheck`, gateway unit, behavioral (needs ephemeral Postgres in CI), contracts, merchant_app 172 tests | unknown until read; locally green at Phase S | read the run |
+| CI · typecheck | `@letbuyy/infrastructure#typecheck` — 29 `TS2322` in the retired cashfree/paypal/stripe adapters (recorded pre-existing since PHASE-B-VERIFY) | stale code after the rail retirement | deletion-gated cleanup (DEL-R2), CI-1 |
+| CI · lint | `@letbuyy/customer-web#lint` 921 problems / 38 errors, first `apps/customer_web/scripts/liquid-parity-harness.mjs` — identical to the Phase M baseline | governance debt | CI-1 |
+| CI · governance (real lane) | individual sweep 107/113: `foundation-antifabrication-gate` (inert bridge literal) · `environment-validator` (Firebase client config + Razorpay's published sample key — false positives without an exemption mechanism) · `sequential-migration-validator` + `tenant-isolation-validator` (another session's **untracked** 208–210: gap 207→211 and a registry that already cites them) · `stale-artifact-validator` (method artifact off the orchestrator) · `platform-domain-literal-validator` (GOV-3's own wording, fixed). The dirty primary additionally reds `validate-design-system` (uncommitted deletion of `identity-platform/src/lib/useAuthTheme.ts`) and `raw-error-message-validator`. `branch-lag-guard` green after D-BRANCH. | mixed: other session's uncommitted work · validator false positive · governance debt | the migration owner commits 208–210 with rollbacks; an `environment-validator` exemption design; the identity theming session restores the reachability target (UX-1) |
+| CI · unit-tests / merge-safety-gate (contracts) | `pnpm run test:contracts` 202 tests, 195 pass, 7 fail — all assert validator source or tree state against pre-rename paths (`apps/customer-web/src`, `"apps/mobile/merchant-app"`, `.store` inside `services/compatibility/*`, reserved labels, settings/theme-editor/dead-source archives) | stale checks after the Phase M rename | CI-1 |
+| CI · merge-safety-gate (gateway unit) | `pnpm run test:unit:gateway` 666 tests, 654 pass, 3 fail — the Phase M baseline trio (`razorpay payment verification…`, `razorpay webhook verifies raw-body signatures…`, `storefront proxy rewrites resolved store hosts…`); source-shape assertions to re-read against the routes | stale check or code defect — undetermined | security lane + CI-1 |
+| CI · merge-safety-gate (behavioral, Flutter) | behavioral suite needs the ephemeral Postgres in CI; merchant_app 172/172 at Phase S | unknown until read | read the run |
 | CI · mobile-merchant | macOS runner: analyze + test + debug APK + iOS no-codesign | iOS never built locally (no Xcode); `UNKNOWN_LIVE_STATE` | read the run |
 | CI · secret-hygiene | validators only; no gitleaks in this repo | passes locally | — |
 | Branch lag monitor | `origin/main` vs `origin/stepup/main` level at `5af69e0c` → passes; after GOV-3 measures `staging` | policy | push all three branches together |
@@ -93,7 +97,7 @@ now asserts "exactly one production deploy workflow, reachable only from `main` 
   permits) is how cloud signal is obtained before promotion. Read the run, attribute, record the run
   id in the phase report and the `Promotions` row.
 - **Never widen `permissions:`**, never add a secret to a workflow without naming the key and its
-  rotation owner, never reintroduce a `letbuyy.store` literal, never point a deploy lane at a branch
+  rotation owner, never reintroduce the retired `.store` domain literal (DEPLOY-R3), never point a deploy lane at a branch
   other than `staging` (staging lanes) or `main` (production lanes).
 - **The CI-1 phase** (unowned as of 2026-09-04): (1) the owner logs the right account into `gh`;
   (2) read the last 30 runs per branch and attribute every red job with the table above as the

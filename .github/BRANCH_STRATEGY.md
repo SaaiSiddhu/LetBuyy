@@ -51,7 +51,8 @@ and the SHA soaked on `staging` is the SHA that reaches `main`.**
   after the `branch-lag-guard` job proves `main` is not behind `staging` (AGENTS.md DEPLOY-R1 as
   amended by D-BRANCH).
 - Never widen a workflow's `permissions:`; never add a deploy trigger to any branch other than
-  `staging` (staging lanes) or `main` (production lanes); never reintroduce a `letbuyy.store` literal.
+  `staging` (staging lanes) or `main` (production lanes); never reintroduce the retired `.store`
+  domain literal (`AGENTS.md` DEPLOY-R3; `platform-domain-literal-validator` catches it).
 
 ## Workflow trigger coverage (source of truth: `.github/workflows/`, measured 2026-09-04)
 

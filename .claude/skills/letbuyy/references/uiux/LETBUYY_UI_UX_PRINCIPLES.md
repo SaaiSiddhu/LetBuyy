@@ -153,7 +153,7 @@ carousels, ambient loops, preloaders. Budgets: `PERFORMANCE_AND_MOTION_BUDGETS.m
 | App-local `--lb-*` redefinition | ratchet `appLocalLbTokenRedefs` (target HARD 0, UX-R3) | 275 |
 | Arbitrary radius / shadow | ratchet `tsxArbitraryRadius` / `tsxArbitraryShadow` | 386 / 9 |
 | Local workspace implementations | HARD `localWorkspaceImplementations` = 0 | 0 |
-| Dark-mode reachability targets missing | HARD | **1 (identity-platform)** |
+| Dark-mode reachability targets missing | HARD | 0 on the committed tree; 1 in the dirty primary (another session deleted `identity-platform/src/lib/useAuthTheme.ts`, uncommitted) |
 | Second token source / second shell | `token-source-single-validator`, `shell-single-validator` | pass |
 | Money surface without the badge | `provider-mode-badge-validator` | pass |
 | Token parity (tokens.ts ↔ tokens.json ↔ Dart) | `generate-design-tokens.mjs --check`, `generate-mobile-tokens.mjs --check` | pass |

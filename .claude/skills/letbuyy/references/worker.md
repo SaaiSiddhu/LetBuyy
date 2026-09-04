@@ -49,7 +49,7 @@ show it; a described problem without a request to change is `status`, not `worke
 - **Never** edit generated output by hand · run repo-wide generators unprompted · bump a ratchet
   baseline (`validate-design-system --update`) or a date to clear a validator · delete a `SKIP-*`/
   `CAP-*` row (mark CLOSED in place) · add an app-local API route that writes the DB (routes are
-  gateway proxies) · introduce a `letbuyy.store` literal · widen a workflow's `permissions:`.
+  gateway proxies) · introduce the retired `.store` domain literal (DEPLOY-R3) · widen a workflow's `permissions:`.
 - **Flutter**: read config from the file Gradle evaluates (Groovy wins when both exist); never touch
   `applicationId`/`namespace`/signing without the registry diff; contain secrets with
   `String.fromEnvironment` + `--dart-define`; the gate deletes `build/` — build APKs **after** the gate.

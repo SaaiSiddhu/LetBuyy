@@ -69,8 +69,11 @@ Adoption at `823aa5ee` (files importing, per app): `@letbuyy/ui` customer_web 44
 merchant_web 122/141 · admin_web 21/33 · identity 10/15 · marketing 33/69. `AppNavigation`
 merchant_web 2 · admin_web 1 · others 0. `ThemeToggleButton` customer_web 1 · admin_web 1 ·
 marketing 1 · merchant_web 0 · identity 0. `DesignSystemRoot` merchant_web 1, others 0. Ratchet at
-`823aa5ee`: 8 of 11 metrics **below** the 2026-08-14 baseline, 3 level, **1 HARD violation**:
-`identity-platform: dark-mode reachability target file is missing` (`uiux/EVIDENCE_LEDGER.md`).
+`823aa5ee`: 8 of 11 metrics **below** the 2026-08-14 baseline, 3 level, **0 HARD violations on the
+committed tree** (the validator passes in a clean worktree). The dirty primary checkout reports one —
+`identity-platform: dark-mode reachability target file is missing` — manufactured by another
+session's uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; it is that
+session's to resolve before it commits (`uiux/EVIDENCE_LEDGER.md`, `hazards.md`).
 
 ## 3. Workflow for any UI change
 

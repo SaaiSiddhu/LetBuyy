@@ -232,9 +232,12 @@ Packages   packages/typescript/{ui,api-client,…} (@letbuyy/ui = the design sys
 Database   database/supabase/migrations 145 tracked (000, 073…216) + paired rollback/ · tenant GUC app.site_id (TENANT_SITE_GUC) · role app_tenant
            · 49 tables FORCE RLS · money RPCs: create_checkout_order · confirm_order_payment_with_ledger · complete_order_refund · issue_gift_card
            · set_gift_card_status · restore_gift_card_on_refund · issue_gst_invoice · generated registry services/api-gateway/src/tenant/tenant-tables.registry.ts
-Governance node scripts/validate-governance.mjs --lane=gate --plan (SAFE) · 116 .mjs on disk, 113 in the gate lane after GOV-3
-           baseline 106 PASS / 6 FAIL at 823aa5ee: foundation-antifabrication-gate · validate-design-system · sequential-migration
-           · raw-error-message · environment-validator · branch-lag-guard (retargeted by GOV-3 — re-measure)
+Governance node scripts/validate-governance.mjs --lane=gate --plan (SAFE) · 117 .mjs on disk, 113 in the gate lane after GOV-3
+           clean-tree sweep at 823aa5ee (GOV-3 rehearsal, each validator individually): 107/113 — reds: foundation-antifabrication-gate
+           · environment-validator · sequential-migration + tenant-isolation (another session's untracked migrations 208–210)
+           · stale-artifact (method artifact) · [platform-domain-literal — GOV-3's own, fixed]. The DIRTY PRIMARY additionally reds
+           validate-design-system and raw-error-message (other sessions' uncommitted files). typecheck: @letbuyy/infrastructure (retired
+           adapters) · lint: customer_web 921/38 · contracts 195/202 (Phase M rename fallout) — all attributed in references/hazards.md
            THE REAL LANE DELETES node_modules/.next/.turbo/dist/.dart_tool/build/coverage/.cache/.wrangler/.vercel/.symlinks under apps|packages|services
 Toolchain  pnpm 10.6.2 + turbo (frozen apps filtered) · Node 20 in CI, 26.5.1 here · node --test / tsx --test / vitest (@letbuyy/ui only)
            Flutter 3.44.8 stable (pub workspace 20/20; merchant_app 172 tests canary) · bash 3.2 (no declare -A) · no `timeout` binary · grep is ugrep
