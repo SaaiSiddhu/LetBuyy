@@ -27,7 +27,13 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const migrationsDir = join(repoRoot, 'database/supabase/migrations');
 const rollbackDir = join(repoRoot, 'database/supabase/rollback');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
-const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_executable';
+const sharedDatabase = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_executable';
+// This suite owns a database of its own inside the shared container. `DROP SCHEMA public CASCADE` on
+// the shared database needs one lock slot per object the earlier suites left behind, and after the
+// full-baseline suites that exceeds max_locks_per_transaction ("out of shared memory" — observed in
+// the aggregated test:behavioral run). DROP/CREATE DATABASE needs no per-object locks and leaves the
+// other suites' state untouched. Roles are cluster-wide, so they are created if missing, never dropped.
+const databaseName = `${sharedDatabase}_channel_listings`;
 
 const MIGRATION = '217_marketplace_channel_listings.sql';
 const ROLLBACK = '217_marketplace_channel_listings.rollback.sql';
@@ -69,12 +75,16 @@ function fileText(dir, name) {
     return fileCache.get(key);
 }
 
-function psql(sql) {
+function psqlIn(database, sql) {
     return execFileSync(
         'docker',
-        ['exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', databaseName, '-v', 'ON_ERROR_STOP=1', '-qAt'],
+        ['exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', database, '-v', 'ON_ERROR_STOP=1', '-qAt'],
         { input: `SET client_min_messages TO warning;\n${sql}`, encoding: 'utf8' },
     ).trim();
+}
+
+function psql(sql) {
+    return psqlIn(databaseName, sql);
 }
 
 // Runs `sql` expecting Postgres to REJECT it, returning the error text; success is a failed assertion.
@@ -126,7 +136,7 @@ function asTenantExpectError(siteId, sql, what) {
 
 function ensureContainer() {
     try {
-        execFileSync('docker', ['exec', containerName, 'pg_isready', '-U', 'postgres', '-d', databaseName], { stdio: 'pipe' });
+        execFileSync('docker', ['exec', containerName, 'pg_isready', '-U', 'postgres', '-d', sharedDatabase], { stdio: 'pipe' });
     } catch {
         assert.fail(`Postgres container "${containerName}" is not running — start it with scripts/governance/foundation-ephemeral-postgres.mjs start (LETBUYY_EXECUTABLE_PG_CONTAINER names an isolated one)`);
     }
@@ -144,37 +154,22 @@ function resetDatabase() {
         extractStatement(baseline, 'ADD CONSTRAINT products_pkey PRIMARY KEY', { withHeader: true }),
     ].join('\n');
 
+    // A fresh database per run: no per-object locks, nothing inherited from the other suites.
+    psqlIn('postgres', `
+    DROP DATABASE IF EXISTS ${databaseName} WITH (FORCE);
+    CREATE DATABASE ${databaseName};
+  `);
+
     psql(`
-    DROP SCHEMA IF EXISTS public CASCADE;
-    CREATE SCHEMA public;
-    GRANT ALL ON SCHEMA public TO postgres;
-    GRANT USAGE ON SCHEMA public TO public;
     DO $$
     BEGIN
-      IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_tenant') THEN
-        REVOKE app_tenant FROM postgres;
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN REVOKE app_tenant FROM service_role; END IF;
-      END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN; END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'app_tenant') THEN CREATE ROLE app_tenant NOLOGIN NOBYPASSRLS; END IF;
     END
     $$;
-    DO $$
-    DECLARE v_role text;
-    BEGIN
-      FOREACH v_role IN ARRAY ARRAY['app_tenant', 'service_role', 'authenticated', 'anon'] LOOP
-        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = v_role) THEN
-          EXECUTE format('DROP OWNED BY %I', v_role);
-        END IF;
-      END LOOP;
-    END
-    $$;
-    DROP ROLE IF EXISTS app_tenant;
-    DROP ROLE IF EXISTS service_role;
-    DROP ROLE IF EXISTS authenticated;
-    DROP ROLE IF EXISTS anon;
-    CREATE ROLE service_role NOLOGIN BYPASSRLS;
-    CREATE ROLE authenticated NOLOGIN;
-    CREATE ROLE anon NOLOGIN;
-    CREATE ROLE app_tenant NOLOGIN NOBYPASSRLS;
+    ALTER ROLE app_tenant NOBYPASSRLS;
     GRANT app_tenant TO service_role;
     GRANT USAGE ON SCHEMA public TO app_tenant, authenticated, anon, service_role;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app_tenant;
