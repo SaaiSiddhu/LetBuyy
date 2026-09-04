@@ -240,6 +240,14 @@ test.before(() => {
     seed();
 });
 
+// Nothing of this suite may outlive it: sibling suites in the same container DROP and re-CREATE the
+// cluster-wide roles, and a role cannot be dropped while another database holds objects that depend
+// on it (observed as "role service_role cannot be dropped" in whatsapp-postgres.test.mjs when this
+// database was left behind). `after` runs even when a test above failed.
+test.after(() => {
+    psqlIn('postgres', `DROP DATABASE IF EXISTS ${databaseName} WITH (FORCE);`);
+});
+
 test('1. app_tenant with the GUC unset sees zero rows and cannot mutate either tenant table', () => {
     assert.equal(asTenant(null, 'SELECT count(*) FROM public.channel_listings;'), '0');
     assert.equal(asTenant(null, 'SELECT count(*) FROM public.channel_listing_moderation_events;'), '0');
