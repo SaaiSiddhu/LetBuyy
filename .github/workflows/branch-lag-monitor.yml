@@ -22,4 +22,4 @@ jobs:
         env:
           LETBUYY_ENFORCE_BRANCH_LAG: "1"
           LETBUYY_PRODUCTION_BRANCH: main
-          LETBUYY_RELEASE_INTEGRATION_BRANCH: stepup/main
+          LETBUYY_RELEASE_INTEGRATION_BRANCH: staging

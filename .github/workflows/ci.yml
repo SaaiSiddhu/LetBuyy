@@ -8,12 +8,14 @@ on:
   pull_request:
     branches:
       - develop
+      - staging
       - main
       - stepup/main
       - codex/web-v1-integration
   push:
     branches:
       - develop
+      - staging
       - main
       - stepup/main
       - codex/web-v1-integration

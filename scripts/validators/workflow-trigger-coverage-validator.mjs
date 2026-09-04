@@ -357,6 +357,7 @@ const GOVERNANCE_WORKFLOW = `${WORKFLOW_DIR}/architecture-governance.yml`;
 const gatedBranches = [
   "main",
   "develop",
+  "staging",
   "stepup/main",
   "codex/web-v1-integration",
 ];
@@ -446,17 +447,25 @@ for (const file of deployingWorkflows) {
 }
 
 // Production must stay on the approved release path: main push or manual dispatch.
+// OWNER_DECISION D-DEPLOY (2026-09-04): the lane is dispatch-only until a DEPLOY-1 phase retargets it with
+// verified cloud targets; a push trigger, when present, must be explicitly restricted to main.
 const productionDeploy = workflows.get(`${WORKFLOW_DIR}/production-deploy.yml`);
 if (productionDeploy) {
   const pushTrigger = triggerFor(productionDeploy, "push");
   reporter.assert(
-    Boolean(pushTrigger) && toList(pushTrigger.branches).length > 0,
-    "production-deploy.yml push trigger must be explicitly branch-filtered",
+    triggerFor(productionDeploy, "workflow_dispatch") !== undefined,
+    "production-deploy.yml must be dispatchable (workflow_dispatch)",
   );
-  reporter.assert(
-    toList(pushTrigger?.branches).every((pattern) => pattern === "main"),
-    `production-deploy.yml push trigger must be restricted to main (found: ${toList(pushTrigger?.branches).join(", ")})`,
-  );
+  if (pushTrigger !== undefined) {
+    reporter.assert(
+      toList(pushTrigger?.branches).length > 0,
+      "production-deploy.yml push trigger must be explicitly branch-filtered",
+    );
+    reporter.assert(
+      toList(pushTrigger?.branches).every((pattern) => pattern === "main"),
+      `production-deploy.yml push trigger must be restricted to main (found: ${toList(pushTrigger?.branches).join(", ")})`,
+    );
+  }
   reporter.assert(
     triggerFor(productionDeploy, "pull_request") === undefined,
     "production-deploy.yml must not run on pull_request",
@@ -478,9 +487,14 @@ if (productionRollout) {
 
 const deployStaging = workflows.get(`${WORKFLOW_DIR}/deploy-staging.yml`);
 if (deployStaging) {
+  // D-BRANCH / D-DEPLOY (2026-09-04): the staging lane belongs to `staging`; dispatch-only until DEPLOY-1.
   reporter.assert(
-    toList(triggerFor(deployStaging, "push")?.branches).every((pattern) => pattern === "stepup/main"),
-    "deploy-staging.yml push trigger must stay restricted to stepup/main",
+    toList(triggerFor(deployStaging, "push")?.branches).every((pattern) => pattern === "staging"),
+    "deploy-staging.yml push trigger, when present, must be restricted to staging",
+  );
+  reporter.assert(
+    triggerFor(deployStaging, "workflow_dispatch") !== undefined,
+    "deploy-staging.yml must be dispatchable (workflow_dispatch)",
   );
 }
 

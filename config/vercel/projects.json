@@ -7,7 +7,7 @@
       "staging": {
         "project_id": "STAGING_IDENTITY_PROJECT_ID",
         "url": "https://accounts-staging.letbuyy.com",
-        "branch": "stepup/main"
+        "branch": "staging"
       },
       "production": {
         "project_id": "PRODUCTION_IDENTITY_PROJECT_ID",
@@ -22,7 +22,7 @@
       "staging": {
         "project_id": "STAGING_MERCHANT_PROJECT_ID",
         "url": "https://admin-staging.letbuyy.com",
-        "branch": "stepup/main"
+        "branch": "staging"
       },
       "production": {
         "project_id": "PRODUCTION_MERCHANT_PROJECT_ID",
@@ -37,7 +37,7 @@
       "staging": {
         "project_id": "STAGING_STOREFRONT_PROJECT_ID",
         "url": "https://store-staging.letbuyy.com",
-        "branch": "stepup/main"
+        "branch": "staging"
       },
       "production": {
         "project_id": "PRODUCTION_STOREFRONT_PROJECT_ID",
@@ -52,7 +52,7 @@
       "staging": {
         "project_id": "STAGING_MARKETING_PROJECT_ID",
         "url": "https://www-staging.letbuyy.com",
-        "branch": "stepup/main"
+        "branch": "staging"
       },
       "production": {
         "project_id": "PRODUCTION_MARKETING_PROJECT_ID",
@@ -67,7 +67,7 @@
       "staging": {
         "project_id": "STAGING_PLATFORM_CONSOLE_PROJECT_ID",
         "url": "https://console-staging.letbuyy.com",
-        "branch": "stepup/main"
+        "branch": "staging"
       },
       "production": {
         "project_id": "PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID",
