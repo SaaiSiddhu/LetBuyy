@@ -3,7 +3,7 @@
 **Mandate.** Every change that touches the surface list in §2 gets this lane before VERIFY. The lane
 produces findings with severity, evidence and a fix; it never "signs off" from reading a passing
 test. **A verified live P0 in lineage A outranks every feature and migration phase** — say so, mark
-`LIVE_FIREBASE_SECURITY: NO_GO`, and stop feature work. Never resolve D-0…D-7 while reviewing.
+`LIVE_FIREBASE_SECURITY: NO_GO`, and stop feature work. Never resolve an open decision (D-2, D-ID, …) while reviewing; cite recorded ones (`decisions.md` §2) by date.
 
 **Never reproduce a secret value.** Cite the path and the key name, say what is exposed, require
 rotation or deletion. Key names live in `config/env/{staging,production}.env.template`,
@@ -162,7 +162,7 @@ count. Before crediting a real-db suite, confirm it printed a test count, not `n
   need asymmetric `USING`/`WITH CHECK`; multiple permissive policies OR together; prove with
   `SET ROLE app_tenant` in a rolled-back transaction, GUC set and unset.
 - **Money**: RPC only; idempotency key required; lock before check; balanced ledger transaction;
-  provider evidence; reconcile; refunds never exceed capture; no fee (D-1 open); no custody.
+  provider evidence; reconcile; refunds never exceed capture; no fee (D-1, decided 2026-09-04: 0% on both channels); no custody.
 - **Webhooks/queues**: raw-body HMAC unconditional; event id idempotency; envelope signed; consumer
   DLQ path; never delete an endpoint before the provider is re-pointed and observed.
 - **Storefront/theme**: sanitizer allowlist untouched; Liquid default stays OFF; per-store theming

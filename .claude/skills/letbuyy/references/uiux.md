@@ -5,7 +5,8 @@ system** — `@letbuyy/ui` (`packages/typescript/ui`), its `--lb-*` token engine
 bridge in `packages/dart/ui_kit`, and the constitution in `references/uiux/*.md` — for
 `apps/customer_web`, `apps/merchant_web`, `apps/admin_web`, `apps/identity-platform` and
 `apps/merchant_app`. **`apps/customer_app`, `apps/admin_app`, `apps/phase_2/*`, `apps/marketing-site`
-and the FROZEN apps are ON HOLD**: donor UI is preserved by design until D-0/D-4; the lane reviews
+and the FROZEN apps are ON HOLD**: donor UI is preserved by design until D-UX-DONORS lifts HOLD (D-0 = A and D-4 = `admin_web` were
+decided 2026-09-04; each port phase decides when a donor screen converges); the lane reviews
 them only for accessibility and safety regressions and never re-skins. If a request is donor or
 marketing UI work, say so, cite this file, and stop.
 
