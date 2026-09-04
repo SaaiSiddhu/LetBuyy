@@ -236,3 +236,57 @@ test('the category schemas repeat 217\'s slug format CHECK verbatim, and the cre
     assert.match(schema, /export const UpdateMarketplaceCategorySchema = z\s*\.object\(\{[\s\S]*?\}\)\s*\.strict\(\)/, 'update must be .strict()');
     assert.doesNotMatch(schema.match(/export const UpdateMarketplaceCategorySchema[\s\S]*?message: 'nothing to update' \},\s*\);/)?.[0] ?? '', /slug:/, 'slug must be immutable after creation — Update must not accept it');
 });
+
+// ── MKT-2: the single-listing read must not drift from the feed ─────────────────────────────────
+const DETAIL_ROUTE = 'services/api-gateway/src/routes/storefront/marketplace-detail-routes.ts';
+
+// The WHERE predicates a public marketplace read applies, up to the first parameter-dependent clause.
+function visibilityFence(migration: string, fn: string): string {
+    const start = migration.indexOf(`CREATE OR REPLACE FUNCTION public.${fn}`);
+    assert.notEqual(start, -1, `${MIGRATION} must declare ${fn}`);
+    const body = migration.slice(start);
+    const where = body.indexOf('WHERE');
+    assert.notEqual(where, -1, `${fn} must carry a WHERE clause`);
+    const lines: string[] = [];
+    for (const line of body.slice(where).split('\n')) {
+        const trimmed = line.trim();
+        // Stop at the first clause that depends on a parameter — everything above is the fence.
+        if (trimmed.startsWith('AND (') || trimmed.startsWith('AND cl.id = p_listing_id') || trimmed.startsWith('ORDER BY') || trimmed.startsWith('LIMIT')) break;
+        lines.push(line.trimEnd());
+    }
+    return lines.join('\n');
+}
+
+test('the listing detail and the feed apply a character-identical visibility fence', () => {
+    const migrations = executableSql(read(MIGRATION)) + '\n' + executableSql(read('database/supabase/migrations/220_marketplace_listing_detail.sql'));
+    const feedFence = visibilityFence(migrations, 'marketplace_feed');
+    const detailFence = visibilityFence(migrations, 'marketplace_listing_detail');
+    assert.ok(feedFence.includes("cl.status = 'approved'"), 'the feed fence must be recognisable');
+    assert.equal(
+        detailFence,
+        feedFence,
+        'a listing hidden from the grid must be unreachable by direct link, and one in the grid must open — two public reads that disagree about "visible" is the defect this pins',
+    );
+});
+
+test('the listing detail returns no merchant-internal column and no unaudited variants blob', () => {
+    const detail = executableSql(read('database/supabase/migrations/220_marketplace_listing_detail.sql'));
+    const returns = detail.slice(detail.indexOf('RETURNS TABLE'), detail.indexOf('LANGUAGE sql'));
+    for (const column of ['cost_price', 'cost_per_item', 'sku', 'barcode']) {
+        assert.ok(!returns.includes(column), `${column} must not be in the public detail's return shape (SEC-1)`);
+    }
+    assert.ok(!/\bvariants\b/.test(returns), 'products.variants is an unaudited jsonb blob — a new public read must not carry it');
+});
+
+test('the detail route calls the RPC by its named parameter and is registered once', () => {
+    const route = executableTs(read(DETAIL_ROUTE));
+    assert.match(route, /export const MARKETPLACE_LISTING_DETAIL_RPC = 'marketplace_listing_detail'/);
+    assert.match(route, /db\.rpc\(MARKETPLACE_LISTING_DETAIL_RPC, \{ p_listing_id: listingId \}\)/, 'named parameter, matching 220\'s declaration');
+    assert.match(route, /router\.get\('\/marketplace\/listings\/:id'/);
+    // An absent row is a 404; a query failure is a 500. Collapsing the two would hide a schema fault
+    // behind an indistinguishable "not found" — the defect PHASE-T3 fixed on the storefront's own detail.
+    assert.match(route, /if \(error\) return \{ status: 500/);
+    assert.match(route, /status: 404/);
+    const publicRoutes = executableTs(read(PUBLIC_ROUTES));
+    assert.equal(publicRoutes.match(/registerStorefrontMarketplaceDetailRoutes\(router,/g)?.length, 1, 'registered exactly once');
+});

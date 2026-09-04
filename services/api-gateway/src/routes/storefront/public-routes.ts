@@ -9,6 +9,7 @@ import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
 import { MarketplaceFeedQuery, type MarketplaceFeedInput } from '../../schemas/channel-listing.schema';
 import { authRateLimit, sensitiveRateLimit } from '../../middleware/rateLimit';
 import { registerStorefrontCartRoutes } from './cart-routes';
+import { registerStorefrontMarketplaceDetailRoutes, type StorefrontMarketplaceDetailDependencies } from './marketplace-detail-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
@@ -172,6 +173,8 @@ type StorefrontPublicRouteDependencies = {
     // below call the SECURITY DEFINER functions from migration 217. Injectable for unit tests.
     loadMarketplaceFeed?: (c: AppContext, params: MarketplaceFeedParams) => Promise<{ data: MarketplaceFeedRow[] | null; error: DatabaseErrorLike }>;
     listMarketplaceCategories?: (c: AppContext) => Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }>;
+    // MKT-2: injectable so unit tests can drive the detail route without a database.
+    loadMarketplaceListingDetail?: StorefrontMarketplaceDetailDependencies['loadMarketplaceListingDetail'];
 };
 
 // ── MKT-1: marketplace feed + taxonomy (public reads) ─────────────────────────────────────────
@@ -322,6 +325,11 @@ export function registerStorefrontPublicRoutes(
             if (error) return { status: 500, body: dbFailureBody() };
             return { body: success(data || []), tags: ['marketplace:categories'] };
         });
+    });
+
+    // MKT-2 — the single-listing read, beside the feed and taxonomy above.
+    registerStorefrontMarketplaceDetailRoutes(router, {
+        loadMarketplaceListingDetail: dependencies.loadMarketplaceListingDetail,
     });
 
     registerStorefrontCartRoutes(router, {
