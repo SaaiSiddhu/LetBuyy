@@ -55,6 +55,13 @@ function matchesExpression(row: Row, column: string, expression: string): { ok: 
         return { ok: String(value) === operand };
     }
     if (operator === 'is') return { ok: operand === 'null' ? value === null || value === undefined : false };
+    // SEC-2: variant hydration filters with `.in('product_id', [...])`, which PostgREST sends as
+    // `in.(a,b)`. Without this the fake matched nothing and the relational variant path could not be
+    // exercised at all — the reason no existing test covered it.
+    if (operator === 'in') {
+        const members = operand.replace(/^\(/, '').replace(/\)$/, '').split(',').map((entry) => entry.trim().replace(/^"|"$/g, ''));
+        return { ok: members.includes(String(value)) };
+    }
     return { ok: false };
 }
 
@@ -390,4 +397,96 @@ test('SEC-1: the same holds on the non-relational fallback branch, which previou
     }
     const select = postgrest.tableRequests('products')[0]?.params.get('select') ?? '';
     assert.notEqual(select, '*', 'a public route must never select every column');
+});
+
+// ─── SEC-2: the same identifiers, one level down ──────────────────────────────────────────────
+//
+// SEC-1 removed cost_price, sku and barcode from the product row. Its allowlist filters TOP-LEVEL
+// keys and deliberately keeps `variants`, so the array was copied through untouched — and variants
+// carry sku and barcode on both paths: publicProductVariantView maps them in explicitly on the
+// relational path, and products.variants (built by migration 086) contains them in the jsonb blob.
+// Nothing renders either field. These fixtures carry real values, for the same reason SEC-1's did.
+
+const VARIANT_INTERNAL_FIELDS = ['sku', 'barcode', 'cost_price', 'cost_per_item'] as const;
+
+const VARIANT_ROW: Row = {
+    id: 'dddddddd-0000-4000-8000-000000000001',
+    product_id: PRODUCT_A.id,
+    title: 'Large / Blue',
+    price: 1099,
+    compare_price: null,
+    sku: 'VAR-SKU-777',
+    barcode: '4006381333931',
+    inventory_qty: 4,
+    weight: null,
+    weight_unit: 'kg',
+    option1: 'Large',
+    option2: 'Blue',
+    option3: null,
+    image_url: null,
+    position: 1,
+};
+
+test('SEC-2: the relational variant path returns no sku or barcode', async (t) => {
+    const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_A], product_variants: [VARIANT_ROW] });
+    t.after(() => postgrest.restore());
+
+    const response = await storefrontApp().request(`/storefront/snaz/products/${PRODUCT_A.slug}`, undefined, env());
+    assert.equal(response.status, 200);
+    const payload = await jsonBody<{ data: { variants?: Record<string, unknown>[] } }>(response);
+    const variants = payload.data.variants ?? [];
+    assert.equal(variants.length, 1, 'the variant must still be returned — this is a redaction, not a removal');
+
+    for (const field of VARIANT_INTERNAL_FIELDS) {
+        assert.ok(!(field in variants[0]), `variant.${field} must not reach a public caller`);
+    }
+    const serialized = JSON.stringify(payload);
+    assert.ok(!serialized.includes('VAR-SKU-777'), 'the variant SKU value must not appear anywhere in the response');
+    assert.ok(!serialized.includes('4006381333931'), 'the variant barcode value must not appear anywhere in the response');
+
+    // What a storefront actually renders must be untouched.
+    assert.equal(variants[0].title, 'Large / Blue');
+    assert.equal(variants[0].price, 1099);
+    assert.equal(variants[0].option1, 'Large');
+    assert.equal(variants[0].stock, 4);
+});
+
+test('SEC-2: the products.variants jsonb path returns no sku or barcode either', async (t) => {
+    // Migration 086 builds this blob with 'sku' and 'barcode' inside it. With
+    // PRODUCT_VARIANTS_RELATIONAL_READS=off the row's own column is what ships, so the projection —
+    // not the select list — is the only thing standing between that blob and an anonymous caller.
+    const productWithJsonbVariants: Row = {
+        ...PRODUCT_A,
+        variants: [{
+            id: VARIANT_ROW.id,
+            product_id: PRODUCT_A.id,
+            title: 'Large / Blue',
+            price: 1099,
+            compare_price: null,
+            sku: 'VAR-SKU-777',
+            barcode: '4006381333931',
+            stock: 4,
+            inventory_qty: 4,
+            option1: 'Large',
+            option2: 'Blue',
+            option3: null,
+            image_url: null,
+            position: 1,
+        }],
+    };
+    const postgrest = installFakePostgrest({ sites: [SITE_A], products: [productWithJsonbVariants], product_variants: [] });
+    t.after(() => postgrest.restore());
+
+    const offEnv = { ...env(), PRODUCT_VARIANTS_RELATIONAL_READS: 'off' } as unknown as Env;
+    const response = await storefrontApp().request(`/storefront/snaz/products/${PRODUCT_A.slug}`, undefined, offEnv);
+    assert.equal(response.status, 200);
+    const payload = await jsonBody<{ data: { variants?: Record<string, unknown>[] } }>(response);
+    const serialized = JSON.stringify(payload);
+    assert.ok(!serialized.includes('VAR-SKU-777'), 'the jsonb blob must be projected, not passed through');
+    assert.ok(!serialized.includes('4006381333931'), 'the jsonb blob must be projected, not passed through');
+    for (const variant of payload.data.variants ?? []) {
+        for (const field of VARIANT_INTERNAL_FIELDS) {
+            assert.ok(!(field in variant), `variant.${field} must not survive the jsonb path`);
+        }
+    }
 });

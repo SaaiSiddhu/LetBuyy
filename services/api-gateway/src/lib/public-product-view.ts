@@ -31,11 +31,59 @@ export const PUBLIC_PRODUCT_FIELDS: ReadonlySet<string> = new Set([
     'product_variants',
 ]);
 
-/** Drops every key that is not public. Applied after hydration, immediately before serialisation. */
+// SEC-2: the public shape of a VARIANT. Two paths produce variants and both carried stock-keeping
+// identifiers to anonymous callers: the relational path mapped `sku` and `barcode` in explicitly
+// (storefront.ts's publicProductVariantView), and the non-relational path returns products.variants,
+// a jsonb column whose contents migration 086 builds with 'sku' and 'barcode' inside it. Nothing in
+// any storefront renders either. This set is the single definition both paths now use, so they
+// cannot drift apart the way the two product selects did.
+export const PUBLIC_VARIANT_FIELDS: ReadonlySet<string> = new Set([
+    'id',
+    'product_id',
+    'title',
+    'price',
+    'compare_price',
+    'stock',
+    'inventory_qty',
+    'weight',
+    'weight_unit',
+    'option1',
+    'option2',
+    'option3',
+    'image_url',
+    'position',
+]);
+
+/** Drops every key that is not public from one variant, whichever path produced it. */
+export function toPublicVariant(variant: Record<string, unknown>): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(variant)) {
+        if (PUBLIC_VARIANT_FIELDS.has(key)) result[key] = value;
+    }
+    return result;
+}
+
+const VARIANT_KEYS = ['variants', 'product_variants'] as const;
+
+/**
+ * Drops every key that is not public. Applied after hydration, immediately before serialisation.
+ *
+ * SEC-2: this recurses into the variant arrays. SEC-1's version filtered top-level keys only and
+ * `variants` is on the allowlist, so the array was copied through untouched and the identifiers it
+ * carries stayed public — the same defect one level down. An allowlist that stops at the top level
+ * is not a projection of the response, only of its first layer.
+ */
 export function toPublicProduct<T extends Record<string, unknown>>(product: T): Record<string, unknown> {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(product)) {
-        if (PUBLIC_PRODUCT_FIELDS.has(key)) result[key] = value;
+        if (!PUBLIC_PRODUCT_FIELDS.has(key)) continue;
+        if ((VARIANT_KEYS as readonly string[]).includes(key) && Array.isArray(value)) {
+            result[key] = value.map((variant) => (
+                variant && typeof variant === 'object' ? toPublicVariant(variant as Record<string, unknown>) : variant
+            ));
+            continue;
+        }
+        result[key] = value;
     }
     return result;
 }
