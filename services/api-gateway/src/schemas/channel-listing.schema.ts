@@ -103,6 +103,54 @@ export const OperatorListingDecisionSchema = z
 export type OperatorListingListInput = z.infer<typeof OperatorListingListQuery>;
 export type OperatorListingDecisionInput = z.infer<typeof OperatorListingDecisionSchema>;
 
+// ── Operator realm (ADM-3) — marketplace_categories taxonomy ───────────────────────────────────
+// A platform-owned table (no site_id, no tenant scope): writes are a service_role-only policy
+// (217:44-48), so these schemas carry no store_id. slug repeats 217's format CHECK verbatim and is
+// immutable after creation — Update never accepts it. `.strict()`: a client cannot smuggle
+// unrecognised fields through either body.
+export const CreateMarketplaceCategorySchema = z
+    .object({
+        slug,
+        name: z.string().trim().min(1).max(200),
+        parent_id: uuid.nullable().optional(),
+        position: z.coerce.number().int().min(0).default(0),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+    })
+    .strict();
+
+export const UpdateMarketplaceCategorySchema = z
+    .object({
+        name: z.string().trim().min(1).max(200).optional(),
+        parent_id: uuid.nullable().optional(),
+        position: z.coerce.number().int().min(0).optional(),
+        is_active: z.boolean().optional(),
+        metadata: z.record(z.string(), z.unknown()).optional(),
+    })
+    .strict()
+    .refine(
+        (body) =>
+            body.name !== undefined ||
+            body.parent_id !== undefined ||
+            body.position !== undefined ||
+            body.is_active !== undefined ||
+            body.metadata !== undefined,
+        { message: 'nothing to update' },
+    );
+
+export const ListMarketplaceCategoriesOperatorQuery = z.object({
+    // z.coerce.boolean() would treat the literal string "false" as truthy (Boolean("false") === true);
+    // a query-string flag must be parsed from its two literal values, not coerced.
+    is_active: z
+        .enum(['true', 'false'])
+        .optional()
+        .transform((v) => (v === undefined ? undefined : v === 'true')),
+    parent_id: uuid.optional(),
+});
+
+export type CreateMarketplaceCategoryInput = z.infer<typeof CreateMarketplaceCategorySchema>;
+export type UpdateMarketplaceCategoryInput = z.infer<typeof UpdateMarketplaceCategorySchema>;
+export type ListMarketplaceCategoriesOperatorInput = z.infer<typeof ListMarketplaceCategoriesOperatorQuery>;
+
 export type ListChannelListingsInput = z.infer<typeof ListChannelListingsQuery>;
 export type GetChannelListingInput = z.infer<typeof GetChannelListingQuery>;
 export type CreateChannelListingInput = z.infer<typeof CreateChannelListingSchema>;
