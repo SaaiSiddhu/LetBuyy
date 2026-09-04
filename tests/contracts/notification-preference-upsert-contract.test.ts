@@ -36,6 +36,18 @@ function read(relativePath: string): string {
     return readFileSync(absolute, 'utf8');
 }
 
+// Migration 210 explains itself in a long `--` header that quotes the very SQL shapes asserted
+// below, including a literal `ON CONFLICT (user_id, COALESCE(store_id, ...), ...)`. Matching against
+// the raw file therefore lets a comment satisfy an assertion about executable SQL — an assertion
+// that cannot fail is the same defect class this whole guard exists to catch. Strip comments first
+// and assert only against statements Postgres will actually run.
+function executableSql(source: string): string {
+    return source
+        .split('\n')
+        .filter((line) => !line.trimStart().startsWith('--'))
+        .join('\n');
+}
+
 // Ordered parameter names from the migration's CREATE FUNCTION signature.
 function sqlParameterNames(migration: string): string[] {
     const signature = migration.match(
@@ -53,7 +65,7 @@ function routeRpcArgumentNames(route: string): string[] {
 }
 
 test('the gateway calls migration 210 with exactly the parameter names the function declares', () => {
-    const sqlNames = sqlParameterNames(read(MIGRATION));
+    const sqlNames = sqlParameterNames(executableSql(read(MIGRATION)));
     const routeNames = routeRpcArgumentNames(read(ROUTE));
 
     assert.deepEqual(sqlNames, ['p_user_id', 'p_store_id', 'p_channel', 'p_category', 'p_enabled']);
@@ -63,14 +75,17 @@ test('the gateway calls migration 210 with exactly the parameter names the funct
 });
 
 test('migration 210 targets the expression index rather than a bare column list', () => {
-    const migration = read(MIGRATION);
+    const migration = executableSql(read(MIGRATION));
 
     // The COALESCE must appear inside the ON CONFLICT target. A bare `ON CONFLICT (user_id,
     // store_id, channel, category)` here would reintroduce the exact defect the RPC exists to fix.
     const onConflict = migration.match(/ON CONFLICT\s*\(([\s\S]*?)\)\s*DO UPDATE/);
-    assert.ok(onConflict, `${MIGRATION} must carry an ON CONFLICT ... DO UPDATE clause`);
-    assert.match(onConflict[1], /COALESCE\(store_id/, 'the conflict target must repeat the expression index, not list bare columns');
-    assert.match(migration, /CREATE UNIQUE INDEX|COALESCE\(store_id, '00000000-0000-0000-0000-000000000000'::uuid\)/);
+    assert.ok(onConflict, `${MIGRATION} must carry an executable ON CONFLICT ... DO UPDATE clause`);
+    assert.match(
+        onConflict[1],
+        /COALESCE\(store_id, '00000000-0000-0000-0000-000000000000'::uuid\)/,
+        'the conflict target must repeat the expression index verbatim, not list bare columns',
+    );
 });
 
 test('the preference write path does not fall back to a PostgREST upsert on notification_preferences', () => {
@@ -87,7 +102,7 @@ test('the preference write path does not fall back to a PostgREST upsert on noti
 });
 
 test('migration 210 ships a rollback that drops exactly the function it created', () => {
-    const rollback = read(ROLLBACK);
+    const rollback = executableSql(read(ROLLBACK));
 
     assert.match(rollback, new RegExp(`DROP FUNCTION IF EXISTS public\\.${RPC_NAME}`));
     // The rollback must name the full argument-type list, otherwise it silently fails to drop an
