@@ -290,3 +290,18 @@ test('the detail route calls the RPC by its named parameter and is registered on
     const publicRoutes = executableTs(read(PUBLIC_ROUTES));
     assert.equal(publicRoutes.match(/registerStorefrontMarketplaceDetailRoutes\(router,/g)?.length, 1, 'registered exactly once');
 });
+
+test('MKT-3: the marketplace detail hydrates variants through the shared projection, and 220 still returns none', () => {
+    const route = executableTs(read(DETAIL_ROUTE));
+    // One definition of a public variant, shared with the storefront path (SEC-2). A second field
+    // map here is the drift condition that produced SEC-1 and SEC-2 in the first place.
+    assert.match(route, /import \{ toPublicVariant \} from '\.\.\/\.\.\/lib\/public-product-view'/);
+    assert.match(route, /\.map\(\(variant\) => toPublicVariant\(variant\)\)/, 'every variant row must be projected');
+    assert.doesNotMatch(route, /PUBLIC_VARIANT_SELECT[^;]*\b(sku|barcode)\b/, 'the variant select must not request sku or barcode');
+
+    // The SQL shape stays free of variants: hydration belongs in the gateway, where the audited
+    // projection lives. Widening 220 would smuggle the unaudited blob back in.
+    const detail = executableSql(read('database/supabase/migrations/220_marketplace_listing_detail.sql'));
+    const returns = detail.slice(detail.indexOf('RETURNS TABLE'), detail.indexOf('LANGUAGE sql'));
+    assert.ok(!/\bvariants\b/.test(returns), 'migration 220 must still return no variants column');
+});

@@ -18,12 +18,19 @@
 import type { Context, Hono } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, getSupabaseAdmin, success } from '../../lib/supabase';
+import { toPublicVariant } from '../../lib/public-product-view';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 
 type AppContext = Context<{ Bindings: Env }>;
 type DatabaseErrorLike = { message?: string; details?: string; hint?: string } | null | undefined;
 
 export const MARKETPLACE_LISTING_DETAIL_RPC = 'marketplace_listing_detail';
+
+// MKT-3: the columns hydrated for a public variant. sku and barcode are not requested at all — the
+// query does not ask for what the response may not carry — and every row still passes through
+// toPublicVariant, so the projection remains the backstop if this list is ever widened. `stock` is
+// derived from inventory_qty, matching the storefront's own public variant shape.
+export const PUBLIC_VARIANT_SELECT = 'id, product_id, title, price, compare_price, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -63,8 +70,27 @@ export async function loadMarketplaceListingDetailFromDatabase(
     return { data: rows && rows.length > 0 ? rows[0] : null, error: error as DatabaseErrorLike };
 }
 
+// MKT-3: hydrated from the canonical product_variants rows — not from products.variants, which is a
+// jsonb projection of them (migration 086) and depends on a reconcile having run, and not by widening
+// migration 220's return shape, which would put a second variant allowlist in SQL where it could
+// drift from SEC-2's. Called ONLY after the RPC returns a row, so 220's seven-predicate fence stays
+// the single authority on whether this listing is visible at all.
+export async function loadListingVariantsFromDatabase(
+    c: AppContext,
+    productId: string,
+): Promise<{ data: Record<string, unknown>[]; error: DatabaseErrorLike }> {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('product_variants')
+        .select(PUBLIC_VARIANT_SELECT)
+        .eq('product_id', productId)
+        .order('position', { ascending: true });
+    return { data: (data as Record<string, unknown>[] | null) ?? [], error: error as DatabaseErrorLike };
+}
+
 export interface StorefrontMarketplaceDetailDependencies {
     loadMarketplaceListingDetail?: (c: AppContext, listingId: string) => Promise<{ data: MarketplaceListingDetailRow | null; error: DatabaseErrorLike }>;
+    loadListingVariants?: (c: AppContext, productId: string) => Promise<{ data: Record<string, unknown>[]; error: DatabaseErrorLike }>;
 }
 
 export function registerStorefrontMarketplaceDetailRoutes(
@@ -72,6 +98,7 @@ export function registerStorefrontMarketplaceDetailRoutes(
     dependencies: StorefrontMarketplaceDetailDependencies = {},
 ): void {
     const loadListing = dependencies.loadMarketplaceListingDetail ?? loadMarketplaceListingDetailFromDatabase;
+    const loadVariants = dependencies.loadListingVariants ?? loadListingVariantsFromDatabase;
 
     // GET /storefront/marketplace/listings/:id — one approved listing, or 404.
     // Registered with the other /marketplace routes, before the `/:subdomain/...` family, so no
@@ -93,8 +120,14 @@ export function registerStorefrontMarketplaceDetailRoutes(
                 // site — the fence does not distinguish, and neither should the response.
                 return { status: 404, body: { success: false, error: { code: 'NOT_FOUND', message: 'Listing not found' } } };
             }
+            // The listing exists and is publicly visible; only now are its variants read.
+            const variants = await loadVariants(c, data.product_id);
+            // A variant-read failure must not turn a good listing into a 500 — a product page
+            // without a variant picker is degraded, not broken, and the storefront's own hydration
+            // treats a missing product_variants table the same way.
+            const publicVariants = (variants.error ? [] : variants.data).map((variant) => toPublicVariant(variant));
             return {
-                body: success(data),
+                body: success({ ...data, variants: publicVariants }),
                 tags: ['marketplace:feed', `marketplace:listing:${listingId}`],
             };
         });
