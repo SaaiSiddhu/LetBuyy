@@ -43,6 +43,18 @@ provider · storefront theme survivor · domain strategy · retention periods ·
 and dark-store model · the `00b_topology_amendment_draft.md` Signature Block (all 7 items unsigned; the
 six-app rename was applied under the brief's apply-anyway instruction).
 
+### 2b. Purchase tenancy — OWNER_DECISION 2026-09-05 (D-PURCHASE-TENANCY)
+
+Raised by CHK-1 and answered in chat the same day ("go with your recommendation"). D-3 requires a
+parent purchase over child orders; a purchase that spans two merchants has no single `site_id`, so it
+cannot carry the `site_id = current_site_id()` RLS shape every tenant table uses. The fork was put to
+the owner rather than decided in a phase, because it touches the tenant-isolation model (Constitution
+"never decide alone").
+
+| ID | Question | Decision · consequence |
+|---|---|---|
+| **D-PURCHASE-TENANCY** | How is a purchase that may span merchants isolated? | **Platform-level, with no merchant-realm read path.** `public.purchases` carries no tenant column and no policy granting `app_tenant`/`anon`/`authenticated` any access; writes are `service_role`-only, exercised by the checkout RPC. Merchants continue to read their own `orders` row, which is already RLS-scoped, and never the parent. Consequence: no cross-merchant amount or identity can leak through the parent, because the parent holds no money and no merchant-readable data, and no merchant can reach it at all. Forecloses: putting totals or a status on `purchases` (that would create a second source of truth for money and order state, and would leak one merchant's amounts to another once a cart spans merchants). A buyer-facing or operator-facing read of `purchases` is a later, deliberate phase with its own policy, not an incidental widening. |
+
 ### 2a. Seller-feature survival and retirements — OWNER_DECISION 2026-09-04
 
 Measured against the System A bundle (`be716ae`): seller app 96,098 lines / 171 files, Firestore-direct,
