@@ -81,17 +81,18 @@ test('GET /marketplace/feed passes exactly the five marketplace_feed parameters,
 });
 
 test('GET /marketplace/feed clamps limit to 1..100 and emits a keyset cursor when a page is full', async () => {
+    const listingId = (i: number) => `11111111-0000-4000-8000-${String(i).padStart(12, '0')}`;
     const { app, calls } = publicApp({
         loadMarketplaceFeed: async (_c: unknown, params: MarketplaceFeedParams) => {
             calls.push(params);
-            return { data: Array.from({ length: params.limit }, (_, i) => ({ ...ROW, listing_id: `1111111${i}-0000-4000-8000-000000000001` })), error: null };
+            return { data: Array.from({ length: params.limit }, (_, i) => ({ ...ROW, listing_id: listingId(i) })), error: null };
         },
     } as Partial<PublicDeps>);
     const res = await app.request('/marketplace/feed?limit=500', undefined, {});
     assert.equal(res.status, 200);
     assert.equal(calls[0].limit, 100, '500 is clamped to 100, not rejected');
     const body = (await res.json()) as { meta: { next_cursor: { after_approved_at: string; after_id: string } | null } };
-    assert.deepEqual(body.meta.next_cursor, { after_approved_at: ROW.approved_at, after_id: '11111119-0000-4000-8000-000000000001' });
+    assert.deepEqual(body.meta.next_cursor, { after_approved_at: ROW.approved_at, after_id: listingId(99) }, 'the cursor is the last row of a full page');
 
     const low = await app.request('/marketplace/feed?limit=0', undefined, {});
     assert.equal(low.status, 200);
