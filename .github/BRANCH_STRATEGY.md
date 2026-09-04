@@ -1,102 +1,112 @@
 # LetBuyy Branch Strategy
 
-Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (ART-02, ART-03) > root `AGENTS.md` (DEPLOY-R1, TEST-R8) > this document.
+Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (ART-02, ART-03) > root `AGENTS.md` (DEPLOY-R1, TEST-R8) > OWNER_DECISION D-BRANCH / D-DEPLOY (2026-09-04, recorded in `.claude/skills/letbuyy/references/decisions.md`) > this document.
 
 This document describes what the workflows in `.github/workflows/` actually do. Where a claim
 here is not machine-checkable from the repository, it is marked **UNVERIFIED** and named as a
-human-owned seam. `scripts/validators/workflow-trigger-coverage-validator.mjs` enforces the
-in-repo half of this document on every governance run.
+human-owned seam. `scripts/validators/workflow-trigger-coverage-validator.mjs`,
+`deployment-safety-validator.mjs`, `branch-lag-guard-validator.mjs` and
+`branch-dispositions-validator.mjs` enforce the in-repo half of this document on every governance run.
+The operating procedure (claims, merges, promotions, the loop) is `.claude/skills/letbuyy/SKILL.md`.
 
-## Branches
+## Branches (OWNER_DECISION D-BRANCH, 2026-09-04)
 
-- `main` - production pointer. Protected. No direct push. `production-deploy.yml` triggers only
-  from `main` (push) or manual dispatch, behind the `branch-lag-guard` job.
-- `stepup/main` - repository-side integration and staging branch for the converged reality.
-  `deploy-staging.yml` deploys staging from a push to this branch, behind its governance gate.
-- `codex/web-v1-integration` - the Web V1 integration branch. Gated, **never deploying**.
-  No deploy workflow (`production-deploy.yml`, `production-rollout.yml`,
-  `live-production-certification.yml`, `deploy-staging.yml`, `staging-deploy.yml`,
-  `staging-runtime-deployment.yml`, `mobile-merchant-release.yml`) triggers from it.
-- `codex/*` - short-lived agent/work branches off `stepup/main`. Merge back via PR.
-  `architecture-governance.yml` runs on every push to `codex/**`.
-- `feature/*` - short-lived. Branch off `stepup/main`. Merge back to `stepup/main` via PR.
-- `hotfix/*` - branch off `main`. PR to `main` and then fast-forward `stepup/main` to the same commit.
-- `develop` - retired/stale branch name. Do not target new PRs, staging deploys, or required
-  checks here. Its `ci.yml` triggers are deliberately **retained** as a fail-safe: if `develop`
-  is ever recreated it stays gated by default. Removing the triggers would weaken an existing
-  gate, which ART-02 / R-18 forbid. `staging-deploy.yml` has its `develop` push trigger disabled.
+- `main` - production pointer. Moves **only** by fast-forward promotion from `staging`
+  (`git fetch . staging:main`), with the owner's word in the same message before any push. Never a
+  merge commit, never a direct commit, never a hotfix commit. `production-deploy.yml` is
+  **`workflow_dispatch` only** until a DEPLOY-1 phase retargets it with verified cloud targets
+  (D-DEPLOY); when a push trigger returns it must be restricted to `main`, behind the
+  `branch-lag-guard` job (`main` not behind `origin/staging`).
+- `staging` - cloud pre-production. Moves only by fast-forward promotion from `develop`
+  (`git fetch . develop:staging`), owner's word before any push. `deploy-staging.yml` is
+  **`workflow_dispatch` only** until DEPLOY-1; it will then trigger on `staging`, behind its
+  governance gate.
+- `develop` - integration and local end-to-end. Receives `--no-ff` merges of phase branches,
+  performed inside the `develop` worktree (`.claude/skills/letbuyy/references/merge.md`), plus ledger
+  bookkeeping commits. Pushing `develop` is how cloud signal (`ci.yml`) is obtained before promotion.
+- `letbuyy/<id>-<slug>` - one bounded phase. Its first commit is the claim row in
+  `docs/active/BRANCH_DISPOSITIONS.md`; it merges only into `develop`; its worktree is removed after
+  the merge. Never pushed.
+- `stepup/main` - the former integration/staging branch, now a **preserved alias**
+  (`LEGACY_INTEGRATED`): never advanced, never deleted. Its `ci.yml` triggers are retained as a
+  fail-safe (ART-02 / R-18: removing a gate weakens it), exactly as `develop`'s were while it was retired.
+- `feature/claude-md-durable-architecture-memory` - the primary checkout's frozen work surface,
+  integrated into `develop` at `823aa5ee`. Commits landing on it afterwards are unintegrated until they
+  travel through a phase branch.
+- `codex/web-v1-integration`, `codex/*` - gated, **never deploying**; historical Web V1 lanes.
+  `architecture-governance.yml` still runs on every push to `codex/**`.
+- `hotfix/*` - no special path: a hotfix is a phase branch that merges into `develop` and is
+  promoted `develop` → `staging` → `main`, faster.
+
+Fast-forward-only promotion means **the SHA tested on `develop` is the SHA that reaches `staging`,
+and the SHA soaked on `staging` is the SHA that reaches `main`.**
 
 ## Rules
 
-- Every PR to `stepup/main`, `codex/web-v1-integration`, or `main` must pass all CI gates before merge.
-- PRs to `main` require all CI gates, E2E on staging, and one approver.
-- Squash merge only on `main`. Merge commits are allowed on `stepup/main`.
-- Never push directly to `main` or `stepup/main`.
-- Production deploys only from `main` (push) or manual `workflow_dispatch`, and only after the
-  `branch-lag-guard` job proves `main` is not behind `stepup/main` (AGENTS.md DEPLOY-R1).
+- Every phase claims its row before its first implementation commit; every merge into `develop`
+  runs the first-parent diff and the resurrection check; every promotion is a fast-forward or it is
+  refused and the divergence is classified (`MERGE_RUNBOOK.md` §Divergence).
+- Never push `staging` or `main` without the owner's word in the same message. Never deploy.
+- Production deploys only from `main` (dispatch today; push to `main` only after DEPLOY-1), and only
+  after the `branch-lag-guard` job proves `main` is not behind `staging` (AGENTS.md DEPLOY-R1 as
+  amended by D-BRANCH).
+- Never widen a workflow's `permissions:`; never add a deploy trigger to any branch other than
+  `staging` (staging lanes) or `main` (production lanes); never reintroduce a `letbuyy.store` literal.
 
-## Workflow trigger coverage (source of truth: `.github/workflows/`)
+## Workflow trigger coverage (source of truth: `.github/workflows/`, measured 2026-09-04)
 
 | Branch | `ci.yml` (PR) | `ci.yml` (push) | `architecture-governance.yml` | Deploys? |
 |---|---|---|---|---|
-| `main` | yes | yes | yes (push `main`) | `production-deploy.yml` (push), `staging-runtime-deployment.yml` (push, path-scoped) |
-| `stepup/main` | yes | yes | PR only (path-scoped) | `deploy-staging.yml` (push) |
+| `main` | yes | yes | yes (push `main`) | `production-deploy.yml` **dispatch only**; `staging-runtime-deployment.yml` push is plan-only (path-scoped) |
+| `staging` | yes | yes | PR only (path-scoped) | `deploy-staging.yml` **dispatch only** (push on `staging` after DEPLOY-1) |
+| `develop` | yes | yes | PR only (path-scoped) | **no** |
+| `stepup/main` (alias) | yes (fail-safe) | yes (fail-safe) | PR only (path-scoped) | **no** |
 | `codex/web-v1-integration` | yes | yes | yes (push `codex/**`) | **no** |
 | other `codex/**` | PR only (path-scoped) | no | yes (push `codex/**`) | **no** |
-| `develop` (retired) | yes | yes | PR only (path-scoped) | **no** |
+| `letbuyy/*` | no (never pushed) | no | no | **no** |
 
-`ci.yml` jobs: `typecheck`, `secret-hygiene`, `lint`, `unit-tests`, `merge-safety-gate`,
-`governance`, `mobile-merchant`, `build`.
+`ci.yml` jobs: `typecheck`, `secret-hygiene`, `lint` (includes `lint:css`), `unit-tests`,
+`merge-safety-gate`, `governance` (the real governance lane), `mobile-merchant`, `build`.
 
 ## Known reality gaps (do not paper over)
 
-- **`main` is not aligned with `stepup/main`.** Measured 2026-08-09 at `ee371182`: `main` is
-  106 commits behind `stepup/main` locally and `origin/main` is 291 behind. The alignment claim
-  previously carried by this document was false. `production-deploy.yml`'s `branch-lag-guard`
-  job is the enforcing mechanism (it fails the release when the lag is non-zero); the
-  outstanding merge is a human-owned action, tracked as a launch blocker, not a documentation fix.
-- **`origin/stepup/main` is 17 commits behind local `stepup/main`.** Nothing in CI can observe
-  unpushed local commits.
-- **The `develop` retirement is only half done.** `staging-deploy.yml` has its push trigger
-  disabled; `ci.yml` deliberately keeps `develop` for the fail-safe reason above.
+- **The remote cannot be read from this machine** (2026-09-04): `gh` is logged in as an account
+  without access and `git ls-remote` reports the repository as not found. Nothing in CI has been
+  observed since 2026-08-15. See `.claude/skills/letbuyy/references/ci.md` §0.
+- **`origin/develop` (2026-06-09), `origin/main` and `origin/stepup/main` (2026-08-15) are all
+  ancestors of `823aa5ee`**; the owner's first push of `develop`, `staging`, `main` is a
+  fast-forward on every ref. Push `develop`, then `staging`, then `main`.
+- **Nothing is deployed.** `config/vercel/projects.json` holds placeholder project IDs; whether the
+  Cloudflare / Vercel / Supabase secrets exist in GitHub is UNVERIFIED.
+- **The governance lane is red** (six ambient failures at `823aa5ee`, attributed in `ci.md` §3), so a
+  dispatched production deploy stops at its governance gate today.
 
 ## GitHub Branch Protection Settings — **UNVERIFIED from the repository**
 
-Branch protection lives on github.com, not in this repository. Nothing in `.github/` can prove
-that these rules are configured, and no validator in this repository asserts them. Every box
-below is a **human-owned seam requiring repo-owner access to confirm.** Configure manually in
-the GitHub UI and record the confirmation in the launch evidence set.
+Branch protection lives on github.com, not in this repository. Nothing in `.github/` can prove that
+these rules are configured, and no validator in this repository asserts them. Every box below is a
+**human-owned seam requiring repo-owner access to confirm.** Configure manually in the GitHub UI and
+record the confirmation in the launch evidence set.
 
-### For `stepup/main`
+### For `develop`
 
-- [ ] Require a pull request before merging.
-- [ ] Require status checks to pass before merging.
-- [ ] Required checks: `CI / Typecheck`, `CI / Lint`, `CI / Build`, `CI / Unit tests`,
-      `CI / Governance`, `CI / Merge safety gate`, `CI / Secret hygiene`.
-- [ ] Require branches to be up to date before merging.
-- [ ] Do not allow bypassing the above settings.
+- [ ] Require status checks to pass before merging: `CI / Typecheck`, `CI / Lint`, `CI / Build`,
+      `CI / Unit tests`, `CI / Governance`, `CI / Merge safety gate`, `CI / Secret hygiene`.
+- [ ] Restrict who can push (the owner; agents never push).
 
-### For `codex/web-v1-integration`
+### For `staging`
 
-- [ ] Require a pull request before merging.
-- [ ] Require status checks to pass before merging.
-- [ ] Required checks: `CI / Typecheck`, `CI / Lint`, `CI / Build`, `CI / Unit tests`,
-      `CI / Governance`, `CI / Merge safety gate`, `CI / Secret hygiene`,
-      `Architecture Governance / validate-architecture`.
-- [ ] Do not allow bypassing the above settings.
+- [ ] Allow fast-forward pushes only (no merge commits; "Require linear history").
+- [ ] Require the `develop` status checks on the promoted SHA.
+- [ ] Restrict who can push to the owner.
 
 ### For `main`
 
-- [ ] Require a pull request before merging.
-- [ ] Require at least one approving review.
-- [ ] Require status checks to pass before merging.
-- [ ] Required checks: the `stepup/main` set plus `staging-e2e / playwright`.
-- [ ] Require branches to be up to date before merging.
-- [ ] Restrict who can push to matching branches.
-- [ ] Do not allow bypassing the above settings.
+- [ ] Require linear history; no direct commits; no force pushes.
+- [ ] Require the `staging` checks on the promoted SHA plus `staging-e2e / playwright` once DEPLOY-1
+      exists.
+- [ ] Restrict who can push to the owner; do not allow bypassing.
 
-### Retired `develop`
+### Preserved `stepup/main`
 
-- [ ] Remove active deploy, required-check, and PR targeting rules after the protected remote is
-      promoted. This is a human-owned branch-protection seam; do not reintroduce `develop` as an
-      active integration branch, and do not remove its `ci.yml` fail-safe triggers.
+- [ ] Lock the branch (no pushes) so the alias can never advance.

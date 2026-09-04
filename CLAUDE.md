@@ -2,6 +2,10 @@
 
 `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` is supreme law for this repository. Claude, Codex, humans, and other automation must follow the Constitution first, then root `AGENTS.md` (the promoted `LETBUYY_AGENTS_V2` operating rulebook), then the relevant local `AGENTS.md`, then the canonical governance rewrite documents.
 
+## Operating skill — `/letbuyy` (tracked, adopted 2026-09-04)
+
+`.claude/skills/letbuyy/SKILL.md` is the single operating skill for every role in this repository — CTO review and gating, phase planning, Worker implementation, the security / UI-UX / feedback lanes, merge, promotion and the self-paced run loop. Every AI coding tool and every human session follows it. It is subordinate to the Constitution → `AGENTS.md` chain above and never overrides it; where they disagree the skill is wrong and must be fixed. **Single agent, always** (no subagents, worktree agents or workflow orchestration — `PROMPTS.md` records why). Branch model (OWNER_DECISION D-BRANCH, 2026-09-04): `letbuyy/<phase>` → `--no-ff` merge into `develop` inside the `develop` worktree → fast-forward-only promotion to `staging` → `main`, with the owner's word in the same message before any push to `staging` or `main`; `stepup/main` is a preserved alias and is never advanced. The only branch-disposition authority is `docs/active/BRANCH_DISPOSITIONS.md` (the row is the claim and the branch's first commit), enforced by `scripts/validators/branch-dispositions-validator.mjs` in the gate lane. `production-deploy.yml` and `deploy-staging.yml` are `workflow_dispatch`-only until a DEPLOY-1 phase retargets them with verified cloud targets (OWNER_DECISION D-DEPLOY). Run-state for the loop lives in `~/.letbuyy/run/`, never in the tree; generated prompts and contracts never enter the tree. Commit identity is an open owner decision (D-ID) recorded in the skill's `references/decisions.md`.
+
 ## LetBuyy Durable Architecture Memory
 
 > Summarizes the Constitution for fast recall. It does **not** amend or override it. On any conflict: Constitution → root `AGENTS.md` → local `AGENTS.md` → `LETBUYY_CANONICAL_SYSTEMS.md` → this section.
