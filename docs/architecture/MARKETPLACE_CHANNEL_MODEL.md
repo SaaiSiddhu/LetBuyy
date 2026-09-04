@@ -128,7 +128,7 @@ The one cross-tenant read. Returns **only** these columns:
 | from | columns | bound by |
 |---|---|---|
 | `channel_listings` | `listing_id`, `approved_at` | this document |
-| `products` | `product_id`, `name`, `slug`, `images`, `price`, `compare_price`, `currency` | ⊆ `PRODUCT_SELECT_FULL` (`storefront.ts:353`) — the contract test asserts this |
+| `products` | `product_id`, `name`, `slug`, `images`, `price`, `compare_price` | ⊆ `PRODUCT_SELECT_FULL` (`storefront.ts:353`) — the contract test asserts this. `currency` is deliberately absent: `PRODUCT_SELECT_FULL` names it, but no migration ever added it to `products` (105 added it to `marketplace_apps`), and the storefront only survives by falling back to `PRODUCT_SELECT_COMPAT`/`MINIMAL` (`storefront.ts:1089-1091`). A `SECURITY DEFINER` SQL function is validated at creation, so it cannot reference a column that does not exist. INR is the platform currency. |
 | `sites` | `site_id`, `store_name`, `subdomain` | what every storefront URL already reveals |
 | `marketplace_categories` | `category_slug` | public taxonomy |
 

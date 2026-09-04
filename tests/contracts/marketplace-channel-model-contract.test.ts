@@ -11,7 +11,7 @@
 // tests/executable/marketplace-channel-listings-postgres.test.mjs.
 
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -25,7 +25,10 @@ const REGISTRY = 'services/api-gateway/src/tenant/tenant-tables.registry.ts';
 
 // The allowlist MARKETPLACE_CHANNEL_MODEL.md §5.2 documents, by origin. Widening the feed means
 // editing this test AND the document in the same change, which is the review moment this guard exists for.
-const PRODUCT_COLUMNS = ['product_id', 'name', 'slug', 'images', 'price', 'compare_price', 'currency'];
+// `currency` is in PRODUCT_SELECT_FULL but no migration ever added it to products (105 added it to
+// marketplace_apps); the storefront only survives through its COMPAT/MINIMAL fallbacks. A SQL function
+// is validated at creation, so the feed must not name it — see MARKETPLACE_CHANNEL_MODEL.md §5.2.
+const PRODUCT_COLUMNS = ['product_id', 'name', 'slug', 'images', 'price', 'compare_price'];
 // The exact RETURNS TABLE order the document and the migration share.
 const FEED_ALLOWLIST = [
     'listing_id',
@@ -38,7 +41,6 @@ const FEED_ALLOWLIST = [
     'images',
     'price',
     'compare_price',
-    'currency',
     'category_slug',
     'approved_at',
 ];
@@ -50,7 +52,6 @@ const PRODUCT_SOURCE: Record<string, string> = {
     images: 'images',
     price: 'price',
     compare_price: 'compare_price',
-    currency: 'currency',
 };
 
 const TENANT_TABLES = ['channel_listings', 'channel_listing_moderation_events'];
@@ -113,6 +114,25 @@ test('marketplace_feed returns exactly the documented allowlist, and nothing the
     const allowedProductReads = new Set([...Object.values(PRODUCT_SOURCE), 'is_active', 'deleted_at']);
     for (const column of productReads) {
         assert.ok(allowedProductReads.has(column), `marketplace_feed reads products.${column}, which is neither an allowlisted output nor a visibility filter`);
+    }
+
+    // Every products column the feed reads must actually exist in the schema: the baseline CREATE TABLE
+    // or a later ALTER TABLE public.products ADD COLUMN. PRODUCT_SELECT_FULL is not proof of existence
+    // (it names `currency`, which no migration ever added to products), and a SQL function that names a
+    // missing column fails at CREATE FUNCTION time — in production, not in a unit test.
+    const migrations = readdirSync(join(repoRoot, 'database/supabase/migrations')).filter((f) => f.endsWith('.sql')).sort();
+    const baseline = read('database/supabase/migrations/000_baseline.sql');
+    const productsDdl = baseline.match(/CREATE TABLE public\.products \(([\s\S]*?)\n\);/);
+    assert.ok(productsDdl, '000_baseline.sql must define CREATE TABLE public.products');
+    const knownProductColumns = new Set([...productsDdl[1].matchAll(/^\s+([a-z_]+) /gm)].map((m) => m[1]));
+    for (const file of migrations) {
+        const text = executableSql(read(`database/supabase/migrations/${file}`));
+        for (const alter of text.matchAll(/ALTER TABLE (?:ONLY )?public\.products\b([\s\S]*?);/g)) {
+            for (const added of alter[1].matchAll(/ADD COLUMN (?:IF NOT EXISTS )?([a-z_]+)/g)) knownProductColumns.add(added[1]);
+        }
+    }
+    for (const column of new Set(productReads)) {
+        assert.ok(knownProductColumns.has(column), `marketplace_feed reads products.${column}, but no migration defines that column`);
     }
 });
 

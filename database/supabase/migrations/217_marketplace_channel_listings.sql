@@ -438,7 +438,6 @@ RETURNS TABLE (
   images text[],
   price numeric,
   compare_price numeric,
-  currency text,
   category_slug text,
   approved_at timestamp with time zone
 )
@@ -458,7 +457,6 @@ AS $$
     p.images         AS images,
     p.price          AS price,
     p.compare_price  AS compare_price,
-    p.currency       AS currency,
     mc.slug          AS category_slug,
     cl.approved_at   AS approved_at
   FROM public.channel_listings cl
