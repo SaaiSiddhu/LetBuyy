@@ -144,3 +144,53 @@ test('the zod vocabularies repeat 217\'s CHECK lists verbatim, and merchants can
     assert.doesNotMatch(merchantBranch[1], /p_to_status = 'rejected'/);
     assert.doesNotMatch(merchantBranch[1], /p_to_status IN \([^)]*'rejected'/);
 });
+
+// ── ADM-1: the operator half ────────────────────────────────────────────────────────────────────
+const OPERATOR_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-listings.ts';
+
+test('the operator decision passes exactly 217\'s parameter names by name, with the literal operator realm', () => {
+    const migration = executableSql(read(MIGRATION));
+    const route = executableTs(read(OPERATOR_ROUTE));
+    const sqlNames = sqlParameterNames(migration, 'transition_channel_listing');
+    // The TransitionParams type is the wire object handed to db.rpc — its keys are the contract.
+    const typeBlock = route.match(/export type TransitionParams = \{([\s\S]*?)\};/);
+    assert.ok(typeBlock, `${OPERATOR_ROUTE} must declare TransitionParams`);
+    const keys = [...typeBlock[1].matchAll(/^\s*(p_[a-z_]+):/gm)].map((m) => m[1]);
+    assert.deepEqual([...keys].sort(), [...sqlNames].sort(), 'named keys must equal the function\'s parameter names');
+    assert.match(typeBlock[1], /p_actor_realm: 'operator'/, 'the realm is a literal type, not a free string');
+    assert.match(route, /p_actor_realm: 'operator',/, 'the call site binds the literal operator realm');
+    assert.doesNotMatch(route, /p_actor_realm: 'merchant'/, 'an operator route must never bind the merchant realm');
+    assert.match(route, /db\.rpc\(TRANSITION_CHANNEL_LISTING_RPC, params\)/, 'the default dependency calls the RPC through the admin client with the named object');
+});
+
+test('an operator never acts inside a tenant transaction, every decision route is permission-gated, and the router is mounted once outside the kill switch', () => {
+    const route = executableTs(read(OPERATOR_ROUTE));
+    assert.doesNotMatch(route, /withResolvedTenantTx|resolveOwnedStoreScope|withTenantTx/, 'no tenant-transaction helper may be imported or called');
+    for (const path of ['/:id/approve', '/:id/reject', '/:id/take-down']) {
+        assert.match(route, new RegExp(`router\\.post\\('${path.replace(/\//g, '\\/')}', deps\\.permission\\('review:decide'\\)`), `${path} must require review:decide`);
+    }
+    assert.match(route, /router\.get\('\/', deps\.permission\('review:view'\)/);
+    assert.match(route, /router\.get\('\/:id', deps\.permission\('review:view'\)/);
+    assert.match(route, /permission: requirePermission,/, 'production wires rbac\'s requirePermission');
+    assert.match(route, /validateSensitiveReason\(body\.reason\)/, 'negative decisions go through the shared reason rule');
+
+    const index = executableTs(read(INDEX));
+    assert.equal(index.match(/import operationsMarketplaceListingsRouter from '\.\/routes\/operations\/marketplace-listings'/g)?.length, 1);
+    assert.equal(index.match(/api\.route\('\/operations\/marketplace-listings', operationsMarketplaceListingsRouter\)/g)?.length, 1);
+    assert.doesNotMatch(index, /api\.use\('\/operations\/marketplace-listings[^']*', appPlatformKillSwitch\)/);
+});
+
+test('the operator decision targets are exactly 217\'s operator edges', () => {
+    const migration = executableSql(read(MIGRATION));
+    const route = executableTs(read(OPERATOR_ROUTE));
+    const targets = route.match(/export const DECISION_TARGET[^=]*= \{([\s\S]*?)\};/);
+    assert.ok(targets);
+    const values = [...targets[1].matchAll(/'([a-z_]+)'/g)].map((m) => m[1]).sort();
+    assert.deepEqual(values, ['approved', 'delisted', 'rejected']);
+    const operatorBranch = migration.match(/ELSE\s+v_allowed :=([\s\S]*?);/);
+    assert.ok(operatorBranch, '217 must carry the operator edge matrix');
+    for (const target of values) {
+        assert.ok(operatorBranch[1].includes(`'${target}'`), `217's operator branch must allow ${target}`);
+    }
+    assert.doesNotMatch(operatorBranch[1], /'pending_review'\)|'paused'|'draft'/, 'operator edges never move a listing back into merchant-owned states');
+});
