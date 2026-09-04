@@ -168,7 +168,8 @@ Each assertion group is first observed **failing** against a planted regression 
 | Schema, RPCs, rollback, registry, tests (this document) | MKT-0 | MERGED into `develop` as `e8dfacb6` (2026-09-04) |
 | Gateway routes: `/channel-listings` (list, create draft, get, patch, `POST /:id/transition` — merchant edges only, inside the tenant transaction) and `GET /storefront/marketplace/feed` + `/categories` calling `marketplace_feed` / the live taxonomy behind the storefront cache wrapper | CAP-MKT-1 | BUILT on `letbuyy/mkt1-marketplace-routes` (2026-09-04); closed at merge (`EXECUTION_LEDGER.md` PHASE-MKT-1). Not yet exercised over HTTP against a real database (D-DEV-DB-217). |
 | `customer_app` marketplace home / category / search on `/v1/marketplace/feed` | CAP-CUS-1 | OPEN |
-| `admin_web` moderation queue calling `transition_channel_listing` as the operator realm; taxonomy management | CAP-ADM-1 | OPEN |
+| Operator routes `/operations/marketplace-listings` (list, inspect, approve / reject / take-down as the operator realm, `review:view` / `review:decide`, audit row per decision) | CAP-ADM-1 | BUILT on `letbuyy/adm1-listing-moderation-routes` (2026-09-04); closed at merge (`EXECUTION_LEDGER.md` PHASE-ADM-1). Not yet exercised over HTTP against a real database (D-DEV-DB-217). |
+| `admin_web` moderation queue screen and `marketplace_categories` management | CAP-ADM-2 | OPEN |
 | `purchases` + child `orders` behind the D-3 single-merchant flag | CAP-CHK-1 | OPEN |
 | Firestore `products.approvalStatus` / `sellers` → `channel_listings` / `sites` data migration | MIG-1 | OPEN |
 
