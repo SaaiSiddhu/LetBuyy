@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const PUBLIC_ROUTES = 'services/api-gateway/src/routes/storefront/public-routes.ts';
+const PRODUCT_VIEW = 'services/api-gateway/src/lib/public-product-view.ts';
 const INDEX = 'services/api-gateway/src/index.ts';
 
 // Margin data and stock-keeping identifiers. A shopper needs none of them to buy a product.
@@ -35,12 +36,12 @@ function executableTs(source: string): string {
     return source.split('\n').filter((line) => !line.trimStart().startsWith('//')).join('\n');
 }
 
-// Every `'a,b,c'` literal assigned to a PRODUCT_SELECT_* constant in the public router.
+// Every `'a,b,c'` column-list literal assigned to a *_SELECT* constant, in either file. Scanning
+// both means moving the list back into the router, or adding a second one anywhere, is still caught.
 function productSelectLiterals(source: string): { name: string; columns: string[] }[] {
-    return [...source.matchAll(/const (PRODUCT_SELECT_\w+): string =\s*\n?\s*'([^']+)'/g)].map((match) => ({
-        name: match[1],
-        columns: match[2].split(',').map((column) => column.trim()),
-    }));
+    return [...source.matchAll(/const (\w*SELECT\w*): string =\s*\n?\s*'([^']+)'/g)]
+        .filter((match) => match[2].includes(','))
+        .map((match) => ({ name: match[1], columns: match[2].split(',').map((column) => column.trim()) }));
 }
 
 test('the storefront public router is mounted before authMiddleware — which is why its selects are a security boundary', () => {
@@ -56,9 +57,11 @@ test('the storefront public router is mounted before authMiddleware — which is
 });
 
 test('no public product select names a merchant-internal column', () => {
-    const source = executableTs(read(PUBLIC_ROUTES));
-    const selects = productSelectLiterals(source);
-    assert.ok(selects.length > 0, `${PUBLIC_ROUTES} must declare at least one PRODUCT_SELECT_* literal`);
+    const selects = [
+        ...productSelectLiterals(executableTs(read(PRODUCT_VIEW))),
+        ...productSelectLiterals(executableTs(read(PUBLIC_ROUTES))),
+    ];
+    assert.ok(selects.length > 0, 'the public product column allowlist must exist as a literal');
     for (const select of selects) {
         for (const column of MERCHANT_INTERNAL_COLUMNS) {
             assert.ok(
@@ -85,9 +88,10 @@ test('no public route selects every column from products', () => {
 });
 
 test('the public product projection exists and is applied before serialisation', () => {
+    const view = executableTs(read(PRODUCT_VIEW));
     const source = executableTs(read(PUBLIC_ROUTES));
-    assert.match(source, /const PUBLIC_PRODUCT_FIELDS: ReadonlySet<string>/, 'the response allowlist must exist');
-    assert.match(source, /function toPublicProduct/, 'the projection must exist');
+    assert.match(view, /export const PUBLIC_PRODUCT_FIELDS: ReadonlySet<string>/, 'the response allowlist must exist');
+    assert.match(view, /export function toPublicProduct/, 'the projection must exist');
     // The backstop is only a backstop if it actually wraps the response body.
     assert.match(
         source,
@@ -96,7 +100,7 @@ test('the public product projection exists and is applied before serialisation',
     );
     for (const column of MERCHANT_INTERNAL_COLUMNS) {
         assert.ok(
-            !new RegExp(`PUBLIC_PRODUCT_FIELDS[\\s\\S]{0,600}?'${column}'`).test(source),
+            !new RegExp(`PUBLIC_PRODUCT_FIELDS[\\s\\S]{0,600}?'${column}'`).test(view),
             `${column} must not be added to the public field allowlist`,
         );
     }
