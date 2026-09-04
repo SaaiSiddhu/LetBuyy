@@ -3,6 +3,7 @@ import type { Env } from '../../index';
 import { sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
+import { PUBLIC_PRODUCT_SELECT, PUBLIC_PRODUCT_SELECT_RELATIONAL, toPublicProduct } from '../../lib/public-product-view';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
 import { MarketplaceFeedQuery, type MarketplaceFeedInput } from '../../schemas/channel-listing.schema';
@@ -29,13 +30,10 @@ const STOREFRONT_SITE_COMPAT_SELECT: string =
     'id,store_name,name,description,site_type,status,subdomain,custom_domain,domain,is_published,is_active,is_password_protected,coming_soon_enabled,tagline,logo_url,cover_image,primary_color,secondary_color,published_at,created_at,updated_at,seo_title,seo_description,seo_keywords,og_image_url,twitter_handle,settings,theme_settings,currency,timezone,language,theme_id,theme_config';
 const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
     `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
-// Column names verified against the live `products` table (see W1 in EXECUTION_LEDGER.md
-// PHASE-T3): the previous list referenced short_description, compare_at_price, category_id,
-// brand, inventory_quantity and dimensions, none of which exist, so PostgREST rejected every
-// call with 42703 and the swallowed error was misreported as "Product not found".
-const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,price,compare_price,cost_price,sku,barcode,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,seo_title,seo_description,created_at,updated_at,variants';
-const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
+// SEC-1: the public product column allowlist and its response projection live in
+// lib/public-product-view.ts, next to the reasoning for what a shopper may and may not learn.
+const PRODUCT_SELECT_FULL: string = PUBLIC_PRODUCT_SELECT;
+const PRODUCT_SELECT_FULL_RELATIONAL: string = PUBLIC_PRODUCT_SELECT_RELATIONAL;
 const STOREFRONT_BEACON_EVENT_TYPES: Record<StorefrontAnalyticsBeaconEventType, string> = {
     session_started: 'storefront.session_started',
     page_view: 'storefront.page_view',
@@ -980,7 +978,11 @@ export function registerStorefrontPublicRoutes(
                 : `slug.eq.${identifier}`;
             const { data, error } = await db
                 .from('products')
-                .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_SELECT_FULL_RELATIONAL : '*')
+                // SEC-1: never `'*'` on a public route. The fallback branch reads `variants` from the
+                // products row instead of hydrating it, which is the only difference between the two
+                // lists; selecting every column additionally exposed cost_per_item and the row's
+                // bookkeeping columns.
+                .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_SELECT_FULL_RELATIONAL : PRODUCT_SELECT_FULL)
                 .eq('store_id', store.id)
                 .or(identifierFilter)
                 .eq('is_active', true)
@@ -1013,7 +1015,9 @@ export function registerStorefrontPublicRoutes(
                 product: product as StorefrontProductDetail,
             });
             return {
-                body: success(product),
+                // SEC-1: filtered at the point of serialisation, after hydration, so nothing an
+                // upstream step attaches can reach an anonymous caller unreviewed.
+                body: success(toPublicProduct(product as Record<string, unknown>)),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:products', `storefront:product:${identifier}`),
             };
         });

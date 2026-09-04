@@ -323,3 +323,71 @@ test('the id.eq. branch is only added for uuid-shaped identifiers, so a slug loo
     assert.ok(orParam, 'expected an or= filter');
     assert.ok(!orParam?.includes('id.eq.'), `slug lookups must not add an id.eq. branch: ${orParam}`);
 });
+
+// ─── SEC-1: merchant-internal columns must never reach an unauthenticated caller ──────────────
+//
+// This route is mounted at index.ts:754, BEFORE authMiddleware at :781, so every assertion below
+// describes what an anonymous visitor to a storefront product page receives. PRODUCT_A above sets
+// cost_price, sku and barcode to null, which is exactly why the leak survived every existing test
+// here — these fixtures carry real values instead.
+
+// Everything a merchant may see about its own product but a shopper may not: margin data
+// (cost_price, cost_per_item), stock-keeping identifiers (sku, barcode) and row bookkeeping.
+const MERCHANT_INTERNAL_FIELDS = ['cost_price', 'cost_per_item', 'sku', 'barcode', 'deleted_at', 'created_by', 'updated_by', 'version'] as const;
+
+const PRODUCT_WITH_INTERNALS: Row = {
+    ...PRODUCT_A,
+    cost_price: 412.5,
+    sku: 'SNZ-TOTE-001',
+    barcode: '8901234567890',
+    cost_per_item: 400,
+    deleted_at: null,
+    created_by: 'cccccccc-0000-4000-8000-0000000000c1',
+    updated_by: 'cccccccc-0000-4000-8000-0000000000c1',
+    version: 3,
+};
+
+test('SEC-1: the public product detail never returns cost price, SKU or barcode', async (t) => {
+    const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_WITH_INTERNALS], product_variants: [] });
+    t.after(() => postgrest.restore());
+
+    const response = await storefrontApp().request(`/storefront/snaz/products/${PRODUCT_A.slug}`, undefined, env());
+    assert.equal(response.status, 200);
+    const payload = await jsonBody<{ success: boolean; data: Record<string, unknown> }>(response);
+    assert.equal(payload.success, true);
+    assert.equal(payload.data.name, 'Snaz Canvas Tote', 'the public fields a storefront needs must still be returned');
+    assert.equal(payload.data.price, 999);
+
+    const serialized = JSON.stringify(payload);
+    for (const field of MERCHANT_INTERNAL_FIELDS) {
+        assert.ok(!(field in payload.data), `${field} must not be a key in a public product response`);
+    }
+    // Values, not just keys: a rename or a nested copy would still be a leak.
+    assert.ok(!serialized.includes('412.5'), 'the cost price value must not appear anywhere in the response');
+    assert.ok(!serialized.includes('SNZ-TOTE-001'), 'the SKU value must not appear anywhere in the response');
+    assert.ok(!serialized.includes('8901234567890'), 'the barcode value must not appear anywhere in the response');
+
+    // The select sent to PostgREST must not ask for them either — defence in depth, and the reason
+    // the projection alone is not the whole fix.
+    const select = postgrest.tableRequests('products')[0]?.params.get('select') ?? '';
+    for (const field of ['cost_price', 'sku', 'barcode']) {
+        assert.ok(!select.includes(field), `the public select must not request ${field}: ${select}`);
+    }
+});
+
+test('SEC-1: the same holds on the non-relational fallback branch, which previously selected everything', async (t) => {
+    const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_WITH_INTERNALS], product_variants: [] });
+    t.after(() => postgrest.restore());
+
+    // PRODUCT_VARIANTS_RELATIONAL_READS=off took the `'*'` path, which returned every column on the
+    // row — including cost_per_item and the bookkeeping columns the allowlist above never named.
+    const offEnv = { ...env(), PRODUCT_VARIANTS_RELATIONAL_READS: 'off' } as unknown as Env;
+    const response = await storefrontApp().request(`/storefront/snaz/products/${PRODUCT_A.slug}`, undefined, offEnv);
+    assert.equal(response.status, 200);
+    const payload = await jsonBody<{ data: Record<string, unknown> }>(response);
+    for (const field of MERCHANT_INTERNAL_FIELDS) {
+        assert.ok(!(field in payload.data), `${field} must not leak through the fallback branch either`);
+    }
+    const select = postgrest.tableRequests('products')[0]?.params.get('select') ?? '';
+    assert.notEqual(select, '*', 'a public route must never select every column');
+});
