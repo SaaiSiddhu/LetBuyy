@@ -5,6 +5,7 @@ import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/s
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
+import { MarketplaceFeedQuery, type MarketplaceFeedInput } from '../../schemas/channel-listing.schema';
 import { authRateLimit, sensitiveRateLimit } from '../../middleware/rateLimit';
 import { registerStorefrontCartRoutes } from './cart-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
@@ -169,7 +170,87 @@ type StorefrontPublicRouteDependencies = {
     requireValidTurnstile: (c: AppContext, body: unknown) => Promise<Response | null>;
     getRequestId: (c: AppContext) => string;
     emitStorefrontOrderPaidEvent: Parameters<typeof registerStorefrontCheckoutPaymentRoutes>[1]['emitStorefrontOrderPaidEvent'];
+    // MKT-1 — marketplace reads. Optional so the storefront.ts call site is untouched; the defaults
+    // below call the SECURITY DEFINER functions from migration 217. Injectable for unit tests.
+    loadMarketplaceFeed?: (c: AppContext, params: MarketplaceFeedParams) => Promise<{ data: MarketplaceFeedRow[] | null; error: DatabaseErrorLike }>;
+    listMarketplaceCategories?: (c: AppContext) => Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }>;
 };
+
+// ── MKT-1: marketplace feed + taxonomy (public reads) ─────────────────────────────────────────
+// marketplace_feed (217) is the ONE designed cross-tenant read: SECURITY DEFINER, explicit column
+// allowlist ⊆ PRODUCT_SELECT_FULL, filters mirroring the storefront. The gateway never re-implements
+// its filters or joins — it passes the five named parameters through and caches the answer.
+export const MARKETPLACE_FEED_RPC = 'marketplace_feed';
+
+export type MarketplaceFeedParams = {
+    category: string | null;
+    search: string | null;
+    limit: number;
+    afterApprovedAt: string | null;
+    afterId: string | null;
+};
+
+export type MarketplaceFeedRow = {
+    listing_id: string;
+    product_id: string;
+    site_id: string;
+    store_name: string | null;
+    subdomain: string | null;
+    name: string;
+    slug: string | null;
+    images: string[] | null;
+    price: number | string | null;
+    compare_price: number | string | null;
+    category_slug: string | null;
+    approved_at: string;
+};
+
+export type MarketplaceCategoryRow = {
+    id: string;
+    slug: string;
+    name: string;
+    parent_id: string | null;
+    position: number;
+};
+
+export async function loadMarketplaceFeedFromDatabase(
+    c: AppContext,
+    params: MarketplaceFeedParams,
+): Promise<{ data: MarketplaceFeedRow[] | null; error: DatabaseErrorLike }> {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc(MARKETPLACE_FEED_RPC, {
+        p_category_slug: params.category,
+        p_search: params.search,
+        p_limit: params.limit,
+        p_after_approved_at: params.afterApprovedAt,
+        p_after_id: params.afterId,
+    });
+    return { data: (data as MarketplaceFeedRow[] | null) ?? null, error: error as DatabaseErrorLike };
+}
+
+export async function listMarketplaceCategoriesFromDatabase(
+    c: AppContext,
+): Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }> {
+    const db = getSupabaseAdmin(c);
+    // Mirrors marketplace_categories_public_read (217): only live taxonomy is ever exposed.
+    const { data, error } = await db
+        .from('marketplace_categories')
+        .select('id, slug, name, parent_id, position')
+        .eq('is_active', true)
+        .order('position', { ascending: true })
+        .order('name', { ascending: true });
+    return { data: (data as MarketplaceCategoryRow[] | null) ?? null, error: error as DatabaseErrorLike };
+}
+
+export function marketplaceFeedParams(query: MarketplaceFeedInput): MarketplaceFeedParams {
+    return {
+        category: query.category ?? null,
+        search: query.search && query.search.length > 0 ? query.search : null,
+        limit: query.limit,
+        afterApprovedAt: query.after_approved_at ?? null,
+        afterId: query.after_id ?? null,
+    };
+}
 
 export function registerStorefrontPublicRoutes(
     router: Hono<{ Bindings: Env }>,
@@ -201,6 +282,49 @@ export function registerStorefrontPublicRoutes(
         getRequestId,
         emitStorefrontOrderPaidEvent,
     } = dependencies;
+    const loadMarketplaceFeed = dependencies.loadMarketplaceFeed ?? loadMarketplaceFeedFromDatabase;
+    const listMarketplaceCategories = dependencies.listMarketplaceCategories ?? listMarketplaceCategoriesFromDatabase;
+
+    // MKT-1 — registered before the `/:subdomain/...` family so no handle-shaped pattern can shadow them.
+    // GET /storefront/marketplace/feed?category=&search=&limit=&after_approved_at=&after_id=
+    router.get('/marketplace/feed', validate('query', MarketplaceFeedQuery), async (c) => {
+        const query = c.get('validatedQuery') as MarketplaceFeedInput;
+        const params = marketplaceFeedParams(query);
+        const key = await storefrontRequestCacheKey(
+            c,
+            'marketplace:feed',
+            params.category ?? '',
+            params.search ?? '',
+            String(params.limit),
+            params.afterApprovedAt ?? '',
+            params.afterId ?? '',
+        );
+        return cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+            const { data, error } = await loadMarketplaceFeed(c, params);
+            if (error) return { status: 500, body: dbFailureBody() };
+            const items = data || [];
+            const last = items.length === params.limit ? items[items.length - 1] : null;
+            return {
+                body: success(items, {
+                    meta: {
+                        limit: params.limit,
+                        next_cursor: last ? { after_approved_at: last.approved_at, after_id: last.listing_id } : null,
+                    },
+                }),
+                tags: ['marketplace:feed'],
+            };
+        });
+    });
+
+    // GET /storefront/marketplace/categories — the live platform taxonomy (no site scope by design)
+    router.get('/marketplace/categories', async (c) => {
+        const key = await storefrontRequestCacheKey(c, 'marketplace:categories');
+        return cachedJson(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+            const { data, error } = await listMarketplaceCategories(c);
+            if (error) return { status: 500, body: dbFailureBody() };
+            return { body: success(data || []), tags: ['marketplace:categories'] };
+        });
+    });
 
     registerStorefrontCartRoutes(router, {
         loadPublishedStore,
