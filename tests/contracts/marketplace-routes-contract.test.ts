@@ -194,3 +194,45 @@ test('the operator decision targets are exactly 217\'s operator edges', () => {
     }
     assert.doesNotMatch(operatorBranch[1], /'pending_review'\)|'paused'|'draft'/, 'operator edges never move a listing back into merchant-owned states');
 });
+
+// ── ADM-3: marketplace_categories taxonomy management (operator realm) ─────────────────────────
+const CATEGORIES_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-categories.ts';
+
+test('marketplace_categories is a service_role-only write table in 217, and the operator router calls it through the admin client, never a tenant transaction', () => {
+    const migration = executableSql(read(MIGRATION));
+    const route = executableTs(read(CATEGORIES_ROUTE));
+    assert.match(migration, /CREATE POLICY service_role_marketplace_categories ON public\.marketplace_categories\s+FOR ALL TO service_role/, '217 must grant service_role the only write policy on this table');
+    assert.match(migration, /REVOKE INSERT, UPDATE, DELETE ON public\.marketplace_categories FROM app_tenant/, '217 must revoke merchant writes on this table');
+    assert.match(route, /getSupabaseAdmin/, 'the router must write through the admin (service_role) client');
+    assert.doesNotMatch(route, /withResolvedTenantTx|resolveOwnedStoreScope|withTenantTx/, 'no tenant-transaction helper may be imported or called');
+});
+
+test('the categories router requires review:view to list and review:decide to mutate, carries no DELETE route, and is mounted exactly once outside the kill switch', () => {
+    const route = executableTs(read(CATEGORIES_ROUTE));
+    assert.match(route, /router\.get\('\/', deps\.permission\('review:view'\)/);
+    assert.match(route, /router\.post\('\/', deps\.permission\('review:decide'\)/);
+    assert.match(route, /router\.patch\('\/:id', deps\.permission\('review:decide'\)/);
+    assert.match(route, /permission: requirePermission,/, 'production wires rbac\'s requirePermission');
+    assert.doesNotMatch(route, /router\.delete/, 'no DELETE route: both FKs onto this table are ON DELETE RESTRICT and unhandled by design this phase');
+
+    const index = executableTs(read(INDEX));
+    assert.equal(index.match(/import operationsMarketplaceCategoriesRouter from '\.\/routes\/operations\/marketplace-categories'/g)?.length, 1);
+    assert.equal(index.match(/api\.route\('\/operations\/marketplace-categories', operationsMarketplaceCategoriesRouter\)/g)?.length, 1);
+    assert.doesNotMatch(index, /api\.use\('\/operations\/marketplace-categories[^']*', appPlatformKillSwitch\)/);
+});
+
+test('the category schemas repeat 217\'s slug format CHECK verbatim, and the create/update bodies can never smuggle an id or mismatched field', () => {
+    const migration = executableSql(read(MIGRATION));
+    const schema = executableTs(read(SCHEMA));
+    const migrationSlugCheck = migration.match(/CONSTRAINT marketplace_categories_slug_format_check CHECK \(slug ~ '([^']+)'\)/);
+    assert.ok(migrationSlugCheck, '217 must declare the slug format CHECK');
+    // The schema module declares one shared `slug` regex reused by both channel-listing and category schemas.
+    const schemaSlugRegex = schema.match(/const slug = z\.string\(\)\.regex\(\/([^/]+)\//);
+    assert.ok(schemaSlugRegex, `${SCHEMA} must declare a shared slug regex`);
+    assert.equal(schemaSlugRegex[1], migrationSlugCheck[1], 'the zod slug pattern must equal 217\'s CHECK pattern exactly');
+
+    assert.match(schema, /export const CreateMarketplaceCategorySchema = z\s*\.object\(\{[\s\S]*?\}\)\s*\.strict\(\)/, 'create must be .strict()');
+    assert.doesNotMatch(schema.match(/export const CreateMarketplaceCategorySchema[\s\S]*?\.strict\(\);/)?.[0] ?? '', /is_active/, 'is_active is not a creatable field — a row is always active on creation');
+    assert.match(schema, /export const UpdateMarketplaceCategorySchema = z\s*\.object\(\{[\s\S]*?\}\)\s*\.strict\(\)/, 'update must be .strict()');
+    assert.doesNotMatch(schema.match(/export const UpdateMarketplaceCategorySchema[\s\S]*?message: 'nothing to update' \},\s*\);/)?.[0] ?? '', /slug:/, 'slug must be immutable after creation — Update must not accept it');
+});
