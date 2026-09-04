@@ -113,9 +113,10 @@ function sqlString(value) {
     return `'${String(value).replaceAll("'", "''")}'`;
 }
 
+// Returns the LAST output line: with a site scope the set_config() call prints the site id first.
 function asTenant(siteId, sql) {
     const setSite = siteId ? `SELECT set_config('app.site_id', ${sqlString(siteId)}, true);` : '';
-    return psql(`BEGIN; SET LOCAL ROLE app_tenant; ${setSite} ${sql} COMMIT;`);
+    return lastLine(psql(`BEGIN; SET LOCAL ROLE app_tenant; ${setSite} ${sql} COMMIT;`));
 }
 
 function asTenantExpectError(siteId, sql, what) {
@@ -156,7 +157,16 @@ function resetDatabase() {
       END IF;
     END
     $$;
-    DROP OWNED BY app_tenant, service_role, authenticated, anon;
+    DO $$
+    DECLARE v_role text;
+    BEGIN
+      FOREACH v_role IN ARRAY ARRAY['app_tenant', 'service_role', 'authenticated', 'anon'] LOOP
+        IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = v_role) THEN
+          EXECUTE format('DROP OWNED BY %I', v_role);
+        END IF;
+      END LOOP;
+    END
+    $$;
     DROP ROLE IF EXISTS app_tenant;
     DROP ROLE IF EXISTS service_role;
     DROP ROLE IF EXISTS authenticated;
@@ -238,14 +248,16 @@ test.before(() => {
 test('1. app_tenant with the GUC unset sees zero rows and cannot mutate either tenant table', () => {
     assert.equal(asTenant(null, 'SELECT count(*) FROM public.channel_listings;'), '0');
     assert.equal(asTenant(null, 'SELECT count(*) FROM public.channel_listing_moderation_events;'), '0');
-    assert.equal(lastLine(asTenant(null, `UPDATE public.channel_listings SET visibility = 'hidden' RETURNING 1;`)), '', 'UPDATE must affect zero rows');
-    assert.equal(lastLine(asTenant(null, `DELETE FROM public.channel_listings RETURNING 1;`)), '', 'DELETE must affect zero rows');
+    assert.equal(asTenant(null, `UPDATE public.channel_listings SET visibility = 'hidden' RETURNING 1;`), '', 'UPDATE must affect zero rows');
+    assert.equal(asTenant(null, `DELETE FROM public.channel_listings RETURNING 1;`), '', 'DELETE must affect zero rows');
     const err = asTenantExpectError(
         null,
         `INSERT INTO public.channel_listings (site_id, product_id, channel) VALUES (${sqlString(SITE_A)}, ${sqlString(PRODUCT.A5)}, 'storefront');`,
         'an INSERT with no tenant context',
     );
-    assert.match(err, /row-level security/i);
+    // Two independent fences refuse this row: the BEFORE INSERT trigger cannot see the product under RLS
+    // with no tenant context, and the policy's WITH CHECK would reject it next. Either message is a refusal.
+    assert.match(err, /row-level security|must match the product's site/i);
     // Nothing leaked through: still 8 listings, still 0 events, as the superuser sees them.
     assert.equal(psql('SELECT count(*) FROM public.channel_listings;'), '8');
     assert.equal(psql('SELECT count(*) FROM public.channel_listing_moderation_events;'), '0');
@@ -273,7 +285,8 @@ test('3. marketplace_feed returns exactly the approved public listings of publis
     assert.deepEqual(ids, [LISTING.B1, LISTING.A1], 'B1 (other site) and A1 only: rejected, paused, inactive-product and unpublished-site rows are excluded');
 
     const columns = psql(`SELECT pg_get_function_result('public.marketplace_feed'::regproc);`);
-    const names = [...columns.matchAll(/([a-z_]+) [a-z]/g)].map((m) => m[1]).filter((n) => n !== 'TABLE');
+    // "TABLE(listing_id uuid, ..., approved_at timestamp with time zone)" → first token of each column.
+    const names = columns.replace(/^TABLE\(/, '').replace(/\)$/, '').split(', ').map((c) => c.trim().split(' ')[0]);
     assert.deepEqual(names, FEED_COLUMNS, 'the RETURNS TABLE must equal MARKETPLACE_CHANNEL_MODEL.md §5.2 exactly');
 
     const row = psql(`SELECT store_name || '|' || subdomain || '|' || name || '|' || slug || '|' || price::text FROM public.marketplace_feed() WHERE listing_id = ${sqlString(LISTING.B1)};`);

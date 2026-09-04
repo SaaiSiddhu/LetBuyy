@@ -318,15 +318,17 @@ BEGIN
 
   -- Realm fence. Merchant edges must run inside the tenant transaction for this very site (GUC set by
   -- withTenantTx from a validated claim; an unset GUC fails closed). Operator edges are refused when the
-  -- effective role is app_tenant — the only role a merchant request can run as — and when a tenant GUC
+  -- caller's role is app_tenant — the only role a merchant request can run as — and when a tenant GUC
   -- is set, because an operator never acts inside a tenant transaction. service_role is a member of
-  -- app_tenant (164:21), so membership is NOT the test; the effective role after SET LOCAL ROLE is.
+  -- app_tenant (164:21), so membership is NOT the test. Inside a SECURITY DEFINER function current_user
+  -- is the DEFINER, not the caller (measured on postgres:16: current_user=postgres, role=app_tenant after
+  -- SET LOCAL ROLE app_tenant), so the caller's SET ROLE is read through the `role` setting.
   IF p_actor_realm = 'merchant' THEN
     IF public.current_site_id() IS NULL OR public.current_site_id() <> p_site_id THEN
       RAISE EXCEPTION 'tenant context required for merchant transitions';
     END IF;
   ELSE
-    IF current_user = 'app_tenant' OR public.current_site_id() IS NOT NULL THEN
+    IF current_setting('role', true) = 'app_tenant' OR public.current_site_id() IS NOT NULL THEN
       RAISE EXCEPTION 'operator transitions are not permitted from a tenant context';
     END IF;
   END IF;

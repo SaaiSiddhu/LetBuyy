@@ -201,7 +201,10 @@ test('transition_channel_listing locks before it looks, fences the realms, and i
     assert.ok(lockAt < lookupAt, 'the advisory lock must be taken BEFORE the idempotency lookup (206:114 pattern)');
 
     assert.match(body, /public\.current_site_id\(\) <> p_site_id/, 'merchant edges must be bound to the tenant GUC');
-    assert.match(body, /current_user = 'app_tenant'/, 'operator edges must be refused when the effective role is app_tenant');
+    // Inside a SECURITY DEFINER function current_user is the definer; the caller's SET LOCAL ROLE is only
+    // visible through the `role` setting (measured in tests/executable/marketplace-channel-listings-postgres.test.mjs).
+    assert.match(body, /current_setting\('role', true\) = 'app_tenant'/, "operator edges must be refused when the caller's role is app_tenant");
+    assert.doesNotMatch(body, /current_user = 'app_tenant'/, 'current_user is the definer inside SECURITY DEFINER and can never equal app_tenant here');
     assert.match(body, /set_config\('app\.channel_listing_transition', 'rpc', true\)/, 'the RPC must set the marker the status trigger checks');
     assert.match(migration, /BEFORE UPDATE OF status ON public\.channel_listings/, 'a status trigger must exist so direct UPDATEs cannot skip the event log');
 
