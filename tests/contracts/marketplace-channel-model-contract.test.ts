@@ -246,3 +246,89 @@ test('the rollback drops exactly what 217 created, with full function signatures
     assert.ok(order[0] < order[1] && order[1] < order[2], 'tables must be dropped in reverse dependency order');
     assert.doesNotMatch(rollback, /products|sites\b/, 'the rollback must not touch products or sites');
 });
+
+// ── MIG-0: the migration actor realm (D-MIG-REALM) ──────────────────────────────────────────────
+const MIGRATION_REALM_MIGRATION = 'database/supabase/migrations/221_channel_listing_migration_realm.sql';
+const MIGRATION_REALM_ROLLBACK = 'database/supabase/rollback/221_channel_listing_migration_realm.rollback.sql';
+
+test('the actor_realm CHECK and the RPC\'s own allowlist agree on exactly three realms', () => {
+    const migration = executableSql(read(MIGRATION_REALM_MIGRATION));
+    assert.match(
+        migration,
+        /CHECK \(actor_realm IN \('merchant', 'operator', 'migration'\)\)/,
+        '221 must widen the CHECK constraint to exactly these three realms, in this order',
+    );
+    const body = functionBody(migration, 'transition_channel_listing');
+    assert.match(body, /p_actor_realm NOT IN \('merchant', 'operator', 'migration'\)/, 'the RPC\'s own guard must accept exactly the same three realms');
+});
+
+test('migration has exactly one edge, draft -> approved, and it alone', () => {
+    const body = functionBody(executableSql(read(MIGRATION_REALM_MIGRATION)), 'transition_channel_listing');
+    const migrationBranch = body.match(/ELSIF p_actor_realm = 'migration' THEN\s*v_allowed := \(([^)]+)\);/);
+    assert.ok(migrationBranch, 'a migration branch of the edge matrix must exist');
+    assert.equal(
+        migrationBranch[1].replace(/\s+/g, ' ').trim(),
+        "v_listing.status = 'draft' AND p_to_status = 'approved'",
+        'the migration realm must have exactly one edge and no other',
+    );
+});
+
+test('a migration transition is fenced by the SAME code path as an operator one — no realm-specific fence exists', () => {
+    const body = functionBody(executableSql(read(MIGRATION_REALM_MIGRATION)), 'transition_channel_listing');
+    // The fence is an IF ... ELSE keyed only on 'merchant'; anything else, migration included, falls
+    // into the same ELSE. A realm-specific branch here would mean migration could diverge from
+    // operator's tenant-context rule without this test failing on 221's edge-matrix assertion above.
+    //
+    // Anchored with a line-start regex, not a plain indexOf: a planted `IF p_actor_realm = 'migration'
+    // THEN ... ELSIF p_actor_realm = 'merchant' THEN` still CONTAINS the substring
+    // "IF p_actor_realm = 'merchant' THEN" (as the tail of "ELSIF ... THEN"), so indexOf would find
+    // that occurrence and slice the injected migration branch clean out of the fence — an
+    // unfalsifiable assertion of exactly the kind this programme keeps finding and fixing. `^\s*IF `
+    // only matches a bare `IF`, never the tail of `ELSIF`.
+    const fenceStart = body.search(/^\s*IF p_actor_realm = 'merchant' THEN$/m);
+    assert.ok(fenceStart >= 0, 'the tenant-context fence\'s IF must start its own line, not follow an ELSIF');
+    const fence = body.slice(fenceStart, body.indexOf('SELECT * INTO v_listing'));
+    assert.doesNotMatch(fence, /'migration'/, 'the tenant-context fence must not name the migration realm at all — it inherits the operator branch by falling through to it');
+    assert.match(fence, /operator transitions are not permitted from a tenant context/, 'the inherited fence message must still be present');
+});
+
+test('a migration approval passes the category/sellability gate, requires a reason, and stamps approved_at', () => {
+    const body = functionBody(executableSql(read(MIGRATION_REALM_MIGRATION)), 'transition_channel_listing');
+    assert.match(
+        body,
+        /IF p_to_status = 'pending_review' OR \(p_to_status = 'approved' AND p_actor_realm = 'migration'\) THEN/,
+        'the category/sellability gate must extend to a migration approval — it is the only checkpoint before an imported listing is visible',
+    );
+    assert.match(
+        body,
+        /IF p_actor_realm = 'migration' AND \(p_reason IS NULL OR length\(btrim\(p_reason\)\) = 0\) THEN/,
+        'a migration transition must require a reason',
+    );
+    assert.match(
+        body,
+        /approved_at = CASE WHEN p_to_status = 'approved' AND p_actor_realm IN \('operator', 'migration'\) THEN v_now/,
+        'approved_at must be stamped for migration exactly as for operator — marketplace_feed keyset-paginates on this column',
+    );
+    // reviewed_at/reviewed_by stay operator-only: nobody reviewed a migration import.
+    assert.match(body, /reviewed_at = CASE WHEN p_actor_realm = 'operator' THEN v_now ELSE l\.reviewed_at END,/);
+    assert.match(body, /reviewed_by = CASE WHEN p_actor_realm = 'operator' THEN p_actor_id ELSE l\.reviewed_by END,/);
+});
+
+test('the merchant edge matrix in 221 is byte-identical to 217\'s — the migration realm changed nothing about it', () => {
+    const originalBody = functionBody(executableSql(read(MIGRATION)), 'transition_channel_listing');
+    const newBody = functionBody(executableSql(read(MIGRATION_REALM_MIGRATION)), 'transition_channel_listing');
+    const merchantBlock = (body: string) => {
+        const start = body.indexOf("IF p_actor_realm = 'merchant' THEN\n    v_allowed :=");
+        const end = body.indexOf(start >= 0 && body.slice(start).includes('ELSIF') ? 'ELSIF' : 'ELSE', start);
+        return body.slice(start, end);
+    };
+    assert.equal(merchantBlock(newBody), merchantBlock(originalBody), 'the merchant edge matrix must not change when the migration realm is added');
+});
+
+test('221\'s rollback restores the original two-realm CHECK and the exact 217 function body', () => {
+    const rollback = executableSql(read(MIGRATION_REALM_ROLLBACK));
+    assert.match(rollback, /CHECK \(actor_realm IN \('merchant', 'operator'\)\)/, 'the rollback must restore the ORIGINAL two-realm vocabulary');
+    const restoredBody = functionBody(rollback, 'transition_channel_listing');
+    const originalBody = functionBody(executableSql(read(MIGRATION)), 'transition_channel_listing');
+    assert.equal(restoredBody, originalBody, 'the rollback must restore 217\'s function body exactly, not an approximation of it');
+});
