@@ -16,6 +16,7 @@ import { runInventoryReservationSweeper } from './inventory-reservations';
 import { runMerchantSessionJtiConsumptionSweeper } from './merchant-session-jti-sweeper';
 import { runSloTelemetryEmitter } from './slo-telemetry';
 import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
+import { runLoyaltyEarnSweeper } from './loyalty-earn';
 
 type QueuePayload = {
   messageId?: string;
