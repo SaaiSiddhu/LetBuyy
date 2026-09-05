@@ -19,7 +19,7 @@ function stubClient(): any {
     const builder: any = {
         select: () => builder, eq: () => builder, is: () => builder, in: () => builder,
         limit: () => builder, order: () => builder, maybeSingle: () => builder,
-        delete: () => builder, insert: () => builder, upsert: () => builder,
+        delete: () => builder, insert: () => builder, upsert: () => builder, update: () => builder,
         then: (resolve: any) => resolve({ data: [], error: null, count: 0 }),
     };
     return { from: () => builder };
@@ -81,4 +81,44 @@ test('a buyer_account_id predicate does not scope a table that has no such colum
     // carries it, or "scoped by the buyer" would become a universal bypass.
     const result = await runsUnguarded((db) => db.from('orders').select('id').eq('buyer_account_id', 'b'));
     assert.equal(result.ok, false, 'orders has no buyer_account_id, so this must not count as scoping');
+});
+
+
+// ── F-GUARD-1: buyer-owned tables are now guarded too ─────────────────────────
+
+test('buyer_notifications and buyer_product_views are GUARDED, so a missing predicate fails loudly', async () => {
+    // Before F-GUARD-1 these were covered by RLS and route scoping but not by the query guard, so a
+    // route that forgot the buyer predicate would have returned every buyer's rows.
+    for (const table of ['buyer_notifications', 'buyer_product_views']) {
+        const result = await runsUnguarded((db) => db.from(table).select('id').limit(50));
+        assert.equal(result.ok, false, `an unscoped read of ${table} must be refused`);
+        assert.match(result.reason, /requires a tenant\/owner predicate/);
+    }
+});
+
+test('every real buyer inbox and history query still runs', async () => {
+    // The queries the gateway actually makes. If registering these tables broke one, it would 500 in
+    // production and no route test would notice, because route tests inject their queries.
+    const shapes: Array<[string, (db: any) => Promise<unknown>]> = [
+        ['list notifications', (db) => db.from('buyer_notifications').select('id').eq('buyer_account_id', 'b').order('created_at').limit(20)],
+        ['unread count', (db) => db.from('buyer_notifications').select('id', { count: 'exact', head: true }).eq('buyer_account_id', 'b').is('read_at', null)],
+        ['mark one read', (db) => db.from('buyer_notifications').update({}).eq('buyer_account_id', 'b').eq('id', 'n').select('id').maybeSingle()],
+        ['mark all read', (db) => db.from('buyer_notifications').update({}).eq('buyer_account_id', 'b').is('read_at', null)],
+        ['recently viewed', (db) => db.from('buyer_product_views').select('product_id').eq('buyer_account_id', 'b').order('viewed_at').limit(10)],
+        ['clear history', (db) => db.from('buyer_product_views').delete().eq('buyer_account_id', 'b')],
+    ];
+    for (const [label, run] of shapes) {
+        const result = await runsUnguarded(run);
+        assert.equal(result.ok, true, `${label}: ${result.reason}`);
+    }
+});
+
+test('the widening did NOT sweep in token-looked-up tables', async () => {
+    // Measured and rejected: sessions, verification_tokens and devices are found by a globally-unique
+    // token with no owner predicate. Registering them would refuse legitimate lookups and create
+    // pressure to bypass the guard, which is worse than not guarding them.
+    for (const table of ['sessions', 'verification_tokens', 'devices']) {
+        const result = await runsUnguarded((db) => db.from(table).select('id').eq('token', 't').maybeSingle());
+        assert.equal(result.ok, true, `${table} must remain unregistered: ${result.reason}`);
+    }
 });

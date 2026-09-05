@@ -108,7 +108,21 @@ export function deriveTenantTablesFromMigrations() {
   }
 
   return [...tables.values()]
-    .filter((table) => table.table === 'sites' || table.tenantColumns.size > 0)
+    // A table is registered when it carries a TENANT column, or when it is BUYER-OWNED.
+    //
+    // The buyer clause is deliberately narrow. Relaxing this to any owner column was measured and
+    // rejected: it would add 32 tables, among them sessions, verification_tokens, devices and
+    // merchant_session_jti_consumptions, which are looked up by a globally-unique TOKEN with no
+    // owner predicate. Guarding those would refuse legitimate lookups — the documented shape
+    // getSupabaseAdminUnguarded exists for — so widening there would create pressure to bypass the
+    // guard, which is worse than not guarding them.
+    //
+    // buyer_account_id is different: every buyer-owned table is read by its owner and by nobody
+    // else, so the predicate the guard demands is one those queries already carry. Registering them
+    // means a route that forgets it fails loudly instead of returning every buyer's rows.
+    .filter((table) => table.table === 'sites'
+      || table.tenantColumns.size > 0
+      || table.ownerColumns.has('buyer_account_id'))
     .map((table) => {
       const tenantColumns = [...table.tenantColumns].sort();
       const ownerColumns = [...table.ownerColumns].sort();
