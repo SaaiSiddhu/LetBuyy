@@ -17,6 +17,7 @@ import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-accou
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
+import { registerSellerFollowRoutes } from './seller-follow-routes';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerRealmRoutesDeps {
@@ -200,6 +201,71 @@ export function registerBuyerRealmRoutes(
     // for a build too old to log in. Registered here because this module already composes the
     // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
     // binary, so a release belongs to the platform.
+    registerSellerFollowRoutes(router, {
+        // ON CONFLICT DO NOTHING makes a repeat follow one row rather than an error, and `created`
+        // still distinguishes "now following" from "already following". 229's PK is what makes this
+        // safe under concurrency: two simultaneous follows cannot produce two rows.
+        follow: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('seller_follows')
+                .upsert({ buyer_account_id: buyerAccountId, site_id: siteId }, { onConflict: 'buyer_account_id,site_id', ignoreDuplicates: true })
+                .select('site_id')
+                .maybeSingle();
+            return { created: Boolean(data), error };
+        },
+        unfollow: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('seller_follows')
+                .delete()
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('site_id', siteId)
+                .select('site_id')
+                .maybeSingle();
+            return { removed: Boolean(data), error };
+        },
+        // Joined to sites and filtered to currently-published sellers. 229's trigger stops a follow
+        // being CREATED on an unpublished site; a site unpublished afterwards keeps its rows (the
+        // buyer's data is not the merchant's to delete) and disappears from reads here instead.
+        listFollowing: async (c, buyerAccountId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('seller_follows')
+                .select('site_id, followed_at, sites!inner(store_name, subdomain, status, deleted_at)')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('sites.status', 'published')
+                .is('sites.deleted_at', null)
+                .order('followed_at', { ascending: false })
+                .limit(limit);
+            const rows = (data || []).map((row) => {
+                const site = (row as { sites?: { store_name?: string | null; subdomain?: string | null } }).sites;
+                return {
+                    site_id: (row as { site_id: string }).site_id,
+                    followed_at: (row as { followed_at: string }).followed_at,
+                    store_name: site?.store_name ?? null,
+                    subdomain: site?.subdomain ?? null,
+                };
+            });
+            return { data: error ? null : rows, error };
+        },
+        isFollowing: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('seller_follows')
+                .select('site_id')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('site_id', siteId)
+                .maybeSingle();
+            return { following: Boolean(data), error };
+        },
+        // head:true so the rows are never transferred: the count is the whole answer, and shipping
+        // follower rows to compute a number would hand out the identities this phase withholds.
+        countFollowers: async (c, siteId) => {
+            const { count, error } = await getSupabaseAdmin(c)
+                .from('seller_follows')
+                .select('site_id', { count: 'exact', head: true })
+                .eq('site_id', siteId);
+            return { count: count ?? null, error };
+        },
+    });
+
     registerMobileReleaseRoutes(router, {
         loadLatestRelease: async (c, platform, applicationId) => getSupabaseAdmin(c)
             .from('mobile_app_releases')
