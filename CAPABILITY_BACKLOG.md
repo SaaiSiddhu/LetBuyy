@@ -73,3 +73,67 @@ This is the explicit go-live backlog for Category-C gaps recorded during foundat
 | CAP-MKT-3 | **CLOSED (PHASE-MKT-3, 2026-09-05)** — variants are hydrated in `routes/storefront/marketplace-detail-routes.ts` from the canonical `product_variants` rows and projected through SEC-2's shared `toPublicVariant`; the select requests neither `sku` nor `barcode`, migration 220's return shape is unchanged, and the read happens only after the fence admits the listing. Six unit cases, four planted regressions each observed failing. Original row: **OPEN — unblocked by SEC-2 (2026-09-05).** Variants on the marketplace listing detail. MKT-2 deliberately omitted them because `products.variants` was an unaudited jsonb blob; SEC-2 performed that audit (migration `086:192-208` packs `sku` and `barcode` into it) and closed the exposure with a shared `toPublicVariant` projection. A marketplace product page cannot render a variant picker from canonical data until the detail read carries variants, so this is the last backend gap in the browse → open → add-to-cart path for `apps/customer_app` (CAP-CUS-1). Shape: hydrate variants in `routes/storefront/marketplace-detail-routes.ts` through the shared projection — never by widening migration 220's return shape with the raw blob. | `services/api-gateway/src/routes/storefront/marketplace-detail-routes.ts`; `services/api-gateway/src/lib/public-product-view.ts` (the audited projection to reuse) | `tests/contracts/public-product-exposure-contract.test.ts` binds any implementation | None | The marketplace app can browse and open a product but cannot offer a variant choice, so multi-variant products are unbuyable from the marketplace surface |
 | CAP-MIG-1 | **PARTIALLY UNBLOCKED — the schema prerequisite is done (PHASE-MIG-0, 2026-09-05).** The actual Firestore-to-Postgres backfill has not been built; MIG-0 only made it possible to build one honestly. Migration `221_channel_listing_migration_realm.sql` adds a `'migration'` actor realm (OWNER_DECISION D-MIG-REALM) with exactly one edge, `draft → approved`, fenced identically to `operator`, requiring a reason, stamping `approved_at`, and passing the same category/sellability gate `pending_review` enforces — so an import can create an approved listing with an honest audit trail instead of a silent gap or a false human attribution. **What still has no design and is not assumed solved:** (1) **Firestore project access** — no credentials, no export, no read path from this repository into the live `letbuy-y` Firebase project exists; (2) **seller → site mapping** — a Firestore seller has no `sites` row today; whether to create one per seller, match by an existing field, or require manual pairing is undecided; (3) **product → marketplace_category mapping** — Firestore's category taxonomy and `marketplace_categories` (217) are different vocabularies with no crosswalk; (4) **idempotency key design for a one-time backfill** — `transition_channel_listing`'s key is per-(site, key), so the import needs a stable key derived from the Firestore document id, not invented per run; (5) **batch size, retry and partial-failure behaviour** for a script that will run against production data exactly once. None of these are schema questions — MIG-0 answered the one schema question this capability had. | `database/supabase/migrations/221_channel_listing_migration_realm.sql`; the backfill script itself does not exist yet, in any language or runtime | `tests/executable/channel-listing-migration-realm-postgres.test.mjs` (8, the realm's behaviour) + `tests/contracts/marketplace-channel-model-contract.test.ts` (+6, the realm's shape) bind the schema half; nothing yet binds the backfill script, because it does not exist | None | Until built, `apps/customer_app`'s marketplace screens (blocked separately by CUS-1/CUS-2) would show an empty grid if cut over — the marketplace has structure and no catalogue |
 | CAP-TEST-2 | **CLOSED (PHASE-TEST-2, 2026-09-05).** Third instance this session of a recurring defect class in self-authored contract tests: a substring search used as an extraction boundary, with nothing guaranteeing the match found is the intended occurrence rather than a same-prefix neighbor (SEC-1's wildcard-select regex stopping at the first paren; MIG-0's fence-isolation check defeated by an ELSIF-prefixed branch). A sweep of every `tests/contracts/*.ts` file with an extract-then-assert-absent shape found one CONFIRMED real instance: `demo-store-isolation.test.ts`'s `methodBody()` extracted a method's source via a plain `indexOf`, and `getStoreBySubdomain` is a literal prefix of `getStoreBySubdomainAnyStatus` — both checked by the same test. It returned the correct body only because `store-service.ts` happens to declare the shorter name first; reordered, the test would silently inspect the wrong method and could pass even with the real defect present. Fixed by anchoring the search on the method name being followed by `(`. Proven with a self-test against a synthetic decoy (never the real source) in both possible declaration orders, showing the old helper genuinely wrong in the vulnerable order and the new one correct in both. Two other candidates from the same sweep were checked and found NOT currently exploitable — `storefront-login-abuse-controls.test.ts` (a trailing quote character in its route markers prevents the same trick on its two candidate routes) and `theme-editor-publish-separation.test.ts` (marker uniqueness; not exhaustively audited for nested-block false-positives) — neither was touched. | `tests/contracts/demo-store-isolation.test.ts` | the self-test in the same file, proving both the defect and the fix on a synthetic decoy | None | None — this closes a latent test-quality gap, not a live defect; the real `getStoreBySubdomain` correctly contains no demo short-circuit today |
+
+## Firebase retirement — `customer_app` Firestore-to-canonical coverage register (measured 2026-09-05, phase FB-2)
+
+Measured at `develop` `550d6c04` by extracting every `collection('…')` literal from `apps/customer_app`
+and `packages/dart/marketplace_*`, then checking each against the gateway's actual route table. **55
+distinct collections across 29 Dart files.** This register exists because the sequence's remaining
+scope is a product decision, not an engineering one: roughly a fifth of what this app reads has a
+canonical owner, and the rest has none. FB-2 migrated one screen and deliberately did not
+half-migrate the others.
+
+**COVERED — a canonical route exists today.**
+
+| Firestore collection | refs | Canonical owner |
+|---|---|---|
+| `products` | 80 | `GET /storefront/marketplace/feed`, `/marketplace/listings/:id`, `/:subdomain/products` |
+| `orders` | 50 | `GET /storefront/customer/orders`, `/customer/order-stats`, `/:subdomain/orders` |
+| `users` (profile half) | 36 | `GET/PATCH /storefront/customer/profile`, `/customer/status` |
+| `reviews` | 18 | `/storefront/reviews` |
+| `addresses` | 17 | `/storefront/customer/addresses`, `/customer/addresses/:id` |
+| `categories` | 13 | `/storefront/marketplace/categories`, `/:subdomain/categories` |
+| `coupons` | 18 | `/:subdomain/coupons/validate`, `/store/:storeId/coupons/validate` |
+| `carts` | 3 | `/:subdomain/cart`, `/cart/:cartToken` and its sub-routes |
+| `wishlists` | 4 | `/storefront/customer/wishlist`, `/customer/wishlist/sync` |
+| `sellers` | 17 | **partial** — a marketplace seller is a `site` in the canonical model; `/storefront/store/:storeId` and `/directory` cover identity, but there is no seller *profile* surface (bio, banner, follower count, rating) |
+
+**NO CANONICAL OWNER — nothing in `services/api-gateway` serves these.** Each was checked against the
+whole route tree, not assumed.
+
+| Area | Collections | What is missing |
+|---|---|---|
+| Buyer notifications | `notifications` (28 refs) | The gateway's notification code is **merchant-side only** (`routes/notifications.ts`, `email.ts`, `whatsapp.ts`); `git grep notification` under `routes/storefront` returns nothing. A buyer inbox has no route, no table and no owner. |
+| Advertising | `ad_campaigns`, `ad_products`, `ad_views`, `ad_impressions`, `ad_clicks`, `ad_wallets`, `ad_wallet_transactions`, `sponsored_banners` | The entire sponsored-placement business. No route, no ledger integration. Note this is **revenue-bearing** in System A's model and would have to reach the canonical double-entry ledger, not a side wallet. |
+| Reels / social video | `reels`, `saved_reels`, `reel_stats`, `reel_likes`, `reel_comments`, `reel_interactions` | No media pipeline (`services/media-service` is a RESERVED empty root), no feed, no moderation path. |
+| Messaging | `chats`, `messages`, `support_conversations` | Buyer↔seller chat and support inbox. No route; `operations/trust-safety.ts` is operator-side. |
+| Merchandising | `banners` | Home-page banner slots. |
+| Social graph | `followers`, `seller_followers` | Follow/unfollow, follower counts on the seller profile. |
+| Loyalty | `loyalty` | Points balance and redemption. Money-adjacent: would need the canonical ledger, never a client-writable balance. |
+| Personalization | `recently_viewed`, `trending_searches`, `user_intents`, `signals` | Also the reason `deal_cards_section` lost its "trending" ordering in FB-2 — **the canonical feed has no popularity signal at all**, only keyset order by `approved_at`. |
+| Returns | `return_requests`, `return_reasons` | Buyer-initiated returns. Refunds exist canonically (`complete_order_refund`), the buyer-facing request flow does not. |
+| Per-product shipping | (fields on `products`) | `shippingDays`, `shippingPrice`, `freeShippingAbove`, `isFreeDelivery`, `expressDelivery`, `expressDeliveryDays`. **Canonically shipping is per-site (`shipping_rates`), never per-product**, and none of these fields exists on `MarketplaceListingDetail`. This is why `delivery_info_widget.dart` is measured as blocked and was not touched. |
+| App release control | `app_updates` | Forced-update gating. |
+| Auth-adjacent | `auth_logs`, `sessions`, `email_index` | FB-3's scope, not this register's. |
+
+**What this means for the sequence.** FB-3 (auth) and FB-4 (storage/core) can proceed as planned.
+Everything in the second table is a **product decision the owner has to make** and that no phase
+should make silently — for each area: build it canonically, cut the feature, or keep `customer_app`
+on Firebase for it (which contradicts the 2026-09-05 decision). The measured answer to *"can
+`customer_app` come off Firebase without losing features?"* is **no** — not without either building
+roughly ten capability areas in the gateway or removing them from the app. Recorded here so the
+choice is made against the real list rather than an impression of it.
+
+| Capability ID | Status |
+|---|---|
+| CAP-FB-NOTIF | OPEN — buyer notification inbox has no canonical owner |
+| CAP-FB-ADS | OPEN — sponsored placements; revenue-bearing, must reach the canonical ledger |
+| CAP-FB-REELS | OPEN — social video; blocked on a media pipeline (`media-service` is RESERVED/empty) |
+| CAP-FB-CHAT | OPEN — buyer↔seller messaging and support inbox |
+| CAP-FB-SOCIAL | OPEN — follower graph and seller profile surface |
+| CAP-FB-LOYALTY | OPEN — points; money-adjacent, ledger-bound |
+| CAP-FB-PERSONALIZE | OPEN — recently viewed, trending, popularity signal for feed ordering |
+| CAP-FB-RETURNS | OPEN — buyer-initiated return requests |
+| CAP-FB-SHIPPING-PRODUCT | OPEN — per-product delivery estimates; blocks `delivery_info_widget.dart` |
+| CAP-FB-BANNERS | OPEN — home merchandising slots |
+| CAP-FB-APPUPDATE | OPEN — forced-update gating |

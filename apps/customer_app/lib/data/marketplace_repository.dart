@@ -5,13 +5,19 @@
 // place. Screens depend on MarketplaceRepository; what stands behind it — Firestore during the
 // cutover, the canonical gateway after — is a wiring decision, not something 29 files each re-make.
 //
-// NOTHING CONSUMES THIS YET, and the reason is measured rather than preference: migrations 217 and
-// 220 have been applied to no dev, staging or production database, so
-// /storefront/marketplace/{feed,categories,listings/:id} cannot return a single row to anyone, while
-// this app is live on the Play Store as com.letbuyy.letbuyy. Repointing a live screen at those
-// endpoints today would empty it for real users. The cutover is gated on data existing (MIG-1), not
-// on this code; CUS-2 flips screens once it does. Wiring a screen now would look like progress and
-// ship an empty catalogue.
+// FB-2 (2026-09-05) — THE GATE ABOVE IS VOID AND THIS IS NOW CONSUMED. The original note said the
+// cutover was gated on MIG-1 importing the Firestore catalogue. The owner cancelled MIG-1 in the
+// same decision that retires Firebase ("its test data, delete firebase completely"), so that gate
+// can never open: there will be no import. The canonical catalogue fills when real merchants list
+// real products through the canonical path, or it stays empty — and an empty canonical catalogue
+// shown honestly is the correct state, where Firestore test data shown as a live storefront was
+// not. `lib/data/canonical_api.dart` builds the client; `main.dart` provides this repository;
+// `deal_cards_section.dart` is the first screen reading it.
+//
+// Still true, and the reason screens must handle failure explicitly rather than falling through to
+// an empty state: migrations 217 and 220 are applied to no dev, staging or production database, so
+// today these endpoints error rather than return an empty list. A screen that renders "nothing
+// here" on a failed read is lying about a merchant's stock.
 
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 
