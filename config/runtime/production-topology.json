@@ -158,17 +158,6 @@
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
-      "runtimeName": "Admin App",
-      "runtimeRoot": "apps/admin_app",
-      "environment": "production",
-      "status": "active",
-      "deploymentKind": "mobile-app",
-      "deploymentManifests": [
-        "apps/admin_app/pubspec.yaml"
-      ],
-      "outbox": "transactional outbox via Supabase/Postgres"
-    },
-    {
       "runtimeName": "checkout-runtime",
       "runtimeRoot": "services/checkout-runtime",
       "environment": "reserved",

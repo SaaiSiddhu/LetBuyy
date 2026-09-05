@@ -36,10 +36,10 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
       out="${out:+$out,}money"; lane money;;
   esac
   case "$f" in
-    apps/customer_app/*|apps/merchant_app/*|apps/admin_app/*|apps/phase_2/*|packages/dart/*|pubspec.yaml|*.dart) out="${out:+$out,}mobile"; lane mobile;;
+    apps/customer_app/*|apps/merchant_app/*|apps/phase_2/*|packages/dart/*|pubspec.yaml|*.dart) out="${out:+$out,}mobile"; lane mobile;;
   esac
   case "$f" in
-    apps/customer_app/*|apps/admin_app/*|apps/phase_2/*|apps/marketing-site/*|apps/app-marketplace/*|apps/developer-portal/*|apps/theme-marketplace/*|apps/platform-operations-portal/*)
+    apps/customer_app/*|apps/phase_2/*|apps/marketing-site/*|apps/app-marketplace/*|apps/developer-portal/*|apps/theme-marketplace/*|apps/platform-operations-portal/*)
       case "$f" in *.tsx|*.css|*.dart|*.arb) out="${out:+$out,}uiux-hold"; lane uiux-hold;; esac;;
     packages/typescript/ui/*|packages/dart/ui_kit/*|apps/*/src/app/*.tsx|apps/*/src/components/*|apps/*/src/features/*|apps/*/src/*.css|apps/*/tailwind.config.*|\
     apps/merchant_app/lib/*.dart|scripts/generators/generate-design-tokens.mjs|scripts/generators/generate-mobile-tokens.mjs|scripts/validators/validate-design-system.mjs|scripts/validators/design-system-baseline.json)
@@ -63,8 +63,13 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
     apps/app-marketplace/*|apps/developer-portal/*|apps/theme-marketplace/*|apps/platform-operations-portal/*) out="${out:+$out,}frozen"; lane frozen;;
   esac
   case "$f" in
-    services/checkout-runtime/*|services/event-bus/*|services/notification-service/*|services/analytics-pipeline/*|services/media-service/*|services/search-service/*|apps/mobile/*)
-      case "$f" in */runtime.manifest.json|*/AGENTS.md) ;; *) out="${out:+$out,}reserved"; lane reserved;; esac;;
+    services/checkout-runtime/*|services/event-bus/*|services/notification-service/*|services/analytics-pipeline/*|services/media-service/*|services/search-service/*|apps/mobile/*|\
+    apps/admin_app/*)
+      # "Gained source" means source is there AFTER the change. A diff that DELETES
+      # source from a reserved root is the rule being satisfied, not broken — and it
+      # is exactly what phase FB-1 did to apps/admin_app, which is how this was
+      # found. Classify by path, then confirm the file still exists before flagging.
+      case "$f" in */runtime.manifest.json|*/AGENTS.md) ;; *) if [ -e "$f" ]; then out="${out:+$out,}reserved"; lane reserved; fi;; esac;;
   esac
   case "$f" in
     docs/*|*.md) out="${out:+$out,}docs"; lane docs;;

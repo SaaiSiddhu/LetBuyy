@@ -18,7 +18,7 @@ LetBuyy, the Firebase LetBuyy app, the Start_Up platform, and Agrimore are **one
 - ~~**D-0**, which backend is canonical~~ — **decided 2026-09-04 (OWNER_DECISION, recorded by GOV-4): option A, the Supabase/Cloudflare `services/api-gateway` commerce OS extended with a marketplace channel.** `docs/migration/repository_consolidation/11_backend_consolidation.md`'s 24-domain map remains the option analysis of its moment; the binding record is `.claude/skills/letbuyy/references/decisions.md` §2, which also records D-1, D-3…D-7 and the seller-feature survival list.
 - **D-2**, whether LetBuyy is merchant of record — still open, needs counsel.
 - The fee / merchant-of-record model for the quick-commerce channel specifically.
-- Which of `apps/customer_app`/`admin_app`'s currently-unconsolidated shared packages become the long-term canonical Dart package set.
+- Which of `apps/customer_app`'s currently-unconsolidated shared packages become the long-term canonical Dart package set. (`admin_app` no longer bears on this question: its source was deleted in phase FB-1, 2026-09-05, and the root is RESERVED.)
 
 ## Where to look for more detail
 

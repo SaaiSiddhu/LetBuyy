@@ -1,6 +1,6 @@
 # packages/dart/marketplace_ui_kit
 
-Shared UI components, themes, and widgets for the marketplace-channel Flutter apps (`customer_app`, `admin_app`).
+Shared UI components, themes, and widgets for the marketplace-channel Flutter apps (`customer_app`; `admin_app` was retired to a RESERVED root in phase FB-1, 2026-09-05).
 
 ## Provenance
 

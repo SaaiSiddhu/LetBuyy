@@ -6,11 +6,11 @@
     "platform-operator",
     "admin"
   ],
-  "runtimeCategory": "flutter-app",
-  "runtimeClassification": "mobile-admin-app",
+  "runtimeCategory": "reserved-mobile-app",
+  "runtimeClassification": "reserved-mobile-operator-runtime",
   "ownership": {
     "sourceAuthority": "apps/admin_app",
-    "businessAuthority": "Platform-operator mobile app — seller/user management, commissions, marketing, analytics, KYC, moderation. Not production-signed (debug-keystore release config, see 00a_signing_key_rescue.md).",
+    "businessAuthority": "Reserved/not-implemented mobile platform-operator runtime. Its former Firestore implementation (seller/user management, commissions, marketing, moderation queues, KYC) was deleted in phase FB-1 under the owner decision of 2026-09-05 to retire Firebase completely; it had never shipped a signed release. This root owns no active operator behavior. apps/admin_web owns the active platform-operator surface and services/api-gateway owns the operator APIs behind it (/operations/marketplace-listings, PHASE-ADM-1).",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
       "docs/governance/runtime-boundaries.md",
@@ -29,12 +29,7 @@
     ]
   },
   "allowedDependencies": {
-    "workspacePackages": [
-      "letbuyy_marketplace_core",
-      "letbuyy_marketplace_models",
-      "letbuyy_marketplace_services",
-      "letbuyy_marketplace_ui_kit"
-    ],
+    "workspacePackages": [],
     "runtimeImports": []
   },
   "forbiddenDependencies": [
@@ -45,10 +40,8 @@
     "generated-artifacts"
   ],
   "deploymentAuthority": {
-    "platform": "Mobile app stores",
-    "config": [
-      "apps/admin_app/pubspec.yaml"
-    ]
+    "platform": "Reserved only - no deployable mobile runtime artifact",
+    "config": []
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/mobile.schema.json",
@@ -56,49 +49,55 @@
     "secretStore": "mobile CI dart-define environment"
   },
   "observabilityAuthority": {
-    "correlationId": "X-Request-ID",
-    "logging": "redacted mobile admin operation logs and backend-correlated request IDs",
-    "audit": "admin mutations must be audit-correlated through backend APIs"
+    "correlationId": "none-active-reserved-root",
+    "logging": "No active mobile operator runtime logging; apps/admin_web and services/api-gateway emit current operator telemetry.",
+    "audit": "No active audit emission from this reserved mobile root; operator mutations are audited by services/api-gateway (audit_logs)."
   },
   "executionAuthority": {
-    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
-    "orchestrationRole": "No durable business service-local event helpers; delegate workflows to service-owned workflow adapters and backend services.",
-    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through service-owned read planners adapters or service API contracts.",
-    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
-    "queryOwnership": "May consume service-owned read planners query layers and API responses; page-level read aggregation must migrate to service-owned read planners.",
-    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
+    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/admin_web owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
+    "orchestrationRole": "No active service-local event helpers execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
+    "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires mobile source, package/deployment config, tests, and governance approval.",
+    "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
+    "queryOwnership": "No active query execution ownership; current reads delegate to implemented runtimes.",
+    "compositionOwnership": "No active mobile runtime composition ownership; current composition delegates to implemented runtimes."
   },
-  "orchestrationAuthority": "No durable business service-local event helpers; routes and pages delegate workflows to service-owned workflow adapters and read composition to service-owned read planners.",
-  "eventAuthority": "No durable event ownership; may propagate correlation metadata and render event-derived state received from service APIs.",
-  "workflowAuthority": "Workflows, use cases, sequencing, and cross-domain coordination are owned by service-owned workflow adapters, not this runtime.",
-  "queryAuthority": "Consumes service-owned read planners query layers and service API responses; does not own aggregation pipelines or projection assembly.",
-  "compositionAuthority": "Owns actor-specific rendering, routing, presentation adapters, and runtime composition only.",
-  "executionOwnership": "Routing, rendering, runtime adapters, presentation transport, and runtime hooks only.",
-  "queueOwnership": "No queue execution ownership; durable queue production and consumption delegate to service execution containers and queue workers.",
-  "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved service-owned read planners or service API boundaries.",
-  "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
-  "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, and retries delegate to services, service-owned workflow adapters, and service-local event helpers.",
-  "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers.",
-  "telemetryOwnership": "No durable telemetry pipeline ownership; propagates request and correlation metadata while trace, metric, log, and span persistence delegate to service runtimes and service runtime governance contracts.",
-  "cacheOwnership": "No durable cache coordination ownership; app fetch/cache hints delegate invalidation and projection cache policy to service-owned read planners, service-owned read planners, and service execution containers.",
-  "auditOwnership": "No execution audit ownership; privileged actions and durable execution audit trails delegate to service runtimes and service runtime governance contracts.",
-  "operationalOwnership": "No operational runtime ownership; deployment, recovery, diagnostics, and control-plane execution delegate to service runtimes and service runtime governance contracts.",
-  "telemetryExecutionOwnership": "No telemetry execution ownership; apps propagate trace and request metadata while service runtimes execute spans, metrics, and structured log persistence.",
-  "queueExecutionOwnership": "No queue execution ownership; durable queue inspection, recovery, redrive, retry, and dead-letter operations delegate to queue worker and API service runtimes.",
-  "auditExecutionOwnership": "No audit execution ownership; runtime audit persistence and operational security telemetry delegate to backend service runtimes.",
-  "cacheExecutionOwnership": "No cache execution ownership; cache invalidation, consistency checks, idempotency invalidation, and lifecycle metrics delegate to service-owned read planners, service-owned read planners, and service runtimes.",
-  "diagnosticsOwnership": "May surface user-safe diagnostics returned by service APIs; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
-  "operationalControlPlaneOwnership": "No operational control-plane ownership; workflow, queue, provider resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes.",
-  "deploymentOwnership": "Owns presentation runtime deployment participation for Admin App; deploys through provider promotion gates and delegates infrastructure execution to service runtimes.",
-  "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
-  "queueProviderOwnership": "Delegates production queue provider execution to services/api-gateway producers and services/queue-workers consumers.",
-  "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
-  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
-  "securityOwnership": "Uses provider environment stores and authenticated service APIs; no service-role or provider secrets may enter client runtime.",
-  "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
-  "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
-  "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
-  "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
-  "dashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data.",
-  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through admin-web operations UI and Grafana dashboards without local fixture data."
+  "orchestrationAuthority": "Reserved/not-implemented mobile root; no active orchestrationAuthority is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "eventAuthority": "Reserved/not-implemented mobile root; no active eventAuthority is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "workflowAuthority": "Reserved/not-implemented mobile root; no active workflowAuthority is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "queryAuthority": "Reserved/not-implemented mobile root; no active queryAuthority is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "compositionAuthority": "Reserved/not-implemented mobile root; no active compositionAuthority is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "executionOwnership": "Reserved/not-implemented mobile root; no active executionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "queueOwnership": "Reserved/not-implemented mobile root; no active queueOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "providerOwnership": "Reserved/not-implemented mobile root; no active providerOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "executionBoundaries": "Reserved/not-implemented mobile root; no active executionBoundaries is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "asyncExecutionOwnership": "Reserved/not-implemented mobile root; no active asyncExecutionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "observabilityOwnership": "Reserved/not-implemented mobile root; no active observabilityOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "telemetryOwnership": "Reserved/not-implemented mobile root; no active telemetryOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "cacheOwnership": "Reserved/not-implemented mobile root; no active cacheOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "auditOwnership": "Reserved/not-implemented mobile root; no active auditOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "operationalOwnership": "Reserved/not-implemented mobile root; no active operationalOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "telemetryExecutionOwnership": "Reserved/not-implemented mobile root; no active telemetryExecutionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "queueExecutionOwnership": "Reserved/not-implemented mobile root; no active queueExecutionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "auditExecutionOwnership": "Reserved/not-implemented mobile root; no active auditExecutionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "cacheExecutionOwnership": "Reserved/not-implemented mobile root; no active cacheExecutionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "diagnosticsOwnership": "Reserved/not-implemented mobile root; no active diagnosticsOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "operationalControlPlaneOwnership": "Reserved/not-implemented mobile root; no active operationalControlPlaneOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "deploymentOwnership": "Reserved/not-implemented mobile root; no active deploymentOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "observabilityInfrastructureOwnership": "Reserved/not-implemented mobile root; no active observabilityInfrastructureOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "queueProviderOwnership": "Reserved/not-implemented mobile root; no active queueProviderOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "incidentOwnership": "Reserved/not-implemented mobile root; no active incidentOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "deploymentTopologyOwnership": "Reserved/not-implemented mobile root; no active deploymentTopologyOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "securityOwnership": "Reserved/not-implemented mobile root; no active securityOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "controlPlaneOwnership": "Reserved/not-implemented mobile root; no active controlPlaneOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "productionOwnership": "Reserved/not-implemented mobile root; no active productionOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "deploymentPipelineOwnership": "Reserved/not-implemented mobile root; no active deploymentPipelineOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "telemetryInfrastructureOwnership": "Reserved/not-implemented mobile root; no active telemetryInfrastructureOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "dashboardOwnership": "Reserved/not-implemented mobile root; no active dashboardOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "operationalDashboardOwnership": "Reserved/not-implemented mobile root; no active operationalDashboardOwnership is owned here. Current behavior delegates to implemented web/service runtimes. Activation requires human-approved source, tests, deployment config, and governance update.",
+  "implementationStatus": {
+    "status": "reserved-not-implemented",
+    "sourceState": "manifest-and-agents-only",
+    "currentActiveOwner": "apps/admin_web owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
+    "activationRequirement": "Reserved by phase FB-1 (2026-09-05). Reactivation requires BOTH a named trigger and human approval: the admin_web moderation port (CAP-ADM-2) complete, a measured demand for a mobile operator surface, and gateway-wired source with tests, deployment config and an ARB-approved governance update. The deleted implementation was Firestore-backed and must never be restored; it is readable in git history at the parent of the FB-1 branch as a behavioural reference only."
+  }
 }

@@ -88,7 +88,7 @@ repository**, but three lineages with different rules and different risk:
 | Lineage | Where it lives now | Rule |
 |---|---|---|
 | **C — canonical commerce OS** (Supabase + Cloudflare) | `services/api-gateway`, `queue-workers`, `webhook-service`, `mobile-bff`, `apps/{customer_web,merchant_web,admin_web,identity-platform,marketing-site,merchant_app}`, `packages/*`, `database/supabase` | the Constitution chain; money/tenancy/identity invariants (`references/security.md`) |
-| **A — live Firebase marketplace** (Play Store `com.letbuyy.letbuyy`, Firebase project `letbuy-y`) | `apps/customer_app`, `apps/admin_app`, `packages/dart/marketplace_*`, `services/compatibility/firebase_bridge` (inert copy of rules + functions) | **a verified live P0 outranks migration work**; the live rules are `UNKNOWN_LIVE_STATE` from this repo; Play Store compatibility (`references/security.md` §1.2) |
+| **A — live Firebase marketplace** (Play Store `com.letbuyy.letbuyy`, Firebase project `letbuy-y`) | `apps/customer_app`, `packages/dart/marketplace_*`. **Being retired**: the owner decided on 2026-09-05 to delete Firebase completely. FB-1 deleted `apps/admin_app` (now RESERVED) and `services/compatibility/firebase_bridge`; FB-2/3/4 move `customer_app` onto the canonical gateway; FB-5 is the owner deleting the project | **a verified live P0 outranks migration work**; the live rules are `UNKNOWN_LIVE_STATE` from this repo; Play Store compatibility (`references/security.md` §1.2) |
 | **B — quick-commerce donor** (Agrimore) | `apps/phase_2/*`, `packages/dart/quickcommerce_*`, `services/compatibility/agrimore_bridge` | design donor, never a runnable backend; Phase 2 only |
 
 History for A and B is in `~/LetBuyy-history-preservation-2026-08-29/*.bundle`; the standalone
@@ -223,10 +223,10 @@ Worktrees  LetBuyy-develop [develop] (GOV-3) · phase worktrees LetBuyy-<phase> 
 Remote     https://github.com/SaaiSiddhu/Letbuyy_Store.git — UNREADABLE from this machine (gh account Edynox-hq → 404; git → not found).
            origin/{main,stepup/main}=5af69e0c · origin/develop=41b6ea49 (June); all ancestors of 823aa5ee. Push = owner only.
 Apps       customer_web :9000 · merchant_web :9001 · identity-platform :9002 · marketing-site :9006 · admin_web :9007 (Next, next dev --webpack)
-           Flutter: customer_app com.letbuyy.letbuyy SHIPPED (vc 4013, 1.0.10) · merchant_app com.letbuyy.store · admin_app com.letbuyy.admin
+           Flutter: customer_app com.letbuyy.letbuyy SHIPPED (vc 4013, 1.0.10) · merchant_app com.letbuyy.store · admin_app RETIRED to RESERVED (FB-1, 2026-09-05; com.letbuyy.admin is a retired applicationId)
            · phase_2/{rider_app,store_ops_app} · FROZEN: app-marketplace, developer-portal, theme-marketplace, platform-operations-portal
 Services   api-gateway (Hono/Wrangler :9010) · mobile-bff :9011 · webhook-service :9012 · queue-workers :9013 · lcis-api (tooling)
-           compatibility/{firebase_bridge,agrimore_bridge,cloudflare_bridge} inert & unwired · 6 RESERVED roots manifest-only
+           compatibility/{agrimore_bridge,cloudflare_bridge} inert & unwired (firebase_bridge DELETED, FB-1) · 7 RESERVED roots manifest-only (incl. apps/admin_app)
 Packages   packages/typescript/{ui,api-client,…} (@letbuyy/ui = the design system; --lb-* tokens; tokens.ts 1,749 lines, 307 variables)
            packages/{tenant-core,session-core,identity-core,auth-core,payments,billing-core,checkout-core,theme-engine,infrastructure,…}
            packages/token-core = auth JWT envelope, NOT design tokens · packages/dart/{core,models,ui_kit,marketplace_*,quickcommerce_*} · packages/lcis-* tooling

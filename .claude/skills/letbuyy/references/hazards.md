@@ -106,7 +106,8 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
   `test:governance`/`test:behavioral`/`test:foundation:wave*`) may touch a Postgres another session is
   using — name a unique throwaway container via `LETBUYY_EXECUTABLE_PG_CONTAINER`/`_DATABASE`, no
   host port, and prove teardown.
-- `customer_app`/`admin_app` have 13/11 tests (Phase P), `merchant_app` 172 (the canary),
+- `customer_app` has 13 tests (Phase P), `merchant_app` 172 (the canary),
+  (`admin_app`'s 11 went with it when FB-1 retired the root on 2026-09-05),
   `marketplace_core` 165, `marketplace_ui_kit` 54; both `phase_2` apps carry one dead `MyApp isn't a
   class` scaffold error, deliberately left. `merchant_app` has 80 pre-existing analyze infos/warnings.
 - `packages/typescript/ui` is the only vitest package; everything else is `node --test`/`tsx --test`.
@@ -125,10 +126,17 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
   the Play listing is unproven — only the Play Console certificate fingerprint decides. None is
   tracked (0 hits for `*.jks|key.properties|*.keystore` in `git ls-files`); keep it that way.
 - `com.letbuyy.letbuyy` is the one irreplaceable value in the repository
-  (`config/governance/android-identity-registry.json`); `admin_app`'s `namespace` deliberately
-  differs from its `applicationId` — do not "fix" it. iOS bundle identifiers are ungoverned.
-- `services/compatibility/firebase_bridge/config/*.rules` are a **copy**; the live Firebase rules are
-  unknown from here. A rules lockdown without its callable replacement breaks the shipped app.
+  (`config/governance/android-identity-registry.json`). `namespace` may legitimately differ from
+  `applicationId` — do not "fix" a divergence. iOS bundle identifiers are ungoverned.
+  `com.letbuyy.admin` is now in that file's `retiredApps` section (FB-1, 2026-09-05) and the validator
+  fails if any tracked Gradle script declares it: a retired identity is not a free name.
+- `services/compatibility/firebase_bridge` was **deleted in FB-1** (2026-09-05). Its `config/*.rules`
+  were only ever a copy — the live Firebase rules were always `UNKNOWN_LIVE_STATE` from here. Read
+  two consequences honestly: (a) the security findings in `references/security.md` that were measured
+  against that copy are no longer verifiable from the working tree, only from git history at the
+  parent of `letbuyy/fb1-retire-firebase-admin-app`; and (b) they remain **live risks until the owner
+  deletes the Firebase project itself** (FB-5) — deleting this repository's copy retires the bridge,
+  not the exposure.
 
 ## Toolchain and machine
 
@@ -157,11 +165,15 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   (`12_final_verification.md`). `identity-platform` 26, `admin-web` 114, `marketing-site` 326 warnings,
   0 errors → pass. The **dirty primary** additionally reports errors in `merchant_web`
   (`SettingsPane.tsx`) and `identity-platform` (`resend.ts`) — other sessions' uncommitted files.
-- **validator sweep 107/113** (each run individually): `foundation-antifabrication-gate` (inert
-  `firebase_bridge/src/commissionService.ts` literal) · `environment-validator` (14 files: the Firebase
-  client config of `customer_app`/`admin_app` ×12 — public identifiers; `marketplace_services/
-  custom_payment_service.dart` — Razorpay's published sample test key id; `firebase_bridge/src/
-  adminAuth.ts` — a Firebase Web API key) · `sequential-migration-validator` (gap 207 → 211: another
+- **validator sweep** (each run individually). **Two of these were CLOSED by phase FB-1 on
+  2026-09-05** — measured side by side, the FB-1 worktree against `develop` at `19895c9c`:
+  `foundation-antifabrication-gate` now **PASSES** (its only offender was the inert
+  `firebase_bridge/src/commissionService.ts` hardcoded-payout literal, and the bridge is deleted), and
+  `environment-validator`'s offender list dropped **14 → 7** (the six `admin_app` Firebase client-config
+  files and `firebase_bridge/src/adminAuth.ts` are gone). What remains red there is
+  `environment-validator` on 7 files: `customer_app`'s Firebase client config ×6 — public identifiers,
+  and the target of FB-4 — plus `marketplace_services/custom_payment_service.dart`, Razorpay's
+  published sample test key id. Still red for their own reasons: `sequential-migration-validator` (gap 207 → 211: another
   session's **untracked** 208–210) · `tenant-isolation-validator` (the generated registry already
   cites `208_…`/`209_…`, which are not tracked — same root cause; **do not regenerate**, that would
   strip the other session's pending entries) · `stale-artifact-validator` (method artifact when run

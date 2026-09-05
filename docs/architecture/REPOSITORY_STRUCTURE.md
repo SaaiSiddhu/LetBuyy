@@ -29,7 +29,7 @@ tools/           — Central Intelligence System (LCIS) tooling
 | `customer_web` | `apps/customer_web` | Renamed from `apps/storefront-runtime` (native to this repository) |
 | `merchant_app` | `apps/merchant_app` | Renamed from `apps/mobile/merchant-app` (native) |
 | `merchant_web` | `apps/merchant_web` | Renamed from `apps/merchant-control-plane` (native) |
-| `admin_app` | `apps/admin_app` | Cross-repo copy from System A's `apps/admin` — not production-signed |
+| `admin_app` | `apps/admin_app` | **RESERVED, manifest-only** since 2026-09-05 (Constitution Amendment 2). Was a cross-repo copy of System A's `apps/admin`, never production-signed; deleted with Firebase in phase FB-1 |
 | `admin_web` | `apps/admin_web` | Renamed from `apps/platform-console` (native) |
 
 Full survivor evidence and every rejected candidate's disposition: `docs/migration/repository_consolidation/04_application_survivor_scorecard.md`, `07_final_path_mapping.md`, and the Stage 3 entry in `10_merge_execution_journal.md`.

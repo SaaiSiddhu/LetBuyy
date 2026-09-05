@@ -13,10 +13,10 @@ environment:
 # apps that is native to this repository. See CLAUDE.md's "Six-App Target
 # Topology" section.
 #
-# apps/customer_app, apps/admin_app (Stage 3, cross-repo from System A) and
+# apps/customer_app (Stage 3, cross-repo from System A) and
 # apps/phase_2/{rider_app,store_ops_app} (Stage 4, cross-repo from System B)
 # are deliberately NOT workspace members yet (Stage 8 finding, corrected
-# after two broken attempts): customer_app/admin_app path-depend on System
+# after two broken attempts): customer_app path-depended on System
 # A's own packages/{core,models,services,ui_kit} (4 packages); the phase_2
 # apps path-depend on 6 packages/agrimore_* packages. None of those 10
 # packages were copied into this repository — Stage 5 deliberately deferred
@@ -28,11 +28,16 @@ environment:
 # apps without their dependencies present breaks pub resolution for the
 # ENTIRE workspace, not just that app (reproduced and reverted twice this
 # stage — see the journal). All four apps' own README.md already discloses
-# "NOT production-ready" for the phase_2 pair; customer_app/admin_app carry
-# real production-relevant identity (customer_app is the shipped Play Store
-# app) but their *shared Dart package* dependencies are unresolved pending
-# the deferred package-unification pass — not being a pub workspace member
-# yet is an accurate reflection of that, not a regression this stage caused.
+# "NOT production-ready" for the phase_2 pair; customer_app carries real
+# production-relevant identity (it is the shipped Play Store app) but its
+# *shared Dart package* dependencies were unresolved pending the deferred
+# package-unification pass — not being a pub workspace member yet was an
+# accurate reflection of that, not a regression that stage caused.
+#
+# Updated 2026-09-05 (phase FB-1): apps/admin_app is no longer a workspace
+# member and no longer has a pubspec.yaml. Its Firestore implementation was
+# deleted under the owner's decision to retire Firebase completely, and the
+# root is now RESERVED (manifest-only). See apps/admin_app/AGENTS.md.
 workspace:
   - apps/merchant_app
   - packages/dart/core
@@ -50,7 +55,6 @@ workspace:
   - packages/dart/marketplace_models
   - packages/dart/marketplace_services
   - apps/customer_app
-  - apps/admin_app
   - packages/dart/quickcommerce_core
   - apps/phase_2/rider_app
   - apps/phase_2/store_ops_app

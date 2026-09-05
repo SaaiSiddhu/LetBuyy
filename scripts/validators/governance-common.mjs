@@ -58,10 +58,20 @@ export const ignoredDirectoryNames = new Set([
 // apps/merchant-control-plane, apps/mobile/merchant-app, and
 // apps/platform-console are now apps/customer_web, apps/merchant_web,
 // apps/merchant_app, and apps/admin_web respectively (renamed on disk,
-// Stage 3). apps/customer_app and apps/admin_app are new additions
+// Stage 3). apps/customer_app and apps/admin_app were new additions
 // established the same stage (no prior ACTIVE/SUPPORTING classification to
 // rename from). See CLAUDE.md's "Six-App Target Topology" section and
 // docs/migration/repository_consolidation/10_merge_execution_journal.md.
+//
+// Updated 2026-09-05 (phase FB-1): apps/admin_app moved from here to
+// reservedMobileRuntimeRoots. Its implementation was 100% Firestore-backed and
+// had never shipped a signed release; the owner's decision of 2026-09-05 retires
+// Firebase completely, so the source was deleted and the root reduced to the
+// manifest-only reserved shape. The NAME is deliberately kept -- the Constitution
+// admits it as one of six product-facing roots -- but it is now a reserved root,
+// which means no-reserved-service-activation-validator fails the gate on any
+// source file added under it until a named trigger and human approval reactivate
+// it. apps/admin_web is the active admin surface (D-4).
 export const canonicalAppRoots = [
   "apps/customer_web",
   "apps/merchant_web",
@@ -70,7 +80,6 @@ export const canonicalAppRoots = [
   "apps/admin_web",
   "apps/merchant_app",
   "apps/customer_app",
-  "apps/admin_app",
 ];
 
 export const frozenAppRoots = [
@@ -83,6 +92,10 @@ export const frozenAppRoots = [
 export const reservedMobileRuntimeRoots = [
   "apps/mobile/shopper-app",
   "apps/mobile/operator-app",
+  // Reserved by phase FB-1 (2026-09-05), not a placeholder that never held source:
+  // the Firestore implementation was deleted and this root reduced to
+  // AGENTS.md + runtime.manifest.json. See apps/admin_app/AGENTS.md.
+  "apps/admin_app",
 ];
 
 // apps/phase_2/* (Constitution amendment, 2026-09-02, Gap 4): product capabilities
