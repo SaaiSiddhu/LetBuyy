@@ -26,7 +26,7 @@
       "path": "config/runtime/deployment-topology.json",
       "owner": "runtime-topology",
       "compatibility": "startup-order-compatible",
-      "checksum": "8abf4c41bc7133de28057daf93787111eb1fbe60d53924b6b2e6dc97a6f85232"
+      "checksum": "6ae26c3fa4b47037624b58ed345513836366a8d7d88f949f941c2ebdb3c1bd91"
     },
     {
       "path": "config/runtime/environment-lifecycle.json",
@@ -44,7 +44,7 @@
       "path": "config/runtime/production-topology.json",
       "owner": "production-topology",
       "compatibility": "single-region-outbox-compatible",
-      "checksum": "37b5dad8cd99fdf08ce6e93a102901680cbb20dfa448b26826fd00c412d8ad1e"
+      "checksum": "2d3d0a880e56e7eccc8727b2024aecc5468c93514bde8efa207240f5881b3e64"
     },
     {
       "path": "config/runtime/live-production-certification.json",
