@@ -165,6 +165,20 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   (`12_final_verification.md`). `identity-platform` 26, `admin-web` 114, `marketing-site` 326 warnings,
   0 errors → pass. The **dirty primary** additionally reports errors in `merchant_web`
   (`SettingsPane.tsx`) and `identity-platform` (`resend.ts`) — other sessions' uncommitted files.
+- **A gate count is not a gate SET — compare failure NAMES (ROUTE-1 → ROUTE-2, 2026-09-05).** The
+  gate table prints a count and the **first** failure line per lane. ROUTE-1 introduced a contract
+  failure and, in the same run, a different contract failure did not reproduce — so `test:contracts`
+  read `exit=1`, first line `custom-domain tables remain api-gateway single-writer owned` (ambient),
+  count 8 before and 8 after. A one-in/one-out swap is **invisible** in that summary, and the
+  regression merged. Attribute by diffing failure NAMES between the phase base and the tip
+  (`grep '^✖' | sed 's/ ([0-9.]*ms)//' | sort -u`, then `comm`), never by comparing totals.
+- **Never symlink another worktree's `node_modules`.** Doing it in the ROUTE-2 worktree made
+  `liquid-commerce-embeds.test.ts` fail deterministically there while passing on `develop`, and
+  briefly produced a false "this contract test is flaky" finding. Run `pnpm install
+  --frozen-lockfile` in the phase worktree; workspace resolution is path-sensitive.
+- **Re-run the tests your LATER change affects, not the one you just edited.** ROUTE-1's W1 ran the
+  engagement contract test (green), then W2 moved a route band out of `public-routes.ts` and only the
+  *public-routes* test was re-run — while the engagement test anchored on a marker W2 had removed.
 - **validator sweep** (each run individually). **Two of these were CLOSED by phase FB-1 on
   2026-09-05** — measured side by side, the FB-1 worktree against `develop` at `19895c9c`:
   `foundation-antifabrication-gate` now **PASSES** (its only offender was the inert
