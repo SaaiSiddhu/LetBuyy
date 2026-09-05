@@ -163,7 +163,30 @@ for (const entry of phaseBEntries(
 
   for (const enumMatch of entry.text.matchAll(enumCallPattern)) {
     const body = enumMatch[1];
-    for (const forbiddenMatch of body.matchAll(forbiddenRailLiteralPattern)) {
+    const forbidden = [...body.matchAll(forbiddenRailLiteralPattern)];
+    if (forbidden.length === 0) continue;
+
+    // This clause is about PAYMENT-METHOD/PROVIDER enums, as its own name says, but it used to
+    // inspect every `.enum([...])` in these directories. Some rail names are also ordinary words —
+    // 'square' is an image aspect ratio, 'stripe' is a border style — so an unrelated vocabulary
+    // was reported as admitting a payment rail, and the only ways out were to corrupt the domain
+    // vocabulary or to add a blanket file exemption. Both are worse than making the check say what
+    // it means.
+    //
+    // Two independent ways to qualify, so narrowing the first cannot open a hole:
+    //   1. the enum is DECLARED in a payment context — every real one in the repository is
+    //      (payment_method · paymentMethod · provider · V1PaymentProviderSchema ·
+    //      AppFunctionCheckoutPaymentMethodSchema · MerchantPayoutRailSchema ·
+    //      AppBillingIndiaPayoutRailSchema · checkout_mode); or
+    //   2. it lists TWO OR MORE distinct rails, which is a provider list whatever it is called.
+    const declaration = entry.text.slice(Math.max(0, (enumMatch.index || 0) - 160), enumMatch.index || 0);
+    const declaredAsPayment = /payment|provider|rail|gateway|psp|checkout|payout|billing|method|tender|processor/i.test(
+      declaration.split("\n").pop() || declaration,
+    );
+    const distinctRails = new Set(forbidden.map((m) => m[1].toLowerCase()));
+    if (!declaredAsPayment && distinctRails.size < 2) continue;
+
+    for (const forbiddenMatch of forbidden) {
       const absoluteIndex = (enumMatch.index || 0) + (forbiddenMatch.index || 0);
       offenders.push(
         `${entry.path}:${lineNumberForIndex(entry.text, absoluteIndex)} payment-method/provider enum admits non-canonical rail '${forbiddenMatch[1]}'; only ${CANONICAL_PAYMENT_RAILS.join("/")} (plus 'upi' as a Razorpay instrument, where applicable) are canonical (DOC 03 row 11)`,

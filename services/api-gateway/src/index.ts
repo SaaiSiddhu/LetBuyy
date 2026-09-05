@@ -73,6 +73,7 @@ import operationsRouter from './routes/operations';
 import operationsMarketplaceReviewsRouter from './routes/operations/marketplace-reviews';
 import operationsMarketplaceListingsRouter from './routes/operations/marketplace-listings';
 import operationsMarketplaceCategoriesRouter from './routes/operations/marketplace-categories';
+import operationsMarketplaceBannersRouter from './routes/operations/marketplace-banners';
 import operationsDevelopersRouter from './routes/operations/developers';
 import operationsRbacRouter from './routes/operations/rbac';
 import operationsIncidentCommandRouter from './routes/operations/incident-command';
@@ -852,6 +853,7 @@ api.route('/operations/trust-safety', operationsTrustSafetyRouter);
 api.route('/operations/marketplace-reviews', operationsMarketplaceReviewsRouter);
 api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);
 api.route('/operations/marketplace-categories', operationsMarketplaceCategoriesRouter);
+api.route('/operations/marketplace-banners', operationsMarketplaceBannersRouter);
 api.route('/operations/developers', operationsDevelopersRouter);
 api.route('/operations', operationsRouter);
 

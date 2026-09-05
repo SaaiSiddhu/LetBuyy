@@ -11,6 +11,7 @@ import { MarketplaceFeedQuery, type MarketplaceFeedInput } from '../../schemas/c
 import { authRateLimit, sensitiveRateLimit } from '../../middleware/rateLimit';
 import { registerStorefrontCartRoutes } from './cart-routes';
 import { registerStorefrontMarketplaceDetailRoutes, type StorefrontMarketplaceDetailDependencies } from './marketplace-detail-routes';
+import { registerMarketplaceBannerRoutes, type MarketplaceBannerRoutesDeps } from './marketplace-banner-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
@@ -176,6 +177,8 @@ type StorefrontPublicRouteDependencies = {
     listMarketplaceCategories?: (c: AppContext) => Promise<{ data: MarketplaceCategoryRow[] | null; error: DatabaseErrorLike }>;
     // MKT-2: injectable so unit tests can drive the detail route without a database.
     loadMarketplaceListingDetail?: StorefrontMarketplaceDetailDependencies['loadMarketplaceListingDetail'];
+    // CAP-FB-BANNERS: injectable so unit tests can drive the strip without a database.
+    loadActiveMarketplaceBanners?: MarketplaceBannerRoutesDeps['loadActiveBanners'];
 };
 
 // ── MKT-1: marketplace feed + taxonomy (public reads) ─────────────────────────────────────────
@@ -331,6 +334,11 @@ export function registerStorefrontPublicRoutes(
     // MKT-2 — the single-listing read, beside the feed and taxonomy above.
     registerStorefrontMarketplaceDetailRoutes(router, {
         loadMarketplaceListingDetail: dependencies.loadMarketplaceListingDetail,
+    });
+
+    // CAP-FB-BANNERS — the home merchandising strip, beside the feed, taxonomy and detail reads.
+    registerMarketplaceBannerRoutes(router, {
+        loadActiveBanners: dependencies.loadActiveMarketplaceBanners,
     });
 
     registerStorefrontCartRoutes(router, {
