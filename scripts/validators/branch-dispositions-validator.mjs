@@ -55,19 +55,44 @@ const text = fs.existsSync(ledgerPath) ? fs.readFileSync(ledgerPath, "utf8") : "
 // ---- parse the Rows table: | `branch` | `sha` | STATUS | Decided | Decided by | Why | Merged into |
 const rows = [];
 const promotions = [];
+// A disposition row that is not inside `## Rows` is invisible to every check below, because the
+// parser never collects it. Not hypothetical: on 2026-09-05 an insertion helper anchored on the
+// STRING "## Promotions", which line 5 of this ledger mentions in prose, and spliced two claim rows
+// into the middle of that sentence. This validator passed on the corrupted file.
+const misplacedRows = [];
 let section = null;
 for (const line of text.split("\n")) {
-  if (line.startsWith("## ")) { section = line.slice(3).trim(); continue; }
+  if (/^## /.test(line)) { section = line.slice(3).trim(); continue; }
+  const rowMatch = line.match(/^\| `([^`]+)` \| `([^`]+)` \| ([A-Za-z_]+(?::[^ |]+)?) \|/);
   if (section === "Rows") {
-    const m = line.match(/^\| `([^`]+)` \| `([^`]+)` \| ([A-Za-z_]+(?::[^ |]+)?) \|/);
-    if (m) rows.push({ branch: m[1], sha: m[2], status: m[3], line });
+    if (rowMatch) rows.push({ branch: rowMatch[1], sha: rowMatch[2], status: rowMatch[3], line });
   } else if (section === "Promotions") {
     const m = line.match(/^\| (\d{4}-\d{2}-\d{2}) \| `([^`]+)` \| `([a-z]+)`/);
     if (m) promotions.push({ date: m[1], sha: m[2], target: m[3], line });
+  } else if (rowMatch) {
+    misplacedRows.push({ branch: rowMatch[1], section: section || "(before any heading)" });
   }
 }
 reporter.assert(rows.length > 0, "BRANCH_DISPOSITIONS.md must contain a `## Rows` table with at least one row");
-reporter.assert(text.includes("## Promotions"), "BRANCH_DISPOSITIONS.md must contain a `## Promotions` table");
+
+// Headings are matched LINE-ANCHORED and counted. text.includes("## Promotions") was satisfied by the
+// prose mention on line 5, so the heading could have been destroyed entirely and the old check would
+// still have passed -- the same use-versus-mention defect as the bug above, inside the check meant to
+// catch it.
+const headingCount = (name) => text.split("\n").filter((line) => line.trim() === "## " + name).length;
+for (const heading of ["Rows", "Promotions"]) {
+  reporter.assert(
+    headingCount(heading) === 1,
+    "BRANCH_DISPOSITIONS.md must contain exactly one `## " + heading + "` HEADING (found " + headingCount(heading) + "); a prose mention is not a heading",
+  );
+}
+for (const misplaced of misplacedRows) {
+  reporter.assert(
+    false,
+    "Disposition row for " + misplaced.branch + " is outside `## Rows` -- it sits in " + misplaced.section
+      + ", where every check below silently ignores it. An insertion anchored on a STRING rather than a line-anchored heading is how this happens.",
+  );
+}
 
 // ---- duplicates and tokens
 const seen = new Map();
