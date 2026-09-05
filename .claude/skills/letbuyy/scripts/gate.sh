@@ -42,11 +42,28 @@ OUT="${LETBUYY_GATE_OUT:-$HOME/.letbuyy/gate/$(echo "$BRANCH" | tr '/' '_')-$SHA
 [ -d node_modules ] || echo "WARNING: node_modules missing — a fresh worktree lies in both directions; run pnpm install --frozen-lockfile first"
 echo "gate.sh mode=$MODE flutter-build=$FLUTTER_BUILD real-db=$REAL_DB gate-real=$GATE_REAL build=$BUILD  root=$ROOT  branch=$BRANCH  sha=$SHA  dirty=$(git status --porcelain | wc -l | tr -d ' ')  untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ')"
 echo "logs → $OUT"
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FAILS=0; ROWS=()
 run() { # run <name> <command…>
   local name="$1"; shift; local log="$OUT/$(echo "$name" | tr ' /:' '___').log"; local start=$SECONDS
   ( "$@" ) >"$log" 2>&1; local rc=$?; local secs=$((SECONDS-start))
-  local first=""; if [ $rc -ne 0 ]; then first="$(grep -E '^✖ |^not ok |failed:|error TS[0-9]+|RATCHET regression|ELIFECYCLE|^- ' "$log" | grep -vE '✔|✓|^ok |failing tests:' | head -1 | cut -c1-110 || true)"; FAILS=$((FAILS+1)); fi
+  local first=""
+  if [ $rc -ne 0 ]; then
+    local matches n unrun
+    matches="$(grep -E '^✖ |^not ok |failed:|error TS[0-9]+|RATCHET regression|ELIFECYCLE|^- ' "$log" | grep -vE '✔|✓|^ok |failing tests:' || true)"
+    n="$(printf '%s' "$matches" | grep -c . || true)"
+    first="$(printf '%s\n' "$matches" | head -1 | cut -c1-110)"
+    # GW-1: one line was all this ever showed, so a second, worse failure in the same lane was
+    # invisible. A count is not a set — say how many more there are.
+    [ "${n:-0}" -gt 1 ] && first="$first  (+$((n-1)) more)"
+    # GW-1: and a turbo task that fails CANCELS its dependents, so a lane can report a single
+    # failure while whole packages are never checked at all. That is how a missing export left
+    # @letbuyy/api-gateway — the canonical backend — unbuildable on develop while this table read
+    # "1 failure, already attributed". Name every package that owns the task and produced nothing.
+    unrun="$(node "$SKILL_DIR/turbo-unrun.mjs" "$log" "$PWD" 2>/dev/null || true)"
+    [ -n "$unrun" ] && first="$first  [NO OUTPUT: $unrun]"
+    FAILS=$((FAILS+1))
+  fi
   ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "$name" "$rc" "$secs" "$first")")
   printf '  %-40s exit=%s (%ss)\n' "$name" "$rc" "$secs"
 }
