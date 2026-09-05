@@ -214,21 +214,46 @@ const followBlock = (() => {
     return wiring.slice(at, wiring.indexOf('registerMobileReleaseRoutes(router', at));
 })();
 
+// One dependency's implementation, bounded by the NEXT dependency key rather than by a fixed offset.
+// A fixed window is the same defect as a needle that matches the wrong construct, in the opposite
+// direction: `unfollow` is short, so a 700-character window ran past its end and swallowed
+// `listFollowing` — which carries the very predicate being asserted. The assertion then passed while
+// the real unfollow query had no buyer scope at all. Proven by planting exactly that.
+const DEPENDENCY_KEYS = ['follow', 'unfollow', 'listFollowing', 'isFollowing', 'countFollowers'];
+
+function dependencyBody(name: string): string {
+    const key = `${name}:`;
+    const at = followBlock.indexOf(key);
+    assert.ok(at > 0, `${name} should be wired`);
+    const rest = followBlock.slice(at + key.length);
+    // The nearest following key wins, whichever it is — the deps may be reordered later.
+    const ends = DEPENDENCY_KEYS
+        .filter((other) => other !== name)
+        .map((other) => rest.indexOf(`${other}:`))
+        .filter((index) => index > 0);
+    return ends.length ? rest.slice(0, Math.min(...ends)) : rest;
+}
+
+test('the dependency-body extractor stops at the next dependency', () => {
+    // Proving the instrument: unfollow's body must not contain listFollowing's text, or every
+    // assertion below can pass on a neighbour's query.
+    const body = dependencyBody('unfollow');
+    assert.match(body, /\.delete\(\)/, 'should be the unfollow implementation');
+    assert.doesNotMatch(body, /sites!inner|listFollowing/, 'must not run past unfollow into the next dependency');
+});
+
 test('SOURCE: every follow query is scoped by the buyer id, not by the site alone', () => {
     // unfollow and isFollowing must carry BOTH predicates. Scoping by site alone would let any
     // buyer unfollow, or read the follow state of, another buyer.
     for (const op of ['unfollow', 'isFollowing']) {
-        const at = followBlock.indexOf(`${op}:`);
-        assert.ok(at > 0, `${op} should be wired`);
-        const body = followBlock.slice(at, at + 700);
+        const body = dependencyBody(op);
         assert.match(body, /\.eq\('buyer_account_id', buyerAccountId\)/, `${op} must scope by the buyer`);
         assert.match(body, /\.eq\('site_id', siteId\)/, `${op} must scope by the site`);
     }
 });
 
 test('SOURCE: the follower count is a projection and transfers no rows', () => {
-    const at = followBlock.indexOf('countFollowers:');
-    const body = followBlock.slice(at, at + 700);
+    const body = dependencyBody('countFollowers');
     assert.match(body, /count:\s*'exact'/, 'the count must come from the database');
     assert.match(body, /head:\s*true/, 'head:true keeps follower rows — the identities — from being transferred');
     assert.match(body, /\.eq\('site_id', siteId\)/);
@@ -244,8 +269,7 @@ test('SOURCE: no denormalised follower counter is maintained anywhere', () => {
 });
 
 test('SOURCE: the follow list filters to currently-published sellers', () => {
-    const at = followBlock.indexOf('listFollowing:');
-    const body = followBlock.slice(at, at + 1400);
+    const body = dependencyBody('listFollowing');
     // 229's trigger governs CREATING a follow; a site unpublished afterwards keeps its rows and must
     // disappear from reads instead — deleting a buyer's follows on a merchant's action would destroy
     // the buyer's data.
