@@ -43,6 +43,19 @@ provider · storefront theme survivor · domain strategy · retention periods ·
 and dark-store model · the `00b_topology_amendment_draft.md` Signature Block (all 7 items unsigned; the
 six-app rename was applied under the brief's apply-anyway instruction).
 
+### 2c. Migration actor realm — OWNER_DECISION 2026-09-05 (D-MIG-REALM)
+
+Raised by BUILD-1's follow-up measurement and answered in chat the same day ("go with option 3, add
+the migration realm"). `transition_channel_listing`'s moderation trigger only fires `BEFORE UPDATE OF
+status`, so a bulk import can INSERT a listing already `approved` with no moderation event at all — an
+audit gap across the whole imported catalogue — and `channel_listing_moderation_events.actor_realm` was
+CHECK-constrained to `('merchant', 'operator')`, so routing an import through the existing RPC would
+misattribute every row to a human operator who never reviewed it.
+
+| ID | Question | Decision · consequence |
+|---|---|---|
+| **D-MIG-REALM** | How does a bulk data migration record what it did? | **A third actor realm, `'migration'`.** `channel_listing_moderation_events.actor_realm` and `transition_channel_listing`'s `p_actor_realm` both accept `'merchant' \| 'operator' \| 'migration'`. The migration edge is exactly one: `draft → approved`, so a one-time backfill has no reason to route through `pending_review`. A migration transition is fenced identically to an operator one (no tenant context — it runs via the admin client, never inside a merchant's tenant transaction) and MUST carry a reason (enforced the same way operator rejections are), so every imported row's provenance is written down, never inferred. `approved_at` is stamped for a migration approval exactly as it is for an operator one, because `marketplace_feed`'s keyset pagination orders and filters on that column and a NULL would make imported listings behave inconsistently in the feed. The category/sellability gate that normally fires when a listing enters `pending_review` now also fires when `migration` approves directly, so an imported listing can never reach `approved` in a state a normally-submitted listing could not. `reviewed_at`/`reviewed_by` stay unset for a migration transition — honestly, since no human reviewed it. Forecloses inventing a fourth realm or reusing `operator` for anything migration-shaped.
+
 ### 2b. Purchase tenancy — OWNER_DECISION 2026-09-05 (D-PURCHASE-TENANCY)
 
 Raised by CHK-1 and answered in chat the same day ("go with your recommendation"). D-3 requires a
