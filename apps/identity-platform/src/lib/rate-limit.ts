@@ -23,6 +23,11 @@ export const AUTH_RATE_LIMITS = {
 
     // Login: 5 requests per 15 minutes
     login: { limit: 5, window: '15 m', prefix: 'rl:login' },
+    // D-8 buyer realm. Separate buckets rather than reusing signup/login: a shared bucket would let
+    // buyer traffic exhaust a merchant's allowance and vice versa, so a burst of marketplace
+    // registrations could lock merchants out of their own dashboard.
+    'buyer-register': { limit: 3, window: '1 h', prefix: 'rl:buyer-register' },
+    'buyer-login': { limit: 5, window: '15 m', prefix: 'rl:buyer-login' },
 
     // Send magic link: 3 per 15 minutes
     'send-magic': { limit: 3, window: '15 m', prefix: 'rl:magic' },

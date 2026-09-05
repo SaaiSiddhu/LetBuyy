@@ -128,6 +128,20 @@ export const AUTH_OTP_EXPIRY_MS = 10 * 60 * 1000;
 export const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 export const LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session';
 export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
+/**
+ * Marketplace buyer session (D-8, 2026-09-05).
+ *
+ * A THIRD name, deliberately. A buyer is neither a merchant nor a per-store customer: buyer auth must
+ * never grant merchant rights (ART-05, SEC-R7), and a buyer spans sellers so it is not store-scoped
+ * either. Reusing either existing name would put one realm's credential exactly where another's is
+ * expected.
+ *
+ * This cookie is HOST-ONLY. cookies.ts sets a parent-domain attribute on the merchant cookie so the
+ * platform apps share one login, and that same attribute here would transmit a shopper's credential
+ * to admin, apps, themes, developer and console — none of which has any business receiving it. The
+ * SSO convenience that justifies a parent domain for merchants is exactly what makes it wrong here.
+ */
+export const LETBUYY_BUYER_SESSION_COOKIE = 'lb_buyer_session';
 export const LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session';
 export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
