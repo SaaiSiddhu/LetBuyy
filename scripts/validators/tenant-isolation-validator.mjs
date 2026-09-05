@@ -78,11 +78,37 @@ const directBypassPattern = /getSupabaseAdmin\([^)]*\)\s*\.from\(\s*['"`]([a-zA-
 //
 // Add to this list ONLY when a migration REVOKEs the table from app_tenant. A table a tenant can read
 // belongs under the rule, not here.
+const violations = [];
+
 const platformOwnedRevokedFromTenants = new Set([
   'buyer_store_customers',
+  // 229 REVOKEs seller_follows from app_tenant, authenticated and anon, and grants only service_role.
+  // Verified by execution against a real database: as app_tenant with the tenant GUC set, and as
+  // anon, both SELECT and write return 'permission denied for table seller_follows'.
+  'seller_follows',
 ]);
 
-const violations = [];
+// The list above is a claim about the schema, so it is CHECKED rather than trusted: an entry whose
+// migration does not actually REVOKE it from app_tenant would be a standing exemption for a table a
+// tenant CAN read, which is the exact thing this validator exists to prevent. A future author who
+// adds a name here without the REVOKE gets a failure naming their own entry.
+const migrationsSource = fs
+  .readdirSync(path.join(root, 'database/supabase/migrations'))
+  .filter((name) => name.endsWith('.sql'))
+  .map((name) => fs.readFileSync(path.join(root, 'database/supabase/migrations', name), 'utf8'))
+  .join('\n');
+
+for (const table of platformOwnedRevokedFromTenants) {
+  const revoked = new RegExp(
+    `REVOKE\\s+ALL\\s+ON\\s+public\\.${table}\\s+FROM[^;]*\\bapp_tenant\\b`,
+    'i',
+  ).test(migrationsSource);
+  if (!revoked) {
+    violations.push(
+      `scripts/validators/tenant-isolation-validator.mjs ${table} is exempted as platform-owned but no migration REVOKEs it from app_tenant`,
+    );
+  }
+}
 
 for (const file of sourceFiles()) {
   const abs = path.join(root, file);
