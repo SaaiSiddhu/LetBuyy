@@ -185,6 +185,16 @@ const appApiRoutes = listWorkspaceFiles(["apps"])
 
 function classifyAppApiRoute(file) {
   if (file.startsWith("apps/identity-platform/src/app/api/auth/")) return "app-local-auth";
+  // D-8 (2026-09-05): the marketplace buyer realm. A SEPARATE class from app-local-auth, not a
+  // widening of it -- buyer auth must never grant merchant rights (ART-05, SEC-R7), and keeping the
+  // two trees distinct is what makes a buyer route landing in the merchant tree visible in a diff.
+  //
+  // Why an app-local route at all, when the boundary rule says backend behavior belongs in
+  // services/api-gateway: token ISSUANCE cannot move there. ART-05 makes identity-platform the sole
+  // asymmetric issuer, and a previous phase closed a second live issuer as an S0. The gateway owns
+  // the buyer_accounts rows (BUYER-3); these routes only mint. That is the one thing the gateway
+  // must not do, so this is a constitutional exception, not a convenience.
+  if (file.startsWith("apps/identity-platform/src/app/api/buyer/")) return "app-local-buyer-auth";
   if (file.startsWith("apps/identity-platform/src/app/api/email/")) return "identity-gateway-proxy";
   if (file.startsWith("apps/admin_web/src/app/api/console-auth/")) return "app-local-operator-auth";
   if (file.startsWith("apps/admin_web/src/app/api/")) return "gateway-proxy";
@@ -211,10 +221,14 @@ for (const file of appApiRoutes) {
 }
 
 // T8/W0 — 189 as of apps/customer_web/src/app/api/store/[subdomain]/search-suggest/
+// BUYER-4 (2026-09-05) — 191: + apps/identity-platform/src/app/api/buyer/{login,register}, class
+// app-local-buyer-auth. Bumping this count is the deliberate maintenance action the classification
+// check expects; the two routes are also added to config/eslint/boundary-baseline.json, which is the
+// matching allowlist for letbuyy-boundaries/no-new-next-api-route.
 // route.ts (T5, commit 68ed4b29): a thin gateway-proxy read route, already correctly classified
 // by the existing `apps/customer_web/src/app/api/` catch-all above — this bump is the
 // deliberate maintenance action the classification check above expects, not a workaround.
-reporter.assert(appApiRoutes.length === 189, `App-local API route inventory changed without updating P4-4 classification: expected 189, found ${appApiRoutes.length}`);
+reporter.assert(appApiRoutes.length === 191, `App-local API route inventory changed without updating P4-4 classification: expected 191, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {
