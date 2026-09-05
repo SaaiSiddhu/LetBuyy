@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
@@ -15,6 +15,19 @@ function source(path: string): string {
 function repositorySource(path: string): string {
     return readFileSync(join(repositoryRoot, path), 'utf8');
 }
+
+function repositoryPathExists(path: string): boolean {
+    return existsSync(join(repositoryRoot, path));
+}
+
+// D-16 (owner, 2026-09-05): the retired non-canonical rails were SAFE_DELETEd. Their assertions
+// below changed from "exists but is inert" to "is absent" — the DEL-R3 ordering, retargeted before
+// the source was removed.
+const RETIRED_ADAPTER_PATHS = [
+    'packages/infrastructure/stripe-adapter/index.ts',
+    'packages/infrastructure/paypal-adapter/index.ts',
+    'packages/infrastructure/cashfree-adapter/index.ts',
+];
 
 test('razorpay order creation rejects stale client amounts and recalculates totals server-side', () => {
     const internalPaymentSource = source('routes/storefront/internal-payment-routes.ts');
@@ -102,9 +115,6 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
 
 test('the razorpay webhook is centralized in webhook-service; retired provider webhooks are gone (Phase M1, DOC 03 row 11)', () => {
     const webhookSource = repositorySource('services/webhook-service/src/index.ts');
-    const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
-    const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
-    const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
 
     assert.match(webhookSource, /app\.post\("\/razorpay"/);
     // Phase M1 retired the Stripe/PayPal/Cashfree webhook ingress: after the
@@ -122,20 +132,51 @@ test('the razorpay webhook is centralized in webhook-service; retired provider w
     assert.match(webhookSource, /emitGatewayDomainEvent/);
     assert.doesNotMatch(webhookSource, /["']outbox_events["']/);
 
-    // The adapters themselves are untouched this phase (deleting them is a
-    // separate SAFE_DELETE gated on zero importers); only the live routes
-    // that could reach them were retired.
-    assert.doesNotMatch(stripeAdapter, /constructWebhookEvent/);
-    assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
-    assert.match(cashfreeAdapter, /x-webhook-timestamp/);
-    assert.match(cashfreeAdapter, /x-webhook-signature/);
+    // That SAFE_DELETE has since happened (D-16, phase F-INFRA-2), so the adapters are no longer
+    // read here at all — their absence is asserted once, below.
+});
+
+test('the retired Stripe/PayPal/Cashfree adapters are gone, not merely unreachable (D-16, DEL-R2 SAFE_DELETE)', () => {
+    // Phase M1 cut the live routes that could reach these rails and left the adapters in place,
+    // recording that deleting them was "a separate SAFE_DELETE gated on zero importers". F-INFRA-1
+    // measured that gate at zero and the owner authorised the delete (D-16). Unreachable code that
+    // still compiles is one import away from being reachable again, and these 29 type errors were
+    // also cancelling the typecheck of every package downstream of @letbuyy/infrastructure —
+    // including the gateway.
+    for (const path of RETIRED_ADAPTER_PATHS) {
+        assert.ok(!repositoryPathExists(path), `${path} must not exist: it was SAFE_DELETEd under D-16`);
+    }
+
+    // The package surface must not offer them either. A subpath export or a barrel re-export that
+    // outlives the file is a broken specifier at best and a resurrection target at worst.
+    const infrastructurePackage = repositorySource('packages/infrastructure/package.json');
+    const infrastructureBarrel = repositorySource('packages/infrastructure/src/index.ts');
+    for (const rail of ['stripe', 'paypal', 'cashfree']) {
+        assert.ok(
+            !infrastructurePackage.includes(`${rail}-adapter`),
+            `packages/infrastructure/package.json must not export ./${rail}-adapter`,
+        );
+        assert.ok(
+            !infrastructureBarrel.includes(`${rail}-adapter`),
+            `packages/infrastructure/src/index.ts must not re-export ${rail}-adapter`,
+        );
+    }
+
+    // The Stripe SDK entered the dependency tree only for the deleted adapter; nothing else imports
+    // it, so it leaves with it. A payment SDK nobody calls is pure supply-chain surface.
+    assert.doesNotMatch(
+        infrastructurePackage,
+        /"stripe"\s*:/,
+        'the stripe npm dependency existed only for the deleted adapter and must go with it',
+    );
+
+    // The canonical rails are untouched — this test proves a deletion, never an erosion.
+    assert.ok(repositoryPathExists('packages/infrastructure/razorpay-adapter/index.ts'));
+    assert.ok(repositoryPathExists('packages/infrastructure/cod-adapter/index.ts'));
 });
 
 test('payment provider adapters implement the unified payments contract', () => {
     const razorpayAdapter = repositorySource('packages/infrastructure/razorpay-adapter/index.ts');
-    const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
-    const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
-    const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
     const codAdapter = repositorySource('packages/infrastructure/cod-adapter/index.ts');
 
     assert.match(razorpayAdapter, /createRazorpayPaymentProvider/);
@@ -144,14 +185,9 @@ test('payment provider adapters implement the unified payments contract', () => 
     assert.match(razorpayAdapter, /webhookVerify/);
     assert.match(razorpayAdapter, /hmacSha256Hex\(credentials\.keySecret,\s*`\$\{input\.providerOrderId\}\|\$\{input\.providerPaymentId\}`/);
 
-    assert.match(stripeAdapter, /createStripePaymentProvider/);
-    assert.match(paypalAdapter, /createPayPalPaymentProvider/);
-    assert.match(cashfreeAdapter, /createCashfreePaymentProvider/);
-    assert.match(cashfreeAdapter, /x-client-id/);
-    assert.match(cashfreeAdapter, /payment_session_id/);
-    assert.doesNotMatch(cashfreeAdapter, /scaffolded|cashfreeUnavailable/);
-
-    for (const adapter of [stripeAdapter, paypalAdapter, cashfreeAdapter, codAdapter]) {
+    // Only the two CANONICAL rails have adapters now (D-16). The contract this test names is the
+    // one they implement; a retired rail cannot implement it because it does not exist.
+    for (const adapter of [codAdapter]) {
         assert.match(adapter, /PaymentProvider/);
         assert.match(adapter, /createIntent/);
         assert.match(adapter, /verify/);
