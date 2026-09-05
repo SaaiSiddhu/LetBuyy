@@ -8,11 +8,19 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const storefrontPath = join(testDir, '../../services/api-gateway/src/routes/storefront.ts');
 const publicRoutesPath = join(testDir, '../../services/api-gateway/src/routes/storefront/public-routes.ts');
 const extractedPath = join(testDir, '../../services/api-gateway/src/routes/storefront/customer-engagement-routes.ts');
+// ROUTE-1 (2026-09-05): the address book moved to its own module because
+// customer-engagement-routes.ts hit exactly 1500 lines against a `<= 1500` validator. This test
+// caught that move, which is the guard working — the band is defined across two files now, so the
+// band source is their concatenation IN REGISTRATION ORDER. That order is not assumed: a test below
+// asserts the address module is registered after the last inline route, which is what makes
+// concatenating engagement-then-address a faithful model of what Hono actually sees.
+const addressRoutesPath = join(testDir, '../../services/api-gateway/src/routes/storefront/customer-address-routes.ts');
 
 const storefrontSource = readFileSync(storefrontPath, 'utf8');
 const publicRoutesSource = existsSync(publicRoutesPath) ? readFileSync(publicRoutesPath, 'utf8') : '';
 const extractedSource = existsSync(extractedPath) ? readFileSync(extractedPath, 'utf8') : '';
-const routeBandSource = extractedSource || storefrontSource;
+const addressRoutesSource = existsSync(addressRoutesPath) ? readFileSync(addressRoutesPath, 'utf8') : '';
+const routeBandSource = (extractedSource || storefrontSource) + addressRoutesSource;
 const registrationHostSource = publicRoutesSource || storefrontSource;
 
 const expectedRoutes = [
@@ -88,4 +96,55 @@ test('storefront customer engagement band stays after page routes and before blo
     assert.notEqual(bandIndex, -1, 'customer engagement band should be inline or registered');
     assert.ok(beforeIndex < bandIndex, 'customer engagement band should stay after page routes');
     assert.ok(bandIndex < afterIndex, 'customer engagement band should stay before blog routes');
+});
+
+// ROUTE-1: an extracted module is only real if something registers it. Routes can sit in a file that
+// no one calls — they would still satisfy every "route exists" assertion above while being
+// unreachable at runtime, which is the specific way an extraction goes wrong.
+test('the extracted address module is registered, and registered last', () => {
+    assert.ok(
+        existsSync(addressRoutesPath),
+        'customer-address-routes.ts should exist once the address band is extracted',
+    );
+
+    const callIndex = extractedSource.indexOf('registerCustomerAddressRoutes(router');
+    assert.notEqual(callIndex, -1, 'customer-engagement-routes.ts must call registerCustomerAddressRoutes');
+
+    assert.ok(
+        extractedSource.includes("from './customer-address-routes'"),
+        'the module must be imported, not merely named',
+    );
+
+    // Registration order is what makes concatenating the two sources a faithful band. Every inline
+    // router.* call in the engagement file must come before the address module's registration.
+    const lastInlineRoute = extractedSource.lastIndexOf('router.');
+    assert.ok(
+        callIndex >= lastInlineRoute - 'registerCustomerAddressRoutes('.length,
+        'registerCustomerAddressRoutes must be the final registration in the band',
+    );
+});
+
+// ROUTE-1: the extraction injects normalizeEmail and getVerifiedStoreCustomer rather than copying
+// them. getVerifiedStoreCustomer is the check binding a session to THIS store and THIS customer; a
+// second copy of a tenant-isolation check is a second one to get wrong, and the two would drift in
+// silence because nothing compares them.
+test('the address module injects its shared helpers instead of re-declaring them', () => {
+    if (!existsSync(addressRoutesPath)) return;
+
+    for (const helper of ['normalizeEmail', 'getVerifiedStoreCustomer']) {
+        assert.ok(
+            addressRoutesSource.includes(helper),
+            `${helper} should be used by the address routes`,
+        );
+        // A local definition — `function x(`, `const x =`, `async function x(` — is the failure.
+        // Destructuring it out of deps (`const { x } = deps`) is the intended shape and is not a
+        // definition, so the patterns below are anchored to declaration syntax only.
+        const declares = new RegExp(
+            `(?:async\\s+)?function\\s+${helper}\\s*\\(|const\\s+${helper}\\s*(?::[^=]+)?=\\s*(?:async\\s*)?\\(`,
+        );
+        assert.ok(
+            !declares.test(addressRoutesSource),
+            `${helper} must be injected, never re-declared in customer-address-routes.ts`,
+        );
+    }
 });

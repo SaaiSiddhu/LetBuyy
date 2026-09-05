@@ -12,6 +12,7 @@ import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { issueCustomerSession, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, LETBUYY_CUSTOMER_SESSION_COOKIE } from '@letbuyy/auth-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { registerCustomerRegistrationRoute } from './customer-registration';
+import { registerCustomerAddressRoutes } from './customer-address-routes';
 
 export type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
@@ -79,7 +80,7 @@ export type StoreCustomerAuthRow = {
     updated_at?: string | null;
 };
 
-type VerifiedStoreCustomer = { id: string; store_id: string; email: string };
+export type VerifiedStoreCustomer = { id: string; store_id: string; email: string };
 
 type CustomerProfileBody = {
     customer_id?: string;
@@ -89,7 +90,7 @@ type CustomerProfileBody = {
     accepts_marketing?: boolean;
 };
 
-type CustomerAddressBody = {
+export type CustomerAddressBody = {
     customer_id?: string;
     store_id?: string;
     customer_email?: string;
@@ -1345,156 +1346,10 @@ export function registerStorefrontCustomerEngagementRoutes(
         }), 201);
     });
 
-    router.get('/customer/addresses', async (c) => {
-        const storeId = c.req.query('store_id');
-        const customerId = getCustomerSession(c)?.customerId || c.req.query('customer_id');
-
-        if (!customerId || !storeId) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id and store_id are required' } }, 400);
-        }
-
-        const customer = await getVerifiedStoreCustomer(c, storeId, customerId);
-        if (!customer) {
-            return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
-        }
-
-        const db = getSupabaseAdmin(c);
-        const { data, error } = await db
-            .from('customer_addresses')
-            .select('*')
-            .eq('store_id', storeId)
-            .eq('customer_email', normalizeEmail(customer.email))
-            .order('is_default', { ascending: false })
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        return c.json(success({ addresses: data || [] }));
-    });
-
-    router.post('/customer/addresses', async (c) => {
-        const body = await c.req.json() as CustomerAddressBody;
-
-        if (!body.customer_id || !body.store_id || !body.customer_email || !body.full_name || !body.address_line1 || !body.city || !body.state || !body.postal_code) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Required address fields missing' } }, 400);
-        }
-
-        const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
-        if (!customer) {
-            return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
-        }
-
-        const db = getSupabaseAdmin(c);
-        const customerEmail = normalizeEmail(customer.email);
-        if (body.is_default) {
-            await db
-                .from('customer_addresses')
-                .update({ is_default: false })
-                .eq('store_id', body.store_id)
-                .eq('customer_email', customerEmail);
-        }
-
-        const { data, error } = await db
-            .from('customer_addresses')
-            .insert({
-                store_id: body.store_id,
-                customer_email: customerEmail,
-                customer_phone: body.customer_phone || null,
-                label: body.label || 'home',
-                full_name: body.full_name,
-                address_line1: body.address_line1,
-                address_line2: body.address_line2 || null,
-                city: body.city,
-                state: body.state,
-                postal_code: body.postal_code,
-                country: body.country || 'IN',
-                landmark: body.landmark || null,
-                is_default: Boolean(body.is_default),
-            })
-            .select()
-            .single();
-
-        if (error) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        return c.json(success({ address: data }), 201);
-    });
-
-    router.patch('/customer/addresses/:id', async (c) => {
-        const addressId = c.req.param('id');
-        const body = await c.req.json() as CustomerAddressBody;
-
-        if (!body.customer_id || !body.store_id || !body.customer_email) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and customer_email are required' } }, 400);
-        }
-
-        const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
-        if (!customer) {
-            return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
-        }
-
-        const db = getSupabaseAdmin(c);
-        const customerEmail = normalizeEmail(customer.email);
-        if (body.is_default) {
-            await db
-                .from('customer_addresses')
-                .update({ is_default: false })
-                .eq('store_id', body.store_id)
-                .eq('customer_email', customerEmail);
-        }
-
-        const allowed = ['label', 'full_name', 'address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country', 'landmark', 'is_default'];
-        const updates: Record<string, unknown> = {};
-        for (const key of allowed) {
-            const value = body[key as keyof CustomerAddressBody];
-            if (value !== undefined) updates[key] = value;
-        }
-
-        const { data, error } = await db
-            .from('customer_addresses')
-            .update(updates)
-            .eq('id', addressId)
-            .eq('store_id', body.store_id)
-            .eq('customer_email', customerEmail)
-            .select()
-            .single();
-
-        if (error) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        return c.json(success({ address: data }));
-    });
-
-    router.delete('/customer/addresses/:id', async (c) => {
-        const addressId = c.req.param('id');
-        const body = await c.req.json() as CustomerAddressBody;
-
-        if (!body.customer_id || !body.store_id || !body.customer_email) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and customer_email are required' } }, 400);
-        }
-
-        const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
-        if (!customer) {
-            return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
-        }
-
-        const db = getSupabaseAdmin(c);
-        const { error } = await db
-            .from('customer_addresses')
-            .delete()
-            .eq('id', addressId)
-            .eq('store_id', body.store_id)
-            .eq('customer_email', normalizeEmail(customer.email));
-
-        if (error) {
-            return c.json(dbFailureBody(), 500);
-        }
-
-        return c.json(success({ deleted: true }));
-    });
+    // ROUTE-1: the address book lives in its own module. Both helpers are INJECTED, never copied.
+    // normalizeEmail because two definitions of what an email is, is how two files start disagreeing;
+    // getVerifiedStoreCustomer because it is the check binding a session to this store AND this
+    // customer, and a second copy of a tenant-isolation check is a second copy to get wrong.
+    registerCustomerAddressRoutes(router, { normalizeEmail, getVerifiedStoreCustomer });
 
 }
