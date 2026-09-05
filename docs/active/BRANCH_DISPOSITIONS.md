@@ -2,7 +2,10 @@
 
 Authority: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` > root `AGENTS.md` > this ledger.
 Operating rules: `.claude/skills/letbuyy/references/merge.md` (rows, claims, worktree lifecycle) and
-`references/promote.md` (the `## Promotions` table). Enforced by
+`references/promote.md` (the `
+| `letbuyy/ban1-marketplace-banners` | `PENDING` | ACTIVE | 2026-09-05 | CAP-FB-BANNERS (this phase) | Phase CAP-FB-BANNERS, fifth of **D-9**'s areas. **The register mis-describes it and the gap is real.** The backlog calls this "home merchandising slots", which reads as merchant-owned per-store merchandising; the actual System A implementation (`packages/dart/marketplace_services/.../banner_provider.dart`) reads a **flat global** Firestore `banners` collection with `orderBy('priority')` and **no owner filter of any kind** — these are platform-curated marketplace home banners, not per-merchant slots, so the canonical table is **platform-scoped with no `site_id`**, like `mobile_app_releases` (227) and unlike every tenant table. Nothing canonical covers it: `app_featured_placements` (migration 100) is keyed by `app_id`/`developer_id` and belongs to the **frozen app marketplace** — the same false-positive shape that `app_versions` had in CAP-FB-APPUPDATE — and the `promotion_*` family is discount rules, not merchandising imagery. The client also **writes** banners directly to Firestore (`createBannerWithFile`, `updateBanner`, `deleteBanner`, `toggleBannerStatus`), so the canonical form is an operator-realm API, mirroring `operations/marketplace-categories.ts` — itself an operator-curated global list on `review:view` / `review:decide`. Scope: migration 228 + a public read + the operator CRUD; **no image uploader** (the table takes a URL; the media pipeline is out of scope) and **no `admin_web` screen** (a separate UI phase, as CAP-ADM-1 was to CAP-ADM-2). |
+
+## Promotions` table). Enforced by
 `scripts/validators/branch-dispositions-validator.mjs` (gate lane).
 
 ## Claim protocol
