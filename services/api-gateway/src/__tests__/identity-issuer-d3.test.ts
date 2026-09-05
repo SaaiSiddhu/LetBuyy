@@ -43,7 +43,15 @@ test('D3 identity app issues merchant session tokens before gateway persistence'
     assert.match(identityIssuedSession, /new SignJWT/);
     assert.match(identityIssuedSession, /setAudience\(MERCHANT_SESSION_AUDIENCE\)/);
     assert.match(identityIssuedSession, /setProtectedHeader\(\{[\s\S]*alg,[\s\S]*typ: 'JWT'/);
-    assert.doesNotMatch(identityIssuedSession, /HS256/);
+    // BUYER-2 (2026-09-05): match CODE, not prose. This asserted the source never contains the
+    // string HS256 anywhere, which cannot tell a use from a mention — it fired on a comment
+    // explaining WHY HS256 is forbidden here, i.e. on exactly the documentation the rule wants to
+    // exist. Comments and strings are stripped first, so the assertion means what it always claimed
+    // to: this issuer never signs with a symmetric algorithm.
+    const identityIssuedSessionCode = identityIssuedSession
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/(^|[^:])\/\/.*$/gm, '$1');
+    assert.doesNotMatch(identityIssuedSessionCode, /HS256/);
 });
 
 test('D3 gateway production path is verify/store-only for merchant sessions', () => {
