@@ -2,7 +2,36 @@ import { createLocalJWKSet, jwtVerify, type JSONWebKeySet } from 'jose';
 import type { Env } from '../index';
 
 const MERCHANT_SESSION_AUDIENCE = 'letbuyy:merchant-session';
+// D-8 (2026-09-05): the marketplace buyer realm. A DISTINCT audience is what makes cross-realm
+// acceptance impossible rather than merely unlikely.
+const BUYER_SESSION_AUDIENCE = 'letbuyy:buyer-session';
 const DEFAULT_IDENTITY_ISSUER = 'https://accounts.letbuyy.com';
+
+/// What distinguishes one realm's session from another's. Everything else about verification is
+/// identical, which is exactly why this is parameterised rather than copied: a second 100-line
+/// verifier would drift from the first, and a verifier that has drifted is one that accepts
+/// something it should not. The label exists only so a rejection reason names the realm the caller
+/// actually asked about.
+interface SessionRealmContract {
+    readonly realm: string;
+    readonly tokenUse: string;
+    readonly audience: string;
+    readonly label: string;
+}
+
+const MERCHANT_REALM: SessionRealmContract = {
+    realm: 'merchant',
+    tokenUse: 'merchant_session',
+    audience: MERCHANT_SESSION_AUDIENCE,
+    label: 'merchant session',
+};
+
+const BUYER_REALM: SessionRealmContract = {
+    realm: 'buyer',
+    tokenUse: 'buyer_session',
+    audience: BUYER_SESSION_AUDIENCE,
+    label: 'buyer session',
+};
 
 function decodeBase64UrlJson(value: string): Record<string, unknown> | null {
     try {
@@ -39,13 +68,16 @@ function parseIdentityPublicJwks(env: Env): JSONWebKeySet | null {
     return null;
 }
 
-export async function validateIdentityIssuedMerchantSessionToken(
+async function validateIdentityIssuedSessionToken(
     env: Env,
     token: string,
-    userId: string,
+    subject: string,
+    contract: SessionRealmContract,
 ): Promise<{ ok: boolean; reason?: string }> {
+    const { label } = contract;
+
     if (token.length > 4096 || token.split('.').length !== 3 || !/^[A-Za-z0-9._~-]+$/.test(token)) {
-        return { ok: false, reason: 'merchant session token is malformed' };
+        return { ok: false, reason: `${label} token is malformed` };
     }
 
     const [encodedHeader, encodedPayload] = token.split('.');
@@ -53,26 +85,26 @@ export async function validateIdentityIssuedMerchantSessionToken(
     const payload = decodeBase64UrlJson(encodedPayload);
     const nowSeconds = Math.floor(Date.now() / 1000);
 
-    if (!header || !payload) return { ok: false, reason: 'merchant session token is malformed' };
+    if (!header || !payload) return { ok: false, reason: `${label} token is malformed` };
     if (header.alg !== 'ES256' && header.alg !== 'EdDSA') {
-        return { ok: false, reason: 'merchant session token must use an asymmetric algorithm' };
+        return { ok: false, reason: `${label} token must use an asymmetric algorithm` };
     }
-    if (payload.sub !== userId) return { ok: false, reason: 'merchant session subject mismatch' };
-    if (payload.aud !== MERCHANT_SESSION_AUDIENCE) return { ok: false, reason: 'merchant session audience mismatch' };
-    if (payload.realm !== 'merchant' || payload.token_use !== 'merchant_session') {
-        return { ok: false, reason: 'merchant session token use mismatch' };
+    if (payload.sub !== subject) return { ok: false, reason: `${label} subject mismatch` };
+    if (payload.aud !== contract.audience) return { ok: false, reason: `${label} audience mismatch` };
+    if (payload.realm !== contract.realm || payload.token_use !== contract.tokenUse) {
+        return { ok: false, reason: `${label} token use mismatch` };
     }
     if (payload.iss !== identityIssuer(env)) {
-        return { ok: false, reason: 'merchant session issuer mismatch' };
+        return { ok: false, reason: `${label} issuer mismatch` };
     }
     if (typeof payload.exp !== 'number' || payload.exp <= nowSeconds) {
-        return { ok: false, reason: 'merchant session token is expired' };
+        return { ok: false, reason: `${label} token is expired` };
     }
     if (typeof payload.iat !== 'number' || payload.iat > nowSeconds + 60) {
-        return { ok: false, reason: 'merchant session token issue time is invalid' };
+        return { ok: false, reason: `${label} token issue time is invalid` };
     }
     if (typeof payload.jti !== 'string' || payload.jti.length < 16) {
-        return { ok: false, reason: 'merchant session replay id is missing' };
+        return { ok: false, reason: `${label} replay id is missing` };
     }
 
     const jwks = parseIdentityPublicJwks(env);
@@ -86,24 +118,56 @@ export async function validateIdentityIssuedMerchantSessionToken(
             createLocalJWKSet(jwks),
             {
                 issuer: identityIssuer(env),
-                audience: MERCHANT_SESSION_AUDIENCE,
+                audience: contract.audience,
                 algorithms: ['ES256', 'EdDSA'],
-                subject: userId,
+                subject,
             },
         );
 
         if (protectedHeader.alg !== 'ES256' && protectedHeader.alg !== 'EdDSA') {
-            return { ok: false, reason: 'merchant session token must use an asymmetric algorithm' };
+            return { ok: false, reason: `${label} token must use an asymmetric algorithm` };
         }
-        if (verifiedPayload.realm !== 'merchant' || verifiedPayload.token_use !== 'merchant_session') {
-            return { ok: false, reason: 'merchant session token use mismatch' };
+        // Re-checked on the VERIFIED payload, not the pre-parse above. The pre-parse reads an
+        // unverified token and exists only to reject cheaply; trusting it for realm separation would
+        // mean the claim deciding which realm a caller belongs to was never authenticated.
+        //
+        // HONESTLY: for a well-formed JWT these two payloads are the same bytes, so the pre-parse
+        // check above already rejects anything this would catch, and NO TEST CAN REACH THIS LINE.
+        // Verified by planting its removal — all seven buyer tests still passed. It is kept anyway,
+        // because its value is surviving a future change that relaxes or reorders the cheap
+        // pre-parse, at which point this becomes the only realm check left. Do not "cover" it with
+        // an assertion that cannot fail; an unfalsifiable test here would be worse than none, since
+        // it would claim the separation is proven when the proof is the audience check.
+        if (verifiedPayload.realm !== contract.realm || verifiedPayload.token_use !== contract.tokenUse) {
+            return { ok: false, reason: `${label} token use mismatch` };
         }
         if (typeof verifiedPayload.jti !== 'string' || verifiedPayload.jti.length < 16) {
-            return { ok: false, reason: 'merchant session replay id is missing' };
+            return { ok: false, reason: `${label} replay id is missing` };
         }
     } catch {
-        return { ok: false, reason: 'merchant session signature verification failed' };
+        return { ok: false, reason: `${label} signature verification failed` };
     }
 
     return { ok: true };
+}
+
+export async function validateIdentityIssuedMerchantSessionToken(
+    env: Env,
+    token: string,
+    userId: string,
+): Promise<{ ok: boolean; reason?: string }> {
+    return validateIdentityIssuedSessionToken(env, token, userId, MERCHANT_REALM);
+}
+
+/// Verifies a marketplace buyer session (D-8). `buyerAccountId` is a buyer_accounts.id.
+///
+/// Buyer auth must never grant merchant or operator rights, and the separation is not a convention
+/// here: a merchant token fails the audience check, and would fail realm and token_use even if the
+/// audience somehow matched.
+export async function validateIdentityIssuedBuyerSessionToken(
+    env: Env,
+    token: string,
+    buyerAccountId: string,
+): Promise<{ ok: boolean; reason?: string }> {
+    return validateIdentityIssuedSessionToken(env, token, buyerAccountId, BUYER_REALM);
 }
