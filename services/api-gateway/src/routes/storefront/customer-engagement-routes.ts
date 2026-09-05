@@ -13,6 +13,7 @@ import { issueCustomerSession, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, LET
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { registerCustomerRegistrationRoute } from './customer-registration';
 import { registerCustomerAddressRoutes } from './customer-address-routes';
+import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-account-routes';
 
 export type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
@@ -1351,5 +1352,29 @@ export function registerStorefrontCustomerEngagementRoutes(
     // getVerifiedStoreCustomer because it is the check binding a session to this store AND this
     // customer, and a second copy of a tenant-isolation check is a second copy to get wrong.
     registerCustomerAddressRoutes(router, { normalizeEmail, getVerifiedStoreCustomer });
+
+    // BUYER-3 (D-8): the marketplace buyer realm's data operations. Registered here because this is
+    // where the storefront band is composed, but they share nothing with the per-store customer
+    // lifecycle above — a buyer is platform-level and carries no store_id at all.
+    registerBuyerAccountRoutes(router, {
+        normalizeEmail,
+        requireStorefrontInternal,
+        loadBuyerByEmail: async (c, email) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .eq('email', email)
+            .maybeSingle(),
+        insertBuyer: async (c, row) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .insert(row)
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .single(),
+        setBuyerPassword: async (c, id, passwordHash) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .update({ password_hash: passwordHash, status: 'active' })
+            .eq('id', id)
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .single(),
+    });
 
 }
