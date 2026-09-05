@@ -10,9 +10,9 @@
   "purpose": "Declare the expected Android applicationId and namespace for every native-Android Flutter app, in a file that is NOT generated from and does NOT live beside the Gradle files it governs. Changing a shipped identity now requires a reviewable diff to TWO files, not a silent edit to one. This exists because apps/admin_app/android/app/build.gradle.kts carried applicationId \"com.letbuyy.letbuyy\" — the customer app's shipped identity — undetected through Phase 0 and fourteen further phases, found only by a human diffing two files by hand. See docs/migration/repository_consolidation/27_android_gradle_resolution.md.",
   "honestyContract": [
     "com.letbuyy.letbuyy (customer_app) is a SHIPPED Play Store production identity. Its signingConfig references a real release keystore (apps/customer_app/android/key.properties, untracked, storeFile=key.jks). This is the one value in this file that cannot be changed and re-issued if it is ever lost or altered.",
-    "com.letbuyy.admin (admin_app) is NOT a shipped identity. Its release signingConfig points at debug.keystore (apps/admin_app/android/key.properties) — strong evidence it has never shipped a signed release. See docs/migration/00a_signing_key_rescue.md and admin_app's own README.md.",
+    "com.letbuyy.admin (admin_app) is a RETIRED identity, recorded under retiredApps below rather than apps. It was never a shipped identity: its release signingConfig pointed at debug.keystore. apps/admin_app's Flutter/Firestore implementation, including its whole android/ tree, was deleted in phase FB-1 (2026-09-05) under the owner's decision to retire Firebase completely, so there is no longer a Gradle file to check. The identity is kept on record so it can never be silently reused: the validator now fails if ANY tracked Gradle script in the repository declares a retired applicationId.",
     "com.letbuyy.store (merchant_app) is declared in Kotlin DSL (build.gradle.kts), not Groovy — this is the only one of the three apps that is. A check that assumes Groovy syntax will silently pass merchant_app while verifying nothing.",
-    "namespace and applicationId are independent Gradle/AGP concerns and may legitimately differ. admin_app's namespace is com.letbuyy.letbuyy (matching its real physical Kotlin source path at android/app/src/main/kotlin/com/letbuyy/letbuyy/) while its applicationId is com.letbuyy.admin. This is documented, intentional scaffolding leftover, not a defect — do not 'fix' it to match applicationId.",
+    "namespace and applicationId are independent Gradle/AGP concerns and may legitimately differ. This was recorded for admin_app, whose namespace was com.letbuyy.letbuyy while its applicationId was com.letbuyy.admin — documented scaffolding leftover, not a defect. That app's Gradle tree was deleted in FB-1; the principle is kept because it still governs the remaining apps and the next reader would otherwise 'fix' a legitimate divergence.",
     "This registry does not declare versionCode or versionName. Those change on every release by design; asserting an exact value here would need editing on every release cycle and would be a worse validator than none.",
     "This registry does not declare signingConfig key material or any keystore/key.properties content. The validator enforces only that no such file is TRACKED IN GIT (a path-level check) — it never reads, prints, diffs or hashes their contents. See the disclosed incident in docs/migration/repository_consolidation/27_android_gradle_resolution.md where a diff against a non-existent tracked counterpart printed a real keystore password."
   ],
@@ -27,16 +27,6 @@
       "googleServicesJson": "apps/customer_app/android/app/google-services.json",
       "measuredAt": "apps/customer_app/android/app/build.gradle:13,32 (HEAD ba0de035)"
     },
-    "admin_app": {
-      "gradleRoot": "apps/admin_app/android",
-      "buildScriptDialect": "groovy",
-      "applicationId": "com.letbuyy.admin",
-      "namespace": "com.letbuyy.letbuyy",
-      "shipped": false,
-      "shippedNote": "Never shipped a signed release — release signingConfig points at debug.keystore.",
-      "googleServicesJson": "apps/admin_app/android/app/google-services.json",
-      "measuredAt": "apps/admin_app/android/app/build.gradle:13,32 (HEAD ba0de035)"
-    },
     "merchant_app": {
       "gradleRoot": "apps/merchant_app/android",
       "buildScriptDialect": "kotlin",
@@ -46,6 +36,18 @@
       "shippedNote": "Uses a different, environment-variable-driven signing setup (releaseKeystorePath in build.gradle.kts, no key.properties file at all — unlike customer_app/admin_app). Shipped status was NOT determined this phase; recorded honestly as unknown rather than guessed. Out of Phase S's scope beyond recording the currently-declared applicationId/namespace.",
       "googleServicesJson": null,
       "measuredAt": "apps/merchant_app/android/app/build.gradle.kts:37,53 (HEAD ba0de035)"
+    }
+  },
+  "retiredApps": {
+    "admin_app": {
+      "applicationId": "com.letbuyy.admin",
+      "namespace": "com.letbuyy.letbuyy",
+      "shipped": false,
+      "retiredOn": "2026-09-05",
+      "retiredBy": "Phase FB-1 — Firebase retirement (owner decision 2026-09-05)",
+      "retiredReason": "apps/admin_app was 100% Firestore-backed with no canonical gateway client, and had never shipped a signed release (its release signingConfig pointed at debug.keystore). Its source, including the entire android/ tree and google-services.json, was deleted and the root reduced to the RESERVED manifest-only shape. See apps/admin_app/AGENTS.md.",
+      "lastMeasuredAt": "apps/admin_app/android/app/build.gradle:13,32 (HEAD ba0de035)",
+      "enforcement": "No tracked build.gradle or build.gradle.kts anywhere in this repository may declare this applicationId. Reusing a retired identity for a different app would silently ship one product under another's Play Store listing."
     }
   }
 }

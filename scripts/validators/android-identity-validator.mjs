@@ -26,6 +26,16 @@ import {
  * file. Phase R disclosed a real incident where a diff against a
  * non-existent tracked counterpart printed a live signing password --
  * every check here is an existence/path assertion only.
+ *
+ * Retired identities (registry.retiredApps, added by phase FB-1, 2026-09-05):
+ * an applicationId whose app has been deleted is NOT checked against a Gradle
+ * file -- there is no longer one to read. It is instead checked in the opposite
+ * direction: no tracked Gradle script anywhere in the repository may declare
+ * it. A retired applicationId is not a free name. Reusing com.letbuyy.admin
+ * for some later app would publish that app under the retired listing's
+ * identity, which is the same class of defect as the Phase R incident this
+ * validator was written for -- one app silently carrying another's identity --
+ * only in the reverse direction, and no other check would catch it.
  */
 
 const reporter = createReporter("Android identity validator");
@@ -130,6 +140,27 @@ if (!registry || typeof registry.apps !== "object" || registry.apps === null) {
   }
 }
 
+// --- retired applicationIds must not reappear in ANY tracked Gradle script ---
+const retiredApps = registry?.retiredApps ?? {};
+const retiredIds = new Map(
+  Object.entries(retiredApps)
+    .map(([name, entry]) => [entry?.applicationId, name])
+    .filter(([id]) => typeof id === "string" && id.length > 0),
+);
+if (retiredIds.size > 0) {
+  const gradleScripts = getTrackedFiles().filter((file) => /(^|\/)build\.gradle(\.kts)?$/.test(file));
+  for (const file of gradleScripts) {
+    const text = readFile(file);
+    const declaredId = text.match(dialectPatterns.kotlin.applicationId)?.[1]
+      ?? text.match(dialectPatterns.groovy.applicationId)?.[1];
+    if (declaredId && retiredIds.has(declaredId)) {
+      offenders.push(
+        `${file}: declares applicationId '${declaredId}', which ${registryPath} records as RETIRED (was ${retiredIds.get(declaredId)}, retired ${retiredApps[retiredIds.get(declaredId)]?.retiredOn ?? "unknown date"}). A retired identity must never be reused -- it would ship this app under the retired app's store listing.`,
+      );
+    }
+  }
+}
+
 // --- keystore / key.properties must never be tracked in git -- path-only, content never read ---
 const keystorePattern = /\.jks$|\.keystore$|(^|\/)key\.properties$/;
 const trackedKeystoreFiles = getTrackedFiles().filter((file) => keystorePattern.test(file));
@@ -141,4 +172,4 @@ reporter.assert(
   offenders.length === 0,
   `Android identity drift or hazard detected:\n${offenders.join("\n")}`,
 );
-reporter.finish("Android applicationId/namespace, duplicate build scripts, and keystore tracking checked");
+reporter.finish("Android applicationId/namespace, duplicate build scripts, retired-identity reuse, and keystore tracking checked");
