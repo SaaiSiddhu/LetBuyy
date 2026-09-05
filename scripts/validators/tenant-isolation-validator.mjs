@@ -138,6 +138,15 @@ for (const file of sourceFiles()) {
     );
     if (ownerScoped) continue;
 
+    // An INSERT or UPSERT that NAMES its owner in the payload has no scope to bypass: it writes the
+    // row it names rather than selecting rows it was not entitled to. The runtime guard agrees —
+    // probing it shows an insert passes while an unscoped SELECT on the same table is refused — so
+    // flagging this would report a write as if it were an unscoped read. Both halves are required:
+    // a write, AND the owner column present as a payload key.
+    const writesOwnedRow = /\.(insert|upsert)\s*\(/.test(statement)
+      && (entry.ownerColumns || []).some((column) => new RegExp(`\\b${column}\\s*:`).test(statement));
+    if (writesOwnedRow) continue;
+
     const line = source.slice(0, match.index).split('\n').length;
     violations.push(`${file}:${line} ${table} bypasses guarded tenantScoped/service client`);
   }
