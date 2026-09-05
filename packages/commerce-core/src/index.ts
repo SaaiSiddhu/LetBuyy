@@ -93,6 +93,14 @@ export const UpdateProductSchema = z.object({
   is_active: z.boolean().optional(),
   is_featured: z.boolean().optional(),
   display_order: z.number().int().min(0).optional(),
+  // CAP-FB-SHIPPING-PRODUCT (D-9): which of the site's shipping profiles this product uses. NULL
+  // means "the site default", which is how every product behaved before the column existed.
+  //
+  // A caller can name any uuid here and no application code checks whose profile it is — that check
+  // is a COMPOSITE FOREIGN KEY in migration 226, (shipping_profile_id, site_id) referencing
+  // shipping_profiles (id, site_id). Another merchant's profile is rejected by the database, so this
+  // schema deliberately validates only the shape.
+  shipping_profile_id: UuidSchema.optional().nullable(),
   version: z.number().int().positive('Version is required').optional(),
 });
 
@@ -625,6 +633,9 @@ export const PRODUCT_UPDATE_FIELDS = [
   'seo_title',
   'seo_description',
   'charge_tax',
+  // CAP-FB-SHIPPING-PRODUCT (D-9). This allowlist is a SECOND gate after UpdateProductSchema: a field
+  // the schema accepts but this list omits is silently dropped, so both must be updated together.
+  'shipping_profile_id',
   'is_active',
   'is_featured',
   'tags',
