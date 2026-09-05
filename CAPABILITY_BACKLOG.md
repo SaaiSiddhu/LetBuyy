@@ -137,3 +137,62 @@ choice is made against the real list rather than an impression of it.
 | CAP-FB-SHIPPING-PRODUCT | OPEN — per-product delivery estimates; blocks `delivery_info_widget.dart` |
 | CAP-FB-BANNERS | OPEN — home merchandising slots |
 | CAP-FB-APPUPDATE | OPEN — forced-update gating |
+
+## CAP-FB-BUYER-IDENTITY — the marketplace has no buyer account (BLOCKING, owner decision required)
+
+**Opened by phase FB-3, 2026-09-05. This is an identity-model question, which Constitution
+§"Never decide alone" reserves to the owner and the ARB — no phase may resolve it.**
+
+**Measured at `develop` `79c65a7e`:**
+
+| Realm | Table | Scope | Evidence |
+|---|---|---|---|
+| Merchant / operator | `users_custom` | **platform-level**, one account per person | `000_baseline.sql` — columns are `id, email, password_hash, auth_provider, …`; **no `store_id` column at all** |
+| Customer / buyer | `store_customers` + `customer_credentials` | **per store** | `store_customers_store_id_email_key UNIQUE (store_id, email)`; `customer_credentials_store_id_email_or_phone_key UNIQUE (store_id, email_or_phone)` |
+| Marketplace buyer | — | **does not exist** | `grep -ilE 'platform_customer\|marketplace_customer\|global_customer\|buyer_account'` over every migration returns **nothing**. Migration `217_marketplace_channel_listings.sql` mentions neither `customer` nor `buyer`. |
+
+**The contradiction.** Every canonical customer route requires `store_id` — `/storefront/customer/login`,
+`/register`, `/password/request-reset`, `/password/confirm-reset` all reject with
+`VALIDATION: store_id, email and password are required`. The customer session cookie is issued per
+store. But `apps/customer_app` is a **marketplace** client: its feed is cross-site by design (every
+`/storefront/marketplace/feed` row carries a `site_id`), and a shopper browses many sellers with one
+account, one cart and one order history.
+
+The same person shopping two sellers is, canonically, **two unrelated `store_customers` rows with two
+separate passwords**. There is no id that spans them. So there is no `store_id` a marketplace login
+could legitimately pass, and no way to migrate `customer_app`'s auth without inventing one.
+
+**Why FB-3 stopped rather than working around it.** The three available workarounds are all worse
+than the blocker:
+
+1. *Pick a sentinel `store_id` for "the marketplace."* That invents a fake tenant in the column that
+   **is** the tenant boundary (`site_id`), directly against the Constitution's tenancy invariants.
+2. *Log the buyer in per seller.* Technically canonical, but it is a different product — a shopper
+   would hold a separate password per seller they ever bought from.
+3. *Reuse `users_custom` for buyers.* That merges the buyer realm into the merchant/operator realm,
+   which `ART-05`/`SEC-R7` exist to keep strictly separated — buyer auth must never grant merchant
+   rights.
+
+**The decision the owner has to make**: does LetBuyy's marketplace channel have a platform-level buyer
+identity (a new realm, issued by `identity-platform`, linked to per-store `store_customers` rows), or
+does the marketplace channel not carry accounts at all? Everything downstream of `customer_app`'s auth
+— cart, orders, wishlist, addresses, loyalty — inherits the answer.
+
+**Also measured and recorded while here** (smaller, and subordinate to the above):
+
+- `packages/dart/api_client` has **no customer-auth methods** — `customerLogin`, `customerRegister`,
+  `customerProfile`, `customerSession` all return zero grep hits. The client contract for
+  `/storefront/customer/*` does not exist and was deliberately NOT built this phase: its signature
+  depends on the answer above (whether `store_id` is a parameter at all).
+- **No Google/OAuth route exists on the canonical customer surface** —
+  `grep -iE 'google.?(oauth|sign|auth)'` under `services/api-gateway/src/routes/storefront` returns
+  nothing — so `signInWithGoogle` (2 call sites) has no canonical equivalent. **CAP-FB-OAUTH, OPEN.**
+- **Auth cannot migrate ahead of data.** 17 of the 24 files reading `FirebaseAuth.instance.currentUser`
+  also query Firestore: they read the uid *to key a Firestore query*. A canonical customer id is a
+  `store_customers` uuid and a Firebase uid is a different namespace, so swapping the identity source
+  underneath would key those queries by an id matching no document — every signed-in user silently
+  sees an empty screen, with no compile error and no analyze warning. The FB-1 sequencing note
+  (FB-2 data → FB-3 auth → FB-4 core) is corrected: **auth and data must move together per screen**.
+- The canonical customer realm is minted **HS256** from `CUSTOMER_SESSION_SECRET`, so its verification
+  key is its forgery key — a known `ART-05` deviation to be collapsed onto the sole issuer, never
+  extended. Any resolution of CAP-FB-BUYER-IDENTITY should not replicate it.
