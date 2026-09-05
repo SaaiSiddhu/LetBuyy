@@ -16,6 +16,7 @@ import { getSupabaseAdmin } from '../../lib/supabase';
 import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-account-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
+import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerRealmRoutesDeps {
@@ -193,5 +194,21 @@ export function registerBuyerRealmRoutes(
                 .order('created_at', { ascending: false })
                 .limit(limit);
         },
+    });
+
+    // CAP-FB-APPUPDATE (D-9): the mobile release gate. Public and unauthenticated — it must answer
+    // for a build too old to log in. Registered here because this module already composes the
+    // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
+    // binary, so a release belongs to the platform.
+    registerMobileReleaseRoutes(router, {
+        loadLatestRelease: async (c, platform, applicationId) => getSupabaseAdmin(c)
+            .from('mobile_app_releases')
+            .select('build_number, version_name, minimum_supported_build, update_url, message')
+            .eq('platform', platform)
+            .eq('application_id', applicationId)
+            .eq('is_active', true)
+            .order('build_number', { ascending: false })
+            .limit(1)
+            .maybeSingle(),
     });
 }
