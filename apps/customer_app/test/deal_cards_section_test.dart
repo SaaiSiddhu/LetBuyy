@@ -100,6 +100,20 @@ void main() {
     test('a free item is 100% off, never more', () {
       expect(discountPercent(price: 0, comparePrice: 1000), 100);
     });
+
+    // These two isolate guards that the other cases cannot reach. Without them the earlier
+    // assertions all still pass while the function is broken for these inputs — checked by
+    // planting each guard's removal individually, not assumed.
+    test('a zero compare price never divides', () {
+      // (0 - -5) / 0 is Infinity, and Infinity.floor() throws rather than returning a number.
+      expect(discountPercent(price: -5, comparePrice: 0), 0);
+    });
+
+    test('a negative price is not a discount over 100%', () {
+      // Without the price guard this is (100 - -5) / 100 = 105%, clamped down to a confident
+      // "100% off" on a price that should not exist at all.
+      expect(discountPercent(price: -5, comparePrice: 100), 0);
+    });
   });
 
   group('DealCardsSection', () {

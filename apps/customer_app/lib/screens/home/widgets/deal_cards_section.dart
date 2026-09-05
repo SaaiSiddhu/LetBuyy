@@ -21,8 +21,17 @@ import 'package:letbuyy_marketplace/app/routes.dart';
 import '../../../data/marketplace_repository.dart';
 
 /// Percent off, derived from the canonical pair. Returns 0 whenever a discount cannot be
-/// established — no compare price, a compare price at or below the price, or either side missing.
-/// Never negative, never above 100.
+/// established, and is never negative or above 100.
+///
+/// The `comparePrice <= 0 || price < 0` guard is load-bearing and not defensive noise: a compare
+/// price of 0 makes the division Infinity, and `Infinity.floor()` THROWS rather than returning a
+/// number, so a single bad row would take down the whole section. A negative price would otherwise
+/// read as a confident "100% off" after clamping. Both are covered by their own tests, each
+/// observed failing with that guard removed.
+///
+/// `comparePrice <= price` is redundant with the clamp — an inverted pair already floors to a
+/// negative and clamps to 0 — and is kept only because it states the intent at the point of the
+/// check. Do not read it as the thing preventing negative output; the clamp is.
 int discountPercent({num? price, num? comparePrice}) {
   if (price == null || comparePrice == null) return 0;
   if (comparePrice <= 0 || price < 0) return 0;
