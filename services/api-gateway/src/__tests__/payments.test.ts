@@ -63,13 +63,21 @@ test('razorpay payment verification validates signatures before confirming payme
     assert.match(paymentSupportSource, /\.eq\('provider_payment_id',\s*params\.providerPaymentId\)/);
     assert.match(paymentSupportSource, /replay\.order_id && replay\.order_id !== params\.orderId/);
     assert.match(paymentSupportSource, /Payment already verified for another order/);
-    assert.match(paymentsSource, /await assertProviderPaymentNotReplayed\(db,\s*\{/);
+    // GW-1: the first argument is the CONTEXT, not a client. cfd1ad03 moved client construction
+    // inside assertProviderPaymentNotReplayed so it could use the unguarded service client — the
+    // replay question is "has this payment id been used by ANYONE", which the tenant query guard
+    // rejects outright on payment_transactions. Asserting the old `(db,` spelling made this test red
+    // while the protection itself was correct and wired.
+    assert.match(paymentsSource, /await assertProviderPaymentNotReplayed\(c,\s*\{/);
+    // ...and the reason it takes the context: it builds the UNGUARDED client itself. Without this the
+    // signature change above would look like a cosmetic rename.
+    assert.match(paymentSupportSource, /const db = getSupabaseAdminUnguarded\(c\);/);
     assert.match(paymentsSource, /paymentService\.confirmPayment\(\{/);
     assert.match(hardeningMigration, /CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_transactions_provider_payment_global/);
     assert.match(hardeningMigration, /ON public\.payment_transactions \(gateway, provider_payment_id\)/);
     assert.match(hardeningMigration, /WHERE provider_payment_id IS NOT NULL AND deleted_at IS NULL/);
     const bindingGuardIndex = paymentsSource.indexOf('if (!order.payment_id || order.payment_id !== body.razorpay_order_id)');
-    const replayGuardIndex = paymentsSource.indexOf('await assertProviderPaymentNotReplayed(db,');
+    const replayGuardIndex = paymentsSource.indexOf('await assertProviderPaymentNotReplayed(c,');
     const confirmAdapterIndex = paymentsSource.indexOf('const paymentService = new PaymentExecutionAdapter(db)', replayGuardIndex);
     assert.ok(bindingGuardIndex > -1);
     assert.ok(replayGuardIndex > bindingGuardIndex);

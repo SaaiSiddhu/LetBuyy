@@ -19,6 +19,33 @@ export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient 
 }
 
 /**
+ * The service-role client WITHOUT the tenant query guard.
+ *
+ * `getSupabaseAdmin` wraps every client in `createTenantGuardedSupabaseClient`, which refuses any
+ * query against a registered tenant table that carries no tenant/owner predicate. That guard is
+ * correct for ordinary work and must stay the default.
+ *
+ * It is wrong for exactly one shape: a BOOTSTRAP LOOKUP BY A GLOBALLY-UNIQUE EXTERNAL KEY, made
+ * before any tenant is known. The motivating case is cross-tenant payment-replay detection — asking
+ * "has this provider payment id ever been used, by anyone?". Adding a `site_id` predicate there
+ * would not fix a violation; it would silently narrow the question to "not replayed within this
+ * tenant" and delete the cross-tenant replay protection the check exists to provide.
+ *
+ * Conditions every call site must meet, and which
+ * `services/api-gateway/src/__tests__/unguarded-admin-client-contract.test.ts` enforces by
+ * allowlist — this is deliberately NOT a general-purpose escape hatch:
+ *   1. the lookup key is unique across the whole provider/platform, not per tenant;
+ *   2. no tenant is known yet, so no scope predicate could be supplied;
+ *   3. the query is bounded (`.limit(1)` / `.maybeSingle()`), so it cannot enumerate across tenants;
+ *   4. the result is re-verified before it is trusted, and is never authorization by itself.
+ *
+ * Anything that does not meet all four uses `getSupabaseAdmin`.
+ */
+export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return createSupabaseServiceClient(c.env);
+}
+
+/**
  * Create a Supabase client scoped to the authenticated user (respects RLS)
  */
 export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): SupabaseClient {
