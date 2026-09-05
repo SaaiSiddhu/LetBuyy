@@ -23,18 +23,22 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import test, { before } from 'node:test';
+import test, { after, before } from 'node:test';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER;
+const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
 const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_chk1_purchases';
-const SHARED_CONTAINER = 'letbuyy-executable-pg';
-const runnable = Boolean(containerName) && containerName !== SHARED_CONTAINER;
+const SHARED_DATABASE = 'letbuyy_executable';
+// TEST-1: the hazard this guards against is recreating the SHARED DATABASE, not sharing a container.
+// This suite builds its own database (letbuyy_chk1_purchases) and drops it again, so it is safe
+// alongside the shared one and runs in `pnpm run test:behavioral` like every other executable suite.
+// Refusing the shared CONTAINER — the inherited rule — meant these deterministic guards never ran in
+// CI at all, which is exactly how the duplicate-order defect CHK-0 fixed stayed hidden for weeks.
+const runnable = databaseName !== SHARED_DATABASE;
 const skip = runnable
-    ? false
-    : `needs a dedicated throwaway container (never ${SHARED_CONTAINER}); run: ` +
-      'docker run -d --name letbuyy-chk1-pg -e POSTGRES_PASSWORD=postgres postgres:16-alpine && ' +
-      'LETBUYY_EXECUTABLE_PG_CONTAINER=letbuyy-chk1-pg node --test tests/executable/purchase-parent-child-postgres.test.mjs';
+  ? false
+  : `refusing to recreate the shared database '${SHARED_DATABASE}'. This suite needs its own; ` +
+    'unset LETBUYY_EXECUTABLE_PG_DATABASE or point it at a private name.';
 
 const MIGRATION = 'database/supabase/migrations/219_purchase_parent_child_orders.sql';
 const ROLLBACK = 'database/supabase/rollback/219_purchase_parent_child_orders.rollback.sql';
@@ -153,6 +157,16 @@ SELECT set_config('app.site_id', ${sqlString(SITE_ID)}, true);
 SET LOCAL ROLE app_tenant;
 ${statement};
 ROLLBACK;`);
+
+// TEST-1: this suite runs inside the shared container now, so it must leave nothing behind.
+after(() => {
+  if (!runnable) return;
+  try {
+    psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`, 'postgres');
+  } catch {
+    // A cleanup failure must not fail an otherwise passing suite; the next run recreates it anyway.
+  }
+});
 
 before(() => {
     if (!runnable) return;
