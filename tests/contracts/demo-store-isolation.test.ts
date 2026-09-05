@@ -17,13 +17,63 @@ function read(path: string): string {
     return readFileSync(path, 'utf8');
 }
 
+// TEST-2: `methodName` must be followed by `(` — a real method signature — not just any character.
+// Both files this helper reads declare a short method name that is a literal prefix of a longer one
+// checked in the same loop (store-service.ts: getStoreBySubdomain / getStoreBySubdomainAnyStatus).
+// A plain `indexOf('async ' + methodName)` would match the START of the longer method's declaration
+// too, and today it happens to return the right body only because the shorter name is declared
+// first in the file — an accident of ordering, not a guarantee. Reordering the two methods would
+// make this test silently inspect the wrong one and could pass even if the real short-named method
+// contained the exact demo-fixture short-circuit this file exists to catch. Third instance of this
+// defect class this session: SEC-1's wildcard-select regex stopped at the first paren (unfalsifiable
+// by construction); MIG-0's fence-isolation check used a plain indexOf an ELSIF-prefixed branch could
+// also satisfy. All three are the same root cause — a substring search used as an extraction
+// boundary, with nothing to guarantee the match found is the intended occurrence.
 function methodBody(source: string, methodName: string): string {
+    const marker = new RegExp(`async ${methodName}\\(`);
+    const match = marker.exec(source);
+    assert.ok(match, `${methodName} must exist`);
+    const start = match.index;
+    const nextMethod = source.indexOf('\n    async ', start + match[0].length);
+    return nextMethod === -1 ? source.slice(start) : source.slice(start, nextMethod);
+}
+
+// The OLD helper, reproduced here only so this self-test can prove it was wrong — never applied to
+// real source. A synthetic decoy stands in for store-service.ts's two same-prefix methods, in both
+// possible declaration orders, since the real file's current order cannot demonstrate the failure.
+function oldMethodBody(source: string, methodName: string): string {
     const marker = `async ${methodName}`;
     const start = source.indexOf(marker);
     assert.notEqual(start, -1, `${methodName} must exist`);
     const nextMethod = source.indexOf('\n    async ', start + marker.length);
     return nextMethod === -1 ? source.slice(start) : source.slice(start, nextMethod);
 }
+
+function decoySource(longNameFirst: boolean): string {
+    const shortMethod = `    async getStoreBySubdomain(subdomain: string) {\n        return SAFE_IMPLEMENTATION;\n    }\n`;
+    const longMethod = `    async getStoreBySubdomainAnyStatus(subdomain: string) {\n        return isUrbanKicksDemoSubdomain(subdomain);\n    }\n`;
+    return longNameFirst ? `class C {\n${longMethod}${shortMethod}}\n` : `class C {\n${shortMethod}${longMethod}}\n`;
+}
+
+test('TEST-2 self-test: the old extraction was genuinely wrong when the longer name is declared first, and the new one is correct in both orders', () => {
+    const vulnerable = decoySource(true);
+
+    // The defect, demonstrated: asking for the SHORT method's body returns the LONG method's body
+    // instead, because "async getStoreBySubdomain" is a literal prefix of
+    // "async getStoreBySubdomainAnyStatus" and indexOf finds whichever occurs first in the source.
+    const oldBody = oldMethodBody(vulnerable, 'getStoreBySubdomain');
+    assert.match(oldBody, /isUrbanKicksDemoSubdomain/, 'the old helper must be shown returning the WRONG (long-named) method\'s body — this is the failure being fixed, not a false alarm');
+
+    // The fix: the same request on the same decoy returns the correct, short-named method's body.
+    const newBody = methodBody(vulnerable, 'getStoreBySubdomain');
+    assert.doesNotMatch(newBody, /isUrbanKicksDemoSubdomain/, 'the new helper must return the short method\'s own body, not the long one\'s');
+    assert.match(newBody, /SAFE_IMPLEMENTATION/);
+
+    // And it must not depend on which order the methods happen to be declared in.
+    const otherOrder = decoySource(false);
+    assert.doesNotMatch(methodBody(otherOrder, 'getStoreBySubdomain'), /isUrbanKicksDemoSubdomain/);
+    assert.match(methodBody(otherOrder, 'getStoreBySubdomainAnyStatus'), /isUrbanKicksDemoSubdomain/);
+});
 
 test('real storefront store reads do not short-circuit to the Urban Kicks demo fixture', () => {
     const source = read(storeServicePath);
