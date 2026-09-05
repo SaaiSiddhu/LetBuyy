@@ -401,7 +401,26 @@ async function appOAuthClientKey(c: Context<{ Bindings: Env }>): Promise<string>
 function customerAuthIdentityKey(identity: CustomerAuthRateLimitIdentity): string | null {
     const storeId = normalizeRateLimitPart(identity.storeId);
     const identifier = normalizeRateLimitPart(identity.email) || normalizeRateLimitPart(identity.contact);
-    if (!storeId || !identifier) return null;
+
+    // Without an identifier there is nothing to key an account-level limit on, so only the per-IP
+    // check applies. That is unavoidable, not a gap.
+    if (!identifier) return null;
+
+    // RL-1 (2026-09-05): a MISSING STORE is a different case, and it used to return null here too --
+    // which silently dropped the per-identity check and left a store-less auth call protected by the
+    // per-IP limit alone. An attacker rotating IPs could then grind one account's password with no
+    // account-level throttle at all, which is exactly what a per-identity limit is for.
+    //
+    // No caller was affected when this was written: all five pass a store_id. It is fixed ahead of
+    // the caller because D-8's marketplace buyer realm is platform-level BY DEFINITION -- a buyer
+    // spans sellers, so buyer auth has no store_id to pass and would have been the first store-less
+    // caller, inheriting no per-account limit without anything failing to say so.
+    //
+    // The store-scoped shape is unchanged byte-for-byte, so this only ADDS a key where there was
+    // none. 'platform' is a fixed literal, never user input, so it cannot collide with a real store
+    // id (a uuid) or be steered by a caller.
+    if (!storeId) return `identity:platform:${identifier}`;
+
     return `identity:${storeId}:${identifier}`;
 }
 
