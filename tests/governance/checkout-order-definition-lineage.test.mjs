@@ -107,6 +107,24 @@ const LINEAGE = [
     pattern: /INSERT INTO gift_card_redemptions\s*\(/,
     why: 'a gift card is tender, never a pre-tax discount; losing the redemption row spends a card without recording it',
   },
+  {
+    since: '234',
+    what: 'loyalty applied as TENDER, through the redeem RPC',
+    pattern: /public\.redeem_loyalty_points\s*\(/,
+    why: 'loyalty must move through the SECURITY DEFINER RPC that holds the idempotency key, the advisory lock and the cap — never by writing the ledger inline',
+  },
+  {
+    since: '234',
+    what: 'loyalty subtracted from what is PAYABLE, not from the taxable total',
+    pattern: /v_payment_due := GREATEST\(v_grand_total - v_gift_card_amount - v_loyalty_amount, 0\)/,
+    why: 'points are tender like a gift card; folding them into v_grand_total would change the GST and the invoice',
+  },
+  {
+    since: '234',
+    what: 'the residual passed as the authoritative payable amount',
+    pattern: /v_loyalty_residual_minor,/,
+    why: 'orders.total is mid-mutation here, so the RPC must be told the payable amount rather than infer it (233)',
+  },
 ];
 
 test('every migration that defines create_checkout_order is accounted for', () => {
@@ -144,6 +162,17 @@ test('the signature slice really is only the parameter list', () => {
   // pass on a body reference to a parameter that had been removed from the signature.
   assert.match(liveSignature, /p_store_id\s+uuid/);
   assert.doesNotMatch(liveSignature, /INSERT INTO/, 'the slice must stop before the body');
+});
+
+test('checkout REFUSES an over-large loyalty request rather than silently applying fewer points', () => {
+  // Clamping would charge the buyer an amount the client never displayed: the points quietly drop
+  // out and the total goes up. One policy, and it is the explicit one.
+  assert.match(liveCode, /loyalty points exceed what this order can apply/);
+  assert.doesNotMatch(liveCode, /v_loyalty_points_applied := LEAST\(/, 'the clamp was replaced by a refusal');
+});
+
+test('the loyalty idempotency key is DERIVED from the order, so a replay cannot debit twice', () => {
+  assert.match(liveCode, /'loyalty\.redemption:' \|\| v_order_id::TEXT/);
 });
 
 test('the advisory lock is taken BEFORE the idempotency existence check', () => {
