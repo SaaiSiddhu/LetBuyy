@@ -3,6 +3,7 @@ import type { Env } from '../../index';
 import { sha256Hex } from '../../lib/crypto';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
+import { registerStorefrontBlogRoutes } from './storefront-blog-routes';
 import { PUBLIC_PRODUCT_SELECT, PUBLIC_PRODUCT_SELECT_RELATIONAL, toPublicProduct } from '../../lib/public-product-view';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
@@ -1399,87 +1400,9 @@ export function registerStorefrontPublicRoutes(
         requireValidTurnstile,
     });
 
-    // GET /storefront/:subdomain/blog
-    router.get('/:subdomain/blog', async (c) => {
-        const page = parseInt(c.req.query('page') || '1');
-        const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
-        const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
-        return cachedJson(c, await storefrontRequestCacheKey(c, 'blog', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
-            const db = getSupabaseAdmin(c);
-            const store = await loadPublishedStore(c, c.req.param('subdomain'));
-            if (!store) {
-                return {
-                    status: 404,
-                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
-                };
-            }
-            const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
-                .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
-            return {
-                body: paginated(data || [], count || 0, page, limit),
-                tags: storefrontCacheTags(store.id, handle, 'storefront:blog'),
-            };
-        });
-    });
-
-    // GET /storefront/:subdomain/blog/:slug
-    router.get('/:subdomain/blog/:slug', async (c) => {
-        const slug = normalizePublicRouteToken(c.req.param('slug'));
-        if (!slug) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid blog post slug' } }, 400);
-        }
-
-        const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
-        return cachedJson(c, await storefrontRequestCacheKey(c, 'blog-detail', handle, slug), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
-            const db = getSupabaseAdmin(c);
-            const store = await loadPublishedStore(c, c.req.param('subdomain'));
-            if (!store) {
-                return {
-                    status: 404,
-                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
-                };
-            }
-
-            const { data, error } = await db.from('blog_posts')
-                .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
-                .eq('store_id', store.id)
-                .eq('status', 'published')
-                .eq('slug', slug)
-                .maybeSingle();
-
-            if (error) return { status: 500, body: dbFailureBody() };
-            if (!data) {
-                return {
-                    status: 404,
-                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } },
-                };
-            }
-
-            return {
-                body: success({
-                    id: data.id,
-                    title: data.title,
-                    slug: data.slug,
-                    page_type: 'blog_post',
-                    content: {
-                        body: data.content || '',
-                        html: data.content_html || '',
-                        image: data.featured_image || '',
-                        excerpt: data.excerpt || '',
-                    },
-                    seo: {
-                        title: data.seo_title || data.title,
-                        description: data.seo_description || data.excerpt || '',
-                        ogImage: data.og_image_url || data.featured_image || '',
-                        canonicalUrl: data.canonical_url || '',
-                    },
-                    published_at: data.published_at,
-                    updated_at: data.updated_at,
-                }),
-                tags: storefrontCacheTags(store.id, handle, 'storefront:blog', `storefront:blog:${slug}`),
-            };
-        });
-    });
+    // ROUTE-1: the blog band lives in its own module. public-routes.ts was at 1496 of a hard
+    // 1500-line budget, four lines from being unable to accept any new public route at all.
+    registerStorefrontBlogRoutes(router, { loadPublishedStore, normalizePublicRouteToken, storefrontCacheTags });
 
     // POST /storefront/:subdomain/contact — Public contact form
     router.post('/:subdomain/contact', async (c) => {
