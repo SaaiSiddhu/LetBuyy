@@ -120,6 +120,24 @@ for (const file of sourceFiles()) {
     const entry = tenantTableByName.get(table);
     if (!entry) continue;
     if (platformOwnedRevokedFromTenants.has(table)) continue;
+    // An access that carries a registered OWNER predicate is SCOPED, and the runtime tenant guard
+    // accepts it for exactly that reason. tenantScoped() cannot serve these: it takes a siteId and
+    // returns rows for one tenant, whereas a platform-level owner read (a buyer's own support
+    // tickets, which span sites and may have no site_id at all) is scoped by the owner instead.
+    // Flagging it would push the next author toward a tenant-scoped client that cannot express the
+    // query, or toward restructuring the call to dodge this regex -- which this file already says is
+    // worse than either.
+    //
+    // The window ends at the NEXT .from( so a neighbouring query's predicate can never satisfy this
+    // one: a fixed-size window is the same defect in the opposite direction.
+    const after = source.slice(match.index + match[0].length);
+    const nextFrom = after.indexOf('.from(');
+    const statement = nextFrom === -1 ? after : after.slice(0, nextFrom);
+    const ownerScoped = (entry.ownerColumns || []).some((column) =>
+      new RegExp(`\\.eq\\(\\s*['"\`]${column}['"\`]`).test(statement),
+    );
+    if (ownerScoped) continue;
+
     const line = source.slice(0, match.index).split('\n').length;
     violations.push(`${file}:${line} ${table} bypasses guarded tenantScoped/service client`);
   }

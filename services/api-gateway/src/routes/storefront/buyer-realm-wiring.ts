@@ -19,6 +19,11 @@ import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-r
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
+import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
+// The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
+// grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
+import { addBusinessDays, generateTicketRef } from '../operations/support';
+import { SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS } from '@letbuyy/shared-types';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerRealmRoutesDeps {
@@ -202,6 +207,87 @@ export function registerBuyerRealmRoutes(
     // for a build too old to log in. Registered here because this module already composes the
     // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
     // binary, so a release belongs to the platform.
+    registerBuyerSupportRoutes(router, {
+        listTickets: async (c, buyerAccountId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            return { data: (data || null) as BuyerTicketRow[] | null, error };
+        },
+        // Scoped by BOTH the ticket and the buyer. Scoping by ticket alone would let any buyer read
+        // any other buyer's support conversation by guessing a uuid, and the response would look
+        // entirely normal.
+        getTicket: async (c, buyerAccountId, ticketId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
+                .eq('id', ticketId)
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .is('deleted_at', null)
+                .maybeSingle();
+            return { data: (data || null) as BuyerTicketRow | null, error };
+        },
+        // visibility = 'internal' is an agent's private note — triage, fraud suspicion, escalation
+        // reasoning. It must never reach the buyer, and the filter lives HERE, in the query, so no
+        // caller can obtain the unfiltered rows by using this dependency differently.
+        listPublicMessages: async (c, ticketId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('ticket_messages')
+                .select('id, author_type, body, created_at')
+                .eq('ticket_id', ticketId)
+                .eq('visibility', 'public')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: true })
+                .limit(limit);
+            return { data: (data || null) as BuyerTicketMessageRow[] | null, error };
+        },
+        // requester_type, channel, status and author_type are set HERE, never taken from the request:
+        // a buyer must not be able to open a ticket as a merchant, nor post as an agent.
+        openTicket: async (c, buyerAccountId, input) => {
+            const db = getSupabaseAdmin(c);
+            const now = new Date();
+            const inserted = await db
+                .from('support_tickets')
+                .insert({
+                    ticket_ref: generateTicketRef(now),
+                    first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                    resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
+                    site_id: input.siteId,
+                    requester_type: 'customer',
+                    requester_user_id: buyerAccountId,
+                    subject: input.subject,
+                    channel: 'chat',
+                    status: 'open',
+                    last_customer_message_at: now.toISOString(),
+                })
+                .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
+                .maybeSingle();
+            if (inserted.error || !inserted.data) return { data: null, error: inserted.error };
+            const ticket = inserted.data as unknown as BuyerTicketRow;
+            const message = await db
+                .from('ticket_messages')
+                .insert({ ticket_id: ticket.id, author_type: 'requester', author_id: buyerAccountId, visibility: 'public', body: input.body })
+                .select('id')
+                .maybeSingle();
+            if (message.error) return { data: null, error: message.error };
+            return { data: ticket, error: null };
+        },
+        addRequesterMessage: async (c, ticketId, body) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('ticket_messages')
+                .insert({ ticket_id: ticketId, author_type: 'requester', visibility: 'public', body })
+                .select('id, author_type, body, created_at')
+                .maybeSingle();
+            return { data: (data || null) as BuyerTicketMessageRow | null, error };
+        },
+    });
+
     registerPersonalizationRoutes(router, {
         // Viewing again UPDATES the timestamp: 230's PK is (buyer, product), so the history holds one
         // row per product and cannot fill with ten copies of the item a buyer keeps returning to.
