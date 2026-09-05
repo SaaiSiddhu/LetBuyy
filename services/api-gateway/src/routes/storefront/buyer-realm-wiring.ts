@@ -20,6 +20,7 @@ import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
+import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
 import { addBusinessDays, generateTicketRef } from '../operations/support';
@@ -207,6 +208,59 @@ export function registerBuyerRealmRoutes(
     // for a build too old to log in. Registered here because this module already composes the
     // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
     // binary, so a release belongs to the platform.
+    registerBuyerLoyaltyRoutes(router, {
+        // The balance comes from the database's own loyalty_balance() projection. Summing entries
+        // here would be a SECOND projection of a money balance, and the two would eventually
+        // disagree — the exact defect this ledger replaces.
+        loadSummary: async (c, buyerAccountId, siteId) => {
+            const db = getSupabaseAdmin(c);
+            const program = await db
+                .from('loyalty_programs')
+                .select('site_id, is_active, earn_rate_bps, redeem_cap_bps, point_value_minor')
+                .eq('site_id', siteId)
+                .maybeSingle();
+            if (program.error) return { data: null, error: program.error };
+            if (!program.data) return { data: null, error: null };
+
+            const account = await db
+                .from('loyalty_accounts')
+                .select('id')
+                .eq('site_id', siteId)
+                .eq('buyer_account_id', buyerAccountId)
+                .maybeSingle();
+            if (account.error) return { data: null, error: account.error };
+
+            let balance = 0;
+            if (account.data) {
+                const projected = await db.rpc('loyalty_balance', { p_loyalty_account_id: (account.data as { id: string }).id });
+                if (projected.error) return { data: null, error: projected.error };
+                balance = Number(projected.data ?? 0);
+            }
+            const row = program.data as unknown as Omit<LoyaltySummary, 'balance'>;
+            return { data: { ...row, balance }, error: null };
+        },
+        listEntries: async (c, buyerAccountId, siteId, limit) => {
+            const db = getSupabaseAdmin(c);
+            const account = await db
+                .from('loyalty_accounts')
+                .select('id')
+                .eq('site_id', siteId)
+                .eq('buyer_account_id', buyerAccountId)
+                .maybeSingle();
+            if (account.error) return { data: null, error: account.error };
+            if (!account.data) return { data: [], error: null };
+
+            const { data, error } = await db
+                .from('loyalty_ledger_entries')
+                .select('id, entry_type, points, balance_after, order_id, created_at')
+                .eq('loyalty_account_id', (account.data as { id: string }).id)
+                .eq('site_id', siteId)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            return { data: (data || null) as LoyaltyEntryRow[] | null, error };
+        },
+    });
+
     registerBuyerSupportRoutes(router, {
         listTickets: async (c, buyerAccountId, limit) => {
             const { data, error } = await getSupabaseAdmin(c)
