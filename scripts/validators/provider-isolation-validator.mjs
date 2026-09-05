@@ -23,8 +23,11 @@ const allowedProviderRoots = new Set([
   // "services/compatibility" covers every source-file check; packageRootForManifest()
   // returns the literal package.json's own dirname, so the four package roots are
   // also listed for the manifest-dependency check.
+  // firebase_bridge was removed from this list when phase FB-1 deleted it
+  // (2026-09-05, owner decision to retire Firebase). Do NOT re-add the entry
+  // without re-adding the bridge: an allowlist entry for a path that does not
+  // exist is an exemption waiting for a file to walk into it.
   "services/compatibility",
-  "services/compatibility/firebase_bridge",
   "services/compatibility/agrimore_bridge/api-gateway",
   "services/compatibility/agrimore_bridge/media-gateway",
   "services/compatibility/agrimore_bridge/realtime-gateway",

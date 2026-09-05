@@ -48,9 +48,15 @@ inventory on checkout paths (`216`).
 
 The shipped app (`apps/customer_app`, versionCode 4013 / 1.0.10) talks to Firestore **directly**;
 `firestore.rules` and `storage.rules` are the entire authorization model; some flows call Cloud
-Functions by name. This repository holds an **inert copy** of those rules and 24 function sources at
-`services/compatibility/firebase_bridge/{config,src}` — nothing here deploys them, and the **live**
-project state is `UNKNOWN_LIVE_STATE` from this repository. Universes: Firebase Auth users
+Functions by name. This repository **held** an inert copy of those rules and 24 function sources at
+`services/compatibility/firebase_bridge/{config,src}`; nothing there ever deployed them, and the
+**live** project state was, and remains, `UNKNOWN_LIVE_STATE` from this repository. **That copy was
+deleted on 2026-09-05 (phase FB-1)** under the owner's decision to retire Firebase completely. Read
+the consequence precisely: deleting the copy retired the bridge, **not the exposure**. Every finding
+below marked **(copy)** was measured against it and is now readable only in git history, at the parent
+of `letbuyy/fb1-retire-firebase-admin-app`. Each stays a **live risk until the owner deletes the
+Firebase project itself** (FB-5), and until then it can be settled only by a live probe (§7 H), never
+from the working tree. Universes: Firebase Auth users
 (`users/{uid}` with a client-writable `role` field), sellers (`sellers/{sellerId}` with a
 self-writable balance), admins (`isAdmin()` reads `users/$(uid).data.role == 'admin'`,
 `firestore.rules:22-25`), anonymous (world-readable collections, §9). Storage rules are **additive**
@@ -168,10 +174,11 @@ count. Before crediting a real-db suite, confirm it printed a test count, not `n
 - **Storefront/theme**: sanitizer allowlist untouched; Liquid default stays OFF; per-store theming
   through blessed dynamic-style patterns; host resolution and password gate unchanged; hosted
   checkout keeps the signed handoff.
-- **Firebase (lineage A)**: never edit `firebase_bridge/config/*.rules` as if it deployed something;
-  a rules lockdown proposal must pair each closed write path with its callable replacement and a
-  compatibility note for the shipped app version; any live change is an owner console act with a
-  before/after unauthenticated probe.
+- **Firebase (lineage A)**: the `firebase_bridge` copy is deleted (FB-1, 2026-09-05), so there is
+  nothing left in-tree to edit — and editing it never deployed anything anyway. The live project is
+  still the owner's to delete (FB-5). Until then, any live change remains an owner console act with a
+  before/after unauthenticated probe, and a rules lockdown would still have to pair each closed write
+  path with its callable replacement and a compatibility note for the shipped app version.
 - **Flutter/Android/iOS**: identity registry diff for any `applicationId`/`namespace`/signing change;
   secrets via `--dart-define`; `google-services.json`/`GoogleService-Info.plist` are public client
   identifiers, not secrets — but no **Gemini** or **Razorpay** literal ever; tokens in secure
@@ -221,10 +228,13 @@ curl -s -o /dev/null -w '%{http_code}\n' "https://firestore.googleapis.com/v1/pr
 
 ## 9. Open findings register — re-verified 2026-09-04 against source at `823aa5ee`
 
-Findings marked **(copy)** were re-read today in `services/compatibility/firebase_bridge/config/`;
-the live Firebase project is `UNKNOWN_LIVE_STATE` and the 2026-08-28 audit found the same patterns in
-System A at `be716ae` — which is now the committed content of the bundle. A live probe (§7 H) settles
-each one; until then the gate is `LIVE_FIREBASE_SECURITY: NO_GO`.
+Findings marked **(copy)** were re-read on 2026-09-04 in `services/compatibility/firebase_bridge/config/`.
+**That directory was deleted on 2026-09-05 (phase FB-1)**; the findings are unchanged and are now
+readable in git history at the parent of `letbuyy/fb1-retire-firebase-admin-app`, and in the
+preservation bundle. The live Firebase project is still `UNKNOWN_LIVE_STATE`, and the 2026-08-28 audit
+found the same patterns in System A at `be716ae` — the committed content of the bundle. A live probe
+(§7 H) settles each one; until then the gate stays `LIVE_FIREBASE_SECURITY: NO_GO`, and it is **not**
+cleared by the copy's deletion.
 
 | ID | Finding | Evidence (today) | Severity |
 |---|---|---|---|

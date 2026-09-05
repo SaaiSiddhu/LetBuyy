@@ -7,7 +7,7 @@ Purpose: Local operating rules for `packages/dart/marketplace_services`. This fi
 - Follow the root `AGENTS.md`, `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, and `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` before making architecture, money, identity, tenancy, or governance changes.
 - Keep this package inside its declared source boundary: `packages/dart/marketplace_services`.
 - Prefer completing the canonical owner over adding a parallel implementation.
-- **BOUNDED COMPATIBILITY PACKAGE — NOT the canonical service layer.** Firebase-coupled, retained only so `customer_app`/`admin_app` resolve/analyze/test. Disposition D0_BLOCKED pending the canonical-backend decision (D-0). Do not extend or use as a template for new backend integration — see `README.md` and `docs/migration/repository_consolidation/18_dart_package_recovery_journal.md` Stage 3.7.
+- **BOUNDED COMPATIBILITY PACKAGE — NOT the canonical service layer.** Firebase-coupled, retained only so `customer_app` resolves/analyzes/test. Disposition D0_BLOCKED pending the canonical-backend decision (D-0). Do not extend or use as a template for new backend integration — see `README.md` and `docs/migration/repository_consolidation/18_dart_package_recovery_journal.md` Stage 3.7.
 
 ## Forbidden Imports
 

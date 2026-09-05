@@ -2,7 +2,8 @@
 ///
 /// BOUNDED COMPATIBILITY PACKAGE — NOT the canonical service layer. Firebase-
 /// coupled (firebase_core/auth/firestore/functions/storage/messaging), retained
-/// only so `customer_app`/`admin_app` resolve/analyze/test. Disposition:
+/// only so `customer_app` resolves/analyzes/tests (`admin_app` was retired to a
+/// RESERVED root in phase FB-1, 2026-09-05, and no longer consumes it). Disposition:
 /// D0_BLOCKED pending the canonical-backend decision (LETBUYY_CONSTITUTION.md,
 /// D-0). Do not extend or use as a template — see this package's README.md and
 /// docs/migration/repository_consolidation/18_dart_package_recovery_journal.md.

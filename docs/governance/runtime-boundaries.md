@@ -13,7 +13,7 @@
 - `apps/platform-operations-portal`: employee support and operations.
 - `apps/merchant_app`: Flutter merchant builder and store management.
 - `apps/customer_app`: Flutter buyer-facing marketplace app; shipped Play Store production identity `com.letbuyy.letbuyy`.
-- `apps/admin_app`: Flutter platform-operator app; not production-signed (debug-keystore release config).
+- `apps/admin_app`: **RESERVED, manifest-only** (Constitution Amendment 2, 2026-09-05). Was a Flutter platform-operator app, never production-signed (debug-keystore release config), and entirely Firestore-backed; deleted in phase FB-1. `apps/admin_web` owns the platform-operator surface (D-4). Adding source here fails `no-reserved-service-activation-validator`.
 
 ## Reserved Mobile Roots
 

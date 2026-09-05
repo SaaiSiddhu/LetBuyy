@@ -50,9 +50,10 @@ register, a canonical-lineage report against the Constitution chain.
    - **Checkout** — totals/tax/shipping recomputed server-side in `create_checkout_order`; payment
      confirmed from provider evidence (`timingSafeEqualHex` over the raw body), never a client id;
      inventory reserved with TTL and a release path; a missing signature is a rejection.
-   - **Firebase (lineage A)** — a rules lockdown without its callable replacement breaks the shipped
-     app; the live project state is `UNKNOWN_LIVE_STATE` from this repository; `firebase_bridge` is
-     an inert copy, never proof of what is deployed.
+   - **Firebase (lineage A)** — being retired (owner, 2026-09-05). `firebase_bridge` was an inert
+     copy, never proof of what is deployed, and was deleted in FB-1; the live project state is still
+     `UNKNOWN_LIVE_STATE` from this repository and stays a live risk until the owner deletes the
+     project (FB-5). A rules lockdown without its callable replacement would still break the shipped app.
    - **Mobile identity** — `applicationId`/`namespace` per `config/governance/android-identity-registry.json`
      (`android-identity-validator`); no `.jks`/`key.properties` tracked; a build proven by
      `aapt dump badging`, not by `flutter analyze`.

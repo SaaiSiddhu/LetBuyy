@@ -8,7 +8,7 @@
 | `apps/customer_web` | customer, buyer | Constitution-designated canonical; build/lint/test status in `12_final_verification.md` | Unassigned | `services/api-gateway` (live) |
 | `apps/merchant_app` | merchant, store-staff | Constitution-designated canonical; fully green (172/172 tests) | Unassigned | `services/api-gateway`, `services/mobile-bff` (live) |
 | `apps/merchant_web` | merchant, store-staff | Most recently committed app in the entire pre-Phase-M inventory | Unassigned | `services/api-gateway` (live) |
-| `apps/admin_app` | platform-operator, admin | **Not production-signed** (debug keystore) | Unassigned | `D0_DEPENDENT`; shared Dart packages not yet consolidated |
+| `apps/admin_app` | platform-operator, admin | **RESERVED — no source** (Constitution Amendment 2, phase FB-1, 2026-09-05) | Unassigned | Firestore implementation deleted with Firebase; `apps/admin_web` owns the admin surface (D-4) |
 | `apps/admin_web` | platform-operator, admin | Constitution-designated canonical; fully green | Unassigned | `services/api-gateway` (live) |
 | `apps/phase_2/rider_app` | quick-commerce rider | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
 | `apps/phase_2/store_ops_app` | quick-commerce store ops | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
@@ -24,7 +24,7 @@
 | `apps/customer_app` (Agrimore) | B | `customer_app` | Not integrated; bundled, recoverable |
 | `apps/seller` | A | `merchant_app` | Not integrated; bundled, recoverable |
 | `apps/seller_app` (Agrimore) | B | `merchant_app` | Not integrated; bundled, recoverable |
-| `apps/admin_app` (Agrimore) | B | `admin_app` | Not integrated; bundled, recoverable |
+| `apps/admin_app` (Agrimore) | B | `admin_app` | Not integrated; bundled, recoverable. Note the destination root is RESERVED since 2026-09-05 — nothing may be integrated into it without ARB reactivation |
 | `apps/store-builder-web` | A | `merchant_web` (narrow scope) | Not integrated; bundled, recoverable |
 | `apps/admin-web` | A | `admin_web` | Not integrated; bundled, recoverable |
 | `apps/store/storefront`, `Agrimore/apps/marketplace_web` | A, B | `customer_web` | Not integrated; bundled, recoverable |

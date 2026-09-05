@@ -1,6 +1,6 @@
 # packages/dart/marketplace_models
 
-Shared data models for the marketplace-channel Flutter apps (`customer_app`, `admin_app`) — catalog, cart, orders, ads, loyalty, coupons, and the social-commerce "reels" domain.
+Shared data models for the marketplace-channel Flutter apps (`customer_app`; `admin_app` was retired to a RESERVED root in phase FB-1, 2026-09-05) — catalog, cart, orders, ads, loyalty, coupons, and the social-commerce "reels" domain.
 
 ## Provenance
 

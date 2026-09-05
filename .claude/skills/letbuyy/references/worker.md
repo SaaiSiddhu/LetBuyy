@@ -33,7 +33,7 @@ show it; a described problem without a request to change is `status`, not `worke
 - Touch only `may_write`. Anything else you discover goes into the report as a finding.
 - **Canonical UI only** (`uiux.md`): compose from `@letbuyy/ui` / `packages/dart/ui_kit`, `--lb-*`
   tokens only, never a raw hex/px/inline style, never a forked primitive. A missing primitive = stop
-  and report. Donor apps (`customer_app`, `admin_app`, `phase_2/*`) are HOLD: no re-skin.
+  and report. Donor apps (`customer_app`, `phase_2/*`) are HOLD: no re-skin. (`admin_app` is RESERVED since FB-1, 2026-09-05 — it has no UI at all.)
 - **Feedback compliance** (`feedback.md`) the moment anything renders a message — web or Flutter —
   and `ProviderModeBadge` on every money/fulfilment surface, bound to backend `provider_mode`.
 - **Security invariants** (`security.md` §4) preserved by construction: tenant from a validated claim
