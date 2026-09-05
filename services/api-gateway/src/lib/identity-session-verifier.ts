@@ -171,3 +171,36 @@ export async function validateIdentityIssuedBuyerSessionToken(
 ): Promise<{ ok: boolean; reason?: string }> {
     return validateIdentityIssuedSessionToken(env, token, buyerAccountId, BUYER_REALM);
 }
+
+/// Verifies a buyer session and returns WHO it authenticates.
+///
+/// The strict verifier above takes an expected subject, because the merchant path always knows whose
+/// token it is checking — it verifies a token it just issued for a known user. A cookie-borne buyer
+/// session is the opposite question: "who is this?".
+///
+/// `subject` is deliberately NOT made optional in the shared core. Doing so would silently stop
+/// checking `sub` for any caller that omitted it, including the merchant path, and a security check
+/// that disappears when an argument is forgotten is worse than one that was never there.
+///
+/// So the unverified `sub` is read here and fed straight back as the EXPECTED subject of a full
+/// verification. That is safe, and the reason is worth stating because "read the unverified payload"
+/// is normally a red flag: the value is never trusted on its own. If the token is forged, signature
+/// verification fails. If `sub` was tampered with, it no longer matches the signed payload and
+/// jwtVerify's own subject check rejects it. The unverified read only chooses which claim to prove.
+export async function resolveIdentityIssuedBuyerSession(
+    env: Env,
+    token: string,
+): Promise<{ ok: true; buyerAccountId: string } | { ok: false; reason: string }> {
+    if (token.length > 4096 || token.split('.').length !== 3) {
+        return { ok: false, reason: 'buyer session token is malformed' };
+    }
+
+    const claimed = decodeBase64UrlJson(token.split('.')[1]);
+    const subject = typeof claimed?.sub === 'string' ? claimed.sub : null;
+    if (!subject) return { ok: false, reason: 'buyer session subject is missing' };
+
+    const verified = await validateIdentityIssuedBuyerSessionToken(env, token, subject);
+    if (!verified.ok) return { ok: false, reason: verified.reason || 'buyer session verification failed' };
+
+    return { ok: true, buyerAccountId: subject };
+}

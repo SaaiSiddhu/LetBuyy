@@ -15,6 +15,7 @@ import type { Hono } from 'hono';
 import * as bcrypt from 'bcryptjs';
 import type { Env } from '../../index';
 import { dbFailureBody, success } from '../../lib/supabase';
+import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const BCRYPT_COST = 10;
@@ -31,6 +32,12 @@ export interface BuyerAccountRoutesDeps {
     normalizeEmail: (email: string) => string;
     requireStorefrontInternal: (c: AppContext) => Promise<Response | null>;
     loadBuyerByEmail: (c: AppContext, email: string) => Promise<{ data: BuyerAccountRow | null; error: unknown }>;
+    /// Find-or-create the per-store customer row this buyer becomes at one seller.
+    findOrCreateStoreCustomer: (c: AppContext, storeId: string, email: string) => Promise<{ data: { id: string } | null; error: unknown }>;
+    /// Idempotent by the unique indexes migration 223 installed: a store_customers row belongs to at
+    /// most one buyer, and one buyer holds at most one customer record per store.
+    linkBuyerToStoreCustomer: (c: AppContext, link: { buyerAccountId: string; storeCustomerId: string; siteId: string }) => Promise<{ error: unknown }>;
+    loadBuyerById: (c: AppContext, id: string) => Promise<{ data: BuyerAccountRow | null; error: unknown }>;
     insertBuyer: (c: AppContext, row: { email: string; password_hash: string }) => Promise<{ data: BuyerAccountRow | null; error: unknown }>;
     setBuyerPassword: (c: AppContext, id: string, passwordHash: string) => Promise<{ data: BuyerAccountRow | null; error: unknown }>;
 }
@@ -59,7 +66,16 @@ export function registerBuyerAccountRoutes(
     router: Hono<{ Bindings: Env }>,
     deps: BuyerAccountRoutesDeps,
 ): void {
-    const { normalizeEmail, requireStorefrontInternal, loadBuyerByEmail, insertBuyer, setBuyerPassword } = deps;
+    const {
+        normalizeEmail,
+        requireStorefrontInternal,
+        loadBuyerByEmail,
+        insertBuyer,
+        setBuyerPassword,
+        findOrCreateStoreCustomer,
+        linkBuyerToStoreCustomer,
+        loadBuyerById,
+    } = deps;
 
     router.post('/buyer/register', async (c) => {
         const unauthorized = await requireStorefrontInternal(c);
@@ -137,5 +153,45 @@ export function registerBuyerAccountRoutes(
         }
 
         return c.json(success({ buyer: publicBuyerAccount(account) }));
+    });
+
+    router.post('/buyer/link-store-customer', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) {
+            return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        }
+
+        const body = await c.req.json().catch(() => null) as { store_id?: string } | null;
+        if (!body?.store_id) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
+        }
+
+        // THE identity comes from the VERIFIED TOKEN, never from the body. A body-supplied
+        // buyer_account_id would let any caller attach any buyer to any customer record — the entire
+        // cross-store identity, forgeable by typing a uuid. Nothing in the request may influence it.
+        const buyerAccountId = session.buyerAccountId;
+
+        const { data: buyer, error: buyerError } = await loadBuyerById(c, buyerAccountId);
+        if (buyerError) return c.json(dbFailureBody(), 500);
+        if (!buyer) {
+            // A validly signed token for an account that no longer exists — deleted between issuance
+            // and use. Treated as unauthenticated rather than 404, which would confirm the id.
+            return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        }
+        if (buyer.status === 'disabled') {
+            return c.json({ success: false, error: { code: 'BUYER_DISABLED', message: 'Account is disabled.' } }, 403);
+        }
+
+        const { data: storeCustomer, error: customerError } = await findOrCreateStoreCustomer(c, body.store_id, buyer.email);
+        if (customerError || !storeCustomer) return c.json(dbFailureBody(), 500);
+
+        const { error: linkError } = await linkBuyerToStoreCustomer(c, {
+            buyerAccountId,
+            storeCustomerId: storeCustomer.id,
+            siteId: body.store_id,
+        });
+        if (linkError) return c.json(dbFailureBody(), 500);
+
+        return c.json(success({ linked: { buyer_account_id: buyerAccountId, store_customer_id: storeCustomer.id } }));
     });
 }

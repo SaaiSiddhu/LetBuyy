@@ -65,6 +65,11 @@ function app(options: {
             calls.setPassword.push({ id, hash });
             return { data: await accountRow({ id, password_hash: hash }), error: null };
         },
+        // BUYER-5's deps. This suite covers register and verify-credentials; the link route has its
+        // own file, because its risk is entirely different — it is about whose identity is used.
+        loadBuyerById: async () => ({ data: options.existing ?? null, error: null }),
+        findOrCreateStoreCustomer: async () => ({ data: { id: 'store-customer-1' }, error: null }),
+        linkBuyerToStoreCustomer: async () => ({ error: null }),
     });
     const outer = new Hono<{ Bindings: Env }>();
     outer.route('/storefront', router);

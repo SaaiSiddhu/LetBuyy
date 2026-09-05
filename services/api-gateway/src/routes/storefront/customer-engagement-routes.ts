@@ -1375,6 +1375,45 @@ export function registerStorefrontCustomerEngagementRoutes(
             .eq('id', id)
             .select(BUYER_ACCOUNT_COLUMNS)
             .single(),
+        loadBuyerById: async (c, id) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .eq('id', id)
+            .maybeSingle(),
+        findOrCreateStoreCustomer: async (c, storeId, email) => {
+            const db = getSupabaseAdmin(c);
+            const existing = await db
+                .from('store_customers')
+                .select('id')
+                .eq('store_id', storeId)
+                .eq('email', email)
+                .maybeSingle<{ id: string }>();
+            if (existing.error) return { data: null, error: existing.error };
+            if (existing.data) return { data: existing.data, error: null };
+            // store_customers is UNIQUE (store_id, email), so a concurrent create loses the race
+            // rather than duplicating. onConflict returns the winner instead of failing.
+            return db
+                .from('store_customers')
+                .upsert({ store_id: storeId, email }, { onConflict: 'store_id,email' })
+                .select('id')
+                .single<{ id: string }>();
+        },
+        linkBuyerToStoreCustomer: async (c, link) => {
+            // ignoreDuplicates: migration 223's unique indexes already guarantee one link per
+            // store_customers row and one per (buyer, site). Re-linking is a no-op, not an error --
+            // a shopper returning to a seller they already have an account with must not fail.
+            const { error } = await getSupabaseAdmin(c)
+                .from('buyer_store_customers')
+                .upsert(
+                    {
+                        buyer_account_id: link.buyerAccountId,
+                        store_customer_id: link.storeCustomerId,
+                        site_id: link.siteId,
+                    },
+                    { onConflict: 'buyer_account_id,store_customer_id', ignoreDuplicates: true },
+                );
+            return { error };
+        },
     });
 
 }

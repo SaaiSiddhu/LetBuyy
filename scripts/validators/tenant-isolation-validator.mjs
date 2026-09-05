@@ -68,6 +68,20 @@ reporter.assert(
 );
 
 const directBypassPattern = /getSupabaseAdmin\([^)]*\)\s*\.from\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*\)/g;
+// PLATFORM-OWNED tables that appear in the tenant registry because they carry a site_id, but which
+// tenant roles are explicitly REVOKED from (migration 223, D-8). The rule below assumes a
+// tenant-scoped client is the correct accessor and that the admin client bypasses it. For these
+// tables that premise does not hold: there is no tenant-scoped access to bypass, because app_tenant,
+// authenticated and anon have no privileges on them at all. The admin client is the ONLY correct
+// accessor, so flagging it would push the next author toward a tenant-scoped client that cannot
+// work, or toward restructuring the call to dodge the regex -- which is worse than either.
+//
+// Add to this list ONLY when a migration REVOKEs the table from app_tenant. A table a tenant can read
+// belongs under the rule, not here.
+const platformOwnedRevokedFromTenants = new Set([
+  'buyer_store_customers',
+]);
+
 const violations = [];
 
 for (const file of sourceFiles()) {
@@ -79,6 +93,7 @@ for (const file of sourceFiles()) {
     const table = match[1];
     const entry = tenantTableByName.get(table);
     if (!entry) continue;
+    if (platformOwnedRevokedFromTenants.has(table)) continue;
     const line = source.slice(0, match.index).split('\n').length;
     violations.push(`${file}:${line} ${table} bypasses guarded tenantScoped/service client`);
   }
