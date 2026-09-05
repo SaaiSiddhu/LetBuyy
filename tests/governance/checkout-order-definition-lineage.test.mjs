@@ -52,6 +52,10 @@ const live = definitionIn(liveFile);
 // Comments stripped: this function documents itself heavily and names several of the very things
 // asserted below, so an assertion that read its prose would pass on a comment about a deleted fix.
 const liveCode = live.replace(/--[^\n]*/g, ' ');
+// The PARAMETER LIST only. A parameter also appears in the body, so asserting its presence anywhere
+// passes when it has been removed from the signature — proven by planting exactly that removal and
+// watching the first version of this guard stay green.
+const liveSignature = liveCode.slice(0, liveCode.search(/\bRETURNS\b/));
 
 // Each entry: what it protects, which migration introduced it, and why losing it is not cosmetic.
 const LINEAGE = [
@@ -59,6 +63,7 @@ const LINEAGE = [
     since: '170',
     what: 'server-side shipping rate and tax parameters',
     pattern: /p_shipping_rate_id\s+uuid/,
+    inSignature: true,
     why: 'without them the caller cannot name a server-priced shipping rate and totals fall back to client input',
   },
   {
@@ -71,12 +76,14 @@ const LINEAGE = [
     since: '213',
     what: 'GST place of supply',
     pattern: /p_place_of_supply_state/,
+    inSignature: true,
     why: 'place of supply decides CGST/SGST versus IGST; losing it silently mis-taxes every interstate order',
   },
   {
     since: '213',
     what: 'GST tax lines',
     pattern: /p_tax_lines/,
+    inSignature: true,
     why: 'the per-line tax breakdown an invoice is built from',
   },
   {
@@ -88,13 +95,16 @@ const LINEAGE = [
   {
     since: '219',
     what: 'the purchases row for parent/child orders',
-    pattern: /INSERT INTO public\.purchases/,
+    pattern: /INSERT INTO public\.purchases\s*\(/,
     why: 'the parent purchase record a multi-seller order is grouped by',
   },
   {
     since: '219',
     what: 'gift card applied as TENDER, recorded in gift_card_redemptions',
-    pattern: /INSERT INTO gift_card_redemptions/,
+    // Anchored on the opening paren: `gift_card_redemptions_disabled` CONTAINS
+    // `gift_card_redemptions`, so an unanchored pattern matches a renamed-away table. Proven by
+    // planting exactly that rename and watching the unanchored version stay green.
+    pattern: /INSERT INTO gift_card_redemptions\s*\(/,
     why: 'a gift card is tender, never a pre-tax discount; losing the redemption row spends a card without recording it',
   },
 ];
@@ -121,13 +131,20 @@ test('the guard reads the LIVE definition, not a pinned file', () => {
 for (const entry of LINEAGE) {
   test(`create_checkout_order still carries ${entry.what} (since ${entry.since})`, () => {
     assert.match(
-      liveCode,
+      entry.inSignature ? liveSignature : liveCode,
       entry.pattern,
       `${liveFile} dropped ${entry.what}, introduced in ${entry.since}. ${entry.why}. `
       + 'Every redefinition is a full rewrite, so anything not carried forward is gone — that is why 218 had to exist.',
     );
   });
 }
+
+test('the signature slice really is only the parameter list', () => {
+  // Instrument check: if this slice ever spanned the body, every parameter assertion above would
+  // pass on a body reference to a parameter that had been removed from the signature.
+  assert.match(liveSignature, /p_store_id\s+uuid/);
+  assert.doesNotMatch(liveSignature, /INSERT INTO/, 'the slice must stop before the body');
+});
 
 test('the advisory lock is taken BEFORE the idempotency existence check', () => {
   // Order matters, not just presence: 206's own comment says advisory-FIRST is what prevents the
