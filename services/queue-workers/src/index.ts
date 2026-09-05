@@ -16,6 +16,7 @@ import { runInventoryReservationSweeper } from './inventory-reservations';
 import { runMerchantSessionJtiConsumptionSweeper } from './merchant-session-jti-sweeper';
 import { runSloTelemetryEmitter } from './slo-telemetry';
 import { runMoneyLedgerReconciliation } from './money-ledger-reconciliation';
+import { runLoyaltyEarnSweeper } from './loyalty-earn';
 
 type QueuePayload = {
   messageId?: string;
@@ -690,6 +691,24 @@ export default {
           route: 'scheduled.money_ledger_reconciliation',
           status: 'failed',
           error: error instanceof Error ? error.message : 'money ledger reconciliation failed',
+        })),
+    );
+    ctx.waitUntil(
+      // F-LOY-2: loyalty accrual runs HERE and not in the payment RPC. A failure must never roll
+      // back a capture the provider has already settled, and nothing marks an order as awarded
+      // except the ledger entry itself, so a failed run simply retries on the next tick.
+      runLoyaltyEarnSweeper(env, {
+        requestId: `scheduled:loyalty-earn:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.loyalty_earn',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.loyalty_earn',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'loyalty earn sweeper failed',
         })),
     );
     ctx.waitUntil(
