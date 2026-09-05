@@ -8,6 +8,9 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import {
@@ -172,4 +175,72 @@ test('a non-UUID id is rejected before any lookup', async () => {
     const res = await h.app.request('/operations/marketplace-banners/not-a-uuid', { method: 'DELETE' }, env());
     assert.equal(res.status, 400);
     assert.deepEqual(h.deleted, [], 'a malformed id must not reach the database');
+});
+
+// ── Source contracts ──────────────────────────────────────────────────────────────────────────
+// Every test above drives the router with INJECTED dependencies, so it proves what the route does
+// with an answer — never what the real query asks. Making the real deleteBanner return a bare `true`
+// failed nothing above; these read the module's own defaults instead.
+
+function code(source: string): string {
+    return source
+        .replace(/\/\*[\s\S]*?\*\//g, ' ')
+        .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ')
+        .replace(/`(?:[^`\\]|\\.)*`/g, '` `');
+}
+
+const operationsSource = code(
+    readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../routes/operations/marketplace-banners.ts'), 'utf8'),
+);
+
+// The body of one property of the default-dependencies object literal, from its key to the next key
+// at the same indentation. The search starts INSIDE that object: the interface above declares members
+// with the identical `    <name>:` shape and comes first in the file, so an unanchored search reads
+// the type declaration and every assertion below then passes or fails for the wrong reason.
+const DEFAULTS = operationsSource.slice(
+    operationsSource.indexOf('export const defaultMarketplaceBannersOperationsDependencies'),
+);
+
+function dependencyBody(name: string): string {
+    assert.ok(DEFAULTS.length > 0, 'the default dependencies object should exist');
+    const start = DEFAULTS.search(new RegExp(`\\n    ${name}:`));
+    assert.ok(start > 0, `${name} should be a default dependency`);
+    const rest = DEFAULTS.slice(start + 1);
+    const next = rest.slice(1).search(/\n    [a-zA-Z_]+:/);
+    return next === -1 ? rest : rest.slice(0, next + 1);
+}
+
+test('the dependency-body extractor reads the implementation, not the interface', () => {
+    // Proving the instrument: the interface's `deleteBanner:` is a type, and its body contains
+    // neither .delete() nor a return statement. If the extractor drifted back to it, every SOURCE
+    // assertion below would be inspecting a type declaration.
+    const body = dependencyBody('deleteBanner');
+    assert.match(body, /getSupabaseAdmin\(c\)/, 'should be the implementation, which builds a client');
+    assert.doesNotMatch(body, /Promise<boolean>/, 'should not be the interface member');
+});
+
+test('SOURCE: the real delete distinguishes "deleted" from "was never there"', () => {
+    const body = dependencyBody('deleteBanner');
+    assert.match(body, /\.delete\(\)/);
+    // Without selecting the row back, a DELETE against a missing id reports success and the operator
+    // believes a banner is gone. `return true` would pass every injected-dependency test above.
+    assert.match(body, /\.select\('id'\)/, 'the deleted row must be selected back');
+    assert.match(body, /return Boolean\(/, 'the result must be derived from whether a row came back');
+    assert.doesNotMatch(body, /return true;/, 'a delete must never report unconditional success');
+});
+
+test('SOURCE: the real update writes only the fields that were sent', () => {
+    const body = dependencyBody('updateBanner');
+    // Built key by key: `undefined` means "not sent" and must not be written, while an explicit
+    // `null` on a nullable column means "clear it" and must be. A spread would conflate them.
+    assert.match(body, /if \(input\.title !== undefined\) patch\.title = input\.title;/);
+    assert.match(body, /if \(input\.is_active !== undefined\) patch\.is_active = input\.is_active;/);
+    assert.doesNotMatch(body, /\.\.\.input/, 'spreading input would write undefined over stored values');
+    assert.match(body, /\.eq\('id', id\)/, 'an update must be scoped to the one row');
+});
+
+test('SOURCE: every operator query targets marketplace_banners and nothing else', () => {
+    const tables = [...operationsSource.matchAll(/\.from\('([a-z_]+)'\)/g)].map((m) => m[1]);
+    assert.ok(tables.length >= 4, 'list, create, update and delete should each read the table');
+    assert.deepEqual([...new Set(tables)], ['marketplace_banners']);
 });
