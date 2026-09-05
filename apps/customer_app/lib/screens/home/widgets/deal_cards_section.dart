@@ -1,16 +1,74 @@
-// Deal Cards Section - Products with highest views
+// Deal Cards Section — discounted listings from the canonical marketplace feed.
+//
+// FB-2 (2026-09-05): this section read Firestore directly, ordering `products` by `viewCount`. The
+// canonical feed has no popularity signal — it is keyset-ordered by `approved_at` — so the section
+// now shows the newest approved listings that carry a discount. That is an honest degradation, not
+// an equivalent: "trending" is a capability the canonical backend does not have yet, recorded in
+// CAPABILITY_BACKLOG rather than faked with a different sort presented as the same thing.
+//
+// The discount is now COMPUTED from the gateway's `price` and `compare_price` instead of read from a
+// stored `discount` field. Server-authoritative pricing is the rule for money everywhere else in
+// this platform; a discount a client reads from a document is a number nobody recomputed.
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
-class DealCardsSection extends StatelessWidget {
-  const DealCardsSection({super.key});
+import '../../../data/marketplace_repository.dart';
+
+/// Percent off, derived from the canonical pair. Returns 0 whenever a discount cannot be
+/// established, and is never negative or above 100.
+///
+/// The `comparePrice <= 0 || price < 0` guard is load-bearing and not defensive noise: a compare
+/// price of 0 makes the division Infinity, and `Infinity.floor()` THROWS rather than returning a
+/// number, so a single bad row would take down the whole section. A negative price would otherwise
+/// read as a confident "100% off" after clamping. Both are covered by their own tests, each
+/// observed failing with that guard removed.
+///
+/// `comparePrice <= price` is redundant with the clamp — an inverted pair already floors to a
+/// negative and clamps to 0 — and is kept only because it states the intent at the point of the
+/// check. Do not read it as the thing preventing negative output; the clamp is.
+int discountPercent({num? price, num? comparePrice}) {
+  if (price == null || comparePrice == null) return 0;
+  if (comparePrice <= 0 || price < 0) return 0;
+  if (comparePrice <= price) return 0;
+  final pct = ((comparePrice - price) / comparePrice) * 100;
+  return pct.floor().clamp(0, 100);
+}
+
+class DealCardsSection extends StatefulWidget {
+  const DealCardsSection({super.key, this.repository});
+
+  /// Injected in tests. Production builds resolve the canonical repository from the provider tree.
+  final MarketplaceRepository? repository;
+
+  @override
+  State<DealCardsSection> createState() => _DealCardsSectionState();
+}
+
+class _DealCardsSectionState extends State<DealCardsSection> {
+  Future<List<MarketplaceFeedItem>>? _deals;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _deals ??= _load();
+  }
+
+  Future<List<MarketplaceFeedItem>> _load() async {
+    final repo = widget.repository ?? context.read<MarketplaceRepository>();
+    // Ask for more than we render: the discount filter runs client-side because the gateway has no
+    // "on sale" predicate, so a page of 10 could come back with nothing to show.
+    final page = await repo.feed(limit: 30);
+    return page.items
+        .where((item) => discountPercent(price: item.price, comparePrice: item.comparePrice) > 0)
+        .take(10)
+        .toList(growable: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,25 +129,29 @@ class DealCardsSection extends StatelessWidget {
   }
 
   Widget _buildDealsStream(bool isDark, BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('products')
-          .where('approvalStatus', isEqualTo: 'approved')
-          .where('inStock', isEqualTo: true)
-          .orderBy('viewCount', descending: true)
-          .limit(10)
-          .snapshots(),
+    return FutureBuilder<List<MarketplaceFeedItem>>(
+      future: _deals,
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator(strokeWidth: 2));
         }
 
-        final products = snapshot.data!.docs
-            .map((doc) => ProductModel.fromFirestore(doc))
-            .where((p) => p.discount > 0) // Only show products with discount
-            .toList();
+        // A failed read is shown as a failed read. Falling through to the empty state would tell a
+        // shopper there are no deals when the truth is that we could not find out.
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              "Couldn't load deals",
+              style: TextStyle(
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+                fontSize: 12,
+              ),
+            ),
+          );
+        }
 
-        if (products.isEmpty) {
+        final deals = snapshot.data ?? const <MarketplaceFeedItem>[];
+        if (deals.isEmpty) {
           return Center(
             child: Text(
               'No deals available',
@@ -104,17 +166,20 @@ class DealCardsSection extends StatelessWidget {
         return ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          itemCount: products.length,
+          itemCount: deals.length,
           itemBuilder: (context, index) {
-            return _buildDealCard(products[index], isDark, context);
+            return _buildDealCard(deals[index], isDark, context);
           },
         );
       },
     );
   }
 
-  Widget _buildDealCard(ProductModel product, bool isDark, BuildContext context) {
-    // Generate a random background color based on product
+  Widget _buildDealCard(MarketplaceFeedItem deal, bool isDark, BuildContext context) {
+    final discount = discountPercent(price: deal.price, comparePrice: deal.comparePrice);
+
+    // Deterministic per-listing tint. `abs()` matters: hashCode is signed, and a negative index
+    // throws rather than wrapping.
     final colors = [
       Colors.pink.shade100,
       AppColors.infoLight.withValues(alpha: 0.3),
@@ -123,7 +188,7 @@ class DealCardsSection extends StatelessWidget {
       AppColors.accentLight.withValues(alpha: 0.3),
       AppColors.primaryLighter.withValues(alpha: 0.3),
     ];
-    final bgColor = colors[product.id.hashCode % colors.length];
+    final bgColor = colors[deal.listingId.hashCode.abs() % colors.length];
 
     return GestureDetector(
       onTap: () {
@@ -131,7 +196,11 @@ class DealCardsSection extends StatelessWidget {
         Navigator.pushNamed(
           context,
           AppRoutes.productDetails,
-          arguments: product.id,
+          // The canonical detail route is addressed by LISTING id — that is what
+          // GET /storefront/marketplace/listings/:id takes, and it is what carries the
+          // marketplace fence. A product id would identify the merchant's product without
+          // saying anything about whether it is publicly listed.
+          arguments: deal.listingId,
         );
       },
       child: Container(
@@ -157,7 +226,7 @@ class DealCardsSection extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: CachedNetworkImage(
-                    imageUrl: product.images.isNotEmpty ? product.images.first : '',
+                    imageUrl: deal.images.isNotEmpty ? deal.images.first : '',
                     fit: BoxFit.contain,
                     placeholder: (context, url) => const Center(
                       child: Icon(Icons.image, size: 32),
@@ -184,9 +253,9 @@ class DealCardsSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Discount Label
-                  if (product.discount > 0)
+                  if (discount > 0)
                     Text(
-                      'Up to ${product.discount.toInt()}% Off',
+                      'Up to $discount% Off',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
@@ -196,7 +265,7 @@ class DealCardsSection extends StatelessWidget {
                   const SizedBox(height: 2),
                   // Category/Name
                   Text(
-                    product.name,
+                    deal.name,
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w500,

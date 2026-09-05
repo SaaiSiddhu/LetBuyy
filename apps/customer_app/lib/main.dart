@@ -9,6 +9,10 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
+// Canonical gateway wiring (FB-2)
+import 'data/canonical_api.dart';
+import 'data/marketplace_repository.dart';
+
 // App-specific providers
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
@@ -119,6 +123,11 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // ✅ ADDED: Services for reviews
         Provider<AuthService>(create: (_) => AuthService()),
         Provider<DatabaseService>(create: (_) => DatabaseService()),
+
+        // FB-2: the canonical marketplace read path. Screens depend on the interface, never on
+        // ApiMarketplaceRepository or on an ApiClient directly, so the backend behind a screen is
+        // one decision here rather than a per-file import.
+        Provider<MarketplaceRepository>(create: (_) => buildMarketplaceRepository()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
