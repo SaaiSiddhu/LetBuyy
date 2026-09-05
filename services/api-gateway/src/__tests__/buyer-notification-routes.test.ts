@@ -177,8 +177,11 @@ test('the unread count is for the authenticated buyer only', async () => {
 // the only thing standing between that omission and every buyer reading every inbox. A fake that
 // models the scoping cannot prove the scoping.
 test('the REAL queries are scoped by buyer_account_id, not just the fakes', () => {
+    // CAP-FB-RETURNS moved the buyer wiring into its own module (the host file hit the 1500-line
+    // budget again). This test caught that move, which is the guard working — the anchor follows the
+    // code rather than the code being kept where the test happened to look.
     const wiring = readFileSync(
-        new URL('../routes/storefront/customer-engagement-routes.ts', import.meta.url),
+        new URL('../routes/storefront/buyer-realm-wiring.ts', import.meta.url),
         'utf8',
     );
     const block = wiring.slice(

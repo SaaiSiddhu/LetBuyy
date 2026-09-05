@@ -13,11 +13,7 @@ import { issueCustomerSession, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, LET
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { registerCustomerRegistrationRoute } from './customer-registration';
 import { registerCustomerAddressRoutes } from './customer-address-routes';
-import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-account-routes';
-import {
-    registerBuyerNotificationRoutes,
-    BUYER_NOTIFICATION_COLUMNS,
-} from './buyer-notification-routes';
+import { registerBuyerRealmRoutes } from './buyer-realm-wiring';
 
 export type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
@@ -1360,100 +1356,9 @@ export function registerStorefrontCustomerEngagementRoutes(
     // BUYER-3 (D-8): the marketplace buyer realm's data operations. Registered here because this is
     // where the storefront band is composed, but they share nothing with the per-store customer
     // lifecycle above — a buyer is platform-level and carries no store_id at all.
-    registerBuyerAccountRoutes(router, {
-        normalizeEmail,
-        requireStorefrontInternal,
-        loadBuyerByEmail: async (c, email) => getSupabaseAdmin(c)
-            .from('buyer_accounts')
-            .select(BUYER_ACCOUNT_COLUMNS)
-            .eq('email', email)
-            .maybeSingle(),
-        insertBuyer: async (c, row) => getSupabaseAdmin(c)
-            .from('buyer_accounts')
-            .insert(row)
-            .select(BUYER_ACCOUNT_COLUMNS)
-            .single(),
-        setBuyerPassword: async (c, id, passwordHash) => getSupabaseAdmin(c)
-            .from('buyer_accounts')
-            .update({ password_hash: passwordHash, status: 'active' })
-            .eq('id', id)
-            .select(BUYER_ACCOUNT_COLUMNS)
-            .single(),
-        loadBuyerById: async (c, id) => getSupabaseAdmin(c)
-            .from('buyer_accounts')
-            .select(BUYER_ACCOUNT_COLUMNS)
-            .eq('id', id)
-            .maybeSingle(),
-        findOrCreateStoreCustomer: async (c, storeId, email) => {
-            const db = getSupabaseAdmin(c);
-            const existing = await db
-                .from('store_customers')
-                .select('id')
-                .eq('store_id', storeId)
-                .eq('email', email)
-                .maybeSingle<{ id: string }>();
-            if (existing.error) return { data: null, error: existing.error };
-            if (existing.data) return { data: existing.data, error: null };
-            // store_customers is UNIQUE (store_id, email), so a concurrent create loses the race
-            // rather than duplicating. onConflict returns the winner instead of failing.
-            return db
-                .from('store_customers')
-                .upsert({ store_id: storeId, email }, { onConflict: 'store_id,email' })
-                .select('id')
-                .single<{ id: string }>();
-        },
-        linkBuyerToStoreCustomer: async (c, link) => {
-            // ignoreDuplicates: migration 223's unique indexes already guarantee one link per
-            // store_customers row and one per (buyer, site). Re-linking is a no-op, not an error --
-            // a shopper returning to a seller they already have an account with must not fail.
-            const { error } = await getSupabaseAdmin(c)
-                .from('buyer_store_customers')
-                .upsert(
-                    {
-                        buyer_account_id: link.buyerAccountId,
-                        store_customer_id: link.storeCustomerId,
-                        site_id: link.siteId,
-                    },
-                    { onConflict: 'buyer_account_id,store_customer_id', ignoreDuplicates: true },
-                );
-            return { error };
-        },
-    });
-
-    // CAP-FB-NOTIF (D-9): the buyer's own inbox. Every read and write is scoped by the buyer id the
-    // route takes from a VERIFIED session — never a request parameter.
-    registerBuyerNotificationRoutes(router, {
-        listNotifications: async (c, buyerAccountId, limit) => getSupabaseAdmin(c)
-            .from('buyer_notifications')
-            .select(BUYER_NOTIFICATION_COLUMNS)
-            .eq('buyer_account_id', buyerAccountId)
-            .order('created_at', { ascending: false })
-            .limit(limit),
-        countUnread: async (c, buyerAccountId) => {
-            const { count, error } = await getSupabaseAdmin(c)
-                .from('buyer_notifications')
-                .select('id', { count: 'exact', head: true })
-                .eq('buyer_account_id', buyerAccountId)
-                .is('read_at', null);
-            return { count: count ?? 0, error };
-        },
-        // Scoped by BOTH ids. Without the buyer predicate any signed-in buyer could mark any
-        // notification read, and the same omission on a read would expose another inbox entirely.
-        markRead: async (c, buyerAccountId, notificationId) => getSupabaseAdmin(c)
-            .from('buyer_notifications')
-            .update({ read_at: new Date().toISOString() })
-            .eq('id', notificationId)
-            .eq('buyer_account_id', buyerAccountId)
-            .select(BUYER_NOTIFICATION_COLUMNS)
-            .maybeSingle(),
-        markAllRead: async (c, buyerAccountId) => {
-            const { error } = await getSupabaseAdmin(c)
-                .from('buyer_notifications')
-                .update({ read_at: new Date().toISOString() })
-                .eq('buyer_account_id', buyerAccountId)
-                .is('read_at', null);
-            return { error };
-        },
-    });
+    // CAP-FB-* (D-8/D-9): the buyer realm's wiring lives in its own module. It shares nothing
+    // with the per-store customer lifecycle above -- a buyer is platform-level and carries no
+    // store_id -- and keeping it here pushed this file past the 1500-line budget twice.
+    registerBuyerRealmRoutes(router, { normalizeEmail, requireStorefrontInternal });
 
 }
