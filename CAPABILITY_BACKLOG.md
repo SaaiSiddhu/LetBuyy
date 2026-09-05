@@ -130,7 +130,7 @@ choice is made against the real list rather than an impression of it.
 
 | Capability ID | Status |
 |---|---|
-| CAP-FB-NOTIF | **BUILD (D-9)** — buyer notification inbox has no canonical owner |
+| CAP-FB-NOTIF | **CLOSED for the backend (2026-09-05, PHASE-CAP-FB-NOTIF)** — `public.buyer_notifications` (migration 224) plus `GET /storefront/buyer/notifications`, `/unread-count`, `POST /:id/read` and `/read-all`, all behind `requireBuyerSession` and scoped to the token subject. A separate table from the merchant inbox, deliberately. The `customer_app` screen that consumes it is not built. Original row: — buyer notification inbox has no canonical owner |
 | CAP-FB-ADS | **BUILD (D-9) — money: must reach the canonical ledger** — sponsored placements; revenue-bearing, must reach the canonical ledger |
 | CAP-FB-REELS | **BUILD (D-9) — blocked on media-service, a RESERVED root: needs a named trigger + ARB** — social video; blocked on a media pipeline (`media-service` is RESERVED/empty) |
 | CAP-FB-CHAT | **BUILD (D-9)** — buyer↔seller messaging and support inbox |
