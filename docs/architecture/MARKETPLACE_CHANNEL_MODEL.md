@@ -102,8 +102,17 @@ RLS: `ENABLE` + `FORCE`; `FOR SELECT` and `FOR INSERT` policies on `site_id = pu
 | `draft \| pending_review \| approved \| paused \| rejected → delisted` | merchant | none |
 | `pending_review → approved \| rejected` | operator | `rejected` requires a reason |
 | `approved → delisted` | operator | takedown; reason required |
+| `draft → approved` | migration (MIG-0, D-MIG-REALM, 2026-09-05) | reason ALWAYS required; passes the same category/sellability check `pending_review` does — the only checkpoint before an imported listing is visible, since this edge skips `pending_review` entirely |
 
 Every other edge raises `invalid_transition`. Terminal: `delisted`.
+
+The `migration` realm exists for exactly one purpose: a bulk import (CAP-MIG-1, not yet built) creating
+an already-approved listing with an honest audit trail, instead of either leaving no moderation event
+(the trigger only fires on UPDATE, so INSERT can set any status silently) or misattributing the row to
+a human operator who never reviewed it. It is fenced by the SAME code path as `operator` — not a
+realm-specific branch — so it inherits "never inside a tenant transaction" for free. `approved_at` is
+stamped exactly as it is for an operator approval (`marketplace_feed`'s keyset pagination depends on
+it); `reviewed_at`/`reviewed_by` stay `NULL`, honestly, since no human reviewed it.
 
 ## 5. Functions (all `SECURITY DEFINER`, `SET search_path = pg_catalog, public`, extension calls schema-qualified)
 
@@ -114,7 +123,7 @@ Returns `(listing_id, from_status, to_status, event_id, replayed boolean)`.
 1. Validate arguments (realm and status against their CHECK lists; empty key rejected).
 2. `PERFORM pg_advisory_xact_lock(hashtextextended(p_site_id::text || ':' || p_idempotency_key, 0));` — **before** any lookup.
 3. If an event with `(site_id, idempotency_key)` exists, return it with `replayed = true` and change nothing.
-4. **Realm fence.** `merchant`: `public.current_site_id()` must equal `p_site_id` (fail closed; an unset GUC raises). `operator`: the caller's role must not be `app_tenant` and the GUC must be unset — an operator never acts inside a tenant transaction, and the only role a merchant request can run as can never take an operator edge. Two things that look like the right test are not: role *membership* (`service_role` is a member of `app_tenant`, `164:21`) and `current_user` (inside a `SECURITY DEFINER` function it is the definer, measured as `postgres` while the caller sat in `SET LOCAL ROLE app_tenant`). The caller's `SET ROLE` is read through `current_setting('role', true)`, which the executable test proves reflects it. Operator identity itself is asserted by the gateway (ADM-1); the database fences the role, not the person.
+4. **Realm fence.** `merchant`: `public.current_site_id()` must equal `p_site_id` (fail closed; an unset GUC raises). Any other realm — `operator` or `migration` — falls into the same `ELSE` branch: the caller's role must not be `app_tenant` and the GUC must be unset. Neither acts inside a tenant transaction, and the only role a merchant request can run as can never take either edge. Two things that look like the right test are not: role *membership* (`service_role` is a member of `app_tenant`, `164:21`) and `current_user` (inside a `SECURITY DEFINER` function it is the definer, measured as `postgres` while the caller sat in `SET LOCAL ROLE app_tenant`). The caller's `SET ROLE` is read through `current_setting('role', true)`, which the executable test proves reflects it. Operator identity itself is asserted by the gateway (ADM-1); the database fences the role, not the person.
 5. `SELECT … FROM channel_listings WHERE id = p_listing_id AND site_id = p_site_id FOR UPDATE`; missing ⇒ `listing_not_found` (same message for wrong site — no cross-tenant existence oracle).
 6. Check the edge in §4; run its preconditions.
 7. `SELECT set_config('app.channel_listing_transition', 'rpc', true)`; update the listing (status, `version + 1`, the timestamp for that edge, `reviewed_by`, `rejection_reason`); insert the event; return.
