@@ -21,6 +21,7 @@ import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
+import { registerSponsoredProductRoutes, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
 import { addBusinessDays, generateTicketRef } from '../operations/support';
@@ -208,6 +209,18 @@ export function registerBuyerRealmRoutes(
     // for a build too old to log in. Registered here because this module already composes the
     // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
     // binary, so a release belongs to the platform.
+    registerSponsoredProductRoutes(router, {
+        // A designed CROSS-TENANT read, so it goes through a SECURITY DEFINER function exactly as
+        // marketplace_feed (217) does. Every fence — campaign active and in window, placement active,
+        // product visible, seller published — lives in the function, where a later caller cannot omit
+        // one, and the column list there is an explicit allowlist.
+        loadSponsored: async (c, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .rpc('marketplace_sponsored_products', { p_limit: limit });
+            return { data: (data || null) as SponsoredPlacementRow[] | null, error };
+        },
+    });
+
     registerBuyerLoyaltyRoutes(router, {
         // The balance comes from the database's own loyalty_balance() projection. Summing entries
         // here would be a SECOND projection of a money balance, and the two would eventually
