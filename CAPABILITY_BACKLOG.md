@@ -137,7 +137,7 @@ choice is made against the real list rather than an impression of it.
 | CAP-FB-SOCIAL | **BUILD (D-9)** — follower graph and seller profile surface |
 | CAP-FB-LOYALTY | **BUILD (D-9) — money: must reach the canonical ledger** — points; money-adjacent, ledger-bound |
 | CAP-FB-PERSONALIZE | **BUILD (D-9)** — recently viewed, trending, popularity signal for feed ordering |
-| CAP-FB-RETURNS | **BUILD (D-9)** — buyer-initiated return requests |
+| CAP-FB-RETURNS | **CLOSED for the backend (2026-09-05, PHASE-CAP-FB-RETURNS)** — the register OVERSTATED this gap: `returns`, `return_requests` and `return_lines` already existed canonically and `routes/returns.ts` already managed them merchant-side. What was missing was the buyer request, now `POST /storefront/buyer/orders/:orderId/return-request` and `GET /storefront/buyer/return-requests`, authorized through `request_order_return` (migration 225) which walks buyer → link → store customer → order in one SECURITY DEFINER transaction with an advisory lock. No table added. The `customer_app` screen is not built. Original row: — buyer-initiated return requests |
 | CAP-FB-SHIPPING-PRODUCT | **BUILD (D-9)** — per-product delivery estimates; blocks `delivery_info_widget.dart` |
 | CAP-FB-BANNERS | **BUILD (D-9)** — home merchandising slots |
 | CAP-FB-APPUPDATE | **BUILD (D-9)** — forced-update gating |
