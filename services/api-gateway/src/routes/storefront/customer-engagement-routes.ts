@@ -14,6 +14,10 @@ import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
 import { registerCustomerRegistrationRoute } from './customer-registration';
 import { registerCustomerAddressRoutes } from './customer-address-routes';
 import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-account-routes';
+import {
+    registerBuyerNotificationRoutes,
+    BUYER_NOTIFICATION_COLUMNS,
+} from './buyer-notification-routes';
 
 export type AppContext = Context<{ Bindings: Env }>;
 type SqlRecord = Record<string, unknown>;
@@ -1412,6 +1416,42 @@ export function registerStorefrontCustomerEngagementRoutes(
                     },
                     { onConflict: 'buyer_account_id,store_customer_id', ignoreDuplicates: true },
                 );
+            return { error };
+        },
+    });
+
+    // CAP-FB-NOTIF (D-9): the buyer's own inbox. Every read and write is scoped by the buyer id the
+    // route takes from a VERIFIED session — never a request parameter.
+    registerBuyerNotificationRoutes(router, {
+        listNotifications: async (c, buyerAccountId, limit) => getSupabaseAdmin(c)
+            .from('buyer_notifications')
+            .select(BUYER_NOTIFICATION_COLUMNS)
+            .eq('buyer_account_id', buyerAccountId)
+            .order('created_at', { ascending: false })
+            .limit(limit),
+        countUnread: async (c, buyerAccountId) => {
+            const { count, error } = await getSupabaseAdmin(c)
+                .from('buyer_notifications')
+                .select('id', { count: 'exact', head: true })
+                .eq('buyer_account_id', buyerAccountId)
+                .is('read_at', null);
+            return { count: count ?? 0, error };
+        },
+        // Scoped by BOTH ids. Without the buyer predicate any signed-in buyer could mark any
+        // notification read, and the same omission on a read would expose another inbox entirely.
+        markRead: async (c, buyerAccountId, notificationId) => getSupabaseAdmin(c)
+            .from('buyer_notifications')
+            .update({ read_at: new Date().toISOString() })
+            .eq('id', notificationId)
+            .eq('buyer_account_id', buyerAccountId)
+            .select(BUYER_NOTIFICATION_COLUMNS)
+            .maybeSingle(),
+        markAllRead: async (c, buyerAccountId) => {
+            const { error } = await getSupabaseAdmin(c)
+                .from('buyer_notifications')
+                .update({ read_at: new Date().toISOString() })
+                .eq('buyer_account_id', buyerAccountId)
+                .is('read_at', null);
             return { error };
         },
     });
