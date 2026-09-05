@@ -117,7 +117,7 @@ async function readJson(c: AppContext): Promise<unknown> {
     return c.req.json().catch(() => ({}));
 }
 
-function addBusinessDays(start: Date, days: number): Date {
+export function addBusinessDays(start: Date, days: number): Date {
     const date = new Date(start);
     let remaining = days;
     while (remaining > 0) {
@@ -128,7 +128,9 @@ function addBusinessDays(start: Date, days: number): Date {
     return date;
 }
 
-function generateTicketRef(now = new Date()): string {
+// Exported so the buyer-realm support routes use the SAME reference format. A second generator
+// would give the same ticket system two human-facing reference shapes.
+export function generateTicketRef(now = new Date()): string {
     const year = now.getUTCFullYear();
     const random = crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase();
     return `SUP-${year}-${random}`;
