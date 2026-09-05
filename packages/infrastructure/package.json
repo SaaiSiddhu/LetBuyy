@@ -7,11 +7,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./stripe-adapter": "./stripe-adapter/index.ts",
     "./razorpay-adapter": "./razorpay-adapter/index.ts",
-    "./cashfree-adapter": "./cashfree-adapter/index.ts",
     "./cod-adapter": "./cod-adapter/index.ts",
-    "./paypal-adapter": "./paypal-adapter/index.ts",
     "./supabase-adapter": "./supabase-adapter/index.ts",
     "./cloudflare-adapter": "./cloudflare-adapter/index.ts",
     "./resend-adapter": "./resend-adapter/index.ts",
@@ -42,8 +39,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
     "postgres": "^3.4.7",
-    "resend": "^6.9.2",
-    "stripe": "^20.3.1"
+    "resend": "^6.9.2"
   },
   "devDependencies": {
     "@types/node": "^20",
