@@ -106,6 +106,9 @@ const migrationRaw = readFileSync(join(SRC, '../../../database/supabase/migratio
 // sentence "the balance is derived from this" — and an absence check over documented code that reads
 // its own prose is the use-versus-mention trap this session has now hit five times.
 const migration = migrationRaw.replace(/--[^\n]*/g, ' ');
+const redeemMigration = readFileSync(
+    join(SRC, '../../../database/supabase/migrations/233_loyalty_redeem_authoritative_amount.sql'), 'utf8',
+).replace(/--[^\n]*/g, ' ');
 
 test('SOURCE: the balance comes from the database projection, never summed in TypeScript', () => {
     assert.match(block, /\.rpc\('loyalty_balance'/, 'the one projection must be the database function');
@@ -159,4 +162,36 @@ test('SOURCE: the earn path reads the order total from the ORDER and requires it
     assert.match(body, /FROM public\.orders o[\s\S]*payment_status = 'paid'/, 'points require a paid order');
     assert.match(body, /o\.site_id = p_site_id/, 'one merchant must not fund another');
     assert.match(body, /floor\(/, 'rounding up would issue a point the merchant did not fund');
+});
+
+
+// ── F-LOY-1 part 2: redemption takes the authoritative payable amount ──────────
+
+test('SOURCE: the redeem RPC takes a payable amount, and it can only TIGHTEN the cap', () => {
+    // Inside create_checkout_order, orders.total is mid-mutation: the order is created by
+    // create_order_with_inventory_reservations before shipping, tax and discount are folded in, and
+    // `total` is later overwritten with the post-gift-card payable. Capping against that row means
+    // "50% of the order" silently denotes two different numbers depending on call position.
+    assert.match(redeemMigration, /p_max_value_minor bigint DEFAULT NULL/, 'the caller must pass the authoritative amount');
+    // LEAST of the caller's amount and the order's own basis: passing an amount can never RAISE the
+    // cap, so the parameter cannot be used to redeem beyond the programme's limit.
+    assert.match(redeemMigration, /v_basis_minor := LEAST\(/);
+    assert.match(redeemMigration, /COALESCE\(p_max_value_minor,/);
+    // The value applied can never exceed what the caller said is payable, independently of the cap
+    // arithmetic above.
+    assert.match(redeemMigration, /v_value_minor > p_max_value_minor/);
+    assert.match(redeemMigration, /the payable amount cannot be negative/);
+});
+
+test('SOURCE: the old redeem signature is DROPPED, never left as an overload', () => {
+    // Two callable versions of a money RPC is a second authority, resolved by argument count.
+    assert.match(redeemMigration, /DROP FUNCTION IF EXISTS public\.redeem_loyalty_points\(uuid, uuid, uuid, bigint, text, text, uuid\)/);
+});
+
+test('SOURCE: points are clamped BEFORE the debit, never after', () => {
+    // Debiting the requested points and then applying a smaller value would destroy the difference:
+    // the buyer pays points for value they never received.
+    const capAt = redeemMigration.indexOf('redemption exceeds the programme cap');
+    const insertAt = redeemMigration.indexOf('INSERT INTO public.loyalty_ledger_entries');
+    assert.ok(capAt > 0 && insertAt > capAt, 'the cap check must precede the ledger write');
 });
