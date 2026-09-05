@@ -94,6 +94,30 @@ scope**, never evidence that a port exists.
 Unanswered: on the survival question the owner also ticked "Something else" without text —
 **D-FEAT-EXTRA** (§6). Nothing is scoped for it until the owner names it.
 
+## 2b. Owner decisions of 2026-09-05 — OWNER_DECISION
+
+Given in chat on 2026-09-05, in answer to questions this session put to the owner directly. Recorded
+the same day, because D-0…D-7 were given in chat on 2026-09-04 and were still only partly recorded a
+day later — that gap is how a decision gets silently re-litigated or assumed. Where the owner's own
+words settle it, they are quoted verbatim. Where a decision carries a cost the owner accepted, the
+cost is recorded with it: a decision written without its trade-off reads later as though there was none.
+
+| ID | Decision | Status and consequence |
+|---|---|---|
+| **D-8** | **Marketplace buyer identity = a platform buyer realm.** `identity-platform` issues a buyer token as a **third realm**, linked to per-store `store_customers` rows. | **OWNER_DECISION.** Resolves `CAP-FB-BUYER-IDENTITY` and unblocks FB-3/FB-4/FB-5. Rejected: per-store-only login (a separate password per seller — a different product) and a browse-only marketplace. This is the largest of the three options and the only one preserving the current product. It is also the opportunity to *not* inherit the HS256 `CUSTOMER_SESSION_SECRET` deviation (`ART-05`/`SEC-R7`: the verification key is the forgery key) — the new realm must be asymmetric and issued by `identity-platform`, and buyer auth must never grant merchant or operator rights. |
+| **D-9** | **The eleven `CAP-FB-*` capability areas are BUILT canonically.** None is cut. | **OWNER_DECISION.** Notifications, ads, reels, buyer↔seller chat, banners, follower graph, loyalty, personalization, returns, per-product shipping, app-update gating. Rejected: cutting them, and keeping Firebase for them. Two carry money: **ads** and **loyalty** must reach the canonical double-entry ledger, never a side wallet (Constitution: one canonical ledger, every transaction balances). **reels** is blocked on a media pipeline — `services/media-service` is a RESERVED empty root, and filling it needs a named trigger plus ARB approval, so reels cannot start by quietly activating it. |
+| **D-10** | **Firebase is deleted in ONE cutover after every area exists canonically** — not per-area as each lands. | **OWNER_DECISION.** Cost the owner accepted, recorded honestly: `customer_app` runs on the retired provider for the whole build, two systems look live for that entire period, and the final cutover is large and hard to stage. FB-4 and FB-5 are therefore **deferred behind D-9's full programme**, and the 2026-09-05 "delete firebase completely" directive is satisfied at the end of it, not before. FB-1's deletions (`admin_app`, `firebase_bridge`) already landed and are unaffected. |
+| **D-11** | **No dev/staging Supabase.** Local throwaway Postgres containers remain the only database. | **OWNER_DECISION.** Cost the owner accepted: migrations 217, 220 and 221 are applied to **no database anywhere**, so `/storefront/marketplace/{feed,categories,listings/:id}` and `/operations/marketplace-listings` have never returned a row to anyone. SQL and RPC behaviour can still be proven in containers; **route-level behaviour cannot** — Hono routing, auth middleware and the real gateway stay unexercised. Every HTTP-level claim therefore stays `CLAIMED_NOT_VERIFIED` and **must be reported that way**, never as working. This is the failure mode that hid the CSP block and the crash-before-signature-check S0s. |
+| **D-12** | **`develop` is not pushed.** Work stays on this machine. | **OWNER_DECISION.** `config.push_develop` stays `false`. Cost accepted: 23+ phase merges exist only on this disk with no off-machine copy. `staging` and `main` remain at `823aa5ee`. |
+| **D-13** | **All eleven areas are in scope; no owner-specified order.** | **OWNER_DECISION** on scope; sequencing delegated. The owner answered "all" to the build-order question, so order falls to **dependency, not preference**: **D-8's buyer realm goes first**, because notifications, loyalty, returns, the follower graph and chat are all account-scoped and cannot be *correct* — not merely incomplete — before there is a buyer identity to scope them to. |
+| **D-14** | **MIG-0's `migration` actor realm is rolled back.** | **OWNER_DECISION** (owner took the recommendation). Migration 221 added the realm for the bulk Firestore import that the owner then cancelled; it has no caller anywhere. An unused privileged branch inside a tenancy-fenced RPC is a path something later calls that should not have it. |
+| **D-15** | **Work proceeds on BOTH the `admin_web` moderation screen and the backend list**, not one or the other. | **OWNER_DECISION.** Answers the "backend canonical first" steer for this case: `CAP-ADM-2`'s backend half is already closed (PHASE-ADM-1), so the remaining work is a Next.js screen, and without it nothing can ever reach `approved` and the marketplace feed stays permanently empty. |
+
+**What these do NOT decide.** D-2 stays open for counsel. `D-ID` (commit identity and trailer
+policy) stays open — the owner is creating a new account. `D-FEAT-EXTRA` and `D-KYC-VENDOR` are
+untouched. Amendment 1's Signature Block in `00b_topology_amendment_draft.md` remains outstanding and
+is not cured by any of the above.
+
 ## 3. Constitutional rules that bind every phase — CONSTITUTIONAL_DECISION
 
 - **Money.** One append-only double-entry ledger; balance derived, never a mutable column; money

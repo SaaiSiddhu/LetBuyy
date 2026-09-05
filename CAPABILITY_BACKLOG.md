@@ -116,9 +116,12 @@ whole route tree, not assumed.
 | App release control | `app_updates` | Forced-update gating. |
 | Auth-adjacent | `auth_logs`, `sessions`, `email_index` | FB-3's scope, not this register's. |
 
-**What this means for the sequence.** FB-3 (auth) and FB-4 (storage/core) can proceed as planned.
-Everything in the second table is a **product decision the owner has to make** and that no phase
-should make silently — for each area: build it canonically, cut the feature, or keep `customer_app`
+**What this means for the sequence — ANSWERED 2026-09-05.** **D-9: every area below is BUILT
+canonically; none is cut.** **D-10: Firebase is deleted in ONE cutover after all of them exist**, not
+per-area, so FB-4 and FB-5 are deferred behind the whole programme. **D-13: no owner-specified order**,
+so sequencing follows dependency — D-8's buyer realm first, because notifications, loyalty, returns,
+the follower graph and chat are account-scoped and cannot be *correct* before there is a buyer
+identity to scope them to. What follows was the open product question — for each area: build it canonically, cut the feature, or keep `customer_app`
 on Firebase for it (which contradicts the 2026-09-05 decision). The measured answer to *"can
 `customer_app` come off Firebase without losing features?"* is **no** — not without either building
 roughly ten capability areas in the gateway or removing them from the app. Recorded here so the
@@ -126,22 +129,38 @@ choice is made against the real list rather than an impression of it.
 
 | Capability ID | Status |
 |---|---|
-| CAP-FB-NOTIF | OPEN — buyer notification inbox has no canonical owner |
-| CAP-FB-ADS | OPEN — sponsored placements; revenue-bearing, must reach the canonical ledger |
-| CAP-FB-REELS | OPEN — social video; blocked on a media pipeline (`media-service` is RESERVED/empty) |
-| CAP-FB-CHAT | OPEN — buyer↔seller messaging and support inbox |
-| CAP-FB-SOCIAL | OPEN — follower graph and seller profile surface |
-| CAP-FB-LOYALTY | OPEN — points; money-adjacent, ledger-bound |
-| CAP-FB-PERSONALIZE | OPEN — recently viewed, trending, popularity signal for feed ordering |
-| CAP-FB-RETURNS | OPEN — buyer-initiated return requests |
-| CAP-FB-SHIPPING-PRODUCT | OPEN — per-product delivery estimates; blocks `delivery_info_widget.dart` |
-| CAP-FB-BANNERS | OPEN — home merchandising slots |
-| CAP-FB-APPUPDATE | OPEN — forced-update gating |
+| CAP-FB-NOTIF | **BUILD (D-9)** — buyer notification inbox has no canonical owner |
+| CAP-FB-ADS | **BUILD (D-9) — money: must reach the canonical ledger** — sponsored placements; revenue-bearing, must reach the canonical ledger |
+| CAP-FB-REELS | **BUILD (D-9) — blocked on media-service, a RESERVED root: needs a named trigger + ARB** — social video; blocked on a media pipeline (`media-service` is RESERVED/empty) |
+| CAP-FB-CHAT | **BUILD (D-9)** — buyer↔seller messaging and support inbox |
+| CAP-FB-SOCIAL | **BUILD (D-9)** — follower graph and seller profile surface |
+| CAP-FB-LOYALTY | **BUILD (D-9) — money: must reach the canonical ledger** — points; money-adjacent, ledger-bound |
+| CAP-FB-PERSONALIZE | **BUILD (D-9)** — recently viewed, trending, popularity signal for feed ordering |
+| CAP-FB-RETURNS | **BUILD (D-9)** — buyer-initiated return requests |
+| CAP-FB-SHIPPING-PRODUCT | **BUILD (D-9)** — per-product delivery estimates; blocks `delivery_info_widget.dart` |
+| CAP-FB-BANNERS | **BUILD (D-9)** — home merchandising slots |
+| CAP-FB-APPUPDATE | **BUILD (D-9)** — forced-update gating |
 
-## CAP-FB-BUYER-IDENTITY — the marketplace has no buyer account (BLOCKING, owner decision required)
+## CAP-FB-BUYER-IDENTITY — RESOLVED by D-8 (2026-09-05)
 
-**Opened by phase FB-3, 2026-09-05. This is an identity-model question, which Constitution
-§"Never decide alone" reserves to the owner and the ARB — no phase may resolve it.**
+**Opened by phase FB-3, 2026-09-05; answered by the owner the same day.**
+
+> **D-8 (OWNER_DECISION, 2026-09-05): the marketplace gets a platform buyer realm.**
+> `identity-platform` issues a buyer token as a **third realm**, linked to per-store `store_customers`
+> rows. Rejected: per-store-only login (a separate password per seller — a different product) and a
+> browse-only marketplace with no accounts.
+
+**What the build must honour.** The new realm is issued by `identity-platform` and must be
+**asymmetric** — this is the chance to stop inheriting the HS256 `CUSTOMER_SESSION_SECRET` deviation
+where the verification key is the forgery key (`ART-05`, `SEC-R7`), not to replicate it into a third
+realm. Buyer auth must never grant merchant or operator rights; the realms stay strictly separated.
+The link to per-store `store_customers` rows is what lets one buyer account span sellers without
+weakening `site_id` as the tenant boundary — a buyer identity is **not** a tenant, and must never be
+used as one.
+
+**Unblocks** FB-3, and after D-9's programme, FB-4 and FB-5.
+
+The measurement that produced the question is kept below, because the build has to satisfy it.
 
 **Measured at `develop` `79c65a7e`:**
 
@@ -173,10 +192,9 @@ than the blocker:
    which `ART-05`/`SEC-R7` exist to keep strictly separated — buyer auth must never grant merchant
    rights.
 
-**The decision the owner has to make**: does LetBuyy's marketplace channel have a platform-level buyer
-identity (a new realm, issued by `identity-platform`, linked to per-store `store_customers` rows), or
-does the marketplace channel not carry accounts at all? Everything downstream of `customer_app`'s auth
-— cart, orders, wishlist, addresses, loyalty — inherits the answer.
+**~~The decision the owner has to make~~ — ANSWERED 2026-09-05 (D-8): a platform-level buyer identity,
+a new realm issued by `identity-platform`, linked to per-store `store_customers` rows.** Everything
+downstream of `customer_app`'s auth — cart, orders, wishlist, addresses, loyalty — inherits it.
 
 **Also measured and recorded while here** (smaller, and subordinate to the above):
 
