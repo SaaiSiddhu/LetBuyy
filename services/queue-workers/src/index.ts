@@ -694,6 +694,24 @@ export default {
         })),
     );
     ctx.waitUntil(
+      // F-LOY-2: loyalty accrual runs HERE and not in the payment RPC. A failure must never roll
+      // back a capture the provider has already settled, and nothing marks an order as awarded
+      // except the ledger entry itself, so a failed run simply retries on the next tick.
+      runLoyaltyEarnSweeper(env, {
+        requestId: `scheduled:loyalty-earn:${cron}:${Date.now()}`,
+      })
+        .then((result) => writeQueueLog('info', {
+          route: 'scheduled.loyalty_earn',
+          status: 'completed',
+          result,
+        }))
+        .catch((error) => writeQueueLog('error', {
+          route: 'scheduled.loyalty_earn',
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'loyalty earn sweeper failed',
+        })),
+    );
+    ctx.waitUntil(
       runExecutiveAnalyticsRollup(env, {
         requestId: `scheduled:executive-analytics:${cron}:${Date.now()}`,
         reason: 'Nightly executive analytics rollup from queue-worker scheduled trigger.',
