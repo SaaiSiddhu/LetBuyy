@@ -18,6 +18,7 @@ import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './b
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
+import { registerPersonalizationRoutes } from './personalization-routes';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerRealmRoutesDeps {
@@ -201,6 +202,67 @@ export function registerBuyerRealmRoutes(
     // for a build too old to log in. Registered here because this module already composes the
     // marketplace-client surface, though it is not buyer-scoped: every store's buyers run the same
     // binary, so a release belongs to the platform.
+    registerPersonalizationRoutes(router, {
+        // Viewing again UPDATES the timestamp: 230's PK is (buyer, product), so the history holds one
+        // row per product and cannot fill with ten copies of the item a buyer keeps returning to.
+        recordView: async (c, buyerAccountId, productId) => {
+            const { error } = await getSupabaseAdmin(c)
+                .from('buyer_product_views')
+                .upsert(
+                    { buyer_account_id: buyerAccountId, product_id: productId, viewed_at: new Date().toISOString() },
+                    { onConflict: 'buyer_account_id,product_id' },
+                );
+            return { error };
+        },
+        // Joined to products and filtered to publicly-visible ones. A buyer can POST any product id,
+        // so without this filter the history would read back names and prices of catalogue they were
+        // never allowed to see. The projection is the narrow public one for the same reason.
+        listRecentlyViewed: async (c, buyerAccountId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('buyer_product_views')
+                .select('product_id, viewed_at, products!inner(name, slug, price, images, site_id, is_active, deleted_at)')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('products.is_active', true)
+                .is('products.deleted_at', null)
+                .order('viewed_at', { ascending: false })
+                .limit(limit);
+            const rows = (data || []).map((row) => {
+                // PostgREST types an embedded relation as an array even when !inner makes it exactly
+                // one row, so it is normalised here rather than asserted away.
+                const embedded = (row as unknown as { products?: unknown }).products;
+                const product = (Array.isArray(embedded) ? embedded[0] : embedded) as Record<string, unknown> | undefined ?? {};
+                const images = Array.isArray(product.images) ? product.images : [];
+                return {
+                    product_id: (row as unknown as { product_id: string }).product_id,
+                    viewed_at: (row as unknown as { viewed_at: string }).viewed_at,
+                    name: (product.name as string) ?? null,
+                    slug: (product.slug as string) ?? null,
+                    price: (product.price as number) ?? null,
+                    image_url: typeof images[0] === 'string' ? (images[0] as string) : null,
+                    site_id: (product.site_id as string) ?? null,
+                };
+            });
+            return { data: error ? null : rows, error };
+        },
+        clearRecentlyViewed: async (c, buyerAccountId) => {
+            const { error } = await getSupabaseAdmin(c)
+                .from('buyer_product_views')
+                .delete()
+                .eq('buyer_account_id', buyerAccountId);
+            return { error };
+        },
+        listTrendingSearches: async (c) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('marketplace_trending_searches')
+                .select('id, term, position')
+                .eq('is_active', true)
+                .order('position', { ascending: true })
+                .order('created_at', { ascending: true })
+                .limit(20);
+            return { data: (data || null) as { id: string; term: string; position: number }[] | null, error };
+        },
+    });
+
     registerSellerFollowRoutes(router, {
         // ON CONFLICT DO NOTHING makes a repeat follow one row rather than an error, and `created`
         // still distinguishes "now following" from "already following". 229's PK is what makes this
