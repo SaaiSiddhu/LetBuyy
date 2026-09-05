@@ -65,7 +65,11 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
   case "$f" in
     services/checkout-runtime/*|services/event-bus/*|services/notification-service/*|services/analytics-pipeline/*|services/media-service/*|services/search-service/*|apps/mobile/*|\
     apps/admin_app/*)
-      case "$f" in */runtime.manifest.json|*/AGENTS.md) ;; *) out="${out:+$out,}reserved"; lane reserved;; esac;;
+      # "Gained source" means source is there AFTER the change. A diff that DELETES
+      # source from a reserved root is the rule being satisfied, not broken — and it
+      # is exactly what phase FB-1 did to apps/admin_app, which is how this was
+      # found. Classify by path, then confirm the file still exists before flagging.
+      case "$f" in */runtime.manifest.json|*/AGENTS.md) ;; *) if [ -e "$f" ]; then out="${out:+$out,}reserved"; lane reserved; fi;; esac;;
   esac
   case "$f" in
     docs/*|*.md) out="${out:+$out,}docs"; lane docs;;
