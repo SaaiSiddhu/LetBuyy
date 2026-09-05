@@ -155,11 +155,19 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
 
 Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
 
-- **typecheck** — `@letbuyy/infrastructure#typecheck`: 29 × `TS2322` in `cashfree-adapter`,
-  `paypal-adapter`, `stripe-adapter` (`PaymentProviderName` no longer admits the retired rails;
-  `EXECUTION_LEDGER.md` PHASE-B-VERIFY already records "infrastructure typecheck still has
-  pre-existing adapter/dist failures"). Turbo: 31 successful / 49 tasks. Not a regression; a
-  deletion-gated cleanup of the dead adapters (`AGENTS.md` DEL-R2).
+- **typecheck — CLOSED 2026-09-05 (F-INFRA-2, `cf25d0b7`). The lane is GREEN: 81 successful / 81
+  tasks, exit 0.** It was 29 × `TS2322` in `cashfree-adapter`, `paypal-adapter`, `stripe-adapter`
+  (`PaymentProviderName` no longer admitted the retired rails); the adapters were `SAFE_DELETE`d
+  under **D-16**. Do not inherit this red — if typecheck is red on your branch, it is **yours**.
+- **The "Turbo: 31 successful / 49 tasks" that used to sit in the line above was the most important
+  number on this page and was read as a statistic for months.** 18 tasks did not run: turbo cancels a
+  failing task's dependents, so that single red was **suppressing the typecheck of 16 packages,
+  `@letbuyy/api-gateway` among them** — which is how a function imported but defined in no commit
+  left the canonical backend uncompilable on `develop` through every gate run (GW-1, `2c8d27e6`).
+  F-INFRA-1 (`e03d2e2b`) added `--continue` to every root turbo lane so a failure can no longer
+  cancel the rest, and `gate.sh` now prints `(+N more)` and `[NO OUTPUT: <packages>]`.
+  **Whenever a lane reports `N successful / M total` with `M > N`, the gap is work that never ran —
+  read it as coverage lost, never as a summary statistic.**
 - **lint** — `@letbuyy/customer-web#lint`: 921 problems / 38 errors, first in
   `apps/customer_web/scripts/liquid-parity-harness.mjs` — identical to the Phase M baseline
   (`12_final_verification.md`). `identity-platform` 26, `admin-web` 114, `marketing-site` 326 warnings,
