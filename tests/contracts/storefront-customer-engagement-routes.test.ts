@@ -83,14 +83,21 @@ test('storefront customer engagement route order is preserved', () => {
 
 test('storefront customer engagement band stays after page routes and before blog routes', () => {
     const beforeMarker = "router.get('/:subdomain/pages/:slug'";
-    const afterMarker = "router.get('/:subdomain/blog'";
     const beforeIndex = registrationHostSource.indexOf(beforeMarker);
-    const afterIndex = registrationHostSource.indexOf(afterMarker);
+
+    // ROUTE-2: the blog band moved to storefront-blog-routes.ts in ROUTE-1, so the inline
+    // `router.get('/:subdomain/blog'` marker no longer exists in the host file and this assertion
+    // failed. Resolve the band to wherever it now lives — its registration call when extracted,
+    // the inline route when not — which is the same extracted-or-inline fallback this test already
+    // applies to the engagement band a few lines below, rather than a new convention.
+    const blogRegistrationIndex = registrationHostSource.indexOf('registerStorefrontBlogRoutes(router');
+    const inlineBlogIndex = registrationHostSource.indexOf("router.get('/:subdomain/blog'");
+    const afterIndex = blogRegistrationIndex === -1 ? inlineBlogIndex : blogRegistrationIndex;
     const extractedCallIndex = registrationHostSource.indexOf('registerStorefrontCustomerEngagementRoutes(router');
     const inlineFirstRouteIndex = registrationHostSource.indexOf("router.post('/customer/find-or-create'");
 
     assert.notEqual(beforeIndex, -1, 'page route marker should exist');
-    assert.notEqual(afterIndex, -1, 'blog route marker should exist');
+    assert.notEqual(afterIndex, -1, 'the blog band should exist, inline or registered');
 
     const bandIndex = extractedCallIndex === -1 ? inlineFirstRouteIndex : extractedCallIndex;
     assert.notEqual(bandIndex, -1, 'customer engagement band should be inline or registered');
