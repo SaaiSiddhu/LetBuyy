@@ -45,6 +45,7 @@ import {
     AdAccountQuery,
     AdPlacementQuery,
     AllocateAdBudgetSchema,
+    ReleaseAdBudgetSchema,
     CreateAdCampaignSchema,
     CreateAdPlacementSchema,
     ListAdCampaignsQuery,
@@ -52,6 +53,7 @@ import {
     type AdAccountInput,
     type AdPlacementInput,
     type AllocateAdBudgetInput,
+    type ReleaseAdBudgetInput,
     type CreateAdCampaignInput,
     type CreateAdPlacementInput,
     type ListAdCampaignsInput,
@@ -61,6 +63,7 @@ import {
 type AppContext = Context<{ Bindings: Env }>;
 
 export const ALLOCATE_AD_BUDGET_RPC = 'allocate_ad_campaign_budget';
+export const RELEASE_AD_BUDGET_RPC = 'release_ad_campaign_budget';
 // allocated_minor is READ here and never written. Its absence from every write below is the point.
 export const AD_CAMPAIGN_COLUMNS =
     'id, site_id, name, status, allocated_minor, starts_at, ends_at, created_at, updated_at';
@@ -68,6 +71,10 @@ export const AD_PLACEMENT_COLUMNS = 'id, campaign_id, product_id, "position", is
 // The six positional parameters of allocate_ad_campaign_budget, in 232's declared order.
 export const ALLOCATE_AD_BUDGET_SQL =
     `select public.${ALLOCATE_AD_BUDGET_RPC}($1::uuid, $2::uuid, $3::bigint, $4::text, $5::text, $6::uuid) as result`;
+// The six positional parameters of release_ad_campaign_budget, in 242's declared order. Note the
+// amount is THIRD and nullable: passing null releases everything unspent.
+export const RELEASE_AD_BUDGET_SQL =
+    `select public.${RELEASE_AD_BUDGET_RPC}($1::uuid, $2::uuid, $3::bigint, $4::text, $5::text, $6::uuid) as result`;
 
 export type TenantSql = { unsafe: (query: string, parameters?: unknown[]) => Promise<unknown> };
 export type AdsScope = Pick<OwnedStoreScope, 'siteId' | 'customUser' | 'tenant'>;
@@ -113,6 +120,9 @@ export function mapAdsDatabaseError(error: unknown): AppError | null {
     if (/campaign .* does not belong to site/.test(message)) return new NotFoundError('Campaign not found');
     if (/ad credit account is /.test(message)) return new ConflictError('the ad credit account is not active');
     if (/allocation must be greater than zero/.test(message)) return new AppError('amount_minor must be greater than zero', 422, 'UNPROCESSABLE');
+    if (/cannot release .* from a campaign with .* remaining/.test(message)) {
+        return new AppError('cannot release more than the campaign has left', 422, 'RELEASE_EXCEEDS_REMAINING');
+    }
     if (code === '23505') return new ConflictError('this product is already placed in the campaign');
     if (code === '23503') return new AppError('the product or campaign does not belong to this store', 422, 'UNPROCESSABLE');
     return null;
@@ -262,6 +272,37 @@ export function createAdsRouter(deps: AdsRouteDependencies = defaultAdsRouteDepe
                     scope.siteId,
                     id,
                     body.amount_minor,
+                    body.idempotency_key,
+                    scope.tenant.requestId ?? null,
+                    scope.customUser.id,
+                ])) as Array<{ result: unknown }>;
+                return rows[0]?.result ?? null;
+            });
+            return c.json(success(result));
+        } catch (error) {
+            return respond(c, error);
+        }
+    });
+
+    // POST /ads/campaigns/:id/release — return unspent budget to the prepaid balance.
+    //
+    // The inverse of the allocation above, and the reason a typo is not permanent: D-5 makes credits
+    // non-withdrawable, so if they were also non-recoverable a merchant who over-allocated would have
+    // no way back. Releasing does NOT end the campaign — a merchant may trim a budget and keep
+    // running — and ending a campaign does NOT auto-release, because that would change what a status
+    // change means for a merchant who intends to reactivate it.
+    router.post('/campaigns/:id/release', validate('json', ReleaseAdBudgetSchema), async (c) => {
+        const body = c.get('validatedBody') as ReleaseAdBudgetInput;
+        try {
+            const id = uuidParam(c, 'id');
+            const scope = await deps.resolveOwnedStoreScope(c, body.store_id);
+            const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
+                const rows = (await sql.unsafe(RELEASE_AD_BUDGET_SQL, [
+                    scope.siteId,
+                    id,
+                    // Omitted means everything unspent; the amount is decided in the RPC from the
+                    // campaign's own remaining budget, never trusted from the caller beyond a cap.
+                    body.amount_minor ?? null,
                     body.idempotency_key,
                     scope.tenant.requestId ?? null,
                     scope.customUser.id,
