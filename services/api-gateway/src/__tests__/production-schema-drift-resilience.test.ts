@@ -6,6 +6,7 @@ const productsSource = readFileSync(new URL('../routes/products.ts', import.meta
 const ordersSource = readFileSync(new URL('../routes/orders.ts', import.meta.url), 'utf8');
 const appStoreSource = readFileSync(new URL('../routes/app-store.ts', import.meta.url), 'utf8');
 const rateLimitSource = readFileSync(new URL('../middleware/rateLimit.ts', import.meta.url), 'utf8');
+const orderReadCompatSource = readFileSync(new URL('../lib/order-read-compat.ts', import.meta.url), 'utf8');
 
 test('merchant product and order list reads retry without missing optional columns', () => {
     assert.match(productsSource, /function missingColumnFromError/);
@@ -13,7 +14,12 @@ test('merchant product and order list reads retry without missing optional colum
     assert.match(productsSource, /PRODUCT_LIST_COLUMN_NAMES\.includes\(missingColumn/);
     assert.match(productsSource, /omittedColumns\.add\(missingColumn\)/);
 
-    assert.match(ordersSource, /function missingColumnFromError/);
+    // The order-side helper lives in lib/order-read-compat.ts since F-ROUTELEN-1. Assert the whole
+    // chain rather than the substring that used to be here: the function is defined in the module,
+    // AND the route imports it from that module — so moving it again without updating the route
+    // fails here, which a bare `/function missingColumnFromError/` on either file would not.
+    assert.match(orderReadCompatSource, /export function missingColumnFromError/);
+    assert.match(ordersSource, /missingColumnFromError,[\s\S]*?\} from '\.\.\/lib\/order-read-compat'/);
     assert.match(ordersSource, /const omittedColumns = new Set<string>\(\)/);
     assert.match(ordersSource, /ORDER_LIST_COLUMN_NAMES\.includes\(missingColumn/);
     assert.match(ordersSource, /omittedColumns\.add\(missingColumn\)/);
