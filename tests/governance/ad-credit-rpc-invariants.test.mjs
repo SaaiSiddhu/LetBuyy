@@ -91,6 +91,41 @@ const INVARIANTS = {
             why: "only 'purchased' carries a payment reference; the CHECK on the table depends on the pairing",
         },
     ],
+    // Pinned BEFORE migration 240 redefines this function. Its fences are security-relevant: a
+    // sponsored placement is a paid slot on a public feed, and dropping one would surface a hidden
+    // product, a soft-deleted one, or an unpublished seller to every buyer.
+    marketplace_sponsored_products: [
+        {
+            what: 'only ACTIVE placements are served',
+            pattern: /pl\.is_active/,
+            why: 'a merchant who removed a product from a campaign must stop paying for it and stop showing it',
+        },
+        {
+            what: 'the product must be active and not soft-deleted',
+            pattern: /p\.is_active[\s\S]{0,200}?p\.deleted_at IS NULL/,
+            why: 'a paid slot must not be a route around the storefront\'s own visibility rules',
+        },
+        {
+            what: 'the seller must be published and not soft-deleted',
+            pattern: /s\.status = 'published'[\s\S]{0,200}?s\.deleted_at IS NULL/,
+            why: 'an unpublished seller appearing in a paid slot leaks a store that is not open',
+        },
+        {
+            what: 'the placement, campaign and product are joined ON MATCHING site_id',
+            pattern: /c\.id = pl\.campaign_id AND c\.site_id = pl\.site_id[\s\S]{0,300}?p\.id = pl\.product_id AND p\.site_id = pl\.site_id/,
+            why: 'joining on id alone would let one merchant\'s campaign sponsor another\'s product',
+        },
+        {
+            what: 'the campaign window is respected',
+            pattern: /c\.starts_at IS NULL OR c\.starts_at <= now\(\)[\s\S]{0,200}?c\.ends_at IS NULL OR c\.ends_at >= now\(\)/,
+            why: 'a scheduled campaign must not serve early or outlive its end date',
+        },
+        {
+            what: 'the result set is bounded',
+            pattern: /LIMIT GREATEST\(LEAST\(COALESCE\(p_limit, 10\), 20\), 1\)/,
+            why: 'an unbounded SECURITY DEFINER read on a public path is an enumeration primitive',
+        },
+    ],
     record_ad_spend: [
         {
             what: 'the cost is computed from the campaign, never accepted from the caller',
