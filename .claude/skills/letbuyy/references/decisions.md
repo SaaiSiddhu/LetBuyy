@@ -94,6 +94,37 @@ scope**, never evidence that a port exists.
 Unanswered: on the survival question the owner also ticked "Something else" without text —
 **D-FEAT-EXTRA** (§6). Nothing is scoped for it until the owner names it.
 
+## 2c. Owner decisions of 2026-09-06 — OWNER_DECISION
+
+- **D-16 — SAFE_DELETE the retired cashfree/paypal/stripe adapters.** (Recorded with F-INFRA-2.)
+- **D-17 — loyalty is merchant-funded and opt-in**, redemption is tender, the balance is a ledger
+  projection. Accepted cost: points are per-merchant, not one marketplace-wide balance.
+- **F-ADS-1 is IN SCOPE** (chat, 2026-09-06), overriding the recommendation to leave ad
+  metering/bidding as invented scope. Measuring it proved the recommendation half wrong: migration
+  232 already declared `'spent'`/`'released'` and already projected spend per campaign, so metering
+  was wiring a leg the ledger was designed around. Delivered as F-ADS-1a/1b/1c.
+- **D-PLATFORM-CHARGE — the verified platform→merchant payment path is ONE SHARED VERIFIER, bound to
+  `billing`.** (chat, 2026-09-06.) The existing Razorpay verification in `routes/payments.ts` —
+  HMAC signature, provider-order binding, replay protection — is extracted into a helper that is
+  agnostic about which table holds the reference; platform charges bind to `billing_history`, and both
+  ad credits and subscriptions use it.
+  - **Why this is not the second payment authority migration 232 forbids:** it is the *same
+    verification code*, with the reference table as a parameter. A second authority means a second
+    place that decides whether a payment is real; this keeps exactly one.
+  - **Rejected, with the reason:** an `orders` row per platform charge (cheapest to build, most
+    expensive to live with — the platform becomes a party in its own tenant's commerce, the charge
+    lands in merchant order lists and inside GST invoice scope, and `site_id` stops answering "whose
+    order is this"); and building real UPI AutoPay/NPCI mandates first (the right long-term home, but
+    blocked on live provider activation `HR-AUTOPAY-LIVE`, which would keep ad credits unbuyable
+    until it completes).
+  - **Cost the owner accepted:** a careful refactor of a **live money path**. It is done under the
+    lineage-guard discipline — the existing verifier's invariants are pinned and green BEFORE the
+    extraction, and the order path must be proven behaviourally unchanged.
+  - **Corrects the record:** this decision was previously framed as a choice between three options,
+    one of which was "ride `billing`'s existing mandate/autopay model". F-BILL-1 established there is
+    no model to ride — billing had no verified payment path either — so every option was "build one",
+    and the question was only where it lives.
+
 ## 2b. Owner decisions of 2026-09-05 — OWNER_DECISION
 
 Given in chat on 2026-09-05, in answer to questions this session put to the owner directly. Recorded
@@ -218,5 +249,4 @@ is evidence that code exists.**
 | D-CODEOWNERS | `.github/CODEOWNERS` names four retired app paths | CI-1 |
 | D-FEAT-EXTRA | on the 2026-09-04 seller-feature survival question the owner also ticked "Something else" without text — which feature? | nothing scoped for it; ask before MER-* contracts are written |
 | D-KYC-VENDOR | which licensed KYC/AML vendor, and at what cost per verification (D-7 chose the model, not the vendor) | build the adapter seam; no vendor SDK until named |
-| D-PLATFORM-CHARGE | how does the platform charge a MERCHANT — for prepaid ad credits first, and for anything else it bills later? Raised by F-ADS-2: `record_ad_credit_purchase` requires a verified payment reference, and Razorpay verification in this repository is bound to `orders` (it fetches the order, checks `payment_status`, and fails closed unless `orders.payment_id` equals the provider order id). A merchant buying ad credits is not a storefront order. The three routes are: **(1)** create an `orders` row for a platform charge — pollutes merchant order lists and GST, and makes the platform a party to its own tenant's commerce; **(2)** a second Razorpay verification path bound to a different reference table — migration 232's own comment forbids it ("building a second verification here would be a second payment authority"); **(3)** ride `billing`'s mandate/autopay model — **corrected 2026-09-06 (F-BILL-1): there is no model to ride.** `/billing/subscribe` decides "paid" from a client-supplied `sandbox_payment_status` defaulting to `'paid'` and writes a fabricated `sandbox_autopay_payment:<key>` reference, with no provider call anywhere; live mode now refuses outright. So option 3 is not "reuse what exists" but "build the payment path billing never had" — which means **all three options are variations of building one**, and the choice is about WHERE it lives, not whether it must be written | no purchase route exists; credits cannot enter, and `allocate_ad_campaign_budget` correctly refuses for want of an account. `record_ad_credit_purchase` is NOT granted to `app_tenant` and is the single exemption in `tests/governance/money-rpc-reachability.test.mjs`, so the gap stays visible instead of silently ageing |
 | D-LOY-REVALUE | may a merchant lower `point_value_minor` while buyers hold outstanding points, revaluing what they have already earned? Raised by F-LOY-3: `redeem_loyalty_points` reads that value **at redemption time**, so halving it halves the rupee worth of every existing point at that store. **D-17** makes the programme merchant-funded, which argues the merchant sets their own rate; the cost falls on buyers who earned under the old value, and India-first consumer expectations may not match the accounting view | migration 237 **permits** the change and makes it fully attributable — the `audit_logs` row carries the actor, the value before and after, the outstanding point balance and the signed liability delta in paise. No policy is encoded either way. Do not add a floor, a notice period or a grandfathering rule until this is answered |

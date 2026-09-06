@@ -64,12 +64,19 @@ test('razorpay payment verification validates signatures before confirming payme
     const paymentSupportSource = source('lib/payment-route-support.ts');
     const hardeningMigration = repositorySource('database/supabase/migrations/107_security_rls_hardening_and_payment_uniqueness.sql');
 
-    assert.match(paymentsSource, /crypto\.subtle\.importKey\(/);
-    assert.match(paymentsSource, /encoder\.encode\(c\.env\.RAZORPAY_KEY_SECRET\)/);
-    assert.match(paymentsSource, /const payload = `\$\{body\.razorpay_order_id\}\|\$\{body\.razorpay_payment_id\}`/);
-    assert.match(paymentsSource, /crypto\.subtle\.sign\('HMAC',\s*key,\s*encoder\.encode\(payload\)\)/);
-    assert.match(paymentsSource, /!timingSafeEqualHex\(expectedSig,\s*body\.razorpay_signature\)/);
-    assert.match(paymentsSource, /if \(!order\.payment_id \|\| order\.payment_id !== body\.razorpay_order_id\)/);
+    // D-PLATFORM-CHARGE: the route no longer hand-rolls WebCrypto. These four assertions used to pin
+    // the HMAC construction INSIDE routes/payments.ts; they now pin it in the one verifier both the
+    // storefront-order and platform-charge paths call. The property is identical — Razorpay's
+    // `${order_id}|${payment_id}` payload, HMAC-SHA256 with the key secret, compared in constant
+    // time — and it is now asserted once for every caller instead of once per copy.
+    const verifierSource = repositorySource('services/api-gateway/src/lib/provider-payment-verification.ts');
+    assert.match(verifierSource, /return `\$\{providerOrderId\}\|\$\{providerPaymentId\}`/);
+    assert.match(verifierSource, /await hmacSha256Hex\(keySecret, razorpaySignaturePayload\(/);
+    assert.match(verifierSource, /!timingSafeEqualHex\(expected, input\.signature\)/);
+    // And the route must NOT have kept a second copy: two HMAC constructions for one provider is how
+    // a fix gets applied to one of them.
+    assert.ok(!/crypto\.subtle\.importKey\(/.test(paymentsSource),
+        'the route must delegate signature verification rather than hand-roll a second copy');
     assert.match(paymentSupportSource, /export async function assertProviderPaymentNotReplayed/);
     assert.match(paymentSupportSource, /\.from\('payment_transactions'\)/);
     assert.match(paymentSupportSource, /\.eq\('gateway',\s*params\.provider\)/);
@@ -89,12 +96,29 @@ test('razorpay payment verification validates signatures before confirming payme
     assert.match(hardeningMigration, /CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_transactions_provider_payment_global/);
     assert.match(hardeningMigration, /ON public\.payment_transactions \(gateway, provider_payment_id\)/);
     assert.match(hardeningMigration, /WHERE provider_payment_id IS NOT NULL AND deleted_at IS NULL/);
-    const bindingGuardIndex = paymentsSource.indexOf('if (!order.payment_id || order.payment_id !== body.razorpay_order_id)');
+    // D-PLATFORM-CHARGE moved the signature check AND the fail-closed reference binding into one
+    // shared verifier, so platform charges are checked by the same code with a different stored
+    // reference. This assertion moved with them and got STRONGER rather than looser: it now pins the
+    // ordering across both files, and pins the binding's existence in its new home. Anchoring on the
+    // old inline text would have gone quietly green-by-absence the moment the code moved.
+    const verifySource = repositorySource('services/api-gateway/src/lib/provider-payment-verification.ts');
+    const verifyCallIndex = paymentsSource.indexOf('await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET, {');
     const replayGuardIndex = paymentsSource.indexOf('await assertProviderPaymentNotReplayed(c,');
     const confirmAdapterIndex = paymentsSource.indexOf('const paymentService = new PaymentExecutionAdapter(db)', replayGuardIndex);
-    assert.ok(bindingGuardIndex > -1);
-    assert.ok(replayGuardIndex > bindingGuardIndex);
-    assert.ok(confirmAdapterIndex > replayGuardIndex);
+    assert.ok(verifyCallIndex > -1, 'the route must verify through the shared verifier');
+    assert.ok(replayGuardIndex > verifyCallIndex, 'replay protection runs after verification');
+    assert.ok(confirmAdapterIndex > replayGuardIndex, 'and confirmation after replay protection');
+    // The route must pass the SERVER-stored reference, not anything from the request body.
+    assert.match(paymentsSource, /storedProviderOrderId:\s*order\.payment_id/);
+
+    // The verifier itself: signature BEFORE binding, and the binding fails closed on a null stored
+    // reference — the two properties that used to be inline here.
+    const signatureIndex = verifySource.indexOf('timingSafeEqualHex(expected, input.signature)');
+    const bindingIndex = verifySource.indexOf('!input.storedProviderOrderId || input.storedProviderOrderId !== input.providerOrderId');
+    assert.ok(signatureIndex > -1, 'the verifier compares signatures in constant time');
+    assert.ok(bindingIndex > signatureIndex, 'signature is checked before the reference binding');
+    assert.match(verifySource, /if \(!keySecret\) return \{ ok: false, reason: 'provider_not_configured' \}/,
+        'and it fails closed when the provider is not configured');
 });
 
 test('razorpay webhook verifies raw-body signatures, persists event ids, and deduplicates retries', () => {
