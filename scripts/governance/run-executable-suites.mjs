@@ -13,8 +13,11 @@
 // than working around that guard, this runner satisfies it: it starts a uniquely-named container,
 // runs everything inside it, and removes it. Nothing outside that container is touched.
 //
+// It sits in scripts/governance/ beside foundation-ephemeral-postgres.mjs, which is the same class
+// of thing — a test-execution tool, not a migration or a build step.
+//
 // Usage:
-//   node scripts/run-executable-suites.mjs [--filter <substring>] [--list] [--json]
+//   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--list] [--json]
 //                                          [--keep-container] [--timeout <seconds>]
 // Exit code is the number of failing suites, so it composes with a gate lane.
 
@@ -23,7 +26,7 @@ import { readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const suiteDir = join(repoRoot, 'tests/executable');
 
 const args = process.argv.slice(2);
