@@ -53,6 +53,17 @@ const ALSO_GOVERNED = [
 // Each exemption states WHY it cannot be reachable yet and WHICH decision unblocks it. An exemption
 // without a named blocker is a TODO with better formatting.
 const EXEMPT = {
+    // Added by F-ADS-1a, whose own gate run this guard failed — which is the best evidence it works.
+    // The metering substrate landed without its ingress on purpose: a PUBLIC endpoint that spends a
+    // merchant's prepaid balance needs its own abuse controls (server-issued placement tokens,
+    // per-impression idempotency, rate limiting), and bolting that onto the money migration would
+    // have made one phase out of two very different risks.
+    record_ad_spend: {
+        why: 'the click/impression ingress that calls it is F-ADS-1b; a public endpoint that spends a '
+            + "merchant's prepaid balance needs abuse controls designed as their own piece of work, not "
+            + 'appended to the ledger migration',
+        blockedOn: 'F-ADS-1b (ad event ingress and feed ranking by bid)',
+    },
     record_ad_credit_purchase: {
         why: 'a merchant cannot buy ad credits yet: Razorpay verification here is bound to `orders` and '
             + 'fails closed unless orders.payment_id matches the provider order id, so wiring it means '
