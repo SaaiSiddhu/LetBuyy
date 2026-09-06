@@ -42,6 +42,54 @@ const legacyAllowedUntilD5 = new Set([
   "services/api-gateway/src/lib/theme-marketplace-auxiliary-routes.ts",
 ]);
 
+// F-LEDGER-1 -- the stored-value ledgers migrations 231 and 232 added. These are NOT part of the
+// list above, and the difference is deliberate. A table in `moneyMutationTables` may legitimately be
+// written from TypeScript when the same file also posts to the canonical ledger, which is why that
+// arm has a file-level evidence escape hatch. These four have no such case at all: every writer is a
+// SECURITY DEFINER RPC (award_loyalty_points, redeem_loyalty_points, record_ad_credit_purchase,
+// allocate_ad_campaign_budget), and migration 236 removes the privilege that made a direct write
+// possible. So this arm has NO escape hatch -- any `.from(<table>).insert/update/upsert/delete` is an
+// offender, full stop.
+//
+// The database fence in 236 is the real control; this is the tripwire that keeps a call site from
+// being written in the first place, where the failure is a red gate rather than a runtime 42501.
+const storedValueLedgerTables = [
+  "loyalty_accounts",
+  "loyalty_ledger_entries",
+  "ad_credit_accounts",
+  "ad_credit_ledger_entries",
+];
+
+// The window is TEMPERED -- `(?:(?!\.from\()[\s\S])` -- so it can never run past the next
+// `.from(` into a different query. A plain `[\s\S]{0,1400}` reads whatever follows, so an innocent
+// `.from('loyalty_ledger_entries').select(...)` sitting above an unrelated `.insert(` would be
+// reported as a money mutation. That is the window-too-WIDE half of the extraction defect this
+// repository has now hit repeatedly, and the fix is to bound the window at the construct boundary
+// rather than at a character count.
+const storedValueMutationPattern = new RegExp(
+  `\\.from\\(\\s*['"\`](${storedValueLedgerTables.join("|")})['"\`]\\s*\\)`
+  + `(?:(?!\\.from\\()[\\s\\S]){0,1400}?\\.(insert|update|upsert|delete)\\b`,
+  "g",
+);
+
+// The forward ratchet on 236. 231 and 232 contain the very grants 236 revokes, so re-reading them
+// would flag history rather than drift; what must not happen is a LATER migration handing the write
+// back -- the realistic accident being someone copying 232's grant block into a new migration. A
+// bare INSERT/UPDATE on ad_campaigns is likewise forbidden, while a column-scoped
+// `GRANT UPDATE (name, ...)` is exactly what 236 itself issues and stays allowed.
+//
+// Limits, stated rather than implied: this reads plain GRANT statements. A future migration could
+// still hand the privilege back through dynamic SQL or an ownership change, and neither is caught
+// here. The privilege state itself is asserted by 236's own verification block and by
+// tests/executable/stored-value-write-fence-postgres.test.mjs, which execute against a real database.
+const STORED_VALUE_FENCE_MIGRATION = 236;
+const fenceRegrantPattern = new RegExp(
+  `GRANT\\b[^;]*\\b(?:INSERT|UPDATE|DELETE|ALL)\\b[^;]*\\bON\\b[^;]*\\b(?:${storedValueLedgerTables.join("|")})\\b[^;]*`,
+  "gi",
+);
+const adCampaignsRegrantPattern =
+  /GRANT\b[^;]*\b(?:INSERT|UPDATE|ALL)\b(?!\s*\()[^;]*\bON\b[^;]*\bad_campaigns\b[^;]*/gi;
+
 const mutationPattern = new RegExp(
   `\\.from\\(\\s*['"\`](${moneyMutationTables.join("|")})['"\`]\\s*\\)[\\s\\S]{0,1400}\\.(insert|update|upsert|delete)\\b`,
   "g",
@@ -186,6 +234,35 @@ assertLatestFunctionExcludes("create_checkout_order", [
   "UPDATE gift_card_accounts",
   "SET balance = balance - v_gift_card_amount",
 ]);
+
+// Scanned over apps as well as services and packages, unlike the arm above. An app route writing a
+// stored-value ledger directly is doubly wrong -- it is also a local database write from an app,
+// which the gateway-proxy route-ownership rule forbids -- and there is nothing to grandfather:
+// measured at the time this was written, no file under apps/ mentions any of the four tables.
+for (const entry of phaseBEntries(["apps", "services", "packages"])) {
+  for (const match of entry.text.matchAll(storedValueMutationPattern)) {
+    offenders.push(
+      `${entry.path}:1 ${match[1]} is stored value -- every write goes through its SECURITY DEFINER RPC`,
+    );
+  }
+}
+
+for (const entry of phaseBEntries(["database/supabase/migrations"], {
+  includeTests: true,
+  filePattern: /\.sql$/,
+})) {
+  if (migrationRank(entry.path) <= STORED_VALUE_FENCE_MIGRATION) continue;
+  for (const match of entry.text.matchAll(fenceRegrantPattern)) {
+    offenders.push(
+      `${entry.path}:1 re-grants a write on a stored-value ledger table that migration ${STORED_VALUE_FENCE_MIGRATION} revoked: ${match[0].trim().slice(0, 120)}`,
+    );
+  }
+  for (const match of entry.text.matchAll(adCampaignsRegrantPattern)) {
+    offenders.push(
+      `${entry.path}:1 grants an unscoped write on ad_campaigns -- allocated_minor must stay withheld; use a column list: ${match[0].trim().slice(0, 120)}`,
+    );
+  }
+}
 
 assertNoOffenders(reporter, offenders, "Money mutations must route through canonical ledger evidence");
 reporter.finish("canonical money mutation ratchet checked");
