@@ -55,7 +55,7 @@ function app(options: {
             tenant: { siteId: options.resolvedSite ?? siteId, requestId: 'req-test-1' },
         }) as unknown as Awaited<ReturnType<LoyaltyRouteDependencies['resolveOwnedStoreScope']>>,
         withResolvedTenantTx: async (_c, _tenant, callback) => {
-            if (options.tenantTxUnavailable) throw new TenantTransactionUnavailableError('no pooled connection');
+            if (options.tenantTxUnavailable) throw new TenantTransactionUnavailableError();
             return callback({
                 unsafe: async (query: string, params: unknown[] = []) => {
                     calls.push({ query, params });
