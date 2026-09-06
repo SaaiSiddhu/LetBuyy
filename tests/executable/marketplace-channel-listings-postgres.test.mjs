@@ -185,6 +185,12 @@ function resetDatabase() {
       RETURN NEW;
     END;
     $$;
+    -- Roles are CLUSTER-global, so the IF NOT EXISTS above inherits whatever an earlier suite
+    -- left behind. State the attributes production actually gives them (F-HARNESS-2).
+    ALTER ROLE anon NOLOGIN NOBYPASSRLS;
+    ALTER ROLE app_tenant NOLOGIN NOBYPASSRLS;
+    ALTER ROLE authenticated NOLOGIN NOBYPASSRLS;
+    ALTER ROLE service_role NOLOGIN BYPASSRLS;
 
     ${ddl}
 

@@ -51,6 +51,9 @@ function resetDatabase() {
             END IF;
         END;
         $$;
+        -- Roles are CLUSTER-global, so the IF NOT EXISTS above inherits whatever an earlier suite
+        -- left behind. State the attributes production actually gives them (F-HARNESS-2).
+        ALTER ROLE service_role NOLOGIN BYPASSRLS;
         CREATE TABLE public.users_custom (
             id uuid PRIMARY KEY,
             email text NOT NULL,
