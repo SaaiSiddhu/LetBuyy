@@ -91,6 +91,56 @@ const INVARIANTS = {
             why: "only 'purchased' carries a payment reference; the CHECK on the table depends on the pairing",
         },
     ],
+    record_ad_spend: [
+        {
+            what: 'the cost is computed from the campaign, never accepted from the caller',
+            pattern: /v_cost := CASE[\s\S]{0,400}?v_campaign\.bid_minor/,
+            why: 'a caller-supplied amount is a caller-chosen charge against a merchant\'s prepaid balance',
+        },
+        {
+            // Found by a plant that ESCAPED the invariant above: assigning v_cost from a parameter
+            // first and leaving the original CASE behind an `IF false` still matched it. A pattern
+            // that only proves the right code EXISTS says nothing about whether it runs.
+            what: 'v_cost is assigned exactly once, so no earlier assignment can override the computation',
+            pattern: /^(?:(?!v_cost\s*:=)[\s\S])*v_cost\s*:=(?:(?!v_cost\s*:=)[\s\S])*$/,
+            why: 'a second assignment means the computed cost is dead code and something else decides the charge',
+        },
+        {
+            what: 'the idempotency advisory lock on the ad-credit seed',
+            pattern: /pg_advisory_xact_lock\(hashtextextended\(p_site_id::text \|\| ':' \|\| p_idempotency_key, 3\)\)/,
+            why: 'a retried click must not be billed twice',
+        },
+        {
+            what: 'the replay path returns the existing entry',
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            why: 'ad servers retry; without this every retry is a fresh charge',
+        },
+        {
+            what: 'the tenant fence',
+            pattern: /current_setting\('app\.site_id', true\)[\s\S]{0,300}?does not match the requested site/,
+            why: 'a caller inside one tenant transaction must not spend another merchant\'s budget',
+        },
+        {
+            what: 'the campaign must belong to THIS site, and is locked',
+            pattern: /FROM public\.ad_campaigns WHERE id = p_campaign_id AND site_id = p_site_id FOR UPDATE/,
+            why: 'spending against another merchant\'s campaign is the transfer D-5 forbids',
+        },
+        {
+            what: 'the charge is CLAMPED to what the campaign has left',
+            pattern: /v_charged := LEAST\(v_cost, v_remaining\)/,
+            why: 'charging the full bid past the allocation is the overdraft D-5 forbids; refusing it serves the click free',
+        },
+        {
+            what: 'a spent-out campaign is flipped to exhausted',
+            pattern: /UPDATE public\.ad_campaigns SET status = 'exhausted'/,
+            why: 'a campaign with no budget must stop serving, and status is a fact about the ledger',
+        },
+        {
+            what: "the entry is typed 'spent' and carries its campaign",
+            pattern: /campaign_id, entry_type[\s\S]{0,300}?'spent'/,
+            why: 'the per-campaign spend projection reads by campaign_id; an untagged entry is invisible to it',
+        },
+    ],
     allocate_ad_campaign_budget: [
         {
             what: 'the idempotency advisory lock on the ad-credit seed',
@@ -153,3 +203,36 @@ for (const [functionName, invariants] of Object.entries(INVARIANTS)) {
         });
     }
 }
+
+// The account balance must NOT count campaign spend. Migration 232 subtracted both 'allocated' and
+// 'spent', which debits the same money twice -- allocation is what moves it out of the account, and
+// spending draws down the campaign it moved into. 239 removed 'spent'; re-adding it in EITHER arm
+// would silently make every merchant's balance under-report by their total ad spend, and nothing
+// else in the suite would notice. Asserting the name is absent from the whole body is deliberately
+// blunt: there is no arm of this function in which 'spent' belongs.
+test("ad_credit_balance_minor does not count campaign spend against the account", () => {
+    const { file, code } = liveDefinition('ad_credit_balance_minor');
+    assert.ok(!/'spent'/.test(code), `${file} counts 'spent' in the account balance again — that is the double-debit 239 removed`);
+    // Non-vacuity: the other entry types must still be there, or an empty function would pass.
+    for (const entryType of ["'purchased'", "'granted'", "'released'", "'allocated'"]) {
+        assert.ok(code.includes(entryType), `${file} lost ${entryType} from the account balance`);
+    }
+});
+
+// The structural half of "the caller does not choose the charge": record_ad_spend must not TAKE an
+// amount. A pattern over the body can be satisfied by code that no longer runs -- a plant proved
+// exactly that -- but a parameter the function does not have cannot be passed one.
+test("record_ad_spend takes no amount parameter", () => {
+    const { file, code } = liveDefinition('record_ad_spend');
+    const signature = code.slice(0, code.search(/\bRETURNS\b/));
+    for (const forbidden of [/p_amount/, /p_cost/, /p_charge/, /p_price/, /p_bid/, /_minor\s+bigint/]) {
+        assert.ok(
+            !forbidden.test(signature),
+            `${file}: record_ad_spend's signature accepts an amount (${forbidden}) — the charge must come from the campaign's own bid`,
+        );
+    }
+    // Non-vacuity: the parameters it SHOULD have are present, so an empty signature cannot pass.
+    for (const expected of ['p_site_id', 'p_campaign_id', 'p_event_type', 'p_quantity', 'p_idempotency_key']) {
+        assert.ok(signature.includes(expected), `${file}: record_ad_spend lost ${expected} from its signature`);
+    }
+});
