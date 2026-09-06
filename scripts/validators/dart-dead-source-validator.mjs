@@ -46,6 +46,13 @@ const archivedFiles = [
   ["packages/dart/core/lib/src/responsive/responsive_helper.dart", "docs/archive/dead-code/dart-core/responsive/responsive_helper.dart"],
   ["packages/dart/core/lib/src/responsive/size_config.dart", "docs/archive/dead-code/dart-core/responsive/size_config.dart"],
   ["packages/dart/core/lib/src/responsive/breakpoints.dart", "docs/archive/dead-code/dart-core/responsive/breakpoints.dart"],
+  // Reintroduced by Phase N's cross-repo package recovery: byte-name duplicates of the three
+  // files directly above, in a package that did not exist here when they were archived. Measured
+  // dead by the same test that condemned their twins -- zero importers, zero symbol users, and
+  // the marketplace_core barrel exports only src/responsive/responsive.dart, not these.
+  ["packages/dart/marketplace_core/lib/src/responsive/responsive_helper.dart", "docs/archive/dead-code/dart-marketplace-core/responsive/responsive_helper.dart"],
+  ["packages/dart/marketplace_core/lib/src/responsive/size_config.dart", "docs/archive/dead-code/dart-marketplace-core/responsive/size_config.dart"],
+  ["packages/dart/marketplace_core/lib/src/responsive/breakpoints.dart", "docs/archive/dead-code/dart-marketplace-core/responsive/breakpoints.dart"],
 ];
 
 for (const [activePath, archivePath] of archivedFiles) {
@@ -53,17 +60,68 @@ for (const [activePath, archivePath] of archivedFiles) {
   reporter.assert(exists(archivePath), `${archivePath} must preserve the archived Dart source file`);
 }
 
-const archivedBasenames = archivedFiles.map(([activePath]) => activePath.split("/").at(-1));
+// The roots that actually hold Dart today. `apps/mobile` survived the Phase M rename as two RESERVED
+// manifest shells (shopper-app, operator-app: 4 tracked files, no Dart), so a filter naming only it
+// and packages/dart was scanning two empty directories -- while every archived file below came from
+// apps/merchant_app, which it did not match.
+const dartSourceRoots = /^(apps\/(merchant_app|customer_app|admin_app|mobile|phase_2)|packages\/dart)\//;
+
+// A REFERENCE is an import or export directive that RESOLVES TO the archived file's path. Nothing
+// less is sound, and the two weaker forms were both tried against this tree:
+//
+//   * `source.includes(basename)` flagged 8 files -- one whose own header comment names itself, one
+//     importing `order_STATUS_BADGE.dart` (the archived name as a suffix), one importing
+//     `compact_PRODUCT_CARD.dart` (the archived name contained in a longer one);
+//   * comparing the imported file's BASENAME still flagged 5, because customer_app has its own
+//     `product_card.dart`. Same name, different file, different package -- exactly the collision this
+//     repository keeps rediscovering.
+//
+// So the target is resolved: a relative import against the importing file's directory, a
+// `package:<name>/rest` import against the package whose pubspec declares that name. Only an exact
+// path match counts.
+const archivedActivePaths = new Set(archivedFiles.map(([activePath]) => activePath));
+const directivePattern = /^\s*(?:import|export)\s+['"]([^'"]+)['"]/gm;
+
+// package name -> its lib directory, read from the pubspecs rather than assumed from the folder name.
+const packageLibDirs = new Map();
+for (const pubspec of trackedFiles.filter((file) => file.endsWith("pubspec.yaml"))) {
+  const declared = /^name:\s*([A-Za-z0-9_]+)\s*$/m.exec(readFile(pubspec));
+  if (declared) packageLibDirs.set(declared[1], `${pubspec.slice(0, -"pubspec.yaml".length)}lib`);
+}
+
+function normalize(path) {
+  const parts = [];
+  for (const segment of path.split("/")) {
+    if (segment === "" || segment === ".") continue;
+    if (segment === "..") parts.pop();
+    else parts.push(segment);
+  }
+  return parts.join("/");
+}
+
+function resolveDirective(fromFile, target) {
+  if (target.startsWith("dart:")) return null;
+  if (target.startsWith("package:")) {
+    const [packageName, ...rest] = target.slice("package:".length).split("/");
+    const libDir = packageLibDirs.get(packageName);
+    return libDir && rest.length ? normalize(`${libDir}/${rest.join("/")}`) : null;
+  }
+  return normalize(`${fromFile.split("/").slice(0, -1).join("/")}/${target}`);
+}
+
 const activeRefs = trackedFiles.filter((file) => {
-  if (!/^(apps\/mobile|packages\/dart)\//.test(file)) return false;
+  if (!dartSourceRoots.test(file)) return false;
   if (!file.endsWith(".dart")) return false;
-  const source = readFile(file);
-  return archivedBasenames.some((basename) => source.includes(basename));
+  for (const match of readFile(file).matchAll(directivePattern)) {
+    const resolved = resolveDirective(file, match[1]);
+    if (resolved && archivedActivePaths.has(resolved)) return true;
+  }
+  return false;
 });
 
 reporter.assert(
   activeRefs.length === 0,
-  `active Dart source must not reference archived Dart dead-source basenames: ${activeRefs.join(", ")}`,
+  `active Dart source must not import an archived Dart dead-source file: ${activeRefs.join(", ")}`,
 );
 
 reporter.assert(
