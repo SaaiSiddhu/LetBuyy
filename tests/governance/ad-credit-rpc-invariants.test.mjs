@@ -91,6 +91,48 @@ const INVARIANTS = {
             why: "only 'purchased' carries a payment reference; the CHECK on the table depends on the pairing",
         },
     ],
+    record_ad_spend: [
+        {
+            what: 'the cost is computed from the campaign, never accepted from the caller',
+            pattern: /v_cost := CASE[\s\S]{0,400}?v_campaign\.bid_minor/,
+            why: 'a caller-supplied amount is a caller-chosen charge against a merchant\'s prepaid balance',
+        },
+        {
+            what: 'the idempotency advisory lock on the ad-credit seed',
+            pattern: /pg_advisory_xact_lock\(hashtextextended\(p_site_id::text \|\| ':' \|\| p_idempotency_key, 3\)\)/,
+            why: 'a retried click must not be billed twice',
+        },
+        {
+            what: 'the replay path returns the existing entry',
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            why: 'ad servers retry; without this every retry is a fresh charge',
+        },
+        {
+            what: 'the tenant fence',
+            pattern: /current_setting\('app\.site_id', true\)[\s\S]{0,300}?does not match the requested site/,
+            why: 'a caller inside one tenant transaction must not spend another merchant\'s budget',
+        },
+        {
+            what: 'the campaign must belong to THIS site, and is locked',
+            pattern: /FROM public\.ad_campaigns WHERE id = p_campaign_id AND site_id = p_site_id FOR UPDATE/,
+            why: 'spending against another merchant\'s campaign is the transfer D-5 forbids',
+        },
+        {
+            what: 'the charge is CLAMPED to what the campaign has left',
+            pattern: /v_charged := LEAST\(v_cost, v_remaining\)/,
+            why: 'charging the full bid past the allocation is the overdraft D-5 forbids; refusing it serves the click free',
+        },
+        {
+            what: 'a spent-out campaign is flipped to exhausted',
+            pattern: /UPDATE public\.ad_campaigns SET status = 'exhausted'/,
+            why: 'a campaign with no budget must stop serving, and status is a fact about the ledger',
+        },
+        {
+            what: "the entry is typed 'spent' and carries its campaign",
+            pattern: /campaign_id, entry_type[\s\S]{0,300}?'spent'/,
+            why: 'the per-campaign spend projection reads by campaign_id; an untagged entry is invisible to it',
+        },
+    ],
     allocate_ad_campaign_budget: [
         {
             what: 'the idempotency advisory lock on the ad-credit seed',
@@ -153,3 +195,18 @@ for (const [functionName, invariants] of Object.entries(INVARIANTS)) {
         });
     }
 }
+
+// The account balance must NOT count campaign spend. Migration 232 subtracted both 'allocated' and
+// 'spent', which debits the same money twice -- allocation is what moves it out of the account, and
+// spending draws down the campaign it moved into. 239 removed 'spent'; re-adding it in EITHER arm
+// would silently make every merchant's balance under-report by their total ad spend, and nothing
+// else in the suite would notice. Asserting the name is absent from the whole body is deliberately
+// blunt: there is no arm of this function in which 'spent' belongs.
+test("ad_credit_balance_minor does not count campaign spend against the account", () => {
+    const { file, code } = liveDefinition('ad_credit_balance_minor');
+    assert.ok(!/'spent'/.test(code), `${file} counts 'spent' in the account balance again — that is the double-debit 239 removed`);
+    // Non-vacuity: the other entry types must still be there, or an empty function would pass.
+    for (const entryType of ["'purchased'", "'granted'", "'released'", "'allocated'"]) {
+        assert.ok(code.includes(entryType), `${file} lost ${entryType} from the account balance`);
+    }
+});
