@@ -56,6 +56,10 @@ function resetDatabase() {
       END IF;
     END;
     $$;
+    -- Roles are CLUSTER-global, so the IF NOT EXISTS above inherits whatever an earlier suite
+    -- left behind. State the attributes production actually gives them (F-HARNESS-2).
+    ALTER ROLE authenticated NOLOGIN NOBYPASSRLS;
+    ALTER ROLE service_role NOLOGIN BYPASSRLS;
     CREATE OR REPLACE FUNCTION auth.uid()
     RETURNS uuid
     LANGUAGE sql

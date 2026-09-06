@@ -102,6 +102,13 @@ BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
 END $$;
+-- Roles are CLUSTER-global, so CREATE ROLE ... IF NOT EXISTS above silently inherits whatever an
+-- earlier suite left behind. State the attributes rather than trusting them: this cluster's
+-- service_role has been found without BYPASSRLS, which changes what a role can see for a reason
+-- that has nothing to do with the code under test.
+ALTER ROLE service_role NOLOGIN BYPASSRLS;
+ALTER ROLE authenticated NOLOGIN NOBYPASSRLS;
+ALTER ROLE anon NOLOGIN NOBYPASSRLS;
 GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
 GRANT ALL ON auth.users TO service_role;
 `;

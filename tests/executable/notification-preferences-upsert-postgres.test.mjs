@@ -158,6 +158,9 @@ function resetToPreFixSchema() {
     DO $$ BEGIN
       IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role; END IF;
     END $$;
+    -- Roles are CLUSTER-global, so the IF NOT EXISTS above inherits whatever an earlier suite
+    -- left behind. State the attributes production actually gives them (F-HARNESS-2).
+    ALTER ROLE service_role NOLOGIN BYPASSRLS;
   `);
 
   psql(preFixDdl());
