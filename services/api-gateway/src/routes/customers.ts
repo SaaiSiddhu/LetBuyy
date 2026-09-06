@@ -37,6 +37,16 @@ import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { dispatchStoreAppComplianceWebhook } from './app-store/compliance-routes';
 import type { z } from 'zod';
 
+import {
+    applySegmentRules,
+    customerSummaryPayload,
+    matchesSegmentRules,
+    segmentPayload,
+    segmentRulesPayload,
+    splitCustomerName,
+    type CustomerSegmentRow,
+} from '../lib/customer-segments';
+
 const router = new Hono<{ Bindings: Env }>();
 type CustomerRouteContext = Context<{ Bindings: Env }>;
 
@@ -90,19 +100,6 @@ interface CustomerNoteRow {
     updated_at?: string | null;
 }
 
-interface CustomerSegmentRow {
-    id?: string | null;
-    store_id?: string | null;
-    name?: string | null;
-    description?: string | null;
-    rules?: unknown;
-    created_by?: string | null;
-    updated_by?: string | null;
-    deleted_by?: string | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-    deleted_at?: string | null;
-}
 
 type DatabaseErrorLike = { code?: string; message?: string; details?: string; hint?: string } | null | undefined;
 
@@ -223,14 +220,6 @@ async function replaceCustomerTags(db: ReturnType<typeof getSupabaseAdmin>, stor
     return error;
 }
 
-function splitCustomerName(fullName: string | null | undefined) {
-    const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return { firstName: null, lastName: null };
-    return {
-        firstName: parts[0] || null,
-        lastName: parts.slice(1).join(' ') || null,
-    };
-}
 
 function buildCustomerFullName(input: UpdateCustomerInput, existing?: StoreCustomerExportRow | null): string | null | undefined {
     if (input.first_name === undefined && input.last_name === undefined) return undefined;
@@ -265,82 +254,9 @@ function customerPayload(row: StoreCustomerExportRow, fallbackEmail?: string) {
     };
 }
 
-function segmentRulesPayload(value: unknown): CustomerSegmentRules {
-    const parsed = CustomerSegmentRulesSchema.safeParse(value || {});
-    return parsed.success ? parsed.data : { tags_any: [] };
-}
 
-function segmentPayload(row: CustomerSegmentRow, customerCount = 0): CustomerSegment {
-    return {
-        id: row.id || '',
-        store_id: row.store_id || '',
-        name: row.name || 'Customer segment',
-        description: row.description || null,
-        rules: segmentRulesPayload(row.rules),
-        customer_count: customerCount,
-        created_by: row.created_by || null,
-        updated_by: row.updated_by || null,
-        deleted_by: row.deleted_by || null,
-        created_at: row.created_at || new Date().toISOString(),
-        updated_at: row.updated_at || row.created_at || new Date().toISOString(),
-        deleted_at: row.deleted_at || null,
-    };
-}
 
-function customerSummaryPayload(summary: ReturnType<typeof buildCustomerSummaries>[number], storeId: string): Customer {
-    const nameParts = splitCustomerName(summary.customer_name || summary.full_name);
-    return {
-        id: summary.id,
-        store_id: storeId,
-        email: summary.customer_email,
-        phone: summary.customer_phone,
-        gstin: null,
-        first_name: nameParts.firstName,
-        last_name: nameParts.lastName,
-        display_name: summary.customer_name || summary.customer_email,
-        status: (summary.status || 'active') as Customer['status'],
-        accepts_marketing: summary.accepts_marketing,
-        tags: summary.tags,
-        notes: null,
-        default_address_id: null,
-        addresses: [],
-        order_count: summary.total_orders,
-        total_spent: summary.total_spent,
-        last_order_at: summary.last_order_at,
-        metadata: {},
-        created_by: null,
-        updated_by: null,
-        deleted_by: null,
-        created_at: summary.created_at || new Date().toISOString(),
-        updated_at: summary.last_order_at || summary.created_at || new Date().toISOString(),
-        deleted_at: null,
-    };
-}
 
-function matchesSegmentRules(summary: ReturnType<typeof buildCustomerSummaries>[number], rules: CustomerSegmentRules): boolean {
-    if (rules.status && summary.status !== rules.status) return false;
-    if (rules.accepts_marketing !== null && rules.accepts_marketing !== undefined && summary.accepts_marketing !== rules.accepts_marketing) {
-        return false;
-    }
-
-    const tagsAny = rules.tags_any || [];
-    if (tagsAny.length > 0) {
-        const tags = new Set(summary.tags.map((tag) => tag.toLowerCase()));
-        if (!tagsAny.some((tag) => tags.has(tag.toLowerCase()))) return false;
-    }
-
-    if (rules.min_order_count !== null && rules.min_order_count !== undefined && summary.total_orders < rules.min_order_count) {
-        return false;
-    }
-
-    if (rules.min_total_spent !== null && rules.min_total_spent !== undefined && summary.total_spent < rules.min_total_spent) {
-        return false;
-    }
-
-    if (rules.last_order_after && (!summary.last_order_at || summary.last_order_at < rules.last_order_after)) return false;
-    if (rules.last_order_before && summary.last_order_at && summary.last_order_at > rules.last_order_before) return false;
-    return true;
-}
 
 async function loadCustomerSummariesForStore(
     db: ReturnType<typeof getSupabaseAdmin>,
@@ -360,12 +276,6 @@ async function loadCustomerSummariesForStore(
     };
 }
 
-function applySegmentRules(
-    summaries: ReturnType<typeof buildCustomerSummaries>,
-    rules: CustomerSegmentRules,
-) {
-    return summaries.filter((summary) => matchesSegmentRules(summary, rules));
-}
 
 async function loadCustomerProfileRow(
     db: ReturnType<typeof getSupabaseAdmin>,
