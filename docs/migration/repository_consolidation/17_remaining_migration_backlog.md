@@ -45,6 +45,27 @@ ART-24 names `apps/platform-operations-portal` as MIGRATE-then-DELETE into `apps
 
 ## 7 — Governance gate: 2 disclosed, unresolved findings (of the real gate's final 6 failures)
 
+> **Re-measured 2026-09-06 (F-GATE-1) at `develop` = `baa6eacb`. The bullets below are the record of
+> their moment and are kept; all three have moved.**
+>
+> - **`foundation-antifabrication-gate` now PASSES.** Its sole offender was
+>   `services/compatibility/firebase_bridge`, deleted by phase FB-1 on 2026-09-05. The bullet below
+>   describes a tree that no longer exists — and it survived because nothing fails when an
+>   inherited red quietly stops being red.
+> - **`environment-validator`'s offender list is NOT six Firebase files.** It is those six **plus**
+>   `packages/dart/marketplace_services/lib/src/custom_payment_service.dart`, which was never
+>   attributed. See `references/security.md` §9 finding **Q-1**: two of that file's three Razorpay
+>   entry points still hardcode a **test-mode** key ID (lines 89 and 122) while line 49 is
+>   contained. Not a credential exposure; a production-mode hazard. §8 below says Phase Q "found
+>   and fixed 2 more" in this package — it fixed one occurrence in this file and left two of the
+>   same shape in it.
+> - **`stale-artifact-validator`'s offenders re-confirmed 100% generated directories** (`node_modules`,
+>   `.turbo`, `dist`), which the real gate lane deletes before it runs.
+>
+> The gate's ambient failure count is now **4 lanes / 2 validators**, not 6. All three facts are
+> pinned by `tests/governance/ambient-red-attribution.test.mjs`, which fails both when a new
+> offender joins a known red and when a known red starts passing.
+
 - **`foundation-antifabrication-gate.mjs`**: `services/compatibility/firebase_bridge/src/commissionService.ts`'s inherited `status: "released"` literal (inert, unwired code). An allowlist-entry fix was attempted and reverted after it broke `session-security-validator`'s separate invariant. Needs either a real fix to that validator's exemption design, or acceptance that this bridge will always fail this specific check until it's deleted or the literal is edited.
 - **`environment-validator.mjs`**: flags Firebase Web API keys in `customer_app`/`admin_app`/`firebase_bridge` as secret-like. Already independently classified as NOT real secrets in `00c_credential_exposure_and_rotation.md` (Google's own documented public-client-identifier model) — a validator false positive with no existing exemption mechanism in that validator's source.
 - The other 4 gate failures (`validate-design-system`, `sequential-migration-validator`, `raw-error-message-validator`, `branch-lag-guard-validator`) are **pre-existing**, unrelated to this phase, tracked since `09_pre_restructure_build_baseline.md` (2026-09-01).
