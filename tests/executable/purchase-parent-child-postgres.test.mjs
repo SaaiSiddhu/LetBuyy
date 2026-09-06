@@ -24,6 +24,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test, { after, before } from 'node:test';
+import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
@@ -65,6 +66,7 @@ function psqlExpectingFailure(sql) {
     }
 }
 
+const lastLine = (out) => out.split('\n').map((l) => l.trim()).filter(Boolean).at(-1) || '';
 const sqlString = (v) => `'${String(v).replaceAll("'", "''")}'`;
 const stripUnsupportedPg17Guc = (sql) => sql.replace(/^SET transaction_timeout = 0;\s*$/m, '');
 const applySqlFile = (relativePath) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')));
@@ -79,34 +81,11 @@ function listMigrations() {
         });
 }
 
-const BOOTSTRAP_SQL = `
-CREATE SCHEMA IF NOT EXISTS public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT USAGE ON SCHEMA public TO public;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE SCHEMA extensions;
-CREATE FUNCTION extensions.gen_random_bytes(integer) RETURNS bytea LANGUAGE sql AS $$ SELECT public.gen_random_bytes($1) $$;
-CREATE SCHEMA auth;
-CREATE TABLE auth.users (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email text,
-    raw_app_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
-CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{}'::jsonb $$;
-CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$;
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
-END $$;
-GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
-GRANT ALL ON auth.users TO service_role;
-`;
+// The bootstrap lives in a shared, Supabase-faithful module since F-HARNESS-1: pgcrypto in
+// `extensions` rather than `public`, Supabase's own ALTER DEFAULT PRIVILEGES, and role attributes
+// stated rather than inherited from whichever suite created them first. See CAP-C62 and CAP-C64 —
+// each of those three differences has silently flipped a test result in this repository.
+const BOOTSTRAP_SQL = SUPABASE_FAITHFUL_BOOTSTRAP_SQL;
 
 function bootstrapDatabase() {
     psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
@@ -225,10 +204,45 @@ test('D-PURCHASE-TENANCY: no merchant realm can read or write purchases, and mer
         assert.ok(error, `app_tenant must be refused: ${statement.slice(0, 40)}`);
         assert.match(error, /permission denied for table purchases/, 'refused at the grant layer, with no policy behind it either');
     }
+    // anon and authenticated are stopped by RLS, NOT by the grant layer — corrected in F-HARNESS-1.
+    // The original assertion here expected `permission denied`, which was true only because the old
+    // test harness omitted Supabase's `ALTER DEFAULT PRIVILEGES`, leaving these roles with no grant
+    // at all. On Supabase they DO hold the grant, so the protection that actually runs in production
+    // is `purchases` having RLS enabled AND forced with no policy naming them. Measured: a read
+    // succeeds and returns ZERO ROWS; a write is refused by the policy. That is a real defence, but
+    // it is a different one from the one this test used to claim, so assert the real one — and
+    // assert FORCE, because without it the table owner would bypass the only thing protecting the
+    // table. (No data was ever exposed; the guarantee was mis-stated, not missing.)
+    assert.equal(
+        psql(`SELECT relrowsecurity::text || ' ' || relforcerowsecurity::text FROM pg_class WHERE oid='public.purchases'::regclass;`),
+        'true true',
+        'RLS is the only thing standing between the buyer realm and purchases — it must be forced',
+    );
+    assert.equal(
+        psql(`SELECT count(*) FROM pg_policies WHERE tablename='purchases' AND roles::text ~ '(anon|authenticated|public)';`),
+        '0',
+        'no policy may name the buyer realm',
+    );
     for (const role of ['anon', 'authenticated']) {
-        const error = psqlExpectingFailure(`BEGIN; SET LOCAL ROLE ${role}; SELECT count(*) FROM public.purchases; ROLLBACK;`);
-        assert.ok(error && /permission denied for table purchases/.test(error), `${role} must be refused`);
+        const readError = psqlExpectingFailure(`BEGIN; SET LOCAL ROLE ${role}; SELECT count(*) FROM public.purchases; ROLLBACK;`);
+        assert.equal(readError, null, `${role} holds the Supabase default grant, so the read itself succeeds`);
+        assert.equal(
+            lastLine(psql(`BEGIN; SET LOCAL ROLE ${role}; SELECT count(*) FROM public.purchases; ROLLBACK;`)),
+            '0',
+            `${role} must read ZERO rows — there is at least one purchase, and it must not see it`,
+        );
+        const writeError = psqlExpectingFailure(
+            `BEGIN; SET LOCAL ROLE ${role}; INSERT INTO public.purchases (origin_site_id, customer_email, idempotency_key)` +
+            ` VALUES (${sqlString(SITE_ID)}::uuid, 'x@y.z', 'k-${role}'); ROLLBACK;`);
+        assert.ok(writeError, `${role} must not be able to write a purchase`);
+        assert.match(writeError, /violates row-level security policy for table "purchases"/);
     }
+    // app_tenant is still refused at the grant layer, which is the correct answer for a table that
+    // is deliberately NOT a tenant table: migration 164's sweep never granted it anything.
+    assert.match(
+        asMerchant('SELECT count(*) FROM public.purchases') || '',
+        /permission denied for table purchases/,
+    );
     // The merchant loses nothing: its own order row stays visible and carries the link.
     const visible = asMerchant('SELECT count(*) FROM public.orders WHERE purchase_id IS NOT NULL');
     assert.equal(visible, null, 'a merchant must still read its own orders, including purchase_id');

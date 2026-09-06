@@ -18,6 +18,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test, { after, before } from 'node:test';
+import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
@@ -96,52 +97,12 @@ function listMigrations() {
         });
 }
 
-const BOOTSTRAP_SQL = `
-CREATE SCHEMA IF NOT EXISTS public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT USAGE ON SCHEMA public TO public;
-CREATE SCHEMA extensions;
-CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions;
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA extensions;
-GRANT USAGE ON SCHEMA extensions TO public;
-CREATE SCHEMA auth;
-CREATE TABLE auth.users (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email text,
-    raw_app_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
-CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{}'::jsonb $$;
-CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$;
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
-END $$;
--- Roles are CLUSTER-global: CREATE ROLE ... IF NOT EXISTS silently inherits whatever an earlier
--- suite left behind, and this cluster's service_role was already present WITHOUT BYPASSRLS. Force
--- the attributes Supabase actually gives it, so what a role can see here is not an accident of
--- which suite ran first.
-ALTER ROLE service_role NOLOGIN BYPASSRLS;
-ALTER ROLE authenticated NOLOGIN NOBYPASSRLS;
-ALTER ROLE anon NOLOGIN NOBYPASSRLS;
-GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
-GRANT ALL ON auth.users TO service_role;
--- Supabase sets these on the public schema, so a table created by a migration is immediately
--- reachable by service_role. Without them a database built from these migrations leaves 147 of 458
--- public tables unreachable by EVERY application role — an artefact of the harness, not a product
--- defect, and one that would turn every "which role can read this" answer here into fiction.
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres, anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres, anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO postgres, anon, authenticated, service_role;
-`;
+// F-TENANT-INV-1 wrote this bootstrap faithfully by hand; F-HARNESS-1 moved the same three
+// fixes into a shared module, so this suite consumes it rather than keeping a second copy.
+const BOOTSTRAP_SQL = SUPABASE_FAITHFUL_BOOTSTRAP_SQL;
 
 function bootstrapDatabase() {
     psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
-    psql(`ALTER DATABASE "${databaseName}" SET search_path = public, extensions;`, 'postgres');
     psql(BOOTSTRAP_SQL);
     for (const name of listMigrations()) {
         const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8'));

@@ -23,6 +23,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test, { before } from 'node:test';
+import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER;
@@ -89,34 +90,11 @@ function listMigrations(maxPrefix = Infinity) {
     });
 }
 
-const BOOTSTRAP_SQL = `
-CREATE SCHEMA IF NOT EXISTS public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT USAGE ON SCHEMA public TO public;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE SCHEMA extensions;
-CREATE FUNCTION extensions.gen_random_bytes(integer) RETURNS bytea LANGUAGE sql AS $$ SELECT public.gen_random_bytes($1) $$;
-CREATE SCHEMA auth;
-CREATE TABLE auth.users (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email text,
-    raw_app_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
-CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{}'::jsonb $$;
-CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$;
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
-END $$;
-GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
-GRANT ALL ON auth.users TO service_role;
-`;
+// The bootstrap lives in a shared, Supabase-faithful module since F-HARNESS-1: pgcrypto in
+// `extensions` rather than `public`, Supabase's own ALTER DEFAULT PRIVILEGES, and role attributes
+// stated rather than inherited from whichever suite created them first. See CAP-C62 and CAP-C64 —
+// each of those three differences has silently flipped a test result in this repository.
+const BOOTSTRAP_SQL = SUPABASE_FAITHFUL_BOOTSTRAP_SQL;
 
 function applyMigrations(migrations) {
   for (const name of migrations) {
@@ -129,11 +107,36 @@ function applyMigrations(migrations) {
   }
 }
 
+// FIXTURE-ONLY, and it must not be read as a product change. This suite deliberately stands at
+// migration 206 to reproduce the idempotency defect that 207 fixed. Under the Supabase-faithful
+// bootstrap (F-HARNESS-1) a SECOND, unrelated historical defect is also live at that point in
+// history: pre-215 `issue_gift_card` calls `digest(...)` unqualified under `SET search_path TO
+// 'public'`, and pgcrypto lives in `extensions`, so the function raises on every call and the
+// fixture issues ZERO gift cards — which masks the defect this suite exists to demonstrate.
+// Widening the search_path of the historical function inside the fixture removes the unrelated
+// defect and leaves the idempotency race exactly as it was. Nothing in database/ is touched, and no
+// migration widens a search_path — migration 244 does the opposite, qualifying the call instead.
+const RESOLVE_PRE_215_PGCRYPTO = `
+DO $fixture$
+DECLARE
+  v_function record;
+BEGIN
+  FOR v_function IN
+    SELECT p.oid::regprocedure AS signature
+    FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'issue_gift_card'
+  LOOP
+    EXECUTE format('ALTER FUNCTION %s SET search_path TO ''public'', ''extensions''', v_function.signature);
+  END LOOP;
+END
+$fixture$;`;
+
 function bootstrapDatabase(maxPrefix) {
   psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
   psql(BOOTSTRAP_SQL);
   const migrations = listMigrations(maxPrefix);
   applyMigrations(migrations);
+  if (maxPrefix < 215) psql(RESOLVE_PRE_215_PGCRYPTO);
   return migrations.length;
 }
 
@@ -248,6 +251,10 @@ test('W1 — REPRODUCTION (pre-fix): varying-code replay of one idempotency key 
 test('W2 — apply migration 207 in place', () => {
   const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations/207_gift_card_issue_idempotency_advisory_lock.sql'), 'utf8'));
   psql(sql);
+  // 207 predates 215, so its own definition carries `SET search_path TO 'public'` and CREATE OR
+  // REPLACE resets the function's SET clauses — undoing the fixture's widening and reinstating the
+  // unrelated pre-215 pgcrypto defect. Re-apply it, for the same reason and with the same caveat.
+  psql(RESOLVE_PRE_215_PGCRYPTO);
   const fnDef = psql(`SELECT prosrc FROM pg_proc WHERE proname = 'issue_gift_card' LIMIT 1;`);
   assert.match(fnDef, /pg_advisory_xact_lock/, 'issue_gift_card must now take the advisory lock');
 });
