@@ -22,6 +22,8 @@ import { SubscriptionExecutionAdapter, subscriptionPeriodEnd } from '../executio
 import { HumanRequiredError, NotFoundError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
+import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import { verifyRazorpayPayment } from '../lib/provider-payment-verification';
 import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -458,6 +460,165 @@ router.get('/invoices', validate('query', BillingInvoiceQuerySchema), async (c) 
 
     if (error) throw new Error(`Billing invoice lookup failed: ${error.message}`);
     return c.json(success({ invoices: data || [] }));
+});
+
+// ---------------------------------------------------------------------------
+// Ad credit purchase (D-PLATFORM-CHARGE, F-CHARGE-2)
+// ---------------------------------------------------------------------------
+// `record_ad_credit_purchase` has had no caller since F-ADS-1a: it requires a VERIFIED payment
+// reference, and the only verified Razorpay path in this repository was welded to `orders`. The
+// owner's decision was to extract that verifier (F-CHARGE-1) and bind platform charges to
+// `billing`, which is what these two routes do.
+//
+// WHY THEY ARE HERE AND NOT IN routes/ads.ts: that file has a tested property that it contains NO
+// service-role path at all — every route runs inside the tenant transaction — and these need the
+// admin client for the provider call and the billing row. Adding them there would have quietly
+// broken that contract.
+//
+// The shape mirrors the storefront order path exactly, which is the point of having one verifier:
+// the server creates the provider order and stores ITS id, and verification later requires the
+// presented id to equal the stored one. A signature alone only proves Razorpay signed something.
+
+const AD_CREDIT_MIN_MINOR = 10000;      // INR 100 — below this the provider fee dominates the top-up.
+const AD_CREDIT_MAX_MINOR = 100000000;  // INR 10,00,000 — a ceiling, so a typo cannot open a huge order.
+
+// POST /billing/ad-credits/intent — create the provider order and the PENDING billing row.
+router.post('/ad-credits/intent', async (c) => {
+    let body: { store_id?: unknown; amount_minor?: unknown };
+    try {
+        body = (await c.req.json()) as typeof body;
+    } catch {
+        return c.json({ error: { code: 'VALIDATION', message: 'A JSON body is required.' } }, 400);
+    }
+    if (typeof body.store_id !== 'string') {
+        return c.json({ error: { code: 'VALIDATION', message: 'store_id is required.' } }, 400);
+    }
+    const amountMinor = Number(body.amount_minor);
+    if (!Number.isInteger(amountMinor) || amountMinor < AD_CREDIT_MIN_MINOR || amountMinor > AD_CREDIT_MAX_MINOR) {
+        return c.json({ error: { code: 'VALIDATION', message: `amount_minor must be an integer between ${AD_CREDIT_MIN_MINOR} and ${AD_CREDIT_MAX_MINOR}.` } }, 400);
+    }
+
+    // Fails closed, exactly as the storefront order path does.
+    if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+        return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } }, 503);
+    }
+
+    const db = getSupabaseAdmin(c);
+    // Ownership: the site is resolved from the caller's own scope, never taken from the body beyond
+    // choosing WHICH owned store to resolve.
+    const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
+
+    const providerOrder = await createRazorpayOrder(
+        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+        { amount: amountMinor, currency: 'INR', receipt: `adcredit-${tenant.siteId}`, notes: { purpose: 'ad_credits', site_id: tenant.siteId } },
+    );
+    if (!providerOrder.id) {
+        return c.json({ error: { code: 'PAYMENT_ERROR', message: 'Failed to create payment order' } }, 502);
+    }
+
+    // payment_id holds the SERVER-created provider order id. That is the reference verification
+    // binds against, and storing it here is what makes this row the platform-charge equivalent of
+    // orders.payment_id.
+    const { data: row, error } = await db
+        .from('billing_history')
+        .insert({
+            user_id: tenant.userId,
+            store_id: tenant.siteId,
+            site_id: tenant.siteId,
+            invoice_number: `ADC-${providerOrder.id}`,
+            description: 'Prepaid ad credits',
+            amount: amountMinor,
+            currency: 'INR',
+            tax_amount: 0,
+            total_amount: amountMinor,
+            payment_gateway: 'razorpay',
+            payment_id: providerOrder.id,
+            payment_status: 'pending',
+        })
+        .select('id, payment_id, amount, payment_status')
+        .single();
+    if (error || !row) throw new Error(`Ad credit intent create failed: ${error?.message || 'unknown error'}`);
+
+    return c.json(success({
+        billing_history_id: row.id,
+        provider: 'razorpay',
+        provider_order_id: providerOrder.id,
+        amount_minor: amountMinor,
+        key_id: c.env.RAZORPAY_KEY_ID,
+    }), 201);
+});
+
+// POST /billing/ad-credits/verify — verify, then credit.
+router.post('/ad-credits/verify', async (c) => {
+    let body: { store_id?: unknown; razorpay_order_id?: unknown; razorpay_payment_id?: unknown; razorpay_signature?: unknown };
+    try {
+        body = (await c.req.json()) as typeof body;
+    } catch {
+        return c.json({ error: { code: 'VALIDATION', message: 'A JSON body is required.' } }, 400);
+    }
+    for (const field of ['store_id', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature'] as const) {
+        if (typeof body[field] !== 'string' || !body[field]) {
+            return c.json({ error: { code: 'VALIDATION', message: `${field} is required.` } }, 400);
+        }
+    }
+
+    const db = getSupabaseAdmin(c);
+    const tenant = await resolveTenantContextForOwnedSite(c, body.store_id as string);
+
+    // The row is looked up by the provider order id AND the resolved site. Scoping by the reference
+    // alone would let a merchant present someone else's provider order and have the credit land in
+    // their own balance — the site must come from ownership, and the row must belong to it.
+    const { data: charge, error: chargeError } = await db
+        .from('billing_history')
+        .select('id, amount, payment_id, payment_status')
+        .eq('payment_id', body.razorpay_order_id as string)
+        .eq('site_id', tenant.siteId)
+        .maybeSingle();
+    if (chargeError) throw new Error(`Ad credit charge lookup failed: ${chargeError.message}`);
+    if (!charge) throw new NotFoundError('Ad credit charge not found');
+
+    const verification = await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET, {
+        providerOrderId: body.razorpay_order_id as string,
+        providerPaymentId: body.razorpay_payment_id as string,
+        signature: body.razorpay_signature as string,
+        // The SERVER-stored reference. Never anything from the request.
+        storedProviderOrderId: (charge as { payment_id: string | null }).payment_id,
+    });
+    if (!verification.ok) {
+        if (verification.reason === 'provider_not_configured') {
+            return c.json({ error: { code: 'PAYMENT_UNAVAILABLE', message: 'Razorpay is not configured' } }, 503);
+        }
+        return c.json({ error: { code: 'PAYMENT_ERROR', message: 'Invalid payment signature' } }, 400);
+    }
+
+    // The AMOUNT comes from the stored row, never the request: a caller-supplied amount is a
+    // caller-chosen number of credits.
+    const amountMinor = Number((charge as { amount: number }).amount);
+    const paymentId = body.razorpay_payment_id as string;
+
+    // The provider payment id IS the idempotency key, so one real payment credits exactly once —
+    // ad_credit_ledger_entries' UNIQUE (site_id, idempotency_key) is the backstop behind it. This is
+    // deliberately NOT assertProviderPaymentNotReplayed, which is bound to payment_transactions and
+    // to an order id; a platform charge has neither.
+    const { data: credited, error: creditError } = await db.rpc('record_ad_credit_purchase', {
+        p_site_id: tenant.siteId,
+        p_amount_minor: amountMinor,
+        p_payment_reference: paymentId,
+        p_idempotency_key: `ad.purchase:${paymentId}`,
+        p_request_id: c.req.header('x-request-id') ?? null,
+        p_actor_id: tenant.userId ?? null,
+    });
+    if (creditError) throw new Error(`Ad credit purchase failed: ${creditError.message}`);
+
+    // Marked paid only AFTER the credit lands. The other order would leave a row claiming payment
+    // for credits that were never issued.
+    await db
+        .from('billing_history')
+        .update({ payment_status: 'paid' })
+        .eq('id', (charge as { id: string }).id)
+        .eq('site_id', tenant.siteId);
+
+    return c.json(success({ credited, amount_minor: amountMinor }));
 });
 
 export default router;

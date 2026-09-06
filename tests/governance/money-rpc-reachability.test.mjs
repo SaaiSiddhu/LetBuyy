@@ -52,15 +52,12 @@ const ALSO_GOVERNED = [
 
 // Each exemption states WHY it cannot be reachable yet and WHICH decision unblocks it. An exemption
 // without a named blocker is a TODO with better formatting.
-const EXEMPT = {
-    record_ad_credit_purchase: {
-        why: 'a merchant cannot buy ad credits yet: Razorpay verification here is bound to `orders` and '
-            + 'fails closed unless orders.payment_id matches the provider order id, so wiring it means '
-            + 'inventing an orders row for a platform charge, building a second verification path '
-            + '(which migration 232 forbids), or riding billing\'s mandate model',
-        blockedOn: 'D-PLATFORM-CHARGE',
-    },
-};
+// EMPTY, and that is the point: every SECURITY DEFINER money RPC this programme introduced now has
+// a caller. record_ad_credit_purchase was the last exemption, held from F-ADS-1a until F-CHARGE-2
+// gave it one — the merchant ad-credit purchase route the owner's D-PLATFORM-CHARGE decision
+// authorised. An empty register is the state this guard exists to reach; adding an entry back should
+// take the same justification the first one did.
+const EXEMPT = {};
 
 const migrations = migrationFiles();
 
