@@ -98,6 +98,14 @@ const INVARIANTS = {
             why: 'a caller-supplied amount is a caller-chosen charge against a merchant\'s prepaid balance',
         },
         {
+            // Found by a plant that ESCAPED the invariant above: assigning v_cost from a parameter
+            // first and leaving the original CASE behind an `IF false` still matched it. A pattern
+            // that only proves the right code EXISTS says nothing about whether it runs.
+            what: 'v_cost is assigned exactly once, so no earlier assignment can override the computation',
+            pattern: /^(?:(?!v_cost\s*:=)[\s\S])*v_cost\s*:=(?:(?!v_cost\s*:=)[\s\S])*$/,
+            why: 'a second assignment means the computed cost is dead code and something else decides the charge',
+        },
+        {
             what: 'the idempotency advisory lock on the ad-credit seed',
             pattern: /pg_advisory_xact_lock\(hashtextextended\(p_site_id::text \|\| ':' \|\| p_idempotency_key, 3\)\)/,
             why: 'a retried click must not be billed twice',
@@ -208,5 +216,23 @@ test("ad_credit_balance_minor does not count campaign spend against the account"
     // Non-vacuity: the other entry types must still be there, or an empty function would pass.
     for (const entryType of ["'purchased'", "'granted'", "'released'", "'allocated'"]) {
         assert.ok(code.includes(entryType), `${file} lost ${entryType} from the account balance`);
+    }
+});
+
+// The structural half of "the caller does not choose the charge": record_ad_spend must not TAKE an
+// amount. A pattern over the body can be satisfied by code that no longer runs -- a plant proved
+// exactly that -- but a parameter the function does not have cannot be passed one.
+test("record_ad_spend takes no amount parameter", () => {
+    const { file, code } = liveDefinition('record_ad_spend');
+    const signature = code.slice(0, code.search(/\bRETURNS\b/));
+    for (const forbidden of [/p_amount/, /p_cost/, /p_charge/, /p_price/, /p_bid/, /_minor\s+bigint/]) {
+        assert.ok(
+            !forbidden.test(signature),
+            `${file}: record_ad_spend's signature accepts an amount (${forbidden}) — the charge must come from the campaign's own bid`,
+        );
+    }
+    // Non-vacuity: the parameters it SHOULD have are present, so an empty signature cannot pass.
+    for (const expected of ['p_site_id', 'p_campaign_id', 'p_event_type', 'p_quantity', 'p_idempotency_key']) {
+        assert.ok(signature.includes(expected), `${file}: record_ad_spend lost ${expected} from its signature`);
     }
 });
