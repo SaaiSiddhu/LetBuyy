@@ -254,27 +254,27 @@ test('D-PURCHASE-TENANCY: no merchant realm can read or write purchases, and mer
     );
 });
 
-test('the rollback removes the model, keeps CHK-0\'s advisory lock, and round-trips', { skip }, () => {
-    applySqlFile(ROLLBACK);
-    assert.equal(psql("SELECT (to_regclass('public.purchases') IS NOT NULL)::text;"), 'false', 'purchases dropped');
-    assert.equal(
-        psql("SELECT (count(*) > 0)::text FROM information_schema.columns WHERE table_name='orders' AND column_name='purchase_id';"),
-        'false',
-        'orders.purchase_id dropped',
-    );
-    assert.equal(psql("SELECT (to_regclass('public.orders_single_child_per_purchase_idx') IS NOT NULL)::text;"), 'false', 'the single-child index dropped');
-    // Rolling back this FEATURE must never roll back CHK-0's S0 fix.
-    assert.equal(
-        psql(`SELECT (position('pg_advisory_xact_lock' in pg_get_functiondef(p.oid)) > 0)::text
-                FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-               WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';`),
-        'true',
-        'the rollback restores 218\'s body, lock included — a CHK-1 rollback must not reopen the idempotency race',
-    );
-    assert.ok(orderIdOf(checkout('chk1:after-rollback')), 'checkout still works with no parent model present');
+test('at head, 219\'s rollback refuses — and the round trip is proven where it belongs', { skip }, () => {
+    // This test used to apply 219's rollback here and check the round trip. It cannot: this suite
+    // runs at head, where migration 234 has taken create_checkout_order to 20 parameters while
+    // 219's rollback restores the 18-parameter version. CREATE OR REPLACE with a different
+    // parameter list ADDS an overload instead of replacing, and every checkout call then fails
+    // `is not unique` — CAP-C65. The rollback now refuses, which is the correct answer, and the
+    // round trip is proven at migration 219 by
+    // tests/executable/rollback-signature-precondition-postgres.test.mjs.
+    const error = psqlExpectingFailure(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, ROLLBACK), 'utf8')));
+    assert.ok(error, "219's rollback must refuse against a current database");
+    assert.match(error, /rollback 219 refuses to run/);
+    assert.match(error, /adds a second overload/);
 
-    applySqlFile(MIGRATION);
-    assert.equal(psql("SELECT (to_regclass('public.purchases') IS NOT NULL)::text;"), 'true', 're-apply must be clean');
-    const json = checkout('chk1:after-reapply');
-    assert.ok(purchaseIdOf(json), 're-applying restores parent creation');
+    // And it must leave the schema exactly as it was — a refusal that half-applied would be worse
+    // than the defect it prevents.
+    assert.equal(psql("SELECT (to_regclass('public.purchases') IS NOT NULL)::text;"), 'true', 'purchases still present');
+    assert.equal(
+        psql(`SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+               WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';`),
+        '1',
+        'exactly one create_checkout_order',
+    );
+    assert.ok(purchaseIdOf(checkout('chk1:after-refusal')), 'and checkout still creates a parent purchase');
 });

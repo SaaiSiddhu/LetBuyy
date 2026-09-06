@@ -7,6 +7,72 @@
 
 BEGIN;
 
+-- SIGNATURE PRECONDITION (F-ROLLBACK-1, CAP-C65) -- runs before anything else in this file.
+--
+-- This rollback restores the 18-parameter create_checkout_order that was live at its own point in
+-- history. That is correct, and the parameter list below must NOT be "modernised": rewriting it to
+-- match today's signature would destroy the historical body this file exists to restore.
+--
+-- What must not happen is applying it when the live signature has moved on. `CREATE OR REPLACE
+-- FUNCTION` matches on the parameter list, so a different one does not replace the function -- it
+-- silently ADDS a second overload, the script reports success, and every subsequent call fails with
+-- `function public.create_checkout_order(...) is not unique`. A rollback is what gets run during an
+-- incident, so that turns a checkout problem into a total checkout outage.
+DO $rollback_precondition$
+DECLARE
+    v_count integer;
+    v_names text[];
+    v_expected text[] := ARRAY[
+        'p_store_id',
+        'p_customer_name',
+        'p_customer_email',
+        'p_customer_phone',
+        'p_shipping_address',
+        'p_items',
+        'p_payment_method',
+        'p_notes',
+        'p_coupon_code',
+        'p_gift_card_code',
+        'p_shipping_method',
+        'p_idempotency_key',
+        'p_actor_id',
+        'p_request_id',
+        'p_shipping_rate_id',
+        'p_tax_amount',
+        'p_place_of_supply_state',
+        'p_tax_lines'
+    ];
+BEGIN
+    SELECT count(*) INTO v_count
+      FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';
+
+    IF v_count = 0 THEN
+        RAISE EXCEPTION 'rollback 218: public.create_checkout_order does not exist, so there is nothing to restore.';
+    ELSIF v_count > 1 THEN
+        RAISE EXCEPTION 'rollback 218: public.create_checkout_order already has % overloads. Every call is ambiguous already; resolve that before rolling anything back.', v_count;
+    END IF;
+
+    -- proargnames[1:pronargs] takes the INPUT parameters only. create_checkout_order returns jsonb
+    -- so the slice is a no-op for it, but this block gets copied: for a RETURNS TABLE function
+    -- proargnames also carries the output column names, and comparing those would be nonsense.
+    SELECT p.proargnames[1:p.pronargs] INTO v_names
+      FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';
+
+    IF v_names IS DISTINCT FROM v_expected THEN
+        RAISE EXCEPTION USING
+            MESSAGE = format(
+                'rollback 218 refuses to run: public.create_checkout_order currently takes %s parameters (%s), but this rollback restores the 18-parameter signature (%s).',
+                coalesce(array_length(v_names, 1), 0),
+                array_to_string(v_names, ', '),
+                array_to_string(v_expected, ', ')),
+            DETAIL = 'CREATE OR REPLACE FUNCTION with a different parameter list does not replace the function, it adds a second overload -- after which every create_checkout_order call fails with "is not unique" and checkout is down entirely.',
+            HINT = 'Roll back the later migrations that changed this signature first (234 added p_buyer_account_id and p_loyalty_points), then re-run this rollback.';
+    END IF;
+END
+$rollback_precondition$;
+
 CREATE OR REPLACE FUNCTION public.create_checkout_order(p_store_id uuid, p_customer_name text, p_customer_email text, p_customer_phone text, p_shipping_address jsonb, p_items jsonb, p_payment_method text, p_notes text DEFAULT NULL::text, p_coupon_code text DEFAULT NULL::text, p_gift_card_code text DEFAULT NULL::text, p_shipping_method text DEFAULT 'standard'::text, p_idempotency_key text DEFAULT NULL::text, p_actor_id uuid DEFAULT NULL::uuid, p_request_id text DEFAULT NULL::text, p_shipping_rate_id uuid DEFAULT NULL::uuid, p_tax_amount numeric DEFAULT NULL::numeric, p_place_of_supply_state text DEFAULT NULL::text, p_tax_lines jsonb DEFAULT NULL::jsonb)
  RETURNS jsonb
  LANGUAGE plpgsql

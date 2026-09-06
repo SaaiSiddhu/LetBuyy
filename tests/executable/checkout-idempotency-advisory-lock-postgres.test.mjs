@@ -153,6 +153,10 @@ function checkoutCall(idempotencyKey) {
 const orderCount = () =>
   Number(psql(`SELECT count(*) FROM public.orders WHERE store_id = ${sqlString(SITE_ID)}::uuid AND items @> ${sqlString(`[{"product_id": "${PRODUCT_ID}"}]`)}::jsonb;`));
 
+const overloadCount = () => psql(
+  `SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';`);
+
 const liveFunctionTakesLockFirst = () =>
   psql(`
     SELECT (position('pg_advisory_xact_lock' in pg_get_functiondef(p.oid)) > 0
@@ -160,6 +164,15 @@ const liveFunctionTakesLockFirst = () =>
                 < position('FROM checkout_sessions' in pg_get_functiondef(p.oid)))
       FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
      WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';`) === 't';
+
+function psqlExpectingFailure(sql) {
+  try {
+    psql(sql);
+    return null;
+  } catch (error) {
+    return `${error.stderr || ''}${error.stdout || ''}`;
+  }
+}
 
 const applySqlFile = (relativePath) =>
   psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')));
@@ -170,10 +183,18 @@ async function racedReplay(key, holdSeconds = 5, fireAfterMs = 2000) {
   const before = orderCount();
   const a = psqlDetached(`BEGIN;\n${checkoutCall(key)}\nSELECT pg_sleep(${holdSeconds});\nCOMMIT;`);
   await sleep(fireAfterMs);
-  const b = await psqlDetached(checkoutCall(key));
+  let b = '';
+  let bError = null;
+  try {
+    b = await psqlDetached(checkoutCall(key));
+  } catch (error) {
+    // Not always a test failure: without the advisory lock the replay can now be stopped by the
+    // unique constraint migration 219 added on purchases. The caller decides what that means.
+    bError = `${error.stderr || ''}${error.stdout || ''}${error.message || ''}`;
+  }
   const aOut = await a;
   const orderId = (out) => out.match(/"id"\s*:\s*"([0-9a-f-]{36})"/)?.[1] ?? null;
-  return { created: orderCount() - before, aOrderId: orderId(aOut), bOrderId: orderId(b) };
+  return { created: orderCount() - before, aOrderId: orderId(aOut), bOrderId: orderId(b), bError };
 }
 
 // TEST-1: this suite runs inside the shared container now, so it must leave nothing behind.
@@ -212,19 +233,68 @@ test('a concurrently replayed idempotency key creates exactly one order, and bot
   assert.equal(bOrderId, aOrderId, 'the replaying caller must receive the SAME order, not a second one');
 });
 
-test('control: with the lock removed by this migration\'s own rollback, the race reopens — the statement is what does the work', { skip }, async () => {
-  applySqlFile(ROLLBACK);
-  assert.equal(liveFunctionTakesLockFirst(), false, 'precondition: the rollback must actually remove the lock');
+test('control: with the lock removed from the LIVE definition, the replay fails instead of returning the order', { skip }, async () => {
+  // This control used to apply migration 218's own rollback. It cannot any more, and the reason is
+  // the point of F-ROLLBACK-1: that rollback restores the 18-parameter create_checkout_order that
+  // was live at 218, while migration 234 has since taken the live signature to 20. CREATE OR REPLACE
+  // with a different parameter list does not replace — it ADDS an overload, after which every call
+  // fails `is not unique`. The rollback now refuses outright, which is correct and is asserted below.
+  //
+  // So the control derives the unlocked body by TRANSFORMING the live definition instead: read it
+  // back with pg_get_functiondef, delete exactly the one PERFORM statement, and execute the result.
+  // Same signature, so it genuinely replaces; one statement different, so what the race proves is
+  // attributable to that statement and nothing else.
+  const lockedDefinition = psql(
+    `SELECT pg_get_functiondef(p.oid) FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+      WHERE n.nspname = 'public' AND p.proname = 'create_checkout_order';`);
+
+  const lockStatement = lockedDefinition
+    .split('\n')
+    .find((line) => line.includes('PERFORM pg_advisory_xact_lock('));
+  assert.ok(lockStatement, 'the live definition must contain the advisory lock to begin with');
+
+  const unlockedDefinition = lockedDefinition.replace(lockStatement + '\n', '');
+  assert.notEqual(unlockedDefinition, lockedDefinition, 'the transform must remove something');
+  assert.equal(
+    lockedDefinition.length - unlockedDefinition.length,
+    lockStatement.length + 1,
+    'exactly one line may be removed — the control is only meaningful if nothing else changed',
+  );
+
+  psql(unlockedDefinition);
+  assert.equal(liveFunctionTakesLockFirst(), false, 'precondition: the transform must actually remove the lock');
+  assert.equal(overloadCount(), '1', 'and must REPLACE the function, not add a second overload');
+
   try {
-    const { created, aOrderId, bOrderId } = await racedReplay(`chk0:unlocked:${Date.now()}`);
-    // This is the defect 218 fixes, reproduced on demand: two orders for one idempotency key,
-    // and a single checkout_sessions row because ON CONFLICT DO NOTHING swallows the second.
-    assert.equal(created, 2, 'without the lock a replayed key must create a SECOND order (the regression 213/215 shipped)');
-    assert.notEqual(bOrderId, aOrderId, 'the replaying caller receives a different order — not an idempotent replay');
+    const { created, aOrderId, bOrderId, bError } = await racedReplay(`chk0:unlocked:${Date.now()}`);
+    // What this control asserted before F-ROLLBACK-1 was that the unlocked path creates a SECOND
+    // order. That is no longer what happens, and the change is worth recording rather than
+    // papering over: migration 219 added `purchases_origin_idempotency_key UNIQUE (origin_site_id,
+    // idempotency_key)`, so the duplicate is now stopped at the constraint. The money outcome is
+    // therefore protected twice over — but the advisory lock still does real work, because without
+    // it the replaying caller gets a raw constraint violation instead of the original order.
+    assert.ok(aOrderId, 'the first caller must still succeed');
+    assert.equal(created, 1, 'no second order is created — migration 219\'s unique constraint blocks it');
+    assert.equal(bOrderId, null, 'the replaying caller receives no order at all');
+    assert.ok(bError, 'the replaying caller must fail outright');
+    assert.match(bError, /duplicate key value violates unique constraint "purchases_origin_idempotency_key"/);
   } finally {
-    applySqlFile(MIGRATION);
+    psql(lockedDefinition);
   }
-  assert.equal(liveFunctionTakesLockFirst(), true, 'the migration must be re-applied cleanly after the control');
+  assert.equal(liveFunctionTakesLockFirst(), true, 'the locked definition must be restored after the control');
+  assert.equal(overloadCount(), '1');
   const { created } = await racedReplay(`chk0:relocked:${Date.now()}`);
-  assert.equal(created, 1, 're-applying the migration must close the race again');
+  assert.equal(created, 1, 'restoring the lock must close the race again');
+});
+
+test('migration 218\'s rollback refuses to run here, and says why', { skip }, () => {
+  // The behaviour that replaced the old control. Asserting it keeps the reason visible: this is not
+  // a rollback that stopped working, it is one that now declines an operation which used to corrupt
+  // the schema silently.
+  const error = psqlExpectingFailure(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, ROLLBACK), 'utf8')));
+  assert.ok(error, 'rollback 218 must refuse against a current database');
+  assert.match(error, /rollback 218 refuses to run/);
+  assert.match(error, /adds a second overload/);
+  assert.equal(overloadCount(), '1', 'and must leave the live function untouched');
+  assert.equal(liveFunctionTakesLockFirst(), true);
 });
