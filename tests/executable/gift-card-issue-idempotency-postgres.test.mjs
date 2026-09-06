@@ -107,11 +107,36 @@ function applyMigrations(migrations) {
   }
 }
 
+// FIXTURE-ONLY, and it must not be read as a product change. This suite deliberately stands at
+// migration 206 to reproduce the idempotency defect that 207 fixed. Under the Supabase-faithful
+// bootstrap (F-HARNESS-1) a SECOND, unrelated historical defect is also live at that point in
+// history: pre-215 `issue_gift_card` calls `digest(...)` unqualified under `SET search_path TO
+// 'public'`, and pgcrypto lives in `extensions`, so the function raises on every call and the
+// fixture issues ZERO gift cards — which masks the defect this suite exists to demonstrate.
+// Widening the search_path of the historical function inside the fixture removes the unrelated
+// defect and leaves the idempotency race exactly as it was. Nothing in database/ is touched, and no
+// migration widens a search_path — migration 244 does the opposite, qualifying the call instead.
+const RESOLVE_PRE_215_PGCRYPTO = `
+DO $fixture$
+DECLARE
+  v_function record;
+BEGIN
+  FOR v_function IN
+    SELECT p.oid::regprocedure AS signature
+    FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public' AND p.proname = 'issue_gift_card'
+  LOOP
+    EXECUTE format('ALTER FUNCTION %s SET search_path TO ''public'', ''extensions''', v_function.signature);
+  END LOOP;
+END
+$fixture$;`;
+
 function bootstrapDatabase(maxPrefix) {
   psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
   psql(BOOTSTRAP_SQL);
   const migrations = listMigrations(maxPrefix);
   applyMigrations(migrations);
+  if (maxPrefix < 215) psql(RESOLVE_PRE_215_PGCRYPTO);
   return migrations.length;
 }
 
@@ -226,6 +251,10 @@ test('W1 — REPRODUCTION (pre-fix): varying-code replay of one idempotency key 
 test('W2 — apply migration 207 in place', () => {
   const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations/207_gift_card_issue_idempotency_advisory_lock.sql'), 'utf8'));
   psql(sql);
+  // 207 predates 215, so its own definition carries `SET search_path TO 'public'` and CREATE OR
+  // REPLACE resets the function's SET clauses — undoing the fixture's widening and reinstating the
+  // unrelated pre-215 pgcrypto defect. Re-apply it, for the same reason and with the same caveat.
+  psql(RESOLVE_PRE_215_PGCRYPTO);
   const fnDef = psql(`SELECT prosrc FROM pg_proc WHERE proname = 'issue_gift_card' LIMIT 1;`);
   assert.match(fnDef, /pg_advisory_xact_lock/, 'issue_gift_card must now take the advisory lock');
 });
