@@ -114,6 +114,10 @@ export interface Env {
     SUPABASE_DB_URL?: string;
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
+    // F-ADS-1c. OPTIONAL on purpose: without it no placement tokens are issued and the ad event
+    // endpoint answers 503, so a deployment that has not set it degrades instead of failing to boot.
+    // A required secret is how MEDIA_UPLOAD_SIGNING_SECRET made production deploys hard-fail.
+    AD_PLACEMENT_SIGNING_SECRET?: string;
     LETBUYY_PAYMENT_MODE?: 'sandbox' | 'live';
     LETBUYY_RAZORPAY_MODE?: 'sandbox' | 'live';
     LETBUYY_CASHFREE_MODE?: 'sandbox' | 'live';
