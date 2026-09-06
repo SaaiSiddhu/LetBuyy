@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const ordersSource = readFileSync(new URL('../routes/orders.ts', import.meta.url), 'utf8');
+const orderReadCompatSource = readFileSync(new URL('../lib/order-read-compat.ts', import.meta.url), 'utf8');
 const orderRiskSource = readFileSync(new URL('../routes/order-risk.ts', import.meta.url), 'utf8');
 const schemaSource = readFileSync(new URL('../schemas/order.schema.ts', import.meta.url), 'utf8');
 const checkoutCoreSource = readFileSync(new URL('../../../../packages/checkout-core/src/index.ts', import.meta.url), 'utf8');
@@ -47,11 +48,17 @@ test('Task 005 order schemas expose risk and COD contracts through the gateway f
     assert.match(checkoutCoreSource, /export const CodTimeoutSchema/);
     assert.match(checkoutCoreSource, /cancellation_reason: z\.string\(\)\.max\(500\)\.optional\(\)/);
     assert.match(checkoutCoreSource, /metadata\.cancellation_reason/);
-    assert.match(ordersSource, /'risk_score'/);
-    assert.match(ordersSource, /'risk_level'/);
-    assert.match(ordersSource, /'fulfillment_state'/);
-    assert.match(ordersSource, /'cod_confirmation_status'/);
-    assert.match(ordersSource, /'rto_status'/);
+    // ORDER_LIST_COLUMN_NAMES moved to lib/order-read-compat.ts in F-ROUTELEN-1. The point of these
+    // five assertions is that the gateway actually SELECTs the Task 005 columns, so check the list
+    // where it now lives and check that the route still reads from that list — the second half is
+    // what keeps this from passing on a module nothing imports.
+    assert.match(orderReadCompatSource, /'risk_score'/);
+    assert.match(orderReadCompatSource, /'risk_level'/);
+    assert.match(orderReadCompatSource, /'fulfillment_state'/);
+    assert.match(orderReadCompatSource, /'cod_confirmation_status'/);
+    assert.match(orderReadCompatSource, /'rto_status'/);
+    assert.match(orderReadCompatSource, /export const ORDER_LIST_COLUMN_NAMES = \[/);
+    assert.match(ordersSource, /ORDER_LIST_COLUMN_NAMES,[\s\S]*?\} from '\.\.\/lib\/order-read-compat'/);
 });
 
 test('Task 005 migration adds immutable order state, risk tables, COD requests, RLS, and rollback', () => {
