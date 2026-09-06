@@ -22,14 +22,18 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const migrationsDir = join(root, 'database/supabase/migrations');
-const FIRST_GOVERNED_MIGRATION = 217;
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import {
+    FIRST_GOVERNED_MIGRATION,
+    applicationSources,
+    assertExemptionIsWellFormed,
+    migrationBodies,
+    migrationFiles,
+    migrationsDir,
+    numericPrefix,
+    referencesIn,
+} from './reachability-common.mjs';
 
 // The canonical money RPCs CLAUDE.md names. They predate 217 — create_checkout_order goes back to
 // 073 — so the migration-rank rule alone would leave the most important functions in the schema
@@ -58,14 +62,7 @@ const EXEMPT = {
     },
 };
 
-function numericPrefix(name) {
-    const m = /^(\d+)/.exec(name);
-    return m ? Number(m[1]) : -1;
-}
-
-const migrations = readdirSync(migrationsDir)
-    .filter((f) => f.endsWith('.sql'))
-    .sort((a, b) => numericPrefix(a) - numericPrefix(b));
+const migrations = migrationFiles();
 
 // name -> { firstFile, isTrigger }
 function governedFunctions() {
@@ -90,42 +87,15 @@ function governedFunctions() {
         .sort(([a], [b]) => a.localeCompare(b));
 }
 
-const stripTsComments = (s) => s.replace(/\/\/[^\n]*/g, ' ').replace(/\/\*[\s\S]*?\*\//g, ' ');
-const stripSqlComments = (s) => s.replace(/--[^\n]*/g, ' ');
-
-const sourceFiles = execFileSync(
-    'git',
-    ['ls-files', 'services', 'apps', 'packages'],
-    { cwd: root, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 },
-)
-    .split('\n')
-    .filter((p) => /\.(ts|tsx|mjs|cjs)$/.test(p))
-    .filter((p) => !/__tests__|\/test\/|\.test\./.test(p));
-
-const sources = sourceFiles.map((path) => {
-    try {
-        return { path, text: stripTsComments(readFileSync(join(root, path), 'utf8')) };
-    } catch {
-        return { path, text: '' };
-    }
-});
-
-const migrationBodies = migrations.map((file) => ({
-    file,
-    text: stripSqlComments(readFileSync(join(migrationsDir, file), 'utf8')),
-}));
+const sources = applicationSources();
+const bodies = migrationBodies();
 
 // All four caller shapes, because each of the first three alone gave a wrong answer.
 function callersOf(name) {
-    const quoted = new RegExp(`['"\`]${name}['"\`]`);
-    const qualified = new RegExp(`public\\.${name}\\s*\\(`);
-    const hits = [];
-    for (const { path, text } of sources) {
-        if (quoted.test(text) || qualified.test(text)) hits.push(path);
-    }
+    const hits = referencesIn(sources, name);
     // SQL-to-SQL: redeem_loyalty_points has no TypeScript caller and never will — create_checkout_order
     // calls it. A function reachable from another function is wired.
-    for (const { file, text } of migrationBodies) {
+    for (const { file, text } of bodies) {
         const defines = new RegExp(`CREATE\\s+(?:OR\\s+REPLACE\\s+)?FUNCTION\\s+public\\.${name}\\s*\\(`, 'i');
         const callsIt = new RegExp(`(?:PERFORM|SELECT|:=|=)\\s*public\\.${name}\\s*\\(`, 'i');
         if (callsIt.test(text.replace(defines, ' '))) hits.push(`sql:${file}`);
@@ -164,8 +134,7 @@ for (const [name, meta] of governed) {
                 0,
                 `${name} now HAS callers (${callers.join(', ')}) — remove its exemption rather than leaving a standing waiver`,
             );
-            assert.ok(exemption.blockedOn, `${name}'s exemption must name the decision that unblocks it`);
-            assert.ok(exemption.why.length > 40, `${name}'s exemption must say why, not merely that`);
+            assertExemptionIsWellFormed(assert, name, exemption);
         });
         continue;
     }
