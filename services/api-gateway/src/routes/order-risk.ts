@@ -310,6 +310,18 @@ async function releaseCancelledCodOrderResources(
     } catch (restoreError) {
         console.warn(JSON.stringify({ level: 'warn', event: 'cod_gift_card_restore_failed', order_id: orderId, error: String(restoreError) }));
     }
+    // F-LOY-4 — loyalty points redeemed on a cancelled COD order come back too. Same event, same
+    // shape, same place as the gift-card restore above.
+    try {
+        await db.rpc('restore_loyalty_on_refund', {
+            p_site_id: tenant.siteId,
+            p_order_id: orderId,
+            p_actor_id: tenant.userId ?? null,
+            p_request_id: tenant.requestId ?? null,
+        });
+    } catch (restoreError) {
+        console.warn(JSON.stringify({ level: 'warn', event: 'cod_loyalty_restore_failed', order_id: orderId, error: String(restoreError) }));
+    }
 }
 
 orderCodRouter.post('/:id/cod/confirm', validate('json', CodConfirmationSchema), async (c) => {

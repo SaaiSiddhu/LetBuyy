@@ -1243,6 +1243,28 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                     error: String(restoreError),
                 }));
             }
+            // F-LOY-4 — and the same for loyalty points redeemed on this order. Migration 234 made
+            // them spendable as tender; nothing gave them back, so a refunded buyer lost them while
+            // a gift card was correctly restored two lines above. Deliberately placed HERE, beside
+            // its sibling, with the same idempotent + best-effort shape: two stored-value instruments
+            // reversed by the same event must not be reversed in different places or on different
+            // conditions.
+            try {
+                await db.rpc('restore_loyalty_on_refund', {
+                    p_site_id: tenant.siteId,
+                    p_order_id: orderId,
+                    p_actor_id: tenant.userId,
+                    p_request_id: tenant.requestId,
+                });
+            } catch (restoreError) {
+                console.warn(JSON.stringify({
+                    level: 'warn',
+                    event: 'loyalty_refund_restore_failed',
+                    kind: body.status,
+                    order_id: orderId,
+                    error: String(restoreError),
+                }));
+            }
         }
         const responseBody = success(data);
         await idempotency.complete({
