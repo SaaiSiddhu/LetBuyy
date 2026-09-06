@@ -38,6 +38,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test, { before } from 'node:test';
+import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER;
@@ -123,34 +124,11 @@ function listMigrations() {
 // apply with "schema extensions does not exist". Fixed by keeping a real
 // `extensions` schema with a thin wrapper delegating to the pgcrypto
 // installed in `public`, rather than installing pgcrypto a second time.
-const BOOTSTRAP_SQL = `
-CREATE SCHEMA IF NOT EXISTS public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT USAGE ON SCHEMA public TO public;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE SCHEMA extensions;
-CREATE FUNCTION extensions.gen_random_bytes(integer) RETURNS bytea LANGUAGE sql AS $$ SELECT public.gen_random_bytes($1) $$;
-CREATE SCHEMA auth;
-CREATE TABLE auth.users (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email text,
-    raw_app_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    raw_user_meta_data jsonb NOT NULL DEFAULT '{}'::jsonb,
-    created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT NULL::uuid $$;
-CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS $$ SELECT '{}'::jsonb $$;
-CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT NULL::text $$;
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'anon') THEN CREATE ROLE anon NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN CREATE ROLE authenticated NOLOGIN; END IF;
-  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'service_role') THEN CREATE ROLE service_role NOLOGIN BYPASSRLS; END IF;
-END $$;
-GRANT USAGE ON SCHEMA auth TO anon, authenticated, service_role;
-GRANT ALL ON auth.users TO service_role;
-`;
+// The bootstrap lives in a shared, Supabase-faithful module since F-HARNESS-1: pgcrypto in
+// `extensions` rather than `public`, Supabase's own ALTER DEFAULT PRIVILEGES, and role attributes
+// stated rather than inherited from whichever suite created them first. See CAP-C62 and CAP-C64 —
+// each of those three differences has silently flipped a test result in this repository.
+const BOOTSTRAP_SQL = SUPABASE_FAITHFUL_BOOTSTRAP_SQL;
 
 function bootstrapDatabase() {
   psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
