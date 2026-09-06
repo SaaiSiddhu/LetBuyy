@@ -21,7 +21,7 @@ import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
-import { registerSponsoredProductRoutes, type SponsoredPlacementRow } from './sponsored-product-routes';
+import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
 import { addBusinessDays, generateTicketRef } from '../operations/support';
@@ -218,6 +218,20 @@ export function registerBuyerRealmRoutes(
             const { data, error } = await getSupabaseAdmin(c)
                 .rpc('marketplace_sponsored_products', { p_limit: limit });
             return { data: (data || null) as SponsoredPlacementRow[] | null, error };
+        },
+        // The charge is computed inside record_ad_spend from the campaign's own bid. Nothing here
+        // passes an amount, because nothing on this side is entitled to choose one.
+        recordAdSpend: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('record_ad_spend', {
+                p_site_id: input.siteId,
+                p_campaign_id: input.campaignId,
+                p_event_type: input.eventType,
+                p_quantity: 1,
+                p_idempotency_key: input.idempotencyKey,
+                p_request_id: c.req.header('x-request-id') ?? null,
+                p_actor_id: null,
+            });
+            return { data: (data || null) as AdSpendResult | null, error };
         },
     });
 
