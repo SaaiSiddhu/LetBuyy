@@ -62,7 +62,7 @@ const EXEMPT = {
         why: 'the click/impression ingress that calls it is F-ADS-1b; a public endpoint that spends a '
             + "merchant's prepaid balance needs abuse controls designed as their own piece of work, not "
             + 'appended to the ledger migration',
-        blockedOn: 'F-ADS-1b (ad event ingress and feed ranking by bid)',
+        blockedOn: 'F-ADS-1c (the signed ad-event ingress; F-ADS-1b delivered the ranking half)',
     },
     record_ad_credit_purchase: {
         why: 'a merchant cannot buy ad credits yet: Razorpay verification here is bound to `orders` and '
