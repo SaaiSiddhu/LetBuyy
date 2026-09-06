@@ -1,20 +1,23 @@
-// MIG-0 — the migration actor realm (D-MIG-REALM), proven on real Postgres.
+// The migration actor realm is RETIRED — migration 222, owner decision D-14, proven on real Postgres.
 //
-// A bulk import cannot record what it did as either a merchant (it acts on nobody's behalf) or an
-// operator (no human reviewed it) without writing a false record. Migration 221 adds a third realm
-// with exactly one edge: draft -> approved. This file measures every claim the migration's header
-// makes, rather than assuming the SQL does what it says:
-//   * the edge works, stamps approved_at, and writes an honest moderation event;
-//   * every OTHER edge for this realm is refused — a migration import gets exactly one door;
-//   * a reason is mandatory, so provenance is written down, not inferred;
-//   * the tenant-context fence, inherited from operator's branch with zero new code, actually holds;
-//   * the category/sellability gate — the only checkpoint before an imported listing is visible,
-//     since migration skips pending_review — is not weaker than the one a normal submission passes;
-//   * reviewed_at/reviewed_by stay NULL: nobody reviewed this, and the record must not pretend they did;
-//   * a replay is idempotent;
-//   * the merchant and operator paths are unaffected by any of the above;
-//   * the rollback restores the two-realm world exactly, and refuses to do so over an existing
-//     migration-realm event rather than silently orphaning it.
+// WHAT THIS FILE USED TO BE, AND WHY IT CHANGED. It proved migration 221's addition of a third
+// 'migration' actor realm to transition_channel_listing, for a bulk Firestore import. The owner
+// cancelled that import the same day ("its test data, delete firebase completely"), and migration
+// 222 retired the realm on 2026-09-05 — but the commit that shipped 222 never touched this file, so
+// it went on asserting a capability the owner had ordered removed. It failed 7 of 8 tests on develop
+// from that day until 2026-09-06, and nobody saw it, because no gate lane runs tests/executable
+// (CAP-C66). The suite was not deleted: 222 had no test of its own, so the stale red is now the
+// regression guard for the decision that made it stale.
+//
+// WHAT IS PROVEN HERE
+//   * at head the realm is refused, and the moderation-event CHECK no longer admits it;
+//   * merchant and operator paths are untouched — retiring a realm must not narrow the other two;
+//   * 222 is what does the work: apply its rollback, watch 221's realm come back and function, then
+//     re-apply 222 and watch it close again;
+//   * 222 refuses to run over an existing migration-realm event with a readable message instead of
+//     letting a restored CHECK constraint fail with a violation nobody can act on. That is the one
+//     thing a forward migration must handle which 221's paired rollback could assume away, it is the
+//     reason 222 exists as a migration rather than a deletion of 221, and until now nothing tested it.
 //
 // DESTRUCTIVE: recreates its database and replays every migration. Refuses the shared database, and
 // SKIPS with the exact command when no dedicated one is named rather than throwing at import.
@@ -36,8 +39,11 @@ const skip = runnable
     : `refusing to recreate the shared database '${SHARED_DATABASE}'. This suite needs its own; ` +
       'unset LETBUYY_EXECUTABLE_PG_DATABASE or point it at a private name.';
 
-const MIGRATION = 'database/supabase/migrations/221_channel_listing_migration_realm.sql';
-const ROLLBACK = 'database/supabase/rollback/221_channel_listing_migration_realm.rollback.sql';
+// 222 is the subject now; its rollback re-applies 221, which is what makes the control below real.
+const MIGRATION = 'database/supabase/migrations/222_retire_migration_actor_realm.sql';
+const ROLLBACK = 'database/supabase/rollback/222_retire_migration_actor_realm.rollback.sql';
+const TWO_REALM_CHECK = "CHECK ((actor_realm = ANY (ARRAY['merchant'::text, 'operator'::text])))";
+const THREE_REALM_CHECK = "CHECK ((actor_realm = ANY (ARRAY['merchant'::text, 'operator'::text, 'migration'::text])))";
 
 const SITE = '11111111-1111-4111-8111-111111111111';
 const CATEGORY = 'cccccccc-0000-4000-8000-0000000000c1';
@@ -156,75 +162,21 @@ after(() => {
     }
 });
 
-test('a migration transition approves the listing, stamps approved_at, and writes an honest event', { skip }, () => {
+test('at head the migration realm is refused — the D-14 guarantee', { skip }, () => {
     const { listingId } = draftListing();
-    const result = migrate(listingId, 'mig-key-1');
-    assert.equal(result, 'approved');
+    const refused = psqlExpectingFailure(
+        `SELECT to_status FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, 'r', 'k-head');`);
+    assert.ok(refused, 'the migration realm must not be usable');
+    assert.match(refused, /unsupported actor_realm: migration/);
 
-    const row = psql(`SELECT approved_at IS NOT NULL, reviewed_at IS NULL, reviewed_by IS NULL FROM public.channel_listings WHERE id = ${sqlString(listingId)}::uuid;`);
-    assert.deepEqual(row.split('|'), ['t', 't', 't'], 'approved_at must be set; reviewed_at/reviewed_by must stay NULL — nobody reviewed this');
-
-    const event = psql(`SELECT actor_realm || '|' || reason FROM public.channel_listing_moderation_events WHERE listing_id = ${sqlString(listingId)}::uuid;`);
-    assert.equal(event, 'migration|Migrated from Firebase product fs-test');
+    // And the listing is untouched: a refused transition must not half-apply.
+    assert.equal(psql(`SELECT status FROM public.channel_listings WHERE id = ${sqlString(listingId)}::uuid;`), 'draft');
 });
 
-test('every edge except draft -> approved is refused for the migration realm', { skip }, () => {
-    for (const to of ['pending_review', 'rejected', 'paused', 'delisted']) {
-        const { listingId } = draftListing();
-        const error = psqlExpectingFailure(
-            `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, ${sqlString(to)}, 'migration', NULL, 'reason text here', 'mig-edge-${to}');`,
-        );
-        assert.ok(error && /invalid_transition/.test(error), `draft -> ${to} must be refused for migration`);
-    }
-    // And once approved, no further migration-driven move is allowed either.
-    const { listingId } = draftListing();
-    migrate(listingId, 'mig-approve-then-delist');
-    const error = psqlExpectingFailure(
-        `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'delisted', 'migration', NULL, 'reason', 'mig-then-delist');`,
-    );
-    assert.ok(error && /invalid_transition/.test(error), 'approved -> delisted must be refused for migration — take-down is an operator edge');
-});
-
-test('a migration transition without a reason is refused', { skip }, () => {
-    const { listingId } = draftListing();
-    const error = psqlExpectingFailure(
-        `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, NULL, 'mig-noreason');`,
-    );
-    assert.ok(error && /reason is required for migration/.test(error));
-});
-
-test('a migration transition is refused from a tenant context, exactly like an operator one', { skip }, () => {
-    const { listingId } = draftListing();
-    const error = psqlExpectingFailure(`
-    BEGIN;
-    SELECT set_config('app.site_id', ${sqlString(SITE)}, true);
-    SET LOCAL ROLE app_tenant;
-    SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, 'reason', 'mig-fence');
-    ROLLBACK;
-  `);
-    assert.ok(error && /operator transitions are not permitted from a tenant context/.test(error), 'migration inherits the same fence, with no fence code of its own');
-});
-
-test('a migration approval passes the same category and sellability gate pending_review enforces', { skip }, () => {
-    const { listingId: noCategory } = draftListing({ category: null });
-    const noCategoryError = psqlExpectingFailure(
-        `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(noCategory)}::uuid, 'approved', 'migration', NULL, 'reason', 'mig-nocat');`,
-    );
-    assert.ok(noCategoryError && /marketplace_category_id/.test(noCategoryError), 'a migration approval with no category must be refused, exactly as pending_review requires one');
-
-    const { listingId: inactive } = draftListing({ active: false });
-    const inactiveError = psqlExpectingFailure(
-        `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(inactive)}::uuid, 'approved', 'migration', NULL, 'reason', 'mig-inactive');`,
-    );
-    assert.ok(inactiveError && /product is not sellable/.test(inactiveError), 'an inactive product must be refused for migration too');
-});
-
-test('replaying the same idempotency key returns the same event, not a second one', { skip }, () => {
-    const { listingId } = draftListing();
-    const first = psql(`SELECT event_id FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, 'reason', 'mig-replay');`);
-    const second = psql(`SELECT event_id FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, 'reason', 'mig-replay');`);
-    assert.equal(second, first);
-    assert.equal(psql(`SELECT count(*) FROM public.channel_listing_moderation_events WHERE listing_id = ${sqlString(listingId)}::uuid;`), '1');
+test('the moderation-event CHECK no longer admits the migration realm', { skip }, () => {
+    // The RPC refusing is one layer; the constraint is the one that holds if a future writer bypasses
+    // the RPC. 222 restores the two-realm CHECK, so assert the constraint itself, not just the RPC.
+    assert.equal(psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';"), TWO_REALM_CHECK);
 });
 
 test('the merchant and operator paths are unaffected', { skip }, () => {
@@ -248,39 +200,35 @@ test('the merchant and operator paths are unaffected', { skip }, () => {
     assert.equal(operatorRow, `t|${OPERATOR}`, 'an operator approval must still stamp reviewed_at/reviewed_by — only migration skips that');
 });
 
-test('the rollback restores the two-realm world exactly, and refuses over existing migration data', { skip }, () => {
-    // Refuses over existing data: a defect class of its own if it silently succeeded and orphaned rows.
-    const { listingId } = draftListing();
-    migrate(listingId, 'mig-before-rollback');
-    const blocked = psqlExpectingFailure(readFileSync(join(repoRoot, ROLLBACK), 'utf8'));
-    assert.ok(blocked && /violated by some row/.test(blocked), 'the rollback must refuse to run over an existing migration-realm event rather than orphaning it');
+test('CONTROL: 222 is what retires the realm — its rollback brings it back, and re-applying closes it', { skip }, () => {
+    // Without this, "the realm is refused" could be true for some unrelated reason and 222 would be
+    // doing nothing. Apply 222's rollback (which re-applies 221) and the realm must work again.
+    applySqlFile(ROLLBACK);
+    assert.equal(psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';"), THREE_REALM_CHECK, "222's rollback must restore 221's three-realm CHECK");
 
-    // Clean round trip, on a fresh database with no such data.
-    const cleanDb = `${databaseName}_rollback`;
-    psql(`DROP DATABASE IF EXISTS "${cleanDb}"; CREATE DATABASE "${cleanDb}";`, 'postgres');
-    psql(BOOTSTRAP_SQL, cleanDb);
-    for (const name of listMigrations()) {
-        psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')), cleanDb);
-    }
-    psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, ROLLBACK), 'utf8')), cleanDb);
+    const { listingId } = draftListing();
+    assert.equal(migrate(listingId, 'mig-control-1'), 'approved', 'with 221 back, the migration edge must work');
     assert.equal(
-        psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';", cleanDb),
-        "CHECK ((actor_realm = ANY (ARRAY['merchant'::text, 'operator'::text])))",
+        psql(`SELECT approved_at IS NOT NULL, reviewed_at IS NULL, reviewed_by IS NULL FROM public.channel_listings WHERE id = ${sqlString(listingId)}::uuid;`),
+        't|t|t',
+        'and must still stamp approved_at while leaving the review fields NULL — nobody reviewed this',
     );
-    const refusedOnCleanDb = (() => {
-        try {
-            psql(`SELECT public.transition_channel_listing('00000000-0000-4000-8000-000000000000'::uuid, '00000000-0000-4000-8000-000000000000'::uuid, 'approved', 'migration', NULL, 'r', 'k');`, cleanDb);
-            return null;
-        } catch (error) {
-            return `${error.stderr || ''}${error.stdout || ''}`;
-        }
-    })();
-    assert.ok(refusedOnCleanDb && /unsupported actor_realm/.test(refusedOnCleanDb));
-    psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, MIGRATION), 'utf8')), cleanDb);
-    assert.equal(
-        psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';", cleanDb),
-        "CHECK ((actor_realm = ANY (ARRAY['merchant'::text, 'operator'::text, 'migration'::text])))",
-        're-apply must be clean',
+
+    // Now the state 222 has to cope with in the real world: a migration-realm event already exists.
+    const blocked = psqlExpectingFailure(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, MIGRATION), 'utf8')));
+    assert.ok(blocked, '222 must refuse to run while a migration-realm event exists');
+    assert.doesNotMatch(
+        blocked,
+        /violates check constraint/,
+        'it must fail with its own readable message, not with a raw constraint violation nobody can act on',
     );
-    psql(`DROP DATABASE IF EXISTS "${cleanDb}" WITH (FORCE);`, 'postgres');
+    assert.equal(psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';"), THREE_REALM_CHECK, 'a refused migration must leave the schema as it was');
+
+    // Remove the event and 222 applies, closing the realm again. That is the round trip.
+    psql("DELETE FROM public.channel_listing_moderation_events WHERE actor_realm = 'migration';");
+    applySqlFile(MIGRATION);
+    assert.equal(psql("SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conname = 'channel_listing_moderation_events_actor_realm_check';"), TWO_REALM_CHECK);
+    const after = psqlExpectingFailure(
+        `SELECT public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(listingId)}::uuid, 'approved', 'migration', NULL, 'r', 'k-after');`);
+    assert.ok(after && /unsupported actor_realm: migration/.test(after), 're-applying 222 must close the realm again');
 });
