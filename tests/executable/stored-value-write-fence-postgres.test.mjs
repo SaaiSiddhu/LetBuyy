@@ -211,6 +211,26 @@ test('the four stored-value tables refuse every write from service_role, and sti
     }
 });
 
+test('no application role holds a write on the stored-value tables — not just service_role', { skip }, () => {
+    // 231 and 232 revoked app_tenant, authenticated and anon; 236 revokes service_role. Reading the
+    // whole set back from pg_catalog is what turns three separate REVOKE statements into one
+    // measured claim, and it is the check that would catch a future GRANT aimed at any of them.
+    const holders = psql(`SELECT string_agg(r.who || ':' || t.tbl || ':' || p.priv, ', ')
+      FROM unnest(ARRAY['service_role','app_tenant','authenticated','anon','public']) AS r(who)
+      CROSS JOIN unnest(ARRAY['loyalty_accounts','loyalty_ledger_entries','ad_credit_accounts','ad_credit_ledger_entries']) AS t(tbl)
+      CROSS JOIN unnest(ARRAY['INSERT','UPDATE','DELETE']) AS p(priv)
+     WHERE (r.who = 'public' OR EXISTS (SELECT 1 FROM pg_roles WHERE rolname = r.who))
+       AND has_table_privilege(r.who, 'public.' || t.tbl, p.priv);`);
+    assert.equal(holders, '', `no application role may hold a write on a stored-value ledger, but: ${holders}`);
+
+    const budgetHolders = psql(`SELECT string_agg(r.who || ':' || p.priv, ', ')
+      FROM unnest(ARRAY['service_role','app_tenant','authenticated','anon','public']) AS r(who)
+      CROSS JOIN unnest(ARRAY['INSERT','UPDATE']) AS p(priv)
+     WHERE (r.who = 'public' OR EXISTS (SELECT 1 FROM pg_roles WHERE rolname = r.who))
+       AND has_column_privilege(r.who, 'public.ad_campaigns', 'allocated_minor', p.priv);`);
+    assert.equal(budgetHolders, '', `allocated_minor must be unreachable, but: ${budgetHolders}`);
+});
+
 test('ad_campaigns.allocated_minor cannot be minted from application code, by UPDATE or by INSERT', { skip }, () => {
     const updated = asServiceRole(
         `UPDATE public.ad_campaigns SET allocated_minor = 500000 WHERE id = ${sqlString(CAMPAIGN_ID)}::uuid`,

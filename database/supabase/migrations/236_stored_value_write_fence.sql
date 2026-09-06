@@ -80,28 +80,49 @@ DO $$
 DECLARE
   v_table text;
   v_priv text;
+  v_role text;
+  -- Every role an application can reach the database as, plus PUBLIC. Checking only service_role
+  -- would leave the claim narrower than the sentence this migration is written to support: these
+  -- tables are not writable from application code, by any route. 231 and 232 already revoked the
+  -- others; asserting it here turns that from something two earlier files say into something this
+  -- one measures.
+  v_roles CONSTANT text[] := ARRAY['service_role', 'app_tenant', 'authenticated', 'anon', 'public'];
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'service_role') THEN RETURN; END IF;
 
+  FOREACH v_role IN ARRAY v_roles LOOP
+    -- PUBLIC is not a row in pg_roles but is a valid argument to has_table_privilege, so it is
+    -- checked without an existence test; the named roles are skipped when absent.
+    CONTINUE WHEN v_role <> 'public'
+      AND NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = v_role);
+
+    FOREACH v_table IN ARRAY ARRAY[
+      'loyalty_accounts', 'loyalty_ledger_entries', 'ad_credit_accounts', 'ad_credit_ledger_entries'
+    ] LOOP
+      FOREACH v_priv IN ARRAY ARRAY['INSERT', 'UPDATE', 'DELETE'] LOOP
+        IF has_table_privilege(v_role, 'public.' || v_table, v_priv) THEN
+          RAISE EXCEPTION '236: % still holds % on %', v_role, v_priv, v_table;
+        END IF;
+      END LOOP;
+    END LOOP;
+
+    IF has_column_privilege(v_role, 'public.ad_campaigns', 'allocated_minor', 'UPDATE') THEN
+      RAISE EXCEPTION '236: % can still UPDATE ad_campaigns.allocated_minor', v_role;
+    END IF;
+    IF has_column_privilege(v_role, 'public.ad_campaigns', 'allocated_minor', 'INSERT') THEN
+      RAISE EXCEPTION '236: % can still INSERT ad_campaigns.allocated_minor', v_role;
+    END IF;
+  END LOOP;
+
+  -- Reads and settings writes must survive: the buyer's balance and history routes read these
+  -- tables as service_role, and a merchant route renames and pauses campaigns.
   FOREACH v_table IN ARRAY ARRAY[
     'loyalty_accounts', 'loyalty_ledger_entries', 'ad_credit_accounts', 'ad_credit_ledger_entries'
   ] LOOP
-    FOREACH v_priv IN ARRAY ARRAY['INSERT', 'UPDATE', 'DELETE'] LOOP
-      IF has_table_privilege('service_role', 'public.' || v_table, v_priv) THEN
-        RAISE EXCEPTION '236: service_role still holds % on %', v_priv, v_table;
-      END IF;
-    END LOOP;
     IF NOT has_table_privilege('service_role', 'public.' || v_table, 'SELECT') THEN
       RAISE EXCEPTION '236: service_role lost SELECT on % -- reads must keep working', v_table;
     END IF;
   END LOOP;
-
-  IF has_column_privilege('service_role', 'public.ad_campaigns', 'allocated_minor', 'UPDATE') THEN
-    RAISE EXCEPTION '236: service_role can still UPDATE ad_campaigns.allocated_minor';
-  END IF;
-  IF has_column_privilege('service_role', 'public.ad_campaigns', 'allocated_minor', 'INSERT') THEN
-    RAISE EXCEPTION '236: service_role can still INSERT ad_campaigns.allocated_minor';
-  END IF;
   IF NOT has_column_privilege('service_role', 'public.ad_campaigns', 'name', 'UPDATE') THEN
     RAISE EXCEPTION '236: campaign settings must stay writable -- name lost UPDATE';
   END IF;
