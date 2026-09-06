@@ -221,6 +221,29 @@ router.post('/mandate', validate('json', BillingMandateSchema), async (c) => {
 
 router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) => {
     const body = c.get('validatedBody') as BillingSubscribeInput;
+
+    // F-BILL-1. This route decides "paid" from body.sandbox_payment_status -- a CLIENT-SUPPLIED field
+    // that defaults to 'paid' -- and then activates the subscription with a fabricated provider
+    // reference (`sandbox_autopay_payment:<key>`). There is no provider call, no signature check and
+    // no amount verification anywhere below. In sandbox that is a deliberate simulation and stays
+    // exactly as it was; in LIVE mode it would let an authenticated merchant activate any purchasable
+    // plan without paying, which is "never trust client payment status" and "a client-supplied
+    // payment identifier is never sufficient proof of payment" in one request.
+    //
+    // So live mode REFUSES rather than fabricating. What it should do instead -- an orders row for a
+    // platform charge, a second verification path, or a real autopay mandate -- is OWNER DECISION
+    // D-PLATFORM-CHARGE, and picking one here would be answering it by implementation. Note that
+    // assertAutopayReady is NOT sufficient on its own: it passes once Razorpay credentials exist, and
+    // this path would then fabricate a reference with credentials present, which is worse.
+    if (autopayMode(c.env) === 'live') {
+        return c.json({
+            error: {
+                code: 'AUTOPAY_PROVIDER_SETUP_REQUIRED',
+                message: 'Live subscription billing requires a verified payment path; sandbox activation is refused in live mode.',
+            },
+        }, 503);
+    }
+
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
     const existing = await db
