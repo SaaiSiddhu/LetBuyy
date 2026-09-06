@@ -64,6 +64,16 @@ export const AllocateAdBudgetSchema = z
     })
     .strict();
 
+export const ReleaseAdBudgetSchema = z
+    .object({
+        store_id: uuid,
+        // Omitted means "everything still unspent" — the case that matters when ending a campaign,
+        // and the one a merchant would otherwise have to compute from two projections themselves.
+        amount_minor: z.coerce.number().int().positive().optional(),
+        idempotency_key: z.string().trim().min(8).max(200),
+    })
+    .strict();
+
 export const CreateAdPlacementSchema = z
     .object({
         store_id: uuid,
@@ -81,5 +91,6 @@ export type AdAccountInput = z.infer<typeof AdAccountQuery>;
 export type CreateAdCampaignInput = z.infer<typeof CreateAdCampaignSchema>;
 export type UpdateAdCampaignInput = z.infer<typeof UpdateAdCampaignSchema>;
 export type AllocateAdBudgetInput = z.infer<typeof AllocateAdBudgetSchema>;
+export type ReleaseAdBudgetInput = z.infer<typeof ReleaseAdBudgetSchema>;
 export type CreateAdPlacementInput = z.infer<typeof CreateAdPlacementSchema>;
 export type AdPlacementInput = z.infer<typeof AdPlacementQuery>;

@@ -126,6 +126,48 @@ const INVARIANTS = {
             why: 'an unbounded SECURITY DEFINER read on a public path is an enumeration primitive',
         },
     ],
+    release_ad_campaign_budget: [
+        {
+            what: 'the idempotency advisory lock on the ad-credit seed',
+            pattern: /pg_advisory_xact_lock\(hashtextextended\(p_site_id::text \|\| ':' \|\| p_idempotency_key, 3\)\)/,
+            why: 'without it one key can release twice, crediting the account for money the campaign still holds',
+        },
+        {
+            what: 'the replay path returns the existing entry',
+            pattern: /FROM public\.ad_credit_ledger_entries[\s\S]{0,200}?idempotency_key = p_idempotency_key[\s\S]{0,400}?'replayed', true/,
+            why: 'a retried release must not credit twice',
+        },
+        {
+            what: 'the tenant fence',
+            pattern: /current_setting\('app\.site_id', true\)[\s\S]{0,300}?does not match the requested site/,
+            why: 'a caller in one tenant transaction must not move another merchant\'s budget',
+        },
+        {
+            what: 'the campaign must belong to THIS site, and is locked',
+            pattern: /FROM public\.ad_campaigns WHERE id = p_campaign_id AND site_id = p_site_id FOR UPDATE/,
+            why: 'releasing from another merchant\'s campaign into this account is the transfer D-5 forbids',
+        },
+        {
+            what: 'RELEASING MORE THAN REMAINS IS REFUSED',
+            pattern: /IF v_amount > v_releasable THEN[\s\S]{0,300}?RAISE EXCEPTION 'cannot release/,
+            why: 'crediting the account beyond what the campaign holds invents credit out of a ledger meant to conserve it — the single most important line in this function',
+        },
+        {
+            what: 'the releasable amount comes from the shared projection',
+            pattern: /v_releasable := public\.ad_campaign_remaining_minor\(p_campaign_id\)/,
+            why: '"remaining" must mean one thing across serving, spending and releasing',
+        },
+        {
+            what: "the entry is typed 'released' and carries its campaign",
+            pattern: /campaign_id, entry_type[\s\S]{0,300}?'released'/,
+            why: 'an untagged credit cannot be traced back to the campaign it came from',
+        },
+        {
+            what: 'allocated_minor is DECREMENTED by exactly the released amount',
+            pattern: /UPDATE public\.ad_campaigns\s*SET allocated_minor = allocated_minor - v_amount/,
+            why: 'a credit without this decrement leaves the campaign able to spend money the account already has back — the two must move together',
+        },
+    ],
     record_ad_spend: [
         {
             what: 'the cost is computed from the campaign, never accepted from the caller',
