@@ -184,12 +184,6 @@ for (const entry of phaseBEntries(["services", "packages"])) {
     }
   }
 
-  for (const match of entry.text.matchAll(storedValueMutationPattern)) {
-    offenders.push(
-      `${entry.path}:1 ${match[1]} is stored value -- every write goes through its SECURITY DEFINER RPC`,
-    );
-  }
-
   for (const match of entry.text.matchAll(mutableBalanceReadPattern)) {
     if (!/ledger_account_balance_minor|derived/i.test(entry.text)) {
       offenders.push(`${entry.path}:1 mutable balance read must use derived canonical ledger balance`);
@@ -240,6 +234,18 @@ assertLatestFunctionExcludes("create_checkout_order", [
   "UPDATE gift_card_accounts",
   "SET balance = balance - v_gift_card_amount",
 ]);
+
+// Scanned over apps as well as services and packages, unlike the arm above. An app route writing a
+// stored-value ledger directly is doubly wrong -- it is also a local database write from an app,
+// which the gateway-proxy route-ownership rule forbids -- and there is nothing to grandfather:
+// measured at the time this was written, no file under apps/ mentions any of the four tables.
+for (const entry of phaseBEntries(["apps", "services", "packages"])) {
+  for (const match of entry.text.matchAll(storedValueMutationPattern)) {
+    offenders.push(
+      `${entry.path}:1 ${match[1]} is stored value -- every write goes through its SECURITY DEFINER RPC`,
+    );
+  }
+}
 
 for (const entry of phaseBEntries(["database/supabase/migrations"], {
   includeTests: true,

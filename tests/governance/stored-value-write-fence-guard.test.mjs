@@ -98,6 +98,20 @@ test('INSTRUMENT: the window stops at the next query, so a read above an unrelat
     assert.equal(second.ok, false, 'the control: the same shape aimed at the ledger table must fail');
 });
 
+test('the strict arm covers apps too, not only services and packages', () => {
+    // An app route writing a ledger directly is doubly wrong: it is also a local database write from
+    // an app, which the gateway-proxy route-ownership rule forbids. The arm it sits beside scans only
+    // services and packages, so this is pinned rather than assumed.
+    const { ok, output } = runValidator([{
+        path: 'apps/merchant_web/src/app/api/loyalty/route.ts',
+        text: `export async function POST(db) {\n`
+            + `    await db.from('loyalty_ledger_entries').insert({ points: 1000 });\n`
+            + `}\n`,
+    }]);
+    assert.equal(ok, false, 'an app writing a stored-value ledger must fail the gate');
+    assert.match(output, /loyalty_ledger_entries is stored value/, output);
+});
+
 test('a migration after 236 may not re-grant a write on a stored-value ledger table', () => {
     const { ok, output } = runValidator([{
         path: SQL_PATH_AFTER_FENCE,
