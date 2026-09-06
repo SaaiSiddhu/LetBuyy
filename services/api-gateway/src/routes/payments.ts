@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
+import { verifyRazorpayPayment } from '../lib/provider-payment-verification';
 import { dbErrorBody, getSupabaseAdmin } from '../lib/supabase';
 import { ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
@@ -1184,35 +1185,27 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         throw new ConflictError('Payment already verified for this order');
     }
 
-    // Verify HMAC-SHA256 signature
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(c.env.RAZORPAY_KEY_SECRET),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-
-    const payload = `${body.razorpay_order_id}|${body.razorpay_payment_id}`;
-    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
-    const expectedSig = Array.from(new Uint8Array(signatureBuffer))
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-
-    if (!timingSafeEqualHex(expectedSig, body.razorpay_signature)) {
+    // D-PLATFORM-CHARGE: signature AND fail-closed reference binding now live in ONE verifier, so a
+    // platform charge against billing_history is checked by exactly this code with a different
+    // stored reference. The behaviour here is unchanged: signature first, then the binding, then the
+    // replay guard, then confirm. What was inline is now named; nothing was reordered.
+    //
+    // The binding is the part worth restating: a valid signature only proves Razorpay signed
+    // something. `order.payment_id` is what the server stored when IT created the provider order, so
+    // requiring the presented id to equal it is what stops a real payment being applied to an order
+    // it was not created for.
+    const verification = await verifyRazorpayPayment(c.env.RAZORPAY_KEY_SECRET, {
+        providerOrderId: body.razorpay_order_id,
+        providerPaymentId: body.razorpay_payment_id,
+        signature: body.razorpay_signature,
+        storedProviderOrderId: order.payment_id,
+    });
+    if (!verification.ok) {
+        if (verification.reason === 'reference_mismatch') throw new ConflictError('Payment reference mismatch');
         return c.json(
             { error: { code: 'PAYMENT_ERROR', message: 'Invalid payment signature' } },
             400
         );
-    }
-
-    // SECURITY: fail closed — the order MUST have been bound to a server-created Razorpay
-    // order (via POST /razorpay/order → attachPaymentReference) before it can be verified.
-    // A null payment_id means no provider order was created for this order, so any signature
-    // presented here is being replayed from a different order. Reject.
-    if (!order.payment_id || order.payment_id !== body.razorpay_order_id) {
-        throw new ConflictError('Payment reference mismatch');
     }
 
     await assertProviderPaymentNotReplayed(c, {
