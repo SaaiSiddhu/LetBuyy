@@ -367,6 +367,7 @@ export default function OrdersPage() {
         label: string
     ) => {
         const eligibleRows = rows.filter(order => eligibleStatuses.includes(order.status))
+        const skippedCount = rows.length - eligibleRows.length
         if (eligibleRows.length === 0) {
             notify({
                 title: 'No eligible orders selected',
@@ -398,6 +399,18 @@ export default function OrdersPage() {
 
         await loadOrders()
         setUpdatingId(null)
+
+        // A partial skip used to be silent: the completion message counted only the rows that were
+        // eligible, so selecting every visible order and confirming could act on a fraction of them
+        // without saying so. That matters more now that the Pending tab also lists pending_cod orders,
+        // which a plain status change cannot confirm (COD has its own flow).
+        if (skippedCount > 0 && failures === 0) {
+            notify({
+                title: `${label.charAt(0).toUpperCase()}${label.slice(1)} applied to ${eligibleRows.length} of ${rows.length} selected`,
+                description: `${skippedCount} selected ${skippedCount === 1 ? 'order was' : 'orders were'} not eligible and ${skippedCount === 1 ? 'was' : 'were'} left unchanged.`,
+                variant: 'warning',
+            })
+        }
 
         if (failures > 0) {
             notify({

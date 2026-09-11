@@ -427,7 +427,16 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
             .order('id', { ascending: query.order === 'asc' });
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
-        if (query.status !== 'all') dbQuery = dbQuery.eq('status', query.status);
+        // `pending_cod` is a pending order: migration 074 added the status and a trigger assigns it to
+        // every COD order at creation. An exact match on 'pending' therefore hid the majority of a
+        // merchant's pending orders (CAP-C59 measured 46 of 65 on the reference store). The Analytics
+        // "Orders by status" card already sums both buckets, so this aligns the list with it.
+        // `status=pending_cod` stays exact for callers that ask for that bucket specifically.
+        if (query.status === 'pending') {
+            dbQuery = dbQuery.in('status', ['pending', 'pending_cod']);
+        } else if (query.status !== 'all') {
+            dbQuery = dbQuery.eq('status', query.status);
+        }
         if (query.payment_status !== 'all') dbQuery = dbQuery.eq('payment_status', query.payment_status);
         if (decodedCursor) {
             dbQuery = query.order === 'asc'
