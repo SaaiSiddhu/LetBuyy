@@ -8,6 +8,54 @@
 
 BEGIN;
 
+-- SIGNATURE PRECONDITION (F-ROLLBACK-1's rule, applied to this file by its own ratchet).
+--
+-- This rollback replaces release_order_inventory with its pre-246 body. The parameter list is
+-- unchanged -- 246 was a single insertion into the live definition, not a signature change -- so
+-- CREATE OR REPLACE genuinely replaces here rather than adding an overload. That is exactly the
+-- claim worth asserting instead of assuming: if a later migration changes this signature, running
+-- this file would silently create a SECOND release_order_inventory and every caller would then fail
+-- with "is not unique". Refuse instead.
+DO $rollback_precondition$
+DECLARE
+    v_count integer;
+    v_names text[];
+    v_expected text[] := ARRAY[
+        'p_order_id',
+        'p_actor_id',
+        'p_request_id',
+        'p_release_reason'
+    ];
+BEGIN
+    SELECT count(*) INTO v_count
+      FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = 'release_order_inventory';
+
+    IF v_count = 0 THEN
+        RAISE EXCEPTION 'rollback 246: public.release_order_inventory does not exist, so there is nothing to restore.';
+    ELSIF v_count > 1 THEN
+        RAISE EXCEPTION 'rollback 246: public.release_order_inventory already has % overloads. Every call is ambiguous already; resolve that before rolling anything back.', v_count;
+    END IF;
+
+    -- proargnames[1:pronargs] takes the INPUT parameters only; release_order_inventory returns
+    -- boolean so the slice is a no-op for it, but the block gets copied.
+    SELECT p.proargnames[1:p.pronargs] INTO v_names
+      FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+     WHERE n.nspname = 'public' AND p.proname = 'release_order_inventory';
+
+    IF v_names IS DISTINCT FROM v_expected THEN
+        RAISE EXCEPTION USING
+            MESSAGE = format(
+                'rollback 246 refuses to run: public.release_order_inventory currently takes %s parameters (%s), but this rollback restores the 4-parameter signature (%s).',
+                coalesce(array_length(v_names, 1), 0),
+                array_to_string(v_names, ', '),
+                array_to_string(v_expected, ', ')),
+            DETAIL = 'CREATE OR REPLACE FUNCTION with a different parameter list does not replace the function, it adds a second overload -- after which every release_order_inventory call fails with "is not unique".',
+            HINT = 'Roll back the later migrations that changed this signature first, then re-run this rollback.';
+    END IF;
+END
+$rollback_precondition$;
+
 CREATE OR REPLACE FUNCTION public.release_order_inventory(p_order_id uuid, p_actor_id uuid DEFAULT NULL::uuid, p_request_id text DEFAULT NULL::text, p_release_reason text DEFAULT 'order_cancelled'::text)
  RETURNS boolean
  LANGUAGE plpgsql
