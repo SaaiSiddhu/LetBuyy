@@ -88,49 +88,48 @@ server/client boundary enforcement, and static-versus-dynamic rendering decision
 here. `customer_web` in particular compiles the full `/store/[subdomain]/…` tree that every storefront
 serves. A green gate with a broken `next build` is a state this repository has been in before.
 
-## `E2E_DEVELOP` — attempted, blocked, and diagnosed (corrected)
+## `E2E_DEVELOP` — blocked on this machine's Docker daemon (third diagnosis)
 
-> **This section replaces an earlier version that named the wrong cause.** The first draft said
-> `supabase start` created nothing because the CLI derives its project namespace from the workdir
-> directory name and therefore looked for `supabase_db_database`. That namespace observation is true,
-> but it was a *consequence* of nothing having started, not the reason nothing started. The corrected
-> cause is below. A wrong cause in an evidence document is worse than no document, because it sends
-> the next attempt somewhere specific and wrong.
+> **This section has now been wrong twice.** The first version blamed the Supabase project namespace.
+> The second blamed the `supavisor` image pull — right about *where* it stalls, wrong in implying the
+> image or the network was the cause. Both were published as settled. They were not. The narrowing is
+> left visible rather than tidied away, because a reader deciding what to try next needs to know which
+> explanations have already been eliminated.
 
-Attempted because leaving it as an unexplained gap was worse than trying. `references/run.md` §5
-explicitly permits the loop to boot and stop the local stack.
+`references/run.md` §5 explicitly permits the loop to boot and stop the local stack, so this was in
+scope to attempt.
 
-**What actually blocks it.** `supabase start` blocks on
+**The registry works. The daemon's pull path does not.**
 
-```
-docker pull public.ecr.aws/supabase/supavisor:2.9.7
-```
+| probe | result |
+|---|---|
+| `public.ecr.aws/token/?scope=repository:supabase/supavisor:pull` | **HTTP 200 in 0.86s**, 1,593-byte token |
+| `public.ecr.aws/v2/supabase/supavisor/manifests/2.9.7` (with that token) | **HTTP 200 in 0.89s** |
+| `docker pull public.ecr.aws/supabase/supavisor:2.9.7` | zero bytes of output, image never arrives |
+| `docker pull busybox:latest` — tiny, never pulled here | **identical**: zero output, image never arrives |
+| `docker system df` across a sampling window, both pulls | `Images 18.46GB` → `Images 18.46GB` |
+| `docker ps` · `docker images` · `docker version` · `docker info` | instant; version `29.6.2`; `ServerErrors` `[]` |
 
-`supavisor` is the connection pooler, required because `database/supabase/config.toml` sets
-`[db.pooler] enabled = true`. The image is **absent** from this machine
-(`docker images | grep -ci supavisor` → `0`) and the pull **does not progress**: `docker system df`
-reported `Images 18.46GB` at both ends of a sampling window with the pull process alive throughout.
-The registry itself answers — `https://public.ecr.aws/v2/` returns HTTP 401 in 0.97s, which is the
-expected unauthenticated response from a live v2 registry — so this is not DNS or TLS. **Why the
-transfer stalls was not determined and is not claimed here.**
+DNS, TLS, auth and the image path all work from this machine. The daemon answers every other call
+immediately and reports no server errors. `busybox` is the discriminating test: the fault is in the
+pull path generally, **not** in the `supavisor` image and **not** in the network.
 
-The namespace fact remains true and still worth fixing: `database/supabase/config.toml` declares no
-`project_id` (`grep -c project_id` → `0`), so the CLI names every container after whatever directory
-it was invoked from. That makes the local stack's identity non-deterministic — the twelve
-`supabase_*_Letbuyy_Store` containers on this machine, all `Exited` and three weeks old, are from a
-checkout directory of that name. It is a defect in its own right; it was not this stall.
+`supabase start` needs `supavisor` because `database/supabase/config.toml` sets
+`[db.pooler] enabled = true`, so it blocks there — but it would block on any uncached image.
 
-**Process note, recorded because it cost a tick.** The first attempt was reported as stopped. It was
-not: the process survived that `kill` and was still running a full tick later, so a retry contended
-with it and both blocked on the same pull. A command that returns without error is not evidence that
-a process is gone. Both were subsequently killed with `-KILL` and their absence *verified* by `pgrep`
-returning zero, as was the orphaned pull.
+**Remedy: restart Docker Desktop. That is an owner action, not this session's.** It would stop the
+four `edynox-*` containers belonging to a different project and the `letbuyy-executable-pg` container.
 
-Nothing was created and nothing left behind: zero `*_database` containers, and the pre-existing
-`supabase_*_Letbuyy_Store` and unrelated `supabase_*_Agrimore` container sets were not touched.
+**The impact is bounded, and saying so matters more than the alarm.** Only work that needs a *new*
+image is blocked. `pnpm test:executable` runs from the already-cached `postgres:16-alpine` and was
+observed passing 46 suites / 182 assertions earlier in this same session. The phase pipeline —
+claim, build, gate, merge — is unaffected.
 
-**So `E2E_DEVELOP` remains unreached for all nine phases.** CAP-C69 carries the corrected diagnosis
-and the two independent repairs it suggests.
+All stray pull processes were killed and their absence verified with `pgrep`. No container was
+created. The five running containers were not touched, and neither were the dormant
+`supabase_*_Letbuyy_Store` or unrelated `supabase_*_Agrimore` sets.
+
+**So `E2E_DEVELOP` remains unreached for all nine phases.** CAP-C69 carries this diagnosis.
 
 ## The four ambient failures, attributed
 
