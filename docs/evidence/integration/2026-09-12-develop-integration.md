@@ -89,5 +89,5 @@ It is also not an end-to-end run: `E2E_DEVELOP` in the phase lifecycle means boo
 from `develop` and exercising each phase's journeys through the running system. That has **not** been
 done for any of the nine phases above. Nothing here substitutes for it.
 
-`develop` is `~492` commits ahead of `staging` and `main`, which both sit at `823aa5ee`. Promotion is
+`develop` is **508** commits ahead of `staging` and `main`, which both sit at `823aa5ee` (`git rev-list --count staging..develop` at `7b96adb1`). Promotion is
 fast-forward only and requires the owner's word in the same message.
