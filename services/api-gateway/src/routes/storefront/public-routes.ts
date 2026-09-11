@@ -420,7 +420,16 @@ export function registerStorefrontPublicRoutes(
 
     // GET /storefront/directory — Public LetBuyy discovery directory and aggregate stats.
     // SECURITY: owner PII (full_name, email) is never returned to anonymous callers.
-    // Aggregate stats are per-platform counts with no PII exposure.
+    // SECURITY: published stores ONLY. A `draft` site is a store its merchant has created and not
+    // launched; listing one here, or counting it in `totalStores`, discloses that merchant's
+    // store_name/logo_url/theme_id to any anonymous caller before they have chosen to be public.
+    // Both filters below are `.eq('status', 'published')` for that reason — see F-DIRECTORY-1 and
+    // __tests__/storefront-directory-exposure.test.ts, which fails if either widens again.
+    // NOTE: this route does not currently execute at all. `sites` is a registered tenant table and
+    // `status` is not one of its accepted scope columns, so createTenantGuardedSupabaseClient
+    // rejects both queries before they run. That fail-closed state is deliberate and unchanged
+    // here: making a platform-wide public store directory live is an owner decision (CAP-C60),
+    // and getSupabaseAdminUnguarded is not the instrument for it — see its conditions 1 and 3.
     router.get('/directory', async (c) => {
         const db = getSupabaseAdmin(c);
 
@@ -435,13 +444,13 @@ export function registerStorefrontPublicRoutes(
                 site_type,
                 created_at
             `)
-            .in('status', ['draft', 'published'])
+            .eq('status', 'published')
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
             .limit(12);
 
         const [storesCount, themesCount] = await Promise.all([
-            db.from('sites').select('*', { count: 'exact', head: true }).not('status', 'eq', 'suspended').is('deleted_at', null),
+            db.from('sites').select('*', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
             db.from('online_store_themes').select('*', { count: 'exact', head: true }),
         ]);
 
