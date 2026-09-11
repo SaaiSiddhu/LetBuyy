@@ -65,6 +65,55 @@ All three gateway suites added on 2026-09-11/12 were confirmed running inside `t
 this tip by name, not by filename: `storefront-directory-exposure`, `wire-contract-duplication`,
 `internal-payment-union-enforcement`. A test file that exists but never runs is proof of nothing.
 
+## Measurement 3 — the five Next app builds, which the gate does not cover
+
+**Measured at `56b521f6`**, not at `7b96adb1`. `git diff --name-status 7b96adb1..56b521f6` is three
+Markdown files — `EXECUTION_LEDGER.md`, `docs/active/BRANCH_DISPOSITIONS.md` and this document — and
+**zero code files**, so the build result carries over; saying so is cheaper than pretending the two
+commits were the same one.
+
+`CLAUDE.md`'s Operational rules state it outright: *run real `pnpm --filter <app> build` (the gate
+does NOT cover app `next build`)*. Until this tick, no phase this session had run it.
+
+```
+pnpm --filter @letbuyy/customer-web       build   BUILD OK
+pnpm --filter @letbuyy/merchant-web       build   BUILD OK
+pnpm --filter @letbuyy/admin-web          build   BUILD OK
+pnpm --filter @letbuyy/identity-platform  build   BUILD OK
+pnpm --filter @letbuyy/marketing-site     build   BUILD OK
+```
+
+This matters because `typecheck` and `lint` do not exercise Next's own build: route collection,
+server/client boundary enforcement, and static-versus-dynamic rendering decisions are resolved only
+here. `customer_web` in particular compiles the full `/store/[subdomain]/…` tree that every storefront
+serves. A green gate with a broken `next build` is a state this repository has been in before.
+
+## `E2E_DEVELOP` — attempted, blocked, and diagnosed
+
+Attempted this tick, because leaving it as an unexplained gap in the previous section was worse than
+trying. `references/run.md` §5 explicitly permits the loop to boot and stop the local stack.
+
+`supabase start --workdir database` ran for 13 minutes and created **zero** containers. The reason
+came from `supabase status --workdir database`:
+
+```
+failed to inspect container health: No such container: supabase_db_database
+```
+
+The CLI derives its project namespace from the **workdir directory name**. `--workdir database`
+therefore addresses a project called `database`, while the twelve `supabase_*_Letbuyy_Store`
+containers already on this machine — all `Exited`, three weeks old — belong to a namespace created
+from a checkout directory named `Letbuyy_Store`. The config this repository ships lives at
+`database/supabase/config.toml`, which is what forces the mismatched workdir.
+
+The command was stopped. It had created nothing: `docker ps -a` shows no `*_database` container, and
+the tree was clean before and after. The separate `supabase_*_Agrimore` containers belong to a
+different programme and were not touched.
+
+**So `E2E_DEVELOP` remains unreached for all nine phases**, now for a named reason rather than an
+unexamined one. Filed as CAP-C69 with the diagnosis, so the next attempt does not spend the same
+thirteen minutes discovering it again.
+
 ## The four ambient failures, attributed
 
 These are inherited, not introduced, and are attributed in `references/hazards.md`:
@@ -87,7 +136,9 @@ rollback. Two green batteries are not those eleven dimensions.
 
 It is also not an end-to-end run: `E2E_DEVELOP` in the phase lifecycle means booting the local stack
 from `develop` and exercising each phase's journeys through the running system. That has **not** been
-done for any of the nine phases above. Nothing here substitutes for it.
+done for any of the nine phases above — see the section above for the attempt and its diagnosed
+blocker. Five successful `next build`s prove the apps compile and their routes resolve; they prove
+nothing about whether a buyer can complete a checkout. Nothing here substitutes for that.
 
 `develop` is **508** commits ahead of `staging` and `main`, which both sit at `823aa5ee` (`git rev-list --count staging..develop` at `7b96adb1`). Promotion is
 fast-forward only and requires the owner's word in the same message.
