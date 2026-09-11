@@ -134,8 +134,14 @@ function bootstrapDatabase(name, faithful) {
 // The sweep. Returns [{name, searchPath, securityDefiner, calls}] for every `public` function whose
 // explicit search_path omits `extensions` and whose BODY calls an extensions-only function
 // unqualified. Deliberate exclusions, each for a stated reason:
-//   - the function HEADER is skipped: a DEFAULT parameter expression is evaluated in the CALLER's
-//     search_path, not the function's, so `redrive_distributed_dead_letters`'s default is not a bug;
+//   - the function HEADER is skipped. The reason first written here — "a DEFAULT parameter
+//     expression is evaluated in the CALLER's search_path" — was an assertion, and F-QUALIFY-2
+//     measured it to be WRONG. The exclusion is right; the reason is that a parameter default is
+//     resolved to an OID at DEFINITION time and stored as a parse tree, so it can only fail while
+//     the migration is being applied, never at call time, and no caller's search_path can break it.
+//     The five `PARAMETER DEFAULT` tests at the end of this file are that measurement. They also
+//     show why reading a default out of a dump proves nothing about how it was written: its
+//     rendering is a display artefact of the READING session's search_path;
 //   - a name that also exists in pg_catalog (gen_random_uuid) is skipped: pg_catalog is always on
 //     the search path, so such a call resolves under any setting.
 function sweepForUnqualifiedExtensionCalls(targetDatabase = databaseName) {
@@ -343,4 +349,133 @@ test('244 is replayable and its self-verification is load-bearing', { skip }, ()
     applySqlFile(MIGRATION);
     assert.match(psql(LEASE_CALL), /^[0-9a-f]{32}$/);
     assert.deepEqual(sweepForUnqualifiedExtensionCalls(), []);
+});
+
+// ── PARAMETER DEFAULTS — the measurement CAP-C54 asked for ──────────────────────────────────────
+//
+// CAP-C54 flagged `redrive_distributed_dead_letters(..., p_recovery_operation_id text DEFAULT
+// encode(gen_random_bytes(16), 'hex'), ...)` — an unqualified pgcrypto call in a parameter HEADER,
+// not a body — observed that two superuser calls did not throw, guessed that a default is evaluated
+// in the calling session's search_path, and said explicitly: test this under the real application
+// role before either fixing or clearing it, and do not assume the outcome.
+//
+// Measured here. The guess is wrong, and so was the reason this file originally gave for skipping
+// headers. What actually happens is DEFINITION-TIME BINDING: PostgreSQL parses a default expression
+// when the function is created, resolves the function reference to an OID using the CREATING
+// session's search_path, and stores the parse tree. After that the default cannot fail — not for a
+// narrow caller, not for a different role, not for a function whose own SET search_path excludes
+// `extensions`. The failure mode is real but lands somewhere else entirely: the CREATE statement
+// itself is refused, so an unqualified header default breaks the MIGRATION APPLY, not the runtime.
+
+const probeDatabase = `${databaseName}_paramdefault`;
+
+const HEADER_DEFAULT_FN = `
+CREATE FUNCTION public.probe_header_default(p_id text DEFAULT encode(gen_random_bytes(8), 'hex'))
+RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $probe$
+BEGIN RETURN p_id; END $probe$;`;
+
+const BODY_CALL_FN = `
+CREATE FUNCTION public.probe_body_call() RETURNS text
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $probe$
+BEGIN RETURN encode(gen_random_bytes(8), 'hex'); END $probe$;`;
+
+function bootstrapProbeDatabase() {
+    psql(`DROP DATABASE IF EXISTS "${probeDatabase}"; CREATE DATABASE "${probeDatabase}";`, 'postgres');
+    // Supabase-shaped: pgcrypto in `extensions`, and `extensions` on the DATABASE search_path.
+    psql(`ALTER DATABASE "${probeDatabase}" SET search_path = public, extensions;`, 'postgres');
+    psql(`
+        CREATE SCHEMA extensions;
+        CREATE EXTENSION pgcrypto WITH SCHEMA extensions;
+        GRANT USAGE ON SCHEMA extensions TO public;
+        DO $$ BEGIN
+          IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'app_tenant') THEN CREATE ROLE app_tenant NOLOGIN; END IF;
+        END $$;
+        -- Roles are CLUSTER-global, so the conditional create above silently inherits whatever an
+        -- earlier suite left behind. State the attributes: a leftover app_tenant carrying BYPASSRLS
+        -- would change what this role can do for a reason unrelated to the code under test, and
+        -- NOBYPASSRLS is what the tenancy design requires of it in the first place.
+        ALTER ROLE app_tenant NOLOGIN NOBYPASSRLS;
+        GRANT USAGE ON SCHEMA public TO app_tenant;`, probeDatabase);
+}
+
+test('PARAMETER DEFAULT: an unqualified call in a header is refused at DEFINITION time', { skip }, () => {
+    bootstrapProbeDatabase();
+
+    // The creating session, not the function, is what has to resolve the name. Narrow it and the
+    // CREATE is refused outright — which is why this shape can never reach a caller.
+    const createError = psqlExpectingFailure(`SET search_path = public;${HEADER_DEFAULT_FN}`, probeDatabase);
+    assert.ok(createError, 'CREATE FUNCTION was expected to fail with a narrow creating search_path');
+    assert.match(createError, new RegExp(MISSING_FN_ERROR.replace(/[()]/g, '\\$&')));
+
+    // Same statement, same database, only the creating session's search_path differs.
+    psql(HEADER_DEFAULT_FN, probeDatabase);
+    psql(BODY_CALL_FN, probeDatabase);
+});
+
+test('PARAMETER DEFAULT: once created it resolves for every caller, whatever their search_path', { skip }, () => {
+    // This is the assertion CAP-C54 wanted and could not make: the real application connects as
+    // app_tenant, not as the superuser its two probe calls used.
+    const wide = psql(`SELECT public.probe_header_default();`, probeDatabase);
+    assert.match(wide, /^[0-9a-f]{16}$/, 'the default must produce 8 random bytes as hex');
+
+    const narrow = psql(`SET search_path = public; SELECT public.probe_header_default();`, probeDatabase);
+    assert.match(narrow, /^[0-9a-f]{16}$/, 'a caller with no `extensions` on its path must still get a value');
+
+    const asTenant = psql(`SET ROLE app_tenant; SELECT public.probe_header_default();`, probeDatabase);
+    assert.match(asTenant, /^[0-9a-f]{16}$/, 'app_tenant is the role the tenancy design actually uses');
+
+    assert.notEqual(wide, narrow, 'each call must generate fresh bytes, not replay a bound constant');
+});
+
+test('PARAMETER DEFAULT: the function\'s own SET search_path governs the BODY and not the header', { skip }, () => {
+    // Both functions carry `SET search_path = public`, both were created in the same session, and
+    // both call gen_random_bytes unqualified. Only one of them breaks. That asymmetry is the whole
+    // reason the sweep above scans the body and skips the header.
+    assert.match(psql(`SELECT public.probe_header_default();`, probeDatabase), /^[0-9a-f]{16}$/);
+
+    const bodyError = psqlExpectingFailure(`SELECT public.probe_body_call();`, probeDatabase);
+    assert.ok(bodyError, 'the body call was expected to fail under a narrow function search_path');
+    assert.match(bodyError, new RegExp(MISSING_FN_ERROR.replace(/[()]/g, '\\$&')));
+});
+
+test('PARAMETER DEFAULT: how a default READS is a display artefact of the reading session', { skip }, () => {
+    // This is what reconciles CAP-C54's observation with the repository. The row reports the default
+    // as `encode(gen_random_bytes(16), 'hex')`; `database/supabase/migrations/000_baseline.sql`
+    // declares it as `encode(extensions.gen_random_bytes(16), 'hex'::text)`. Both readings are
+    // correct: pg_get_functiondef prints a stored default bare when the target is visible on the
+    // reading session's search_path and schema-qualified when it is not, and the baseline is dump
+    // output. A default's spelling in a dump is therefore evidence about the dumping session, NOT
+    // about how anyone wrote it — and never evidence of a defect.
+    const wide = psql(`SELECT pg_get_functiondef('public.probe_header_default(text)'::regprocedure);`, probeDatabase);
+    const narrow = psql(
+        `SET search_path = public; SELECT pg_get_functiondef('public.probe_header_default(text)'::regprocedure);`,
+        probeDatabase,
+    );
+
+    assert.match(wide, /DEFAULT encode\(gen_random_bytes\(8\)/, 'a wide reading path prints it bare');
+    assert.match(narrow, /DEFAULT encode\(extensions\.gen_random_bytes\(8\)/, 'a narrow reading path qualifies it');
+
+    // The body is stored verbatim and is never re-rendered, which is why a body scan IS meaningful.
+    const body = psql(`SET search_path = public; SELECT prosrc FROM pg_proc WHERE proname = 'probe_body_call';`, probeDatabase);
+    assert.match(body, /encode\(gen_random_bytes\(8\)/, 'prosrc is verbatim text, unaffected by the reading path');
+});
+
+test('PARAMETER DEFAULT: redrive_distributed_dead_letters accepts an omitted operation id as app_tenant', { skip }, () => {
+    // CAP-C54's specific function, on the faithful database with every migration applied, called the
+    // way the row said had never been tested: omitting the defaulted parameter, under a caller whose
+    // search_path cannot see `extensions`, as the tenant role rather than the superuser.
+    const result = psql(
+        `SET search_path = public; SET ROLE app_tenant;
+         SELECT public.redrive_distributed_dead_letters('cap-c54-queue');`,
+    );
+    assert.equal(result, '0', 'an empty dead-letter queue redrives nothing, but must not raise');
+
+    // And the live catalogue agrees with the baseline file, read the same narrow way pg_dump reads.
+    const definition = psql(
+        `SET search_path = public;
+         SELECT pg_get_functiondef('public.redrive_distributed_dead_letters(text, text[], text, text)'::regprocedure);`,
+    );
+    assert.match(definition, /p_recovery_operation_id text DEFAULT encode\(extensions\.gen_random_bytes\(16\)/);
+
+    psql(`DROP DATABASE IF EXISTS "${probeDatabase}";`, 'postgres');
 });
