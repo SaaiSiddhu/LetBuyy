@@ -39,7 +39,23 @@ export function isMissingColumnError(
     error: { message?: string; details?: string; hint?: string } | null | undefined,
     columnName: string,
 ): boolean {
-    return missingColumnFromError(error) === columnName || databaseErrorText(error).includes(columnName.toLowerCase());
+    // The precise test first: missingColumnFromError parses the column out of a drift message, so an
+    // exact match is conclusive. It is kept because it is STRICTER than the majority predicate, not
+    // looser.
+    if (missingColumnFromError(error) === columnName) return true;
+
+    // The fallback used to be `databaseErrorText(error).includes(columnName)` with no further
+    // condition, which made ANY error merely mentioning the column read as a missing column — a
+    // permission denial, a constraint violation, a type error. This route family drops the column
+    // from its select and retries when this returns true, so an unrelated failure silently degraded
+    // the response. Twelve other definitions of this predicate in the gateway require the column name
+    // AND a drift-shaped phrase; this now matches them.
+    const text = databaseErrorText(error);
+    return text.includes(columnName.toLowerCase()) && (
+        text.includes('does not exist') ||
+        text.includes('schema cache') ||
+        text.includes('could not find')
+    );
 }
 
 export function isMissingAppPricingPlansRelation(
