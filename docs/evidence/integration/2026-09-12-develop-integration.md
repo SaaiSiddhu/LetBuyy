@@ -88,31 +88,49 @@ server/client boundary enforcement, and static-versus-dynamic rendering decision
 here. `customer_web` in particular compiles the full `/store/[subdomain]/…` tree that every storefront
 serves. A green gate with a broken `next build` is a state this repository has been in before.
 
-## `E2E_DEVELOP` — attempted, blocked, and diagnosed
+## `E2E_DEVELOP` — attempted, blocked, and diagnosed (corrected)
 
-Attempted this tick, because leaving it as an unexplained gap in the previous section was worse than
-trying. `references/run.md` §5 explicitly permits the loop to boot and stop the local stack.
+> **This section replaces an earlier version that named the wrong cause.** The first draft said
+> `supabase start` created nothing because the CLI derives its project namespace from the workdir
+> directory name and therefore looked for `supabase_db_database`. That namespace observation is true,
+> but it was a *consequence* of nothing having started, not the reason nothing started. The corrected
+> cause is below. A wrong cause in an evidence document is worse than no document, because it sends
+> the next attempt somewhere specific and wrong.
 
-`supabase start --workdir database` ran for 13 minutes and created **zero** containers. The reason
-came from `supabase status --workdir database`:
+Attempted because leaving it as an unexplained gap was worse than trying. `references/run.md` §5
+explicitly permits the loop to boot and stop the local stack.
+
+**What actually blocks it.** `supabase start` blocks on
 
 ```
-failed to inspect container health: No such container: supabase_db_database
+docker pull public.ecr.aws/supabase/supavisor:2.9.7
 ```
 
-The CLI derives its project namespace from the **workdir directory name**. `--workdir database`
-therefore addresses a project called `database`, while the twelve `supabase_*_Letbuyy_Store`
-containers already on this machine — all `Exited`, three weeks old — belong to a namespace created
-from a checkout directory named `Letbuyy_Store`. The config this repository ships lives at
-`database/supabase/config.toml`, which is what forces the mismatched workdir.
+`supavisor` is the connection pooler, required because `database/supabase/config.toml` sets
+`[db.pooler] enabled = true`. The image is **absent** from this machine
+(`docker images | grep -ci supavisor` → `0`) and the pull **does not progress**: `docker system df`
+reported `Images 18.46GB` at both ends of a sampling window with the pull process alive throughout.
+The registry itself answers — `https://public.ecr.aws/v2/` returns HTTP 401 in 0.97s, which is the
+expected unauthenticated response from a live v2 registry — so this is not DNS or TLS. **Why the
+transfer stalls was not determined and is not claimed here.**
 
-The command was stopped. It had created nothing: `docker ps -a` shows no `*_database` container, and
-the tree was clean before and after. The separate `supabase_*_Agrimore` containers belong to a
-different programme and were not touched.
+The namespace fact remains true and still worth fixing: `database/supabase/config.toml` declares no
+`project_id` (`grep -c project_id` → `0`), so the CLI names every container after whatever directory
+it was invoked from. That makes the local stack's identity non-deterministic — the twelve
+`supabase_*_Letbuyy_Store` containers on this machine, all `Exited` and three weeks old, are from a
+checkout directory of that name. It is a defect in its own right; it was not this stall.
 
-**So `E2E_DEVELOP` remains unreached for all nine phases**, now for a named reason rather than an
-unexamined one. Filed as CAP-C69 with the diagnosis, so the next attempt does not spend the same
-thirteen minutes discovering it again.
+**Process note, recorded because it cost a tick.** The first attempt was reported as stopped. It was
+not: the process survived that `kill` and was still running a full tick later, so a retry contended
+with it and both blocked on the same pull. A command that returns without error is not evidence that
+a process is gone. Both were subsequently killed with `-KILL` and their absence *verified* by `pgrep`
+returning zero, as was the orphaned pull.
+
+Nothing was created and nothing left behind: zero `*_database` containers, and the pre-existing
+`supabase_*_Letbuyy_Store` and unrelated `supabase_*_Agrimore` container sets were not touched.
+
+**So `E2E_DEVELOP` remains unreached for all nine phases.** CAP-C69 carries the corrected diagnosis
+and the two independent repairs it suggests.
 
 ## The four ambient failures, attributed
 
