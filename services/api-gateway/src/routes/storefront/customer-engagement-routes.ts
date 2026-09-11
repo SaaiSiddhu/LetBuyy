@@ -135,6 +135,23 @@ async function verifyStoreCustomer(c: AppContext, storeId: string, customerId: s
     return Boolean(await getVerifiedStoreCustomer(c, storeId, customerId));
 }
 
+// Wishlist write bounds. `customer_wishlists.product_id` is `text NOT NULL` with NO foreign key to
+// `products` (000_baseline.sql:8914), so whatever a caller sends is what gets stored — and the sync
+// route writes one row per id. Without these two bounds a single authenticated request can create
+// as many rows as it lists, each holding a string of any length. The repository's own precedent for
+// a buyer-submitted array is `items: z.array(...).min(1).max(50)` in @letbuyy/checkout-core; a
+// wishlist merged from a device deserves more room than a cart, not less, hence 200.
+//
+// These are LENGTH bounds, not format bounds. `products.id` is `uuid`, so requiring a UUID would be
+// the stronger fix — but this column is `text` deliberately, and rejecting a shape existing clients
+// may already send is a behaviour change that needs live data to justify. See CAP-C68.
+export const WISHLIST_SYNC_MAX_IDS = 200;
+export const WISHLIST_PRODUCT_ID_MAX_LENGTH = 64;
+
+export function isBoundedProductId(value: unknown): value is string {
+    return typeof value === 'string' && value.length > 0 && value.length <= WISHLIST_PRODUCT_ID_MAX_LENGTH;
+}
+
 function normalizeEmail(email: string): string {
     return email.toLowerCase().trim();
 }
@@ -1107,8 +1124,8 @@ export function registerStorefrontCustomerEngagementRoutes(
     router.post('/customer/wishlist', async (c) => {
         const body = await c.req.json() as CustomerWishlistBody;
 
-        if (!body.customer_id || !body.store_id || !body.product_id) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and product_id are required' } }, 400);
+        if (!body.customer_id || !body.store_id || !isBoundedProductId(body.product_id)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `customer_id, store_id and product_id (at most ${WISHLIST_PRODUCT_ID_MAX_LENGTH} characters) are required` } }, 400);
         }
 
         if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
@@ -1136,8 +1153,8 @@ export function registerStorefrontCustomerEngagementRoutes(
     router.delete('/customer/wishlist', async (c) => {
         const body = await c.req.json() as CustomerWishlistBody;
 
-        if (!body.customer_id || !body.store_id || !body.product_id) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and product_id are required' } }, 400);
+        if (!body.customer_id || !body.store_id || !isBoundedProductId(body.product_id)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `customer_id, store_id and product_id (at most ${WISHLIST_PRODUCT_ID_MAX_LENGTH} characters) are required` } }, 400);
         }
 
         if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
@@ -1166,11 +1183,15 @@ export function registerStorefrontCustomerEngagementRoutes(
             return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and product_ids are required' } }, 400);
         }
 
+        if (body.product_ids.length > WISHLIST_SYNC_MAX_IDS) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `product_ids may contain at most ${WISHLIST_SYNC_MAX_IDS} entries` } }, 400);
+        }
+
         if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
             return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
         }
 
-        const productIds = Array.from(new Set(body.product_ids.filter((id): id is string => typeof id === 'string' && id.length > 0)));
+        const productIds = Array.from(new Set(body.product_ids.filter(isBoundedProductId)));
         if (!productIds.length) return c.json(success({ synced: 0 }));
 
         const db = getSupabaseAdmin(c);
