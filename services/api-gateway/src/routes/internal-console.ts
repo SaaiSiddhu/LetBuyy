@@ -17,6 +17,25 @@ import { checkSegregationOfDuty, validateSensitiveReason } from '../middleware/r
 import internalConsoleComplianceRouter from './internal-console/compliance';
 import internalConsoleDevelopersRouter from './internal-console/developers';
 import internalConsoleMoneyRouter from './internal-console/money-reconciliation';
+import {
+    dayBounds,
+    daysAgo,
+    intValue,
+    isUuid,
+    numberValue,
+    periodDateDaysAgo,
+    recordValue,
+    stringValue,
+    type CohortSnapshotRow,
+    type DbRecord,
+    type FunnelStepRow,
+    type MerchantOwnerRow,
+    type MerchantSiteRow,
+    type MetricRollupRow,
+    type MrrRollupRow,
+    type RevenueSubscriptionRow,
+} from './internal-console/shapes';
+
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 const ListQuerySchema = z.object({
@@ -69,104 +88,6 @@ const ExecutiveAnalyticsQuerySchema = z.object({
     reason: z.string().trim().max(1000).optional(),
 });
 type ListQuery = z.infer<typeof ListQuerySchema>;
-interface RevenueSubscriptionRow {
-    amount_paid?: number | string | null;
-}
-type DbRecord = Record<string, unknown>;
-interface MerchantSiteRow extends DbRecord {
-    id: string;
-    user_id?: string | null;
-    custom_user_id?: string | null;
-    name?: string | null;
-    store_name?: string | null;
-    site_type?: string | null;
-    subdomain?: string | null;
-    custom_domain?: string | null;
-    custom_domain_status?: string | null;
-    access_mode?: string | null;
-    status?: string | null;
-    published?: boolean | null;
-    published_at?: string | null;
-    views_count?: number | null;
-    product_count?: number | null;
-    order_count?: number | null;
-    current_theme_release_id?: string | null;
-    currency?: string | null;
-    locale?: string | null;
-    trial_status?: string | null;
-    trial_ends_at?: string | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-}
-interface MerchantOwnerRow extends DbRecord {
-    id: string;
-    email?: string | null;
-    full_name?: string | null;
-    email_verified?: boolean | null;
-    auth_provider?: string | null;
-    created_at?: string | null;
-}
-interface MrrRollupRow extends DbRecord {
-    id: string;
-    period_date?: string | null;
-    mrr_paise?: number | string | null;
-    arr_paise?: number | string | null;
-    new_mrr_paise?: number | string | null;
-    expansion_mrr_paise?: number | string | null;
-    contraction_mrr_paise?: number | string | null;
-    churned_mrr_paise?: number | string | null;
-    active_subscriptions?: number | string | null;
-    logo_churn_count?: number | string | null;
-    subscription_revenue_paise?: number | string | null;
-    app_revenue_paise?: number | string | null;
-    theme_revenue_paise?: number | string | null;
-    partner_payout_liability_paise?: number | string | null;
-    definition_version?: string | null;
-    computed_at?: string | null;
-    metadata?: DbRecord | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-}
-interface MetricRollupRow extends DbRecord {
-    id: string;
-    metric_key?: string | null;
-    dimension?: DbRecord | null;
-    period_date?: string | null;
-    value?: number | string | null;
-    unit?: string | null;
-    definition_version?: string | null;
-    computed_at?: string | null;
-    metadata?: DbRecord | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-}
-interface CohortSnapshotRow extends DbRecord {
-    id: string;
-    cohort_month?: string | null;
-    period_index?: number | string | null;
-    metric_key?: string | null;
-    cohort_size?: number | string | null;
-    retained_count?: number | string | null;
-    conversion_count?: number | string | null;
-    definition_version?: string | null;
-    computed_at?: string | null;
-    metadata?: DbRecord | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-}
-interface FunnelStepRow extends DbRecord {
-    id: string;
-    period_date?: string | null;
-    step_key?: string | null;
-    step_index?: number | string | null;
-    count?: number | string | null;
-    conversion_rate_bps?: number | string | null;
-    definition_version?: string | null;
-    computed_at?: string | null;
-    metadata?: DbRecord | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-}
 function readBearerToken(value: string | undefined): string | null {
     if (!value?.startsWith('Bearer ')) return null;
     return value.slice('Bearer '.length).trim() || null;
@@ -234,16 +155,6 @@ function searchExpression(columns: string[], search: string | undefined): string
 
     return columns.map((column) => `${column}.ilike.%${cleaned}%`).join(',');
 }
-function dayBounds(date: string) {
-    const start = new Date(`${date}T00:00:00.000Z`);
-    const end = new Date(start);
-    end.setUTCDate(end.getUTCDate() + 1);
-
-    return {
-        start: start.toISOString(),
-        end: end.toISOString(),
-    };
-}
 function dbError(message: string) {
     return {
         error: {
@@ -273,30 +184,6 @@ function emptyConsoleAnalytics() {
         audit_events: 0,
         signup_to_store_conversion_percent: 0,
     };
-}
-function daysAgo(days: number): string {
-    return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-}
-function isUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
-}
-function numberValue(value: unknown): number {
-    const parsed = typeof value === 'number' ? value : Number(value || 0);
-    return Number.isFinite(parsed) ? parsed : 0;
-}
-function intValue(value: unknown): number {
-    return Math.round(numberValue(value));
-}
-function stringValue(value: unknown): string | null {
-    return typeof value === 'string' && value.trim() ? value.trim() : null;
-}
-function recordValue(value: unknown): DbRecord {
-    return value && typeof value === 'object' && !Array.isArray(value) ? value as DbRecord : {};
-}
-function periodDateDaysAgo(days: number): string {
-    const date = new Date();
-    date.setUTCDate(date.getUTCDate() - days);
-    return date.toISOString().slice(0, 10);
 }
 function rollupFreshness(computedAt: string | null | undefined, hasRows: boolean) {
     const stale = isExecutiveAnalyticsStale(computedAt);
