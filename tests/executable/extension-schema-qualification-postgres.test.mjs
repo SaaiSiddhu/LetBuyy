@@ -390,6 +390,11 @@ function bootstrapProbeDatabase() {
         DO $$ BEGIN
           IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'app_tenant') THEN CREATE ROLE app_tenant NOLOGIN; END IF;
         END $$;
+        -- Roles are CLUSTER-global, so the conditional create above silently inherits whatever an
+        -- earlier suite left behind. State the attributes: a leftover app_tenant carrying BYPASSRLS
+        -- would change what this role can do for a reason unrelated to the code under test, and
+        -- NOBYPASSRLS is what the tenancy design requires of it in the first place.
+        ALTER ROLE app_tenant NOLOGIN NOBYPASSRLS;
         GRANT USAGE ON SCHEMA public TO app_tenant;`, probeDatabase);
 }
 
