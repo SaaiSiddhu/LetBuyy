@@ -14,7 +14,17 @@ import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../../lib/tenant-context';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { assertProviderPaymentNotReplayed } from '../../lib/payment-route-support';
-import type { CreateCheckoutOrderCommand } from '@letbuyy/checkout-core';
+import type {
+    CreateCheckoutOrderCommand,
+    // The wire contracts these handlers receive. They are `z.infer` of the very schemas that parse
+    // the request, so the type checker and the validator can no longer disagree. Three hand-written
+    // copies of these shapes used to live in this file; one of them claimed a `shippingRateId` the
+    // real schema did not declare, `z.object()` stripped the field silently, and a merchant's
+    // configured shipping rate was unreachable while the build stayed green (CAP-C39/C42/C46).
+    StorefrontCreateOrderInput,
+    StorefrontRazorpayOrderInput,
+    StorefrontRazorpayVerifyInput,
+} from '@letbuyy/checkout-core';
 import {
     calculateGstLine,
     normalizeIndianStateCode,
@@ -25,35 +35,6 @@ import { resolveShippingRate } from '../../lib/shipping-rate-resolver';
 
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
-
-type StorefrontCreateOrderBody = {
-    customer: {
-        name: string;
-        email: string;
-        phone?: string;
-        gstin?: string;
-        address: {
-            address: string;
-            city: string;
-            state: string;
-            stateCode?: string;
-            pincode: string;
-        };
-    };
-    items: Array<{
-        productId: string;
-        variantId?: string | null;
-        quantity: number;
-    }>;
-    paymentMethod: 'razorpay' | 'cod';
-    deliveryOption: 'standard' | 'express';
-    notes?: string;
-    couponCode?: string;
-    giftCardCode?: string;
-    idempotencyKey: string;
-    /** V1 shipping: optional server-side rate ID; back-compat when absent. */
-    shippingRateId?: string | null;
-};
 
 type OrderRpcResult = {
     id?: string;
@@ -73,21 +54,6 @@ type StorefrontPaidOrderSnapshot = {
     customer_id?: string;
     total?: number | string;
     currency?: string | null;
-};
-
-type StorefrontRazorpayOrderBody = {
-    orderId: string;
-    idempotencyKey: string;
-    amount?: number;
-    amountMinorUnits?: number;
-};
-
-type StorefrontRazorpayVerifyBody = {
-    orderId: string;
-    razorpay_order_id: string;
-    razorpay_payment_id: string;
-    razorpay_signature: string;
-    idempotencyKey: string;
 };
 
 function isCheckoutPostCommitDeferralEnabled(env: Pick<Env, 'CHECKOUT_POSTCOMMIT_DEFERRAL'>): boolean {
@@ -175,7 +141,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
     router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema), async (c) => {
         const db = getSupabaseAdmin(c);
         const subdomain = c.req.param('subdomain');
-        const body = c.get('validatedBody') as StorefrontCreateOrderBody;
+        const body = c.get('validatedBody') as StorefrontCreateOrderInput;
         const store = await loadPublishedStore(c, subdomain);
 
         if (!store) {
@@ -476,7 +442,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
         validate('json', StorefrontRazorpayOrderSchema),
         async (c) => {
             const subdomain = c.req.param('subdomain');
-            const body = c.get('validatedBody') as StorefrontRazorpayOrderBody;
+            const body = c.get('validatedBody') as StorefrontRazorpayOrderInput;
             const store = await loadPublishedStore(c, subdomain);
 
             if (!store) {
@@ -596,7 +562,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
         validate('json', StorefrontRazorpayVerifySchema),
         async (c) => {
             const subdomain = c.req.param('subdomain');
-            const body = c.get('validatedBody') as StorefrontRazorpayVerifyBody;
+            const body = c.get('validatedBody') as StorefrontRazorpayVerifyInput;
             const store = await loadPublishedStore(c, subdomain);
 
             if (!store) {
