@@ -83,6 +83,24 @@ function assertProvider(value: unknown): value is CapturedPaymentProvider {
     return value === 'razorpay';
 }
 
+// These four routes take their body as `await c.req.json() as <Type>` — a cast, not a parse — so the
+// union members in those declarations are what TypeScript believes downstream and NOT what arrives.
+// A presence check (`!body.paymentStatus`) admits any non-empty string. The ledger RPC does not
+// trust either value (it writes `CASE WHEN p_payment_status = 'refunded' THEN 'refunded' ELSE
+// 'failed' END`, and never uses p_order_status to transition anything), so a bad value has never
+// produced a wrong charge — it is silently COERCED. On a money path that hides a caller's bug
+// instead of surfacing it, which is what these two guards change.
+const FAILURE_PAYMENT_STATUSES = ['failed', 'refunded'] as const;
+const FAILURE_ORDER_STATUSES = ['cancelled', 'refunded'] as const;
+
+function assertPaymentFailureStatus(value: unknown): value is (typeof FAILURE_PAYMENT_STATUSES)[number] {
+    return FAILURE_PAYMENT_STATUSES.includes(value as (typeof FAILURE_PAYMENT_STATUSES)[number]);
+}
+
+function assertFailureOrderStatus(value: unknown): value is (typeof FAILURE_ORDER_STATUSES)[number] {
+    return FAILURE_ORDER_STATUSES.includes(value as (typeof FAILURE_ORDER_STATUSES)[number]);
+}
+
 async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?: string) {
     const db = getSupabaseAdmin(c);
 
@@ -192,8 +210,9 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
         }
 
         const body = await c.req.json() as InternalPaymentFailureBody;
-        if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId || !body.paymentStatus || !body.orderStatus) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider, providerEventId, paymentStatus and orderStatus are required' } }, 400);
+        if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId
+            || !assertPaymentFailureStatus(body.paymentStatus) || !assertFailureOrderStatus(body.orderStatus)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `orderId, provider, providerEventId, paymentStatus (${FAILURE_PAYMENT_STATUSES.join(' | ')}) and orderStatus (${FAILURE_ORDER_STATUSES.join(' | ')}) are required` } }, 400);
         }
 
         const db = getSupabaseAdmin(c);
