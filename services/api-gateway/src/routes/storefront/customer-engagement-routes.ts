@@ -1030,8 +1030,15 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('orders')
-            // T14/W4: tax + gst_invoice_number for the customer order-detail drop (subtotal/discount/shipping_cost/payment_method/tracking_number are a separate, pre-existing, out-of-scope gap -- see CAP registry).
-            .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at' : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items')
+            // Every column here is read by mapOrderDetailDrop in apps/customer_web/src/lib/customer-drop.ts.
+            // Before F-ORDERDETAIL-1 the list stopped after created_at, so the nine fields below fell back
+            // to 0 / '' / null / 'cod' / 'pending' and the customer order-detail page rendered a zero
+            // subtotal, no discount, no shipping cost, an always-COD payment method and an always-pending
+            // payment status for every order (CAP-C51). Adding a read here without adding the column is
+            // the failure mode; the test in customer-order-detail-fields.test.ts fails if they drift apart.
+            .select(orderItemsRelationalReadsEnabled(c.env)
+                ? 'id, store_id, order_number, status, total, tax, gst_invoice_number, created_at, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency'
+                : 'id, order_number, status, total, tax, gst_invoice_number, created_at, items, subtotal, discount, shipping_cost, payment_method, payment_status, tracking_number, carrier, shipping_address, currency')
             .eq('store_id', storeId)
             .eq('customer_email', normalizeEmail(customer.email))
             .order('created_at', { ascending: false })
