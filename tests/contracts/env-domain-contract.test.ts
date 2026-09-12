@@ -3,6 +3,8 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+// @ts-expect-error -- governance-common.mjs is plain ESM with no type declarations
+import { compatibilityBridgeRoots, startsWithPrefix } from '../../scripts/validators/governance-common.mjs';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
@@ -86,6 +88,15 @@ test('legacy platform .store target does not appear in active functional source'
   for (const root of sourceRoots) {
     for (const file of collectSourceFiles(join(repoRoot, root))) {
       const relativePath = file.replace(`${repoRoot}/`, '');
+      // F-CONTRACTSCOPE-1. This sweep and platform-domain-literal-validator.mjs police the SAME rule
+      // and disagreed: the validator skips the compatibility bridges at :56 and passed, while this
+      // test had no exemption and flagged cloudflare_bridge's letbuyy.store proxy. The bridges are
+      // inert and unwired, which is why that exemption exists. The list is imported from
+      // governance-common rather than copied, so the two guards cannot drift apart again — a second
+      // hand-maintained scope is how they diverged in the first place.
+      if (compatibilityBridgeRoots.some((prefix: string) => startsWithPrefix(relativePath, prefix))) {
+        continue;
+      }
       const source = readFileSync(file, 'utf8');
       if (blocked.some((pattern) => pattern.test(source))) {
         offenders.push(relativePath);

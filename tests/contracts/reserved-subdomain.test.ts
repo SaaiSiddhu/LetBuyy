@@ -38,6 +38,14 @@ test('storefront reserved labels match the domain split governance list', () => 
     'mail',
     'dcv',
     'connect',
+    // F-CONTRACTSCOPE-1: added to RESERVED_STOREFRONT_LABELS by 0e8ab1c4 (feat(checkout): move
+    // checkout onto its own hosted origin) — checkout.<root> and its staging variant must never be
+    // resolvable as a merchant subdomain. This literal is a hand-copied mirror of the constant and
+    // did not follow. The 'governance list' in this test's name is
+    // docs/archive/root-governance-2026-06-10/, which describes June 2026 and is provenance, not a
+    // current authority to reconcile against.
+    'checkout',
+    'checkout-staging',
   ]);
 
   for (const label of RESERVED_STOREFRONT_LABELS) {
