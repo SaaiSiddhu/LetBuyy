@@ -94,6 +94,11 @@ sweep() { # every gate-lane validator, individually (safe: no artefact cleanup).
     if node "scripts/validators/$v" >"$OUT/validators/${v%.mjs}.log" 2>&1; then pass=$((pass+1)); else failed="$failed ${v%-validator.mjs}"; fi
   done
   local secs=$((SECONDS-start)); local rc=$((total-pass)); [ $rc -eq 0 ] || FAILS=$((FAILS+1))
+  # F-GATEDIFF-1: $failed is ground truth — it comes from each validator's EXIT CODE above, not from
+  # grepping its log. The table prints it through `cut -c1-110`, which is fine for a human summary and
+  # useless as evidence once the list grows. Persist it whole, one name per line, so a phase compares
+  # SETS instead of re-deriving them with a log heuristic that has over-matched here before.
+  echo "$failed" | tr ' ' '\n' | sed '/^$/d' | sort > "$OUT/failing-validators.txt"
   ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "validators:sweep ($pass/$total pass)" "$rc" "$secs" "$(echo $failed | cut -c1-110)")")
   printf '  %-40s exit=%s (%ss) failed:%s\n' "validators:sweep" "$rc" "$secs" "$failed"
   echo "$failed" | tr ' ' '\n' | grep -q '^stale-artifact$' && echo "  note: stale-artifact-validator fails by method when run individually (no orchestrator cleanup) — confirm its offender list is 100% generated dirs"
@@ -155,6 +160,15 @@ if [ $FLUTTER_BUILD = 1 ]; then
     echo "  note: flutter build writes to tracked files — run git status and attribute every change"
   else skip flutter-build "flutter not on PATH"; fi
 fi
+# F-GATEDIFF-1: the failing TEST-name set, collected across every lane log rather than the two lanes
+# a reader happens to think of. Leading whitespace is stripped on purpose: node:test indents a nested
+# subtest's ✖, and an earlier phase in this programme extracted only `^✖ ` and silently missed those.
+# The `✖ failing tests:` header is node's own section marker, not a test name, so it is excluded.
+find "$OUT" -maxdepth 1 -name '*.log' -exec grep -hE '^[[:space:]]*✖ ' {} + 2>/dev/null \
+  | sed 's/^[[:space:]]*//; s/ ([0-9.]*ms)$//' \
+  | grep -v '^✖ failing tests:' | sort -u > "$OUT/failing-tests.txt"
+[ -f "$OUT/failing-validators.txt" ] || : > "$OUT/failing-validators.txt"
+echo "failure sets → $OUT/failing-tests.txt ($(wc -l < "$OUT/failing-tests.txt" | tr -d ' ') names), $OUT/failing-validators.txt ($(wc -l < "$OUT/failing-validators.txt" | tr -d ' ') names)"
 {
   echo "GATE TABLE  mode=$MODE  branch=$BRANCH  sha=$SHA  at=$TS  failed=$FAILS"
   printf '%-40s | %4s | %6s | %s\n' name exit secs "first failure line"; printf '%s\n' "${ROWS[@]}"
