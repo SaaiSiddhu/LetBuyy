@@ -8,6 +8,7 @@ import {
   listWorkspaceFiles,
   getUntrackedFiles,
   startsWithPrefix,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Stale artifact validator");
@@ -32,7 +33,7 @@ const offenders = [
 
 reporter.assert(
   offenders.length === 0,
-  `Untracked/generated/debug/forbidden topology artifacts must be removed or promoted intentionally: ${[...new Set(offenders)].slice(0, 20).join(", ")}`,
+  `Untracked/generated/debug/forbidden topology artifacts must be removed or promoted intentionally: ${formatOffenderList(offenders)}`,
 );
 
 reporter.finish(`${untrackedFiles.length} untracked non-ignored files and ${workspaceFiles.length} workspace files scanned`);

@@ -277,6 +277,18 @@ export function getUntrackedFiles() {
     .sort();
 }
 
+// F-STALECOUNT-1. Every offender message in this tree rendered `list.slice(0, N).join(", ")`, so a
+// reader saw N entries and had no way to know whether N was the count or the cap. That is the failure
+// this programme names "a count is not a set", and it sat inside the lane that exists to enforce it —
+// gate.sh:104 asks a reader to confirm stale-artifact's offenders are "100% generated dirs", which the
+// truncated log cannot answer. Always say how many were withheld.
+export function formatOffenderList(offenders, limit = 20) {
+  const unique = [...new Set(offenders)];
+  const shown = unique.slice(0, limit);
+  if (unique.length <= limit) return shown.join(", ");
+  return `${shown.join(", ")} (showing ${shown.length} of ${unique.length}; ${unique.length - shown.length} more not listed)`;
+}
+
 export function startsWithPrefix(file, prefix) {
   return file === prefix || file.startsWith(`${prefix}/`);
 }
