@@ -213,7 +213,10 @@ deploys, never touches the primary checkout, never runs the real gate lane, neve
 
 ---
 
-## 5. Repository facts every mode needs (measured 2026-09-04 at `develop` = `823aa5ee`; re-measure)
+## 5. Repository facts every mode needs (baseline measured 2026-09-04 at `develop` = `823aa5ee`; the Governance
+and Database lines RE-MEASURED 2026-09-12 at `develop` = `de543446` by F-SKILLFACTS-1 — every OTHER line still
+carries its 2026-09-04 measurement and was NOT re-verified, including the remote, the Flutter/Play Store figures,
+the legacy worktree inventory and the frozen-root list. Re-measure before citing any of them.)
 
 ```
 Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on feature/claude-md-durable-architecture-memory (LEGACY_INTEGRATED),
@@ -230,15 +233,24 @@ Services   api-gateway (Hono/Wrangler :9010) · mobile-bff :9011 · webhook-serv
 Packages   packages/typescript/{ui,api-client,…} (@letbuyy/ui = the design system; --lb-* tokens; tokens.ts 1,749 lines, 307 variables)
            packages/{tenant-core,session-core,identity-core,auth-core,payments,billing-core,checkout-core,theme-engine,infrastructure,…}
            packages/token-core = auth JWT envelope, NOT design tokens · packages/dart/{core,models,ui_kit,marketplace_*,quickcommerce_*} · packages/lcis-* tooling
-Database   database/supabase/migrations 145 tracked (000, 073…216) + paired rollback/ · tenant GUC app.site_id (TENANT_SITE_GUC) · role app_tenant
+Database   database/supabase/migrations 175 tracked, highest 246 (re-measured 2026-09-12, `git ls-files`) + paired rollback/ · tenant GUC app.site_id (TENANT_SITE_GUC) · role app_tenant
            · 49 tables FORCE RLS · money RPCs: create_checkout_order · confirm_order_payment_with_ledger · complete_order_refund · issue_gift_card
            · set_gift_card_status · restore_gift_card_on_refund · issue_gst_invoice · generated registry services/api-gateway/src/tenant/tenant-tables.registry.ts
 Governance node scripts/validate-governance.mjs --lane=gate --plan (SAFE) · 117 .mjs on disk, 113 in the gate lane after GOV-3
-           clean-tree sweep at 823aa5ee (GOV-3 rehearsal, each validator individually): 107/113 — reds: foundation-antifabrication-gate
-           · environment-validator · sequential-migration + tenant-isolation (another session's untracked migrations 208–210)
-           · stale-artifact (method artifact) · [platform-domain-literal — GOV-3's own, fixed]. The DIRTY PRIMARY additionally reds
-           validate-design-system and raw-error-message (other sessions' uncommitted files). typecheck: @letbuyy/infrastructure (retired
-           adapters) · lint: customer_web 921/38 · contracts 195/202 (Phase M rename fallout) — all attributed in references/hazards.md
+           RE-MEASURED 2026-09-12 at develop=de543446 (F-SKILLFACTS-1), clean tree, `gate.sh --baseline`: failed=2.
+           validators:sweep 111/113 — the ONLY reds are environment-validator and stale-artifact-validator, and BOTH are
+           attributed: environment = 6 Google AIza keys in apps/customer_app's lineage-A Firebase config (FB-2/3/4 retire them)
+           + 2 rzp_TEST keys in a donor fixture, NO live LetBuyy credential (F-SECSCAN-1); stale-artifact = a method artifact,
+           discharged against the FULL list at 54/54 node_modules, 100% generated (F-STALECOUNT-1 — read its `(showing N of M)`
+           suffix, never count the entries shown). foundation-antifabrication-gate, sequential-migration and tenant-isolation
+           NOW PASS. typecheck: exit 0, clean. test:contracts 277/277 · test:unit:gateway 962 tests, 953 pass, 0 fail, 9 skipped
+           · tests:governance 225/225 — all three lanes GREEN (the old "contracts 195/202 Phase M rename fallout" line is
+           SUPERSEDED: those 7 were fixed in F-WEBHOOKTEST-1 / F-RENAMESTALE-1 / F-ARCHIVEPATH-1 / F-CONTRACTSCOPE-1, and every
+           one was a stale assertion, not a regression). lint is the ONLY non-validator red: of 5 app lint tasks only
+           @letbuyy/customer-web exits non-zero (admin-web 114, marketing-site 326, merchant-web 105, identity-platform 26 =
+           warnings only, 0 errors); its 38 errors are 37 @letbuyy/ui/no-hardcoded-hex (CAP-C77) + 1
+           letbuyy-boundaries/no-new-next-api-route (CAP-C76). NOT re-measured this phase, still as of 2026-09-04: the DIRTY
+           PRIMARY's extra reds (validate-design-system, raw-error-message) — see references/hazards.md.
            THE REAL LANE DELETES node_modules/.next/.turbo/dist/.dart_tool/build/coverage/.cache/.wrangler/.vercel/.symlinks under apps|packages|services
 Toolchain  pnpm 10.6.2 + turbo (frozen apps filtered) · Node 20 in CI, 26.5.1 here · node --test / tsx --test / vitest (@letbuyy/ui only)
            Flutter 3.44.8 stable (pub workspace 20/20; merchant_app 172 tests canary) · bash 3.2 (no declare -A) · no `timeout` binary · grep is ugrep
