@@ -90,8 +90,11 @@ test('legacy platform .store target does not appear in active functional source'
       const relativePath = file.replace(`${repoRoot}/`, '');
       // F-CONTRACTSCOPE-1. This sweep and platform-domain-literal-validator.mjs police the SAME rule
       // and disagreed: the validator skips the compatibility bridges at :56 and passed, while this
-      // test had no exemption and flagged cloudflare_bridge's letbuyy.store proxy. The bridges are
-      // inert and unwired, which is why that exemption exists. The list is imported from
+      // test had no exemption and flagged cloudflare_bridge's retired-platform-domain proxy. The
+      // bridges are inert and unwired, which is why that exemption exists. (The domain is spelled
+      // out nowhere in this comment on purpose: platform-domain-literal-validator forbids the bare
+      // literal in functional source, and an earlier draft of this very comment failed it.)
+      // The list is imported from
       // governance-common rather than copied, so the two guards cannot drift apart again — a second
       // hand-maintained scope is how they diverged in the first place.
       if (compatibilityBridgeRoots.some((prefix: string) => startsWithPrefix(relativePath, prefix))) {
