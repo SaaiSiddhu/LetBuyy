@@ -21,6 +21,9 @@
 #
 # Rules encoded here (see references/hazards.md):
 #  - runs from a git worktree root; refuses the primary checkout unless LETBUYY_ALLOW_PRIMARY=1
+#  - refuses to run at all without node_modules unless LETBUYY_ALLOW_NO_INSTALL=1 (F-GATEGUARD-1):
+#    the test lanes would die before running, yielding zero failure names and a set-diff that reads
+#    as every ambient failure fixed
 #  - never runs a generator, never resets a database, never touches another worktree, never pushes
 #  - exit code = number of failed checks (0 = all green); ambient reds still count — attribute them in the report
 set -uo pipefail
@@ -39,7 +42,20 @@ for a in "$@"; do case "$a" in
   *) echo "gate.sh: unknown flag $a" >&2; exit 2;; esac; done
 BRANCH="$(git rev-parse --abbrev-ref HEAD)"; SHA="$(git rev-parse --short HEAD)"; TS="$(date +%Y%m%d-%H%M%S)"
 OUT="${LETBUYY_GATE_OUT:-$HOME/.letbuyy/gate/$(echo "$BRANCH" | tr '/' '_')-$SHA-$TS}"; mkdir -p "$OUT"
-[ -d node_modules ] || echo "WARNING: node_modules missing — a fresh worktree lies in both directions; run pnpm install --frozen-lockfile first"
+# F-GATEGUARD-1: this was a WARNING that then ran anyway, and the warning's own wording — "lies in
+# both directions" — was correct. Measured on one commit (3b0852f8) with and without the install:
+# without it the run reports failed=6, reddening typecheck, tests:governance and two validators
+# (cycle-budget, route-ownership) that are otherwise green. That is the harmless direction. The
+# harmful one is that both test lanes die with ELIFECYCLE BEFORE running, so the run yields ZERO
+# failing test names — and the failure-SET diff this programme performs every phase then compares an
+# empty head set against the real baseline and reports every ambient failure as fixed. A gate that
+# cannot run must not produce a table that looks like one.
+if [ ! -d node_modules ] && [ "${LETBUYY_ALLOW_NO_INSTALL:-0}" != "1" ]; then
+  echo "gate.sh: refusing to run without node_modules — the lanes would fail for the wrong reason and the" >&2
+  echo "         failure-set diff would read as every ambient failure fixed. Run: pnpm install --frozen-lockfile" >&2
+  echo "         (LETBUYY_ALLOW_NO_INSTALL=1 overrides, for deliberately measuring this state)" >&2
+  exit 2
+fi
 echo "gate.sh mode=$MODE flutter-build=$FLUTTER_BUILD real-db=$REAL_DB gate-real=$GATE_REAL build=$BUILD  root=$ROOT  branch=$BRANCH  sha=$SHA  dirty=$(git status --porcelain | wc -l | tr -d ' ')  untracked=$(git ls-files --others --exclude-standard | wc -l | tr -d ' ')"
 echo "logs → $OUT"
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
