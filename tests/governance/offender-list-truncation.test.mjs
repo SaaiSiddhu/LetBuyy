@@ -35,3 +35,25 @@ test('the cap is honoured exactly at the boundary', () => {
     const twentyOne = Array.from({ length: 21 }, (_, i) => `f${i}`);
     assert.match(formatOffenderList(twentyOne, 20), /showing 20 of 21; 1 more not listed/);
 });
+
+test('the separator is honoured, because call sites do not agree on one', () => {
+    // F-STALECOUNT-2. The 14 adopted sites join with ", ", "; " and "\n" respectively. Flattening
+    // them to one style would have silently rewritten eleven validators' output formats while
+    // claiming to change only what they report, so the separator is a parameter and is pinned here.
+    assert.equal(formatOffenderList(['a', 'b', 'c'], 20, '; '), 'a; b; c');
+    assert.equal(formatOffenderList(['a', 'b'], 20, '\n'), 'a\nb');
+    const many = Array.from({ length: 25 }, (_, i) => `f${i}`);
+    const rendered = formatOffenderList(many, 20, '; ');
+    assert.match(rendered, /showing 20 of 25; 5 more not listed/);
+    // Count separators in the JOINED PORTION only. A first draft asserted 19 occurrences of '; '
+    // across the whole string and failed at 20 — because the suffix "…of 25; 5 more…" contains the
+    // separator too. The helper was right and the assertion was wrong; measuring the wrong span is
+    // how a correct implementation gets "fixed".
+    const joined = rendered.slice(0, rendered.indexOf(' (showing'));
+    assert.equal(joined, many.slice(0, 20).join('; '));
+    assert.equal((joined.match(/; /g) || []).length, 19);
+});
+
+test('the default separator is unchanged, so untouched call sites keep their format', () => {
+    assert.equal(formatOffenderList(['a', 'b'], 20), 'a, b');
+});

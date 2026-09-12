@@ -13,6 +13,7 @@ import {
   reservedMobileRuntimeRoots,
   root,
   startsWithPrefix,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Runtime validator");
@@ -28,7 +29,7 @@ for (const forbiddenRoot of forbiddenRuntimePrefixes) {
   reporter.assert(!exists(forbiddenRoot), `Forbidden runtime topology path exists: ${forbiddenRoot}`);
   reporter.assert(
     trackedOffenders.length === 0,
-    `Forbidden runtime topology path has tracked files: ${forbiddenRoot} (${trackedOffenders.slice(0, 5).join(", ")})`,
+    `Forbidden runtime topology path has tracked files: ${forbiddenRoot} (${formatOffenderList(trackedOffenders, 5)})`,
   );
 }
 
@@ -77,7 +78,7 @@ for (const runtimeRoot of reservedMobileRuntimeRoots) {
   const sourceFiles = trackedFiles.filter((file) => startsWithPrefix(file, runtimeRoot) && !allowedFiles.has(file));
   reporter.assert(
     sourceFiles.length === 0,
-    `Reserved mobile runtime root must remain manifest-and-AGENTS-only: ${runtimeRoot} (${sourceFiles.slice(0, 5).join(", ")})`,
+    `Reserved mobile runtime root must remain manifest-and-AGENTS-only: ${runtimeRoot} (${formatOffenderList(sourceFiles, 5)})`,
   );
 }
 

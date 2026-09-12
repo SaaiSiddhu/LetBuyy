@@ -2,6 +2,7 @@ import {
   createReporter,
   getTrackedFiles,
   readFile,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("No scan-generated AGENTS validator");
@@ -29,7 +30,7 @@ const generatedActiveFiles = activeFiles.filter((file) => {
 
 reporter.assert(
   generatedActiveFiles.length === 0,
-  `Active authority/docs must not be scan-generated: ${generatedActiveFiles.slice(0, 10).join(", ")}`,
+  `Active authority/docs must not be scan-generated: ${formatOffenderList(generatedActiveFiles, 10)}`,
 );
 
 const frozenManifestOnlyOffenders = activeFiles.filter((file) => {

@@ -2,6 +2,7 @@ import {
   createReporter,
   listWorkspaceFiles,
   readFile,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Commission bps zero validator");
@@ -36,7 +37,7 @@ for (const file of activeFiles) {
 
 reporter.assert(
   activeOffenders.length === 0,
-  `Non-zero commission/GMV fee defaults are forbidden:\n${activeOffenders.slice(0, 20).join("\n")}`,
+  `Non-zero commission/GMV fee defaults are forbidden:\n${formatOffenderList(activeOffenders, 20, "\n")}`,
 );
 
 const migration162 = readFile("database/supabase/migrations/162_phase_a_commission_zero.sql");

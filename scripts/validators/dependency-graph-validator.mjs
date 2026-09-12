@@ -14,6 +14,7 @@ import {
   sourceExtensions,
   trackedTargetForResolvedImport,
   workspacePackageRoots,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Dependency graph validator");
@@ -205,7 +206,7 @@ function visit(root) {
 
 for (const root of [...governedRoots].sort()) visit(root);
 
-reporter.assert(cycles.length === 0, `Circular internal dependencies detected: ${cycles.slice(0, 10).join("; ")}`);
+reporter.assert(cycles.length === 0, `Circular internal dependencies detected: ${formatOffenderList(cycles, 10, "; ")}`);
 
 const edgeCount = [...edges.values()].reduce((count, targets) => count + targets.size, 0);
 reporter.finish(`${governedRoots.size} governed roots and ${edgeCount} internal dependency edges checked`);

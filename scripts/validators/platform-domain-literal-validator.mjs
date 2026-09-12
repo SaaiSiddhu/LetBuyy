@@ -6,6 +6,7 @@ import {
   readFile,
   startsWithPrefix,
   textExtensions,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Platform domain literal validator");
@@ -68,7 +69,7 @@ for (const file of listWorkspaceFiles(scanRoots)) {
 
 reporter.assert(
   offenders.length === 0,
-  `Functional letbuyy.store literals must be migrated to letbuyy.com: ${offenders.slice(0, 20).join("; ")}`,
+  `Functional letbuyy.store literals must be migrated to letbuyy.com: ${formatOffenderList(offenders, 20, "; ")}`,
 );
 
 reporter.finish("functional platform domain literals checked");

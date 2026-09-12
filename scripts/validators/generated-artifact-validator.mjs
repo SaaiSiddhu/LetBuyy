@@ -6,6 +6,7 @@ import {
   generatedArtifactPattern,
   getTrackedFiles,
   startsWithPrefix,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Generated artifact validator");
@@ -23,7 +24,7 @@ const offenders = trackedFiles.filter(
 
 reporter.assert(
   offenders.length === 0,
-  `Generated, debug, or forbidden topology artifacts must not be tracked: ${offenders.slice(0, 20).join(", ")}`,
+  `Generated, debug, or forbidden topology artifacts must not be tracked: ${formatOffenderList(offenders, 20)}`,
 );
 
 reporter.finish(`${trackedFiles.length} tracked files scanned`);

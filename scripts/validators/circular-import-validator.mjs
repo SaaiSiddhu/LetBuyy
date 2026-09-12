@@ -14,6 +14,7 @@ import {
   sourceExtensions,
   trackedTargetForResolvedImport,
   workspacePackageRoots,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Circular import validator");
@@ -109,5 +110,5 @@ function visit(root) {
 
 for (const root of [...governedRoots].sort()) visit(root);
 
-reporter.assert(cycles.length === 0, `Circular runtime/package imports detected: ${cycles.slice(0, 10).join("; ")}`);
+reporter.assert(cycles.length === 0, `Circular runtime/package imports detected: ${formatOffenderList(cycles, 10, "; ")}`);
 reporter.finish(`${governedRoots.size} governed roots checked for circular imports`);

@@ -2,6 +2,7 @@ import {
   createReporter,
   getTrackedFiles,
   readFile,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Environment honesty validator");
@@ -57,7 +58,7 @@ for (const file of trackedFiles.filter(isActiveSource)) {
 
 reporter.assert(
   offenders.length === 0,
-  `Active source must not hardcode staging/retired LetBuyy production defaults: ${offenders.slice(0, 20).join(", ")}`,
+  `Active source must not hardcode staging/retired LetBuyy production defaults: ${formatOffenderList(offenders, 20)}`,
 );
 
 const identityClient = readFile("apps/identity-platform/src/lib/api/client.ts");
