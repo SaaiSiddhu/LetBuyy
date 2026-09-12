@@ -64,7 +64,19 @@ test('custom-domain tables remain api-gateway single-writer owned', () => {
 
   assert.match(validator, /site_preview_links/);
   assert.match(validator, /site_gate_attempts/);
-  assert.match(validator, /apps\/customer-web\/src/);
+  // F-RENAMESTALE-1. This read /apps\/customer-web\/src/ and had been failing since Phase M renamed
+  // that root to apps/customer_web. The rename was correct; the assertion was not updated. Note which
+  // direction that brittleness runs: this test broke because the validator was FIXED, and it would
+  // have passed happily if the validator had been left policing a directory that no longer exists.
+  // So the path is asserted AND checked to exist, which makes the next rename fail for the right
+  // reason instead of the wrong one.
+  const customerStorefrontRoot = 'apps/customer_web/src';
+  assert.match(validator, new RegExp(customerStorefrontRoot.replace(/\//g, '\\/')));
+  assert.equal(
+    existsSync(join(repoRoot, customerStorefrontRoot)),
+    true,
+    `the single-writer validator must police a path that exists; ${customerStorefrontRoot} is missing`,
+  );
   assert.match(validator, /services\/api-gateway/);
 });
 
