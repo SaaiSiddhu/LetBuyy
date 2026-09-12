@@ -23,7 +23,7 @@ test('settings apps route renders the live client and the old content twin is ar
     assert.match(page, /AppsSettingsClient/);
     assert.equal(existsSync(path('apps/merchant_web/src/app/[store]/settings/apps/AppsSettingsContent.tsx')), false);
     assert.equal(
-        existsSync(path('docs/archive/dead-code/merchant-web/settings-apps/AppsSettingsContent.tsx')),
+        existsSync(path('docs/archive/dead-code/merchant-control-plane/settings-apps/AppsSettingsContent.tsx')),
         true,
     );
 });
