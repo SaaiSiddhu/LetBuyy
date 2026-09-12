@@ -214,23 +214,35 @@ deploys, never touches the primary checkout, never runs the real gate lane, neve
 ---
 
 ## 5. Repository facts every mode needs (baseline measured 2026-09-04 at `develop` = `823aa5ee`; the Governance
-and Database lines RE-MEASURED 2026-09-12 at `develop` = `de543446` by F-SKILLFACTS-1 — every OTHER line still
-carries its 2026-09-04 measurement and was NOT re-verified, including the remote, the Flutter/Play Store figures,
-the legacy worktree inventory and the frozen-root list. Re-measure before citing any of them.)
+and Database lines RE-MEASURED 2026-09-12 at `develop` = `de543446` by F-SKILLFACTS-1; the Root, Worktrees, Remote
+(stored refs only) and Packages lines RE-MEASURED 2026-09-12 at `develop` = `7d4c1711` by F-SKILLFACTS-2, which also
+VERIFIED-UNCHANGED the five app ports and the four FROZEN roots. STILL NOT RE-VERIFIED and still as of 2026-09-04:
+the remote's network reachability, and the Flutter / Play Store figures. Re-measure before citing either.)
 
 ```
-Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on feature/claude-md-durable-architecture-memory (LEGACY_INTEGRATED),
-           39 modified + 58 untracked files owned by other sessions (incl. untracked migrations 208–210). Read-only for this skill.
-Worktrees  LetBuyy-develop [develop] (GOV-3) · phase worktrees LetBuyy-<phase> · 6 legacy .claude/worktrees/* on claude/* branches
-           (+11 orphan agent-* dirs, 9.1 GB) — never remove without the owner. One legacy worktree lives outside the repo (Copy/Letbuyy_Store).
-Remote     https://github.com/SaaiSiddhu/Letbuyy_Store.git — UNREADABLE from this machine (gh account Edynox-hq → 404; git → not found).
-           origin/{main,stepup/main}=5af69e0c · origin/develop=41b6ea49 (June); all ancestors of 823aa5ee. Push = owner only.
+Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on feature/claude-md-durable-architecture-memory (LEGACY_INTEGRATED)
+           at 823aa5ee. RE-MEASURED 2026-09-12 (F-SKILLFACTS-2): 38 modified + 385 untracked files owned by other
+           sessions — the untracked count was 58 on 2026-09-04 and has grown by an order of magnitude; migrations
+           208–210 are STILL untracked there. Read-only for this skill.
+Worktrees  RE-MEASURED 2026-09-12 (F-SKILLFACTS-2). With NO phase worktree live, `git worktree list` registers
+           exactly 8: the primary · LetBuyy-develop [develop] · 5 legacy .claude/worktrees/* on claude/* branches ·
+           1 outside the repo (Copy/Letbuyy_Store). Each live phase worktree LetBuyy-<phase> adds one, so a count of
+           9 during a phase is expected — compare against 8 as the floor, never as the total. CAUTION for the collision check: a SIXTH non-agent directory,
+           .claude/worktrees/intelligent-euclid-61b310, exists under the primary but is NOT a registered worktree — its
+           registered twin of the same name is the one under Copy/Letbuyy_Store, so "6 legacy worktrees" (the pre-2026-09-12
+           wording) counts a directory git does not know about. Also under .claude/worktrees: 11 orphan agent-* dirs
+           totalling 4.4 GB; the 9.1 GB previously attributed to them is the WHOLE worktrees tree. Never remove without the owner.
+Remote     https://github.com/SaaiSiddhu/Letbuyy_Store.git — UNREADABLE from this machine (gh account Edynox-hq → 404;
+           git → not found). NOT RE-TESTED since 2026-09-04: verifying it needs a network call, and `gh` is in fact logged
+           in to TWO accounts — Edynox-hq (active) and SRIESWARAN01 — so the 404 may not be the whole story. Stored refs
+           RE-MEASURED 2026-09-12 and unchanged: origin/{main,stepup/main}=5af69e0c · origin/develop=41b6ea49 (June), both
+           ancestors of develop. Push = owner only.
 Apps       customer_web :9000 · merchant_web :9001 · identity-platform :9002 · marketing-site :9006 · admin_web :9007 (Next, next dev --webpack)
            Flutter: customer_app com.letbuyy.letbuyy SHIPPED (vc 4013, 1.0.10) · merchant_app com.letbuyy.store · admin_app RETIRED to RESERVED (FB-1, 2026-09-05; com.letbuyy.admin is a retired applicationId)
            · phase_2/{rider_app,store_ops_app} · FROZEN: app-marketplace, developer-portal, theme-marketplace, platform-operations-portal
 Services   api-gateway (Hono/Wrangler :9010) · mobile-bff :9011 · webhook-service :9012 · queue-workers :9013 · lcis-api (tooling)
            compatibility/{agrimore_bridge,cloudflare_bridge} inert & unwired (firebase_bridge DELETED, FB-1) · 7 RESERVED roots manifest-only (incl. apps/admin_app)
-Packages   packages/typescript/{ui,api-client,…} (@letbuyy/ui = the design system; --lb-* tokens; tokens.ts 1,749 lines, 307 variables)
+Packages   packages/typescript/{ui,api-client,…} (@letbuyy/ui = the design system; --lb-* tokens; tokens.ts 1,634 lines, 284 distinct --lb-* variables — re-measured 2026-09-12)
            packages/{tenant-core,session-core,identity-core,auth-core,payments,billing-core,checkout-core,theme-engine,infrastructure,…}
            packages/token-core = auth JWT envelope, NOT design tokens · packages/dart/{core,models,ui_kit,marketplace_*,quickcommerce_*} · packages/lcis-* tooling
 Database   database/supabase/migrations 175 tracked, highest 246 (re-measured 2026-09-12, `git ls-files`) + paired rollback/ · tenant GUC app.site_id (TENANT_SITE_GUC) · role app_tenant
