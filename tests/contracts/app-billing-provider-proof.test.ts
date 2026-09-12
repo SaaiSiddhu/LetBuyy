@@ -9,6 +9,15 @@ import { AppBillingChargeApproveSchema } from '@letbuyy/shared-types';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const routeSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store/billing-oauth-routes.ts'), 'utf8');
 const sharedRouteSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store/shared.ts'), 'utf8');
+// F-ROUTELEN-5: billing-oauth-routes.ts was 22 lines under the route-file line limit, so
+// activateExpiredTrialCharge moved to billing-trial.ts. The `app.charge.activated` literal below is
+// the trial path's — measured at the phase base, it appeared EXACTLY ONCE in the route file, at the
+// line inside that helper. The approve route emits via a computed `trialWindow.activation_event_type`
+// and never carried the literal. So this one marker is asserted against the billing surface (route +
+// trial helper); every provider-proof marker below stays pinned to the route file alone, which is
+// what this contract is actually named for.
+const trialSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store/billing-trial.ts'), 'utf8');
+const billingSurfaceSource = `${routeSource}\n${trialSource}`;
 const queueSource = readFileSync(join(testDir, '../../services/queue-workers/src/platform-queue-consumer.ts'), 'utf8');
 
 const approvalPayload = {
@@ -43,7 +52,7 @@ test('gateway activates app billing only after provider verification', () => {
     assert.match(routeSource, /APP_BILLING_PROVIDER_SIGNATURE_INVALID/);
     assert.match(routeSource, /hmacSha256Hex\(/);
     assert.match(routeSource, /getRazorpayOrderNotes\(/);
-    assert.match(routeSource, /eventType: 'app\.charge\.activated'/);
+    assert.match(billingSurfaceSource, /eventType: 'app\.charge\.activated'/);
     assert.match(sharedRouteSource, /provider_reference: stringOrNull\(input\.charge\.provider_reference\) \|\| undefined/);
     assert.match(sharedRouteSource, /provider_mode: input\.charge\.provider_mode === 'live' \? 'live' : 'sandbox'/);
     assert.match(queueSource, /provider_reference: payload\.provider_reference \|\| null/);
