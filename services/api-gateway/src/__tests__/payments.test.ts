@@ -128,7 +128,29 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     assert.match(webhookSource, /createRazorpayPaymentProvider/);
     assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"razorpay"/);
     assert.match(webhookSource, /secret:\s*c\.env\.RAZORPAY_WEBHOOK_SECRET/);
-    assert.match(webhookSource, /return c\.json\(\{ error:\s*"Invalid signature" \},\s*400\)/);
+    // F-WEBHOOKTEST-1. This was a literal match on
+    //   return c.json({ error: "Invalid signature" }, 400)
+    // and it had been failing for a long time — not because the guard weakened, but because it was
+    // STRENGTHENED. The rejection now requires TWO independent checks and the body became a ternary so
+    // a missing signature is distinguished from an invalid one, which is what stopped the literal
+    // matching. A guard sensitive to WORDING rather than to REMOVAL is worse than no guard: this one
+    // sat in the ambient red set for nine phases, and had the rejection actually been deleted it would
+    // have failed in exactly the same way. What follows pins the property instead.
+    //
+    // Both flags are required in ONE guard. Dropping either one must fail here.
+    assert.match(
+        webhookSource,
+        /if \(!timingSafeSignatureValid \|\| !verification\.verified\) \{/,
+        'the rejection must require BOTH the timing-safe HMAC comparison and the provider verification',
+    );
+    // The guard answers 400, and "Invalid signature" is still what a bad signature gets.
+    const rejection = webhookSource.slice(webhookSource.indexOf('if (!timingSafeSignatureValid'));
+    assert.match(rejection.slice(0, 600), /return c\.json\(\{ error:[^}]*"Invalid signature"[^}]*\},\s*400\)/);
+    // The comparison is constant-time and fails CLOSED when either input is absent — the property that
+    // makes the first flag worth requiring at all.
+    assert.match(webhookSource, /async function verifyRazorpayWebhookSignature\(/);
+    assert.match(webhookSource, /if \(!signature \|\| !secret\) return false;/);
+    assert.match(webhookSource, /return timingSafeEqual\(expected, signature\)/);
     assert.match(webhookSource, /writeWebhookEvent\(c\.env,\s*\{/);
     assert.match(webhookSource, /onConflict:\s*"provider,provider_event_id"/);
     assert.match(webhookSource, /if \(recorded\.duplicate\)/);
