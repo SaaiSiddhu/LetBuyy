@@ -29,7 +29,6 @@ import {
     CreateAppBillingChargeSchema,
     DEFAULT_APP_REVENUE_SHARE_BPS,
     appBillingModeForPricingModel,
-    isAppBillingTrialExpired,
     planAppBillingCharge,
     planAppBillingTrialWindow,
 } from '@letbuyy/billing-core';
@@ -64,66 +63,9 @@ import {
     verifyAppOAuthPkceVerifier,
     type AppBillingChargeRecord,
 } from './shared';
+import { activateExpiredTrialCharge } from './billing-trial';
 
 const BILLING_PRICING_PLAN_SELECT = 'id, app_id, developer_id, plan_slug, name, description, pricing_model, billing_mode, currency, amount_minor, interval, trial_days, usage_meter, usage_unit, included_usage, usage_unit_amount_minor, features, limits, is_default, status, sort_order';
-
-async function activateExpiredTrialCharge(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    input: {
-        charge: AppEngineJsonRecord;
-        actorId?: string | null;
-        requestId: string;
-    },
-): Promise<{ charge: AppEngineJsonRecord; activated: boolean; error?: { code: string; message: string } }> {
-    const trialEndsAt = stringOrNull(input.charge.trial_ends_at);
-    if (!isAppBillingTrialExpired({ status: stringOrNull(input.charge.status), trialEndsAt })) {
-        return { charge: input.charge, activated: false };
-    }
-
-    const chargeId = stringOrNull(input.charge.id);
-    if (!chargeId) {
-        return { charge: input.charge, activated: false, error: { code: 'VALIDATION', message: 'Trial charge id is missing' } };
-    }
-
-    const now = new Date().toISOString();
-    const billingStartsAt = stringOrNull(input.charge.billing_starts_at) || trialEndsAt || now;
-    const metadata = parseJsonRecord(input.charge.metadata);
-    const trialMetadata = parseJsonRecord(metadata.trial);
-    const { data: activatedCharge, error } = await db
-        .from('app_billing_charges')
-        .update({
-            status: 'active',
-            activated_at: stringOrNull(input.charge.activated_at) || now,
-            billing_starts_at: billingStartsAt,
-            updated_by: input.actorId || null,
-            metadata: {
-                ...metadata,
-                trial: {
-                    ...trialMetadata,
-                    status: 'completed',
-                    completed_at: now,
-                    billing_starts_at: billingStartsAt,
-                },
-            },
-        })
-        .eq('id', chargeId)
-        .eq('status', 'trialing')
-        .select()
-        .single();
-
-    if (error) {
-        return { charge: input.charge, activated: false, error: { code: 'DB_ERROR', message: error.message } };
-    }
-
-    await insertAppChargeOutbox(db, {
-        charge: activatedCharge as AppBillingChargeRecord,
-        eventType: 'app.charge.activated',
-        actorId: input.actorId || '',
-        requestId: input.requestId,
-    });
-
-    return { charge: activatedCharge as AppEngineJsonRecord, activated: true };
-}
 
 export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env }>): void {
     // POST /app-store/installations/:id/charges — Create a merchant-approved app charge

@@ -12,6 +12,11 @@ const APP_STORE_ROUTE_SOURCES = [
   'services/api-gateway/src/routes/app-store.ts',
   'services/api-gateway/src/routes/app-store/extension-routes.ts',
   'services/api-gateway/src/routes/app-store/billing-oauth-routes.ts',
+  // F-ROUTELEN-5: billing-oauth-routes.ts was 22 lines under the route-file limit, so
+  // activateExpiredTrialCharge — which emits the app.charge.activated outbox row — moved here.
+  // This guard caught that move, which is what it is for: the marker must stay inside the
+  // app-store split, and the split now has one more module.
+  'services/api-gateway/src/routes/app-store/billing-trial.ts',
   'services/api-gateway/src/routes/app-store/install-lifecycle-routes.ts',
   'services/api-gateway/src/routes/app-store/compliance-routes.ts',
   'services/api-gateway/src/routes/app-store/developer-tooling-routes.ts',
