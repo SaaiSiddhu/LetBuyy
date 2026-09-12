@@ -73,8 +73,11 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
 - `tenant-isolation-validator` reds for the *next* session whenever a migration touches a tenant
   table and `services/api-gateway/src/tenant/tenant-tables.registry.ts` was not regenerated
   (`node scripts/generators/generate-tenant-table-registry.mjs`). Provenance-only drift, still a red gate.
-- `sequential-migration-validator` reds on **untracked** migrations and on gaps; today's red is
-  another session's uncommitted 208–210 in the primary checkout. In a clean worktree it passes.
+- `sequential-migration-validator` reds on **untracked** migrations and on gaps. As of 2026-09-04 the
+  red was another session's uncommitted 208–210 in the primary checkout; those files are STILL untracked
+  there (re-measured 2026-09-12), but in a clean worktree this validator PASSES — confirmed in the
+  2026-09-12 sweep at `develop` = `de543446`, where the only two reds are `environment-validator` and
+  `stale-artifact-validator`.
 - `domain-boundary-validator` hard-asserts the app-local API route count, and
   `tests/federation/app-api-route-ownership.test.mjs` asserts the validator's **source text** carries
   the same literal — adding any app route means editing both. `tooling-governance-validator`
@@ -205,18 +208,26 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`), `raw-error-message-validator`,
   and the "untracked migration" variant of `sequential-migration`. `branch-lag-guard-validator` is
   green after the D-BRANCH retarget.
-- **`pnpm run test:contracts`** — 202 tests, 195 pass, **7 fail**, all asserting validator source or
-  tree state against pre-rename paths: the `apps/customer-web/src` dash-form regex, the literal
-  `"apps/mobile/merchant-app"`, the retired `.store` target inside `services/compatibility/*` bridge
-  sources, storefront reserved labels, the settings apps route twin, theme-editor dead-shell and
-  TypeScript dead-source archives. Phase M rename fallout; none of the asserted files is in GOV-3's
-  diff. Owner: CI-1.
-- **`pnpm run test:unit:gateway`** — 666 tests, 654 pass, **3 fail**, the exact Phase M baseline set:
-  `razorpay payment verification validates signatures before confirming payment`, `razorpay webhook
-  verifies raw-body signatures, persists event ids, and deduplicates retries`, `storefront proxy
-  rewrites resolved store hosts into store routes`. Source-shape assertions that drifted from the code
-  they describe (`12_final_verification.md` recorded the same three); each must be re-read against the
-  route before it is called a defect or a stale check. Owner: CI-1, security lane.
+- **`pnpm run test:contracts`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `de543446`:
+  **277 tests, 277 pass, 0 fail**. This entry previously read *202 tests, 195 pass, 7 fail … Phase M
+  rename fallout … Owner: CI-1* and listed each failure by name. All seven were opened one at a time
+  and **every one was a stale assertion, not a regression** — F-RENAMESTALE-1 (the `apps/customer-web/src`
+  dash form and the literal `"apps/mobile/merchant-app"`), F-ARCHIVEPATH-1 (theme-editor dead-shell and
+  the TypeScript dead-source archive, both broken by commit `af492f21` rewriting archive path STRINGS
+  while renaming no archive file), F-CONTRACTSCOPE-1 (the retired `.store` target in a compatibility
+  bridge, storefront reserved labels, the settings apps route twin). **Kept as history because the
+  wording was the hazard:** "expected ambient failures, owner CI-1" is what let nine phases diff past
+  them, and if this lane goes red again it is a NEW finding, not this one.
+- **`pnpm run test:unit:gateway`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `de543446`:
+  **962 tests, 953 pass, 0 fail, 9 skipped**. This entry previously read *666 tests, 654 pass, 3 fail,
+  the exact Phase M baseline set*. Two of that trio were repaired — F-WEBHOOKTEST-1 (`razorpay webhook
+  verifies raw-body signatures…`, where the code was STRONGER than the test: the rejection had gained a
+  second independent check and a ternary, which is what stopped the literal regex matching) and
+  F-ARCHIVEPATH-1 (`storefront proxy rewrites resolved store hosts…`, where `resolveStorefrontHost`
+  gained a third argument). The third, `razorpay payment verification validates signatures before
+  confirming payment`, is **not in the current failure set** and was not separately investigated by
+  those phases. The instruction that stood here — *each must be re-read against the route before it is
+  called a defect or a stale check* — was correct and is why all of them turned out to be stale.
 
 ## Claim protocol reality
 
