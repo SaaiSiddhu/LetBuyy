@@ -152,6 +152,35 @@ export function isBoundedProductId(value: unknown): value is string {
     return typeof value === 'string' && value.length > 0 && value.length <= WISHLIST_PRODUCT_ID_MAX_LENGTH;
 }
 
+// Activity-log write bounds, the same shape as the wishlist bounds above and for the same reason.
+// `customer_activity_log` declares `activity_type text NOT NULL` with no CHECK and no length, and
+// `metadata jsonb DEFAULT '{}'` with no size (000_baseline.sql:8855), so whatever a caller sends is
+// stored verbatim. The route is behind requireCustomerSession + csrfProtection (storefront.ts:74,80)
+// and RLS was corrected by migration 163 — neither is the gap. The gap is size.
+//
+// `activity_type` is bounded by LENGTH, not restricted to an enum: this endpoint has no first-party
+// caller anywhere in apps/** or either api-client, so there is no set to enumerate from and a closed
+// list would be invented rather than derived.
+export const ACTIVITY_TYPE_MAX_LENGTH = 64;
+export const ACTIVITY_METADATA_MAX_BYTES = 4096;
+
+export function isBoundedActivityType(value: unknown): value is string {
+    return typeof value === 'string' && value.length > 0 && value.length <= ACTIVITY_TYPE_MAX_LENGTH;
+}
+
+// Measures the SERIALISED size, because that is what is stored and what costs. A deeply nested or
+// cyclic object cannot be serialised at all; treating that as over-size refuses it rather than
+// letting it reach the driver.
+export function isBoundedActivityMetadata(value: unknown): boolean {
+    if (value === undefined || value === null) return true;
+    if (typeof value !== 'object' || Array.isArray(value)) return false;
+    try {
+        return new TextEncoder().encode(JSON.stringify(value)).length <= ACTIVITY_METADATA_MAX_BYTES;
+    } catch {
+        return false;
+    }
+}
+
 function normalizeEmail(email: string): string {
     return email.toLowerCase().trim();
 }
@@ -1214,8 +1243,12 @@ export function registerStorefrontCustomerEngagementRoutes(
     router.post('/customer/activity', async (c) => {
         const body = await c.req.json() as CustomerActivityBody;
 
-        if (!body.customer_id || !body.store_id || !body.activity_type) {
-            return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and activity_type are required' } }, 400);
+        if (!body.customer_id || !body.store_id || !isBoundedActivityType(body.activity_type)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `customer_id, store_id and activity_type (at most ${ACTIVITY_TYPE_MAX_LENGTH} characters) are required` } }, 400);
+        }
+
+        if (!isBoundedActivityMetadata(body.metadata)) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: `metadata must be a JSON object of at most ${ACTIVITY_METADATA_MAX_BYTES} bytes` } }, 400);
         }
 
         if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
