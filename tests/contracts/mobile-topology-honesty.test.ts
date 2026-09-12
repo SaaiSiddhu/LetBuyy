@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -30,7 +30,18 @@ test('shopper and operator mobile roots are reserved rather than active canonica
   assert.match(source, /"apps\/mobile\/operator-app"/);
 
   const canonicalBlock = source.match(/export const canonicalAppRoots = \[([\s\S]*?)\];/)?.[1] ?? '';
-  assert.match(canonicalBlock, /"apps\/mobile\/merchant-app"/);
+  // F-RENAMESTALE-1. This read /"apps\/mobile\/merchant-app"/ and had been failing since Phase M
+  // renamed that root to apps/merchant_app (governance-common.mjs:81). The load-bearing half of this
+  // test is the two doesNotMatch assertions below — a RESERVED root must never appear among the
+  // canonical ones — and they never stopped holding. Only the positive literal went stale. It is now
+  // checked to exist as well, so a future rename fails this for the right reason.
+  const merchantAppRoot = 'apps/merchant_app';
+  assert.match(canonicalBlock, new RegExp(`"${merchantAppRoot.replace(/\//g, '\\/')}"`));
+  assert.equal(
+    existsSync(resolve(repoRoot, merchantAppRoot)),
+    true,
+    `canonicalAppRoots must name a root that exists; ${merchantAppRoot} is missing`,
+  );
   assert.doesNotMatch(canonicalBlock, /apps\/mobile\/shopper-app/);
   assert.doesNotMatch(canonicalBlock, /apps\/mobile\/operator-app/);
 });
