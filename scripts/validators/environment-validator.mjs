@@ -3,6 +3,7 @@ import {
   exists,
   getTrackedFiles,
   readFile,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Environment validator");
@@ -38,7 +39,7 @@ const trackedEnvFiles = trackedFiles.filter((file) => {
 
 reporter.assert(
   trackedEnvFiles.length === 0,
-  `Runtime env files must not be tracked: ${trackedEnvFiles.slice(0, 20).join(", ")}`,
+  `Runtime env files must not be tracked: ${formatOffenderList(trackedEnvFiles)}`,
 );
 
 const gitignore = readFile(".gitignore");
@@ -235,7 +236,7 @@ for (const file of trackedFiles) {
 
 reporter.assert(
   secretOffenders.length === 0,
-  `Tracked files contain secret-like values and must be redacted or moved to the secret store: ${secretOffenders.slice(0, 20).join(", ")}`,
+  `Tracked files contain secret-like values and must be redacted or moved to the secret store: ${formatOffenderList(secretOffenders)}`,
 );
 
 reporter.finish(`${trackedFiles.length} tracked files scanned`);
