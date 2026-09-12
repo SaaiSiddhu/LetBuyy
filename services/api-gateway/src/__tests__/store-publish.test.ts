@@ -118,7 +118,11 @@ test('storefront proxy rewrites resolved store hosts into store routes', () => {
     const proxySource = repositorySource('apps/customer_web/src/proxy.ts');
 
     assert.match(proxySource, /normalizeRequestHost\(req\.headers\.get\('x-forwarded-host'\) \|\| req\.headers\.get\('host'\)\)/);
-    assert.match(proxySource, /resolveStorefrontHost\(host,\s*process\.env\.NEXT_PUBLIC_STORE_ROOT_DOMAIN\)/);
+    // F-ARCHIVEPATH-1: this required NEXT_PUBLIC_STORE_ROOT_DOMAIN to be the LAST argument, so it
+    // broke when proxy.ts:410 gained a third — NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES. The property is
+    // that the resolver is called with the request host and the configured root domain; whether more
+    // configuration follows is not this assertion's business.
+    assert.match(proxySource, /resolveStorefrontHost\(\s*host,\s*process\.env\.NEXT_PUBLIC_STORE_ROOT_DOMAIN\b/);
     assert.match(proxySource, /destination\.pathname = `\/store\/\$\{subdomain\}\$\{destination\.pathname\}`/);
     assert.match(proxySource, /NextResponse\.rewrite\(destination,\s*\{ request:\s*\{ headers:\s*requestHeaders \} \}\)/);
 });
