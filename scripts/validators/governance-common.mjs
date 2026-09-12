@@ -282,11 +282,11 @@ export function getUntrackedFiles() {
 // this programme names "a count is not a set", and it sat inside the lane that exists to enforce it —
 // gate.sh:104 asks a reader to confirm stale-artifact's offenders are "100% generated dirs", which the
 // truncated log cannot answer. Always say how many were withheld.
-export function formatOffenderList(offenders, limit = 20) {
+export function formatOffenderList(offenders, limit = 20, separator = ", ") {
   const unique = [...new Set(offenders)];
   const shown = unique.slice(0, limit);
-  if (unique.length <= limit) return shown.join(", ");
-  return `${shown.join(", ")} (showing ${shown.length} of ${unique.length}; ${unique.length - shown.length} more not listed)`;
+  if (unique.length <= limit) return shown.join(separator);
+  return `${shown.join(separator)} (showing ${shown.length} of ${unique.length}; ${unique.length - shown.length} more not listed)`;
 }
 
 export function startsWithPrefix(file, prefix) {

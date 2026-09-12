@@ -10,6 +10,7 @@ import {
   getTrackedFiles,
   rejectedPackageRoots,
   startsWithPrefix,
+  formatOffenderList,
 } from "./governance-common.mjs";
 import fs from "node:fs";
 
@@ -89,7 +90,7 @@ for (const relPath of rejectedPackageRoots) {
 
   reporter.assert(
     offenders.length === 0,
-    `Rejected package is imported by active runtime code: ${relPath} (${offenders.slice(0, 5).join(", ")})`,
+    `Rejected package is imported by active runtime code: ${relPath} (${formatOffenderList(offenders, 5)})`,
   );
 }
 
@@ -101,7 +102,7 @@ for (const prefix of deprecatedTrackedPrefixes) {
   const offenders = trackedFiles.filter((file) => file.startsWith(prefix));
   reporter.assert(
     offenders.length === 0,
-    `Deprecated active root has tracked files: ${prefix} (${offenders.slice(0, 5).join(", ")})`,
+    `Deprecated active root has tracked files: ${prefix} (${formatOffenderList(offenders, 5)})`,
   );
 }
 
@@ -110,7 +111,7 @@ for (const prefix of [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees]) {
   reporter.assert(!exists(prefix), `Forbidden runtime topology path exists: ${prefix}`);
   reporter.assert(
     offenders.length === 0,
-    `Forbidden runtime topology path has tracked files: ${prefix} (${offenders.slice(0, 5).join(", ")})`,
+    `Forbidden runtime topology path has tracked files: ${prefix} (${formatOffenderList(offenders, 5)})`,
   );
 }
 

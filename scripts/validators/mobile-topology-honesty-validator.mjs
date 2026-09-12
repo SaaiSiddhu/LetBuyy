@@ -5,6 +5,7 @@ import {
   readJson,
   reservedMobileRuntimeRoots,
   startsWithPrefix,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Mobile topology honesty validator");
@@ -28,7 +29,7 @@ for (const runtimeRoot of reservedMobileRuntimeRoots) {
   const activeFiles = trackedFiles.filter((file) => startsWithPrefix(file, runtimeRoot) && !allowedFiles.has(file));
   reporter.assert(
     activeFiles.length === 0,
-    `Reserved mobile root contains active source/config: ${runtimeRoot} (${activeFiles.slice(0, 5).join(", ")})`,
+    `Reserved mobile root contains active source/config: ${runtimeRoot} (${formatOffenderList(activeFiles, 5)})`,
   );
 
   const manifest = readJson(`${runtimeRoot}/runtime.manifest.json`);

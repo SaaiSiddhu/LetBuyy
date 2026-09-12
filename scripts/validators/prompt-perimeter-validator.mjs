@@ -5,6 +5,7 @@ import {
   exists,
   getTrackedFiles,
   readFile,
+  formatOffenderList,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Prompt perimeter validator");
@@ -130,9 +131,7 @@ const archivedPromptFilesWithoutSentinel = trackedFiles
 
 reporter.assert(
   archivedPromptFilesWithoutSentinel.length === 0,
-  `Archived prompt-class files must carry or inherit the quarantine sentinel: ${archivedPromptFilesWithoutSentinel
-    .slice(0, 20)
-    .join(", ")}`,
+  `Archived prompt-class files must carry or inherit the quarantine sentinel: ${formatOffenderList(archivedPromptFilesWithoutSentinel, 20)}`,
 );
 
 reporter.finish("canonical prompt registry, deleted hazards, and archive quarantine checked");
