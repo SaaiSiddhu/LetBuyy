@@ -79,7 +79,7 @@
 
         <!-- Google Maps -->
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAB-NXBRjrubWRDrp2HNgbgeG7fNzxSQlY"/>
+            android:value="REMOVED_SEE_AGENTS_MD"/>
 
         <!-- ✅ ML Kit Models (FOR FACE DETECTION & TEXT RECOGNITION) -->
         <meta-data

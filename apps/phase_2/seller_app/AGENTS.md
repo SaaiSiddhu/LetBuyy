@@ -29,4 +29,13 @@ Purpose: Local operating rules for `apps/phase_2/seller_app`. Hand-authored, sub
   - `android/build.gradle.kts` — duplicate root script alongside the Groovy `build.gradle` that Gradle actually evaluates.
 - Also removed on import: `android/app/debug.keystore` (signing material; `*.keystore` is not covered by `.gitignore`), `android/app/google-services.json` and `ios/Runner/GoogleService-Info.plist` (Firebase config retired by FB-1, and both carried `com.letbuyy.letbuyy`), plus `.DS_Store` / `.flutter-plugins-dependencies` build artifacts.
 - `android/app/proguard-rules.pro` had three `-keep class com.letbuyy.letbuyy.*` rules; repointed to `com.letbuyy.seller`.
-- Consequence: this tree does not build as-is without its Firebase config. That is intentional — it is a parked capability, not a deployable app.
+- 2026-09-20, same day: a follow-up pass removed the Firebase/API credentials the first import missed —
+  `lib/firebase_options.dart` (keys for **two** projects: `letbuy-y` and Agrimore's `agrii-mate`) and
+  `web/firebase-messaging-sw.js` (`agrii-mate`), plus inline Google Maps API keys in `web/index.html`
+  and `android/app/src/main/AndroidManifest.xml`, which were replaced with `REMOVED_SEE_AGENTS_MD`.
+  A parked capability must not carry live credentials for the production Firebase project, and must
+  never carry another product's.
+- Consequence: this tree does not build as-is — no Firebase config, and `lib/main.dart` still imports
+  the deleted `firebase_options.dart`. That is intentional: it is a parked capability, not a
+  deployable app. Reviving it means choosing a backend (D-0) and provisioning its own credentials,
+  never restoring the deleted ones.
