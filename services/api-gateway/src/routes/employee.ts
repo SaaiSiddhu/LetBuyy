@@ -256,14 +256,14 @@ router.post('/', async (c) => {
 
 // GET /employees/me — Current employee info.
 // Phase N3: structurally unreachable pending a future employee-realm
-// design (Phase N2's spike). `employees.user_id` still references
-// `auth.users(id)` (Supabase Auth), but no verifier in
-// middleware/auth.ts's legacyGatewayAuthVerifiers can produce that
-// identity space anymore -- internal-session-hmac/internal-identity-hmac
-// only ever resolve `auth.user.id` to a `users_custom.id`. This always
-// 404s today, honestly (no employee row will ever match), not silently.
-// Left in place rather than deleted -- not dead code, a route awaiting
-// its correct auth wiring per Phase N2's recommended design.
+// design (Phase N2's spike). Migration 208 repointed `employees.user_id`
+// to `users_custom(id)` (it referenced `auth.users(id)`, Supabase Auth,
+// until then), so the FK is no longer the blocker -- but no write path
+// populates `employees.user_id` yet (POST / only sets created_by; the
+// column stays NULL until staff-account activation exists). This still
+// always 404s today, honestly (no employee row will ever match), not
+// silently. Left in place rather than deleted -- not dead code, a route
+// awaiting its correct auth wiring per Phase N2's recommended design.
 router.get('/me', async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);

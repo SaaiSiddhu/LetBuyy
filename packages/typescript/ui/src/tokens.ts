@@ -457,6 +457,62 @@ export const letbuyyComponentTokens = {
             dangerText: letbuyySemanticTokens.light.statusText.danger,
             dangerBorder: letbuyySemanticTokens.light.status.danger,
         },
+        /* Deliberately NOT statusSoft (the pale tints banner/badge use) — a
+           toast is a transient, high-attention surface (Sonner "rich colors"),
+           so it takes a full, saturated fill with white text/icon on top. One
+           step darker than the mid-tone `status.*` accent (500-weight, too
+           light for AA-contrast white text) — the 700-weight primitive, or
+           amber's 800 where the scale has no 700. */
+        toast: {
+            // 700/800 (and red's own 700) read as muddy/near-black at toast
+            // size — dropped one step to the classic "600" tier (the usual
+            // sweet spot for a solid fill with white text: vivid, still
+            // AA-contrast). green/amber/blue have no 600 in the primitive
+            // scale, so these are literal — still centralised here, just not
+            // reused from an existing step.
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
+            iconBg: 'rgb(255 255 255 / 20%)',
+            closeHover: 'rgb(255 255 255 / 16%)',
+        },
+        /* Banner's own solid fill — same "600" tier decision as toast, kept
+           as a separate named token (not a cross-component reference to
+           --lb-component-toast-*) so the two surfaces can be retuned
+           independently later. `action*` is the "on solid colour" button
+           treatment: an inline action (e.g. Retry) inside a full-bleed
+           banner can't use the page's normal secondary-button tokens — those
+           assume a neutral/white background — so Banner overrides them
+           locally to a translucent-white ghost button that reads on any of
+           the four solid fills below. */
+        bannerSolid: {
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
+            actionBg: 'rgb(255 255 255 / 14%)',
+            actionBorder: 'rgb(255 255 255 / 40%)',
+            actionText: primitive.color.white,
+            actionHover: 'rgb(255 255 255 / 24%)',
+        },
+        /* Same "600"-tier solid fills as toast/bannerSolid — one visual
+           language across every status surface. `defaultBg` is the one
+           variant that's NOT a fixed semantic colour: it's a neutral/brand
+           chip (role labels, counts), so it takes the LIVE --lb-color-primary
+           reference rather than a literal — on the admin surface that
+           resolves to the merchant ink brand automatically, on any other
+           surface to that surface's own primary. Never a hardcoded hex here. */
+        badgeSolid: {
+            defaultBg: 'var(--lb-color-primary)',
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
+        },
     },
     dark: {
         button: {
@@ -545,6 +601,43 @@ export const letbuyyComponentTokens = {
             dangerBg: letbuyySemanticTokens.dark.statusSoft.danger,
             dangerText: letbuyySemanticTokens.dark.statusText.danger,
             dangerBorder: letbuyySemanticTokens.dark.status.danger,
+        },
+        /* Same solid fills as light — a rich-colours toast doesn't need to
+           invert per theme the way a subtle tint/border pairing does; white
+           text stays legible against these regardless of page theme. */
+        toast: {
+            // 700/800 (and red's own 700) read as muddy/near-black at toast
+            // size — dropped one step to the classic "600" tier (the usual
+            // sweet spot for a solid fill with white text: vivid, still
+            // AA-contrast). green/amber/blue have no 600 in the primitive
+            // scale, so these are literal — still centralised here, just not
+            // reused from an existing step.
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
+            iconBg: 'rgb(255 255 255 / 20%)',
+            closeHover: 'rgb(255 255 255 / 16%)',
+        },
+        bannerSolid: {
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
+            actionBg: 'rgb(255 255 255 / 14%)',
+            actionBorder: 'rgb(255 255 255 / 40%)',
+            actionText: primitive.color.white,
+            actionHover: 'rgb(255 255 255 / 24%)',
+        },
+        badgeSolid: {
+            defaultBg: 'var(--lb-color-primary)',
+            infoBg: '#2563EB',
+            successBg: '#16A34A',
+            warningBg: '#D97706',
+            dangerBg: primitive.color.red[600],
+            text: primitive.color.white,
         },
     },
 } as const;
@@ -1317,6 +1410,28 @@ function surfaceVariables(surface: LetbuyySurface, theme: LetbuyyTheme): CssVari
         '--lb-component-banner-danger-bg': component.banner.dangerBg,
         '--lb-component-banner-danger-text': component.banner.dangerText,
         '--lb-component-banner-danger-border': component.banner.dangerBorder,
+        '--lb-component-toast-info-bg': component.toast.infoBg,
+        '--lb-component-toast-success-bg': component.toast.successBg,
+        '--lb-component-toast-warning-bg': component.toast.warningBg,
+        '--lb-component-toast-danger-bg': component.toast.dangerBg,
+        '--lb-component-toast-text': component.toast.text,
+        '--lb-component-toast-icon-bg': component.toast.iconBg,
+        '--lb-component-toast-close-hover': component.toast.closeHover,
+        '--lb-component-banner-solid-info-bg': component.bannerSolid.infoBg,
+        '--lb-component-banner-solid-success-bg': component.bannerSolid.successBg,
+        '--lb-component-banner-solid-warning-bg': component.bannerSolid.warningBg,
+        '--lb-component-banner-solid-danger-bg': component.bannerSolid.dangerBg,
+        '--lb-component-banner-solid-text': component.bannerSolid.text,
+        '--lb-component-banner-solid-action-bg': component.bannerSolid.actionBg,
+        '--lb-component-banner-solid-action-border': component.bannerSolid.actionBorder,
+        '--lb-component-banner-solid-action-text': component.bannerSolid.actionText,
+        '--lb-component-banner-solid-action-hover': component.bannerSolid.actionHover,
+        '--lb-component-badge-solid-default-bg': component.badgeSolid.defaultBg,
+        '--lb-component-badge-solid-info-bg': component.badgeSolid.infoBg,
+        '--lb-component-badge-solid-success-bg': component.badgeSolid.successBg,
+        '--lb-component-badge-solid-warning-bg': component.badgeSolid.warningBg,
+        '--lb-component-badge-solid-danger-bg': component.badgeSolid.dangerBg,
+        '--lb-component-badge-solid-text': component.badgeSolid.text,
         '--lb-component-input-bg': component.input.bg,
         '--lb-component-input-text': component.input.text,
         '--lb-component-input-border': component.input.border,

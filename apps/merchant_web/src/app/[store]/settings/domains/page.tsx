@@ -125,19 +125,21 @@ export default function DomainCenterPage() {
     }
 
     // ── Detail view ──
+    // No outer SettingsPane here on purpose: DomainDetailView renders its own
+    // PageHeader with the real domain name, status badges and actions.
+    // Wrapping it in SettingsPane's generic title="Domain" header produced two
+    // stacked headers on the same page — this is the fix, not an oversight.
     if (view.kind === 'detail') {
         return (
-            <SettingsPane title="Domain" description="DNS, SSL, health, and routing for this domain." store={store}>
-                <DomainDetailView
-                    store={store}
-                    domain={view.domain}
-                    role={view.role}
-                    redirectTo={view.redirectTo}
-                    provider={view.provider}
-                    onBack={() => { setView({ kind: 'overview' }); void loadData({ quiet: true }) }}
-                    onChanged={() => void loadData({ quiet: true })}
-                />
-            </SettingsPane>
+            <DomainDetailView
+                store={store}
+                domain={view.domain}
+                role={view.role}
+                redirectTo={view.redirectTo}
+                provider={view.provider}
+                onBack={() => { setView({ kind: 'overview' }); void loadData({ quiet: true }) }}
+                onChanged={() => void loadData({ quiet: true })}
+            />
         )
     }
 
@@ -184,12 +186,14 @@ export default function DomainCenterPage() {
                 <div className="settings-form-body">
                     {/* LetBuyy default address — always live */}
                     <div className="domains-row">
-                        <span className="domains-row-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
-                        <div className="domains-row-meta">
-                            <span className="domains-row-domain">{letbuyyHost}</span>
-                            <span className="domains-row-sub">LetBuyy address · always available</span>
+                        <div className="domains-row-top">
+                            <span className="domains-row-icon"><Globe className="letbuyy-icon" aria-hidden="true" /></span>
+                            <div className="domains-row-meta">
+                                <span className="domains-row-domain">{letbuyyHost}</span>
+                                <span className="domains-row-sub">LetBuyy address · always available</span>
+                            </div>
+                            <Badge label={storeInfo?.published ? 'Live' : 'Default'} variant={storeInfo?.published ? 'success' : 'info'} />
                         </div>
-                        <Badge label={storeInfo?.published ? 'Live' : 'Default'} variant={storeInfo?.published ? 'success' : 'info'} />
                     </div>
 
                     {/* Primary custom domain */}
@@ -260,23 +264,27 @@ function DomainRow({ record, onManage, primary = false }: { record: SiteDomainRe
     const score = scoreFromRecord(record)
     return (
         <Button unstyled type="button" className="domains-row domains-row--clickable" onClick={() => onManage(record)}>
-            <span className="domains-row-icon">{primary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}</span>
-            <div className="domains-row-meta">
-                <div className="domains-row-domain-line">
-                    <span className="domains-row-domain">{record.domain}</span>
-                    {primary && <Badge label="Primary" variant="success" />}
-                    {!primary && record.role === 'redirect' && <Badge label="Redirect" variant="info" />}
+            <div className="domains-row-top">
+                <span className="domains-row-icon">{primary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}</span>
+                <div className="domains-row-meta">
+                    <div className="domains-row-domain-line">
+                        <span className="domains-row-domain">{record.domain}</span>
+                        {primary && <Badge label="Primary" variant="success" />}
+                        {!primary && record.role === 'redirect' && <Badge label="Redirect" variant="info" />}
+                    </div>
+                    <span className="domains-row-sub">
+                        {record.provider ? `${record.provider} · ` : ''}{statusLabel(status)}
+                    </span>
                 </div>
-                <span className="domains-row-sub">
-                    {record.provider ? `${record.provider} · ` : ''}{statusLabel(status)}
-                </span>
+                <ChevronRight className="letbuyy-icon domains-row-chevron" aria-hidden="true" />
             </div>
-            <div className="domains-row-status">
-                <SslBadge ssl={ssl} />
-                <DomainStatusBadge status={status} />
+            <div className="domains-row-bottom">
+                <div className="domains-row-status">
+                    <SslBadge ssl={ssl} />
+                    <DomainStatusBadge status={status} />
+                </div>
+                <div className="domains-row-health"><HealthMeter score={score} /></div>
             </div>
-            <div className="domains-row-health"><HealthMeter score={score} showLabel={false} /></div>
-            <ChevronRight className="letbuyy-icon domains-row-chevron" aria-hidden="true" />
         </Button>
     )
 }

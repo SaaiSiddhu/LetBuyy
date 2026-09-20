@@ -70,19 +70,23 @@ export class SaasExecutionAdapter {
             p_site_id: siteId,
         });
 
+        // Entitlements are enrichment on top of an already-verified site
+        // owner/caller, never the authorization decision itself -- any RPC
+        // failure (missing function, transient error, unexpected schema
+        // variance) must degrade to the plan's default snapshot rather than
+        // fail the whole request with an opaque 500.
         if (error) {
-            if (isMissingSaasTableOrFunction(error)) {
-                return {
-                    site_id: siteId,
-                    site_type: 'store',
-                    plan: fallback.plan,
-                    features: fallback.features,
-                    limits: fallback.limits,
-                    entitlements: fallback.entitlements,
-                };
+            if (!isMissingSaasTableOrFunction(error)) {
+                console.error(JSON.stringify({ level: 'warn', service: 'letbuyy-api', context: 'resolveEntitlements', error: error.message }));
             }
-
-            throw new Error(`Tenant entitlements resolution failed: ${error.message}`);
+            return {
+                site_id: siteId,
+                site_type: 'store',
+                plan: fallback.plan,
+                features: fallback.features,
+                limits: fallback.limits,
+                entitlements: fallback.entitlements,
+            };
         }
 
         const raw = (data || {}) as RawSiteEntitlements;

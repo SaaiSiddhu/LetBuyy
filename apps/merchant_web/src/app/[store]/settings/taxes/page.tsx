@@ -5,12 +5,12 @@ import { useParams } from 'next/navigation'
 import { Button, Input,
     Badge,
     Banner,
-    Card,
     ClipboardList,
     ConfirmDialog,
     EmptyState,
     Globe,
     IndianRupee,
+    Modal,
     Plus,
     Section,
     ShieldCheck,
@@ -135,9 +135,6 @@ export default function TaxesSettingsPage() {
 
     const activeRates = useMemo(() => taxRates.filter((rate) => rate.is_active).length, [taxRates])
     const shippingRates = useMemo(() => taxRates.filter((rate) => rate.is_shipping).length, [taxRates])
-    const activeSaveState: SaveState = formMode
-        ? (formSaveState === 'saving' ? 'saving' : 'unsaved')
-        : settingsSaveState
 
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
         if (!options?.quiet) setLoading(true)
@@ -396,11 +393,9 @@ export default function TaxesSettingsPage() {
                 description="Configure price tax handling and checkout tax rates."
                 store={store}
             >
-                <Card>
-                    <Section title="Tax rates">
-                        <Skeleton variant="table" lines={5} />
-                    </Section>
-                </Card>
+                <Section variant="grouped" title="Tax rates">
+                    <Skeleton variant="table" lines={5} />
+                </Section>
             </SettingsPane>
         )
     }
@@ -422,22 +417,10 @@ export default function TaxesSettingsPage() {
                     icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
                 saveBar={{
-                    state: activeSaveState,
-                    onSave: () => {
-                        if (formMode) {
-                            void handleSaveRate()
-                        } else {
-                            void handleSaveSettings()
-                        }
-                    },
-                    onDiscard: () => {
-                        if (formMode) {
-                            resetForm()
-                        } else {
-                            handleTaxInclusiveChange(initialTaxInclusive)
-                        }
-                    },
-                    saveLabel: formMode ? (formMode === 'edit' ? 'Update rate' : 'Add rate') : 'Save taxes',
+                    state: settingsSaveState,
+                    onSave: () => void handleSaveSettings(),
+                    onDiscard: () => handleTaxInclusiveChange(initialTaxInclusive),
+                    saveLabel: 'Save taxes',
                 }}
             >
                 {loadError && (
@@ -447,12 +430,6 @@ export default function TaxesSettingsPage() {
                         action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                     >
                         {loadError}
-                    </Banner>
-                )}
-
-                {formError && (
-                    <Banner variant="critical" title="Tax rate needs attention">
-                        {formError}
                     </Banner>
                 )}
 
@@ -474,30 +451,28 @@ export default function TaxesSettingsPage() {
                     />
                 </div>
 
-                <Card>
-                    <Section
-                        title="Tax region"
-                        description="India is the default tax region for this store. Choose whether product prices already include taxes."
-                    >
-                        <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-                            <Input unstyled
-                                type="checkbox"
-                                checked={taxData.tax_inclusive}
-                                onChange={(event) => handleTaxInclusiveChange(event.target.checked)}
-                                disabled={Boolean(formMode) || settingsSaveState === 'saving'}
-                                className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                            />
-                            <span className="space-y-[var(--lb-space-1)]">
-                                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                    All prices include tax
-                                </span>
-                                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                    Checkout will treat displayed product prices as tax inclusive and show tax as part of the total.
-                                </span>
+                <Section variant="grouped" title="Tax region">
+                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        India is the default tax region for this store. Choose whether product prices already include taxes.
+                    </p>
+                    <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
+                        <Input unstyled
+                            type="checkbox"
+                            checked={taxData.tax_inclusive}
+                            onChange={(event) => handleTaxInclusiveChange(event.target.checked)}
+                            disabled={Boolean(formMode) || settingsSaveState === 'saving'}
+                            className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] shrink-0 accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                        />
+                        <span className="min-w-0 space-y-[var(--lb-space-1)]">
+                            <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                All prices include tax
                             </span>
-                        </label>
-                    </Section>
-                </Card>
+                            <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                Checkout will treat displayed product prices as tax inclusive and show tax as part of the total.
+                            </span>
+                        </span>
+                    </label>
+                </Section>
 
                 {settingsSaveState !== 'saved' && !formMode && (
                     <Banner variant="warning" title="Unsaved tax setting">
@@ -505,117 +480,19 @@ export default function TaxesSettingsPage() {
                     </Banner>
                 )}
 
-                {formMode && (
-                    <Card>
-                        <Section
-                            title={formMode === 'edit' ? 'Edit tax rate' : 'Add tax rate'}
-                            description="Create GST or duty rates for checkout calculations. Rates are stored as percentages."
-                        >
-                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                                <Input
-                                    label="Tax name"
-                                    value={formName}
-                                    onChange={(event) => setFormName(event.target.value)}
-                                    placeholder="e.g. GST 18%"
-                                    helperText="Use a name your team will recognize during order reviews."
-                                />
-                                <Input
-                                    label="Rate (%)"
-                                    type="number"
-                                    step="0.01"
-                                    value={formRate}
-                                    onChange={(event) => setFormRate(event.target.value)}
-                                    placeholder="e.g. 18"
-                                    helperText="Enter the percentage shown at checkout."
-                                />
-                                <Input
-                                    label="Country"
-                                    value={formCountry}
-                                    onChange={(event) => setFormCountry(event.target.value)}
-                                    placeholder="IN"
-                                    helperText="Use the country code or configured market label."
-                                />
-                                <Input
-                                    label="State"
-                                    value={formState}
-                                    onChange={(event) => setFormState(event.target.value)}
-                                    placeholder="e.g. TN"
-                                    helperText="Optional. Leave blank for country-wide tax."
-                                />
-                            </div>
-                            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                                <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <Input unstyled
-                                        type="checkbox"
-                                        checked={formCompound}
-                                        onChange={(event) => setFormCompound(event.target.checked)}
-                                        className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                    />
-                                    <span className="space-y-[var(--lb-space-1)]">
-                                        <span className="block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
-                                            Compound tax
-                                        </span>
-                                        <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                            Calculate on top of other taxes.
-                                        </span>
-                                    </span>
-                                </label>
-                                <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <Input unstyled
-                                        type="checkbox"
-                                        checked={formShipping}
-                                        onChange={(event) => setFormShipping(event.target.checked)}
-                                        className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                    />
-                                    <span className="space-y-[var(--lb-space-1)]">
-                                        <span className="block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
-                                            Apply to shipping
-                                        </span>
-                                        <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                            Include delivery costs in tax.
-                                        </span>
-                                    </span>
-                                </label>
-                                <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
-                                    <Input unstyled
-                                        type="checkbox"
-                                        checked={formActive}
-                                        onChange={(event) => setFormActive(event.target.checked)}
-                                        className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                    />
-                                    <span className="space-y-[var(--lb-space-1)]">
-                                        <span className="block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
-                                            Active
-                                        </span>
-                                        <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                            Make this rate available now.
-                                        </span>
-                                    </span>
-                                </label>
-                            </div>
-                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                <Button type="button" onClick={() => void handleSaveRate()} loading={formSaveState === 'saving'}>
-                                    {formMode === 'edit' ? 'Update rate' : 'Add rate'}
-                                </Button>
-                                <Button type="button" variant="secondary" onClick={resetForm} disabled={formSaveState === 'saving'}>
-                                    Cancel
-                                </Button>
-                            </div>
-                        </Section>
-                    </Card>
-                )}
-
-                <Card>
-                    <Section
-                        title="Tax rates"
-                        description="Rates are applied during checkout based on the customer address and product pricing mode."
-                        action={!formMode && (
-                            <Button type="button" variant="secondary" onClick={startAdd} disabled={settingsSaveState !== 'saved'}>
-                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                Add tax rate
-                            </Button>
-                        )}
-                    >
+                <Section
+                    variant="grouped"
+                    title="Tax rates"
+                    action={(
+                        <Button type="button" variant="secondary" size="sm" onClick={startAdd} disabled={Boolean(formMode) || settingsSaveState !== 'saved'}>
+                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            Add tax rate
+                        </Button>
+                    )}
+                >
+                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        Rates are applied during checkout based on the customer address and product pricing mode.
+                    </p>
                         {taxRates.length === 0 ? (
                             <EmptyState
                                 icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
@@ -624,9 +501,9 @@ export default function TaxesSettingsPage() {
                                 primaryAction={!formMode ? <Button type="button" onClick={startAdd} disabled={settingsSaveState !== 'saved'}>Add tax rate</Button> : undefined}
                             />
                         ) : (
-                            <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                            <div className="grid gap-[var(--lb-space-3)]">
                                 {taxRates.map((rate) => (
-                                    <div key={rate.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                                    <div key={rate.id} className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
                                         <div className="min-w-0 space-y-[var(--lb-space-2)]">
                                             <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
                                                 <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
@@ -657,8 +534,7 @@ export default function TaxesSettingsPage() {
                                 ))}
                             </div>
                         )}
-                    </Section>
-                </Card>
+                </Section>
             </SettingsPane>
 
             <ConfirmDialog
@@ -672,6 +548,114 @@ export default function TaxesSettingsPage() {
                     if (!deletingId) setRateToDelete(null)
                 }}
             />
+
+            <Modal
+                open={Boolean(formMode)}
+                title={formMode === 'edit' ? 'Edit tax rate' : 'Add tax rate'}
+                description="Create GST or duty rates for checkout calculations. Rates are stored as percentages."
+                onClose={() => { if (formSaveState !== 'saving') resetForm() }}
+                footer={(
+                    <>
+                        <Button type="button" variant="secondary" onClick={resetForm} disabled={formSaveState === 'saving'}>
+                            Cancel
+                        </Button>
+                        <Button type="button" onClick={() => void handleSaveRate()} loading={formSaveState === 'saving'}>
+                            {formMode === 'edit' ? 'Update rate' : 'Add rate'}
+                        </Button>
+                    </>
+                )}
+            >
+                <div className="grid gap-[var(--lb-space-4)]">
+                    {formError && (
+                        <Banner variant="critical" title="Tax rate needs attention">
+                            {formError}
+                        </Banner>
+                    )}
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                        <Input
+                            label="Tax name"
+                            value={formName}
+                            onChange={(event) => setFormName(event.target.value)}
+                            placeholder="e.g. GST 18%"
+                            helperText="Use a name your team will recognize during order reviews."
+                            autoFocus
+                        />
+                        <Input
+                            label="Rate (%)"
+                            type="number"
+                            step="0.01"
+                            value={formRate}
+                            onChange={(event) => setFormRate(event.target.value)}
+                            placeholder="e.g. 18"
+                            helperText="Enter the percentage shown at checkout."
+                        />
+                        <Input
+                            label="Country"
+                            value={formCountry}
+                            onChange={(event) => setFormCountry(event.target.value)}
+                            placeholder="IN"
+                            helperText="Use the country code or configured market label."
+                        />
+                        <Input
+                            label="State"
+                            value={formState}
+                            onChange={(event) => setFormState(event.target.value)}
+                            placeholder="e.g. TN"
+                            helperText="Optional. Leave blank for country-wide tax."
+                        />
+                    </div>
+                    <div className="grid gap-[var(--lb-space-2)]">
+                        <label className="flex cursor-pointer items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
+                            <Input unstyled
+                                type="checkbox"
+                                checked={formCompound}
+                                onChange={(event) => setFormCompound(event.target.checked)}
+                                className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] shrink-0 accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                            />
+                            <span className="min-w-0">
+                                <span className="block text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]">
+                                    Compound tax
+                                </span>
+                                <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    Calculate on top of other taxes.
+                                </span>
+                            </span>
+                        </label>
+                        <label className="flex cursor-pointer items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
+                            <Input unstyled
+                                type="checkbox"
+                                checked={formShipping}
+                                onChange={(event) => setFormShipping(event.target.checked)}
+                                className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] shrink-0 accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                            />
+                            <span className="min-w-0">
+                                <span className="block text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]">
+                                    Apply to shipping
+                                </span>
+                                <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    Include delivery costs in tax.
+                                </span>
+                            </span>
+                        </label>
+                        <label className="flex cursor-pointer items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)]">
+                            <Input unstyled
+                                type="checkbox"
+                                checked={formActive}
+                                onChange={(event) => setFormActive(event.target.checked)}
+                                className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] shrink-0 accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                            />
+                            <span className="min-w-0">
+                                <span className="block text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]">
+                                    Active
+                                </span>
+                                <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    Make this rate available now.
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </Modal>
         </>
     )
 }

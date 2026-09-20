@@ -5,10 +5,12 @@ import {
     Page,
     PageHeader,
     SaveBar,
+    type LucideIcon,
     type MaterialIconName,
     type PageHeaderAction,
     type SaveBarProps,
 } from '@letbuyy/ui'
+import { SETTINGS_NAV_ITEMS } from './settings-navigation'
 
 interface SettingsPaneProps {
     title: string
@@ -28,6 +30,19 @@ interface SettingsPaneProps {
     saveBar?: Pick<SaveBarProps, 'state' | 'onSave' | 'onDiscard' | 'saveLabel' | 'discardLabel'>
 }
 
+/**
+ * Same icon as the sidebar row for this page — looked up from the SAME
+ * SETTINGS_NAV_ITEMS the sidebar itself renders from, not a second,
+ * independently-maintained choice. Without this, PageHeader's own fallback
+ * (getPageIconName) guesses from the title string and has no entry for most
+ * of these titles, so it defaulted to a generic document icon for pages
+ * like General/Business details/Security while others coincidentally hit a
+ * different generic guess — neither matched the row you clicked to get here.
+ */
+function findSidebarIcon(title: string): LucideIcon | undefined {
+    return SETTINGS_NAV_ITEMS.find((item) => item.label === title)?.Icon
+}
+
 export function SettingsPane({
     title,
     description,
@@ -41,13 +56,16 @@ export function SettingsPane({
     secondaryActions,
     saveBar,
 }: SettingsPaneProps) {
+    const SidebarIcon = findSidebarIcon(title)
+
     return (
         <Page>
             <PageHeader
                 title={title}
                 description={description}
                 eyebrow={eyebrow}
-                iconName={iconName}
+                icon={SidebarIcon ? <SidebarIcon className="letbuyy-icon" aria-hidden="true" /> : undefined}
+                iconName={SidebarIcon ? undefined : iconName}
                 breadcrumbs={breadcrumbs ?? [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
                 primaryAction={primaryAction}
                 secondaryActions={secondaryActions}

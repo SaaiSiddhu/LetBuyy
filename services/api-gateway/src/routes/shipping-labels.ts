@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
+import { ForbiddenError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { bytesToBase64, createSimplePdfBytes } from '../lib/simple-pdf';
 import {
@@ -269,7 +270,16 @@ router.get('/provider-mode', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
     }
 
-    await resolveTenantContextForOwnedSite(c, storeId);
+    try {
+        await resolveTenantContextForOwnedSite(c, storeId);
+    } catch (err) {
+        if (err instanceof ForbiddenError || err instanceof NotFoundError) throw err;
+        // resolveTenantContextForOwnedSite's own enrichment lookups already
+        // degrade gracefully on failure -- if something still throws here,
+        // surface the real cause instead of the global handler's opaque
+        // "An internal error occurred" so it's actually diagnosable.
+        return c.json({ error: { code: 'UNEXPECTED', message: err instanceof Error ? err.message : 'Unexpected error resolving store context' } }, 500);
+    }
 
     return c.json(success({
         provider_mode: providerModeFromLogisticsContext(c),

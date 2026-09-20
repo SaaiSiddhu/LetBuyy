@@ -8,7 +8,6 @@ import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminSelectPlanUrl, getPlatformRootDomain, getStorefrontHost } from '@/lib/config/urls'
 import { Button, Input, Select } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 
 interface SessionUser {
     id: string
@@ -229,7 +228,6 @@ export default function OnboardingPage() {
     const [success, setSuccess] = useState(false)
     const [user, setUser] = useState<SessionUser | null>(null)
     const [authLoading, setAuthLoading] = useState(true)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
     const [showUserMenu, setShowUserMenu] = useState(false)
 
@@ -356,8 +354,8 @@ export default function OnboardingPage() {
         const selectedSiteType = ACQUISITION_SITE_TYPES.find((st) => st.id === siteType)
         return (
             <div className="auth-container">
-                <TopBar lang={lang} isDark={isDark} user={user} showUserMenu={showUserMenu}
-                    onCycleLang={cycleLang} onToggleTheme={toggleTheme}
+                <TopBar lang={lang} user={user} showUserMenu={showUserMenu}
+                    onCycleLang={cycleLang}
                     onToggleUserMenu={() => setShowUserMenu(!showUserMenu)} onLogout={handleLogout} />
                 <div className="auth-card onboard-card">
                     <div className="auth-logo"><BrandLogo /></div>
@@ -395,8 +393,8 @@ export default function OnboardingPage() {
 
     return (
         <div className="auth-container">
-            <TopBar lang={lang} isDark={isDark} user={user} showUserMenu={showUserMenu}
-                onCycleLang={cycleLang} onToggleTheme={toggleTheme}
+            <TopBar lang={lang} user={user} showUserMenu={showUserMenu}
+                onCycleLang={cycleLang}
                 onToggleUserMenu={() => setShowUserMenu(!showUserMenu)} onLogout={handleLogout} />
 
             <div className="auth-card onboard-card">
@@ -564,18 +562,15 @@ export default function OnboardingPage() {
 }
 
 interface TopBarProps {
-    lang: Lang; isDark: boolean; user: SessionUser; showUserMenu: boolean
-    onCycleLang: () => void; onToggleTheme: () => void
+    lang: Lang; user: SessionUser; showUserMenu: boolean
+    onCycleLang: () => void
     onToggleUserMenu: () => void; onLogout: () => void
 }
 
-function TopBar({ lang, isDark, user, showUserMenu, onCycleLang, onToggleTheme, onToggleUserMenu, onLogout }: TopBarProps) {
+function TopBar({ lang, user, showUserMenu, onCycleLang, onToggleUserMenu, onLogout }: TopBarProps) {
     return (
         <div className="auth-top-bar">
             <Button unstyled onClick={onCycleLang} className="auth-lang-btn">{lang.toUpperCase()}</Button>
-            <Button unstyled onClick={onToggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-            </Button>
             <div className="auth-user-container">
                 <Button unstyled onClick={onToggleUserMenu} className="auth-user-btn" aria-label="User menu">
                     <AuthIcon name="account_circle" size={20} />

@@ -541,6 +541,14 @@ export interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
     iconName?: MaterialIconName;
     showIcon?: boolean;
     /**
+     * Inline content rendered immediately after the title text — status
+     * badges naming a live entity's state (Primary, Live, Needs DNS setup).
+     * `title` stays a plain string (so it keeps behaving as a real heading
+     * for a11y/SEO); this is the sanctioned way to attach badges to it
+     * instead of a page hand-rolling its own title row to fit them in.
+     */
+    titleAdornment?: React.ReactNode;
+    /**
      * @deprecated since 0.0.2. Use `showBreadcrumbs` for the canonical plural prop.
      */
     showBreadcrumb?: boolean;
@@ -585,6 +593,7 @@ export function PageHeader({
     primaryAction,
     secondaryActions = [],
     renderAction,
+    titleAdornment,
     className = '',
     ...props
 }: PageHeaderProps) {
@@ -641,9 +650,16 @@ export function PageHeader({
                                 {eyebrow}
                             </p>
                         )}
-                        <h1 data-lb-page-header-title="true" className="m-0 truncate text-[length:var(--lb-component-page-header-title-size)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-component-page-header-title-line-height)] text-[color:var(--lb-color-text)]">
-                            {title}
-                        </h1>
+                        <div className="flex min-w-0 flex-wrap items-center gap-[var(--lb-space-2)]">
+                            <h1 data-lb-page-header-title="true" className="m-0 min-w-0 truncate text-[length:var(--lb-component-page-header-title-size)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-component-page-header-title-line-height)] text-[color:var(--lb-color-text)]">
+                                {title}
+                            </h1>
+                            {titleAdornment && (
+                                <span className="inline-flex shrink-0 flex-wrap items-center gap-[var(--lb-space-2)]">
+                                    {titleAdornment}
+                                </span>
+                            )}
+                        </div>
                         {shouldShowDescription && description && (
                             <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-small)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text-subdued)]">
                                 {description}
@@ -689,12 +705,23 @@ export function Card({ children, layout = 'default', className = '', ...props }:
     );
 }
 
+export type SectionVariant = 'default' | 'grouped';
+
 export interface SectionProps extends React.HTMLAttributes<HTMLElement> {
     title?: string;
     description?: string;
     action?: React.ReactNode;
     children: React.ReactNode;
     columns?: 1 | 2 | 3;
+    /**
+     * 'default': the original padded title/description/action header.
+     * 'grouped': a self-contained bordered card with a compact uppercase
+     * label band (own border + bg, no description/columns support) — the
+     * settings-page convention established across domains, business,
+     * billing, plan, general and users. Renders its own border/radius/bg,
+     * so do not nest it inside another Card.
+     */
+    variant?: SectionVariant;
 }
 
 const sectionColumnClasses: Record<NonNullable<SectionProps['columns']>, string> = {
@@ -703,7 +730,27 @@ const sectionColumnClasses: Record<NonNullable<SectionProps['columns']>, string>
     3: 'md:grid md:grid-cols-2 xl:grid-cols-3',
 };
 
-export function Section({ title, description, action, children, columns = 1, className = '', ...props }: SectionProps) {
+export function Section({ title, description, action, children, columns = 1, variant = 'default', className = '', ...props }: SectionProps) {
+    if (variant === 'grouped') {
+        return (
+            <section
+                className={cx('overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)}
+                {...props}
+            >
+                {title && (
+                    <div className="flex min-h-[34px] items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-5)] py-[var(--lb-space-2)]">
+                        <span className="select-none text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase tracking-[0.055em] text-[color:var(--lb-color-text-muted)]">
+                            {title}
+                        </span>
+                        {action}
+                    </div>
+                )}
+                <div className="flex flex-col gap-[var(--lb-space-4)] px-[var(--lb-space-5)] py-[var(--lb-space-4)]">
+                    {children}
+                </div>
+            </section>
+        );
+    }
     return (
         <section className={cx('flex flex-col gap-[var(--lb-density-section-gap)] p-[var(--lb-density-card-padding)]', className)} {...props}>
             {(title || description || action) && (

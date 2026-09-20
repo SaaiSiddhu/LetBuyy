@@ -5,6 +5,7 @@ import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership, type CustomUser, type WorkerAuthUser } from './auth-user';
 import { getSupabaseAdmin } from './supabase';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
+import { resolvePlanEntitlementSnapshot } from '@letbuyy/billing-core';
 import {
     TENANT_SITE_GUC,
     requireSiteIdPredicate,
@@ -89,6 +90,20 @@ function isMissingSaasTable(error: { message?: string } | null | undefined, tabl
     return Boolean(error?.message?.includes(tableName) && error.message.includes('schema cache'));
 }
 
+// Membership/role/permission lookups only ever refine an ALREADY-VERIFIED
+// owner's access (buildOwnedTenantContext runs verifySiteOwnership first
+// and throws ForbiddenError before any of this executes) -- they are
+// enrichment, not the authorization decision itself. A transient or
+// unexpected query failure here must degrade to the caller's fallback
+// role/permission set, matching what happens when no membership/role row
+// exists at all, rather than 500 the entire request. Previously any error
+// other than the narrow "missing table" text match was re-thrown as a
+// plain Error, which isn't an AppError, so it fell through Hono's global
+// onError as an opaque "An internal error occurred" 500.
+function logSaasLookupFailure(context: string, error: { message?: string } | null | undefined): void {
+    console.error(JSON.stringify({ level: 'warn', service: 'letbuyy-api', context, error: error?.message || 'Unknown error' }));
+}
+
 async function loadMembership(db: SupabaseClient, siteId: string, userId: string): Promise<MembershipRow | null> {
     const { data, error } = await db
         .from('site_memberships')
@@ -100,8 +115,8 @@ async function loadMembership(db: SupabaseClient, siteId: string, userId: string
         .maybeSingle();
 
     if (error) {
-        if (isMissingSaasTable(error, 'site_memberships')) return null;
-        throw new Error(`Membership lookup failed: ${error.message}`);
+        if (!isMissingSaasTable(error, 'site_memberships')) logSaasLookupFailure('loadMembership', error);
+        return null;
     }
 
     return (data as MembershipRow | null) || null;
@@ -120,8 +135,8 @@ async function loadRolePermissions(
         .is('deleted_at', null);
 
     if (rolesError) {
-        if (isMissingSaasTable(rolesError, 'site_roles')) return [];
-        throw new Error(`Role lookup failed: ${rolesError.message}`);
+        if (!isMissingSaasTable(rolesError, 'site_roles')) logSaasLookupFailure('loadRolePermissions:roles', rolesError);
+        return [];
     }
 
     const scopedRoles = ((roles || []) as SiteRoleRow[]).filter((role) => role.slug && role.id);
@@ -135,8 +150,8 @@ async function loadRolePermissions(
         .is('deleted_at', null);
 
     if (permissionsError) {
-        if (isMissingSaasTable(permissionsError, 'site_role_permissions')) return [];
-        throw new Error(`Role permission lookup failed: ${permissionsError.message}`);
+        if (!isMissingSaasTable(permissionsError, 'site_role_permissions')) logSaasLookupFailure('loadRolePermissions:permissions', permissionsError);
+        return [];
     }
 
     const allowed = new Set<string>();
@@ -161,25 +176,48 @@ export async function resolveTenantAccessProfile(
     fallbackPermissions: string[],
     fallbackPlan?: string
 ): Promise<Pick<TenantContext, 'membershipId' | 'roles' | 'permissions' | 'plan' | 'entitlements'>> {
-    const membership = userId ? await loadMembership(db, siteId, userId) : null;
-    const roles = membership?.role_slugs?.length ? membership.role_slugs : fallbackRoles;
-    const rolePermissions = await loadRolePermissions(db, siteId, roles);
-    const explicitPermissions = membership?.permissions || fallbackPermissions;
-    const permissions = [...new Set([...rolePermissions, ...explicitPermissions])];
-    const plan = fallbackPlan || await loadPlan(db, siteId);
-    const entitlementSnapshot = await new SaasExecutionAdapter(db).resolveEntitlements(siteId, plan);
+    // Everything below is enrichment on an already-verified owner/caller
+    // (see buildOwnedTenantContext -- verifySiteOwnership runs first and
+    // throws ForbiddenError before this function is ever called). The
+    // per-call error handling inside loadMembership/loadRolePermissions/
+    // resolveEntitlements only covers a query that RESOLVES with an
+    // `{ error }` payload -- it does nothing for a rejected/thrown await
+    // (e.g. a network-level fetch failure to Supabase), which would still
+    // propagate out of this function uncaught. Wrapping the whole profile
+    // resolution guarantees ANY failure here -- returned error or thrown
+    // exception -- degrades to the caller's fallback role/permission/plan
+    // rather than failing the entire request with an opaque 500.
+    try {
+        const membership = userId ? await loadMembership(db, siteId, userId) : null;
+        const roles = membership?.role_slugs?.length ? membership.role_slugs : fallbackRoles;
+        const rolePermissions = await loadRolePermissions(db, siteId, roles);
+        const explicitPermissions = membership?.permissions || fallbackPermissions;
+        const permissions = [...new Set([...rolePermissions, ...explicitPermissions])];
+        const plan = fallbackPlan || await loadPlan(db, siteId);
+        const entitlementSnapshot = await new SaasExecutionAdapter(db).resolveEntitlements(siteId, plan);
 
-    return {
-        membershipId: membership?.id || null,
-        roles,
-        permissions,
-        plan: entitlementSnapshot.plan || plan,
-        entitlements: {
-            features: entitlementSnapshot.features,
-            limits: entitlementSnapshot.limits,
-            ...entitlementSnapshot.entitlements,
-        },
-    };
+        return {
+            membershipId: membership?.id || null,
+            roles,
+            permissions,
+            plan: entitlementSnapshot.plan || plan,
+            entitlements: {
+                features: entitlementSnapshot.features,
+                limits: entitlementSnapshot.limits,
+                ...entitlementSnapshot.entitlements,
+            },
+        };
+    } catch (err) {
+        logSaasLookupFailure('resolveTenantAccessProfile', { message: err instanceof Error ? err.message : String(err) });
+        const fallback = resolvePlanEntitlementSnapshot(fallbackPlan || 'free');
+        return {
+            membershipId: null,
+            roles: fallbackRoles,
+            permissions: fallbackPermissions,
+            plan: fallback.plan,
+            entitlements: { features: fallback.features, limits: fallback.limits, ...fallback.entitlements },
+        };
+    }
 }
 
 async function buildOwnedTenantContext(

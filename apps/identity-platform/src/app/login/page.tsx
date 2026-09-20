@@ -9,7 +9,6 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -84,7 +83,6 @@ function LoginContent() {
     const [showPasswordVisible, setShowPasswordVisible] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileTokenRef = useRef<string | null>(null)
     const turnstileRef = useRef<TurnstileHandle>(null)
@@ -205,13 +203,10 @@ function LoginContent() {
 
     return (
         <main className="auth-container">
-            {/* Top bar: Language + Theme — matches lookup page exactly */}
+            {/* Top bar: Language — matches lookup page exactly */}
             <div className="auth-top-bar">
                 <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </Button>
-                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </Button>
             </div>
 

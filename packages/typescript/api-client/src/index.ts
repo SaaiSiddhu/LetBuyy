@@ -5181,20 +5181,24 @@ export class LetbuyyApiClient {
         this.requestData<ShippingZone[]>('/shipping-tax/shipping/zones', { ...options, query }),
       create: (input: CreateShippingZoneInput, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingZone>('/shipping-tax/shipping/zones', { ...options, method: 'POST', body: input }),
-      update: (id: string, input: UpdateShippingZoneInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingZone>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-      remove: (id: string, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      // storeId is required here (not just in the body/URL) because the gateway's
+      // idempotency middleware resolves tenant context from the query string for
+      // PATCH/DELETE-by-id routes -- the resource id in the path isn't the store id,
+      // and these calls otherwise carry no store context at all.
+      update: (id: string, storeId: string, input: UpdateShippingZoneInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingZone>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, query: { ...(options?.query || {}), store_id: storeId } }),
+      remove: (id: string, storeId: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     },
     rates: {
       list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
         this.requestData<ShippingRate[]>('/shipping-tax/shipping', { ...options, query }),
-      create: (input: CreateShippingRateInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingRate>('/shipping-tax/shipping', { ...options, method: 'POST', body: input }),
-      update: (id: string, input: UpdateShippingRateInput, options?: LetbuyyRequestOptions) =>
-        this.requestData<ShippingRate>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-      remove: (id: string, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      create: (input: CreateShippingRateInput, storeId: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingRate>('/shipping-tax/shipping', { ...options, method: 'POST', body: input, query: { ...(options?.query || {}), store_id: storeId } }),
+      update: (id: string, storeId: string, input: UpdateShippingRateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingRate>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, query: { ...(options?.query || {}), store_id: storeId } }),
+      remove: (id: string, storeId: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     },
   };
 
@@ -5203,10 +5207,13 @@ export class LetbuyyApiClient {
       this.requestData<TaxRate[]>('/shipping-tax/taxes', { ...options, query }),
     create: (input: CreateTaxRateInput, options?: LetbuyyRequestOptions) =>
       this.requestData<TaxRate>('/shipping-tax/taxes', { ...options, method: 'POST', body: input }),
-    update: (id: string, input: UpdateTaxRateInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<TaxRate>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
-    remove: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ deleted: boolean }>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    // storeId is required separately (not just in the body) because the gateway's
+    // idempotency middleware resolves tenant context from the query string for
+    // PATCH/DELETE-by-id routes -- see shipping.zones/rates above for the same fix.
+    update: (id: string, storeId: string, input: UpdateTaxRateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<TaxRate>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input, query: { ...(options?.query || {}), store_id: storeId } }),
+    remove: (id: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
   };
 
   readonly themes = {

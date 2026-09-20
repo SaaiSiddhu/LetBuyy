@@ -235,20 +235,19 @@ router.put('/preferences', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { data, error } = await db
-        .from('notification_preferences')
-        .upsert(
-            {
-                user_id: auth.user.id,
-                store_id: body.store_id || null,
-                channel: body.channel,
-                category: body.category,
-                enabled: body.enabled ?? true,
-            },
-            { onConflict: 'user_id,store_id,channel,category' }
-        )
-        .select()
-        .single();
+    // notification_preferences dedupes user+store+channel+category through an
+    // expression unique index (COALESCE(store_id, sentinel)) so a NULL
+    // (global) store_id can't be inserted twice. PostgREST's upsert() only
+    // ever emits a bare ON CONFLICT (col, col, ...) column list, which can
+    // never match an expression index — every call here 500ed. The RPC does
+    // the same insert with the matching expression conflict target.
+    const { data, error } = await db.rpc('upsert_notification_preference', {
+        p_user_id: auth.user.id,
+        p_store_id: body.store_id || null,
+        p_channel: body.channel,
+        p_category: body.category,
+        p_enabled: body.enabled ?? true,
+    });
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

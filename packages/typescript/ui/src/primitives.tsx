@@ -438,9 +438,29 @@ export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
     max?: number;
     label?: string;
     showValue?: boolean;
+    /** Fill colour. Defaults to the brand primary; the three status tones let
+     * a single canonical bar stand in for score/health meters (a domain
+     * health score, a password-strength meter, …) instead of every such
+     * surface hand-rolling its own coloured `<progress>` element. */
+    tone?: 'primary' | 'success' | 'warning' | 'critical';
+    /**
+     * Accessible name for the progressbar role, independent of the visible
+     * `label` row. Falls back to `label`. Set this when a caller renders its
+     * OWN visible label/score elsewhere (so `label` is intentionally left
+     * unset to avoid a duplicate row) but the bar still needs a real
+     * accessible name rather than an unlabeled progressbar.
+     */
+    ariaLabel?: string;
 }
 
-export function ProgressBar({ value, max = 100, label, showValue = false, className = '', ...props }: ProgressBarProps) {
+const progressBarToneClass: Record<NonNullable<ProgressBarProps['tone']>, string> = {
+    primary: 'bg-[var(--lb-color-primary)]',
+    success: 'bg-[var(--lb-color-success)]',
+    warning: 'bg-[var(--lb-color-warning)]',
+    critical: 'bg-[var(--lb-color-critical)]',
+};
+
+export function ProgressBar({ value, max = 100, label, showValue = false, tone = 'primary', ariaLabel, className = '', ...props }: ProgressBarProps) {
     const percent = Math.max(0, Math.min(100, max > 0 ? (value / max) * 100 : 0));
 
     return (
@@ -454,13 +474,13 @@ export function ProgressBar({ value, max = 100, label, showValue = false, classN
             <div
                 className="h-[var(--lb-space-2)] overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]"
                 role="progressbar"
-                aria-label={label}
+                aria-label={ariaLabel ?? label}
                 aria-valuemin={0}
                 aria-valuemax={max}
                 aria-valuenow={Math.max(0, Math.min(max, value))}
             >
                 <div
-                    className="h-full rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] transition-[width] duration-[var(--lb-motion-slow)] ease-[var(--lb-ease-standard)]"
+                    className={cx('h-full rounded-[var(--lb-radius-full)] transition-[width] duration-[var(--lb-motion-slow)] ease-[var(--lb-ease-standard)]', progressBarToneClass[tone])}
                     style={{ width: `${percent}%` }}
                 />
             </div>

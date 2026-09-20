@@ -15,7 +15,8 @@ export async function POST(
 
         const body = await request.json()
         const payload = await createMerchantApiClient().shipping.rates.create(
-            body as CreateShippingRateInput
+            body as CreateShippingRateInput,
+            resolved.storeId,
         )
 
         return NextResponse.json({ success: true, data: payload }, { status: 201 })

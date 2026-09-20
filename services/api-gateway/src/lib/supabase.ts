@@ -19,6 +19,25 @@ export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient 
 }
 
 /**
+ * Unguarded service-role client, for the one query shape the tenant guard
+ * structurally cannot support: resolving a resource's tenant by its own
+ * primary key (`.eq('id', id).single()`) BEFORE the caller knows which
+ * tenant it belongs to -- e.g. PATCH/DELETE /shipping/zones/:id fetching
+ * the zone first to learn its store_id. The guard on getSupabaseAdmin
+ * requires a scope-column predicate on every call against a registered
+ * table, which this bootstrap lookup cannot supply by definition. Safe
+ * because it returns at most one row (by globally-unique id, no
+ * cross-tenant enumeration is possible) and its result is never trusted
+ * until verifySiteOwnership independently re-checks ownership afterward.
+ * Every subsequent query in the same handler -- list/insert/update/delete
+ * -- must go back to the guarded getSupabaseAdmin client with an explicit
+ * tenant predicate now that the tenant is known.
+ */
+export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return createSupabaseServiceClient(c.env);
+}
+
+/**
  * Create a Supabase client scoped to the authenticated user (respects RLS)
  */
 export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): SupabaseClient {
