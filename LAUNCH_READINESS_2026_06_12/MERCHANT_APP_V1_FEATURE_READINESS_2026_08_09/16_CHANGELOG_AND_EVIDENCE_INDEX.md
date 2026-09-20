@@ -1,7 +1,7 @@
 # 16 — CHANGELOG AND EVIDENCE INDEX
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`)
+**Audited commit:** `bf35062e` (`stepup/main`)
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 ---

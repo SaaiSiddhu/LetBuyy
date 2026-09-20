@@ -1,6 +1,6 @@
 # Phase H — Merchant Journey Audit
 
-**HEAD `587dc988`. Score: 70/100.**
+**HEAD `ae383bb8`. Score: 70/100.**
 
 | Step | Status | Evidence |
 |---|---|---|

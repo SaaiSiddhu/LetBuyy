@@ -1,6 +1,6 @@
 # FULL_LIQUID_GAP_MATRIX.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-cited. For each capability: backend Exists/Partial/Missing · Liquid template Exists/Partial/Missing · current owner · the phase that closes it.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-cited. For each capability: backend Exists/Partial/Missing · Liquid template Exists/Partial/Missing · current owner · the phase that closes it.
 
 **Key:** B=backend, LT=Liquid template/render, ●=exists ◐=partial ○=missing. "Owner today" = React (R) / Liquid (L) / engine-agnostic (EA).
 

@@ -1,6 +1,6 @@
 # CURRENT_LIQUID_ARCHITECTURE.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · **Method:** code-verified (feasibility report + 4 fresh file-level agents). **Code wins.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · **Method:** code-verified (feasibility report + 4 fresh file-level agents). **Code wins.**
 
 > **Correction to the prior feasibility report (code re-verified):** the cart API is **not** missing. `apps/storefront-runtime/next.config.ts:107-115` rewrites `/api/storefront/:subdomain/:path*` → `${gateway}/storefront/:subdomain/:path*`, and a full server-cart backend exists at `services/api-gateway/src/routes/storefront/cart-routes.ts` (mounted `public-routes.ts:201` → `storefront.ts:1296` → `index.ts:686`). The "cart 404" claim was an artifact of looking for a local Next route file and missing the rewrite. This materially shrinks the migration.
 

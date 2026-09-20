@@ -8,14 +8,14 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
-| S0 | Preflight and resume | COMPLETE | 091e979c |
-| S1 | Recover packages from bundles | COMPLETE | 6d12bfc6 |
-| S2 | Collision evidence and naming decision | COMPLETE | a0330b2d |
-| S3 | Import/rename System A's four packages | COMPLETE | 3edecdc9 |
-| S4 | Import/rename System B's quick-commerce packages | COMPLETE | dbcef593 |
-| S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | 1b064dab |
-| S6 | Make each app resolve/analyze/test | COMPLETE | b1cd91b5 |
-| S7 | Full verification | COMPLETE | 96d0f06e |
+| S0 | Preflight and resume | COMPLETE | 9dd21026 |
+| S1 | Recover packages from bundles | COMPLETE | 8e89c70b |
+| S2 | Collision evidence and naming decision | COMPLETE | 61fa5b9d |
+| S3 | Import/rename System A's four packages | COMPLETE | b00ed1f0 |
+| S4 | Import/rename System B's quick-commerce packages | COMPLETE | 6b32f4fe |
+| S5 | Workspace membership and path repair | COMPLETE (12/15 added, 3 BLOCKED) | db3cd4fd |
+| S6 | Make each app resolve/analyze/test | COMPLETE | 79219fef |
+| S7 | Full verification | COMPLETE | 0797a108 |
 | S8 | Documentation and close-out | COMPLETE | (this commit) |
 | S8 | Documentation and close-out | PENDING | |
 
@@ -32,13 +32,13 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 ### Baseline measurement vs. CTO-supplied baseline
 
 CTO baseline (given in the Phase N prompt, measured 2026-09-02 immediately before the prompt):
-`HEAD 5c930d2d  tracked 8055  changed 39  staged 0  untracked 58  deletions 1`
+`HEAD db64ae79  tracked 8055  changed 39  staged 0  untracked 58  deletions 1`
 Governance gate: 105 PASS / 6 FAIL. Branch: main +0 / this branch +40.
 
 My measurement (2026-09-03, `git status --porcelain=v1` against `git rev-parse HEAD` / `git ls-files | wc -l`):
 
 ```
-HEAD:       5c930d2d036bc6c53d68a6f9940de1f4fa2c97db   (EXACT MATCH)
+HEAD:       db64ae79d18b02429bda40347015daab6409780a   (EXACT MATCH)
 tracked:    8055                                        (EXACT MATCH)
 staged:     0                                            (EXACT MATCH)
 deletions:  1  (apps/identity-platform/src/lib/useAuthTheme.ts)  (EXACT MATCH)
@@ -253,7 +253,7 @@ Both apps sit at `apps/<app>/` (two levels deep from repo root) — verified by 
 
 ### Commits this stage
 
-`b2558ba1` (`marketplace_core`), `6fd28f7f` (`marketplace_models`), `bd698052` (`marketplace_services`), `5aa2407f` (`marketplace_ui_kit`), `889ca97b` (`customer_app`/`admin_app` rewrites). Each verified with `git diff --cached --name-status` before commit (all `create mode` for the four package commits — new content, not a rename within this repo's own history, so `A` not `R` is correct and expected; all `M` for the app-rewrite commit) — no pre-existing dirty file or unrelated path was swept into any of the five commits.
+`1149e12a` (`marketplace_core`), `44f4dafa` (`marketplace_models`), `8fa51728` (`marketplace_services`), `0ec6a5dd` (`marketplace_ui_kit`), `e32c7ede` (`customer_app`/`admin_app` rewrites). Each verified with `git diff --cached --name-status` before commit (all `create mode` for the four package commits — new content, not a rename within this repo's own history, so `A` not `R` is correct and expected; all `M` for the app-rewrite commit) — no pre-existing dirty file or unrelated path was swept into any of the five commits.
 
 **S3 verdict: COMPLETE.**
 
@@ -299,7 +299,7 @@ Authored `README.md` for all 7 `quickcommerce_*` packages (System B has no local
 
 ### Commits this stage
 
-`7454b66c` (`quickcommerce_{api,core,domain,observability}`), `a0221f4a` (`quickcommerce_{design_system,offline,realtime}`), `455c8e1c` (`rider_app`/`store_ops_app` rewrites, including the disclosed process-violation note in the commit message itself). Each verified with `git diff --cached --name-status` before commit.
+`a6351926` (`quickcommerce_{api,core,domain,observability}`), `125457be` (`quickcommerce_{design_system,offline,realtime}`), `e32d67ab` (`rider_app`/`store_ops_app` rewrites, including the disclosed process-violation note in the commit message itself). Each verified with `git diff --cached --name-status` before commit.
 
 **S4 verdict: COMPLETE.**
 
@@ -309,7 +309,7 @@ Authored `README.md` for all 7 `quickcommerce_*` packages (System B has no local
 
 ### 5.1 — `apps/merchant_app`'s stale path depth
 
-Fixed `../../../packages/dart/*` → `../../packages/dart/*` (`apps/merchant_app/` is two levels deep, not three — Phase M's Stage 3 moved it out of `apps/mobile/merchant-app/`, and this pubspec was never updated to match). `flutter pub get` at the workspace root succeeded; `cd apps/merchant_app && flutter test` — **172/172, exact baseline match.** Commit `3d55966f`.
+Fixed `../../../packages/dart/*` → `../../packages/dart/*` (`apps/merchant_app/` is two levels deep, not three — Phase M's Stage 3 moved it out of `apps/mobile/merchant-app/`, and this pubspec was never updated to match). `flutter pub get` at the workspace root succeeded; `cd apps/merchant_app && flutter test` — **172/172, exact baseline match.** Commit `0ca0d3ac`.
 
 ### 5.2/5.3 — Incremental workspace-list additions
 
@@ -347,7 +347,7 @@ Added members one at a time (or as a tightly-coupled cluster where pub's own err
 
 ### Commits this stage
 
-`3d55966f` (`merchant_app` path fix), `64069e0b` (all 12 successful workspace additions + the 2 SDK-constraint bumps + regenerated `pubspec.lock`, with the 3 BLOCKED members and their exact errors in the commit message itself).
+`0ca0d3ac` (`merchant_app` path fix), `35a6f611` (all 12 successful workspace additions + the 2 SDK-constraint bumps + regenerated `pubspec.lock`, with the 3 BLOCKED members and their exact errors in the commit message itself).
 
 **S5 verdict: COMPLETE — 12 of 15 candidate members added; 3 correctly and deliberately left out, each with a recorded, reproducible reason. A partially-restored workspace, not a forced green.**
 
@@ -372,7 +372,7 @@ Per app: `flutter pub get` → `flutter analyze` → `flutter test` (if a `test/
 ### `apps/merchant_app` (regression check)
 
 - **Resolves:** yes.
-- **Analyzes:** 80 pre-existing issues (deprecation warnings — `activeColor`/`onReorder`/`value`/`pipelineOwner` — plus 2 unused-element/unused-variable warnings), all in files this phase never touched except the one path-fix commit (`3d55966f`, which changed 4 lines, none of which are near any flagged line). **Not a regression** — recorded as the honest pre-existing baseline, not fixed (out of scope; this phase only fixes rename-caused breakage).
+- **Analyzes:** 80 pre-existing issues (deprecation warnings — `activeColor`/`onReorder`/`value`/`pipelineOwner` — plus 2 unused-element/unused-variable warnings), all in files this phase never touched except the one path-fix commit (`0ca0d3ac`, which changed 4 lines, none of which are near any flagged line). **Not a regression** — recorded as the honest pre-existing baseline, not fixed (out of scope; this phase only fixes rename-caused breakage).
 - **Tests: 172/172, exact baseline match** — confirmed three times across this phase (after 5.1's path fix, after the 2-app addition, and again after the full 12-member workspace settled).
 
 ### `apps/phase_2/rider_app`
@@ -382,7 +382,7 @@ Cannot join the shared workspace (Stage 5, BLOCKED). Removed its now-counterprod
 - **Resolves:** `flutter pub get` (standalone, run from `apps/phase_2/rider_app/`) → **`Changed 124 dependencies!`, success.**
 - **Analyzes:** 2 issues, **both pre-existing and unrelated to this phase's renames**:
   1. `analysis_options.yaml:10:10 include_file_not_found` — `include: package:flutter_lints/flutter.yaml` can't be found, because `flutter_lints` was never declared as a `dev_dependency` in this app's own `pubspec.yaml` (a gap present since Phase M's Stage 4 copy; not touched by any rename).
-  2. `test/widget_test.dart:16:35 creation_with_non_type` — `The name 'MyApp' isn't a class.` This is Flutter's default `flutter create` scaffold boilerplate test, referencing a placeholder `MyApp` widget that was **never** the app's real class (always `AgrimoreRiderApp`, now `QuickcommerceRiderApp`) — confirmed via `git log --oneline -- .../test/widget_test.dart`, which shows exactly one commit, Phase M's original establishment (`a9623d38`); this file has never been touched since, by any phase. A genuine, pre-existing dead file inherited from System B's own scaffold, not a rename casualty.
+  2. `test/widget_test.dart:16:35 creation_with_non_type` — `The name 'MyApp' isn't a class.` This is Flutter's default `flutter create` scaffold boilerplate test, referencing a placeholder `MyApp` widget that was **never** the app's real class (always `AgrimoreRiderApp`, now `QuickcommerceRiderApp`) — confirmed via `git log --oneline -- .../test/widget_test.dart`, which shows exactly one commit, Phase M's original establishment (`11dbbb19`); this file has never been touched since, by any phase. A genuine, pre-existing dead file inherited from System B's own scaffold, not a rename casualty.
 - **Tests:** `flutter test` → **2 of 3 test files pass.** `test/app_test.dart` (renders the auth entrypoint — passes, using the renamed `QuickcommerceRiderApp` class, proving the Stage 4 rename is functionally correct) and `test/rider_delivery_flow_test.dart` (a thin wrapper — `import '../integration_test/rider_delivery_flow_test.dart' as rider_flow; void main() => rider_flow.main();` — that runs the real fake-repository state-machine test from `integration_test/`: offer → accept → pickup → deliver, using the renamed `quickcommerce_domain`/`quickcommerce_observability` packages end to end) both pass. `test/widget_test.dart` fails to compile, for the pre-existing reason above. **Honest PARTIAL, not forced green** — the failure is real, disclosed, and out of this phase's scope to fix.
 
 ### `apps/phase_2/store_ops_app`
@@ -395,7 +395,7 @@ Identical situation and identical findings to `rider_app` (both apps were scaffo
 
 ### A necessary correction discovered while running this stage
 
-Testing `rider_app` standalone first failed immediately: `Found a pubspec.yaml ... resolution 'workspace'. But found no workspace root including it in parent directories.` Stage 4.3 had added `resolution: workspace` to both apps on the (correct, at the time) assumption they'd join the shared workspace — Stage 5 then found they can't (the `flutter_secure_storage` conflict). Leaving `resolution: workspace` in place after that discovery made both apps **strictly worse off than before this phase touched them**: unable to resolve in ANY configuration, shared or standalone. Removed `resolution: workspace` from both (commit `a3648603`), which restored standalone resolution — confirmed by the successful `pub get`/`analyze`/`test` runs above.
+Testing `rider_app` standalone first failed immediately: `Found a pubspec.yaml ... resolution 'workspace'. But found no workspace root including it in parent directories.` Stage 4.3 had added `resolution: workspace` to both apps on the (correct, at the time) assumption they'd join the shared workspace — Stage 5 then found they can't (the `flutter_secure_storage` conflict). Leaving `resolution: workspace` in place after that discovery made both apps **strictly worse off than before this phase touched them**: unable to resolve in ANY configuration, shared or standalone. Removed `resolution: workspace` from both (commit `844d73a1`), which restored standalone resolution — confirmed by the successful `pub get`/`analyze`/`test` runs above.
 
 Running `pub get` standalone in both apps also regenerated `ios/Flutter/Generated.xcconfig` and `flutter_export_environment.sh` — both files literally headed `// This is a generated file; do not edit or check into version control.` The regenerated content (this machine's real path) is arguably more correct than what Phase M committed (the original developer's `/Users/saai_sidd/Git/Agrimore/...` path), but committing either version is out of this phase's scope and both files' own header says not to track them at all — reverted to the pre-existing committed content via `git show HEAD:<path>` + overwrite (not `git checkout --`, learned from the Stage 4 incident). Also left uncommitted, deliberately: both apps' freshly-generated `pubspec.lock` (this repository's own convention, confirmed against `apps/merchant_app` and `packages/dart/core`, doesn't track per-app/per-package lockfiles outside the shared root).
 
@@ -403,7 +403,7 @@ No Android or iOS build was attempted for any app, per the brief's explicit inst
 
 ### Commits this stage
 
-`a3648603` (`resolution: workspace` removal for the 2 BLOCKED apps). No source code was changed this stage beyond that one structural fix — everything else was measurement.
+`844d73a1` (`resolution: workspace` removal for the 2 BLOCKED apps). No source code was changed this stage beyond that one structural fix — everything else was measurement.
 
 **S6 verdict: COMPLETE. 4 of 4 buildable apps resolve; `customer_app`/`admin_app` analyze with zero issues; `merchant_app` stays at its exact 172/172 baseline; `rider_app`/`store_ops_app` each resolve standalone and pass 2 of 3 test files, with the one failure fully attributed to pre-existing, unrelated scaffold debris.**
 
@@ -427,7 +427,7 @@ All three unchanged from `12_final_verification.md`'s post-Phase-M green state �
 
 **First real run this phase** (`node scripts/validate-governance.mjs`, full output in `/tmp/phase_n_gate_output.txt`): **102 PASS / 9 FAIL** — a regression of 3 from the known-good post-Phase-M baseline (105/6). First failure by name: `foundation-antifabrication-gate.mjs` (validator 1/111, a pre-existing/known finding, unrelated to this phase — see `12_final_verification.md` §8.5).
 
-The 3 NEW failures (not in the 6-item known baseline), all traced to this phase's own changes and fixed (commit `e85e8d4d`):
+The 3 NEW failures (not in the 6-item known baseline), all traced to this phase's own changes and fixed (commit `427e37a2`):
 
 1. **`runtime-manifest-validator.mjs`** — `apps/{customer_app,admin_app}/runtime.manifest.json`'s `allowedDependencies.workspacePackages` still listed the pre-rename `letbuyy_{core,models,ui_kit}` names (authored by Phase M before these packages existed under those names in this repository). Updated to the real, current dependency list: `letbuyy_marketplace_{core,models,services,ui_kit}`.
 2. **`package-ownership-validator.mjs`** — all 11 new `packages/dart/{marketplace_*,quickcommerce_*}` packages lacked an `AGENTS.md`. Authored one per package from `packages/dart/core/AGENTS.md`'s established template, each with a package-specific Migration Notes section (provenance, collision status where relevant, the `quickcommerce_core` BLOCKED-from-workspace note).
@@ -443,7 +443,7 @@ Both required artifact classes were needed and are now present: `runtime.manifes
 
 ### Commits this stage
 
-`e85e8d4d` (all three gate-failure fixes, in one commit — a runtime-manifest correction, 11 new `AGENTS.md` files, and one stray-file deletion, none of which stand alone as separate logical units worth splitting further).
+`427e37a2` (all three gate-failure fixes, in one commit — a runtime-manifest correction, 11 new `AGENTS.md` files, and one stray-file deletion, none of which stand alone as separate logical units worth splitting further).
 
 **S7 verdict: COMPLETE. Real governance gate at 105 PASS / 6 FAIL, byte-identical to the documented post-Phase-M baseline, with the interim 3-failure regression this phase itself introduced fully root-caused and closed rather than left disclosed-but-unresolved. `node_modules`/`pnpm-lock.yaml` restored and verified unchanged. All three web runtimes independently re-typechecked, not assumed.**
 
@@ -459,7 +459,7 @@ Checked `CLAUDE.md` for any `packages/dart` content enumeration that would need 
 
 ### Commits this stage
 
-`e2bb3a4d` (`19_dart_package_recovery.md` + the two backlog-document updates).
+`fa2b2d7a` (`19_dart_package_recovery.md` + the two backlog-document updates).
 
 **S8 verdict: COMPLETE.**
 
@@ -467,4 +467,4 @@ Checked `CLAUDE.md` for any `packages/dart` content enumeration that would need 
 
 ## Phase N — final summary
 
-All 8 stages (S0–S7 substantive work, S8 documentation) COMPLETE. 21 commits total (`091e979c` through this journal's own closing commit). Governance gate: 105 PASS / 6 FAIL, byte-identical to the pre-phase baseline. `apps/merchant_app`: 172/172, unchanged. `apps/customer_app`/`apps/admin_app`: resolve, zero analyze issues, no tests to run. `apps/phase_2/rider_app`/`apps/phase_2/store_ops_app`: resolve standalone, 2/3 test files pass each, the one failure pre-existing and unrelated. 3 workspace members correctly and disclosedly BLOCKED, not forced. No package was merged. D-0 was never touched. Nothing pushed, deployed, or rotated. One disclosed process violation (`git checkout --`), caught and corrected before any commit, with no work lost. Full detail for every claim above is in this journal's own stage-by-stage entries; `19_dart_package_recovery.md` is the reader-facing summary.
+All 8 stages (S0–S7 substantive work, S8 documentation) COMPLETE. 21 commits total (`9dd21026` through this journal's own closing commit). Governance gate: 105 PASS / 6 FAIL, byte-identical to the pre-phase baseline. `apps/merchant_app`: 172/172, unchanged. `apps/customer_app`/`apps/admin_app`: resolve, zero analyze issues, no tests to run. `apps/phase_2/rider_app`/`apps/phase_2/store_ops_app`: resolve standalone, 2/3 test files pass each, the one failure pre-existing and unrelated. 3 workspace members correctly and disclosedly BLOCKED, not forced. No package was merged. D-0 was never touched. Nothing pushed, deployed, or rotated. One disclosed process violation (`git checkout --`), caught and corrected before any commit, with no work lost. Full detail for every claim above is in this journal's own stage-by-stage entries; `19_dart_package_recovery.md` is the reader-facing summary.

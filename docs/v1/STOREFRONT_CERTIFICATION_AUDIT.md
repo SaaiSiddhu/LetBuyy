@@ -31,7 +31,7 @@
   - `…/composition-engine.tsx:352` — `if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;` (→ falls back to React `RenderSectionList`).
   - `…/template-resolver.ts:241-246` — `liquidEnabled = options.liquidEnabled ?? resolveThemeLiquidRenderingEnabled({ templateConfig, defaultEnabled: THEME_LIQUID_RENDERING_DEFAULT_ENABLED })`.
 - React is not removed; it is the **default rendering path** with ~20 live React section renderers (`apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx`, `…/components/sections/*.tsx`) and a React layout chrome (`apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx:119,218,245` — `liquidPage ? children : <React header/footer>`).
-- Only **one** theme is Liquid-first (commit `742192cf` "make Urban Kicks a first-class Liquid theme"). For every other store/theme, Liquid resolution finds no bundle → React.
+- Only **one** theme is Liquid-first (commit `57760d0c` "make Urban Kicks a first-class Liquid theme"). For every other store/theme, Liquid resolution finds no bundle → React.
 
 **So:** the user's belief that "the React storefront has been removed" is **factually false** (see [§14](#14-react-removal-certification) and [THEME_ENGINE_CERTIFICATION.md](THEME_ENGINE_CERTIFICATION.md)). The Liquid engine is *real and works*, but it is gated **off** by default. The commerce chain is real via React + the canonical gateway.
 

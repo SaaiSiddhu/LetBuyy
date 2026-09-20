@@ -2,7 +2,7 @@
 
 > **RESEARCH — NOT AUTHORITY — NOT AN IMPLEMENTATION ORDER**
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 
 ---
 
@@ -152,7 +152,7 @@ Two consequences follow, and both are load-bearing:
 | **CURRENT VALUE** | `UNKNOWN`, and **structurally unmeasurable today**: the cron's only lag metric reads `replay_operation_schedules` (`services/api-gateway/src/index.ts:557-563`), not outbox age. Depth is readable on demand via `GET /operations/outbox` (`services/api-gateway/src/routes/operations.ts:187`). Configured ceiling: 50 events/tick (`services/api-gateway/src/index.ts:945`) × 96 ticks/day (`wrangler.toml:236`) = **4,800/day**, against an `INFERRED` top-of-envelope demand of ~6,000–8,000/day. |
 | **User-visible symptom** | **Merchant webhook deliveries and the analytics/search fanout lag** by minutes to hours. **Not buyer order-confirmation emails** — those bypass the outbox entirely and go direct to `NOTIFICATION_QUEUE` (`services/api-gateway/src/lib/order-confirmation-email.ts:127-130`), which `queue-workers` consumes continuously. This narrows the blast radius that `07` §3.6 implies. |
 | **First response** | Raise `outboxLimit` from 50 toward the RPC's hard cap of 100 (`index.ts:945`; `database/supabase/migrations/000_baseline.sql:756` clamps at `LEAST(GREATEST(p_limit,1),100)`). That alone doubles capacity to **9,600/day with no cron change** — the current setting uses half the available headroom. |
-| **Escalation if that fails** | Restore the pre-throttle cron `*/1`, recorded verbatim in the comment above `wrangler.toml:236` and introduced by commit `ebaf61e2` for free-tier cost: 1,440 ticks × 50 = **72,000/day**, or × 100 = **144,000/day** — 9–18× the top-of-envelope requirement. If still insufficient, move the relay to a queue consumer rather than a cron. |
+| **Escalation if that fails** | Restore the pre-throttle cron `*/1`, recorded verbatim in the comment above `wrangler.toml:236` and introduced by commit `a7dbb93b` for free-tier cost: 1,440 ticks × 50 = **72,000/day**, or × 100 = **144,000/day** — 9–18× the top-of-envelope requirement. If still insufficient, move the relay to a queue consumer rather than a cron. |
 | **Proof required before acting** | **Emit the backlog-age metric first.** Depth alone is not evidence — a large depth that is draining is fine, and a small depth that is growing is not. `07` §6 names the falsifying test: synthesise 1,000 orders/day and measure unrelayed depth over 72 h. |
 | **Expected incremental cost** | Worker cron invocations rise from 96/day to up to 1,440/day. The throttle exists for free-tier cost per the committed comment; the absolute magnitude at Workers Paid invocation pricing is small. Queue operations, if the relay moves to a consumer, are $0.40/M with ~3 operations per small message lifecycle. |
 | **Rollback method** | Revert two configuration values (`outboxLimit`, `crons`). Single commit. |

@@ -1,7 +1,7 @@
 # 05 — V1 SCOPE FREEZE AND EXCLUSIONS
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`)
+**Audited commit:** `bf35062e` (`stepup/main`)
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 This document freezes a **scope**. It does not amend the Constitution, alter a canonical winner,
 or reopen a frozen capability.
@@ -11,7 +11,7 @@ or reopen a frozen capability.
 ## 1. The finding that shapes the whole freeze
 
 The mandate was: find what is genuinely past 70%, finish it, add the indispensable foundations, hide
-the rest, launch small. Applying that honestly to `ee371182` produces an uncomfortable result.
+the rest, launch small. Applying that honestly to `bf35062e` produces an uncomfortable result.
 
 **188 capabilities. Mean score 45.5. Nineteen at ≥70. None above 89. None launch-proven.**
 
@@ -192,7 +192,7 @@ This package **does not delete or overwrite** `V1_SCOPE_LOCK_2026_06_12/LETBUYY_
 **Prior hypothesis** (`LETBUYY_V1_SCOPE_LOCK.md:77`): *"`apps/mobile/merchant-app` | V2 | 68% | Login
 unblocked in code, but push structurally absent + store signing unprovisioned."*
 
-**Re-tested at `ee371182`: CONFIRMED as to the conclusion, CORRECTED as to the reasons.**
+**Re-tested at `bf35062e`: CONFIRMED as to the conclusion, CORRECTED as to the reasons.**
 
 | Prior reason | Status now |
 |---|---|

@@ -5,7 +5,7 @@
 **Date:** 2026-07-04
 **Branch:** stepup/main (working tree — Phase D changes not yet committed)
 **Phase:** D — Parity, drops, compiler, schema, DX, API completeness
-**Predecessor:** Phase C (`70a40c2a` — phase-c critical platform fixes)
+**Predecessor:** Phase C (`be56a6fd` — phase-c critical platform fixes)
 **Authored by:** Subagent — Phase D documentation engineer
 
 ---
@@ -332,7 +332,7 @@ Findings are listed most-severe first. Each finding's disposition is recorded.
 |---------|--------|--------|--------|
 | `pnpm typecheck test` | `@letbuyy/theme-engine` (LANE-A) | **PASS** | 101/101 tests pass, 0 typecheck errors. Includes 12 new D1-A/D2/D6/D8/D9/D10 tests. |
 | `pnpm typecheck test` | `@letbuyy/storefront-runtime` (LANE-B) | **PASS** | 31/31 tests pass (25 pre-existing + 5 Phase D + 1 D1-B runtime hardening), 0 typecheck errors. |
-| `node scripts/validate-governance.mjs` | repository | Not re-run (no topology, import, package, environment, or generated-artifact changes in Phase D). Phase C gate was clean (`70a40c2a`). |
+| `node scripts/validate-governance.mjs` | repository | Not re-run (no topology, import, package, environment, or generated-artifact changes in Phase D). Phase C gate was clean (`be56a6fd`). |
 
 Phase D changes are in the working tree (unstaged). Commit will follow standard ARB two-lane merge rule once both lanes are reviewed.
 

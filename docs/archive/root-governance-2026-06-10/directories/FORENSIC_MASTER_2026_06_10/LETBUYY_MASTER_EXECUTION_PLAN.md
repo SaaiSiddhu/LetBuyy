@@ -2,7 +2,7 @@
 
 **LetBuyy Forensic Master Audit · 2026-06-10**
 **Principal architect — remediation execution plan (audit close-out)**
-**Evidence baseline:** working tree `stepup/main` @ `5cf9e64e`, dirty tree, 2026-06-10.
+**Evidence baseline:** working tree `stepup/main` @ `c4fc3cd6`, dirty tree, 2026-06-10.
 **Primary input:** `FORENSIC_MASTER_2026_06_10/TOP_250_PLATFORM_ISSUES.md` (291 unique issues, ISSUE-001..291; 9 S0s).
 **Constitution:** `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` (FROZEN & EXECUTABLE; §12 roadmap, §13 squads, §16 backlog, 100→1k→10k envelope).
 

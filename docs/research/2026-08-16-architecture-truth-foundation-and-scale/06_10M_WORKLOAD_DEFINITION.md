@@ -4,7 +4,7 @@
 >
 > Subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, root `AGENTS.md`, local `AGENTS.md`, and `LETBUYY_CANONICAL_SYSTEMS.md`. Nothing in this document changes the ratified scale envelope (100 → 1,000 → 10,000 merchants). It defines a *hypothetical* workload precisely enough to be tested, so that the ARB can reason about it rather than react to a slogan.
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 
 ---
 

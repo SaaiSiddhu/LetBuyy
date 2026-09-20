@@ -3,8 +3,8 @@
 **Evidence artifact, not governance authority.**
 
 - Archive: `letbuyy-web-v1-wave-0-2026-08-09.zip`
-- Baseline SHA: `ee3711829d857e986014c5811bb94d86ebc3d343`
-- Integration branch: `codex/web-v1-integration` @ `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6`
+- Baseline SHA: `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
+- Integration branch: `codex/web-v1-integration` @ `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab`
 - Date: 2026-08-09
 - Wave 0 verdict: **PASS_WITH_NAMED_BLOCKERS**
 
@@ -108,7 +108,7 @@ share outside the ARB. No credential, token, key, or .env content is included.
 | 80 | `raw-evidence/appbridge-urgent/31_bypass_reproduction_and_closure.txt` | 6716 | `24ea408534e61ac9b748c5acaa7a9281f7c6f856a35e8f7882ac7880e67cfcc3` |
 | 81 | `raw-evidence/appbridge-urgent/32_falsification_and_regression.txt` | 1701 | `be4d8e50ef1e2415979b1a2ce40ca01a1283c7c278e7e3111ac94539726ce956` |
 | 82 | `raw-evidence/appbridge-urgent/killswitch-raw/appbridge-existing.log` | 730 | `3485716bbc92b35e2bab2db10fd05bb549ad381ae030fcf71112c09c9a945583` |
-| 83 | `raw-evidence/appbridge-urgent/killswitch-raw/commit-ed6e5167.stat` | 4229 | `01004daf940ae3011bc9ef0b6c63e0c31171abe100626dca0cfdca5d4bb71ded` |
+| 83 | `raw-evidence/appbridge-urgent/killswitch-raw/commit-df4abd5d.stat` | 4229 | `01004daf940ae3011bc9ef0b6c63e0c31171abe100626dca0cfdca5d4bb71ded` |
 | 84 | `raw-evidence/appbridge-urgent/killswitch-raw/gov.log` | 307 | `46fe95187d0019c48a4853c497a54bc0d8bf6b812be7519295be58ab730463a5` |
 | 85 | `raw-evidence/appbridge-urgent/killswitch-raw/ks-falsify.log` | 231536 | `28eca397dd1a0421b43848ed19b9ce223b7a88e4944f6ed6199557e00039fcd4` |
 | 86 | `raw-evidence/appbridge-urgent/killswitch-raw/ks-final.log` | 2098 | `8078f826d5e8646d00840033cdd5fa9a4e122fc5b5108e47a7c59f34949957ab` |

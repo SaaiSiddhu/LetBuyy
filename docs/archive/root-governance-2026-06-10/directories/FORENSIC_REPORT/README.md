@@ -1,9 +1,9 @@
 # LetBuyy Platform — Forensic Codebase Investigation
 
 **Engagement:** Platform forensic investigation — *documentation only, no code changed.*
-**Date:** 2026-06-05 — **second pass, post-remediation** (HEAD `127a850e` on `develop`)
+**Date:** 2026-06-05 — **second pass, post-remediation** (HEAD `a8cd5fde` on `develop`)
 **Scope:** Entire `Letbuyy_Store` monorepo — ~2,951 in‑scope files, 9 web apps, 3 mobile apps (1 real), 9 services (3 implemented), 30 packages, ~233‑table database.
-**Method:** A first pass (AM) produced reports `01`–`17`. Then 68 commits (`63053d18..HEAD`; +21,140 −8,527) landed a Codex Foundation‑Hardening run (phases F0 truth/topology + F1 backend integrity) plus five merged workstreams. This **second pass** re‑verified every prior finding against current source, tagged each RESOLVED / PARTIAL / STILL‑OPEN, documented the new issues the remediation introduced, and re‑ran the repo's own `scripts/validate-governance.mjs` (now **129 validators**, exit 0). Each report carries a "Changes since first pass" section; cross‑cutting verification is in the Evidence Appendix.
+**Method:** A first pass (AM) produced reports `01`–`17`. Then 68 commits (`cd71e612..HEAD`; +21,140 −8,527) landed a Codex Foundation‑Hardening run (phases F0 truth/topology + F1 backend integrity) plus five merged workstreams. This **second pass** re‑verified every prior finding against current source, tagged each RESOLVED / PARTIAL / STILL‑OPEN, documented the new issues the remediation introduced, and re‑ran the repo's own `scripts/validate-governance.mjs` (now **129 validators**, exit 0). Each report carries a "Changes since first pass" section; cross‑cutting verification is in the Evidence Appendix.
 
 > **Forensic constraint honored:** no file in the platform under investigation was written, modified, deleted, moved, or renamed. The only writes were the report files in this folder.
 

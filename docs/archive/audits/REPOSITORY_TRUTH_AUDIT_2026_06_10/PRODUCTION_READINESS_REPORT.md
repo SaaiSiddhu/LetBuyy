@@ -2,7 +2,7 @@
 
 **Axis:** Production readiness synthesis (all 11 domains, dual-scored)
 **Auditor:** Production-readiness auditor, wave 2. **Discovery only** — the only file written is this report.
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` (2026-06-10) · working tree massively dirty (512 D / 410 M / 76 ?? per wave-1 counts) · `main` @ `bf8c18c1` (2026-06-09) is the **only branch production CI deploys from** (`.github/workflows/production-deploy.yml:3-7`, push-triggered) and is **30 commits behind** `stepup/main` with **none** of the Phase A–D13 hardening.
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` (2026-06-10) · working tree massively dirty (512 D / 410 M / 76 ?? per wave-1 counts) · `main` @ `4bcae19a` (2026-06-09) is the **only branch production CI deploys from** (`.github/workflows/production-deploy.yml:3-7`, push-triggered) and is **30 commits behind** `stepup/main` with **none** of the Phase A–D13 hardening.
 **Inputs:** all nine wave-1 reports in this directory (governance, architecture, prompt-drift, codebase, database, theme, identity, money, mobile) plus my own targeted spot-checks of observability/operations surfaces (`infrastructure/monitoring/`, `infrastructure/observability/`, gateway `middleware/observability.ts`/`rateLimit.ts`/`onError`, `docs/runbooks/`, `config/runtime/database-recovery-policy.json`, `production-safety-preflight.json`, `infrastructure/scripts/deploy/verify-health-gates.mjs`, prod wrangler vars, `EXECUTION_LEDGER.md`, `SKIPPED_HUMAN_DECISIONS.md`).
 **Date:** 2026-06-10.
 
@@ -23,7 +23,7 @@
 ## 2. Scoring Method
 
 - Each domain is scored 0–10 **twice**:
-  - **(a) As-deployable today** — what a push-triggered production deploy from `main` (`bf8c18c1`) would ship. This is the only deploy path that exists.
+  - **(a) As-deployable today** — what a push-triggered production deploy from `main` (`4bcae19a`) would ship. This is the only deploy path that exists.
   - **(b) Working-tree end-state** — the dirty tree committed, merged to `main`, deployed, **and** all human-only seams in `SKIPPED_HUMAN_DECISIONS.md` resolved (keys/secrets/DNS/PITR provisioned, probes run). Genuine missing capability (code that does not exist in any state) still caps this score.
 - 0 = absent/actively dangerous · 3 = skeleton/unsafe for real users · 5 = works for a supervised beta with manual ops · 7 = production-credible with known gaps · 9+ = hardened.
 - **Weights** (commerce platform — money, identity, and tenancy carry the blast radius): payments .16, identity .13, tenancy .13, security .12, checkout .10, operations .08, observability .07, themes .07, architecture .06, mobile .05, governance .03.
@@ -234,7 +234,7 @@ Launching today from `main` is not a degraded launch; it is shipping the exact a
 ## 11. Unknowns / UNVERIFIED
 
 1. **All live infrastructure state** (deployed worker/app versions, applied migrations, DNS, Vercel projects, secret values, whether 162–166 were ever applied out-of-band): no live access; repo self-labels `mode: governance-contract-not-live-evidence`.
-2. Whether `main`'s payout adapter at `bf8c18c1` fabricates UTRs or fails — MONEY_TRUTH verified the throw at HEAD/worktree only; `main` behavior inferred from migration absence, not read line-by-line.
+2. Whether `main`'s payout adapter at `4bcae19a` fabricates UTRs or fails — MONEY_TRUTH verified the throw at HEAD/worktree only; `main` behavior inferred from migration absence, not read line-by-line.
 3. Live Cloudflare Turnstile verdicts (double-spend inference is code-derived; real site keys, not test keys, are pinned).
 4. Whether any production store row carries `liquidRenderingCanary: true` (no setter exists in-repo; presumed none).
 5. Behavioral test execution for theme-engine/identity suites (esbuild darwin/linux mismatch in audit sandboxes; suites read, not run — D-phase VERIFY rows claim implementer runs).

@@ -18,7 +18,7 @@ From Claude Code: `/graph-search`, `/graph-payments`, `/graph-auth`, `/graph-ten
 | Edges | 66,761 |
 | Communities | 3,279 |
 | Files | 3,677 |
-| Built at commit | `0db025a6` |
+| Built at commit | `0f257ca1` |
 | Languages | TS 9,319 · Dart 7,413 · TSX 3,170 · MJS 2,762 · JSON 4,820 · MD 24,015 |
 
 ## Services indexed

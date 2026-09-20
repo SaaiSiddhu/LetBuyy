@@ -37,7 +37,7 @@
 **Score: 88%**
 
 **What exists:**
-- Variant matrix builder committed (LB-5) as of commit `04cbbbab`
+- Variant matrix builder committed (LB-5) as of commit `db986077`
 - Real `variants[]` array → cart `variant_id`
 - `product_variants` table with full schema
 - `product_options` table for option definitions
@@ -81,7 +81,7 @@
 - Collections list UI: `apps/merchant-control-plane/src/app/[store]/products/collections/page.tsx`
 - Collection detail with product assignment
 - Storefront: `/collections/[slug]` page exists
-- LB-6 committed: "collections E2E: assignment API/UI + `/collections/[slug]` route" (commit `0b8a56e7`)
+- LB-6 committed: "collections E2E: assignment API/UI + `/collections/[slug]` route" (commit `140a73db`)
 - API: `GET/POST /v1/collections`, product assignment endpoints
 
 **What is missing:**

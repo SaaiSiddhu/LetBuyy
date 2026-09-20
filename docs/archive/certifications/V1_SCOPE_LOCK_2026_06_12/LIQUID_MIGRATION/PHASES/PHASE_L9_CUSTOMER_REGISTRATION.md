@@ -1,6 +1,6 @@
 # PHASE L9 — CUSTOMER REGISTRATION
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **Auth surface — highest care; depends on LB-12.**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **Auth surface — highest care; depends on LB-12.**
 
 1. **Purpose.** Render login + an explicit register flow through Liquid, over the existing customer-session model.
 2. **Repository Reality.** `store_customers` = identity row, `customer_credentials` = password store; `hasPassword` driven by `customer_credentials` (`customer-engagement-routes.ts:681-686`). Login is public (`:695-788`), mints HS256 session via `issueCustomerSession` (`auth-core/customer-session.ts:28-59`). **Registration dead-ends** (`account-bottom-sheet.tsx:372-413`) and the `set_password` "Create Account" button is broken (no resetToken → rejected `customer-auth-context.tsx:145`, `set-password/route.ts:35`) — this is the pending **LB-12**. The storefront proxy must re-mint locally via `createSession()` (gateway IDs-only token fails `isCustomerSessionPayload`).

@@ -1,6 +1,6 @@
 # Phase J — Scale Audit
 
-**HEAD `587dc988`. Architecture-bounded (the repo proves design, not a runtime ceiling).**
+**HEAD `ae383bb8`. Architecture-bounded (the repo proves design, not a runtime ceiling).**
 
 ## By merchant count
 | Scale | Verdict | Basis |

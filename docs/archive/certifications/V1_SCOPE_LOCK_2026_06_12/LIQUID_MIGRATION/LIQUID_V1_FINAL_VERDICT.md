@@ -1,6 +1,6 @@
 # LIQUID_V1_FINAL_VERDICT.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-verified. Repository truth only.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-verified. Repository truth only.
 
 ## Can LetBuyy launch V1 on Liquid?
 

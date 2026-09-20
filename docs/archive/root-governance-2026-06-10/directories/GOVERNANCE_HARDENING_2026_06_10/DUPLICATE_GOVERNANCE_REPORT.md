@@ -2,7 +2,7 @@
 
 > **Document type:** ARB governance-hardening audit. Hunts **duplicate governance** across the 7-doc stack — the same rule, decision, or list stated in more than one document — and decides, for each duplicated rule, **where it should live once** (single source of truth) and **where the others should merely reference it.**
 > **Program:** Governance Hardening 2026 · Architecture Review Board (ARB) · **Phase 3 of the hardening pass.**
-> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`.
+> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`.
 > **Scope:** the 7 documents under `GOVERNANCE_REWRITE_2026_06_10/`: `000_GOVERNANCE_INDEX.md`, `LETBUYY_CONSTITUTION.md`, `LETBUYY_AGENTS_V2.md`, `LETBUYY_CANONICAL_SYSTEMS.md`, `LETBUYY_LEGACY_ELIMINATION_MASTER_PLAN.md`, `LETBUYY_FOUNDATION_ROADMAP.md`, `LETBUYY_UI_UX_GOVERNANCE.md`. (The `LETBUYY_FINAL_ARCHITECTURE_SCORECARD.md` reference doc is out of the named 7 but is flagged where it participates in a cluster — see §6 Undetermined.)
 > **Status:** AUTHORITATIVE finding set. **No repo doc was modified.** This is one new report; every fix is a de-duplication / cross-reference instruction, never a rule change.
 
@@ -183,4 +183,4 @@ The money/tenancy/identity/ledger clusters (DUP-G-006/-007/-009/-010) are conten
 
 All other 14 findings are mechanically fixable by inserting a cross-reference ("per CONST ART-XX / §N") and removing the independently-worded restatement — **no rule content changes, nothing is weakened.**
 
-*End of DUPLICATE_GOVERNANCE_REPORT.md (Governance Hardening 2026, Phase 3). 18 duplicate clusters; 5 divergent/CRITICAL, 6 MAJOR parallel-list, 7 MINOR benign-restatement. The fix everywhere is single-source-of-truth: one owning clause + N cross-references, never a deleted or weakened rule. No repo doc was modified. Evidence pinned at `stepup/main` @ `5cf9e64e`, 2026-06-10.*
+*End of DUPLICATE_GOVERNANCE_REPORT.md (Governance Hardening 2026, Phase 3). 18 duplicate clusters; 5 divergent/CRITICAL, 6 MAJOR parallel-list, 7 MINOR benign-restatement. The fix everywhere is single-source-of-truth: one owning clause + N cross-references, never a deleted or weakened rule. No repo doc was modified. Evidence pinned at `stepup/main` @ `c4fc3cd6`, 2026-06-10.*

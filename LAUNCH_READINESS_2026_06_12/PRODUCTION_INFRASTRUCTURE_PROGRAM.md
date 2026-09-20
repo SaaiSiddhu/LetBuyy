@@ -22,7 +22,7 @@ Rules: production topology is exactly `config/runtime/production-topology.json` 
 ## 3. MONITORING & ALERTING
 
 - **Error/exception:** observability project + DSN (SKIP-W3-SENTRY-DSN) with PII redaction proof before first event leaves the building.
-- **Runtime alerts:** the repo-side alert bridge (`letbuyy.alert.runtime.error`, dry-run certified at `0f72fbe3`) goes live per CAP-C10: route → on-call channel; live-delivery certification = induced redacted test alert received end-to-end.
+- **Runtime alerts:** the repo-side alert bridge (`letbuyy.alert.runtime.error`, dry-run certified at `ccf668d6`) goes live per CAP-C10: route → on-call channel; live-delivery certification = induced redacted test alert received end-to-end.
 - **Money signals (non-negotiable pages):** reconciliation mismatch queue depth > 0 for > 24h; suspense balance unexplained; webhook signature failures; payout release failures; capture-without-ledger-entry detector.
 - **Platform signals:** gateway 5xx rate, p95 latency, queue-worker lag/dead-letters, webhook-service delivery failure rate, branch-lag monitor (SKIP-A5), gate status on main.
 - **Synthetic checks:** G4 smoke set re-run on schedule: storefront render, login, checkout session create, `/email/send` healthcheck (sandbox), mobile-bff proxy ping.

@@ -1,6 +1,6 @@
 # 00 — Executive Summary
 
-> **Date:** 2026-08-05 · **Branch:** `stepup/main` · **Baseline HEAD:** `ee371182`
+> **Date:** 2026-08-05 · **Branch:** `stepup/main` · **Baseline HEAD:** `bf35062e`
 > **Scope:** the LetBuyy theme system — `letbuyy-core`, the Liquid renderer, the 10 canonical presets,
 > the theme lifecycle, and the boundaries to shopper auth, cart, checkout and payments.
 

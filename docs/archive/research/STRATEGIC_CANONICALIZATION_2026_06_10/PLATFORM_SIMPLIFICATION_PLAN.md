@@ -7,7 +7,7 @@
 | **Date** | 2026-06-10 |
 | **Author** | Principal Platform/Infrastructure Engineer — Architecture Review Board |
 | **Repo** | `/Users/saai_sidd/Git/Letbuyy_Store` |
-| **Branch / HEAD at audit** | `stepup/main` @ `5cf9e64e`; `main` (prod trigger) tip `bf8c18c1`, **30 commits behind**; working tree DIRTY |
+| **Branch / HEAD at audit** | `stepup/main` @ `c4fc3cd6`; `main` (prod trigger) tip `4bcae19a`, **30 commits behind**; working tree DIRTY |
 | **Authoritative inputs** | `_ANCHOR_DECISIONS_SPINE.md` (A0, A6, A7, A9); `FORENSIC_MASTER_2026_06_10/REPO_TOPOLOGY_AUDIT.md` (TOPO-001…041); `…/ARCHITECTURE_COMPLIANCE_AUDIT.md` (ARCH-005/006 governance gap); `…/PERFORMANCE_AUDIT.md` (PERF-001/002/003 BFF stub); `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` §6 + §17; `LETBUYY_FINAL_ARCHITECTURE_FREEZE.md` §9.13 (frozen diagram) |
 | **Scope** | Topology convergence, deploy-pipeline reality, governance retargeting, single-constitution resolution, domain migration, mobile-bff composites, infra drift. **Money/identity/tenancy/theme/UI internals are owned by the A1–A8 sibling deliverables** and referenced only where they touch topology. |
 | **Constraint** | No production merchants, no legacy migration burden ⇒ converge directly on V1; preserve nothing for its own sake. No repo code modified by this document. |
@@ -83,7 +83,7 @@ Legend — **Deployed?**: YES (workflow ships it) · BUILDS (CI builds, no deplo
 This is the keystone. Every other decision in this document assumes a pipeline that can deploy the integration branch. Today it cannot.
 
 ### The blocker, precisely
-- `production-deploy.yml:4-6` triggers **only** on `push: branches: [main]`. `main`'s tip is `bf8c18c1`; the integration branch `stepup/main` is at `5cf9e64e`, **30 commits ahead** (`git rev-list --count main..stepup/main` = 30). `develop` (staging trigger) is **18 behind** (TOPO-002).
+- `production-deploy.yml:4-6` triggers **only** on `push: branches: [main]`. `main`'s tip is `4bcae19a`; the integration branch `stepup/main` is at `c4fc3cd6`, **30 commits ahead** (`git rev-list --count main..stepup/main` = 30). `develop` (staging trigger) is **18 behind** (TOPO-002).
 - Consequence: all eight foundation waves (money fixes, tenant isolation, session security, theme governance) that `FOUNDATION_STEPUP_STATUS.md` marks "complete" are **undeployable**, and the **S0 `/api/auth/switch` account-takeover fix exists only as an uncommitted working-tree edit** (`git show HEAD:apps/identity-platform/src/app/api/auth/switch/route.ts` lacks the guard; working tree `route.ts:14-81` has it; the new test `…/__tests__/auth-switch-guard.test.ts` is untracked) — TOPO-001.
 - Two staging pipelines (`deploy-staging.yml:3-5`, `staging-deploy.yml:3-6`) both fire on `push: develop` with divergent matrices → nondeterministic staging (TOPO-016).
 
@@ -467,7 +467,7 @@ For each topology/deploy change, the following layers apply (omit a layer only w
 | PLT-010 | `config/runtime/production-topology.json` + `infrastructure/deployment/{kubernetes,helm}` | Regenerate topology from deploy matrix; archive Helm/K8s; anti-fabrication validator | TRANSITIONAL→regenerate / DEAD | 1–2 | Low | `production-topology.json:117-134`; `infrastructure/deployment/helm/letbuyy-production/Chart.yaml`; `deployment-topology.json` |
 | PLT-011 | `apps/theme-marketplace` | De-deploy catalog (FROZEN); keep theme-engine contracts | FROZEN | 2 | Low | `production-deploy.yml:361-362`; A5; `packages/theme-engine` |
 | PLT-012 | `legacy/`, mobile release pipeline, TD-5, `search-core` leak, `dart/services` | Archive legacy; add signing; delete TD-5 + dart/services; un-leak search-core | DEAD / fix | 1–2 | Low | `legacy/` (TOPO-019); `ci.yml:218,222`; `apps/mobile/merchant-app/lib/app/routes.dart:776`; `packages/typescript/api-types/src/index.ts:92`; `packages/dart/services` |
-| PLT-013 | Working-tree process | Per-agent worktrees + clean-tree deploy gate | TRANSITIONAL→fix | 0 | Low | HEAD `c94b71eb`→`5cf9e64e` mid-audit; `.git/index.lock` contention (TOPO-039) |
+| PLT-013 | Working-tree process | Per-agent worktrees + clean-tree deploy gate | TRANSITIONAL→fix | 0 | Low | HEAD `fcae9f43`→`c4fc3cd6` mid-audit; `.git/index.lock` contention (TOPO-039) |
 | PLT-014 | Reserved services (6) | Keep manifest-only; remove from topology.json "production" | FROZEN-empty | 1–2 | Low | `services/{checkout-runtime,event-bus,notification-service,analytics-pipeline,media-service,search-service}` (2 files each); `production-topology.json:117-134` |
 | PLT-015 | Hyperdrive bindings | Keep; widen pooled-SQL usage as A2 tenancy lands | CANONICAL (under-utilized) | 3+ | Low | `api-gateway/wrangler.toml:186-188,303-305`; `routes/storefront.ts:639-665` |
 | PLT-016 | `hot-table-partition-maintenance.yml` cron | Disable schedule (keep dispatch plan-mode) | TRANSITIONAL→defer | 2 | Low | `.github/workflows/hot-table-partition-maintenance.yml:4-6` (`cron "15 2 1 * *"`); V1 §5/§7 |
@@ -476,4 +476,4 @@ For each topology/deploy change, the following layers apply (omit a layer only w
 
 ---
 
-*End of Part 9 — Platform Simplification & Deployment-Reality Plan. Evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty, 2026-06-10. Money/identity/tenancy/theme/UI internals are governed by the A1–A8 sibling deliverables; this document owns topology, deploy, governance-retarget, constitution, domain, and BFF-transport convergence only.*
+*End of Part 9 — Platform Simplification & Deployment-Reality Plan. Evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty, 2026-06-10. Money/identity/tenancy/theme/UI internals are governed by the A1–A8 sibling deliverables; this document owns topology, deploy, governance-retarget, constitution, domain, and BFF-transport convergence only.*

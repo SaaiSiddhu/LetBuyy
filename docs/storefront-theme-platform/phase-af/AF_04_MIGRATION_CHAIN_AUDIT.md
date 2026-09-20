@@ -314,7 +314,7 @@ A PostgreSQL policy without `TO role` applies to ALL roles (PUBLIC, anon, authen
 ## 5. Migration 191 — theme_purchases RLS Tenant Scope
 
 **File:** `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql`
-**Commit:** `7e1441a6` (HEAD) — `feat(theme): add marketplace partner-submission validation gate + close theme_purchases RLS (Phase AE)`
+**Commit:** `80d0b1af` (HEAD) — `feat(theme): add marketplace partner-submission validation gate + close theme_purchases RLS (Phase AE)`
 **Git state:** TRACKED, committed in HEAD
 
 ### 5.1 Policy analysis
@@ -411,7 +411,7 @@ Migration 189 (`theme_persistence_idempotency.sql`) contains at line 33: `-- ARB
 
 Evidence sources examined:
 - `database/supabase/.branches/_current_branch` — contains `main`; this is a local branch tracking file, not a live DB apply record
-- `docs/central-intelligence/deployment-state.md` — states `Latest migration: 174_v1_gift_card_refund_restore.sql` at HEAD `4a91fa96` (generated 2026-06-14). This document is STALE: current HEAD is `7e1441a6` (migration 191). The document itself declares `mode: governance-contract-not-live-evidence`
+- `docs/central-intelligence/deployment-state.md` — states `Latest migration: 174_v1_gift_card_refund_restore.sql` at HEAD `d7f74037` (generated 2026-06-14). This document is STALE: current HEAD is `80d0b1af` (migration 191). The document itself declares `mode: governance-contract-not-live-evidence`
 - `config/runtime/deployment-lineage-manifest.json` — `mode: "governance-contract-not-live-evidence"` — explicitly states this is NOT live evidence
 - No Supabase migration history file (e.g., `supabase_migrations.csv`, `schema_migrations` dump) exists in the repository
 

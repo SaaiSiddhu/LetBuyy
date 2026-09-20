@@ -77,7 +77,7 @@
 - `apps/storefront-runtime/src/proxy.ts` — Next.js middleware for host-based routing
 - `{store}.letbuyy.com` subdomain routing → correct store
 - Custom domain routing → correct store
-- LB-1 committed: "storefront middleware: proxy.ts exists, re-exports proxy" (commit `8d73fe7a`)
+- LB-1 committed: "storefront middleware: proxy.ts exists, re-exports proxy" (commit `90368dc6`)
 - Store lookup API: `apps/storefront-runtime/src/app/api/store-lookup/route.ts`
 - `storefront-slug-redirects` table for URL redirects
 

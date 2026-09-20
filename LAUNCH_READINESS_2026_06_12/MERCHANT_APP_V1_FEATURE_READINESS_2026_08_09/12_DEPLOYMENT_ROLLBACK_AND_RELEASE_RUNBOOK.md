@@ -1,7 +1,7 @@
 # 12 — DEPLOYMENT, ROLLBACK AND RELEASE RUNBOOK
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`)
+**Audited commit:** `bf35062e` (`stepup/main`)
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 > **This runbook has never been executed.** It documents the pipeline that exists in the repository
@@ -25,7 +25,7 @@ and it is still open — larger now (291) than when the prior program measured i
 
 ## 1. Preflight — all must be green before promotion
 
-| # | Check | Command | State at `ee371182` |
+| # | Check | Command | State at `bf35062e` |
 |---|---|---|---|
 | P-1 | Branch lag zero | `git rev-list --count origin/main..stepup/main` | **FAIL — 291** |
 | P-2 | Governance gate | `pnpm validate:governance` | **FAIL** — aborts at validator 5/108 |

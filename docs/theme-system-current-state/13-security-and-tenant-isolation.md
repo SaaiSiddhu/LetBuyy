@@ -14,7 +14,7 @@
 > Between the discovery sweep and the writing of this document, the working tree changed.
 > **Findings 1, 2, 6, 7 and 17 now have uncommitted fixes; finding 3 has an untracked, unapplied
 > migration; the remaining twelve are unchanged.** Every finding is therefore reported against
-> **two states**: `HEAD` (`ee371182` — what a clean checkout gets, and what any deployed build came
+> **two states**: `HEAD` (`bf35062e` — what a clean checkout gets, and what any deployed build came
 > from) and **working tree** (2026-08-04, uncommitted/untracked). §0 is the map.
 >
 > **Unresolved.** Whether `storefront-runtime` is actually reachable on a `*.vercel.app` hostname
@@ -44,7 +44,7 @@
 unstaged (` M`) or untracked (`??`). **A clean checkout of `HEAD` still carries every original
 defect**, and `HEAD` is what any deployed build was produced from.
 
-| # | Finding | State at `HEAD` `ee371182` | State in the working tree | Git state of the fix |
+| # | Finding | State at `HEAD` `bf35062e` | State in the working tree | Git state of the fix |
 |---|---|---|---|---|
 | 1 | Handle-resolution cross-tenant leak (§1) | ⛔ **present** — `git show HEAD:services/api-gateway/src/routes/storefront.ts` still contains the two-column `.or(...)` handle filter at **lines 748 and 802** | ✅ **fixed** — all four loaders now `.eq('subdomain', handle)` / `where subdomain = $1`, with `maybeSingle()` | ` M storefront.ts` (**21+ / 17−**, unstaged) |
 | 2 | Onboarding cross-column collision (§1.2) | ⛔ **present** — `git show HEAD:…/onboarding.ts \| grep handleCandidates` → **no match** | ✅ **fixed** — pre-insert check at `onboarding.ts:402-424` → **409 CONFLICT** | ` M onboarding.ts` (**43+ / 8−**, unstaged) |
@@ -92,7 +92,7 @@ defect**, and `HEAD` is what any deployed build was produced from.
 
 ### 1.1 The defective query
 
-> All line numbers in §1.1–§1.6 are **`HEAD` (`ee371182`)** line numbers, obtained with
+> All line numbers in §1.1–§1.6 are **`HEAD` (`bf35062e`)** line numbers, obtained with
 > `git show HEAD:services/api-gateway/src/routes/storefront.ts`. The working-tree file has been
 > edited (see §0 / §1.10) and its line numbers no longer match.
 
@@ -251,11 +251,11 @@ enforced anywhere.** *(proven)*
 
 | Shape | State | Evidence |
 |---|---|---|
-| Store-service fixture fallback (a failed bundle parse fell back to the Urban Kicks demo bundle) | **CLOSED** by commit `70a40c2a` (scope item C3) — now yields `liquidBundle = undefined` | `apps/storefront-runtime/src/lib/store-service.ts:670-673`; `git show --stat 70a40c2a` |
+| Store-service fixture fallback (a failed bundle parse fell back to the Urban Kicks demo bundle) | **CLOSED** by commit `be56a6fd` (scope item C3) — now yields `liquidBundle = undefined` | `apps/storefront-runtime/src/lib/store-service.ts:670-673`; `git show --stat be56a6fd` |
 | Compile-time base-fixture coupling — `compilePortableToLiquidBundle` bases **every** Liquid-compiled store on the Urban Kicks demo fixture | **OPEN** — branding/metadata contamination (slug, `<title>` suffix, body class, default `storeName`), *not* another tenant's stored data | `packages/theme-engine/src/portable-to-liquid.ts:10,103` — `const base = createUrbanKicksLiquidThemeBundleFixture();` |
 | **Handle-resolution ambiguity (§1.1)** | **OPEN at `HEAD` — real cross-tenant data.** Fixed in the uncommitted working tree (§1.10) | this section |
 
-`docs/theme-discovery/README.md:29,43` and commit `70a40c2a` advertise the leak class as closed
+`docs/theme-discovery/README.md:29,43` and commit `be56a6fd` advertise the leak class as closed
 (R-06 / UC-01). **Source wins: the class is not closed** — one shape (`portable-to-liquid.ts:103`)
 is untouched at both `HEAD` and in the working tree, and the third shape was only found in this
 sweep. Do not treat R-06/UC-01 as resolved. *(proven)*
@@ -912,7 +912,7 @@ Then assert:
 
 ## 11. Findings register
 
-Every row is stated against **`HEAD` (`ee371182`)**. The **WT** column is the working-tree
+Every row is stated against **`HEAD` (`bf35062e`)**. The **WT** column is the working-tree
 state as of 2026-08-04 — ✅ fixed but uncommitted · ⚠️ partially addressed · ⛔ unchanged. See §0.
 
 | # | Sev | Finding (at `HEAD`) | § | Class | WT |

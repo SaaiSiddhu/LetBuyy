@@ -12,9 +12,9 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S1 | Measure the ungoverned surface | COMPLETE | (this commit) |
 | S2 | The declaration | COMPLETE | (pending commit) |
 | S3 | The validator | COMPLETE | (pending commit) |
-| S4 | Prove it catches the real hazard (anti-theatre) | COMPLETE | `6d0fd104` |
+| S4 | Prove it catches the real hazard (anti-theatre) | COMPLETE | `e2b9479c` |
 | S5 | Verification | COMPLETE | (pending commit) |
-| S6 | Documentation | COMPLETE | `7e5ec7ef` |
+| S6 | Documentation | COMPLETE | `3f750f6a` |
 
 ---
 
@@ -22,11 +22,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 ### Baseline reconciliation
 
-CTO baseline: `HEAD 72ec82f9  changed 39  staged 0  deletions 1`. Gate 105/6 (111 selected, 115 .mjs on disk). Tests 415 total (172+165+54+13+11). Workspace 20/20.
+CTO baseline: `HEAD b05feef8  changed 39  staged 0  deletions 1`. Gate 105/6 (111 selected, 115 .mjs on disk). Tests 415 total (172+165+54+13+11). Workspace 20/20.
 
 Measured:
 ```
-HEAD:      72ec82f96c7d94d1fafa8c615e9b57c1d8e6dc72  (EXACT MATCH)
+HEAD:      b05feef80cd6db158615385929a4731263b975ee  (EXACT MATCH)
 changed:   39                                          (EXACT MATCH)
 staged:    0                                            (EXACT MATCH)
 deletions: 1                                            (EXACT MATCH)
@@ -220,7 +220,7 @@ $ echo $?
 1
 ```
 
-**Caught immediately — but the first-pass message named the file, not the wrong value.** This is semantically correct (Gradle itself ignores the `.kts` when both exist, so the *duplicate* is the real structural hazard, not a live identity mismatch), but the brief's own Stage 4.1 requires the message to name the wrong value too. Enhanced the validator (committed separately, `6d0fd104`, re-verified passing against the correct state before that commit) to peek at the dead file's own declared `applicationId` — never used to decide pass/fail, purely diagnostic; a source Gradle script is not a secret — and flag it explicitly when it disagrees with the registry:
+**Caught immediately — but the first-pass message named the file, not the wrong value.** This is semantically correct (Gradle itself ignores the `.kts` when both exist, so the *duplicate* is the real structural hazard, not a live identity mismatch), but the brief's own Stage 4.1 requires the message to name the wrong value too. Enhanced the validator (committed separately, `e2b9479c`, re-verified passing against the correct state before that commit) to peek at the dead file's own declared `applicationId` — never used to decide pass/fail, purely diagnostic; a source Gradle script is not a secret — and flag it explicitly when it disagrees with the registry:
 
 ```
 $ node scripts/validators/android-identity-validator.mjs
@@ -315,7 +315,7 @@ Confirmed this tested regex is byte-identical to the validator's own (`grep -n "
 ```
 $ git status --short
 ```
-Same 39 pre-existing other-session files, plus exactly one intentional file: `scripts/validators/android-identity-validator.mjs` (the 4.1 message enhancement, committed as `6d0fd104` before this check). No trace of any induced breach in `apps/admin_app`, `apps/customer_app`, or `apps/merchant_app`.
+Same 39 pre-existing other-session files, plus exactly one intentional file: `scripts/validators/android-identity-validator.mjs` (the 4.1 message enhancement, committed as `e2b9479c` before this check). No trace of any induced breach in `apps/admin_app`, `apps/customer_app`, or `apps/merchant_app`.
 
 **S4 verdict: COMPLETE. All four controls induced a real failure with an exact, informative message, fully reverted with byte-identity proven by hash where a file was corrupted, and zero residue. The validator was NOT theatre — every invariant it claims to enforce was independently observed to actually block.**
 
@@ -378,7 +378,7 @@ Exactly `+1` PASS, `+1` selected, `+1` on disk, `0` change to FAIL — precisely
 ### 5.5 — Identity untouched by everything above
 
 ```
-$ git diff 72ec82f9..HEAD -- 'apps/*/android/app/build.gradle' 'apps/*/android/app/build.gradle.kts'
+$ git diff b05feef8..HEAD -- 'apps/*/android/app/build.gradle' 'apps/*/android/app/build.gradle.kts'
 (empty)
 ```
 Confirmed empty — this phase adds governance; it changes zero app identity, at any point, across every stage.

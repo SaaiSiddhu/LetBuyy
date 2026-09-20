@@ -1,7 +1,7 @@
 # LetBuyy UI/UX Principles — the canonical design-system law, in one place
 
 Derived from `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_UI_UX_GOVERNANCE.md` (DOC 06, 2026-06-10; the
-constitution, rules UX-R1…R33) and re-measured against the tree on 2026-09-04 at `823aa5ee`. DOC 06
+constitution, rules UX-R1…R33) and re-measured against the tree on 2026-09-04 at `a751a2ff`. DOC 06
 binds; where its dated counts disagree with this file, the counts here are newer (`EVIDENCE_LEDGER.md`).
 Subordinate to the Constitution, `AGENTS.md`, `LETBUYY_CANONICAL_SYSTEMS.md`; supreme on UI/UX below them.
 
@@ -55,7 +55,7 @@ whitespace and dark-mode discipline (DOC 06 §7). Not a marketing template, not 
 | Z-index | `letbuyyZIndexTokens` | `--lb-z-*` | — |
 | Surface | `LetbuyySurface` = admin · marketplace · storefront · identity · operations (`letbuyySurfaceTokens`) | per-surface overrides | — |
 
-307 `--lb-*` variables at `823aa5ee`. Runtime WCAG validation: `validateLetbuyyBrandContrast`
+307 `--lb-*` variables at `a751a2ff`. Runtime WCAG validation: `validateLetbuyyBrandContrast`
 (AA 4.5 text / 3.0 focus, real luminance). **Naming trap:** `packages/token-core` is the **auth/JWT**
 envelope, not design tokens (UX-R28).
 
@@ -103,7 +103,7 @@ where safe, reconciled on response, rolled back with a `Banner` on error.
 
 ## 6. Shell, IA and theme
 
-- **Shell adoption target 9/9** on `AppNavigation`; measured `823aa5ee`: merchant_web 2 files,
+- **Shell adoption target 9/9** on `AppNavigation`; measured `a751a2ff`: merchant_web 2 files,
   admin_web 1, customer_web/identity/marketing 0. Order (DOC 06 §6): merchant_web first (folds in the
   Finance node, keeps the command palette and shortcuts), then customer_web **account** shell (buyer
   chrome stays per-store), then admin_web check; identity is auth-flow only; marketing uses a shared
@@ -123,7 +123,7 @@ where safe, reconciled on response, rolled back with a `Banner` on error.
 - `ProviderModeBadge` (`feedback.tsx:220`) renders `live | sandbox | scaffold` as **text + role,
   never colour alone**, bound to backend `provider_mode`, on every payouts/COD/wallet/commission/
   settlement/fulfilment surface, web and Flutter (UX-R4; `provider-mode-badge-validator` enforces
-  four money-surface consumers at `823aa5ee`). Absent mode renders scaffold/unknown, never
+  four money-surface consumers at `a751a2ff`). Absent mode renders scaffold/unknown, never
   sandbox-as-success.
 - Checkout (`docs/ui-standards/checkout-patterns.md`): server-authoritative totals only; itemised
   subtotal / shipping / GST / discount / gift card / **amount payable**; COD + Razorpay explicit; one-step
@@ -143,7 +143,7 @@ carousels, ambient loops, preloaders. Budgets: `PERFORMANCE_AND_MOTION_BUDGETS.m
 
 ## 9. Enforcement — the ratchet that blocks (DOC 06 §5)
 
-| Banned construct | Validator / gate | At `823aa5ee` |
+| Banned construct | Validator / gate | At `a751a2ff` |
 |---|---|---|
 | Raw hex in CSS / TSX | ratchet `appCssRawHex` / `tsxRawHex`; ESLint `no-hardcoded-hex` | 142 / 2 (both falling) |
 | Naked `rgb()/hsl()` in app CSS | ratchet `appCssNakedRgbHsl`; stylelint | 786 |

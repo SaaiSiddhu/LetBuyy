@@ -1,6 +1,6 @@
 # DOCUMENT 3 — HUMAN SEAMS CLOSURE PROGRAM
 
-**Source of truth:** `SKIPPED_HUMAN_DECISIONS.md` (56 rows at `533479cb`) + `EXECUTABLE_HUMAN_REQUIRED.md` (19 HR rows) + `CAPABILITY_BACKLOG.md` (16 CAP rows). This program categorizes and prioritizes every seam; it invents none and drops none. Closing a seam means: do the human/live action, attach evidence, supersede the row — never delete it silently (runbook guardrail 4).
+**Source of truth:** `SKIPPED_HUMAN_DECISIONS.md` (56 rows at `5c2d3993`) + `EXECUTABLE_HUMAN_REQUIRED.md` (19 HR rows) + `CAPABILITY_BACKLOG.md` (16 CAP rows). This program categorizes and prioritizes every seam; it invents none and drops none. Closing a seam means: do the human/live action, attach evidence, supersede the row — never delete it silently (runbook guardrail 4).
 
 **Priority key:** 🔴 CRITICAL = blocks Phase D/F/G (no merchant, no money, or no deploy without it). 🟡 IMPORTANT = blocks scale/quality, pilot can start with explicit ARB waiver. 🟢 NICE = post-launch acceptable.
 
@@ -81,7 +81,7 @@
 
 | Seam | Pri | Action |
 |---|---|---|
-| SKIP-CAP-KYC-LIVE-PROVIDER (CAP-C15) / HR-KYC-LIVE | 🔴 | Signzy/HyperVerge live creds + automated path; manual `needs_review` path already live repo-side (commit `c8592b2b`) — pilot can run manual-KYC-only with ARB waiver |
+| SKIP-CAP-KYC-LIVE-PROVIDER (CAP-C15) / HR-KYC-LIVE | 🔴 | Signzy/HyperVerge live creds + automated path; manual `needs_review` path already live repo-side (commit `abf534ac`) — pilot can run manual-KYC-only with ARB waiver |
 
 ## 8. LOGISTICS (Phase F)
 
@@ -95,7 +95,7 @@
 | Seam | Pri | Action |
 |---|---|---|
 | SKIP-W3-SENTRY-DSN | 🔴 | Observability project, DSN, alert routing, redaction proof |
-| SKIP-CAP-ALERTING-END-TO-END (CAP-C10) | 🔴 | Live alert delivery cert (emitters + routing already dry-run, commit `0f72fbe3`) |
+| SKIP-CAP-ALERTING-END-TO-END (CAP-C10) | 🔴 | Live alert delivery cert (emitters + routing already dry-run, commit `ccf668d6`) |
 | SKIP-W0-PITR-TIER | 🔴 | Supabase PITR tier + restore drill evidence |
 
 ## 10. SECURITY & IDENTITY (Phase C/B)
@@ -104,7 +104,7 @@
 |---|---|---|
 | SKIP-D2-LIVE-ANON-GRANT-PROBE | 🔴 | Live DB proof anon can't reach tenant tables |
 | SKIP-D4-LIVE-FORCE-COVERAGE-PROBE | 🔴 | Live FORCE-RLS + GUC coverage proof post-migration 164 |
-| SKIP-CAP-TENANT-REDTEAM-ADOPTION (CAP-C11) | 🔴 | RT-1…RT-9 under production-shaped roles (repo proof exists, commit `b09b2ab2`) |
+| SKIP-CAP-TENANT-REDTEAM-ADOPTION (CAP-C11) | 🔴 | RT-1…RT-9 under production-shaped roles (repo proof exists, commit `f5befa7a`) |
 | SKIP-CAP-STEPUP-CRYPTO (CAP-C06) | 🔴 | Live step-up cert (TOTP+HMAC path) |
 | SKIP-W4-MTLS-CF-ACCESS | 🟡 | CF Access/mTLS on internal routes |
 | SKIP-OPS-SSO-IDP | 🟡 | Per-operator ops identity (SSO/IdP) |
@@ -117,7 +117,7 @@
 | Seam | Pri | Action |
 |---|---|---|
 | SKIP-CAP-LIQUID-CHROME (CAP-C08) | 🟡 | Canary + parity corpus + ARB flip (Document 6) |
-| SKIP-CAP-STORE-PUBLISH-PIPELINE (CAP-C12) | 🔴 | Live store-publish cert (publish→canonical config, commit `1f5ef72b`) — pilot merchants need publishing |
+| SKIP-CAP-STORE-PUBLISH-PIPELINE (CAP-C12) | 🔴 | Live store-publish cert (publish→canonical config, commit `29e09477`) — pilot merchants need publishing |
 | HR-AI-MODEL-LIVE | 🟢 | AI model creds for AI features — pilot can waive |
 
 ---

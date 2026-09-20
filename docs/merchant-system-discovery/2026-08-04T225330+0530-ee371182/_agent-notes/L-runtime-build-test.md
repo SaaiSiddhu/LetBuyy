@@ -2,8 +2,8 @@
 
 **Mission:** LetBuyy Merchant System Discovery, Phase 1 (discovery only, read-only).
 **Repository:** `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`
-**Branch:** `stepup/main`  **HEAD:** `ee3711829d857e986014c5811bb94d86ebc3d343`
-**Run:** `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
+**Branch:** `stepup/main`  **HEAD:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
+**Run:** `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
 **Executed:** 2026-08-04T22:55 → 23:40 +0530 (local machine, macOS Darwin 25.3.0, arm64)
 
 > **THIS FILE CONTAINS TWO INDEPENDENT AGENT-L RUNS.**
@@ -803,7 +803,7 @@ What I can attest to at each link, **for the domain I own (runtime/build/test)**
 
 ## 11. UNKNOWNS (honest)
 
-- Whether any of the 25 gate failures also fail on a **clean checkout** of `ee371182`. I could not test: `git stash/checkout/reset` are forbidden and the worktree has 6784 user-owned modifications. My per-failure attribution in §2.2 is reasoned from the untracked-file list, not from a clean-tree run.
+- Whether any of the 25 gate failures also fail on a **clean checkout** of `bf35062e`. I could not test: `git stash/checkout/reset` are forbidden and the worktree has 6784 user-owned modifications. My per-failure attribution in §2.2 is reasoned from the untracked-file list, not from a clean-tree run.
 - Whether the 25 failures reproduce on **Node 20** (CI's version). Untested.
 - Whether the Wave-1 money test failure (G-L-06) also occurs on `postgres:16-alpine`. I used `postgres:15-alpine` to avoid a network pull. The error is a missing-relation dependency, so I rate version sensitivity LOW, but it is not proven.
 - What the 68 non-baselined merchant API routes actually do (pure proxy vs local DB write). Out of my lane; **must be checked**.
@@ -848,7 +848,7 @@ A concurrent session — the one that owns the pre-existing dev stack on ports 9
 | `database/supabase/migrations/196_theme_rls_tenant_hardening.sql` untracked (`??`) | now **staged in the index** (`git ls-files -s` → `100644 e69de29b… 0`, the empty blob — the signature of `git add`/`git add -N`); still **not in HEAD** |
 | 7 untracked `database/supabase/rollback/*.rollback.sql` (180, 181, 188, 189, 190, 191, 196) | no longer listed as untracked; all still present on disk |
 | — | **new** untracked file `services/api-gateway/src/__tests__/storefront-handle-resolution.test.ts` |
-| HEAD `ee371182` | HEAD **unchanged** `ee371182` |
+| HEAD `bf35062e` | HEAD **unchanged** `bf35062e` |
 | 6784 `M` entries | 6784 `M` entries (unchanged) |
 
 Verified: all previously-untracked SQL files **still exist on disk** (`database/supabase/migrations/196_theme_rls_tenant_hardening.sql`, `.../rollback/196_…`, `.../rollback/180_…` all `EXISTS`). Nothing was lost.
@@ -868,7 +868,7 @@ Verified: all previously-untracked SQL files **still exist on disk** (`database/
 # RUN 2 — INDEPENDENT RE-RUN (same commit, ~1 hour later)
 
 **Executed:** 2026-08-04T23:55 → 2026-08-05T00:35 +0530
-**Same HEAD:** `ee371182` (verified unchanged)
+**Same HEAD:** `bf35062e` (verified unchanged)
 **Machine:** macOS 26.3.1 arm64 · Node v26.5.1 · pnpm 10.6.2 · Docker Engine **29.6.2** · Flutter 3.44.8 / Dart 3.12.2 · **OpenJDK 17.0.20 is the only JVM installed**
 
 ## 14.0 Why RUN 2 exists and what it is worth
@@ -935,7 +935,7 @@ I independently flagged `route-ownership-validator`'s `custom-domains.ts:GET:/do
 | Content-modified file count | "**725** files with real content change" (`git diff --numstat`) | **64** (`git -c core.fileMode=false diff --name-only HEAD \| wc -l`) | **UNRESOLVED DISCREPANCY.** Both agree the ~6,790 `M` entries are overwhelmingly `100644→100755` mode churn. The 725-vs-64 gap is either a different counting method (numstat lists mode-only entries as `0 0` rows) or a genuine worktree change. **A third party should re-measure with the explicit command before either number is quoted.** RUN 2's method excludes mode-only changes by construction. |
 | Merchant build | 34 s, **207 routes** | 33.3 s, **130 `/api/*` routes** | Not a conflict — 207 is total routes (pages + API); 130 is the `/api/*` subset, matching the commander's count of 130 proxy `route.ts` files. |
 | Executable Postgres image | `postgres:15-alpine` (RUN 1 avoided a network pull) | **`postgres:16-alpine`** — the script's own default | **Resolves RUN 1's stated UNKNOWN.** See §14.3. |
-| HEAD | `ee371182` | `ee371182` | unchanged |
+| HEAD | `bf35062e` | `bf35062e` | unchanged |
 
 **Everything else matched:** platform-console build failure (same file, same error), the 5 Flutter `ListTile` failures (same 5 names), the merchant control-plane 771/771 pass, the 13 contract failures, the `.letbuyy.store` literals, the merchant-domains 14 missing markers, the design-system ratchet regressions, and the `store_customers` root cause.
 
@@ -971,7 +971,7 @@ Three of these are **ownership-filter shape assertions on tenant reads/writes** 
 
 `services/api-gateway/src/routes/stores.ts` (+80 lines) and `services/api-gateway/src/routes/storefront/public-routes.ts` are both in RUN 2's 64-file content diff — i.e. **uncommitted work in flight**. RUN 1 §13 also noted a brand-new untracked `services/api-gateway/src/__tests__/storefront-handle-resolution.test.ts` appearing mid-run.
 
-**Honest reading:** this is almost certainly the concurrent session's in-flight refactor of store resolution, not a committed defect. But three ownership-filter assertions on tenant data went red inside one hour, and **neither run could produce a clean checkout to prove it.** This must not be dismissed as noise, and it must not be reported as a committed tenancy regression either. It must be **re-measured on a clean `ee371182`**. Filed as **G-L-17**.
+**Honest reading:** this is almost certainly the concurrent session's in-flight refactor of store resolution, not a committed defect. But three ownership-filter assertions on tenant data went red inside one hour, and **neither run could produce a clean checkout to prove it.** This must not be dismissed as noise, and it must not be reported as a committed tenancy regression either. It must be **re-measured on a clean `bf35062e`**. Filed as **G-L-17**.
 
 ---
 
@@ -1102,13 +1102,13 @@ RUN 2 does **not** re-file RUN 1's gaps. `G-L-01` (destructive gate), `G-L-02` (
 ### G-L-17 — [HIGH-STAKES] Gateway store-ownership filter assertions regressed 1 → 4 failures inside one hour
 - **Domain:** tenancy / store ownership · **Status:** `CONTRADICTORY_EVIDENCE`
 - **Impact:** Three assertions on the *ownership filter shape* for tenant store reads/writes went red between RUN 1 and RUN 2, plus one on the public storefront resolver. If the filter genuinely changed, this is a tenant-isolation regression on `/v1/stores`. If it is in-flight refactoring, it is noise. **Neither run could tell which**, and that ambiguity is itself the finding.
-- **Evidence:** RUN 1 `services/api-gateway/src/__tests__/store-publish.test.ts` = **1** failure; RUN 2 = **4** (§14.4, verbatim expectations quoted there). `services/api-gateway/src/routes/stores.ts` (+80) and `routes/storefront/public-routes.ts` are in RUN 2's 64-file content diff. RUN 1 §13 recorded a new untracked `services/api-gateway/src/__tests__/storefront-handle-resolution.test.ts` appearing mid-run. HEAD unchanged (`ee371182`) across both runs.
+- **Evidence:** RUN 1 `services/api-gateway/src/__tests__/store-publish.test.ts` = **1** failure; RUN 2 = **4** (§14.4, verbatim expectations quoted there). `services/api-gateway/src/routes/stores.ts` (+80) and `routes/storefront/public-routes.ts` are in RUN 2's 64-file content diff. RUN 1 §13 recorded a new untracked `services/api-gateway/src/__tests__/storefront-handle-resolution.test.ts` appearing mid-run. HEAD unchanged (`bf35062e`) across both runs.
 - **Expected:** ownership filters on tenant store reads are stable and asserted.
 - **Missing link:** **a clean checkout.** `git stash/checkout/worktree/reset` are forbidden to both runs.
 - **Blast radius:** `/v1/stores` tenant reads/writes; public storefront handle resolution (published-state exposure).
 - **Invariant:** **[HIGH-STAKES]** · **Severity: P1 if confirmed on a clean tree, P3 if WIP** · **Likelihood: UNKNOWN**
 - **Dependencies:** requires the concurrent session to settle
-- **Remediation approach:** re-run `pnpm --filter @letbuyy/api-gateway run test:unit` on a clean `ee371182` checkout. If red there, audit the ownership filter and add a **behavioural** cross-tenant negative test (a foreign `site_id` must return zero rows / 403) rather than another source-regex assertion — see RUN 1 `G-L-05`. If green there, close as WIP.
+- **Remediation approach:** re-run `pnpm --filter @letbuyy/api-gateway run test:unit` on a clean `bf35062e` checkout. If red there, audit the ownership filter and add a **behavioural** cross-tenant negative test (a foreign `site_id` must return zero rows / 403) rather than another source-regex assertion — see RUN 1 `G-L-05`. If green there, close as WIP.
 - **Acceptance criteria:** clean-checkout result recorded in the dossier; if red, filter restored **and** covered by a behavioural test.
 - **Required owner:** security + lead engineer · **Reversibility:** reversible · **Confidence: LOW on attribution, HIGH that the tests fail in this worktree**
 
@@ -1174,7 +1174,7 @@ RUN 2 does **not** re-file RUN 1's gaps. `G-L-01` (destructive gate), `G-L-02` (
 ### G-L-22 — Billing tier catalog drift is committed (attribution added to RUN 1 `G-L-12`)
 - **Domain:** billing / pricing · **Status:** `BROKEN`
 - **Impact:** Two subscription tiers (`launch`, `growth`) exist in the implementation that the billing contract test does not know about. Merchant-facing and revenue-relevant.
-- **Evidence:** `tests/billing/subscription-checkout.test.mjs:220` — actual `['free','starter','business','enterprise','launch','growth']` vs expected `['free','starter','business','enterprise']`. **RUN 2 adds the attribution RUN 1 lacked: neither the test nor `packages/billing-core` is in the 64-file content diff → this is committed truth at `ee371182`, not local WIP.** `commission-bps-zero-validator` and `pricing-catalog-validator` both **PASS** → the 0% transaction-fee invariant (R-9) is **not** implicated.
+- **Evidence:** `tests/billing/subscription-checkout.test.mjs:220` — actual `['free','starter','business','enterprise','launch','growth']` vs expected `['free','starter','business','enterprise']`. **RUN 2 adds the attribution RUN 1 lacked: neither the test nor `packages/billing-core` is in the 64-file content diff → this is committed truth at `bf35062e`, not local WIP.** `commission-bps-zero-validator` and `pricing-catalog-validator` both **PASS** → the 0% transaction-fee invariant (R-9) is **not** implicated.
 - **Expected:** the tier list and its contract agree, and any extra tiers are intentional and priced.
 - **Root cause:** UNKNOWN — either two tiers shipped without a contract update, or two tiers exist that should not.
 - **Blast radius:** merchant plan selection, checkout, entitlements.

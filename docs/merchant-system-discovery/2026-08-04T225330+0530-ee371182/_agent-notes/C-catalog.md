@@ -1,7 +1,7 @@
 # AGENT C — CATALOG / PRODUCTS / COLLECTIONS / MERCHANDISING — DISCOVERY NOTES
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182`. Read-only discovery. No repository file was modified except this notes file.
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e`. Read-only discovery. No repository file was modified except this notes file.
 
 Governance read before inspection:
 - `apps/merchant-control-plane/AGENTS.md` (25 lines) — boundary ownership only, no catalog rules.
@@ -488,7 +488,7 @@ in intent; entirely dependent on that one lookup, which is currently broken (G-C
   returning `{data, error}`, so the routes' `if (error)` branches never run and the handler 500s.
 - **Expected:** by-id reads/writes on a tenant table resolve the tenant first (e.g. `.eq('store_id', ownedStoreId)`
   alongside `.eq('id', …)`), or the guard accepts a two-step ownership pattern.
-- **Root cause:** `49741343 feat(foundation): enforce wave 2 tenant isolation` introduced the fail-closed guard;
+- **Root cause:** `214b6357 feat(foundation): enforce wave 2 tenant isolation` introduced the fail-closed guard;
   `products.ts` / `product-execution.adapter.ts` were never adapted to it. The only test of the guard
   (`tests/governance/foundation-wave2-tenant.test.ts:58-76`) exercises the guard against a synthetic
   `.select('*').eq(scopeColumn, …)` shape — it never runs a real route's query shape, so the regression is invisible.

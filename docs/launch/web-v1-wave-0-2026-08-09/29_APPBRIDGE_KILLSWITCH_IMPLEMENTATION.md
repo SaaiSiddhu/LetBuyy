@@ -3,15 +3,15 @@
 **Status:** IMPLEMENTED AND LOCALLY PROVEN, AFTER ONE ADVERSARIAL ROUND THAT FOUND AND CLOSED THREE REAL BYPASSES — committed, **not pushed, not deployed**.
 **Branch:** `codex/emergency-appbridge-killswitch`
 **Worktree:** `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch`
-**Base:** `ee371182`
+**Base:** `bf35062e`
 **Final commits (in order):**
-1. `ed6e5167567efcde01a349a2354d5e3591dad6e4` — the prefix gate over `/v1/app-store` + `/v1/app` (Parts I below).
-2. `30fd96b57d0b41b5191fdbaf5254f3cd3313fe73` — **FINAL HEAD.** Closes the three ungated seams that a prefix perimeter cannot see (**Part II** below).
+1. `df4abd5d50b3c9c62854c7854cb651846b1f4198` — the prefix gate over `/v1/app-store` + `/v1/app` (Parts I below).
+2. `6c3e17df6fe46a3b326fa749908a94f6bd97b228` — **FINAL HEAD.** Closes the three ungated seams that a prefix perimeter cannot see (**Part II** below).
 
 **Mandate:** doc `28_APPBRIDGE_URGENT_REACHABILITY_VERDICT.md` §7 (adjudicated minimal design).
 **Governance:** ART-16 / ART-22 (`GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md:245,289`), NEVER-R3 (`AGENTS.md:185`), AGENT-R13 (`AGENTS.md:364`).
 
-> **READ PART II FIRST.** Part I (§0–§8) is the record of commit `ed6e5167` and is accurate *about that commit*. Three of its claims were later shown to be **too broad**: independent adversarial review proved the app platform was still reachable from three seams outside the `/v1/app-store` + `/v1/app` prefixes. Part II (§9 onward) records the reproduction, the fix, the final test results, and the residual risk. Where Part I and Part II disagree, **Part II is authoritative.**
+> **READ PART II FIRST.** Part I (§0–§8) is the record of commit `df4abd5d` and is accurate *about that commit*. Three of its claims were later shown to be **too broad**: independent adversarial review proved the app platform was still reachable from three seams outside the `/v1/app-store` + `/v1/app` prefixes. Part II (§9 onward) records the reproduction, the fix, the final test results, and the residual risk. Where Part I and Part II disagree, **Part II is authoritative.**
 
 ---
 
@@ -40,7 +40,7 @@
 
 ## 2. Files changed
 
-Commit `ed6e5167` — **8 files, 605 insertions, 0 deletions.** Zero lines removed anywhere; zero changes to any file under `services/api-gateway/src/routes/app-store*` or `app-api.ts`.
+Commit `df4abd5d` — **8 files, 605 insertions, 0 deletions.** Zero lines removed anywhere; zero changes to any file under `services/api-gateway/src/routes/app-store*` or `app-api.ts`.
 
 ### Component A — gateway hard gate (load-bearing)
 
@@ -99,7 +99,7 @@ api.use('/app/*', appPlatformKillSwitch);
 
 Registered at `index.ts:723-726` (post-change line numbers), i.e. **before** `api.route('/app-store', appStoreRouter)` at `:739` and `api.route('/app', appApiRouter)` at `:740`. Hono composes middleware in registration order, so this position is load-bearing; a test asserts the ordering by line number and refuses to accept commented-out registrations. Because it is a prefix gate rather than a path list, new app-store routes **under these two prefixes** are covered automatically.
 
-> ⚠️ **CORRECTED IN PART II.** Commit `ed6e5167` also claimed "the failure mode that left the old gate at 2 of 83 cannot recur". That claim was **wrong**, and adversarial review proved it: a URL-prefix perimeter cannot see an app-platform read that lives under a *different* prefix. The 2-of-83 enumeration gap was replaced by a 2-of-4-mount-prefix gap. See §9.
+> ⚠️ **CORRECTED IN PART II.** Commit `df4abd5d` also claimed "the failure mode that left the old gate at 2 of 83 cannot recur". That claim was **wrong**, and adversarial review proved it: a URL-prefix perimeter cannot see an app-platform read that lives under a *different* prefix. The 2-of-83 enumeration gap was replaced by a 2-of-4-mount-prefix gap. See §9.
 
 Placing it ahead of `extensionsFeatureGate` and `appOAuthRateLimit` also means a blocked caller consumes no rate-limit budget.
 
@@ -111,7 +111,7 @@ Hono path matching is segment-based, so `'/app/*'` matches `/v1/app/...` and nev
 
 ### 3.4 What this closes
 
-> ⚠️ **SCOPE CORRECTION (Part II).** Everything in §3.4 is true, but it is not the whole app platform. Component A closes the two *mount prefixes*. It does **not** close the public storefront app-block reader, the public checkout-extension registry, or the marketplace/developer operator plane — all of which read the same frozen tables under other prefixes. Those are closed by commit `30fd96b5`; see §9.
+> ⚠️ **SCOPE CORRECTION (Part II).** Everything in §3.4 is true, but it is not the whole app platform. Component A closes the two *mount prefixes*. It does **not** close the public storefront app-block reader, the public checkout-extension registry, or the marketplace/developer operator plane — all of which read the same frozen tables under other prefixes. Those are closed by commit `6c3e17df`; see §9.
 
 Component A alone closes all 83 gateway routes; the merchant UI's server-side calls (it has no local DB access and no `app/api/app-store` proxy — it calls the gateway via `@letbuyy/api-client`); the `services/mobile-bff` proxy path, which forwards through the gateway service binding; and the Flutter client at `apps/mobile/merchant-app/lib/services/app_marketplace_service.dart`. Component B additionally stops the frozen capability being **presented** in a production deploy target.
 
@@ -190,11 +190,11 @@ This independently **reproduces the adjudicated finding** (83 routes reachable i
 | Command | Exit | Result |
 |---|---|---|
 | `node --test tests/app-platform/app-bridge.test.mjs` (the existing App Bridge contract suite) | **0** | **6/6 pass — unchanged.** |
-| `./node_modules/.bin/tsx --test services/api-gateway/src/__tests__/*.test.ts` (whole gateway unit suite, 78 files) | 1 | **562 tests, 559 pass, 3 fail.** All 3 failures are **pre-existing at base `ee371182`** and unrelated: `ai.test.ts` asserts `/adapter\.purchase/` in `routes/ai.ts`; `internal-os-executive-analytics.test.ts` opens a migration file that does not exist (`database/supabase/migrations/129_*.sql`, `ENOENT`); `payments.test.ts` asserts on `apps/storefront-runtime/.../checkout-client.tsx`. **None of those three files is touched by this commit** (`git diff --stat` = 4 files), so their results are identical to base. |
+| `./node_modules/.bin/tsx --test services/api-gateway/src/__tests__/*.test.ts` (whole gateway unit suite, 78 files) | 1 | **562 tests, 559 pass, 3 fail.** All 3 failures are **pre-existing at base `bf35062e`** and unrelated: `ai.test.ts` asserts `/adapter\.purchase/` in `routes/ai.ts`; `internal-os-executive-analytics.test.ts` opens a migration file that does not exist (`database/supabase/migrations/129_*.sql`, `ENOENT`); `payments.test.ts` asserts on `apps/storefront-runtime/.../checkout-client.tsx`. **None of those three files is touched by this commit** (`git diff --stat` = 4 files), so their results are identical to base. |
 | `node --test --test-concurrency=1 tests/*/*.test.mjs` (root behavioural glob) | 1 | **1566 tests, 1521 pass, 30 fail, 15 skipped.** 22 of the 30 are `tests/executable/*-postgres.test.mjs`, which require a local Postgres that was deliberately not started (offline mandate). The remaining 8 are pre-existing source/inventory drift in `apps/marketing-site`, `apps/platform-console`, `packages/theme-engine`, `services/api-gateway/src/schemas/theme.schema.ts` and dependency/typescript governance — all in files this commit does not touch. **No failure references `appPlatformKillSwitch`, `app-platform-flag`, or the three guarded pages.** |
 | `node scripts/validate-governance.mjs` | 1 | Fails **fast** at the 2nd validator: *"`services/api-gateway/src/tenant/tenant-tables.registry.ts` must match schema-derived tenant table registry"*. That validator compares `database/supabase/migrations/*.sql` against the checked-in registry — **neither is touched by this commit**, so it is a pre-existing base-state failure. Because the runner exits on first failure, the remaining validators could not be reached through it. |
 | 16 individually-run validators most plausibly affected | mixed | **12 pass**, including `architecture-validator` (6904 files), `import-validator` (3070 files), `circular-import-validator`, `marketplace-single-source-validator`, `settings-apps-dead-twin-validator`, `frozen-path-override-gate`, `wrangler-env-validator`, `cloudflare-environment-validator`, `env-isolation-validator`, `fail-closed-internal-routes-validator`, `app-utils-service-role-edge-validator`, `no-rejected-package-imports-validator`. The 4 failures (`undeclared-import`, `route-ownership`, `route-line-count`, `environment`) name only `packages/lcis-live`, `packages/theme-engine`, `routes/custom-domains.ts` and `routes/themes.ts` — **pre-existing, none touched here**. |
-| `tsc --noEmit` in `services/api-gateway` | 2 | **20 errors, all pre-existing**, all in `src/lib/contact-request-email.ts` and `src/routes/contact-public.ts`, all caused by `packages/shared-types/src/contact.ts` not being re-exported from `packages/shared-types/src/index.ts` at base `ee371182` (verified with `git grep HEAD`). **Zero errors reference any file in this commit** (`grep -c "appPlatform\|app-platform" = 0`). |
+| `tsc --noEmit` in `services/api-gateway` | 2 | **20 errors, all pre-existing**, all in `src/lib/contact-request-email.ts` and `src/routes/contact-public.ts`, all caused by `packages/shared-types/src/contact.ts` not being re-exported from `packages/shared-types/src/index.ts` at base `bf35062e` (verified with `git grep HEAD`). **Zero errors reference any file in this commit** (`grep -c "appPlatform\|app-platform" = 0`). |
 
 ### 4.5 What could NOT be run locally — stated plainly
 
@@ -252,7 +252,7 @@ This is a **reversible gate**, not a removal: setting `FEATURE_APP_PLATFORM=true
 
 ## 8. Evidence
 
-- **Commit:** `ed6e5167567efcde01a349a2354d5e3591dad6e4` on `codex/emergency-appbridge-killswitch` (local only — not pushed).
+- **Commit:** `df4abd5d50b3c9c62854c7854cb651846b1f4198` on `codex/emergency-appbridge-killswitch` (local only — not pushed).
 - **Raw logs:** `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/appbridge-urgent/killswitch-raw/`
   - `ks-final.log` — the passing 17-test gateway run (exit 0)
   - `ks-falsify.log` — the gate-disabled run proving 83/83 reachability returns (exit 1)
@@ -261,7 +261,7 @@ This is a **reversible gate**, not a removal: setting `FEATURE_APP_PLATFORM=true
   - `gateway-suite.log` — full gateway unit suite, 559/562
   - `behavioral.log` — root behavioural glob, 1521/1566
   - `tsc-gateway.log`, `gov.log` — pre-existing typecheck / governance-gate state
-  - `commit-ed6e5167.patch`, `commit-ed6e5167.stat` — the exact change
+  - `commit-df4abd5d.patch`, `commit-df4abd5d.stat` — the exact change
 - **Upstream:** `docs/launch/web-v1-wave-0-2026-08-09/28_APPBRIDGE_URGENT_REACHABILITY_VERDICT.md` and `raw-evidence/appbridge-urgent/probe-raw/`.
 
 ---
@@ -269,13 +269,13 @@ This is a **reversible gate**, not a removal: setting `FEATURE_APP_PLATFORM=true
 
 # PART II — Adversarial round: three real bypasses, reproduced and closed
 
-**Final HEAD:** `30fd96b57d0b41b5191fdbaf5254f3cd3313fe73` on `codex/emergency-appbridge-killswitch` (local only — **not pushed**, no PR, not deployed).
+**Final HEAD:** `6c3e17df6fe46a3b326fa749908a94f6bd97b228` on `codex/emergency-appbridge-killswitch` (local only — **not pushed**, no PR, not deployed).
 
 ---
 
 ## 9. The bypasses: raised, independently reproduced, real
 
-Three independent skeptics were run against commit `ed6e5167` on separate angles (route-mount, config/precedence, UI+proxy). **All three returned `bypass_found: true` and `claim_survives: false`, converging on the same root cause from different directions.** Each finding was then re-verified here from scratch before any code was changed — not accepted on report.
+Three independent skeptics were run against commit `df4abd5d` on separate angles (route-mount, config/precedence, UI+proxy). **All three returned `bypass_found: true` and `claim_survives: false`, converging on the same root cause from different directions.** Each finding was then re-verified here from scratch before any code was changed — not accepted on report.
 
 ### 9.1 Root cause (one sentence)
 
@@ -287,7 +287,7 @@ The gate was drawn on **URL prefixes**. The frozen app platform is defined by **
 |---|---|
 | **Request** | `GET /v1/storefront/{subdomain}` (also `GET /v1/storefront/store/{storeId}` and `GET /v1/storefront/{subdomain}/theme-preview`) |
 | **Config** | `services/api-gateway/wrangler.toml` `[env.production.vars]` verbatim; `FEATURE_APP_PLATFORM` **absent** |
-| **Observed at `ed6e5167`** | `200 OK`, `data.app_blocks` populated with a third-party block: `"render_mode":"iframe"`, `"iframe_url":"https://evil-third-party.example.com/block"` |
+| **Observed at `df4abd5d`** | `200 OK`, `data.app_blocks` populated with a third-party block: `"render_mode":"iframe"`, `"iframe_url":"https://evil-third-party.example.com/block"` |
 | **Tables actually queried** | `worker_request_logs, sites, theme_releases, **app_extension_registrations**, **app_installations**` |
 | **Chain** | `index.ts:735` `api.route('/storefront', storefrontRouter)` (a third, ungated app-platform mount) → `routes/storefront/public-routes.ts:582` / `:347` / `:553` → `routes/storefront.ts:921` `loadPublicStorefrontAppBlocks` → `:936` `app_extension_registrations` (`surface='theme.app_block'`) and `:957` `app_installations → marketplace_apps → app_extensions` |
 | **Why it matters beyond disclosure** | `apps/storefront-runtime/src/lib/store-service.ts:666-669` injects these into rendered sections and `.../theme-engine/composition-engine.tsx:115-118` emits `<iframe src="${block.iframe_url}" sandbox="allow-forms allow-popups allow-scripts allow-same-origin">`. `allow-scripts` + `allow-same-origin` together is an escapable sandbox, so third-party marketplace code still executes on the live storefront. |
@@ -300,7 +300,7 @@ The gate was drawn on **URL prefixes**. The frozen app platform is defined by **
 |---|---|
 | **Request** | `GET /v1/storefront/{subdomain}/checkout/extensions` |
 | **Config** | `[env.staging.vars]` verbatim (`wrangler.toml:131` `FEATURE_EXTENSIONS = "true"`); `FEATURE_APP_PLATFORM` **absent** |
-| **Observed at `ed6e5167`** | `200 OK` returning `app_extension_registrations` rows with `source_url: https://evil-third-party.example.com/checkout-ext.js`, `renderer`, `scopes`, `capabilities`, `settings` |
+| **Observed at `df4abd5d`** | `200 OK` returning `app_extension_registrations` rows with `source_url: https://evil-third-party.example.com/checkout-ext.js`, `renderer`, `scopes`, `capabilities`, `settings` |
 | **Chain** | `index.ts:717` `api.use('/storefront/:subdomain/checkout/extensions', extensionsFeatureGate)` — the **only** gate — → `routes/storefront/public-routes.ts:391-421` |
 | **The sting** | That single gate is `featureGate('FEATURE_EXTENSIONS', …)`, whose unset branch at `middleware/featureFlags.ts:25` is `return !isProductionRuntime(env)` — **the exact fail-OPEN defect the kill switch was written to close.** The flag is `"true"` in the top-level `[vars]` block (the no-`--env` deploy shape) and in `[env.staging.vars]`. |
 | **Control** | Same request under `[env.production.vars]` (`FEATURE_EXTENSIONS = "false"`) returned `404 EXTENSIONS_DISABLED` — proving reachability was governed by `FEATURE_EXTENSIONS` and **never** by `FEATURE_APP_PLATFORM`. Part I §7 item 4 explicitly deferred this route; that deferral was the hole. |
@@ -310,7 +310,7 @@ The gate was drawn on **URL prefixes**. The frozen app platform is defined by **
 | | |
 |---|---|
 | **Mounts** | `index.ts:832` `api.route('/operations/marketplace-reviews', …)`, `index.ts:833` `api.route('/operations/developers', …)` — neither covered by `index.ts:723-726` |
-| **Observed at `ed6e5167`** | `401 UNAUTHORIZED` (i.e. **live and ungated**, reachable to any staff session with the RBAC permission) vs the control `/v1/app-store/categories` → `404 APP_PLATFORM_DISABLED` |
+| **Observed at `df4abd5d`** | `401 UNAUTHORIZED` (i.e. **live and ungated**, reachable to any staff session with the RBAC permission) vs the control `/v1/app-store/categories` → `404 APP_PLATFORM_DISABLED` |
 | **Still-working actions** | `POST /v1/operations/marketplace-reviews/{id}/decision` (`marketplace-reviews.ts:684` → `:208-224` `db.from('marketplace_apps').update({ status: … })`) — **a third-party app could still be APPROVED and PUBLISHED into the catalog while the catalog itself 404s**. `POST /v1/operations/developers/{id}/payouts/{payoutId}/release` (`developers.ts:308`, writes `partner_payout_ledger_entries`) — app revenue share, named in the kill switch's own in-scope docblock. Also `/{id}/moderation` (`developers.ts:164`) and `/{id}/reconciliation/run` (`:393`). |
 | **Driven by a live, unflagged UI** | `apps/platform-console/src/app/(dashboard)/layout.tsx:36,40` nav entries → `marketplace-governance/page.tsx:35` and `developers/page.tsx:139,165`. `platform-console` is a production deploy target (`production-deploy.yml:408`). Component B guarded `merchant-control-plane` only. |
 | **Calibration (stated honestly)** | This is a **scope** gap, not an auth bypass: it needs a platform-console staff session plus `review:decide` / `developer:manage`. It does **not** re-open App Bridge, embed-session, `bridge/fetch`, app OAuth2, or install. |
@@ -338,7 +338,7 @@ These are positive results and should not be re-litigated:
 
 ---
 
-## 10. The fix — commit `30fd96b5`
+## 10. The fix — commit `6c3e17df`
 
 **8 files, 0 deletions.** Still no repair, extension or refactor of any marketplace implementation; nothing under `routes/app-store*` or `app-api.ts` changed except the one egress guard in §10.1(d).
 
@@ -430,7 +430,7 @@ The 4 still-passing tests are the positive control, no-collateral-damage, drift 
 
 | Command | Result | Real exit |
 |---|---|---|
-| `tsx --test services/api-gateway/src/__tests__/*.test.ts` | **591 tests, 588 pass, 3 fail** — the *same three* pre-existing failures as at base `ee371182` (`ai.test.ts`, `internal-os-executive-analytics.test.ts` `ENOENT` on migration 129, `payments.test.ts`), none in a file this change touches | 1 |
+| `tsx --test services/api-gateway/src/__tests__/*.test.ts` | **591 tests, 588 pass, 3 fail** — the *same three* pre-existing failures as at base `bf35062e` (`ai.test.ts`, `internal-os-executive-analytics.test.ts` `ENOENT` on migration 129, `payments.test.ts`), none in a file this change touches | 1 |
 | `node --test --test-concurrency=1 tests/*/*.test.mjs` | **1568 tests, 1523 pass, 30 fail, 15 skipped.** Base was 1566/1521/**30**/15 — **the fail count is unchanged**; +2 tests/+2 passes are the new platform-console assertions. 22 of the 30 need a local Postgres deliberately not started; 8 are pre-existing drift. **Zero failures reference app-platform.** | 1 |
 | `tsc --noEmit` in `services/api-gateway` | **20 errors, all pre-existing**, all in `src/lib/contact-request-email.ts` + `src/routes/contact-public.ts` (`packages/shared-types` does not re-export `contact.ts` at base). `grep -ci app-platform` on the error log = **0**. | 2 |
 | `node scripts/validate-governance.mjs` | Anti-fabrication gate passes (1907 files), then **fails fast at the same pre-existing** tenant-table-registry drift. Neither the registry nor any migration is touched here. | 1 |
@@ -442,7 +442,7 @@ The first draft of the operator-gate comment contained the literal string `api.u
 
 ### 11.4 The skeptics' own probes, re-run against the fix
 
-| Probe assertion at `ed6e5167` | At `30fd96b5` |
+| Probe assertion at `df4abd5d` | At `6c3e17df` |
 |---|---|
 | `/v1/storefront/demo` (production) leaks `app_blocks` with `iframe_url` | **`app_blocks: []`**; tables queried are now `worker_request_logs, sites, theme_releases` — `app_installations` and `app_extension_registrations` are **no longer touched at all** |
 | `/v1/storefront/demo/checkout/extensions` (staging) returns 200 with `source_url` | **`404 APP_PLATFORM_DISABLED`**; zero app-platform tables queried |
@@ -473,7 +473,7 @@ The first draft of the operator-gate comment contained the literal string `api.u
 1. **No Next.js app was compiled.** Neither `apps/merchant-control-plane` nor `apps/platform-console` was typechecked or built: the worktree has no `node_modules` for either app and installing needs registry network access the mandate excludes. (Running the root `tsc` against an app tsconfig produced ~7,500 "Cannot find module 'react'/'next'/'@letbuyy/ui'" errors — an environment artefact, not a signal.) **Component B is proven by executed flag semantics (`node:vm`) plus source-level guard-ordering assertions, not by a compile.** `pnpm --filter @letbuyy/merchant-control-plane build` **and** `pnpm --filter @letbuyy/platform-console build` must run before the UI half ships. Risk is low — five one-line guards plus imports using each app's existing `@/lib/*` alias and `next/navigation` — but it is **unverified**.
 2. **No real `workerd` runtime.** The harness drives the same `app.fetch` entry point Cloudflare invokes (the same method doc 28's probes used), but no `wrangler dev` process was started.
 3. **The full 107-validator gate is not green.** `validate-governance.mjs` fails fast at a pre-existing tenant-registry drift, so validators after it are unreachable through the runner; 20 relevant ones were run individually instead (17 pass, 3 pre-existing fails in untouched files).
-4. **Live staging/production environment variable values were never accessed — deliberately, by design.** Every env shape in every test is reconstructed **verbatim from `services/api-gateway/wrangler.toml` at base `ee371182`**, not from deployed Cloudflare vars or secrets. No Cloudflare, Supabase, Vercel, Razorpay, Resend, Turnstile or GitHub API was queried. This does not weaken the result — the gate denies on anything other than an explicit positive value, so an unknown deployed override can only be irrelevant (absent) or a deliberate opt-in — but **a human must confirm the actual live values** (§13).
+4. **Live staging/production environment variable values were never accessed — deliberately, by design.** Every env shape in every test is reconstructed **verbatim from `services/api-gateway/wrangler.toml` at base `bf35062e`**, not from deployed Cloudflare vars or secrets. No Cloudflare, Supabase, Vercel, Razorpay, Resend, Turnstile or GitHub API was queried. This does not weaken the result — the gate denies on anything other than an explicit positive value, so an unknown deployed override can only be irrelevant (absent) or a deliberate opt-in — but **a human must confirm the actual live values** (§13).
 5. **No edge/WAF layer was probed.** A hypothetical edge rule is not a repository control and is not fail-closed by construction.
 6. **`app_extension_registrations` reads under the internal perimeter and the queue** were **not** gated (§12.3 item 3) — reachability is unchanged from base, but they are app-platform code that still runs.
 
@@ -506,8 +506,8 @@ The first draft of the operator-gate comment contained the literal string `api.u
 
 ## 14. Evidence index (Part II)
 
-- **Final HEAD:** `30fd96b57d0b41b5191fdbaf5254f3cd3313fe73` — local only, **not pushed**, no PR, not deployed. Working tree clean apart from three untracked skeptic probe directories (`tmp-appbridge-probe/`, `tmp-appbridge-mount-probe/`, `tmp-probe-cfg-bypass/`), none wired into any test script.
-- **Cumulative diff vs base `ee371182`:** 14 files, **1,356 insertions, 0 deletions.**
+- **Final HEAD:** `6c3e17df6fe46a3b326fa749908a94f6bd97b228` — local only, **not pushed**, no PR, not deployed. Working tree clean apart from three untracked skeptic probe directories (`tmp-appbridge-probe/`, `tmp-appbridge-mount-probe/`, `tmp-probe-cfg-bypass/`), none wired into any test script.
+- **Cumulative diff vs base `bf35062e`:** 14 files, **1,356 insertions, 0 deletions.**
 - `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/appbridge-urgent/`
   - `30_final_test_results.txt` — the four proving suites with real exit codes
   - `31_bypass_reproduction_and_closure.txt` — each bypass before → after, plus the decisive handler-reachability matrix

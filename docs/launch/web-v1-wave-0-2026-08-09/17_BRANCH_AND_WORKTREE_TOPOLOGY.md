@@ -2,7 +2,7 @@
 
 **Evidence artifact, not governance authority.**
 
-- **Repo SHA (baseline / HEAD of `stepup/main`):** `ee3711829d857e986014c5811bb94d86ebc3d343` (`ee371182`, committed 2026-08-04 22:03:49 +0530)
+- **Repo SHA (baseline / HEAD of `stepup/main`):** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`bf35062e`, committed 2026-08-04 22:03:49 +0530)
 - **Branch / worktree described:** all local branches and all git worktrees attached to the repository at `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` (primary worktree on `stepup/main`), plus the six Wave 0 isolated worktrees under `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees`.
 - **Date:** 2026-08-09
 - **Status of this document:** read-only audit. No branch was created, deleted, renamed, pushed, or pruned by this agent. No file outside `docs/launch/web-v1-wave-0-2026-08-09/` was written.
@@ -17,7 +17,7 @@ ls -la /Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/.git/worktrees
 # per worktree W:
 ls -a <W>/supabase ; ls -a <W>/supabase/.temp ; ls -a <W> | grep '^\.env'
 git -C <W> status --porcelain ; git -C <W> rev-parse HEAD
-git -C <W> merge-base HEAD ee3711829d857e986014c5811bb94d86ebc3d343
+git -C <W> merge-base HEAD bf35062eda22f4d881efd61fb1d36c8fc83baed1
 # original repo:
 ls -a supabase/.temp ; git remote -v ; git status --porcelain | wc -l
 git for-each-ref refs/heads/codex refs/remotes
@@ -37,12 +37,12 @@ All six exist, all are attached to the same repository, all are at the approved 
 
 | Branch | Absolute worktree path | HEAD | merge-base with baseline | `git status --porcelain` count |
 |---|---|---|---|---|
-| `codex/web-v1-integration` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | 0 (clean) |
-| `codex/w0-ci-coverage` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-ci-coverage` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | 0 (clean) |
-| `codex/w0-validator-execution` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-validator-execution` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | 0 (clean) |
-| `codex/w0-local-environment` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-local-environment` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | 0 (clean) |
-| `codex/w0-v1-perimeter` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-v1-perimeter` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | 0 (clean) |
-| `codex/emergency-appbridge-killswitch` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee371182…` | **2 (in progress)** |
+| `codex/web-v1-integration` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | 0 (clean) |
+| `codex/w0-ci-coverage` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-ci-coverage` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | 0 (clean) |
+| `codex/w0-validator-execution` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-validator-execution` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | 0 (clean) |
+| `codex/w0-local-environment` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-local-environment` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | 0 (clean) |
+| `codex/w0-v1-perimeter` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-v1-perimeter` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | 0 (clean) |
+| `codex/emergency-appbridge-killswitch` | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062e…` | **2 (in progress)** |
 
 Deviation from the brief (the brief said all six were clean): `emergency-appbridge-killswitch` is **no longer clean** — it shows ` M packages/theme-engine/src/theme-cli.ts` and `?? tmp-appbridge-probe/`. That is the separate urgent App Bridge security task working as intended; per the human decision, this workflow does **not** touch it. Noted only. **`tmp-appbridge-probe/` is an untracked scratch directory and must not be committed** — flagged to that task's owner, not acted on here.
 
@@ -61,7 +61,7 @@ Consequence: a Supabase CLI invocation from inside any Wave 0 worktree has **no 
 ## 3. Local branch graph
 
 ```
-ee371182  codex/web-v1-integration
+bf35062e  codex/web-v1-integration
           codex/w0-ci-coverage
           codex/w0-validator-execution
           codex/w0-local-environment
@@ -71,11 +71,11 @@ ee371182  codex/web-v1-integration
    |
    |  106 commits
    v
-0b8a56e7  main, claude/elegant-jang-91fd3e
+140a73db  main, claude/elegant-jang-91fd3e
    |
    |  (185 more, per `main` upstream state)
    v
-41b6ea49  origin/main, origin/develop, + 11 stale worktree-agent-* branches
+c2547049  origin/main, origin/develop, + 11 stale worktree-agent-* branches
 ```
 
 Measured divergence (from the primary worktree):
@@ -85,9 +85,9 @@ Measured divergence (from the primary worktree):
 | HEAD ahead of `origin/stepup/main` | `git rev-list --count origin/stepup/main..HEAD` | **17** (17 unpushed local commits) |
 | HEAD ahead of local `main` | `git rev-list --count main..HEAD` | **106** |
 | HEAD ahead of `origin/main` | `git rev-list --count origin/main..HEAD` | **291** |
-| local `main` vs `origin/main` | `git branch -vv` | `ahead 185`, at `0b8a56e7` |
-| `origin/main` / `origin/develop` | cached ref | both `41b6ea49` |
-| `origin/stepup/main` | cached ref | `8d9dda77` |
+| local `main` vs `origin/main` | `git branch -vv` | `ahead 185`, at `140a73db` |
+| `origin/main` / `origin/develop` | cached ref | both `c2547049` |
+| `origin/stepup/main` | cached ref | `75305725` |
 
 This confirms the Phase 1 figures (106 / 291 / 17) exactly. Remote: single `origin` = `https://github.com/SaaiSiddhu/Letbuyy_Store.git`.
 
@@ -95,7 +95,7 @@ Primary worktree dirtiness re-measured: **`git status --porcelain` = 6826 paths*
 
 ## 4. The 12 pre-existing stale/prunable worktrees — DOCUMENTED, NOT PRUNED
 
-`git worktree list --porcelain` reports 12 entries flagged `prunable  gitdir file points to non-existent location`. All 12 sit at **`41b6ea49c5da30a1409d4cc587d989d459288e45`** ("fix(identity): show turnstile on auth forms") and belong to a **different checkout path — `/Users/saai_sidd/Git/Letbuyy_Store`** (note: `saai_sidd`, not `saai_siddharth`), i.e. a prior machine/user path that no longer exists.
+`git worktree list --porcelain` reports 12 entries flagged `prunable  gitdir file points to non-existent location`. All 12 sit at **`c2547049c0b5666661536d076046415714fb7d03`** ("fix(identity): show turnstile on auth forms") and belong to a **different checkout path — `/Users/saai_sidd/Git/Letbuyy_Store`** (note: `saai_sidd`, not `saai_siddharth`), i.e. a prior machine/user path that no longer exists.
 
 | # | Registered path | Ref |
 |---|---|---|
@@ -112,9 +112,9 @@ Primary worktree dirtiness re-measured: **`git status --porcelain` = 6826 paths*
 | 11 | `…/agent-aedce04cdcb543bc7` | `worktree-agent-aedce04cdcb543bc7` |
 | 12 | `…/agent-afa1b5df213f24ca9` | `worktree-agent-afa1b5df213f24ca9` |
 
-Their admin dirs remain under `.git/worktrees/` dated 2026-08-03. **`git worktree prune` and `git worktree remove` were NOT run** (prohibited by the Wave 0 safety rules). They are inert: they hold refs at `41b6ea49`, which is already the `origin/main` commit, so they pin no unique work. Cleanup is a **human decision**, deferred out of Wave 0.
+Their admin dirs remain under `.git/worktrees/` dated 2026-08-03. **`git worktree prune` and `git worktree remove` were NOT run** (prohibited by the Wave 0 safety rules). They are inert: they hold refs at `c2547049`, which is already the `origin/main` commit, so they pin no unique work. Cleanup is a **human decision**, deferred out of Wave 0.
 
-Note: `41b6ea49` is also where `origin/main` and `origin/develop` sit — consistent with the Phase 1 finding that both remote branches are frozen and ~274 commits behind.
+Note: `c2547049` is also where `origin/main` and `origin/develop` sit — consistent with the Phase 1 finding that both remote branches are frozen and ~274 commits behind.
 
 ## 5. Required branch policy (INFERRED from `.github/BRANCH_STRATEGY.md` + Wave 0 human decisions)
 

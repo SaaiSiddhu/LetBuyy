@@ -7,7 +7,7 @@
 
 ## §0 — REGISTRATION & MUTUAL EXCLUSION (Batch 0, before any other change)
 
-1. This file and `FOUNDATION_CLOSURE_SONNET46_MAX_PROMPT.md` are prompt-class artifacts. The commit that first tracks `FOUNDATION_CLOSURE_2026_06_12/` MUST, in the SAME commit (P0 precedent, commit `7a0342e0`), add `PROMPTS.md` rows: exactly ONE of the two execution prompts as `CANONICAL-FOUNDATION-CLOSURE-EXECUTION`, the other as `STANDBY-…`. Two ACTIVE canonical executors for one mission is the twin-prompt hazard that P0 already hit once — forbidden.
+1. This file and `FOUNDATION_CLOSURE_SONNET46_MAX_PROMPT.md` are prompt-class artifacts. The commit that first tracks `FOUNDATION_CLOSURE_2026_06_12/` MUST, in the SAME commit (P0 precedent, commit `4d900a02`), add `PROMPTS.md` rows: exactly ONE of the two execution prompts as `CANONICAL-FOUNDATION-CLOSURE-EXECUTION`, the other as `STANDBY-…`. Two ACTIVE canonical executors for one mission is the twin-prompt hazard that P0 already hit once — forbidden.
 2. The same Batch-0 commit also tracks `FINAL_REPOSITORY_TRUTH_CERTIFICATION_2026_06_12/` with an `EXECUTED-FINAL-TRUTH-CERTIFICATION` registry row (the report contains prompt-class trigger tokens; untracked = invisible to the perimeter validator, tracked-unregistered = gate-red).
 3. If you are running and the Sonnet prompt is marked CANONICAL: STOP immediately; you are the standby.
 4. Batch-0 exit: gate green, tree clean, ledger row `CLOSURE-CP0`.

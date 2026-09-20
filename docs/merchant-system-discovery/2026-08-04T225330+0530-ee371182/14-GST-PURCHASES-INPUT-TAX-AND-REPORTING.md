@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | The **purchase side** of GST: supplier tax identity, purchase/supplier-bill documents, per-line purchase tax, input-tax-credit (ITC) eligibility, purchase credit/debit notes, purchase payment status, input-tax reporting, reconciliation against supplier-filed returns, export, and tax-period locking. Also the one purchase document a merchant actually receives inside the platform — LetBuyy's own subscription invoice — viewed strictly as the *merchant's input tax*. Output/sales GST (invoice generation, place of supply, IRN/QR, TCS, refund reversal) belongs to document 13 and is referenced, not re-adjudicated. Procurement mechanics (PO lifecycle, receiving, stock effects) belong to document 07 and are referenced, not re-adjudicated. |
 | Evidence basis | The Phase-1 agent notes `_agent-notes/D-inventory-purchase-orders-input-gst.md` and `_agent-notes/H-gst-invoices-reports.md`, both read in full, plus direct re-verification against source at this commit: `database/supabase/migrations/000_baseline.sql`, `144_executable_tax_gst_invoices.sql`, `146_executable_checkout_state_machine.sql`, `152_executable_billing_autopay.sql`, `123_mobile_tax_rate_parity.sql`; `services/api-gateway/src/routes/inventory.ts`, `.../routes/billing.ts`, `.../routes/export.ts`, `.../routes/commerce-analytics.ts`, `.../execution/order-execution.adapter.ts`; `packages/commerce-core/src/index.ts`; `packages/typescript/api-client/src/index.ts`; the merchant web procurement and billing UIs; the Flutter merchant supplier and PO screens; and `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`. |

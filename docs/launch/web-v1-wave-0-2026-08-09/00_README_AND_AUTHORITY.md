@@ -32,12 +32,12 @@ that value so the file cannot be quietly re-badged.
 | **Package** | Web V1 — Wave 0 |
 | **Date** | 2026-08-09 |
 | **Location** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/docs/launch/web-v1-wave-0-2026-08-09/` |
-| **Baseline SHA** | **`ee3711829d857e986014c5811bb94d86ebc3d343`** (`ee371182`) — human-approved |
+| **Baseline SHA** | **`bf35062eda22f4d881efd61fb1d36c8fc83baed1`** (`bf35062e`) — human-approved |
 | **Original repository** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`, branch `stepup/main` — **production-linked** (`supabase/.temp` → Supabase Cloud), **read-only** throughout Wave 0 |
-| **Integration head** | `codex/web-v1-integration` @ `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6`, worktree `…/letbuyy-w0-worktrees/web-v1-integration` |
-| **Emergency branch** | `codex/emergency-appbridge-killswitch` @ `30fd96b5`, **not an ancestor of the integration branch** |
+| **Integration head** | `codex/web-v1-integration` @ `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab`, worktree `…/letbuyy-w0-worktrees/web-v1-integration` |
+| **Emergency branch** | `codex/emergency-appbridge-killswitch` @ `6c3e17df`, **not an ancestor of the integration branch** |
 | **Push / deploy state** | **NOTHING IS PUSHED.** `git branch -r \| grep -c "codex/"` → **0**. No PR. No deploy. No production change. |
-| **Original tree preserved** | branch `stepup/main`, `HEAD` `ee371182`, **6,826** dirty paths, **2** stashes — identical before and after every Wave 0 agent |
+| **Original tree preserved** | branch `stepup/main`, `HEAD` `bf35062e`, **6,826** dirty paths, **2** stashes — identical before and after every Wave 0 agent |
 
 ---
 
@@ -71,7 +71,7 @@ Six statements carry that verdict:
    (`allow-scripts` + `allow-same-origin`) on the buyer-facing storefront. A fail-closed gate exists on
    `codex/emergency-appbridge-killswitch` with **59 proving tests and a falsification pass** — but it is
    **1,356 insertions and 0 deletions**: a reversible gate, not a removal, and it is **not deployed**.
-5. **The deploy keystone is open.** `origin/main` == `origin/develop` == `41b6ea49`, **274 commits
+5. **The deploy keystone is open.** `origin/main` == `origin/develop` == `c2547049`, **274 commits
    behind** `origin/stepup/main`. `AGENTS.md:330` DEPLOY-R1 says in its own words: *"Nothing else ships
    until the pipeline can deploy the integration branch."* `production-deploy.yml` triggers on `main`.
    **Every Wave 0 repair is therefore undeployable**, and the repaired branch-lag guard now fails every
@@ -90,7 +90,7 @@ deliberately **not** labelled security vulnerabilities — consequence severity 
 
 ## The one thing to read if you read nothing else
 
-> **The committed baseline `ee371182` is in a *worse* state than the dirty working tree that sits on top
+> **The committed baseline `bf35062e` is in a *worse* state than the dirty working tree that sits on top
 > of it, in at least two independent ways.**
 
 | Property | Committed baseline (clean checkout) | Dirty original working tree |
@@ -99,9 +99,9 @@ deliberately **not** labelled security vulnerabilities — consequence severity 
 | Governance gate stops at | validator **#2** (`tenant-isolation-validator`) | validator **#6** (`validate-design-system`) — the regenerated tenant registry exists only uncommitted |
 
 Both readings are honest measurements of different trees. The consequence is load-bearing: **any plan
-that treats `ee371182` as a clean, buildable starting point is proceeding on a false premise**, and the
+that treats `bf35062e` as a clean, buildable starting point is proceeding on a false premise**, and the
 6,826 dirty paths are not noise — they contain content the baseline depends on. That is why they were
-preserved rather than discarded, and why `ee371182` is nonetheless the correct baseline (every
+preserved rather than discarded, and why `bf35062e` is nonetheless the correct baseline (every
 alternative branch is a strict ancestor; choosing one would discard 17–291 commits for zero gain).
 
 ---
@@ -170,12 +170,12 @@ Wave 0 refuted itself four times. Full detail in `30` and `27` §8; the short li
 The original repository is **production-linked** and holds **two armed hazards**. Both are documented,
 neither is defused, and neither may be defused by an agent.
 
-**Hazard A — two stashes.** `stash@{0}` (`b85eeb03…`, *"On stepup/main: inf-ext"*) holds **28 files,
+**Hazard A — two stashes.** `stash@{0}` (`f8a6c8c7…`, *"On stepup/main: inf-ext"*) holds **28 files,
 +1,128/−1,203**: a **third divergent body of uncommitted work**, unreachable from the baseline. Nine
 files carry a *different* diff there than in the working tree; nineteen exist **only** in the stash —
 including four **already-committed** migrations (money, payments, credentials), gateway idempotency and
 auth code, and three **deletion-only** `wrangler.toml` changes. **No stash command beyond `list`/`show`
-may be run.** The safe first step is a human-approved `git tag` on `b85eeb03` so it survives reflog
+may be run.** The safe first step is a human-approved `git tag` on `f8a6c8c7` so it survives reflog
 expiry — recommended, not performed.
 
 **Hazard B — the intent-to-add empty-blob trap is still armed.** Ten SQL files sit in the index as empty
@@ -204,7 +204,7 @@ isolation. **The fix is one human command: explicit `git add` on all ten before 
 | Property | Value |
 |---|---|
 | Branch | `stepup/main` |
-| `HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | `git status --porcelain=v1 \| wc -l` | **6826** |
 | `git stash list \| wc -l` | **2** |
 
@@ -229,7 +229,7 @@ open in production terms**, and the production runtime is still at the baseline 
 
 1. **Push the four repaired branches and the integration branch.** Nothing is real until it leaves this
    laptop — this is also the durability fix for work that currently exists on no branch.
-2. **Run the full gate on `fa5630aa` in a disposable checkout** and publish the typed status matrix.
+2. **Run the full gate on `8ec05e21` in a disposable checkout** and publish the typed status matrix.
    *(The gate deletes generated output, including every workspace `node_modules` — order any pipeline
    gate → reinstall → build → test.)*
 3. **Decide `branch-lag-guard`** — it currently fails every branch. The option DEPLOY-R1 mandates is

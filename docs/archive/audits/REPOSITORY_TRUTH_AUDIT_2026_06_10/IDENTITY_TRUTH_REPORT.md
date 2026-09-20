@@ -2,7 +2,7 @@
 
 - **Date:** 2026-06-10
 - **Axis:** Identity Truth (auth, sessions, tokens, tenancy, service_role, OIDC, step-up)
-- **Branch / HEAD:** `stepup/main` @ `5cf9e64e` (2026-06-10 08:42 +0530)
+- **Branch / HEAD:** `stepup/main` @ `c4fc3cd6` (2026-06-10 08:42 +0530)
 - **Working tree:** massively dirty (998 changed paths). The D3-P4-IDENTITY work is **uncommitted** — not at HEAD, not at `main`.
 - **Method:** Static read of working-tree source; `git show HEAD:` / `git show main:` for divergence; validators run read-only with plain `node`. Live providers (Cloudflare Turnstile, Supabase Auth/KMS, deployed Workers) NOT exercised — all marked UNVERIFIED.
 
@@ -86,7 +86,7 @@ Secondary truths: **OIDC is a pure 404/501 skeleton** (every `/oauth2/*` and `/.
 
 ## 2. HEAD & `main` Divergence
 
-| Property | Working tree | HEAD (`5cf9e64e`) | `main` |
+| Property | Working tree | HEAD (`c4fc3cd6`) | `main` |
 |---|---|---|---|
 | `identity-issued-session.ts` (ES256/EdDSA mint) | **Present** | **Absent** (`exists on disk, but not in HEAD`) | Absent |
 | `identity-session-verifier.ts` (JWKS verify) | **Present** | **Absent** | Absent |

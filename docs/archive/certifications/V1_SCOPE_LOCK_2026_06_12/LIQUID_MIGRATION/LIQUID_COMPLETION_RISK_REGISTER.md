@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_RISK_REGISTER.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. Severity/Likelihood: H/M/L.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. Severity/Likelihood: H/M/L.
 
 | ID | Risk | Sev | Lik | Mitigation | Owner |
 |---|---|---|---|---|---|

@@ -1,7 +1,7 @@
 # REALITY PROMOTION IMPLEMENTATION PLAN
 
 **Program:** LetBuyy Final Convergence · **Document 1 of 5** · **Status:** PLAN ONLY — no code changes authorized by this document
-**Audited HEAD:** `cabe148c` (`main` == `stepup/main`, clean tree) · **Remote:** `origin/main` == `origin/develop` == `41b6ea49` (127 commits behind)
+**Audited HEAD:** `3da1416c` (`main` == `stepup/main`, clean tree) · **Remote:** `origin/main` == `origin/develop` == `c2547049` (127 commits behind)
 **Authority:** subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` → root `AGENTS.md` → `MERGE_RUNBOOK.md`. This plan proposes execution; it does not promote anything itself.
 **Location note:** lives under `FINAL_TRUTH_AUDIT_2026_06_11/` because `whole-repo-end-state-validator.mjs:16-38` allowlists exactly 9 root markdown files; adding a root `.md` fails the governance gate.
 
@@ -9,7 +9,7 @@
 
 ## 0. WHY THIS IS PRIORITY 1
 
-The truth audit proved a **temporal split**: the converged reality exists only in local commits `41b6ea49..cabe148c` (127 commits). The remote, CI, and any merchant who shows up today live in `41b6ea49` (2026-06-09), which still ships — verified in code — the unauthenticated account-takeover `/api/auth/switch` (0 ownership checks), the 3% commission rake (`commission.ts:202 commission_bps: 300`), no anon-RLS-leak fix, no tenant GUC, no canonical ledger authority (migrations 160–167 absent), and `letbuyy.store`-bound worker routes.
+The truth audit proved a **temporal split**: the converged reality exists only in local commits `c2547049..3da1416c` (127 commits). The remote, CI, and any merchant who shows up today live in `c2547049` (2026-06-09), which still ships — verified in code — the unauthenticated account-takeover `/api/auth/switch` (0 ownership checks), the 3% commission rake (`commission.ts:202 commission_bps: 300`), no anon-RLS-leak fix, no tenant GUC, no canonical ledger authority (migrations 160–167 absent), and `letbuyy.store`-bound worker routes.
 
 Every other plan in this program (Money, Liquid, Duplicates) operates on the converged tree. **None of their value reaches a single user until this promotion completes.** Reality Promotion is therefore the gating dependency for the entire program, and also the highest-risk single action, because the new code **fails closed** without live secrets: a code-only deploy with no identity JWKs bricks merchant login (verified: `auth.ts:1124` returns `503 IDENTITY_ISSUER_REQUIRED`).
 
@@ -22,7 +22,7 @@ Two findings make this non-trivial rather than "just push":
 
 ## 1. DIVERGENCE ANALYSIS (evidence)
 
-| Dimension | Local `main`/`stepup/main` (`cabe148c`) | Remote `origin/main` (`41b6ea49`) | Delta |
+| Dimension | Local `main`/`stepup/main` (`3da1416c`) | Remote `origin/main` (`c2547049`) | Delta |
 |---|---|---|---|
 | Commits | tip | 127 behind | `git rev-list --count origin/main..main` = 127 |
 | Files | — | — | `git diff --stat`: 2,042 files, +76,344 / −253,383 |
@@ -31,7 +31,7 @@ Two findings make this non-trivial rather than "just push":
 | Migrations | 160–167 present | ends at 159 | schema S0s unfixed |
 | Worker routes | `*.letbuyy.com` | `api.letbuyy.store` | domain split |
 | Deploy workflow | branch-lag guard + 34-secret preflight + encrypted backup + staging-E2E gate | no guard, `.store` URLs | safety only local |
-| `develop` branch | — | == `origin/main` == `41b6ea49` | a dormant third pointer, not a third codebase |
+| `develop` branch | — | == `origin/main` == `c2547049` | a dormant third pointer, not a third codebase |
 
 **Reality count: 2.** Local-converged (`main`==`stepup/main`, all 8 wave branches ahead:0 — nothing stranded) vs remote-stale (`origin/main`==`origin/develop`==local `develop`). The push moves reality 2 onto reality 1.
 
@@ -58,8 +58,8 @@ Two findings make this non-trivial rather than "just push":
 **Goal:** an immutable, restorable record of both realities before any pointer moves.
 
 Steps (human-operated; all read-only to the remote):
-1. Tag the converged tree locally and on a backup remote ref: `git tag -a convergence-cabe148c -m "converged reality snapshot"` (do not push to a protected ref yet). Record the SHA in `EXECUTION_LEDGER.md` as the promotion baseline.
-2. Capture the condemned reality: `git tag -a pre-promotion-origin-41b6ea49 origin/main`. This guarantees a one-command rollback target.
+1. Tag the converged tree locally and on a backup remote ref: `git tag -a convergence-3da1416c -m "converged reality snapshot"` (do not push to a protected ref yet). Record the SHA in `EXECUTION_LEDGER.md` as the promotion baseline.
+2. Capture the condemned reality: `git tag -a pre-promotion-origin-c2547049 origin/main`. This guarantees a one-command rollback target.
 3. Snapshot the **production database** before any migration: confirm the `production-deploy.yml` `migrate-production` job's encrypted `pg_dump` step (already present) runs and the artifact is retrievable; additionally take an out-of-band manual backup and PITR checkpoint (SKIP-W0 is open — PITR tier may need enabling first; if not enabled, a manual logical dump is the floor).
 4. Record current production worker/app versions (Cloudflare + Vercel deployment IDs) so a rollback can re-pin exact prior artifacts.
 
@@ -75,7 +75,7 @@ Steps (human-operated; all read-only to the remote):
 
 Steps:
 1. `git status --short` → must be empty (gitignore `.claude/` first if present, as a separate reviewed commit; RP-R9).
-2. `git rev-parse --short HEAD` → `cabe148c`; `git rev-list --count main..stepup/main` → `0`.
+2. `git rev-parse --short HEAD` → `3da1416c`; `git rev-list --count main..stepup/main` → `0`.
 3. `node scripts/validate-governance.mjs --lane=gate` → green (92 validators). Capture full output to the ledger.
 4. Run the foundation suites named in EXECUTION_LEDGER VERIFY rows: `node --test tests/governance/phase-b-validators.test.mjs` (16/16), the D-series money/identity/checkout tests (ensure `pnpm install` has materialized workspace symlinks — the audit found `jose`/`zod` resolution fails on a partial install; CI must `pnpm install --frozen-lockfile` first).
 5. Confirm all 8 wave branches are ahead:0 of `main` (nothing valuable stranded).
@@ -99,11 +99,11 @@ Steps (Option A):
 1. ARB approves the branch model; `MERGE_RUNBOOK.md` is corrected (reviewed commit on the converged tree, re-run gate).
 2. Human owner enables remote branch protection on `main` **before** the first push (RP-R1): required status check = the governance gate workflow (see Phase 3), required PR review, no force-push, no `workflow_dispatch` deploy from unprotected refs.
 3. Push `stepup/main` to origin, then fast-forward-push `main`. Order matters: pushing `main` first while the guard expects `origin/stepup/main` would fail the next deploy.
-4. Verify on the remote: `origin/main` == `origin/stepup/main` == `cabe148c`; `develop` is explicitly retired or re-pointed (it currently equals the condemned reality and `config/vercel/projects.json` still names it for staging — a Duplicate-Elimination item, but flag it here so a stale `develop`-triggered staging deploy can't fire).
+4. Verify on the remote: `origin/main` == `origin/stepup/main` == `3da1416c`; `develop` is explicitly retired or re-pointed (it currently equals the condemned reality and `config/vercel/projects.json` still names it for staging — a Duplicate-Elimination item, but flag it here so a stale `develop`-triggered staging deploy can't fire).
 
-**Exit gate G2:** remote `main`==`stepup/main`==`cabe148c`; branch protection live; runbook corrected; `develop` neutralized; the branch-lag guard now resolves green against the remote.
+**Exit gate G2:** remote `main`==`stepup/main`==`3da1416c`; branch protection live; runbook corrected; `develop` neutralized; the branch-lag guard now resolves green against the remote.
 
-**Rollback for Phase 2:** branch protection + tags make this reversible. To abort: `git push origin pre-promotion-origin-41b6ea49:main --force-with-lease` (re-pin remote to the snapshot tag) under a maintainer with protection-bypass, then disable any deploy that fired. Because no deploy runs in this phase (push ≠ deploy if `workflow_dispatch`/auto-deploy is gated by protection), the blast radius is the repo pointer only.
+**Rollback for Phase 2:** branch protection + tags make this reversible. To abort: `git push origin pre-promotion-origin-c2547049:main --force-with-lease` (re-pin remote to the snapshot tag) under a maintainer with protection-bypass, then disable any deploy that fired. Because no deploy runs in this phase (push ≠ deploy if `workflow_dispatch`/auto-deploy is gated by protection), the blast radius is the repo pointer only.
 
 ---
 
@@ -149,9 +149,9 @@ This phase has a hard ordering because the new code is fail-closed by design:
 **Goal:** prove reality is now singular and durable.
 
 Steps:
-1. Confirm `origin/main` == `origin/stepup/main` == `cabe148c`; `develop` retired.
+1. Confirm `origin/main` == `origin/stepup/main` == `3da1416c`; `develop` retired.
 2. Re-run the full forensic harness (the 10-agent audit's architecture/governance/validator passes) against the **remote** tree — confirm the converged findings now describe production.
-3. Update `EXECUTION_LEDGER.md`: backfill the stale "not committed" column on rows 1–46 to the freeze commit `e1d6fb18` (the audit flagged this as misleading), and add the promotion + live-probe evidence rows. Remove or supersede `SKIP-PROD-DEPLOY-PROMOTION`, `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE` only when truly done.
+3. Update `EXECUTION_LEDGER.md`: backfill the stale "not committed" column on rows 1–46 to the freeze commit `72e80c2b` (the audit flagged this as misleading), and add the promotion + live-probe evidence rows. Remove or supersede `SKIP-PROD-DEPLOY-PROMOTION`, `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE` only when truly done.
 4. Obtain the 3 pending ARB signatures (GATE-1 ratification, ops-survivor, survivability repeal) now that the promotion they authorize is live.
 5. Set up a standing **branch-lag monitor** (scheduled check that `origin/main` never silently falls behind a future `stepup/main`) so the temporal split cannot recur.
 

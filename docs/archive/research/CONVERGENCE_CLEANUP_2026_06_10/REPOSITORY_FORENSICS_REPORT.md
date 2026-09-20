@@ -2,7 +2,7 @@
 
 **Phase:** 1 of N — REPOSITORY FORENSICS (fresh, independent re-derivation).
 **Mode:** DISCOVERY ONLY. No source modified except this report. Read-only git. No implementation, no deletion, no migrations, no codex prompts.
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e7e62482adaf4b65e74d8cbca754a0a15` (2026-06-10 08:42 +0530) · `main` is the only deploy branch, **30 commits behind**.
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6898215f53fb462800ca526f649ce37ae` (2026-06-10 08:42 +0530) · `main` is the only deploy branch, **30 commits behind**.
 **Working tree (re-verified fresh):** `git status --porcelain` → **512 deleted (D) · 410 modified (M) · 78 untracked (??)**. Markdown files repo-wide: **1,254** (`find . -name '*.md' -not -path './node_modules/*' | wc -l`).
 **Method:** Every material claim below is derived this phase from `grep`/`find`/`git`/`Read` against live source and cites `path:line` or the exact command. Prior audits (`REPOSITORY_TRUTH_AUDIT_2026_06_10/`, `CONVERGENCE_AUDIT_2026_06_10/`) were consulted for completeness; every reused claim was re-verified against source and any delta is flagged **[DELTA]**. Live infrastructure / DB / payment-provider state is **UNVERIFIED** throughout (repo evidence only).
 
@@ -27,7 +27,7 @@
 ## 2. Method & Independent-Verification Notes (deltas from prior reports)
 
 **What I verified directly (commands run this phase):**
-- Baseline: `git rev-parse HEAD` = `5cf9e64e…`; `git rev-list --count main..HEAD` = `30`; `git status --porcelain | awk '{print $1}' | sort | uniq -c` = `78 ?? · 512 D · 410 M`.
+- Baseline: `git rev-parse HEAD` = `c4fc3cd6…`; `git rev-list --count main..HEAD` = `30`; `git status --porcelain | awk '{print $1}' | sort | uniq -c` = `78 ?? · 512 D · 410 M`.
 - `getSupabaseAdmin`: `grep -rn "getSupabaseAdmin" services/ apps/ packages/ --include='*.ts' --include='*.tsx'` → 917 lines / 99 files; breakdown by root → **100% in `services/api-gateway`**.
 - merchant-control-plane: `find apps/merchant-control-plane/src/app/api -name route.ts | wc -l` = **62**.
 - Nested AGENTS.md: `find . -name 'AGENTS.md' -not -path './node_modules/*' | grep -v '^\./AGENTS.md$' | wc -l` = **79**; archived (`*/docs/archive/*`) = 18; active = 61.
@@ -243,7 +243,7 @@ Ranked by number of co-existing authorities/planes (★ = user-facing money/iden
 
 | Metric | Value | Command / source |
 |---|---|---|
-| Branch / HEAD / ahead-of-main | `stepup/main` / `5cf9e64e` / 30 | `git rev-parse`, `git rev-list --count main..HEAD` |
+| Branch / HEAD / ahead-of-main | `stepup/main` / `c4fc3cd6` / 30 | `git rev-parse`, `git rev-list --count main..HEAD` |
 | Working tree D / M / ?? | **512 / 410 / 78** | `git status --porcelain` |
 | Markdown files (excl node_modules) | **1,254** | `find . -name '*.md' …` |
 | `getSupabaseAdmin` occurrences / files | **917 / 99** (100% in api-gateway) | `grep -rn getSupabaseAdmin services apps packages` |
@@ -281,4 +281,4 @@ Ranked by number of co-existing authorities/planes (★ = user-facing money/iden
 
 ---
 
-*End of Phase 1 Repository Forensics Report. Discovery only — no source modified, no deletions, no migrations. All counts re-derived this phase against `stepup/main` @ `5cf9e64e`.*
+*End of Phase 1 Repository Forensics Report. Discovery only — no source modified, no deletions, no migrations. All counts re-derived this phase against `stepup/main` @ `c4fc3cd6`.*

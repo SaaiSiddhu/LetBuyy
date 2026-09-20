@@ -42,8 +42,8 @@ Journal did not exist at start → **FRESH START** confirmed (`test -f ... && ec
 
 | | HEAD | tracked | changed | staged | untracked | deletions |
 |---|---|---|---|---|---|---|
-| C expected | `f53af0fc` | 7246 | 39 | 0 | 58 | 1 |
-| C measured | `f53af0fcdb73f1abe0db90cab287c44c67b8547e` | 7246 | 39 | 0 | 58 | 1 |
+| C expected | `cbbf030d` | 7246 | 39 | 0 | 58 | 1 |
+| C measured | `cbbf030de8b9e7e44832b090909bde5f0e44d810` | 7246 | 39 | 0 | 58 | 1 |
 | A expected | `be716ae` | 1523 | 260 | 0 | 1 | — |
 | A measured | `be716ae18b5f1e25e1266f963ab5c0907928db26` | 1523 | **1523** | 0 | 1 | — |
 | B expected | `20548b8` | 1719 | 157 | 0 | 242 | — |
@@ -200,7 +200,7 @@ Exit code **0**. **111 SELECTED + 1 NOT_APPLICABLE = 112 of 115** files enumerat
 
 **Donor-capability integration scope, disclosed up front:** Stage 3.4 permits recording unintegrated donor capability "in the backlog as integration-pending" rather than deep-porting every donor screen this stage. Given six donor codebases (115+82+90+41+117+... real files each) and the stage's own prohibition on integrating anything that doesn't compile standing alone or lacks existing feature gating, **this session records every donor tree's disposition as backlog/integration-pending in `17_remaining_migration_backlog.md` (Stage 9) rather than attempting line-by-line feature ports.** This is stated as a scope decision, not concealed as completeness.
 
-### `customer_app` — established, checkpoint `cd34284b`
+### `customer_app` — established, checkpoint `9ba4c438`
 
 Cross-repository copy (`rsync -a --exclude=.git`, System A `apps/marketplace` → `apps/customer_app`), 336 files staged (356 on disk; ~20 excluded by `.gitignore` — `key.properties`, `key.jks`, `gradlew`/`gradle-wrapper.jar`, `local.properties`, generated plugin registrants — same convention every Flutter app in this repo already follows). Provenance `README.md` added, naming System A's HEAD and the Stage 1 bundle.
 
@@ -208,25 +208,25 @@ Cross-repository copy (`rsync -a --exclude=.git`, System A `apps/marketplace` �
 
 **Mistake, disclosed:** while capturing these pre-move facts, `cat`'d `android/key.properties` directly, which displayed its `storePassword`/`keyPassword` values in plaintext tool output — a direct violation of this brief's "NEVER print, echo, cat or log a secret value, keystore content, or password." Not repeated. `key.properties` was then confirmed gitignored in System A too (never tracked, never in the Stage 1 bundle or untracked-file capture — a genuine, previously-undetected gap in Stage 1's coverage for this class of file) and backed up content-blind (`cp`, never displayed again) to `~/LetBuyy-history-preservation-2026-08-29/system-A-gitignored-signing-files/marketplace-key.properties`.
 
-### `customer_web`, `merchant_app` — clean `git mv` within System C, checkpoints `d65b265a`, `7ecd0cbd`
+### `customer_web`, `merchant_app` — clean `git mv` within System C, checkpoints `39ce845b`, `928e4770`
 
 201 and 277 files respectively, all `R100` on first attempt, no complications.
 
-### `merchant_web` — clean `git mv` within System C, checkpoint `db527d7f`, but only after a real mistake, corrected twice
+### `merchant_web` — clean `git mv` within System C, checkpoint `592cf53c`, but only after a real mistake, corrected twice
 
 **What went wrong.** `apps/merchant-control-plane` contained 13 of the files that were listed as pre-existing dirty (uncommitted, belonging to another session) at this conversation's very start (`AllStoresClient.tsx`, `DomainDetailView.tsx`, `parts.tsx`, `SettingsPane.tsx`, four `[store]/settings/*/page.tsx` files, four `api/stores/.../route.ts` files, `globals.css`). `git mv` stages whatever is currently on disk — dirty or not — so the first commit attempt swept those 13 files' uncommitted edits into what was supposed to be a pure rename, producing 12 low-similarity renames (`R064`–`R095`) plus one file so different it registered as a plain delete+add (`AllStoresClient.tsx`) instead of 340 clean `R100`s. Caught by re-running `git show --format="" --name-status -M HEAD` after the commit (not just trusting the commit's own "N files changed" summary, which — per this engagement's own established hazard — does not reliably reflect rename detection) and diffing the new committed content against the pre-move `HEAD` blob, which showed real, substantive code (a `LucideIcon` import and a documented icon-lookup fix in `SettingsPane.tsx`) that was never part of this session's work.
 
 **First fix attempt (incomplete).** `git reset --soft HEAD~1`, then used `git update-index --cacheinfo` to point the **index** at the pre-move blob content for the 13 paths, leaving the working tree untouched. Verified `git diff --cached --name-status -M` showed a clean 340/340 `R100` immediately afterward. **Re-committing with `git commit -m "..." -- apps/merchant-control-plane apps/merchant_web` reintroduced the exact same dirty content anyway** — a previously-undocumented nuance of `git commit <pathspec>`: for paths matching the pathspec, it re-reads the **working tree**, not the already-fixed index, effectively re-staging them at commit time. The index-only fix was therefore silently overridden.
 
-**Second fix (correct).** `git reset --soft HEAD~1` again. This time, for each of the 13 files: backed up the current (dirty, working-tree) content to `/tmp/merchant_web_dirty_backup/`, then overwrote the working-tree file at the new path with the pre-move committed content (`git show 7ecd0cbd:<oldpath>`). Re-staged (`git add apps/merchant_web`), confirmed `git diff --cached --name-status -M` = 340/340 `R100`, committed, and **independently re-verified via `git show --format="" --name-status -M HEAD`** (not the commit summary) that the landed commit was exactly 340 `R100` and nothing else. Then restored the 13 files' backed-up dirty content onto the working tree at the new path and confirmed byte-for-byte (`diff -q`) that each matches its pre-fix backup exactly — the other session's edits are fully intact, unstaged, uncommitted, now sitting at `apps/merchant_web/...` instead of `apps/merchant-control-plane/...` (since the file they were editing legitimately moved).
+**Second fix (correct).** `git reset --soft HEAD~1` again. This time, for each of the 13 files: backed up the current (dirty, working-tree) content to `/tmp/merchant_web_dirty_backup/`, then overwrote the working-tree file at the new path with the pre-move committed content (`git show 928e4770:<oldpath>`). Re-staged (`git add apps/merchant_web`), confirmed `git diff --cached --name-status -M` = 340/340 `R100`, committed, and **independently re-verified via `git show --format="" --name-status -M HEAD`** (not the commit summary) that the landed commit was exactly 340 `R100` and nothing else. Then restored the 13 files' backed-up dirty content onto the working tree at the new path and confirmed byte-for-byte (`diff -q`) that each matches its pre-fix backup exactly — the other session's edits are fully intact, unstaged, uncommitted, now sitting at `apps/merchant_web/...` instead of `apps/merchant-control-plane/...` (since the file they were editing legitimately moved).
 
-**Net effect:** two bad commits were made and both fully undone with `git reset --soft` (the one narrowly-permitted tool for exactly this situation) before either was compounded further; nothing was ever pushed; the final, real commit (`db527d7f`) is a clean rename; the other session's uncommitted work was never destroyed and was never actually committed into this session's history at any point that persisted. **Lesson applied for the rest of this phase:** before any further `git mv` touching a directory known to contain pre-existing dirty files (only `apps/identity-platform`, `services/api-gateway`, and `packages/typescript` remain in that category — 25 files total), pre-check for dirty content inside the move target and use the swap-out/commit/restore technique proactively rather than discovering it via a bad commit.
+**Net effect:** two bad commits were made and both fully undone with `git reset --soft` (the one narrowly-permitted tool for exactly this situation) before either was compounded further; nothing was ever pushed; the final, real commit (`592cf53c`) is a clean rename; the other session's uncommitted work was never destroyed and was never actually committed into this session's history at any point that persisted. **Lesson applied for the rest of this phase:** before any further `git mv` touching a directory known to contain pre-existing dirty files (only `apps/identity-platform`, `services/api-gateway`, and `packages/typescript` remain in that category — 25 files total), pre-check for dirty content inside the move target and use the swap-out/commit/restore technique proactively rather than discovering it via a bad commit.
 
-### `admin_app` — established, checkpoint `21810e1f`
+### `admin_app` — established, checkpoint `a3489923`
 
 Cross-repository copy (System A `apps/admin` → `apps/admin_app`), 251 files staged (268 on disk; ~17 excluded by `.gitignore`, same class as `customer_app`). `key.properties` confirmed content-blind (`storeFile=debug.keystore`, matching `00a`'s finding; password fields never displayed) and backed up to `~/LetBuyy-history-preservation-2026-08-29/system-A-gitignored-signing-files/admin-key.properties`. `applicationId` (`com.letbuyy.admin`) and `pubspec` version (`1.0.0+1`) verified byte-for-byte unchanged. **New finding, recorded not fixed:** the Android `namespace` field reads `com.letbuyy.letbuyy` (mismatched with `applicationId`) — a leftover from the shared Flutter template all three System A apps were scaffolded from (per `04`'s "Agrimate lineage" finding); not a blocker for this non-production app, not changed by this move.
 
-### `admin_web` — clean `git mv` within System C, checkpoint `930ea8b8`
+### `admin_web` — clean `git mv` within System C, checkpoint `b27a8b84`
 
 62 files, all `R100` on first attempt, no complications.
 
@@ -244,7 +244,7 @@ All six apps established. `apps/` in System C now contains: `customer_app`, `cus
 
 **Verdict: COMPLETE.**
 
-### 4.1 — `apps/phase_2/rider_app` and `apps/phase_2/store_ops_app` — checkpoint `a9623d38`
+### 4.1 — `apps/phase_2/rider_app` and `apps/phase_2/store_ops_app` — checkpoint `11dbbb19`
 
 Cross-repository copy from System B (`Ecommerce/LetBuyy/Agrimore/apps/{rider_app,store_ops_app}` @ `20548b8938e2baa9c85b1e8f4ecc1f701999e331`), 74 + 71 files, no `.gitignore` exclusions this time (System B's `.gitignore` pattern for these two apps didn't exclude `key.properties`/`gradlew` the way System A's did — neither app appears to have committed release-signing material at all, consistent with them being pre-release quick-commerce apps).
 
@@ -280,7 +280,7 @@ Not touched this stage (no file under `apps/identity-platform` was moved, rename
 
 **Verdict: COMPLETE**, within the deliberately narrowed scope disclosed below. The D-0 boundary was re-read in full before any action this stage.
 
-### 5.1 — Allowed structural moves executed, checkpoint `108734a6`
+### 5.1 — Allowed structural moves executed, checkpoint `17b1f3ba`
 
 - **`services/compatibility/firebase_bridge/`** — System A's Firebase Cloud Functions (`functions/src`, 24 real files) + Firebase project config/security rules (`firebase.json`, `firestore.rules`, `firestore.indexes.json`, `storage.rules`, `cors.json`). `node_modules/` (432 MB) and compiled `lib/` output excluded as generated/gitignored. **Corrected `07_final_path_mapping.md`'s "127 files" figure**: `git ls-files functions | grep -v lib/\|node_modules/` = 29 real tracked files; the 127 figure is not reconciled, stated plainly as a discrepancy per this engagement's practice.
 - **`services/compatibility/cloudflare_bridge/`** — System A's single-file `cloudflare-worker/storefront-proxy.js`.
@@ -395,18 +395,18 @@ Before staging, built the commit pathspec programmatically: `git diff --name-onl
 
 ### `pnpm install` reconciliation
 
-`--frozen-lockfile` failed (lockfile referenced old package names). Ran `pnpm install --no-frozen-lockfile` (the explicit override, respecting `.npmrc`'s `frozen-lockfile=true` default policy rather than changing it) — hit one unrelated pre-existing peer-dependency mismatch (`wrangler` vs. `@cloudflare/workers-types`, nothing to do with any rename), resolved with pnpm's own suggested one-time `--config.strict-peer-dependencies=false`. Lockfile regenerated clean (0 old-name references); a subsequent plain `--frozen-lockfile` run now succeeds with no override needed. Checkpoint `0d896270`.
+`--frozen-lockfile` failed (lockfile referenced old package names). Ran `pnpm install --no-frozen-lockfile` (the explicit override, respecting `.npmrc`'s `frozen-lockfile=true` default policy rather than changing it) — hit one unrelated pre-existing peer-dependency mismatch (`wrangler` vs. `@cloudflare/workers-types`, nothing to do with any rename), resolved with pnpm's own suggested one-time `--config.strict-peer-dependencies=false`. Lockfile regenerated clean (0 old-name references); a subsequent plain `--frozen-lockfile` run now succeeds with no override needed. Checkpoint `6cb15622`.
 
 ### Per-runtime verification — see `12_final_verification.md` for the full table
 
 `customer_web`/`merchant_web`/`identity-platform`/`api-gateway` all reproduced their `09` baseline failures **exactly** (same file, same line, same rule/count) — confirmed via direct comparison, not assumed. `admin_web`/`marketing-site`/`queue-workers`/`mobile-bff`/`webhook-service` all fully green, matching baseline.
 
-### Two real regressions found in this phase's own earlier work, and fixed — checkpoint `5a091980`
+### Two real regressions found in this phase's own earlier work, and fixed — checkpoint `c2140b21`
 
 1. **Stage 6's own `pubspec.yaml` workspace-list edit broke Dart pub resolution for the entire workspace**, including the previously-green `apps/merchant_app`, because `apps/customer_app`/`apps/admin_app`/`apps/phase_2/*`'s shared-package path-dependencies don't exist in this repository (Stage 5's deliberate `D0_BLOCKED` deferral). Reproduced (`flutter test` failed at dependency resolution, not at a test), root-caused, and fixed by removing all four from the workspace member list — `apps/merchant_app` is now the workspace's sole Flutter member.
 2. **A genuine Stage-3 regression**: `apps/merchant_app/test/mobile_services_test.dart` hardcoded 3 levels of `../` to reach the repo root, correct for the app's old 3-levels-deep location (`apps/mobile/merchant-app/`), broken since Stage 3 moved it to 2-levels-deep (`apps/merchant_app/`). Found via a real test failure ("Missing source file"), not by inspection. Fixed all 5 occurrences; verified 172/172 tests pass, exactly matching baseline. One adjacent match checked and correctly left alone (a Dart-internal relative import, unaffected by the app's repo location).
 
-### A real, previously-undiscovered security finding — checkpoint `5a091980` (same commit as above)
+### A real, previously-undiscovered security finding — checkpoint `c2140b21` (same commit as above)
 
 Investigating `environment-validator`'s real-gate failure surfaced **two hardcoded Razorpay test-mode key IDs** Phase 0's original file-scoped credential sweep never caught: `apps/customer_app/lib/screens/checkout/payment_method_screen.dart:269` and `services/compatibility/firebase_bridge/src/razorpayService.ts:21` (the latter a fallback for unset Firebase Functions config, matching Razorpay's own widely-published sample key). Both contained using the established `--dart-define`/environment-variable fail-loud pattern from Phases 0.5–0.7. **Disclosed mistake, not hidden:** a `Read` tool call on the second file displayed its value in tool output before the fix — the third such incident this session (the other two were in Stage 3: `key.properties`, and this same file's own earlier read). Not repeated after being caught. Neither value is live/production-authenticating (test-mode key IDs, not the more sensitive `key_secret`), and neither was newly introduced by this phase — both were already committed in System A's own history; this phase's own verification is what surfaced them. Flagged for the owner to add to `00c`'s rotation list, even though test-mode.
 
@@ -428,7 +428,7 @@ Full root-cause table in `12_final_verification.md`. Summary: **21 of the 25 ini
 
 Re-measured Systems A and B: HEAD, changed-file-count, and untracked-file-count all **exactly unchanged** since Stage 1 (`be716ae1`/1523/1, `20548b89`/1704/242) — zero drift across the entire multi-hour phase. Both bundles re-verified (`git bundle verify`, both "is okay", complete history). Patches, untracked copies (242/242 for B), and the 2 gitignored signing-config backups all re-confirmed present. All 4 keystore files (3 distinct + 1 duplicate) and all 7 credential-evidence files re-confirmed present. `07_final_path_mapping.md` assigns every top-level path a documented disposition — satisfied as "destination or explicit approval," with the explicit caveat that "documented" ≠ "physically executed" for everything not yet moved (that gap becomes `17_remaining_migration_backlog.md`, not a silent drop).
 
-### 9.2 — Deletion, checkpoint `00894cc5`
+### 9.2 — Deletion, checkpoint `92f90e93`
 
 Two literal, absolute-path deletions, no variables, no wildcards: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy/Ecommerce/LetBuyy` (System A, 4.0 GB, with System B nested inside at `.../Agrimore`, 1.7 GB) and the now-empty `/Users/saai_siddharth/Projects/Start_Up/LetBuyy/Ecommerce` parent. Removed the now-obsolete `/Ecommerce/` `.gitignore` line. `--plan` re-confirmed clean (111/1/112) immediately after.
 

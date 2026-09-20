@@ -3,30 +3,30 @@
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
 **Date authored:** 2026-07-10
 **Branch:** `stepup/main`
-**HEAD at authoring:** `29f87115`
+**HEAD at authoring:** `8c1ac94b`
 **Author scope:** Phase M is the documentation and ADR phase only. No source, test, or migration files are modified by Phase M itself.
 
 ---
 
 ## 1. B→L Commit Chain — Verified Real
 
-All eleven commits below are real git objects, all are ancestors of `HEAD` (`29f87115`), and all carry the correct parent ordering. This was verified by `git log --oneline HEAD~12..HEAD` in the session that produced this document.
+All eleven commits below are real git objects, all are ancestors of `HEAD` (`8c1ac94b`), and all carry the correct parent ordering. This was verified by `git log --oneline HEAD~12..HEAD` in the session that produced this document.
 
 | Phase | Hash | Full subject |
 |-------|------|--------------|
-| B | `073bcbfe` | `phase-b(certification): architecture certification of storefront/Liquid discovery corpus` |
-| C | `70a40c2a` | `phase-c(storefront): critical platform fixes - Liquid crash recovery, React fallback, Urban Kicks leak, newsletter alias, postMessage hardening` |
-| D | `def512cb` | `phase-d(storefront): data completeness - linklists, settings parity, drops, fonts, search, hero, registration no-JS` |
-| E | `0e3d763e` | `phase-e(storefront): template completion - blog, article, CMS page, 404, password, routes parity, login no-JS` |
-| F | `fc89b0f1` | `phase-f(storefront): performance engineering - parse cache, parallel sections, chrome seam, password/logout hardening` |
-| G | `40741cb8` | `phase-g(storefront): schema governance - migration engine wired, version gate, canonicalization, letbuyy-core row, experience validation` |
-| H | `fb3f660a` | `phase-h(storefront): developer platform - theme SDK, compiler/validator/linter/packager, .liquid artifact exporter, CLI, examples, docs` |
-| I | `4eaf3e84` | `phase-i(storefront): enterprise QA - a11y/security/SSR-hydration/regression coverage + honest infra-bound catalog + real bug fix` |
-| J | `cea10b67` | `phase-j(storefront): production rollout prep - ARB package, phased canary ramp, rollback runbook, observability design, release notes (PLANNING ONLY)` |
-| K | `9dc84080` | `phase-k(storefront): theme platform - versioning/compatibility, upgrade planning, install validation, publish manifest, analytics contract (marketplace stays frozen)` |
-| L | `29f87115` | `phase-l(storefront): AI theme platform - deterministic validated generative primitives + merchant AI SDK; model boundary NOT-CONNECTED` |
+| B | `93419c58` | `phase-b(certification): architecture certification of storefront/Liquid discovery corpus` |
+| C | `be56a6fd` | `phase-c(storefront): critical platform fixes - Liquid crash recovery, React fallback, Urban Kicks leak, newsletter alias, postMessage hardening` |
+| D | `4546f27b` | `phase-d(storefront): data completeness - linklists, settings parity, drops, fonts, search, hero, registration no-JS` |
+| E | `7b111a94` | `phase-e(storefront): template completion - blog, article, CMS page, 404, password, routes parity, login no-JS` |
+| F | `51d9dd74` | `phase-f(storefront): performance engineering - parse cache, parallel sections, chrome seam, password/logout hardening` |
+| G | `7cdd42a1` | `phase-g(storefront): schema governance - migration engine wired, version gate, canonicalization, letbuyy-core row, experience validation` |
+| H | `06d3cc85` | `phase-h(storefront): developer platform - theme SDK, compiler/validator/linter/packager, .liquid artifact exporter, CLI, examples, docs` |
+| I | `dbcf173a` | `phase-i(storefront): enterprise QA - a11y/security/SSR-hydration/regression coverage + honest infra-bound catalog + real bug fix` |
+| J | `77a5872f` | `phase-j(storefront): production rollout prep - ARB package, phased canary ramp, rollback runbook, observability design, release notes (PLANNING ONLY)` |
+| K | `b71b93bf` | `phase-k(storefront): theme platform - versioning/compatibility, upgrade planning, install validation, publish manifest, analytics contract (marketplace stays frozen)` |
+| L | `8c1ac94b` | `phase-l(storefront): AI theme platform - deterministic validated generative primitives + merchant AI SDK; model boundary NOT-CONNECTED` |
 
-**Notes on ordering:** The `git log` output shows `D` (`def512cb`) listed after `E` (`0e3d763e`) in HEAD-first order. This means Phase D was merged or rebased after Phase E in the linear history. Both are real ancestors of HEAD; the alphabetical E-before-D sequence within the log is correct and is not a cherry-pick anomaly.
+**Notes on ordering:** The `git log` output shows `D` (`4546f27b`) listed after `E` (`7b111a94`) in HEAD-first order. This means Phase D was merged or rebased after Phase E in the linear history. Both are real ancestors of HEAD; the alphabetical E-before-D sequence within the log is correct and is not a cherry-pick anomaly.
 
 ---
 
@@ -85,7 +85,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | I-F1 (DOMPurify clobbering strips `name=name` from customer-register form) is OPEN-HIGH and unfixed, as stated in `PROGRAM_CAPSTONE.md` ARB-Gated table and Open Risk Inventory |
 | **Verdict** | **STALE** |
-| **Evidence** | `packages/theme-engine/src/theme-bundle.ts:2429-2433` — field renamed to `name='fullName'` with a three-line DOMPurify clobbering comment committed inside Phase I (`4eaf3e84`). `apps/storefront-runtime/src/app/api/customer/register/route.ts:45` — reads `form.get('fullName') ?? form.get('name')` for backward compatibility. Both example fixtures carry `name='fullName'`. `PROGRAM_CAPSTONE.md` line 75 says `OPEN-HIGH` — this is stale; the fix landed within the same Phase I commit and was not updated in CAPSTONE. |
+| **Evidence** | `packages/theme-engine/src/theme-bundle.ts:2429-2433` — field renamed to `name='fullName'` with a three-line DOMPurify clobbering comment committed inside Phase I (`dbcf173a`). `apps/storefront-runtime/src/app/api/customer/register/route.ts:45` — reads `form.get('fullName') ?? form.get('name')` for backward compatibility. Both example fixtures carry `name='fullName'`. `PROGRAM_CAPSTONE.md` line 75 says `OPEN-HIGH` — this is stale; the fix landed within the same Phase I commit and was not updated in CAPSTONE. |
 
 ---
 
@@ -105,7 +105,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | Phase L is uncommitted / files untracked, as stated in `PHASE_L_REPORT.md` header and `PROGRAM_CAPSTONE.md` commit table |
 | **Verdict** | **STALE** |
-| **Evidence** | `git log HEAD` = `29f87115` — `phase-l(storefront): AI theme platform - deterministic validated generative primitives + merchant AI SDK; model boundary NOT-CONNECTED` (confirmed). `PHASE_L_REPORT.md:5` says "uncommitted — files untracked; commit pending" — stale, written pre-commit and included verbatim in the commit. `PROGRAM_CAPSTONE.md` Phase L row says `*(uncommitted)*` — also stale for the same reason. The commit is the current HEAD on branch `stepup/main`. |
+| **Evidence** | `git log HEAD` = `8c1ac94b` — `phase-l(storefront): AI theme platform - deterministic validated generative primitives + merchant AI SDK; model boundary NOT-CONNECTED` (confirmed). `PHASE_L_REPORT.md:5` says "uncommitted — files untracked; commit pending" — stale, written pre-commit and included verbatim in the commit. `PROGRAM_CAPSTONE.md` Phase L row says `*(uncommitted)*` — also stale for the same reason. The commit is the current HEAD on branch `stepup/main`. |
 
 ---
 
@@ -195,7 +195,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | Migration 188 (`letbuyy-core` themes row INSERT) is committed |
 | **Verdict** | **TRUE** |
-| **Evidence** | `git log -- database/supabase/migrations/188_letbuyy_core_theme_row.sql` = `40741cb8 phase-g(storefront): schema governance...`. Content is an idempotent `INSERT INTO public.themes slug='letbuyy-core' ON CONFLICT (slug) DO NOTHING`. The migration must be executed against the production database for DB slug lookups of `letbuyy-core` to return a row. New stores from the `create-store` path currently receive `slug='urban-kicks'` at the application layer until migration 188 runs. |
+| **Evidence** | `git log -- database/supabase/migrations/188_letbuyy_core_theme_row.sql` = `7cdd42a1 phase-g(storefront): schema governance...`. Content is an idempotent `INSERT INTO public.themes slug='letbuyy-core' ON CONFLICT (slug) DO NOTHING`. The migration must be executed against the production database for DB slug lookups of `letbuyy-core` to return a row. New stores from the `create-store` path currently receive `slug='urban-kicks'` at the application layer until migration 188 runs. |
 
 ---
 
@@ -225,7 +225,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | `letbuyy-core` DB alias row in `theme_packages` table requires migration 188 to execute against production DB (code alias exists, DB row is migration-gated) |
 | **Verdict** | **TRUE** |
-| **Evidence** | `packages/theme-engine/src/theme-bundle-core.ts:20-22` — comment defers "switching the live compile/store-creation paths to the Core fixture...are the documented, deferred follow-ups"; `resolveCanonicalThemeSlug()` maps `'urban-kicks'` to `'letbuyy-core'` at the code layer. `database/supabase/migrations/188_letbuyy_core_theme_row.sql` committed in `40741cb8` but must execute against production DB before DB slug lookups for `'letbuyy-core'` return a row. New stores from the `create-store` path currently receive `slug='urban-kicks'` not `'letbuyy-core'`. |
+| **Evidence** | `packages/theme-engine/src/theme-bundle-core.ts:20-22` — comment defers "switching the live compile/store-creation paths to the Core fixture...are the documented, deferred follow-ups"; `resolveCanonicalThemeSlug()` maps `'urban-kicks'` to `'letbuyy-core'` at the code layer. `database/supabase/migrations/188_letbuyy_core_theme_row.sql` committed in `7cdd42a1` but must execute against production DB before DB slug lookups for `'letbuyy-core'` return a row. New stores from the `create-store` path currently receive `slug='urban-kicks'` not `'letbuyy-core'`. |
 
 ---
 
@@ -235,7 +235,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | `QA_CERTIFICATION.md` (phase-i) states I-F1 is not yet fixed ("product bug confirmed, tracked, not yet fixed") |
 | **Verdict** | **STALE** |
-| **Evidence** | `docs/storefront-liquid-discovery/phase-i/QA_CERTIFICATION.md` — "DOMPurify clobbering strips `name=name` from customer-register form — product bug confirmed, tracked, not yet fixed (see PHASE_I_REPORT.md §3)". Written before the fix landed within the same Phase I commit (`4eaf3e84`). `packages/theme-engine/src/theme-bundle.ts:2433` — fix is live at `name='fullName'`. The certification was included in the commit in its pre-fix state and was not updated post-fix. |
+| **Evidence** | `docs/storefront-liquid-discovery/phase-i/QA_CERTIFICATION.md` — "DOMPurify clobbering strips `name=name` from customer-register form — product bug confirmed, tracked, not yet fixed (see PHASE_I_REPORT.md §3)". Written before the fix landed within the same Phase I commit (`dbcf173a`). `packages/theme-engine/src/theme-bundle.ts:2433` — fix is live at `name='fullName'`. The certification was included in the commit in its pre-fix state and was not updated post-fix. |
 
 ---
 
@@ -245,7 +245,7 @@ Each row resolves a documented claim against actual repository state. Verdicts: 
 |--|--|
 | **Claim** | Phase H theme-engine test baseline is 198 (PROGRAM_CAPSTONE) |
 | **Verdict** | **PARTIAL** |
-| **Evidence** | `PROGRAM_CAPSTONE.md` and `PHASE_H_REPORT.md` both state Phase H ended at 198 theme-engine tests. `PHASE_I_REPORT.md` commit message states "was 199 before Phase I" — a 1-test discrepancy. No commit exists between Phase H (`fb3f660a`) and Phase I (`4eaf3e84`) to explain the difference. Most likely cause: `theme-presets.test.ts` adopted as WIP in Phase G (`40741cb8`) was counted differently between the two measurement runs. Final Phase I count (221) and all subsequent deltas from 221 are internally consistent. The 198-vs-199 discrepancy affects only the stated starting baseline for Phase I and has no downstream impact on Phase M forward. |
+| **Evidence** | `PROGRAM_CAPSTONE.md` and `PHASE_H_REPORT.md` both state Phase H ended at 198 theme-engine tests. `PHASE_I_REPORT.md` commit message states "was 199 before Phase I" — a 1-test discrepancy. No commit exists between Phase H (`06d3cc85`) and Phase I (`dbcf173a`) to explain the difference. Most likely cause: `theme-presets.test.ts` adopted as WIP in Phase G (`7cdd42a1`) was counted differently between the two measurement runs. Final Phase I count (221) and all subsequent deltas from 221 are internally consistent. The 198-vs-199 discrepancy affects only the stated starting baseline for Phase I and has no downstream impact on Phase M forward. |
 
 ---
 

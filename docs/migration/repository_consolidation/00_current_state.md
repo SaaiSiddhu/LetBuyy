@@ -26,8 +26,8 @@ Dated evidence document. Every number below was measured during this session; it
 |---|---|
 | `git rev-parse --show-toplevel` | `/Users/saai_siddharth/Projects/Start_Up/LetBuyy` |
 | branch | `feature/claude-md-durable-architecture-memory` |
-| HEAD (start) | `073676fc0203acbdc77a55f17bd609afd0d72390` |
-| HEAD (end) | `073676fc0203acbdc77a55f17bd609afd0d72390` (unchanged — nothing committed) |
+| HEAD (start) | `16fe8e4999e1a757ac7742474556268ad2db191f` |
+| HEAD (end) | `16fe8e4999e1a757ac7742474556268ad2db191f` (unchanged — nothing committed) |
 | remote | `origin` → `https://github.com/SaaiSiddhu/Letbuyy_Store.git` |
 | tracked file count | 7,234 (`git ls-files \| wc -l`) |
 | content-changed count (numstat) | 39 (38 pre-existing + `.gitignore`) |
@@ -37,13 +37,13 @@ Dated evidence document. Every number below was measured during this session; it
 
 `git worktree list` (canonical):
 ```
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy                                                         073676fc [feature/claude-md-durable-architecture-memory]
-/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/.claude/worktrees/intelligent-euclid-61b310  ad91eac0 (detached HEAD)
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/busy-tu-4d552d                        1fda6486 [claude/busy-tu-4d552d]
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/confident-booth-07b940                1fda6486 [claude/confident-booth-07b940]
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/eloquent-thompson-f07a86              2634343b [claude/great-mirzakhani-d631f1]
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/peaceful-kare-6e6187                  1fda6486 [claude/peaceful-kare-6e6187]
-/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/vigorous-albattani-89bbf6             1fda6486 [claude/agitated-northcutt-18a70f]
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy                                                         16fe8e49 [feature/claude-md-durable-architecture-memory]
+/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/.claude/worktrees/intelligent-euclid-61b310  a91162b7 (detached HEAD)
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/busy-tu-4d552d                        5c984eaa [claude/busy-tu-4d552d]
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/confident-booth-07b940                5c984eaa [claude/confident-booth-07b940]
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/eloquent-thompson-f07a86              7b32dfcb [claude/great-mirzakhani-d631f1]
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/peaceful-kare-6e6187                  5c984eaa [claude/peaceful-kare-6e6187]
+/Users/saai_siddharth/Projects/Start_Up/LetBuyy/.claude/worktrees/vigorous-albattani-89bbf6             5c984eaa [claude/agitated-northcutt-18a70f]
 ```
 The second entry is a **linked worktree of this canonical repository**, physically located inside `Copy/Letbuyy_Store`. Verified: `.git/worktrees/intelligent-euclid-61b310/gitdir` in canonical points to `Copy/Letbuyy_Store/.claude/worktrees/intelligent-euclid-61b310/.git`, and that path's `.git` file contains `gitdir: /Users/saai_siddharth/Projects/Start_Up/LetBuyy/.git/worktrees/intelligent-euclid-61b310` — a real, live back-reference. **Not pruned. Do not prune it** — pruning would orphan a working tree another session may depend on.
 
@@ -83,13 +83,13 @@ Every one of System B's six `apps/*`, `packages/`, `workers/` and `supabase/` di
 
 | Path | Exists | Branch | HEAD | Remote |
 |---|---|---|---|---|
-| `Start_Up/Letbuyy_Store` | yes | `stepup/main` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `SaaiSiddhu/Letbuyy_Store.git` |
-| `Start_Up/LetBuyy-pre-reconciliation-2026-08-23-667669d0` | yes | `stepup/main` | `667669d09fda470b72cf6b1c2b7949561b7501b4` | `SaaiSiddhu/Letbuyy_Store.git` |
-| `Start_Up/Copy/Letbuyy_Store` | yes | `feature/claude-md-durable-architecture-memory` | `a8162179e41710f8b7d129fbc41c68cc3e246668` | `SaaiSiddhu/Letbuyy_Store.git` |
+| `Start_Up/Letbuyy_Store` | yes | `stepup/main` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `SaaiSiddhu/Letbuyy_Store.git` |
+| `Start_Up/LetBuyy-pre-reconciliation-2026-08-23-359baec6` | yes | `stepup/main` | `359baec6c9423a69416d754ab99763b66d0f1181` | `SaaiSiddhu/Letbuyy_Store.git` |
+| `Start_Up/Copy/Letbuyy_Store` | yes | `feature/claude-md-durable-architecture-memory` | `fd86363f85d57697abad4df0e6ea8e6de716ecc1` | `SaaiSiddhu/Letbuyy_Store.git` |
 
-`Copy/Letbuyy_Store`'s own HEAD (`a8162179`) **is a direct ancestor of the canonical repository's current HEAD** (`git merge-base --is-ancestor a8162179… 073676fc…` succeeds) — it is a slightly-behind independent clone on the same branch line, not a diverged fork. It additionally hosts the linked worktree described above. None of the three copies were modified, deleted, or pruned.
+`Copy/Letbuyy_Store`'s own HEAD (`fd86363f`) **is a direct ancestor of the canonical repository's current HEAD** (`git merge-base --is-ancestor fd86363f… 16fe8e49…` succeeds) — it is a slightly-behind independent clone on the same branch line, not a diverged fork. It additionally hosts the linked worktree described above. None of the three copies were modified, deleted, or pruned.
 
-Sizes (measured with targeted `du -sh`, not a full recursive walk, per the hazard note): `Letbuyy_Store` 16G, `LetBuyy-pre-reconciliation-2026-08-23-667669d0` 16G, `Copy/Letbuyy_Store` 12G.
+Sizes (measured with targeted `du -sh`, not a full recursive walk, per the hazard note): `Letbuyy_Store` 16G, `LetBuyy-pre-reconciliation-2026-08-23-359baec6` 16G, `Copy/Letbuyy_Store` 12G.
 
 ## RESERVED and mobile-placeholder verification (Constitution compliance, measured)
 

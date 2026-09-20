@@ -1,7 +1,7 @@
 # PROMPT DRIFT — Convergence Report (Phase 6)
 
 **Program:** Convergence Audit 2026-06-10 · **Phase:** 6 — PROMPT DRIFT · **Mode:** Discovery only (no code/architecture/prompt changes; read-only git).
-**Repo state:** branch `stepup/main`, HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift"), working tree dirty (`78 ?? / 512 D / 410 M` per `git status --porcelain`).
+**Repo state:** branch `stepup/main`, HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift"), working tree dirty (`78 ?? / 512 D / 410 M` per `git status --porcelain`).
 **Inputs:** `_PREMISES_SEED.md` (winner spine) + the prior `REPOSITORY_TRUTH_AUDIT_2026_06_10/PROMPT_DRIFT_REPORT.md` (verified findings reused and re-confirmed). All paths repo-relative to `/Users/saai_sidd/Git/Letbuyy_Store`.
 
 **This report's job:** produce the three exhaustive lists the user demanded — **ARCHIVE LIST**, **DELETE LIST**, **CANONICAL PROMPT LIST** — each with path + reason, and render the registry-gap verdict. It carries forward the prior report's verified citations and **closes two completeness gaps the prior report missed**: the `docs/audit/` (19 files) and `docs/audits/apps-platform/` (23 files) prescriptive blueprint/refactor-roadmap programs, which are tracked-clean, off-canon, and were never inventoried.
@@ -123,7 +123,7 @@ git status: tracked, unmodified. Era: 2026-06-05/06 wave program (pre-rewrite). 
 
 | Artifact | Last seen | Disposition |
 |---|---|---|
-| `docs/mobile-migration-blueprint/CODEX_MOBILE_FOUNDATION_EXECUTION_MISSION.md` (+`_V2`), `…MANAGED_PAYMENTS_AND_FINAL_PARITY_MISSION.md`, `CODEX_MOBILE_FOUNDATION_{LEDGER,STATUS}.md`, `FIREBASE_DECOMMISSION_PLAN.md` | deleted in `47f29bc6` (2026-06-06) | Recoverable via `git show 47f29bc6^:<path>`; no archive copy. No action required (history is durable). |
+| `docs/mobile-migration-blueprint/CODEX_MOBILE_FOUNDATION_EXECUTION_MISSION.md` (+`_V2`), `…MANAGED_PAYMENTS_AND_FINAL_PARITY_MISSION.md`, `CODEX_MOBILE_FOUNDATION_{LEDGER,STATUS}.md`, `FIREBASE_DECOMMISSION_PLAN.md` | deleted in `aed02212` (2026-06-06) | Recoverable via `git show aed02212^:<path>`; no archive copy. No action required (history is durable). |
 | `AGENT_PROMPT_claude_setup.md`, `CODEX_FOUNDATION_HARDENING_MISSION_V2.md` | HIST | Probable renamed successors exist (`claude-setup-prompt.md`; non-V2 hardening mission) — UNVERIFIED (§7). |
 
 ---
@@ -280,7 +280,7 @@ These ARE the operative instruction set. None may be archived or deleted; the un
 - **docs/: NOT ARCHIVED, NOT REGISTERED.** ~100 mission/prompt/blueprint files remain live and tracked outside `docs/archive/` (§3.3–3.4), including **~24 DANGEROUS** and **9 paste-ready `/goal`** prompts plus **two whole prescriptive build programs** (`docs/audit/` 19 + `docs/audits/apps-platform/` 23) the prior report never inventoried. The legacy register (LEG-074/075) has **no row** for any of them — it scoped `tasks/executable/` + root docs only. AGENTS.md `DOC-R4` condemns superseded docs in principle but nothing enumerates or enforces it below root.
 - **Registry: NONE.** No index of prompts exists. `docs/README.md` is a stale 2026-06-08 generated topic index that lists none. The single machine-known prompt is the archived master prompt.
 - **Evasion is on record and will recur:** `CODEX_INTERNAL_OS_FOUNDATION_STATUS.md:20` — artifacts deliberately placed under `docs/` because root validators reject them. The perimeter must extend below root or the dumping ground refills.
-- **History: ≥6 prompts are git-history-only** (mobile-migration set, deleted `47f29bc6`) — durable as history; no archive copy needed.
+- **History: ≥6 prompts are git-history-only** (mobile-migration set, deleted `aed02212`) — durable as history; no archive copy needed.
 
 **Discovery-level end-state (not actioned, for Phase-0/convergence):** commit the untracked archives + ledgers; `git mv` the §5 set into dated archive folders; rewrite-or-archive `tasks/todo.md` + `memory/lessons.md` and amend AGENT-R16 + repeal LEG-078's conflict; author one canonical convergence-execution prompt + a `PROMPTS.md` registry; extend the end-state validator to fail on any `*MISSION*`/`*PROMPT*`/`*BLUEPRINT*` outside `docs/archive/`.
 

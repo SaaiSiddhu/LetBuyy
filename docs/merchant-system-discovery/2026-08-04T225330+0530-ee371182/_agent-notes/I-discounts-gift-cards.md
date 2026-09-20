@@ -1,7 +1,7 @@
 # AGENT I — DISCOUNTS, COUPONS, AND GIFT CARDS — DISCOVERY NOTES
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `ee371182`
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `bf35062e`
 Method: static source + SQL reading only. **No runtime execution, no DB connection, no provider calls.**
 Therefore **nothing in this note is `VERIFIED_E2E`.** Static ceiling = `IMPLEMENTED_NOT_RUNTIME_VERIFIED`.
 

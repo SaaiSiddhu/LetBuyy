@@ -5,8 +5,8 @@
 **Phase:** AD — Certification + Canary Readiness
 **Decision date:** 2026-07-11
 **Branch:** `stepup/main`
-**HEAD certified:** `83d61e0a` (Phase AC — AI-assisted customization)
-**Programme window:** `9186188e` (Phase M baseline) → `83d61e0a` (Phase AC close)
+**HEAD certified:** `7654927d` (Phase AC — AI-assisted customization)
+**Programme window:** `ff6720a9` (Phase M baseline) → `7654927d` (Phase AC close)
 **Authored by:** AD certification sub-agent (read-only; no source changes; no git; orchestrator commits)
 **Inputs:** Phase AD certification evidence JSON; `docs/storefront-theme-platform/phase-ad/PHASE_AD_CERTIFICATION.md`; Phase J ARB package at `docs/storefront-liquid-discovery/phase-j/ARB_APPROVAL_PACKAGE.md`; Phase J rollout readiness at `docs/storefront-liquid-discovery/phase-j/ROLLOUT_READINESS_PACKAGE.md`; `docs/storefront-theme-platform/PROGRAM_STATE.md`; `docs/storefront-theme-platform/RISK_REGISTER.md`
 
@@ -49,7 +49,7 @@ The seven original ARB blockers from the storefront-liquid-discovery programme (
 
 ### 2.1 Gate results (Phase AD certification evidence)
 
-All gates verified at HEAD `83d61e0a`. Pre-existing failures are confirmed non-programme regressions.
+All gates verified at HEAD `7654927d`. Pre-existing failures are confirmed non-programme regressions.
 
 | Package | Gate | Result | Count / Exit |
 |---------|------|--------|-------------|
@@ -74,10 +74,10 @@ All gates verified at HEAD `83d61e0a`. Pre-existing failures are confirmed non-p
 
 | Seam | File | Evidence |
 |------|------|---------|
-| `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` | `packages/theme-engine/src/theme-governance.ts:14` | `git diff 9186188e..HEAD` on this file shows zero lines changed on this constant. theme-governance-validator output: `Liquid default OFF`. |
+| `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` | `packages/theme-engine/src/theme-governance.ts:14` | `git diff ff6720a9..HEAD` on this file shows zero lines changed on this constant. theme-governance-validator output: `Liquid default OFF`. |
 | `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG` (FORBID_ATTR, FORBID_TAGS, ADD_ATTR, CUSTOM_ELEMENT_HANDLING) | `packages/theme-engine/src/theme-renderer.ts:170-231` | 4 commits touch theme-renderer.ts in M→AC (phases W/Y/T/AA) but 0 diff lines touch the DOMPurify config block, FORBID_ATTR, FORBID_TAGS, ADD_TAGS, ADD_ATTR, or CUSTOM_ELEMENT_HANDLING. Config is byte-identical to Phase M baseline. |
-| `publish_theme_release` RPC call (10 parameters at lines 699-710) | `services/api-gateway/src/execution/theme-execution.adapter.ts:699-710` | `git diff fa4e4786..HEAD` on this adapter shows no +/- lines for `rpc('publish_theme_release'` or any `p_` parameter. The `p_expected_current_release_version` ARB-gated extension (mentioned in Phase AB notes) is NOT present in the current call. |
-| Money ledger (checkout/payment/order routes) | `services/api-gateway/src/routes/payments.ts`, `orders.ts`, checkout routes directory | `git diff 9186188e..HEAD` on these paths returns 0 diff lines. All M→AC commits to `services/api-gateway/src/routes/` are theme-scoped (`feat(theme): ...`). The six canonical money RPCs do not appear as `rpc()` calls in `packages/theme-engine/src/` (2 hits are in test comments, not RPC invocations). |
+| `publish_theme_release` RPC call (10 parameters at lines 699-710) | `services/api-gateway/src/execution/theme-execution.adapter.ts:699-710` | `git diff 1053d611..HEAD` on this adapter shows no +/- lines for `rpc('publish_theme_release'` or any `p_` parameter. The `p_expected_current_release_version` ARB-gated extension (mentioned in Phase AB notes) is NOT present in the current call. |
+| Money ledger (checkout/payment/order routes) | `services/api-gateway/src/routes/payments.ts`, `orders.ts`, checkout routes directory | `git diff ff6720a9..HEAD` on these paths returns 0 diff lines. All M→AC commits to `services/api-gateway/src/routes/` are theme-scoped (`feat(theme): ...`). The six canonical money RPCs do not appear as `rpc()` calls in `packages/theme-engine/src/` (2 hits are in test comments, not RPC invocations). |
 | Fabrication check | All production source in `packages/theme-engine/src/` | Grep for live LLM imports (`openai`, `anthropic`, `@ai-sdk`, `langchain`, `ChatCompletion`, `generateText`, `streamText`) returns zero hits. `packages/theme-engine/package.json` has no LLM provider dependency. Four honesty mechanisms structurally verified (see §3.4). |
 
 ### 2.3 Capability matrix — what is built
@@ -92,7 +92,7 @@ All gates verified at HEAD `83d61e0a`. Pre-existing failures are confirmed non-p
 | S | Live Preview Inspector | CONNECTED | `editor-bridge-protocol.ts:47` (`INSPECTOR_ADD_SECTION_INTENT`). All 8 Phase S security/UX findings resolved before phase close per RISK_REGISTER.md. Bridge origin check is fail-closed; READY_MESSAGE suppressed when env var absent. |
 | T | Nested Blocks / Section Groups | STRUCTURAL-ONLY | `packages/theme-engine/src/theme-document.ts:204–207` (`allowedChildTypes` enforcement in document model). RISK-T05 open: `allowedChildTypes` not enforced in the depth-bounded renderer (`theme-renderer.ts`) at render time. Depth-bounding is model-level only. |
 | U | Settings Control Renderer | CONNECTED | `apps/merchant-control-plane/src/components/theme-editor/SchemaFormRenderer.tsx` and `ResourcePickerControl.tsx`. RISK-SEC-U01/U02/U03 (setting-renderer XSS hardening gaps) open, carried to Phase AE. |
-| V | Template System | CONNECTED | `packages/theme-engine/src/template-registry.ts`: 600 lines, all 15/15 route types covered (index, product, collection, blog, article, page, cart, account, login, register, search, password, not_found, 404, gift-card) as of Phase E commit `0e3d763e`. Governance validator cross-checks parity list count. |
+| V | Template System | CONNECTED | `packages/theme-engine/src/template-registry.ts`: 600 lines, all 15/15 route types covered (index, product, collection, blog, article, page, cart, account, login, register, search, password, not_found, 404, gift-card) as of Phase E commit `7b111a94`. Governance validator cross-checks parity list count. |
 | W | Dynamic Sources / Custom Data | STRUCTURAL-ONLY | Resource bindings (product/collection/page/blog/menu) CONNECTED via `GET /v1/themes/resource-search`. **Metafield bindings NOT-CONNECTED** (see §3). |
 | X | Media Library | CONNECTED | `services/api-gateway/src/routes/themes/media-library.ts` exists and is mounted. Upload handler uses R2 with `verifyUploadStoreOwnership`. RISK-X01 (R2 key user-scoped not site-scoped) is OPEN/LOW and deferred. |
 | Y | App Block Extensions | NOT-CONNECTED | `packages/theme-engine/src/app-block-model.ts:309–310`: `APP_BLOCK_NOT_CONNECTED_REASON` constant. `apps/app-marketplace` is FROZEN. `buildLiquidAppBlocks` returns placeholder HTML only. |
@@ -207,13 +207,13 @@ The seven blockers from `docs/storefront-liquid-discovery/11_GAP_ANALYSIS.md` an
 
 | # | Blocker | Phase Closed (original programme) | Current state (M→AC HEAD) | M→AC change? |
 |---|---------|----------------------------------|--------------------------|-------------|
-| B-1 | postMessage key mismatch — editor section-selection broken | Phase C (commit `70a40c2a`) | **CLOSED** | No regression. `StorefrontPreviewBridge` at `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` bridges `LETBUYY_THEME_EDITOR_SELECTION` to `letbuyy:theme-editor:section-selected` via same-origin postMessage. Phase AD certification verified R-10 REFUTED. |
-| B-2 | `newsletter` / `newsletter-signup` type split — silent render-time lookup miss | Phase C+D (commits `70a40c2a` + `def512cb`) | **CLOSED** | No regression. `PORTABLE_TO_LIQUID_TYPE_OVERRIDES` at `portable-to-liquid.ts:46` maps `newsletter → newsletter-signup` at compile time. Both migrations 171 and 172 store sections with `type:newsletter-signup`. |
-| B-3 | Fonts not wired — dead `buildGoogleFontsHref`, wrong typefaces | Phase D (commit `def512cb`) | **CLOSED** | No regression. `buildGoogleFontsHref` wired into `apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx`; 6 experience fonts load correctly; CSP `style-src`/`font-src` extended. |
-| B-4 | `linklists` absent from Liquid scope — `{{ shop.navigation }}` nil | Phase D (commit `def512cb`) | **CLOSED** | No regression. `navToLinklists()` converts `StoreModel.navigation` to Shopify-convention `linklists` array; wired into `buildLiquidScope` in `packages/theme-engine/src/theme-renderer.ts`. |
-| B-5 | Schema migration engine — zero concrete migrations registered | Phase G (commit `40741cb8`) | **MITIGATED** | No regression. `applySectionSchemaMigrations` wired in the gateway publish path (`theme-execution.adapter.ts`). Registry is honestly empty — no breaking renames yet authored. Full closure requires the first concrete migration entry to be registered. |
-| B-6 | `letbuyy-core` DB row missing — theme-editor 404 for letbuyy-core stores | Phase G (commit `40741cb8`) | **CLOSED (conditional on migration run)** | No regression. Migration `188_letbuyy_core_theme_row.sql` committed (idempotent `INSERT … ON CONFLICT (slug) DO NOTHING`). Production closure requires migration 188 to be applied to the production database. RISK-DATA-001 remains open. |
-| B-7 | Settings dual-shape — DB flat object vs TS 5-group structure | Phase G (commit `40741cb8`) | **MITIGATED** | No regression. Canonicalization utility (`settingsCanonicalizeFlat` / `settingsCanonicalizeGrouped`) shipped in `packages/theme-engine/src/settings-schema-canonical.ts`. End-to-end consumption replacing all ad-hoc shape assumptions is deferred (G3-consume not yet enforced). |
+| B-1 | postMessage key mismatch — editor section-selection broken | Phase C (commit `be56a6fd`) | **CLOSED** | No regression. `StorefrontPreviewBridge` at `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` bridges `LETBUYY_THEME_EDITOR_SELECTION` to `letbuyy:theme-editor:section-selected` via same-origin postMessage. Phase AD certification verified R-10 REFUTED. |
+| B-2 | `newsletter` / `newsletter-signup` type split — silent render-time lookup miss | Phase C+D (commits `be56a6fd` + `4546f27b`) | **CLOSED** | No regression. `PORTABLE_TO_LIQUID_TYPE_OVERRIDES` at `portable-to-liquid.ts:46` maps `newsletter → newsletter-signup` at compile time. Both migrations 171 and 172 store sections with `type:newsletter-signup`. |
+| B-3 | Fonts not wired — dead `buildGoogleFontsHref`, wrong typefaces | Phase D (commit `4546f27b`) | **CLOSED** | No regression. `buildGoogleFontsHref` wired into `apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx`; 6 experience fonts load correctly; CSP `style-src`/`font-src` extended. |
+| B-4 | `linklists` absent from Liquid scope — `{{ shop.navigation }}` nil | Phase D (commit `4546f27b`) | **CLOSED** | No regression. `navToLinklists()` converts `StoreModel.navigation` to Shopify-convention `linklists` array; wired into `buildLiquidScope` in `packages/theme-engine/src/theme-renderer.ts`. |
+| B-5 | Schema migration engine — zero concrete migrations registered | Phase G (commit `7cdd42a1`) | **MITIGATED** | No regression. `applySectionSchemaMigrations` wired in the gateway publish path (`theme-execution.adapter.ts`). Registry is honestly empty — no breaking renames yet authored. Full closure requires the first concrete migration entry to be registered. |
+| B-6 | `letbuyy-core` DB row missing — theme-editor 404 for letbuyy-core stores | Phase G (commit `7cdd42a1`) | **CLOSED (conditional on migration run)** | No regression. Migration `188_letbuyy_core_theme_row.sql` committed (idempotent `INSERT … ON CONFLICT (slug) DO NOTHING`). Production closure requires migration 188 to be applied to the production database. RISK-DATA-001 remains open. |
+| B-7 | Settings dual-shape — DB flat object vs TS 5-group structure | Phase G (commit `7cdd42a1`) | **MITIGATED** | No regression. Canonicalization utility (`settingsCanonicalizeFlat` / `settingsCanonicalizeGrouped`) shipped in `packages/theme-engine/src/settings-schema-canonical.ts`. End-to-end consumption replacing all ad-hoc shape assumptions is deferred (G3-consume not yet enforced). |
 
 **Summary:** 5 of 7 CLOSED, 2 MITIGATED, 0 open blockers. The M→AC programme does not touch the closure evidence for any of these seven items.
 
@@ -470,4 +470,4 @@ The ARB is the only authority that may authorise Stage 7. No automated script, n
 
 ---
 
-*Canary Readiness ARB Decision Package — LetBuyy Liquid Theme Platform M→AC | 2026-07-11 | Branch: `stepup/main` | Head certified: `83d61e0a` | Author: AD certification sub-agent (read-only; no source changes; no git) | This document is documentation only. It does not modify any source file, environment variable, database row, or governance constant.*
+*Canary Readiness ARB Decision Package — LetBuyy Liquid Theme Platform M→AC | 2026-07-11 | Branch: `stepup/main` | Head certified: `7654927d` | Author: AD certification sub-agent (read-only; no source changes; no git) | This document is documentation only. It does not modify any source file, environment variable, database row, or governance constant.*

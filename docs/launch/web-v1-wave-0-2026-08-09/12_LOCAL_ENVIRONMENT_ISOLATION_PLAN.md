@@ -11,7 +11,7 @@
 > | Field | Value |
 > |---|---|
 > | Executed on | **2026-08-09** |
-> | Baseline SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+> | Baseline SHA | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 > | Executed in | worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-local-environment`, branch `codex/w0-local-environment` — **not** the production-linked repo |
 > | Full execution evidence | **`22_LOCAL_STACK_EXECUTION_EVIDENCE.md`** |
 > | Raw transcripts | `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/W0-LOCAL-ENV/` (`01`–`06`) |
@@ -19,20 +19,20 @@
 > **What the execution confirmed in this plan**
 > - §1 (stray production link) — **confirmed**. `supabase/.temp/` in the original repo still holds `linked-project.json`, `project-ref`, `pooler-url`, `start-secrets/`. Read-only `ls` only; nothing touched.
 > - §4.2 / §5 (adopt `local-stack-up.mjs`'s isolation pattern) — **confirmed and used**. Redirected `HOME`/`XDG_CONFIG_HOME` + `--workdir` + unique `project_id` is sufficient; the stack booted with **all 8 services healthy**, the full **124-migration** chain applied, **438** tables, **997** RLS policies, all 6 canonical money RPCs, and **0 rows** of business data. DB identity `127.0.0.1:15422`, not `aws-1-ap-south-1.pooler.supabase.com`.
-> - §5.9 / §2.6 (Node pin missing) — **closed**. `.nvmrc` + `.node-version` = `20`, root `engines.node` = `">=20.9.0"` (commit `623718a1`). Floor verified empirically: `next@16.1.6` declares `engines.node ">=20.9.0"`.
+> - §5.9 / §2.6 (Node pin missing) — **closed**. `.nvmrc` + `.node-version` = `20`, root `engines.node` = `">=20.9.0"` (commit `d926569e`). Floor verified empirically: `next@16.1.6` declares `engines.node ">=20.9.0"`.
 > - §6 step 2 (`pnpm install --frozen-lockfile`) — **executed, exit 0**, lockfile byte-identical.
 > - §7/§9 "Docker daemon running?" — **yes**, `docker info` exit 0, docker 29.6.2.
 >
 > **What the execution corrected or added**
 > 1. **§2.2 port table is not what a linked machine actually runs.** There is no `supabase/config.toml` at the worktree root at all, and **12 dormant `supabase_*_Letbuyy_Store` containers** already exist on this machine from the production-linked repo. This collision hazard was not anticipated here. The isolated stack used `letbuyy-w0-local-env` + the 15420-series block and is fully disjoint; the dormant containers were never started, stopped, or removed.
 > 2. **§5/§6 must NOT be executed by running `local-stack-up.mjs` as-is.** Line 838 runs `supabase db reset`, which the Wave 0 mandate forbids outright. `supabase start` against a fresh volume applies the identical 124 migrations with no reset. The script also seeds App Bridge tables (`app_developers`/`marketplace_apps`/`app_extensions`, lines 646–721) and boots the ART-22-frozen `app-marketplace`/`theme-marketplace` (lines 46–47). See `22_…§7`.
-> 3. **§4.2's characterisation of `.tmp/` understates the risk.** It was untracked **and unignored** — a stray `git add -A` would have committed a generated `config.toml`, the migration copy, the redirected CLI home, and `.dev.vars` holding local Supabase JWTs (violating `SEC-R2`, `AGENTS.md:225`). Fixed in commit `4f3ded6f`.
+> 3. **§4.2's characterisation of `.tmp/` understates the risk.** It was untracked **and unignored** — a stray `git add -A` would have committed a generated `config.toml`, the migration copy, the redirected CLI home, and `.dev.vars` holding local Supabase JWTs (violating `SEC-R2`, `AGENTS.md:225`). Fixed in commit `2a48d56a`.
 > 4. **The teardown script is weaker than the boot script.** `local-stack-down.mjs` uses `--no-backup` (line 48), `rm -rf`s the run root including logs (line 62), and passes the **real `HOME`** (line 18) rather than the redirected one. See `22_…§8`.
 > 5. **Two baseline defects surfaced that are NOT local-environment problems:**
 >    - `services/api-gateway` **cannot bundle** at the baseline — 17 esbuild errors from 9 symbols missing from `@letbuyy/shared-types`. Cause: `packages/shared-types/src/index.ts` never re-exports the tracked `./contact` module. The one-line fix exists only as an **uncommitted** change in the original working tree. Verified: adding it takes errors 17 → 0 and `/health` → HTTP 200. (`22_…§5`)
 >    - `node scripts/validate-governance.mjs` fails at validator **#2** (`tenant-isolation-validator`) in a clean tree, not #6 as doc 10/11 reported — because the dirty tree carries an uncommitted 59-line regeneration of `tenant-tables.registry.ts`. **106 of 108 validators never run** at the baseline. (`22_…§6`)
 >
->   Together these mean the committed baseline is in a **worse** state than the dirty working tree for both build and governance. Treating `ee371182` as a clean, buildable starting point is a false premise.
+>   Together these mean the committed baseline is in a **worse** state than the dirty working tree for both build and governance. Treating `bf35062e` as a clean, buildable starting point is a false premise.
 >
 > §7 and §9 below are retained as the historical Phase 1 record. Items they list as unverified that have since been measured are marked inline; `22_…§11` is the current authority on what remains unverified.
 
@@ -42,7 +42,7 @@
 - Agent: F — Local Environment and Reproducibility Auditor, Wave 0 Phase 1 (read-only)
 - Repo root: `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`
 - Branch: `stepup/main` (`git branch --show-current`)
-- HEAD SHA at time of audit: `ee3711829d857e986014c5811bb94d86ebc3d343` (`git rev-parse HEAD`)
+- HEAD SHA at time of audit: `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`git rev-parse HEAD`)
 - Timestamp used: literal date **2026-08-09** (system date unavailable to this agent; per instructions)
 - Mode: **read-only** — no service booted, no `docker up`, no `supabase start`, no `pnpm install`, no `supabase` CLI mutation of any kind was run. Only `node -v`, `pnpm -v`, `docker -v`, `supabase --version` (version probes) and file reads/greps were executed.
 - Raw evidence: `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/F/` (`00_git_and_tool_versions.txt`, `01_supabase_link_state.txt`, `02_port_map_and_federation_stack.txt`, `03_env_template_keys.txt`, `04_lockfile_vs_package_json_check.txt`, `05_toolchain_pins.txt`)

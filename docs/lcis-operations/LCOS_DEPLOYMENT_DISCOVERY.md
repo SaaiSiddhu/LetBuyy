@@ -12,15 +12,15 @@
 
 | Field | Value | Source |
 |-------|-------|--------|
-| HEAD commit | `4a91fa96` | `deployment-state.json` |
+| HEAD commit | `d7f74037` | `deployment-state.json` |
 | Branch | `stepup/main` | `deployment-state.json` |
-| Last tag | `convergence-cabe148c` | `deployment-state.json` |
+| Last tag | `convergence-3da1416c` | `deployment-state.json` |
 | HEAD subject | `lcis(v5): live operating intelligence — runtime obs, merchant/revenue/security, readiness scoring, AI decision engine` | `deployment-state.json` |
 | Latest migration | `#174 — 174_v1_gift_card_refund_restore.sql` | `deployment-state.json` |
 | Total migrations | 103 | `deployment-state.json` |
 | Migrate gate | ON (migrate-production runs before worker/app deploy) | `deployment-intelligence-v5.json` |
 
-**Note:** The `deployment-intelligence-v5.json` was generated 2026-06-14; the current session's git status shows HEAD as `742192cf` on branch `stepup/main`. There is a **HEAD delta** between the artifact (generated 2026-06-14) and the live working tree (2026-06-21). The live deployed version in production may differ further — requires Cloudflare + Vercel API to confirm.
+**Note:** The `deployment-intelligence-v5.json` was generated 2026-06-14; the current session's git status shows HEAD as `57760d0c` on branch `stepup/main`. There is a **HEAD delta** between the artifact (generated 2026-06-14) and the live working tree (2026-06-21). The live deployed version in production may differ further — requires Cloudflare + Vercel API to confirm.
 
 ---
 
@@ -172,7 +172,7 @@ production-deploy.yml execution order:
 
 | Field | Repository Declared | Live Value | Status |
 |-------|--------------------|-----------|----|
-| HEAD commit | `4a91fa96` (artifact 2026-06-14) / `742192cf` (current git) | Unknown | NOT_CONNECTED |
+| HEAD commit | `d7f74037` (artifact 2026-06-14) / `57760d0c` (current git) | Unknown | NOT_CONNECTED |
 | Deployed worker version (Cloudflare) | Mapped from HEAD | Unknown — requires CF API | NOT_CONNECTED |
 | Vercel build id | Mapped from HEAD | Unknown — requires Vercel API | NOT_CONNECTED |
 | Latest applied migration (production) | #174 (artifact 2026-06-14) | Unknown — requires Supabase API | NOT_CONNECTED |
@@ -185,11 +185,11 @@ production-deploy.yml execution order:
 
 ## 9. Artifact vs Real-Time Delta
 
-The `deployment-intelligence-v5.json` was generated `2026-06-14T05:53:50Z`. The repo has advanced since then (current git HEAD is `742192cf`, with commits through 2026-06-21 per recent activity). The following items in the artifact may be stale:
+The `deployment-intelligence-v5.json` was generated `2026-06-14T05:53:50Z`. The repo has advanced since then (current git HEAD is `57760d0c`, with commits through 2026-06-21 per recent activity). The following items in the artifact may be stale:
 
 | Item | Artifact value | Stale risk |
 |------|---------------|-----------|
-| HEAD commit | `4a91fa96` | HIGH — 7 days of commits |
+| HEAD commit | `d7f74037` | HIGH — 7 days of commits |
 | Total migrations | 103 | MEDIUM — migrations may have been added |
 | Latest migration | #174 | MEDIUM |
 | Open blockers count | 5 | MEDIUM — blockers may have been resolved |

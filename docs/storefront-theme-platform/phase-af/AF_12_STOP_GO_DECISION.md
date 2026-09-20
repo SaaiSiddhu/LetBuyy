@@ -1,7 +1,7 @@
 # AF_12 — STOP / GO Decision
 
 **Phase:** AF.0 → AF.1 gate · **Author:** Root integrator (Claude Code, Opus 4.8), read-only
-**Branch / HEAD:** `stepup/main` / `7e1441a6` · **Evidence:** 2026-07-17/18 IST
+**Branch / HEAD:** `stepup/main` / `80d0b1af` · **Evidence:** 2026-07-17/18 IST
 **Decision authority:** This document proposes the verdict; **the founder holds final approval.** AF.1 remediation has not begun.
 
 ---
@@ -16,7 +16,7 @@ AF.1 source/governance/test remediation **must not begin** until the founder res
 
 ## 2. Executive summary
 
-- **Ancestry is clean (GO signal):** all 14 named B→AE SHAs exist, are ancestors of HEAD, and form a linear chain; HEAD `7e1441a6` is the claimed AE/export head (AF_02). 30 phases confirmed.
+- **Ancestry is clean (GO signal):** all 14 named B→AE SHAs exist, are ancestors of HEAD, and form a linear chain; HEAD `80d0b1af` is the claimed AE/export head (AF_02). 30 phases confirmed.
 - **Core invariants intact (GO signal):** Liquid default `false` (`theme-governance.ts:14`); DOMPurify FORBID lists locked; money ledger, auth issuers, and frozen apps untouched since Phase M; migration 191 *tightened* (not opened) `theme_purchases` RLS (AF_02/AF_05/AF_11).
 - **But the committed state does not build (CRITICAL STOP):** `packages/theme-engine/src/index.ts` at HEAD re-exports `./industry-experience-map`, `./theme-bundle-core`, `./experience-fonts`, and **all three are ABSENT at HEAD** (`git cat-file -e HEAD:… → ABSENT`; untracked, working-tree-only). A clean clone cannot compile `@letbuyy/theme-engine`. The 1726/1726 pass is real only because the dirty tree supplies these files (AF_08, AF_11 AV-1/AV-4).
 - **Gates are red (STOP):** governance gate EXIT=1 (tenant-registry drift, RISK-GOV-001) and sequential-migration EXIT=1 (186/187 untracked). api-gateway unit tests EXIT=1 (3 pre-existing foreign failures) (AF_03/AF_04/AF_01).
@@ -29,10 +29,10 @@ AF.1 source/governance/test remediation **must not begin** until the founder res
 
 | Field | Value |
 |-------|-------|
-| Branch / HEAD | `stepup/main` / `7e1441a6` (attached, intended branch) |
+| Branch / HEAD | `stepup/main` / `80d0b1af` (attached, intended branch) |
 | Upstream | none configured; remote `origin` present |
 | Working tree | **377 dirty** (146 M, 2 D, 229 ??); none under `phase-af/` |
-| Worktrees | 11 stale agent worktrees at ancestor `41b6ea49`, each with uncommitted content; isolated under `.claude/worktrees/`; not removed |
+| Worktrees | 11 stale agent worktrees at ancestor `c2547049`, each with uncommitted content; isolated under `.claude/worktrees/`; not removed |
 | In-progress git op | none (no rebase/merge/cherry-pick/bisect) |
 | AF.0 mutation footprint | **zero** tracked-file changes; only `phase-af/AF_00..AF_13` created; every discovery agent verified porcelain count 378→378 |
 

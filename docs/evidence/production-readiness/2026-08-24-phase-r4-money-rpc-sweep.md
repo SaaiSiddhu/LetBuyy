@@ -5,7 +5,7 @@ records, per RPC, its classification, its pre-recorded prediction, and its
 measured result — kept separate, per this phase's own explicit instruction that
 a static classification is not a measurement.
 
-**Baseline commit:** `4234f50d` (HEAD when Phase R4 began). This repository has
+**Baseline commit:** `e076151c` (HEAD when Phase R4 began). This repository has
 concurrent, actively-committing sessions — see `letbuyy-concurrent-sessions-one-checkout`
 memory; re-check `git log -1` before trusting this document past today.
 

@@ -1,7 +1,7 @@
 # AGENT B — Merchant Control-Plane UI and Navigation Audit
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `ee371182`
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `bf35062e`
 Scope: `apps/merchant-control-plane` (web merchant OS) + navigation/IA; `apps/mobile/merchant-app` (Flutter) inventoried separately at route/screen level.
 
 **Method disclosure.** Everything below is STATIC CODE READING plus deterministic scripted analysis of the source tree. I did NOT run the app, did NOT build it, did NOT hit any endpoint, and did NOT observe any runtime behavior or persistence. Therefore **nothing in this report is `VERIFIED_E2E`**; the strongest status I use for working code is `IMPLEMENTED_NOT_RUNTIME_VERIFIED`. Where I say a page "renders" something I mean the JSX unconditionally emits it, not that I saw it on screen.

@@ -6,7 +6,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 
 ## Current State
 
-- Started from `origin/develop` at `127a850ed3e7690e2570c245fd6313a4d7b58a4e`.
+- Started from `origin/develop` at `a8cd5fdee7f767e949a34b541212cc4d21e60174`.
 - Original checkout was dirty on `stream/letbuyy-foundation-v2`; this stream is isolated in a separate worktree to avoid cross-stream file collisions.
 - Audit docs are present as untracked read-only files in `/Users/saai_sidd/Git/Letbuyy_Store/docs/**`, but not tracked on `develop`. They are being used as the canonical issue source without copying them into this branch.
 - Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `129 validators`, `3043 tracked files scanned`.
@@ -243,7 +243,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - V2-A1 harness note: the Storybook visual harness was corrected from `file://` to a local HTTP server because Chromium CORS-blocked Storybook modules and blank baselines were previously possible; the harness now also disables animations, waits for fonts, compares decoded pixels, and fails on Storybook error pages.
 - V2-A2 DONE: V1 table codemods and manual `Table` render/prop migrations have been applied across all current consumer apps with exact legacy matches.
 - Supporting fix: `Table` now accepts normal object row types instead of requiring `Record<string, unknown>`, so typed app rows infer without casts.
-- App migration commits: `d00d9bdf refactor(platform-console): adopt unified ui table`, `a83a5eb8 refactor(platform-operations-portal): adopt unified ui table`, `206c4321 refactor(merchant-control-plane): adopt unified ui table`; UI typing fix commit: `551c17c0 fix(ui): relax table row typing`.
+- App migration commits: `fd5914e3 refactor(platform-console): adopt unified ui table`, `cf878e95 refactor(platform-operations-portal): adopt unified ui table`, `0d3e6e0d refactor(merchant-control-plane): adopt unified ui table`; UI typing fix commit: `5c10c4e6 fix(ui): relax table row typing`.
 - A2 verification: platform-console typecheck/lint/build PASS; platform-operations-portal typecheck/lint/build PASS; merchant-control-plane typecheck/lint/build PASS. Next/Turbopack builds were run with escalation where sandboxed local process binding failed.
 - A2 scan evidence: no exact `DataTable`/`IndexTable`/`TextStyle`/`PageShell`/`PageActions`/`TableFilterBar`/`Badge variant="danger"` matches remain in `apps/**/*.ts(x)`; no deprecated `--lb-*` token aliases remain in app TS/CSS sources.
 - V2-A3 DONE for the UI adoption surface: `packages/typescript/ui/eslint` is enabled at `error` in all nine web app lint configs for `@letbuyy/ui/no-raw-elements` and `@letbuyy/ui/no-hardcoded-hex`.
@@ -261,4 +261,4 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 
 ## V2 Operational Notes
 
-- During V2-A2, the active branch was switched externally to `stream/domain-split-foundation`; a UI table typing commit was accidentally created there as `3dd08f41`. The same commit was cherry-picked onto the correct V2 branch as `551c17c0`. No user-owned dirty domain/SEO changes were reverted or staged by this stream.
+- During V2-A2, the active branch was switched externally to `stream/domain-split-foundation`; a UI table typing commit was accidentally created there as `562b1959`. The same commit was cherry-picked onto the correct V2 branch as `5c10c4e6`. No user-owned dirty domain/SEO changes were reverted or staged by this stream.

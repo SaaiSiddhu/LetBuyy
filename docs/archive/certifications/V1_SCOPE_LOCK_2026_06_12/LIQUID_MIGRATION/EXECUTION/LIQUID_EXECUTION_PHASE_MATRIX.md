@@ -1,6 +1,6 @@
 # LIQUID_EXECUTION_PHASE_MATRIX.md
 
-**Full Liquid V1 · L0→L18 · HEAD `0b8a56e7` · plan-only.** One-row-per-phase execution matrix. Gate types: **C0**=human commit, **ARB**=governance flip/accept, **HW**=hardening-wave data decision, **LB12**=registration blocker.
+**Full Liquid V1 · L0→L18 · HEAD `140a73db` · plan-only.** One-row-per-phase execution matrix. Gate types: **C0**=human commit, **ARB**=governance flip/accept, **HW**=hardening-wave data decision, **LB12**=registration blocker.
 
 | Phase | Title | Critical-path | Parallel | Human/ARB gate | Risk | Effort | Backend status | Liquid deliverable |
 |---|---|---|---|---|---|---|---|---|

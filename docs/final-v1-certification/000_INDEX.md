@@ -1,6 +1,6 @@
 # LetBuyy V1 — Final Red-Team Certification
 
-**HEAD `587dc988` (`stepup/main`, 217 ahead of `origin/main`). Read-only audit; no code changed. All findings carry file:line and were verified against the live working tree, not docs or memory.**
+**HEAD `ae383bb8` (`stepup/main`, 217 ahead of `origin/main`). Read-only audit; no code changed. All findings carry file:line and were verified against the live working tree, not docs or memory.**
 
 ## Verdict (one line)
 
@@ -9,7 +9,7 @@
 ## Two false positives this program caught (why "no assumptions" matters)
 
 1. **Prior internal docs claimed "LB-1..7,13 done, 2 code blockers."** Stale-but-mostly-true; corrected per-blocker below.
-2. **An earlier pass (incl. this auditor) flagged an S0 "LB-1 routing regression — storefronts unreachable."** **RETRACTED.** The repo is on **Next.js 16.1.6**, which renamed the middleware entry point from `middleware.ts` to **`proxy.ts`** (official: nextjs.org/docs/messages/middleware-to-proxy; having both files is a hard build error). `apps/storefront-runtime/src/proxy.ts` exports `async function proxy()` + `config.matcher` — the correct Next 16 middleware. Commit `56fecb4f` deleting `middleware.ts` was the **correct migration**, not a regression. **LB-1 is SATISFIED; storefront host-routing works.** All four host-routing apps use `proxy.ts`.
+2. **An earlier pass (incl. this auditor) flagged an S0 "LB-1 routing regression — storefronts unreachable."** **RETRACTED.** The repo is on **Next.js 16.1.6**, which renamed the middleware entry point from `middleware.ts` to **`proxy.ts`** (official: nextjs.org/docs/messages/middleware-to-proxy; having both files is a hard build error). `apps/storefront-runtime/src/proxy.ts` exports `async function proxy()` + `config.matcher` — the correct Next 16 middleware. Commit `9c3f2157` deleting `middleware.ts` was the **correct migration**, not a regression. **LB-1 is SATISFIED; storefront host-routing works.** All four host-routing apps use `proxy.ts`.
 
 ## Scores (0–100)
 
@@ -33,7 +33,7 @@ Phase A `ARCHITECTURE_AUDIT.md` · Phase B `CROSS_APP_INTEGRATION.md` + `INTEGRA
 
 ## Method
 
-Consolidates code-verified investigation passes executed this session at HEAD `587dc988`: 8 parallel deep-dive agents (architecture, storefront, merchant, identity, console, marketing, gateway, queues, webhooks, DB, money, payments, shipping/GST, gift-card, email, security, tenant-isolation, rate-limit, deployment, infra/scale) + targeted ground-truth verification of every load-bearing claim + direct re-checks that overturned two earlier conclusions. Where an agent and the code disagreed, the code won.
+Consolidates code-verified investigation passes executed this session at HEAD `ae383bb8`: 8 parallel deep-dive agents (architecture, storefront, merchant, identity, console, marketing, gateway, queues, webhooks, DB, money, payments, shipping/GST, gift-card, email, security, tenant-isolation, rate-limit, deployment, infra/scale) + targeted ground-truth verification of every load-bearing claim + direct re-checks that overturned two earlier conclusions. Where an agent and the code disagreed, the code won.
 
 ## The 3 verified code defects (not LB-1)
 

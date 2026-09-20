@@ -29,7 +29,7 @@ Phase I adds 48 new tests across four files (two per lane), performs an adversar
 | Hardening (SEC-6b) | **+1** | `packages/theme-engine/test/qi-security.test.ts` |
 | **Total incl. hardening** | **48** | |
 
-**Real product bug found and fixed:** DOMPurify 3.x clobbering guard strips `name="name"` from the customer-register `<input type="text">`, causing a no-JS registration POST to omit the customer name field. The fix was applied in commit 4eaf3e84: the template field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`; the register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 now asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). I-F1 is CLOSED.
+**Real product bug found and fixed:** DOMPurify 3.x clobbering guard strips `name="name"` from the customer-register `<input type="text">`, causing a no-JS registration POST to omit the customer name field. The fix was applied in commit dbcf173a: the template field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`; the register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 now asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). I-F1 is CLOSED.
 
 ---
 
@@ -45,7 +45,7 @@ Phase I adds 48 new tests across four files (two per lane), performs an adversar
 | A11Y-2 | hero-banner section renders `<h1>` containing the configured heading text | Heading hierarchy from section settings |
 | A11Y-3 | newsletter-signup section renders email input with `aria-label="Email"` | Email input labelling |
 | A11Y-4 | customer-login form has `<label>` elements wrapping email and password inputs | Form label coverage |
-| A11Y-5 | customer-register form has `<label>` elements for name, email, and password inputs; `name="fullName"` survives DOMPurify; `name="name"` is absent | Form label coverage; I-F1 fix verified (commit 4eaf3e84) |
+| A11Y-5 | customer-register form has `<label>` elements for name, email, and password inputs; `name="fullName"` survives DOMPurify; `name="name"` is absent | Form label coverage; I-F1 fix verified (commit dbcf173a) |
 | A11Y-6 | product-detail gallery images carry `alt` attributes with the product title | Image alt text from drop data |
 | A11Y-7 | lb-add-to-cart island carries `aria-live="polite"` on its cart-status span | Live-region announcement |
 | A11Y-8 | lb-variant-picker option buttons carry `aria-pressed` for toggle state | ARIA state communication |
@@ -81,7 +81,7 @@ Phase I adds 48 new tests across four files (two per lane), performs an adversar
 
 ## 3. Real Failures Found During Phase I
 
-### 3.1 DOMPurify 3.x Clobbering Guard Strips `name="name"` (I-F1 — CLOSED in commit 4eaf3e84)
+### 3.1 DOMPurify 3.x Clobbering Guard Strips `name="name"` (I-F1 — CLOSED in commit dbcf173a)
 
 **File:** `packages/theme-engine/src/theme-renderer.ts` (DOMPurify config) and `packages/theme-engine/src/theme-bundle.ts` (customer-register template)
 
@@ -91,11 +91,11 @@ Phase I adds 48 new tests across four files (two per lane), performs an adversar
 
 **Test discovery path:** A11Y-5 initially asserted `name="name"` on the name input. The test failed. Confirmed by inspecting `sanitizeRenderedHtml()` output: the rendered HTML was `<input type="text" autocomplete="name">` — the `name=` attribute was stripped by the clobbering guard.
 
-**Resolution in template (commit 4eaf3e84):** The template form field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. This avoids the DOM property collision (`name` is a property of `HTMLInputElement`; `fullName` is not). The register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`, so both the new field name and any legacy submissions are accepted.
+**Resolution in template (commit dbcf173a):** The template form field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. This avoids the DOM property collision (`name` is a property of `HTMLInputElement`; `fullName` is not). The register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`, so both the new field name and any legacy submissions are accepted.
 
 **Resolution in test:** A11Y-5 now asserts `name="fullName"` is present after DOMPurify and `name="name"` is absent. These are structural assertions that will fail if the fix is reverted.
 
-**Severity:** HIGH — CLOSED in commit 4eaf3e84. I-F1 is no longer a GO gate.
+**Severity:** HIGH — CLOSED in commit dbcf173a. I-F1 is no longer a GO gate.
 
 ### 3.2 SEC-6 `__proto__` Tautology (Test Authoring Issue — Resolved)
 
@@ -171,13 +171,13 @@ These findings were surfaced during adversarial review of the authored tests. Th
 
 | ID | Severity | File | Summary | Disposition |
 |---|---|---|---|---|
-| I-F1 | ~~HIGH~~ **CLOSED** | `packages/theme-engine/src/theme-bundle.ts:2433` (register template) | DOMPurify 3.x clobbering guard stripped `name="name"` from customer-register `<input type="text">`; no-JS POST omitted customer name | **CLOSED** in commit 4eaf3e84 — field renamed to `name="fullName"`; register route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 asserts fix (221/221 PASS) |
+| I-F1 | ~~HIGH~~ **CLOSED** | `packages/theme-engine/src/theme-bundle.ts:2433` (register template) | DOMPurify 3.x clobbering guard stripped `name="name"` from customer-register `<input type="text">`; no-JS POST omitted customer name | **CLOSED** in commit dbcf173a — field renamed to `name="fullName"`; register route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 asserts fix (221/221 PASS) |
 | I-F2 | HIGH | `packages/theme-engine/test/qi-security.test.ts` (original SEC-6) | `__proto__` sub-assertion was tautological for JS object literal path; real JSON.parse injection path not tested | FIXED in Phase I hardening — SEC-6b added |
-| I-F3 | ~~MEDIUM~~ **CLOSED** | `packages/theme-engine/test/qi-a11y.test.ts` (A11Y-5) | Test transparency gap — A11Y-5 had been updated to assert `autocomplete="name"` (honest observable of the clobbered state) rather than `name="name"` | **CLOSED** — with I-F1 fixed (commit 4eaf3e84), A11Y-5 now asserts `name="fullName"` is present and `name="name"` is absent. A reviewer seeing A11Y-5 green now has a clear structural signal that the fix is in place. |
+| I-F3 | ~~MEDIUM~~ **CLOSED** | `packages/theme-engine/test/qi-a11y.test.ts` (A11Y-5) | Test transparency gap — A11Y-5 had been updated to assert `autocomplete="name"` (honest observable of the clobbered state) rather than `name="name"` | **CLOSED** — with I-F1 fixed (commit dbcf173a), A11Y-5 now asserts `name="fullName"` is present and `name="name"` is absent. A reviewer seeing A11Y-5 green now has a clear structural signal that the fix is in place. |
 | I-F4 | MEDIUM | `tests/theme-engine/liquid-hydration-islands-parity.test.mjs` + `tests/launch/lb-storefront-ssr-contracts.test.mjs` (initial lb-logout regex) | lb-logout form-nesting assertion was satisfied by comment text (`lb-logout` substring in JS comment) rather than structural containment in the template | FIXED in Phase I hardening — regex anchored to `<lb-logout\b[^>]*>` |
 | I-F5 | LOW | `tests/launch/lb-storefront-ssr-contracts.test.mjs` (initial SEC-3a) | SSTI probe assertion used global `/\b49\b/` dependent on fixture isolation, not structural specificity | FIXED in Phase I hardening — narrowed to `/<p>[^<]*49[^<]*<\/p>/` |
 
-I-F1 (product bug) and I-F3 (test transparency) are both **CLOSED** in commit 4eaf3e84. No findings require follow-on work after Phase I.
+I-F1 (product bug) and I-F3 (test transparency) are both **CLOSED** in commit dbcf173a. No findings require follow-on work after Phase I.
 
 ---
 

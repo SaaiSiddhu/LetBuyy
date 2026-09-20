@@ -247,7 +247,7 @@ A snapshot captures the output of all four discovery modules plus git context:
 ```json
 {
   "capturedAt": "2026-06-19T17:52:31.531Z",
-  "gitHead": "742192cf",
+  "gitHead": "57760d0c",
   "gitBranch": "stepup/main",
   "services": { /* ServiceDiscovery output */ },
   "dependencies": { /* DependencyDiscovery output */ },

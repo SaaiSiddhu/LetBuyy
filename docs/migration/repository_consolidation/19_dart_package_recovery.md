@@ -2,7 +2,7 @@
 
 **Execution mode: SINGLE AGENT. Subagents invoked: NO. Agent/Task delegation: NO. Background agents: NO. Parallel worktree agents: NO.**
 
-Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/claude-md-durable-architecture-memory`. Started `HEAD 5c930d2d` (2026-09-03), full stage-by-stage detail in `18_dart_package_recovery_journal.md` — this document is the close-out summary, not a replacement for the journal.
+Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/claude-md-durable-architecture-memory`. Started `HEAD db64ae79` (2026-09-03), full stage-by-stage detail in `18_dart_package_recovery_journal.md` — this document is the close-out summary, not a replacement for the journal.
 
 > **Superseded 2026-09-03 (Phase O).** Every "BLOCKED from Dart pub workspace membership" claim below (`packages/dart/quickcommerce_core`, `apps/phase_2/rider_app`, `apps/phase_2/store_ops_app`) was resolved the same day — see `20_phase2_workspace_journal.md` and `21_phase2_workspace_resolution.md`. This document is left exactly as Phase N wrote it (an accurate record of what was true when Phase N ended); it is not the current state. `letbuyy_marketplace_services`'s D0_BLOCKED status (unrelated to workspace membership) is unchanged and still current.
 
@@ -46,7 +46,7 @@ Full byte-level, file-by-file comparison in `18_dart_package_recovery_journal.md
 |---|---|---|
 | Joins the shared Dart pub workspace | **No — BLOCKED.** `flutter_secure_storage ^10.0.0` (both apps) vs. `apps/merchant_app`'s `^9.2.4`; no overlapping range. Pre-existing, not caused by any rename. | Same, identical dependency, confirmed independently. |
 | Resolves | **Yes, standalone** (`flutter pub get` run directly in the app directory, outside the shared workspace) — `Changed 124 dependencies!` | Same — `Changed 124 dependencies!` |
-| Analyzes | 2 issues, **both pre-existing, unrelated to this phase**: (1) `analysis_options.yaml` includes `package:flutter_lints/flutter.yaml`, but `flutter_lints` was never declared as a dev dependency (a Phase M-era gap); (2) `test/widget_test.dart:16` references a placeholder `MyApp` class that was never this app's real class — dead `flutter create` scaffold boilerplate, one commit in its whole history (Phase M's original establishment, `a9623d38`), never touched since. | Identical 2 issues. |
+| Analyzes | 2 issues, **both pre-existing, unrelated to this phase**: (1) `analysis_options.yaml` includes `package:flutter_lints/flutter.yaml`, but `flutter_lints` was never declared as a dev dependency (a Phase M-era gap); (2) `test/widget_test.dart:16` references a placeholder `MyApp` class that was never this app's real class — dead `flutter create` scaffold boilerplate, one commit in its whole history (Phase M's original establishment, `11dbbb19`), never touched since. | Identical 2 issues. |
 | Tests | **2 of 3 test files pass.** `test/app_test.dart` and `test/rider_delivery_flow_test.dart` (a thin wrapper around `integration_test/rider_delivery_flow_test.dart`'s real offer→accept→pickup→deliver state-machine test, using the renamed `quickcommerce_domain`/`quickcommerce_observability` packages) both pass. `test/widget_test.dart` fails to compile for the pre-existing reason above. | Identical shape: `test/app_test.dart` and the wrapped `test/store_pick_pack_flow_test.dart` (queue→pick/pack→inventory) pass; `test/widget_test.dart` fails identically. |
 
 Neither app's Android `applicationId`/`namespace`/Kotlin package path (`com.agrimore.rider_app`, `com.agrimore.store_ops_app`) was renamed — see PENDING EXTERNAL below.
@@ -103,7 +103,7 @@ Resolving any of the 3 would mean bumping a dependency-version constraint on an 
 
 ## Commits this phase (20)
 
-`091e979c` `6d12bfc6` `a0330b2d` `b2558ba1` `6fd28f7f` `bd698052` `5aa2407f` `889ca97b` `3edecdc9` `7454b66c` `a0221f4a` `455c8e1c` `dbcef593` `3d55966f` `64069e0b` `1b064dab` `a3648603` `b1cd91b5` `e85e8d4d` `96d0f06e` — see `18_dart_package_recovery_journal.md`'s stage table for each one's stage and one-line description.
+`9dd21026` `8e89c70b` `61fa5b9d` `1149e12a` `44f4dafa` `8fa51728` `0ec6a5dd` `e32c7ede` `b00ed1f0` `a6351926` `125457be` `e32d67ab` `6b32f4fe` `0ca0d3ac` `35a6f611` `db3cd4fd` `844d73a1` `79219fef` `427e37a2` `0797a108` — see `18_dart_package_recovery_journal.md`'s stage table for each one's stage and one-line description.
 
 ## What the CTO should independently verify
 

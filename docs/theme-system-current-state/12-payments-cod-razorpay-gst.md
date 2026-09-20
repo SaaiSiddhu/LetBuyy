@@ -71,7 +71,7 @@ holds at the RPC layer. **The tax line is the exception that matters** — see �
 | Keyed on the payment idempotency key | **prosrc:37** — `v_ledger_idempotency_key := COALESCE(NULLIF(p_idempotency_key,''), p_provider_payment_id)`; used at **:88, :99** | proven |
 | Stamps the ledger id back onto the payment | **prosrc:128, :163, :167** — `jsonb_build_object('canonical_ledger_transaction_id', v_ledger_transaction_id)` | proven |
 | Order locked | **prosrc:29** — `FOR UPDATE` | proven |
-| Introduced by | `database/supabase/migrations/168_b1_b2_capture_refund_ledgering.sql` (`CREATE OR REPLACE FUNCTION public.confirm_order_payment_with_ledger`), commit `4efbdddd` *"Implement B1 B2 canonical money ledgering"* | proven |
+| Introduced by | `database/supabase/migrations/168_b1_b2_capture_refund_ledgering.sql` (`CREATE OR REPLACE FUNCTION public.confirm_order_payment_with_ledger`), commit `c428dcf2` *"Implement B1 B2 canonical money ledgering"* | proven |
 
 ### 2.1 Refunds also post
 

@@ -1,6 +1,6 @@
 # Phase L — Final V1 Certification
 
-**HEAD `587dc988`. Read-only. Evidence-backed. No assumptions.**
+**HEAD `ae383bb8`. Read-only. Evidence-backed. No assumptions.**
 
 ## Scores
 

@@ -1,7 +1,7 @@
 # DUPLICATE REALITY REPORT — Repository Truth Audit 2026-06-10
 
 **Axis:** DUPLICATE REALITY — every place the repository contains two (or more) implementations, authorities, configs, or histories for one thing.
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift", 2026-06-10) · `main` @ `bf8c18c1` (30 commits behind) · working tree massively dirty (512 D / 410 M / 76 ?? — Phases A–D13, every `EXECUTION_LEDGER.md` row "not committed").
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift", 2026-06-10) · `main` @ `4bcae19a` (30 commits behind) · working tree massively dirty (512 D / 410 M / 76 ?? — Phases A–D13, every `EXECUTION_LEDGER.md` row "not committed").
 **Mode:** DISCOVERY ONLY. No file changed except this report. Read-only git. Evidence reused from the nine wave-1 reports in this directory (each spot-verified where load-bearing) plus direct verification runs recorded inline.
 **Canon used for Winner/Loser calls:** root `AGENTS.md` (promoted LETBUYY_AGENTS_V2 — verified hand-authored, `AGENTS.md:1-11`), `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (DOC 01), `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03 winner registry, 36 domains), and the ratified ABRs in `STRATEGIC_CANONICALIZATION_2026_06_10/`. Per instruction, **no deletion actions are recommended** — only Winner, Loser, and the blocking condition that makes the loser not-yet-safely-removable.
 
@@ -21,7 +21,7 @@
 
 Three realities, one repo. "Live production" is, by config, whatever `main` last deployed — i.e. the **oldest** of the three (UNVERIFIED live, but CI builds only from committed refs; `production-deploy.yml:3-7`).
 
-| Domain | Reality A — `main` (`bf8c18c1`, deploy branch) | Reality B — HEAD `stepup/main` (`5cf9e64e`) | Reality C — working tree (uncommitted) | Winner | Evidence |
+| Domain | Reality A — `main` (`4bcae19a`, deploy branch) | Reality B — HEAD `stepup/main` (`c4fc3cd6`) | Reality C — working tree (uncommitted) | Winner | Evidence |
 |---|---|---|---|---|---|
 | Governance law | scan-generated `AGENTS.md` (2026-06-08) + 124 `docs/governance` + 181-validator gate | same scan-generated law | promoted AGENTS_V2 + 7-doc Constitution stack + 86 gov docs + 90-validator gate | **C** | GOVERNANCE_TRUTH §1.1, §5.1; `git show HEAD:AGENTS.md` line 1 |
 | Identity | gateway `randomHex(32)` session mint; `/api/auth/switch` takeover live; no JWKS | same (asymmetric files absent at HEAD) | ES256/EdDSA identity-issued token + gateway JWKS verify + switch guards + CI key wiring | **C** | IDENTITY_TRUTH §2 table; `identity-issued-session.ts` / `identity-session-verifier.ts` untracked |

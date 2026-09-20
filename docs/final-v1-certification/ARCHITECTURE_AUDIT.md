@@ -1,6 +1,6 @@
 # Phase A — Architecture Audit
 
-**HEAD `587dc988`. Score: 88/100.**
+**HEAD `ae383bb8`. Score: 88/100.**
 
 ## Inventory (live counts)
 

@@ -1,6 +1,6 @@
 # Phase G — Customer Journey Audit
 
-**HEAD `587dc988`. Score: 65/100. PASS / PARTIAL / FAIL per step.**
+**HEAD `ae383bb8`. Score: 65/100. PASS / PARTIAL / FAIL per step.**
 
 | Step | Status | Evidence |
 |---|---|---|

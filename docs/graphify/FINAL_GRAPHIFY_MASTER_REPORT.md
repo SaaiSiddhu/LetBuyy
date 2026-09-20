@@ -1,6 +1,6 @@
 # Phase 17 — Final Graphify Master Report
 
-**Graph @ `0db025a6` (6 behind HEAD `fa1fcc76`). Every number from `graph.json`; every readiness claim cross-checked against the code-verified certification. No fabrication.**
+**Graph @ `0f257ca1` (6 behind HEAD `3f5afd46`). Every number from `graph.json`; every readiness claim cross-checked against the code-verified certification. No fabrication.**
 
 ## Scores
 | Dimension | Score | Basis |

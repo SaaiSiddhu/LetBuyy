@@ -2,7 +2,7 @@
 
 **Status:** Evidence artifact — NOT governance authority. Where this document conflicts with `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` or root `AGENTS.md`, those documents win; conflicts found are logged in `08_WEB_V1_PERIMETER_AND_EXCLUSIONS.md`.
 
-- **Repo SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343`
+- **Repo SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 - **Branch:** `stepup/main`
 - **Timestamp used:** 2026-08-09 (literal date supplied by task; system clock was not queried)
 - **Author:** Agent D — Web V1 Scope and Perimeter Auditor, Wave 0 Phase 1 (read-only)
@@ -138,7 +138,7 @@ Method for each row: `rg` for the capability's code/route, then trace whether it
 ```json
 {
   "audit_meta": {
-    "repo_sha": "ee3711829d857e986014c5811bb94d86ebc3d343",
+    "repo_sha": "bf35062eda22f4d881efd61fb1d36c8fc83baed1",
     "branch": "stepup/main",
     "date": "2026-08-09",
     "agent": "Agent D"

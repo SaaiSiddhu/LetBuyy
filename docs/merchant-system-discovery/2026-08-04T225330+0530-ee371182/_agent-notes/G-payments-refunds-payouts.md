@@ -1,7 +1,7 @@
 # AGENT G — Payments, Merchant-Owned Razorpay, LetBuyy-Managed Provider, Refunds, Settlements, Payouts
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `ee371182`
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Repo: `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store` · Branch `stepup/main` · Commit `bf35062e`
 Scope: money-in (BYOG + platform-managed), COD, refunds, settlement/transfer/payout, step-up, ledger invariants.
 Mode: **discovery only — no file in this repository was modified except this notes file.**
 

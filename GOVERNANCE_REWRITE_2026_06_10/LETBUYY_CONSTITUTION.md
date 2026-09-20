@@ -4,7 +4,7 @@
 > **Document ID:** DOC 01 (the apex of the governance rewrite of 2026-06-10).
 > **Date ratified:** 2026-06-10.
 > **Authored by:** The Architecture Review Board (ARB), sitting as the constitutional convention; CTO co-signing.
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`. Evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty.
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`. Evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty.
 > **Status:** **RATIFIED. SUPREME. NOTHING OVERRIDES IT.**
 
 ---
@@ -494,7 +494,7 @@ Per §14.1, each entry below records a ratified amendment as a dated, self-conta
 
 ---
 
-*End of the LetBuyy Constitution. Status: RATIFIED, SUPREME, 2026-06-10, amended 2026-09-02 (Amendment 1, §16). Authority hierarchy position: 1 (apex). Evidence pinned at `stepup/main` @ `5cf9e64e`.*
+*End of the LetBuyy Constitution. Status: RATIFIED, SUPREME, 2026-06-10, amended 2026-09-02 (Amendment 1, §16). Authority hierarchy position: 1 (apex). Evidence pinned at `stepup/main` @ `c4fc3cd6`.*
 ### Amendment 2 — `apps/admin_app` reclassified ACTIVE → RESERVED (2026-09-05)
 
 **Named trigger.** The owner's explicit decision of 2026-09-05, issued in session and recorded verbatim in `docs/active/BRANCH_DISPOSITIONS.md` (row `letbuyy/fb1-retire-firebase-admin-app`): *"its test data, delete firebase completely."* Firebase is the platform System A's marketplace lineage ran on; retiring it is a named business decision about which providers this product depends on, not anticipation of scale, and satisfies §14.1.2's trigger requirement. It is consistent with, and completes ahead of schedule, the owner's earlier decision **D-4** (2026-09-04): *"`admin_web` is the one admin. `admin_app`'s moderation queues (listings, campaigns, deals, KYC) are ported into it; `admin_app` retires after the port."*

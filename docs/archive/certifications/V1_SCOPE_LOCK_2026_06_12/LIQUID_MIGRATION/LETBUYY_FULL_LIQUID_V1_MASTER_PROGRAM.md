@@ -1,6 +1,6 @@
 # LETBUYY_FULL_LIQUID_V1_MASTER_PROGRAM.md
 
-**The supreme execution roadmap for Full Liquid V1.** Date: 2026-06-13 · HEAD `0b8a56e7` · code-grounded, plan-only. Target: **every customer-facing storefront route renders through Liquid; React removed after validation** (Constitution ART-17/18, R-15). Checkout remains the engine-agnostic hosted React origin (Constitution §234) — that is constitutional, not hybrid.
+**The supreme execution roadmap for Full Liquid V1.** Date: 2026-06-13 · HEAD `140a73db` · code-grounded, plan-only. Target: **every customer-facing storefront route renders through Liquid; React removed after validation** (Constitution ART-17/18, R-15). Checkout remains the engine-agnostic hosted React origin (Constitution §234) — that is constitutional, not hybrid.
 
 ## 0. Invariants every phase preserves (Constitution)
 

@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_MILESTONES.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. Weeks = critical-path estimate, 2–3 engineers; gated by parity proof + human ARB/hardening acts.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. Weeks = critical-path estimate, 2–3 engineers; gated by parity proof + human ARB/hardening acts.
 
 | Milestone | Definition | Phases complete | ~Week | Proof gate |
 |---|---|---|---|---|

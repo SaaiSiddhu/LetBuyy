@@ -2,7 +2,7 @@
 
 > **RESEARCH — NOT AUTHORITY — NOT AN IMPLEMENTATION ORDER**
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 >
 > Seven options are compared as **decision alternatives**. None is approved, recommended by this document alone, or authorised. `16_FINAL_RECOMMENDATION.md` states a recommendation; this document supplies the comparison it rests on.
 

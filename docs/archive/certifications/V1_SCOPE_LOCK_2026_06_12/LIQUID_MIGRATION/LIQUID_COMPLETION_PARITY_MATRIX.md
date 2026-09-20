@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_PARITY_MATRIX.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · code-cited. Per capability: React status · Liquid status · Parity % (code-completeness, **not** validation — the render-validation matrix `PARITY_MATRIX.md` is 0/200 executed) · blocking gap · closing phase.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · code-cited. Per capability: React status · Liquid status · Parity % (code-completeness, **not** validation — the render-validation matrix `PARITY_MATRIX.md` is 0/200 executed) · blocking gap · closing phase.
 
 | Capability | React | Liquid | Parity % | Blocking gap | Phase |
 |---|---|---|---|---|---|

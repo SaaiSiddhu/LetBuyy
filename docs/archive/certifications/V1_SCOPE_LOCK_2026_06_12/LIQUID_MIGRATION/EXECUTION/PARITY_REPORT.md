@@ -1,6 +1,6 @@
 # PHASE L14 — PARITY REPORT (Full Liquid V1)
 
-**Date:** 2026-06-13 · **HEAD:** `5d7f15a3` · **Method:** repository truth only — no fabricated screenshots/DOM/metrics.
+**Date:** 2026-06-13 · **HEAD:** `50980f6b` · **Method:** repository truth only — no fabricated screenshots/DOM/metrics.
 
 ## Verdict
 

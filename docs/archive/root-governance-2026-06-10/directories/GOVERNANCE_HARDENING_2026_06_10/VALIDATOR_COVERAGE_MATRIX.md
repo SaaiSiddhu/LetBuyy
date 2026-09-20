@@ -2,7 +2,7 @@
 
 > **Document type:** ARB governance-auditor analysis. Maps every load-bearing governance rule to its machine-enforcement status (ENFORCED / ENFORCEABLE-BUT-UNWIRED / UNENFORCEABLE) and **recommends** the validators needed to close the gap. This document **recommends, it does not implement** — no validator code is written here, no architecture is changed.
 >
-> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`.
+> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`.
 >
 > **Authority position:** Subordinate to the Constitution (DOC 01), `LETBUYY_AGENTS_V2.md` (DOC 02), and the canonical-systems registry (DOC 03). This is an evidence/recommendation artifact (authority tier 6 — the "why," not law). It does not declare topology or amend any rule.
 >

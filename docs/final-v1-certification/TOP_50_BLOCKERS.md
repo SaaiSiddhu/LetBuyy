@@ -1,6 +1,6 @@
 # Top 50 Blockers
 
-**HEAD `587dc988`. Prioritized; severity in brackets. LB-1 is NOT here (Next 16 `proxy.ts` satisfies it).**
+**HEAD `ae383bb8`. Prioritized; severity in brackets. LB-1 is NOT here (Next 16 `proxy.ts` satisfies it).**
 
 ## S0 — launch-stopping (3)
 1. [S0] Never pushed — `origin/main` 217 behind HEAD; zero deploys.

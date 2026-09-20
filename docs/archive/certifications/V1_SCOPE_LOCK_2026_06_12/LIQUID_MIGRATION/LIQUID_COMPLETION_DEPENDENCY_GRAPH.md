@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_DEPENDENCY_GRAPH.md
 
-**Program:** Full Liquid V1 (L0–L18) · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 (L0–L18) · **HEAD:** `140a73db` · plan-only.
 
 ## Graph (L0 → L18)
 

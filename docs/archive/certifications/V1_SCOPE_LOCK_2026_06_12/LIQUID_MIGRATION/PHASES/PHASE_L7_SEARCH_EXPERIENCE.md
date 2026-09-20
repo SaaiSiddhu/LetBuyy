@@ -1,6 +1,6 @@
 # PHASE L7 — SEARCH EXPERIENCE
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **The only phase with a genuine backend gap.**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **The only phase with a genuine backend gap.**
 
 1. **Purpose.** Render search results through a Liquid `search` template.
 2. **Repository Reality.** Storefront search is **client-side filter only**; the `lb-search` island navigates to `?search=` (`liquid-hydration-islands.tsx`, `theme-bundle.ts:980`); the `/shop?search=` param is otherwise unused. The gateway `search` routes are internal-console/developer/domains only — **no public product-search endpoint exists**.

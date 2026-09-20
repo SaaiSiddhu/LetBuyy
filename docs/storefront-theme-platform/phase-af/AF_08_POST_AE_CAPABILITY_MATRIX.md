@@ -2,7 +2,7 @@
 
 **Workstream:** AF-H — Post-AE Capability Matrix
 **Phase:** AF.0 (read-only discovery)
-**Branch/HEAD:** `stepup/main` · `7e1441a6`
+**Branch/HEAD:** `stepup/main` · `80d0b1af`
 **Evidence timestamp:** 2026-07-17 (AF.0 session)
 **Status:** COMPLETE — all 70 Phase-M rows re-evaluated; 4 additional findings appended.
 
@@ -12,7 +12,7 @@
 
 Before row-level analysis, a build-integrity hazard must be disclosed.
 
-`packages/theme-engine/src/index.ts` at HEAD (`7e1441a6`) contains three export lines that have been present since at least the Phase M baseline commit (`9186188e`):
+`packages/theme-engine/src/index.ts` at HEAD (`80d0b1af`) contains three export lines that have been present since at least the Phase M baseline commit (`ff6720a9`):
 
 ```
 export * from './industry-experience-map';

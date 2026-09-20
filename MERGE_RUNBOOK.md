@@ -5,12 +5,12 @@ This runbook governs local branch alignment and the human remote seam. It must n
 ## Current local reality (2026-09-04, phase GOV-3)
 
 - Branch model: `letbuyy/<phase>` → `--no-ff` merge into `develop` (inside the `develop` worktree) → fast-forward-only promotion `develop` → `staging` → `main`. `main` never receives a merge commit or a direct commit.
-- Environment branches were levelled at `823aa5ee1aa0d8acf35d711b7f24b49a0b332761` on 2026-09-04: `develop` and `staging` created there; `main` fast-forwarded from `1fda6486` with `git fetch . <sha>:main` (reflog reads `fast-forward`). Nothing is deployed anywhere.
+- Environment branches were levelled at `a751a2ffd335866e4194d5902ef1a95846bd82f2` on 2026-09-04: `develop` and `staging` created there; `main` fast-forwarded from `5c984eaa` with `git fetch . <sha>:main` (reflog reads `fast-forward`). Nothing is deployed anywhere.
 - Required local invariant: `git merge-base --is-ancestor main staging && git merge-base --is-ancestor staging develop` (equivalently `git rev-list --count staging..main` = `0` and `git rev-list --count develop..staging` = `0`). Enforced by `scripts/validators/branch-lag-guard-validator.mjs` (local mode) and `branch-dispositions-validator.mjs`; the deploy-time pair (`main` not behind `origin/staging`) by the enforce mode in `production-deploy.yml` and `branch-lag-monitor.yml`.
-- `stepup/main` (`08c6f872`) is a **preserved alias** of the former integration branch: never advanced, never deleted, listed as `LEGACY_INTEGRATED` in `docs/active/BRANCH_DISPOSITIONS.md` — the only branch-disposition authority. `feature/claude-md-durable-architecture-memory` is the primary checkout's frozen work surface; commits after `823aa5ee` on it are unintegrated until merged through a phase branch.
+- `stepup/main` (`e72aef17`) is a **preserved alias** of the former integration branch: never advanced, never deleted, listed as `LEGACY_INTEGRATED` in `docs/active/BRANCH_DISPOSITIONS.md` — the only branch-disposition authority. `feature/claude-md-durable-architecture-memory` is the primary checkout's frozen work surface; commits after `a751a2ff` on it are unintegrated until merged through a phase branch.
 - Remote promotion remains human-controlled and is recorded in `SKIPPED_HUMAN_DECISIONS.md` as `SKIP-PROD-DEPLOY-PROMOTION` and `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE`; the owner's word is required in the same message before any push of `staging` or `main`, and the harness denies agent pushes.
 - Launch readiness remains blocked by `CAPABILITY_BACKLOG.md`; a levelled branch chain is not a production launch claim.
-- History (2026-08-23): integration work on the feature branch was promoted locally, fast-forward only, to `stepup/main` and then to `main` (both `1edaea71` at the time). That model is superseded by the one above.
+- History (2026-08-23): integration work on the feature branch was promoted locally, fast-forward only, to `stepup/main` and then to `main` (both `4bdb9e55` at the time). That model is superseded by the one above.
 
 ## Non-negotiable guardrails
 
@@ -39,7 +39,7 @@ Expected:
 - `git rev-list --count main..stepup/main` is `0`.
 - The governance gate passes without survivability, multi-region, failover, or prompt-perimeter drift.
 
-Note: `branch-lag-guard-validator` previously only asserted the lag invariant when it ran on `main`, or when `LETBUYY_ENFORCE_BRANCH_LAG=1`, or when `LETBUYY_PRODUCTION_BRANCH` was set — on any other local branch it fell through to a commit-count check that always passed. That fallthrough was fixed in Phase V0 (commit `2df03029`): on any other checked-out branch the validator now computes `productionBranch..HEAD` (`scripts/validators/branch-lag-guard-validator.mjs:117`), the same real fast-forward check the other code paths already performed. A green run of this validator is now genuine local-branch-lag evidence regardless of which branch is checked out. It still only measures local refs — it proves nothing about `origin` or about what is actually deployed; measure the commands above directly when that distinction matters.
+Note: `branch-lag-guard-validator` previously only asserted the lag invariant when it ran on `main`, or when `LETBUYY_ENFORCE_BRANCH_LAG=1`, or when `LETBUYY_PRODUCTION_BRANCH` was set — on any other local branch it fell through to a commit-count check that always passed. That fallthrough was fixed in Phase V0 (commit `ac655957`): on any other checked-out branch the validator now computes `productionBranch..HEAD` (`scripts/validators/branch-lag-guard-validator.mjs:117`), the same real fast-forward check the other code paths already performed. A green run of this validator is now genuine local-branch-lag evidence regardless of which branch is checked out. It still only measures local refs — it proves nothing about `origin` or about what is actually deployed; measure the commands above directly when that distinction matters.
 
 ## Divergence — classify before aligning
 

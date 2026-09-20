@@ -1,7 +1,7 @@
 # AF_13 — AF.1 Remediation Plan (PLAN ONLY — DO NOT EXECUTE)
 
 **Phase:** AF.1 (planning) · **Author:** Root integrator, read-only
-**Branch / HEAD:** `stepup/main` / `7e1441a6`
+**Branch / HEAD:** `stepup/main` / `80d0b1af`
 **Status:** Written under an `AF_1_STOP` verdict (AF_12). **Nothing in this plan is executed.** Each group runs only after the founder approves the specific §11 blocker it depends on, and only on a clean lane per the repository two-lane rule.
 
 > Governing constraints for all groups: read the law chain first (Constitution → AGENTS_V2 → local AGENTS.md → CLAUDE.md); stay inside the AF.1 allowlist (AF_12 §9); never touch the denylist (AF_12 §10); never weaken/skip/quarantine a test; show the exact file list + diffstat before each commit and rerun the focused gate after; never bundle foreign WIP.
@@ -30,7 +30,7 @@ AF.1E  Final clean certification (full gate matrix, EXIT 0)
 
 **Problem:** committed `packages/theme-engine/src/index.ts:21-23` re-exports `./industry-experience-map`, `./theme-bundle-core`, `./experience-fonts`; all three are untracked (ABSENT at HEAD). Clean clone cannot build `@letbuyy/theme-engine`.
 **Founder decision (blocker #1):** these files are intended source **or** the exports are stray.
-- **Path A (commit the source):** verify each file is clean, first-party, and passes lint/typecheck; add ONLY these three files (never the surrounding foreign WIP); rerun `pnpm --filter @letbuyy/theme-engine typecheck test`; confirm a **fresh `git clone` + `git checkout 7e1441a6`-equivalent tree builds** (simulate with `git stash`-free method: `git archive HEAD | tar -x` into a temp dir and build — read-only to the working tree).
+- **Path A (commit the source):** verify each file is clean, first-party, and passes lint/typecheck; add ONLY these three files (never the surrounding foreign WIP); rerun `pnpm --filter @letbuyy/theme-engine typecheck test`; confirm a **fresh `git clone` + `git checkout 80d0b1af`-equivalent tree builds** (simulate with `git stash`-free method: `git archive HEAD | tar -x` into a temp dir and build — read-only to the working tree).
 - **Path B (remove the exports):** if the modules are not intended, remove lines 21-23 from `index.ts` and any dependent re-exports; prove no committed symbol depends on them (`git grep` for the exported identifiers across tracked files only); rerun the theme-engine gate.
 **Predicted diff:** Path A = +3 untracked files staged; Path B = −3 export lines in `index.ts`.
 **Rollback:** single-file revert of `index.ts` (Path B) or `git rm --cached` the three files (Path A).

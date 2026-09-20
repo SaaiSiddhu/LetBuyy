@@ -4,9 +4,9 @@
 
 | Field | Value |
 |---|---|
-| Repo SHA (baseline) | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| Repo SHA (baseline) | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | Branch / worktree described | `codex/w0-v1-perimeter` at `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-v1-perimeter` (isolated git worktree, clean at baseline before this work) |
-| Commit produced | `2c84e1a9` — local only, not pushed, no PR |
+| Commit produced | `eff77adc` — local only, not pushed, no PR |
 | Date | 2026-08-09 |
 | Original repository | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — treated as read-only. Only this deliverable and `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/W0-V1-PERIMETER/` were written there. No Supabase, provider, deploy, or remote command was run from anywhere. |
 | Raw evidence | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/W0-V1-PERIMETER/` (6 files, listed in §7) |
@@ -108,7 +108,7 @@ Its baseline signal is `mobile_merchant_app::source_root`, explicitly annotated 
 
 **The baseline is NOT a clean state, and the artifact says so in three places.** The validator hard-asserts that `knownActivationsBaseline.heading` contains the literal string `NOT A CLEAN STATE`, so the disclaimer cannot be edited away without failing the check. It also asserts `recordedCount === signals.length`, so the count cannot drift from reality, and requires ≥20 characters of file-level evidence on every entry.
 
-**32 activation signals were already live at `ee371182`.** Four are marked `expectedRemoval` (owned by the App Bridge killswitch task and the Wasm escalation). Summary:
+**32 activation signals were already live at `bf35062e`.** Four are marked `expectedRemoval` (owned by the App Bridge killswitch task and the Wasm escalation). Summary:
 
 | Capability | Baselined signals | Status |
 |---|---|---|
@@ -169,7 +169,7 @@ Web V1 scope perimeter validator passed (50 capabilities registered; 28 ratchete
 ```
 Web V1 scope perimeter validator failed:
 - NEW activation of an excluded or forbidden Web V1 capability detected.
-The Web V1 perimeter is frozen at ee3711829d857e986014c5811bb94d86ebc3d343.
+The Web V1 perimeter is frozen at bf35062eda22f4d881efd61fb1d36c8fc83baed1.
 If this activation is intended, it needs a human decision recorded in config/governance/web-v1-scope-registry.json before the gate can pass.
   - whatsapp_sms_push::sms_gateway_router_file [WEB_V1_DEFERRED] activated by: services/api-gateway/src/routes/sms.ts
 ```
@@ -222,7 +222,7 @@ Two ordering choices were deliberately **not** made: existing validators were no
 
 ## 8. Commit
 
-`2c84e1a9` on `codex/w0-v1-perimeter`, 6 files, +911 lines, **local only — not pushed, no PR, no deploy.**
+`eff77adc` on `codex/w0-v1-perimeter`, 6 files, +911 lines, **local only — not pushed, no PR, no deploy.**
 
 `git commit --no-verify` was used. Disclosed in full: `core.hooksPath` is not configured in this worktree, so no hook would have executed either way. The two hook stages relevant to this change were run manually and both passed (`frozen-path-override-gate.mjs` → "no locked paths staged", `foundation-antifabrication-gate.mjs` → 1,905 files, 0 entries). The hook's third stage, `validate-design-system.mjs`, fails identically at the untouched baseline (§6) and is unrelated to this change, which touches only `.json`, `.mjs` and `.md` files.
 

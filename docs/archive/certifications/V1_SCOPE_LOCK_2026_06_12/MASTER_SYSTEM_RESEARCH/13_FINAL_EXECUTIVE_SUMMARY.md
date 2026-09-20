@@ -1,6 +1,6 @@
 # 13 — FINAL EXECUTIVE SUMMARY
 
-**Date:** 2026-06-13 · **HEAD:** `cd5905be` · read-only, code-verified. No optimism, no pessimism — evidence.
+**Date:** 2026-06-13 · **HEAD:** `c7c82847` · read-only, code-verified. No optimism, no pessimism — evidence.
 
 ## Scored readiness
 
@@ -44,4 +44,4 @@ LetBuyy is a **gate-green, money-/identity-/tenancy-sound, Shopify-class commerc
 
 ---
 
-*Index: 01 master state · 02 storefront · 03 merchant · 04 internal · 05 teams · 06 cross-app · 07 database · 08 infrastructure · 09 free-tier · 10 scaling · 11 gap · 12 readiness · 13 (this). All in `V1_SCOPE_LOCK_2026_06_12/MASTER_SYSTEM_RESEARCH/`. Scaling/cost figures are architecture-bounded estimates grounded in declared config + published platform limits; everything else is code-verified at HEAD `cd5905be`.*
+*Index: 01 master state · 02 storefront · 03 merchant · 04 internal · 05 teams · 06 cross-app · 07 database · 08 infrastructure · 09 free-tier · 10 scaling · 11 gap · 12 readiness · 13 (this). All in `V1_SCOPE_LOCK_2026_06_12/MASTER_SYSTEM_RESEARCH/`. Scaling/cost figures are architecture-bounded estimates grounded in declared config + published platform limits; everything else is code-verified at HEAD `c7c82847`.*

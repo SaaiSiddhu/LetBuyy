@@ -1,7 +1,7 @@
 # LETBUYY CANONICAL SYSTEMS — THE WINNER REGISTRY (DOC 03)
 
 > **Document type:** Authority document — the canonical-winner registry. The single operative reference an agent or engineer consults to answer **"which system do I use for this domain?"** There is exactly one answer per domain, and it is law.
-> **Date:** 2026-06-10 · **Author:** Architecture Review Board (ARB) · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty.
+> **Date:** 2026-06-10 · **Author:** Architecture Review Board (ARB) · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty.
 > **Status:** Active law. Supersedes any per-domain "system of record" claim made by `AGENTS.md` (generated), the 60+ root governance docs, or the ~120 `docs/governance/*` files.
 
 ---
@@ -475,4 +475,4 @@ DOC 02 (`LETBUYY_AGENTS_V2.md`) carries the **operational** winner-selection rul
 - **The 6 anon RLS table GRANTs** are set by Supabase's managed bootstrap (not repo SQL) — proof = an anon-key probe / `\dp public.orders` before final S0 sign-off (migration 107's header is strong evidence they are live).
 - **`/api/auth/switch` fix and the 8 remediation waves are working-tree-only and UNDEPLOYED** — `main` is ~30 commits behind; the live platform runs pre-wave code until DOC 04 Wave 0 clears.
 
-*End of LETBUYY_CANONICAL_SYSTEMS.md (DOC 03). The winner registry. One system per domain; every winner traceable to `_GOVERNANCE_SPINE.md` §S5 or a canonicalization doc ID. Evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty, 2026-06-10.*
+*End of LETBUYY_CANONICAL_SYSTEMS.md (DOC 03). The winner registry. One system per domain; every winner traceable to `_GOVERNANCE_SPINE.md` §S5 or a canonicalization doc ID. Evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty, 2026-06-10.*

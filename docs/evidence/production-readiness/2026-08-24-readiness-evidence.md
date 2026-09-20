@@ -10,7 +10,7 @@ platform ready or unready. A matrix that is mostly `NOT MEASURED` is the honest,
 expected state of a pre-launch, ~100-1,000-merchant-envelope system; it is not a
 finding of failure.
 
-**Baseline commit:** `89274860` (HEAD at the time this phase began, 2026-08-24
+**Baseline commit:** `db4c08bf` (HEAD at the time this phase began, 2026-08-24
 11:33:35 +05:30). Re-check `git log -1` before trusting this document past today —
 this snapshot is valid only for the commit it names, and this repository has
 concurrent, actively-committing sessions (see `letbuyy-concurrent-sessions-one-checkout`
@@ -49,7 +49,7 @@ test against the real, unmodified `create_checkout_order` RPC — and, in the
 process, found a real, reproducible idempotency-under-concurrency defect in
 that same RPC (5/5 runs). Status stays **PARTIALLY MEASURED**: the second
 named gap (end-to-end browser-driven checkout proof) is unaffected and
-explicitly out of scope for this phase. Valid against commit `e43bc1a5` (HEAD
+explicitly out of scope for this phase. Valid against commit `c7e3845f` (HEAD
 when the test was run; this repository has concurrent, actively-committing
 sessions — see `letbuyy-concurrent-sessions-one-checkout` memory). No other
 dimension was touched by Phase R2.
@@ -133,8 +133,8 @@ as a live integration test, and this document does not blur that distinction.
   against the same isolated container. All passing, including real
   append-only-ledger and insufficient-balance rejection proofs (genuine
   Postgres constraint violations, not mocked assertions).
-- Phase M1-M5 (this same execution ledger, commits `07494bcb` through
-  `2cd8da35`) closed every non-canonical payment rail (Stripe/PayPal/Cashfree)
+- Phase M1-M5 (this same execution ledger, commits `df7b76e4` through
+  `aee36c89`) closed every non-canonical payment rail (Stripe/PayPal/Cashfree)
   from route registration, zod schemas, hand-written TS unions, and the money
   table CHECK constraints themselves, each with its own executable proof
   (`tests/executable/checkout-order-payment-method-guard-postgres.test.mjs`,
@@ -670,7 +670,7 @@ validator sweep's outcome is expected or claimed from this phase's own edits.
 
 ## Closing statement
 
-This document is an evidence snapshot for commit `89274860`, dated
+This document is an evidence snapshot for commit `db4c08bf`, dated
 2026-08-24. It supersedes no prior evidence document and is itself
 superseded the moment a new commit lands. It certifies nothing. Where a
 dimension above reads `MEASURED`, it means a specific, named, reproducible

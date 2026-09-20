@@ -3,7 +3,7 @@
 > **Document type:** Definitive Winner/Loser registry for every duplicated domain, re-derived FRESH from canon + code.
 > **Phase:** 2 — Strategic Winners Final (DISCOVERY/DECISION ONLY; no implementation, no code changes, no commits, no deletions, read-only git).
 > **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`
-> **Baseline (re-verified this run):** branch `stepup/main` · HEAD `5cf9e64e` · **+30 over `main`** (`git rev-list --count main..HEAD = 30`) · working tree **512 D / 410 M / 78 ??** (`git status --porcelain | wc -l = 1000`).
+> **Baseline (re-verified this run):** branch `stepup/main` · HEAD `c4fc3cd6` · **+30 over `main`** (`git rev-list --count main..HEAD = 30`) · working tree **512 D / 410 M / 78 ??** (`git status --porcelain | wc -l = 1000`).
 > **Authority for winner selection (the ratified canon, in order):** `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (DOC 01) → root `AGENTS.md` (= promoted `LETBUYY_AGENTS_V2`, DOC 02) → `LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03). V1/Freeze content is absorbed into DOC 01 (P.2) and preserved in `docs/archive/root-governance-2026-06-10/`.
 > **Method:** every winner call is re-derived from a quoted canon line AND a quoted code reality independently re-verified at `path:line` this run. Prior reports (`REPOSITORY_TRUTH_AUDIT_2026_06_10/`, `CONVERGENCE_AUDIT_2026_06_10/STRATEGIC_WINNER_DECISIONS.md`) were consulted for completeness only; nothing is asserted on their say-so without fresh code confirmation.
 
@@ -411,4 +411,4 @@ For each of the 14 domains: a Winner/Loser table, a **Reason** that quotes the g
 
 ---
 
-*End of STRATEGIC_WINNERS_FINAL.md. Discovery/decision only — the single file written is this report; no code, schema, git state, or other document was modified. Every winner re-derived FRESH from canon (DOC 01/02/03) + code (`path:line` re-verified at `stepup/main` @ `5cf9e64e`, working tree dirty, 2026-06-10). Overturns vs prior audits: 0 of 14.*
+*End of STRATEGIC_WINNERS_FINAL.md. Discovery/decision only — the single file written is this report; no code, schema, git state, or other document was modified. Every winner re-derived FRESH from canon (DOC 01/02/03) + code (`path:line` re-verified at `stepup/main` @ `c4fc3cd6`, working tree dirty, 2026-06-10). Overturns vs prior audits: 0 of 14.*

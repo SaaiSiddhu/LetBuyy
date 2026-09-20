@@ -1,7 +1,7 @@
 # 10 — PAYMENTS: MERCHANT-OWNED RAZORPAY (BYOG)
 
-- **Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-- **Branch:** `stepup/main` · **Commit:** `ee371182` · **Run date:** 2026-08-04 (+0530)
+- **Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+- **Branch:** `stepup/main` · **Commit:** `bf35062e` · **Run date:** 2026-08-04 (+0530)
 - **Scope:** The merchant-owned / bring-your-own-gateway (BYOG) Razorpay architecture only — merchant credential capture, storage, encryption, verification, resolution, lifecycle, and the honesty surfaces built on it. The platform-managed money-in path, refunds, COD, settlements and payouts are documented in **11** and its siblings; they appear here only where they prove or disprove a BYOG claim.
 - **Evidence basis:** Agent-G Phase-1 notes (`_agent-notes/G-payments-refunds-payouts.md`) read in full, plus first-hand re-verification of every source file cited below (gateway routes, gateway libs, tenant-core schemas, typed API client, merchant console UI, Flutter merchant app, migrations 142/160, storefront public payload selects). Where this document goes **beyond** the notes, it is marked *(enrichment — verified from source in this document)*.
 - **METHOD DISCLOSURE:** **Nothing in this document was runtime-verified.** No gateway was started, no request was issued, no database was queried, no Razorpay sandbox call was made. Every status is static-source-derived and therefore capped at `IMPLEMENTED_NOT_RUNTIME_VERIFIED`; nothing here is `VERIFIED_E2E`.

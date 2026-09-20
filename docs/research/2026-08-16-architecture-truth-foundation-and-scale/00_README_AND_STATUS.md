@@ -6,7 +6,7 @@
 >
 > It is **not** registered as a canonical execution prompt. `PROMPTS.md` was not modified.
 
-**Audited commit:** `5af69e0c080503765dec361eae2128ba860cf529`
+**Audited commit:** `f52abca7ef6b2ddfc39f03b38206779cbe543e46`
 **Branch:** `stepup/main` · **`main` ↔ `stepup/main` divergence: `0 0` (identical)**
 **Date:** 2026-08-16
 **Worktree at start:** dirty — 19 user-owned modified files under `apps/merchant-control-plane/**` and `packages/typescript/ui/**`, plus one untracked file (`docs/research/LETBUYY_CLAUDE_CODE_ARCHITECTURE_RESEARCH_BRIEF.md`). **All left untouched.**

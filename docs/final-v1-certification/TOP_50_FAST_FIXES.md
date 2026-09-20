@@ -1,6 +1,6 @@
 # Top 50 Fast Fixes
 
-**HEAD `587dc988`. Small, localized, low-risk. Each names the exact edit point. (None applied — this is a read-only certification; all require build + gate validation before commit, and the repo cannot be committed from this sandbox.)**
+**HEAD `ae383bb8`. Small, localized, low-risk. Each names the exact edit point. (None applied — this is a read-only certification; all require build + gate validation before commit, and the repo cannot be committed from this sandbox.)**
 
 ## ≤1 line / ≤15 min (1–15)
 1. **Shipping-drop** `app/api/orders/route.ts:~48` — add `shippingRateId: body.shippingRateId ?? body.shipping_rate_id ?? null` to the `createOrder` payload. *(Verify gateway `storefront.createOrder` forwards `p_shipping_rate_id`.)*

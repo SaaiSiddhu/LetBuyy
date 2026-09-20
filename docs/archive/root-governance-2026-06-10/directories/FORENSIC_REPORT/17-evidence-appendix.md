@@ -1,6 +1,6 @@
 # Evidence Appendix
 
-**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e` on `develop`)
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `a8cd5fde` on `develop`)
 **Purpose:** Consolidated proof layer for the report set: (A) the second‑pass fact‑check log re‑verifying resolved and newly‑introduced findings, (B) the first‑pass fact‑check log (retained), (C) reproducible commands, (D) corrections and investigation conditions. Per‑finding evidence lives in each domain report's own "Evidence Index"; this appendix records the *cross‑checking*.
 
 **Method:** A separate fact‑checking pass re‑derived each claim from source (reads + greps) without relying on the originating report. Verdicts: **CONFIRMED / PARTIALLY‑CONFIRMED / REFUTED / CANNOT‑VERIFY**. Paths relative to repo root `/Users/saai_sidd/Git/Letbuyy_Store`.
@@ -70,7 +70,7 @@ $ wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/r
 
 ## D. Corrections, caveats & investigation conditions
 
-1. **Commit window.** `63053d18..HEAD` = `127a850e`; 68 commits, 292 files, +21,140 −8,527; all dated 2026‑06‑05 IST. Two reports' agents independently measured the window (68 commits) consistently.
+1. **Commit window.** `cd71e612..HEAD` = `a8cd5fde`; 68 commits, 292 files, +21,140 −8,527; all dated 2026‑06‑05 IST. Two reports' agents independently measured the window (68 commits) consistently.
 2. **Repo edited during BOTH passes.** During this second pass, several `FORENSIC_REPORT/*` files were modified concurrently by the parallel report agents; **no source file under apps/services/packages changed mid‑pass** (verified). Only untracked file: `.claude/settings.local.json`.
 3. **`pnpm`/`node_modules` unavailable in this environment** — standalone per‑workspace `tsc`/`pnpm turbo` could not be reproduced; the remediation ledger's "typecheck 60/60 + lint pass" is recorded as a **claim**, while governance 129/129 was independently reproduced. Import‑integrity relied on path/grep analysis.
 4. **Numbering note.** `FORENSIC_REPORT/` contains the canonical `00`–`17` set plus residual earlier‑run stub files (`03-application-reports.md`, `08-dead-code.md`, `09-duplication.md`, `10-architecture-violations.md`, `11-shopify-gap-analysis.md`, `12-technical-debt.md`, `13-risk-assessment.md`, `14-evidence-appendix.md`) left in place at the user's instruction. The canonical set is listed in [README.md](README.md); the stubs are superseded. A separate `FORENSIC_REPORT_OPERATIONS/` (16 files) was produced by another process and is outside this investigation.

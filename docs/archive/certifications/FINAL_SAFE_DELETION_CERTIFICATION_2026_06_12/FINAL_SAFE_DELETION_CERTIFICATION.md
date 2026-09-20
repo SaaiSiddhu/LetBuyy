@@ -2,9 +2,9 @@
 
 **Program:** Repository Freeze Certification — Safe Deletion Certification Program
 **Date:** 2026-06-12
-**Certified tree:** `stepup/main` == `main` @ `533479cb` ("Create AI credit Razorpay payment links"), clean worktree, 157 commits ahead of `origin/main`
+**Certified tree:** `stepup/main` == `main` @ `5c2d3993` ("Create AI credit Razorpay payment links"), clean worktree, 157 commits ahead of `origin/main`
 **Governance gate at HEAD:** GREEN — `node scripts/validate-governance.mjs --lane=gate` exit 0, **105 validators passed** (≈122 registered across lanes)
-**Method:** 15 agents — 13 parallel read-only investigators (Phases 1–8), 1 adversarial certification agent (Phase 9), 1 orchestrator performing independent git/filesystem verification. Every DELETE claim was adversarially re-verified against references, runtime ownership, validator dependency, and governance dependency. One investigator report (Agent 14, Repository Archaeologist) was **discarded in full** after direct verification proved it trusted ledger prose over git (claimed tip `e1d6fb18`, actually 138 commits behind HEAD) and misreported directory existence; all of its subject matter was re-derived first-hand.
+**Method:** 15 agents — 13 parallel read-only investigators (Phases 1–8), 1 adversarial certification agent (Phase 9), 1 orchestrator performing independent git/filesystem verification. Every DELETE claim was adversarially re-verified against references, runtime ownership, validator dependency, and governance dependency. One investigator report (Agent 14, Repository Archaeologist) was **discarded in full** after direct verification proved it trusted ledger prose over git (claimed tip `72e80c2b`, actually 138 commits behind HEAD) and misreported directory existence; all of its subject matter was re-derived first-hand.
 
 ---
 
@@ -16,7 +16,7 @@
 
 After seven prior audit/convergence programs, this certification finds **no substantive hidden mass left to clean**. One repository reality exists (locally). One authority chain (Constitution → root AGENTS.md → local AGENTS.md → rewrite docs) is uncontested across 1,204 markdown files. The prompt perimeter is registered, quarantined, and validator-enforced with zero orphans. Reserved services are genuinely empty. Deprecated app aliases are genuinely gone. The previously feared holes are closed at file level: migrations are 98 tracked == 98 on disk (sequence …161–168, nothing untracked), the GATE-1 self-block is gone, the merge runbook now includes the origin push steps, and money/identity/topology invariants are enforced by real validators that the adversarial pass confirmed green at HEAD.
 
-What remains deletable is **trivia** (≈16 dead env-template lines, 2 dead feature flags, 14 dead dependency declarations, 1 untracked `.DS_Store`, 2 empty/cache local dirs, 9 fully-merged git branches) plus **one substantive item**: the retired Wasm app-functions extension runtime (≈785 LOC + its route file), whose live checkout path was removed at `e2e2d47e` but whose engine remains in-tree, flag-gated, and unguarded by a dedicated validator. That is the single biggest remaining freeze-protection gap and the one deletion that still deserves a governed commit.
+What remains deletable is **trivia** (≈16 dead env-template lines, 2 dead feature flags, 14 dead dependency declarations, 1 untracked `.DS_Store`, 2 empty/cache local dirs, 9 fully-merged git branches) plus **one substantive item**: the retired Wasm app-functions extension runtime (≈785 LOC + its route file), whose live checkout path was removed at `e469a7c0` but whose engine remains in-tree, flag-gated, and unguarded by a dedicated validator. That is the single biggest remaining freeze-protection gap and the one deletion that still deserves a governed commit.
 
 **Cleanup mode can be exited.** The remaining work is not cleanup — it is the recorded human seams (origin push, branch protection, secrets, live provider certification, migrations apply, DNS) already enumerated in `SKIPPED_HUMAN_DECISIONS.md` (50 seams) and `CAPABILITY_BACKLOG.md` (23 gaps).
 
@@ -26,7 +26,7 @@ What remains deletable is **trivia** (≈16 dead env-template lines, 2 dead feat
 
 | Dimension | Score | Basis (verified) |
 |---|---|---|
-| Repository Reality | **9/10** | One converged tree; `main` == `stepup/main` @ `533479cb`; worktree clean; `EXECUTION_LEDGER.md` last modified by HEAD commit itself and truthful through HEAD. −1: `origin/main` is 157 behind (push = human seam; runbook now contains the push steps). |
+| Repository Reality | **9/10** | One converged tree; `main` == `stepup/main` @ `5c2d3993`; worktree clean; `EXECUTION_LEDGER.md` last modified by HEAD commit itself and truthful through HEAD. −1: `origin/main` is 157 behind (push = human seam; runbook now contains the push steps). |
 | Authority Integrity | **10/10** | Exactly one Constitution (`GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`); root `AGENTS.md` is the promoted hand-authored V2; zero competing authority claims found across 1,204 md files; 77 nested AGENTS.md sampled — all defer to root; V1/FREEZE absorbed, maximalist plan formally rejected and archived. |
 | Governance Integrity | **9/10** | Gate green at HEAD (105 validators); GATE-1 self-block confirmed gone; no validator mandates multi-region; generator-authored law retired and validator-blocked. −1: no dedicated guard against app-functions runtime re-wiring (§6.1). |
 | Documentation Integrity | **9/10** | 1,204 md: 9 root (allowlist validator-enforced), ~600 active docs, 437+ quarantined under `docs/archive/`; stale-mandate spot-checks in active docs came back clean; six dated audit dirs are evidence, not law. −1: 44MB of tracked PNG evidence under `artifacts/` referenced only from archive docs (§4.1). |
@@ -65,7 +65,7 @@ What remains deletable is **trivia** (≈16 dead env-template lines, 2 dead feat
 `git branch --merged stepup/main` proves **all** of `develop` (0 unique commits) and `stepup/wave-0…7` (8 branches) are fully merged → safe local branch deletions. `origin/develop` neutralization is already a recorded human seam (SKIP-A2).
 
 ### 3.6 The one substantive deletion (recommended, governed)
-`services/api-gateway/src/extensions/app-functions-runtime.ts` (~785 LOC) + `services/api-gateway/src/routes/app-store/extension-routes.ts` — see §6.1. Live checkout path retired at `e2e2d47e` (deleted `CheckoutExtensionHost.tsx`, 155 LOC); engine remains flag-gated reachable. ADR-016 already mandates removal. Requires one governed commit + a `no-app-functions-execution` guard validator + gate re-run. **This is the last real cleanup item in the repository.**
+`services/api-gateway/src/extensions/app-functions-runtime.ts` (~785 LOC) + `services/api-gateway/src/routes/app-store/extension-routes.ts` — see §6.1. Live checkout path retired at `e469a7c0` (deleted `CheckoutExtensionHost.tsx`, 155 LOC); engine remains flag-gated reachable. ADR-016 already mandates removal. Requires one governed commit + a `no-app-functions-execution` guard validator + gate re-run. **This is the last real cleanup item in the repository.**
 
 ---
 

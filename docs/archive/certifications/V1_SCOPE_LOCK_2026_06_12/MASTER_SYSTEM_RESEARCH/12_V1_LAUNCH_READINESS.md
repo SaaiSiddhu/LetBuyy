@@ -1,6 +1,6 @@
 # 12 — V1 LAUNCH READINESS
 
-**HEAD `cd5905be` · code-verified. Evidence-only answers.**
+**HEAD `c7c82847` · code-verified. Evidence-only answers.**
 
 ## Can LetBuyy launch tomorrow?
 

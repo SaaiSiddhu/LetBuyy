@@ -134,7 +134,7 @@
 - `refunds` domain: 1 route, 2 RPCs, 7 tables, 11 policies
 - `payment_transactions`, `refund_requests` tables
 - Merchant admin refund UI (via orders page)
-- LB-3 committed: "refund chain: Razorpay refund() → postPaymentLedger; step-up gated; idempotent; over-refund guard" (commit `30744216`)
+- LB-3 committed: "refund chain: Razorpay refund() → postPaymentLedger; step-up gated; idempotent; over-refund guard" (commit `f53d6e2f`)
 
 **What is missing:**
 - Partial refund line-item selection UI (full refund works; partial may be API-only)

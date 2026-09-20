@@ -6,7 +6,7 @@
 - Enforcement (executable): `scripts/validators/web-v1-scope-perimeter-validator.mjs`
 - Gate lane wiring: `scripts/validate-governance.mjs`
 - Standalone: `pnpm validate:web-v1-perimeter` · read-only listing: `pnpm validate:web-v1-perimeter:report`
-- Recorded baseline SHA: `ee3711829d857e986014c5811bb94d86ebc3d343`
+- Recorded baseline SHA: `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 
 ## What this mechanism does
 

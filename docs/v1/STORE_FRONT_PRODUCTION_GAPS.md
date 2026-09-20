@@ -14,7 +14,7 @@ Parent: [STOREFRONT_CERTIFICATION_AUDIT.md](STOREFRONT_CERTIFICATION_AUDIT.md) �
 |---|---|---|---|
 | B1 | Liquid rendering is **OFF by default** | `packages/theme-engine/src/theme-governance.ts:14` (`= false`); `apps/storefront-runtime/src/proxy.ts:175` | The production default renderer is React, not Liquid |
 | B2 | **React not removed** — full React registry + chrome is the live default | `lib/theme-engine/renderer-registry.tsx`; `app/store/[subdomain]/layout.tsx:218,245` | "React storefront removed" is false |
-| B3 | **Only one Liquid theme** ships a bundle | commit `742192cf`; `resolveLiquidBundle` returns `undefined` → React `template-resolver.ts:110-125` | Other stores can't be Liquid even if enabled |
+| B3 | **Only one Liquid theme** ships a bundle | commit `57760d0c`; `resolveLiquidBundle` returns `undefined` → React `template-resolver.ts:110-125` | Other stores can't be Liquid even if enabled |
 | B4 | Liquid fallback is the **demo fixture bundle** | `apps/storefront-runtime/src/lib/store-service.ts:670-673` | A real store with Liquid-on but no bundle renders the demo theme |
 
 ### 🟠 Major functional gaps (independent of Liquid)

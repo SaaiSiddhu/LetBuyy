@@ -4,7 +4,7 @@
 
 LetBuyy Convergence Cleanup Program · Document-granular keep/archive/rewrite/delete cut
 
-**Baseline (re-verified):** HEAD `5cf9e64e7e62482adaf4b65e74d8cbca754a0a15` · branch `stepup/main` · **+30** over `main` · working tree **512 D / 410 M / 78 ??** (entry-level porcelain) · **1,254 `.md`** on disk excl. `node_modules`/`.git`.
+**Baseline (re-verified):** HEAD `c4fc3cd6898215f53fb462800ca526f649ce37ae` · branch `stepup/main` · **+30** over `main` · working tree **512 D / 410 M / 78 ??** (entry-level porcelain) · **1,254 `.md`** on disk excl. `node_modules`/`.git`.
 
 ---
 

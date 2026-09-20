@@ -1,5 +1,5 @@
 # LETBUYY V1 — FINAL CERTIFICATION
-**Release Commander execution · HEAD `eb38a220` · branch `stepup/main` · repository truth**
+**Release Commander execution · HEAD `254af28c` · branch `stepup/main` · repository truth**
 
 ## Readiness Score: **95% (repository-side: 100%)**
 Every repository-side launch-blocking defect is closed and committed. The remaining 5% is external/operator action (push, secrets, deploy) plus a Docker-gated regression suite — none are code blockers.
@@ -33,11 +33,11 @@ Every repository-side launch-blocking defect is closed and committed. The remain
 
 | Sev | Defect | Fix | Commit |
 |-----|--------|-----|--------|
-| **P0** | storefront `next build` failed — Next 16 errors on both `middleware.ts` + `proxy.ts` | removed the legacy `middleware.ts` shim (proxy.ts is the Next-16 entry) | `56fecb4f` |
-| **P0** | storefront `next build` failed — server-only `jsdom` pulled into the client bundle via theme-engine barrel (19 components) | `webpackIgnore` on the dynamic jsdom import + `serverExternalPackages` | `56fecb4f` |
-| **P0** | gift-card refund destroyed redeemed balance (`refund_credit` never written) | migration 174 `restore_gift_card_on_refund` (idempotent) wired into cancel/refund | `cd5905be` |
-| **P1** | 4 app build-breaking type errors (storefront SectionRenderData; merchant refund typo, Button size, Checkbox label) | corrected each | `a312567f` |
-| **P1** | 2 stale-assertion tests (GraphQL fanout observability; checkout deferral) failing against correct source | refreshed assertions (test-only) | `eb38a220` |
+| **P0** | storefront `next build` failed — Next 16 errors on both `middleware.ts` + `proxy.ts` | removed the legacy `middleware.ts` shim (proxy.ts is the Next-16 entry) | `9c3f2157` |
+| **P0** | storefront `next build` failed — server-only `jsdom` pulled into the client bundle via theme-engine barrel (19 components) | `webpackIgnore` on the dynamic jsdom import + `serverExternalPackages` | `9c3f2157` |
+| **P0** | gift-card refund destroyed redeemed balance (`refund_credit` never written) | migration 174 `restore_gift_card_on_refund` (idempotent) wired into cancel/refund | `c7c82847` |
+| **P1** | 4 app build-breaking type errors (storefront SectionRenderData; merchant refund typo, Button size, Checkbox label) | corrected each | `d1fb44c8` |
+| **P1** | 2 stale-assertion tests (GraphQL fanout observability; checkout deferral) failing against correct source | refreshed assertions (test-only) | `254af28c` |
 
 ## Remaining P2 (documented, non-blocking)
 - No standalone customer gift-card balance page (balance is applied + shown at checkout). Deferred to avoid an unreviewed public enumeration surface.

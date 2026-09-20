@@ -1,6 +1,6 @@
 # PHASE L11 — ORDERS
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render order history and order detail through Liquid over the existing order-read APIs.
 2. **Repository Reality.** Two engine-agnostic read surfaces: logged-in history `/api/customer/orders` (→ gateway `customer-engagement-routes.ts:1012`) and guest lookup `/api/orders/{check,login,set-password}` (→ `:829-863`). `order-service.ts` is a read/auth wrapper over the gateway (creation/mutation owned by the worker). React `orders/orders-client.tsx` (447) + `account/orders/page.tsx` (228) consume them.

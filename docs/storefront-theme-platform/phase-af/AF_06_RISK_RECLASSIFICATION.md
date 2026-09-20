@@ -1,7 +1,7 @@
 # AF-06 Risk-Register Reclassification
 
 **Status:** COMPLETE — all entries in `docs/storefront-theme-platform/RISK_REGISTER.md` verified
-against current repository state on branch `stepup/main` at HEAD `7e1441a6`.
+against current repository state on branch `stepup/main` at HEAD `80d0b1af`.
 **Working-tree delta:** 0 tracked-file mutations (porcelain count: 378 before, 378 after).
 **Date:** 2026-07-17
 
@@ -14,7 +14,7 @@ For each risk entry the following checks were run (read-only only):
 - Defect or gap still present in current code.
 - Whether a later commit fixed the item (git log + code inspection).
 - Severity still appropriate to the current attack surface.
-- Target-phase staleness (Phase AD completed at `7337f297`, docs-only).
+- Target-phase staleness (Phase AD completed at `9b4ad6fb`, docs-only).
 - Reachability split: "Liquid OFF (current default)" vs "Liquid canary ON per-store".
 
 Status vocabulary used: VERIFIED_CURRENT, IMPLEMENTED_NOT_LIVE, STRUCTURAL_ONLY, NOT_CONNECTED,
@@ -26,7 +26,7 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
 
 | Check | Result |
 |---|---|
-| Migration 191 committed | YES — `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` exists and committed in `7e1441a6` |
+| Migration 191 committed | YES — `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` exists and committed in `80d0b1af` |
 | Migration 191 applied to DB | UNKNOWN — ARB-gated; not verifiable without DB access |
 | Migrations 186/187 still untracked | CONFIRMED — `git ls-files --error-unmatch` exits 1 for both |
 | THEME_LIQUID_RENDERING_DEFAULT_ENABLED | = `false` at `packages/theme-engine/src/theme-governance.ts:14` (ART-17 intact) |
@@ -42,7 +42,7 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
 #### RISK-SEC-001 — `theme_purchases` wide-open RLS [HIGH → IMPLEMENTED_NOT_LIVE]
 - **Register status:** "FIXED in Phase AE — Migration 191 committed; ARB-gated for production apply."
 - **Verification:** Migration 191 confirmed at
-  `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` (committed `7e1441a6`).
+  `database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` (committed `80d0b1af`).
   Policies verified at migration:63-91: `tp_service_role TO service_role USING(true)`,
   `tp_authenticated_select TO authenticated USING (user_id = auth.uid())`,
   `tp_authenticated_insert TO authenticated WITH CHECK (user_id = auth.uid())`.
@@ -109,10 +109,10 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
   - 186 (`186_v1_scale_commerce_os_coming_soon.sql`) — UNTRACKED confirmed
     (`git ls-files --error-unmatch` exits 1).
   - 187 (`187_v1_sites_site_settings.sql`) — UNTRACKED confirmed (same).
-  - 188 (`188_letbuyy_core_theme_row.sql`) — committed at `40741cb8`.
-  - 189 (`189_theme_persistence_idempotency.sql`) — committed at `fa4e4786`.
-  - 190 (`190_theme_library_q.sql`) — committed at `016da8f0`.
-  - 191 (`191_theme_purchases_rls_tenant_scope.sql`) — committed at `7e1441a6` (Phase AE).
+  - 188 (`188_letbuyy_core_theme_row.sql`) — committed at `7cdd42a1`.
+  - 189 (`189_theme_persistence_idempotency.sql`) — committed at `1053d611`.
+  - 190 (`190_theme_library_q.sql`) — committed at `a0990ce7`.
+  - 191 (`191_theme_purchases_rls_tenant_scope.sql`) — committed at `80d0b1af` (Phase AE).
 - **Issue:** The register entry does not list migration 191 in the "committed-but-unapplied" list.
   The register's last update only covered 188/189/190. Migration 191 must be included.
 - **Current status:** STALE — the description is partially outdated (missing migration 191).
@@ -128,7 +128,7 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
   idempotency pre-check at `:1366`, post-enrich UPDATE at `:1460`. No `p_idempotency_key` param
   added to `publish_theme_release` SECURITY DEFINER RPC. Concurrent-window gap confirmed.
 - **Current status:** VERIFIED_CURRENT (ARB-gated for full closure).
-- **Phase target:** Phase AD completed (7337f297) WITHOUT fixing this. Retarget: next ARB review
+- **Phase target:** Phase AD completed (9b4ad6fb) WITHOUT fixing this. Retarget: next ARB review
   or Phase AG at earliest.
 
 #### RISK-TOCTOU-P02 — Rollback CAS TS-level only [LOW — VERIFIED_CURRENT]
@@ -232,13 +232,13 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
     `data:image/svg`, `data:text/javascript`, `data:application/javascript`,
     `data:application/ecmascript`, `data:text/ecmascript`.
   The test file `test/schema-field-extensions.test.ts:53-59` confirms these are tested.
-  Commit `48f60f49` (Phase U commit message) explicitly states: "isUnsafeUrl now blocks
+  Commit `45df4ae3` (Phase U commit message) explicitly states: "isUnsafeUrl now blocks
   data:image/svg+xml ... data:text/javascript, data:application/javascript/ecmascript, blob:
   (was only javascript/vbscript/data:text-html/xhtml)".
-- **Current status:** STALE — the risk was FIXED in Phase U itself (commit 48f60f49, 2026-07-11).
+- **Current status:** STALE — the risk was FIXED in Phase U itself (commit 45df4ae3, 2026-07-11).
   The Phase AC "gap remains" note is incorrect. The register must be updated.
 - **Archive:** Move to "fixed-with-proof" section. Evidence:
-  `schema-field-extensions.ts:112-128` + `test/schema-field-extensions.test.ts:53-59` + commit 48f60f49.
+  `schema-field-extensions.ts:112-128` + `test/schema-field-extensions.test.ts:53-59` + commit 45df4ae3.
 
 #### RISK-SEC-U02 — ColorBackgroundControl gradient accepts url() [MEDIUM → STALE / FIXED IN PHASE U]
 - **Register status:** "OPEN · editor-side gap; render-time concern" — Phase AC note says "gap remains."
@@ -246,12 +246,12 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
   (read directly) — `case 'color_background'` and `case 'color'` validate the value and reject
   any string containing `url(`, `expression`, `@import`, or `javascript:` (regex at line 237:
   `/[;{}<>]/.test(value) || v.includes('url(') || v.includes('expression') || ...`).
-  Commit `48f60f49` explicitly states: "color/color_background now rejects CSS-breakout chars
+  Commit `45df4ae3` explicitly states: "color/color_background now rejects CSS-breakout chars
   (;{}<>), url(, expression, @import, javascript: — blocks stylesheet injection via gradient strings."
-- **Current status:** STALE — the risk was FIXED in Phase U itself (commit 48f60f49). The register
+- **Current status:** STALE — the risk was FIXED in Phase U itself (commit 45df4ae3). The register
   must be updated.
 - **Archive:** Move to "fixed-with-proof" section. Evidence:
-  `schema-field-extensions.ts:230-242` + commit 48f60f49.
+  `schema-field-extensions.ts:230-242` + commit 45df4ae3.
 
 #### RISK-SEC-U03 — required: true on checkbox/toggle is a validation no-op [MEDIUM — VERIFIED_CURRENT with design clarification]
 - **Verification:** `schema-field-extensions.ts:157-165` — current code DOES reject
@@ -323,7 +323,7 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
   - `packages/theme-engine/test/dynamic-source-binding.test.ts:48` (read directly) — test
     `'W BINDING_BLOCKED_KEYS is a superset of BLOCKED_DROP_KEYS (no credential-key drift)'` asserts
     parity at every build.
-  - Committed in `9487a1f9` (Phase W itself, not a later phase).
+  - Committed in `7a507bbd` (Phase W itself, not a later phase).
 - **Analysis:** The register's disposition said "import BLOCKED_DROP_KEYS into dynamic-source-binding.ts."
   The actual fix took a different but functionally equivalent approach: export BINDING_BLOCKED_KEYS
   and assert parity by test. A future `BLOCKED_DROP_KEYS` addition that is NOT mirrored will now
@@ -516,11 +516,11 @@ HISTORICAL_ONLY, STALE, BROKEN, BLOCKED, FOREIGN_WIP, UNKNOWN.
 
 | Risk | Fixed In | Evidence |
 |---|---|---|
-| RISK-SEC-001 | Phase AE (7e1441a6) | `migrations/191_theme_purchases_rls_tenant_scope.sql` committed; policies correct. IMPLEMENTED_NOT_LIVE pending DB apply. |
+| RISK-SEC-001 | Phase AE (80d0b1af) | `migrations/191_theme_purchases_rls_tenant_scope.sql` committed; policies correct. IMPLEMENTED_NOT_LIVE pending DB apply. |
 | RISK-AE-SEC-001 | Phase AE hardening | `theme-marketplace-contract.ts:128` MAX_SETTINGS_WALK_DEPTH=12 + fail-closed at :279-280. VERIFIED_CURRENT. |
-| RISK-SEC-U01 | Phase U (48f60f49) | `schema-field-extensions.ts:112-128` — isUnsafeUrl blocks blob:, data:image/svg, data:text/javascript, data:application/javascript, etc. STALE in register. |
-| RISK-SEC-U02 | Phase U (48f60f49) | `schema-field-extensions.ts:237` — color/color_background rejects url(, expression, @import. STALE in register. |
-| RISK-W01 | Phase W (9487a1f9) | `dynamic-source-binding.ts:37-42` — BINDING_BLOCKED_KEYS exported + `dynamic-source-binding.test.ts:48` parity test. STALE in register (test-enforced parity, not import-based). |
+| RISK-SEC-U01 | Phase U (45df4ae3) | `schema-field-extensions.ts:112-128` — isUnsafeUrl blocks blob:, data:image/svg, data:text/javascript, data:application/javascript, etc. STALE in register. |
+| RISK-SEC-U02 | Phase U (45df4ae3) | `schema-field-extensions.ts:237` — color/color_background rejects url(, expression, @import. STALE in register. |
+| RISK-W01 | Phase W (7a507bbd) | `dynamic-source-binding.ts:37-42` — BINDING_BLOCKED_KEYS exported + `dynamic-source-binding.test.ts:48` parity test. STALE in register (test-enforced parity, not import-based). |
 
 ### 4b. Historical / Archive Candidates
 
@@ -605,18 +605,18 @@ or bounded single-tenant impact):
 The following entries in `RISK_REGISTER.md` contain incorrect "OPEN · gap remains" status notes
 that contradict current code evidence:
 
-1. **RISK-SEC-U01** (and all Phase AC "gap remains" notes): Fixed in Phase U commit `48f60f49`.
+1. **RISK-SEC-U01** (and all Phase AC "gap remains" notes): Fixed in Phase U commit `45df4ae3`.
    `isUnsafeUrl` at `schema-field-extensions.ts:112-128` already blocks all listed protocols.
 
-2. **RISK-SEC-U02** (and all Phase AC "gap remains" notes): Fixed in Phase U commit `48f60f49`.
+2. **RISK-SEC-U02** (and all Phase AC "gap remains" notes): Fixed in Phase U commit `45df4ae3`.
    `color_background` validation at `schema-field-extensions.ts:237` already rejects `url(`.
 
 3. **RISK-W01** (and Phase AC "gap remains" note): Parity enforced by test since Phase W commit
-   `9487a1f9`. `dynamic-source-binding.test.ts:48` asserts superset parity at every build.
+   `7a507bbd`. `dynamic-source-binding.test.ts:48` asserts superset parity at every build.
 
 4. **RISK-DATA-001**: Missing migration 191 from the "committed-but-unapplied" list.
 
-5. All risks retargeted to "Phase AD" that were NOT closed: Phase AD (commit `7337f297`) was a
+5. All risks retargeted to "Phase AD" that were NOT closed: Phase AD (commit `9b4ad6fb`) was a
    docs-only phase. All "Retarget: Phase AD" entries need to be updated to "Phase AG" or
    "ARB follow-up" as appropriate.
 

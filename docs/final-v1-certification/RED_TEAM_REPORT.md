@@ -1,6 +1,6 @@
 # Phase K — Red-Team Attack Review
 
-**HEAD `587dc988`. Adversarial. Each vector: attempted → result.**
+**HEAD `ae383bb8`. Adversarial. Each vector: attempted → result.**
 
 | Attack | Result | Evidence |
 |---|---|---|
@@ -17,7 +17,7 @@
 | **Email-bomb owner via lead form** | **EXPLOITABLE** | `contacts.ts:56` enqueues owner notification per request (High) |
 | **Secret blast-radius** (one internal secret → fleet) | **LATENT** | shared `INTERNAL_API_SECRET`, `INTERNAL_AUTH_LEGACY_ACCEPT` ON → leak forges internal headers across ~10 runtimes (Med, pending keyring) |
 | **DB-layer public write** (anon) | **MOSTLY BLOCKED** | RLS REVOKE from anon (mig 163); **except** 4 frozen marketplace tables with `USING(true)` no-`TO` (mig `100:133–155`) — no PII/money, no anon route writes them (Med, latent) |
-| **Gate evasion** (ship a feature change that weakens a guard) | **DEMONSTRATED** | commit `56fecb4f` edited `lb1-storefront-middleware.test.mjs` in the same commit it deleted `middleware.ts` — here the change was *legitimate* (Next 16 migration), but it proves the gate can be moved in lockstep with code (R1) |
+| **Gate evasion** (ship a feature change that weakens a guard) | **DEMONSTRATED** | commit `9c3f2157` edited `lb1-storefront-middleware.test.mjs` in the same commit it deleted `middleware.ts` — here the change was *legitimate* (Next 16 migration), but it proves the gate can be moved in lockstep with code (R1) |
 
 ## Highest-value attacker targets (ranked)
 1. **Contact/lead form email-bombing** (`contacts.ts:56`) — trivial, no auth, amplifies to owner inbox + email quota. **Fix: add limiter + Turnstile.**

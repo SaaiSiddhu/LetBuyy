@@ -7,7 +7,7 @@
 > | Field | Value |
 > |---|---|
 > | Repo | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` (original tree, read-only — no write, no git mutation) |
-> | Branch / HEAD | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
+> | Branch / HEAD | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 > | Date | 2026-08-09 |
 > | Commands used | `git diff HEAD --numstat`, `git diff HEAD --raw`, `git diff HEAD --shortstat`, `git ls-files -s`, `git hash-object`, `git status --porcelain` |
 > | EXECUTED vs INFERRED | All three corrections below were EXECUTED against the original tree this session and their exit codes observed. Nothing is INFERRED. |
@@ -64,7 +64,7 @@
 
 **Agent:** Agent B — Git and Working-Tree Forensics Auditor, Wave 0 Phase 1, read-only.
 
-**Repo SHA at time of audit (HEAD):** `ee3711829d857e986014c5811bb94d86ebc3d343`
+**Repo SHA at time of audit (HEAD):** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 **Branch:** `stepup/main`
 **Timestamp used:** 2026-08-09 (literal, per task brief)
 
@@ -91,7 +91,7 @@ Total textual line delta across these 99 files: **6,496 insertions / 1,344 delet
 ### Group A — This audit round's own self-documentation (2 files, self-reported/subordinate)
 | File | Δ | What changed |
 |---|---|---|
-| `EXECUTION_LEDGER.md` | +1/-0 | Appends one new ledger row, `MERCHANT-APP-V1-READINESS-2026-08-09`, self-describing a prior forensic pass at this same commit (`ee371182`) — 12 agents, 188 capabilities inventoried, 65 claims re-verified (3 REFUTED), and lists the exact files it touched (which substantially overlap with the rest of this table). Self-reported; quoted for corroboration only. |
+| `EXECUTION_LEDGER.md` | +1/-0 | Appends one new ledger row, `MERCHANT-APP-V1-READINESS-2026-08-09`, self-describing a prior forensic pass at this same commit (`bf35062e`) — 12 agents, 188 capabilities inventoried, 65 claims re-verified (3 REFUTED), and lists the exact files it touched (which substantially overlap with the rest of this table). Self-reported; quoted for corroboration only. |
 | `LAUNCH_READINESS_2026_06_12/000_LAUNCH_READINESS_INDEX.md` | +6/-0 | Adds a "Subordinate evidence packages" table row pointing at `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/`, explicitly stating it is evidence/implementation class, subordinate to the governance docs, and restates the V1-scope-lock (mobile deferred to V1.1) as still standing. |
 
 ### Group B — developer-portal navigation refactor (13 files) — **FROZEN SURFACE**
@@ -128,7 +128,7 @@ This matches the self-reported ledger row's claim of "removed 5 live `letbuyy.st
 ### Group D — marketing-site contact page rebuild (1 file)
 | File | Δ | What changed |
 |---|---|---|
-| `apps/marketing-site/src/app/[locale]/contact/page.tsx` | +188/-55 | Substantial rebuild: imports a new `ContactForm` and `TicketLookup` component, `CONTACT_TOPICS` from `@letbuyy/shared-types`, computes `fastestPromise` from topic response-hour data, adds "assurances"/"direct channels" content blocks. Consistent with the recent `feat(demo): end-to-end demo request capture` / `add-to-calendar invite, ticket email, contact-shell page` commits already on this branch's tip (`4ac324e7`). |
+| `apps/marketing-site/src/app/[locale]/contact/page.tsx` | +188/-55 | Substantial rebuild: imports a new `ContactForm` and `TicketLookup` component, `CONTACT_TOPICS` from `@letbuyy/shared-types`, computes `fastestPromise` from topic response-hour data, adds "assurances"/"direct channels" content blocks. Consistent with the recent `feat(demo): end-to-end demo request capture` / `add-to-calendar invite, ticket email, contact-shell page` commits already on this branch's tip (`3b6e52bf`). |
 
 ### Group E — merchant-control-plane: nav reorg + dashboard activation board (11 files)
 | File | Δ | What changed |
@@ -345,7 +345,7 @@ This group exists only because Groups A–O enumerated **98** of the 99 real con
 | ~~Untracked new files~~ | ~~30~~ |
 | ~~**Grand total dirty paths**~~ | ~~**6,825**~~ |
 
-**Corrected table (all figures EXECUTED and re-measured 2026-08-09 against `ee371182` on `stepup/main`):**
+**Corrected table (all figures EXECUTED and re-measured 2026-08-09 against `bf35062e` on `stepup/main`):**
 
 | Category | Count | How verified |
 |---|---:|---|

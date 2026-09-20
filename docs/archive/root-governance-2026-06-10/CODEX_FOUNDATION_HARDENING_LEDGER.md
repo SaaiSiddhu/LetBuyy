@@ -110,11 +110,11 @@
 
 ## SINGLE-WRITER LEDGER
 
-- 2026-06-05T15:03:40Z table `orders` -> sole writer `services/api-gateway` for payment webhook order transitions; `services/webhook-service` now calls gateway internal payment endpoints; second-writer validator added in commit `9b5e0604`.
-- 2026-06-05T15:03:40Z table `products` -> sole writer `services/api-gateway` for payment webhook legacy stock fallback; `services/webhook-service` has zero direct writes to `products`; second-writer validator added in commit `9b5e0604`.
-- 2026-06-05T15:41:10Z table `subscriptions` -> sole writer `services/api-gateway` for provider subscription activation/status sync; `services/webhook-service` now calls `/v1/internal/billing/subscriptions/*`; second-writer validator expanded in commit `964c46d1`.
-- 2026-06-05T15:41:10Z table `sites` -> sole writer `services/api-gateway` for subscription-paid trial status updates; `services/webhook-service` no longer patches `sites`; second-writer validator expanded in commit `964c46d1`.
-- 2026-06-05T15:41:10Z table `billing_history` -> sole writer `services/api-gateway` for provider subscription invoices; `services/webhook-service` now calls gateway invoice endpoint; second-writer validator expanded in commit `964c46d1`.
+- 2026-06-05T15:03:40Z table `orders` -> sole writer `services/api-gateway` for payment webhook order transitions; `services/webhook-service` now calls gateway internal payment endpoints; second-writer validator added in commit `cdd33494`.
+- 2026-06-05T15:03:40Z table `products` -> sole writer `services/api-gateway` for payment webhook legacy stock fallback; `services/webhook-service` has zero direct writes to `products`; second-writer validator added in commit `cdd33494`.
+- 2026-06-05T15:41:10Z table `subscriptions` -> sole writer `services/api-gateway` for provider subscription activation/status sync; `services/webhook-service` now calls `/v1/internal/billing/subscriptions/*`; second-writer validator expanded in commit `088f3990`.
+- 2026-06-05T15:41:10Z table `sites` -> sole writer `services/api-gateway` for subscription-paid trial status updates; `services/webhook-service` no longer patches `sites`; second-writer validator expanded in commit `088f3990`.
+- 2026-06-05T15:41:10Z table `billing_history` -> sole writer `services/api-gateway` for provider subscription invoices; `services/webhook-service` now calls gateway invoice endpoint; second-writer validator expanded in commit `088f3990`.
 - 2026-06-05T15:09:20Z table `outbox_events` -> sole writer `services/api-gateway`; `services/webhook-service` and `services/queue-workers` now call gateway-owned `/v1/internal/events/domain`; second-writer validator expanded in this increment.
 - 2026-06-05T15:09:20Z table `payment_webhook_events` -> sole writer `services/webhook-service`; `services/api-gateway` and `services/queue-workers` are validator-guarded from writing provider webhook receipt/idempotency rows.
 

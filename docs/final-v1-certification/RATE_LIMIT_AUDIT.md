@@ -1,6 +1,6 @@
 # Phase E — Rate Limit Audit
 
-**HEAD `587dc988`. Two global baselines + per-endpoint limiters in only 5 of 87 route files.**
+**HEAD `ae383bb8`. Two global baselines + per-endpoint limiters in only 5 of 87 route files.**
 
 ## Global baselines (`services/api-gateway/src/index.ts`)
 - **Per-IP query-cost leaky bucket** on all `/v1/*` (`:644–648`, 20 pts/s, cap 200; POST cost 5, GET cost 1). **Per-IP only** — no per-identity/account dimension → does not stop distributed credential-stuffing or OTP/email bombing from rotating IPs.

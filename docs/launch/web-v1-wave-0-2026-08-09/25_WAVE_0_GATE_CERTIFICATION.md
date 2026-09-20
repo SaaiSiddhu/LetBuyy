@@ -5,8 +5,8 @@
 | Field | Value |
 |---|---|
 | **Repo** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — the original, production-linked tree |
-| **Branch / HEAD (original tree)** | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
-| **Certified subject** | `codex/web-v1-integration` @ `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6`, in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
+| **Branch / HEAD (original tree)** | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
+| **Certified subject** | `codex/web-v1-integration` @ `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab`, in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
 | **Date** | 2026-08-09 |
 | **Agent** | Wave 0 Gate Certification agent |
 | **Mode** | **Read-only against git and against every provider.** No `commit`, `add`, `stage`, `stash push/pop/apply/drop/clear/branch`, `clean`, `reset`, `checkout --`, `restore`, `chmod`, `worktree remove/prune`, push, PR, or deploy. No `supabase` command of any kind. No provider command. |
@@ -18,7 +18,7 @@
 | Measurement | Before | After |
 |---|---|---|
 | `git rev-parse --abbrev-ref HEAD` | `stepup/main` | `stepup/main` |
-| `git rev-parse HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `git rev-parse HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | `git status --porcelain \| wc -l` | `6826` | `6826` |
 | `git status --porcelain=v2 \| wc -l` | `6826` | (unchanged) |
 | `git stash list \| wc -l` | `2` | `2` |
@@ -70,7 +70,7 @@ The document does not merely assert reading; it produces falsifiable derived cla
 
 ```
 git rev-parse --abbrev-ref HEAD   → stepup/main                                     (both)
-git rev-parse HEAD                → ee3711829d857e986014c5811bb94d86ebc3d343        (both)
+git rev-parse HEAD                → bf35062eda22f4d881efd61fb1d36c8fc83baed1        (both)
 git status --porcelain | wc -l    → 6826                                            (both)
 git status --porcelain=v2 | wc -l → 6826
 git stash list | wc -l            → 2                                               (both)
@@ -148,7 +148,7 @@ genuinely different content             :   99
 **Not merged (EXECUTED):** the integration branch was tested directly for mode contamination:
 
 ```
-git diff --raw ee371182 fa5630aa | (entries where srcmode == dstmode) → 0
+git diff --raw bf35062e 8ec05e21 | (entries where srcmode == dstmode) → 0
 ```
 
 **Zero mode-only entries** exist in the 155-file, +51,757/−1,003 diff between the baseline and the integration head. The mode noise was isolated in the original tree and none of it crossed onto the branch.
@@ -165,11 +165,11 @@ git diff --raw ee371182 fa5630aa | (entries where srcmode == dstmode) → 0
 
 **Condition:** the exact baseline SHA is evidence-backed, human-approved, and governance-compatible.
 
-**Evidence (EXECUTED):** `git rev-parse HEAD` in the original tree returns `ee3711829d857e986014c5811bb94d86ebc3d343`, and `git reflog -5` shows `HEAD@{0}: commit: feat(demo): mount Turnstile so the form works in production` — the baseline is the tip of `stepup/main` and has not moved.
+**Evidence (EXECUTED):** `git rev-parse HEAD` in the original tree returns `bf35062eda22f4d881efd61fb1d36c8fc83baed1`, and `git reflog -5` shows `HEAD@{0}: commit: feat(demo): mount Turnstile so the form works in production` — the baseline is the tip of `stepup/main` and has not moved.
 
 The SHA is **load-bearing in machine-checkable places**, not merely asserted in prose:
 
-- `config/governance/web-v1-scope-registry.json` → `baselineSha: "ee3711829d857e986014c5811bb94d86ebc3d343"`, `recordedOn: "2026-08-09"` (read by this agent from the file on the integration branch).
+- `config/governance/web-v1-scope-registry.json` → `baselineSha: "bf35062eda22f4d881efd61fb1d36c8fc83baed1"`, `recordedOn: "2026-08-09"` (read by this agent from the file on the integration branch).
 - `15_BASELINE_DECISION_RECORD.md` carries the decision record; the SHA is repeated in the header of every Wave 0 document, including the correction notices that re-measured it.
 
 Human approval of this specific SHA is recorded by the Lead as a precondition of this task and is not something this agent can independently re-witness; it is recorded here as **INFERRED from the Lead's instruction**, with the SHA itself EXECUTED and confirmed.
@@ -189,9 +189,9 @@ Human approval of this specific SHA is recorded by the Lead as a precondition of
 **Evidence (EXECUTED):**
 
 ```
-git rev-parse codex/web-v1-integration                    → fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6
-git rev-list --count ee371182..codex/web-v1-integration   → 23
-git diff --shortstat ee371182 codex/web-v1-integration    → 155 files changed, 51757 insertions(+), 1003 deletions(-)
+git rev-parse codex/web-v1-integration                    → 8ec05e210e2282bbaa70fd39bbf61904cb9e21ab
+git rev-list --count bf35062e..codex/web-v1-integration   → 23
+git diff --shortstat bf35062e codex/web-v1-integration    → 155 files changed, 51757 insertions(+), 1003 deletions(-)
 git worktree list                                         → worktree present at
     /Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration
 git merge-base --is-ancestor codex/emergency-appbridge-killswitch codex/web-v1-integration
@@ -220,7 +220,7 @@ All five short-lived branches and the integration branch each hold their own wor
 | Property | Measured value |
 |---|---|
 | `artifactClass` | `GOVERNANCE_CONFIG_NOT_AUTHORITY` |
-| `baselineSha` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `baselineSha` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | Capabilities | **50** |
 | `WEB_V1_REQUIRED` | 19 |
 | `WEB_V1_DEFERRED` | 16 |
@@ -231,7 +231,7 @@ All five short-lived branches and the integration branch each hold their own wor
 | `knownActivationsBaseline.recordedCount` | **32** (signals array length 32 — self-consistent) |
 | Open escalations | **5** — `ESC-APPBRIDGE`, `ESC-DEFERRED-LIVE`, `ESC-GATE-FAILFAST`, `ESC-STRIPE-LIVE`, `ESC-WASM-APPFUNCTIONS` |
 
-The freeze is **enforced, not documented**. `web-v1-scope-perimeter-validator.mjs` **PASSED** in this agent's own gate run at `fa5630aa` (reporting 378 assertions), and the registry encodes the unresolved questions as *invariants the code rejects violations of*:
+The freeze is **enforced, not documented**. `web-v1-scope-perimeter-validator.mjs` **PASSED** in this agent's own gate run at `8ec05e21` (reporting 378 assertions), and the registry encodes the unresolved questions as *invariants the code rejects violations of*:
 
 ```
 invariants.mustBeHumanDecisionRequired = ["mobile_merchant_app", "lcis_api_service"]
@@ -265,7 +265,7 @@ That is the honest engineering move: rather than guessing mobile's classificatio
 **Not mixed (EXECUTED):**
 
 ```
-git diff --name-only ee371182 fa5630aa | grep -c '^apps/mobile/'   → 0
+git diff --name-only bf35062e 8ec05e21 | grep -c '^apps/mobile/'   → 0
 ```
 
 **Zero** mobile paths appear anywhere in the integration branch's 155-file diff. The same test against the frozen apps (`app-marketplace`, `developer-portal`, `theme-marketplace`, `platform-operations-portal`) also returns empty. The integration branch is web-runtime and governance-tooling only.
@@ -287,7 +287,7 @@ git diff --name-only ee371182 fa5630aa | grep -c '^apps/mobile/'   → 0
 
 **Condition:** PRs targeting the V1 branch receive the intended **non-deploying** gates.
 
-**Gates reach the branch (READ from the workflow files on `fa5630aa`):** exactly two workflows reference `codex/web-v1-integration` — `.github/workflows/ci.yml` and `.github/workflows/architecture-governance.yml`. `ci.yml`'s trigger block is verbatim:
+**Gates reach the branch (READ from the workflow files on `8ec05e21`):** exactly two workflows reference `codex/web-v1-integration` — `.github/workflows/ci.yml` and `.github/workflows/architecture-governance.yml`. `ci.yml`'s trigger block is verbatim:
 
 ```yaml
 on:
@@ -330,12 +330,12 @@ env:
 
 **Condition:** all applicable validators execute, or report an explicit truthful blocker.
 
-**Evidence — EXECUTED BY THIS AGENT at `fa5630aa`, not copied:**
+**Evidence — EXECUTED BY THIS AGENT at `8ec05e21`, not copied:**
 
 ```
 $ cd /Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration
 $ git rev-parse HEAD
-fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6
+8ec05e210e2282bbaa70fd39bbf61904cb9e21ab
 $ node scripts/validate-governance.mjs --lane=gate
 exit 1
 TOTALS: PASS=90 FAIL=20 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1
@@ -356,7 +356,7 @@ Both lanes account for **every one of the 111 validator files discovered on disk
 
 **Two blockers that prior documents recorded as open are now closed by this run:**
 
-- **FBR-41 ("Full gate never run on `fa5630aa`", BLOCKS-WAVE-0, OPEN)** — **now measured.** This certification run is the full gate at `fa5630aa`, with the typed matrix above.
+- **FBR-41 ("Full gate never run on `8ec05e21`", BLOCKS-WAVE-0, OPEN)** — **now measured.** This certification run is the full gate at `8ec05e21`, with the typed matrix above.
 - **FBR-47 ("2 validators BLOCKED — `typescript` unresolvable", BLOCKS-WAVE-0, OPEN)** — **BLOCKED=0** in this run. The earlier `BLOCKED=2` (`cycle-budget-validator.mjs`, `route-ownership-validator.mjs`, in `raw-evidence/w0-validator-execution/20_post-repair-gate.log`) was caused by absent `node_modules`, not by a validator defect. With dependencies installed both execute; `route-ownership-validator.mjs` then reports a genuine `FAIL`, which is a real finding it could not previously reach. **Note for Wave 1: the BLOCKED→FAIL transition means one of the 20 current failures was previously invisible.**
 
 **Result stability (CORRECTED 2026-08-09, round-2 falsification):** this run and the earlier post-repair run produced byte-identical totals, but **both ran on node `v26.5.1`** — `raw-evidence/w0-validator-execution/20_post-repair-gate.log` prints `Node.js v26.5.1`, and all 31 build-baseline logs record `v26.5.1` (31/31). The agreement therefore demonstrates **run-to-run determinism on the same node major, not node-major independence**. **No Node 20 run exists anywhere in this evidence corpus**, despite Node 20 being the version now pinned in `.nvmrc`/`.node-version`. The original sentence claimed the baseline used pinned node 20 and inferred node-major independence from it; that claim was false and is struck. Doc 23 line 475 already stated the position correctly ("Nothing was measured on Node 20"). **W0-G10's PASS verdict is unaffected** — it rests on all 110 validators executing, not on cross-version stability. Verifying the gate under Node 20 is a Wave 1 action.
@@ -580,7 +580,7 @@ Seven gates carry open defects, and three of them are structural rather than cos
 Carried from the register (`24_WAVE_0_FAILURE_AND_BLOCKER_REGISTER.md`: 52 entries; S0=2, S1=11, S2=18, S3=20, n/a=1; BLOCKS-WAVE-0=18, BLOCKS-WAVE-1=14, BLOCKS-LAUNCH=12, NON-BLOCKING=8 — summary table re-read by this agent at lines 117–122), with this certification's own updates applied:
 
 **Closed by this certification:**
-- **FBR-41** — full gate never run on `fa5630aa` → **now run**: exit 1, PASS=90 / FAIL=20 / BLOCKED=0 / NOT_APPLICABLE=1, 110/110 executed.
+- **FBR-41** — full gate never run on `8ec05e21` → **now run**: exit 1, PASS=90 / FAIL=20 / BLOCKED=0 / NOT_APPLICABLE=1, 110/110 executed.
 - **FBR-47** — 2 validators BLOCKED on unresolvable `typescript` → **BLOCKED=0** with dependencies installed. *Caveat for Wave 1: `route-ownership-validator.mjs` moves from BLOCKED to FAIL, so one of the 20 current failures was previously invisible.*
 
 **New, found by this certification:**
@@ -607,7 +607,7 @@ Carried from the register (`24_WAVE_0_FAILURE_AND_BLOCKER_REGISTER.md`: 52 entri
 
 Concretely, Wave 0 establishes that the baseline is known and approved, that no user work has been lost, that the gate now executes completely and fails honestly, that a scoped integration branch exists in isolation, that a local environment can be stood up without touching production, and that nothing in production was mutated. It establishes **the ability to measure**, not the quality of what was measured.
 
-It says nothing about whether Web V1 can take traffic. The register's own launch section is unambiguous: **12 entries are BLOCKS-LAUNCH**, and both S0 findings — the same unauthenticated app-platform surface, adjudicated REACHABLE in verbatim production shape with 19 of 83 routes executing for an unauthenticated caller — are open at the baseline commit. The kill switch for them is committed on `codex/emergency-appbridge-killswitch` (`30fd96b5`), which this agent confirmed is **not an ancestor** of the integration branch and which has been neither reviewed by ARB, compiled, nor deployed; its status is **GATED_WITH_RESIDUAL_RISK**. Until ARB decides that rollout and a human confirms the live flag values, **the production state is the baseline state**.
+It says nothing about whether Web V1 can take traffic. The register's own launch section is unambiguous: **12 entries are BLOCKS-LAUNCH**, and both S0 findings — the same unauthenticated app-platform surface, adjudicated REACHABLE in verbatim production shape with 19 of 83 routes executing for an unauthenticated caller — are open at the baseline commit. The kill switch for them is committed on `codex/emergency-appbridge-killswitch` (`6c3e17df`), which this agent confirmed is **not an ancestor** of the integration branch and which has been neither reviewed by ARB, compiled, nor deployed; its status is **GATED_WITH_RESIDUAL_RISK**. Until ARB decides that rollout and a human confirms the live flag values, **the production state is the baseline state**.
 
 ---
 

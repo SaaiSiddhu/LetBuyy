@@ -1,7 +1,7 @@
 # FINAL GOVERNANCE SCORECARD — PHASE 8 (GOVERNANCE-MATURITY VERDICT)
 
 > **Document type:** ARB-chair final scorecard for the **Governance Hardening 2026-06-10** program. This document scores the **maturity of LetBuyy's governance SYSTEM** — the authority model, the canonical registry, the legacy-elimination discipline, the roadmap, the UI law, and (above all) whether the law is *in force* — **NOT** the platform's architecture. It scores the *governing apparatus*, grounded line-by-line in the 7 phase-audit reports that precede it.
-> **Date:** 2026-06-10 · **Author:** Architecture Review Board (chair). · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`.
+> **Date:** 2026-06-10 · **Author:** Architecture Review Board (chair). · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`.
 > **Subject of scoring:** the governance stack in `GOVERNANCE_REWRITE_2026_06_10/` (8 files; "7 governing + 1 reference") **as a system**, and its live enforcement surface (root `AGENTS.md`, `scripts/validators/*` (187 files), `scripts/validate-governance.mjs`, `.github/workflows/*`).
 > **Inputs (the 7 phase reports, this folder):** `AUTHORITY_GAP_REPORT.md` (P1), `CANONICAL_CONSISTENCY_REPORT.md` (P2), `DUPLICATE_GOVERNANCE_REPORT.md` (P3), `LEGACY_ELIMINATION_GAP_REPORT.md` (P4), `ROADMAP_GAP_REPORT.md` (P5), `CODEX_ENFORCEMENT_REPORT.md` (P6), `VALIDATOR_COVERAGE_MATRIX.md` (P7). **129 findings total** across the seven.
 > **Absolute rule honored:** no architecture is changed, scored, or re-litigated. This is one new file; no repo doc was modified.
@@ -131,4 +131,4 @@ These are items the phase reports flagged UNVERIFIED or as ARB calls; this score
 
 ---
 
-*End of FINAL_GOVERNANCE_SCORECARD.md — Phase 8, Governance Hardening 2026-06-10. Scores the governance SYSTEM only; no architecture changed, scored, or re-litigated. Grounded in 129 findings across the 7 phase reports in this folder. Headline: document-quality ≈ 8.4/10, in-force ≈ 2.5/10, weighted overall ≈ 3.7/10; the single blocking gap is the un-executed, self-blocked GATE-1 plus money's zero enforcement. One new file; no repo doc modified. Evidence pinned at `stepup/main` @ `5cf9e64e`, 2026-06-10.*
+*End of FINAL_GOVERNANCE_SCORECARD.md — Phase 8, Governance Hardening 2026-06-10. Scores the governance SYSTEM only; no architecture changed, scored, or re-litigated. Grounded in 129 findings across the 7 phase reports in this folder. Headline: document-quality ≈ 8.4/10, in-force ≈ 2.5/10, weighted overall ≈ 3.7/10; the single blocking gap is the un-executed, self-blocked GATE-1 plus money's zero enforcement. One new file; no repo doc modified. Evidence pinned at `stepup/main` @ `c4fc3cd6`, 2026-06-10.*

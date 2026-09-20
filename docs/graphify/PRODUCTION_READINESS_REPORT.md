@@ -21,7 +21,7 @@
 
 ## Readiness %
 - **Code architecture readiness (graph-corroborated): ~85%.**
-- **Production readiness (deploy/provision): ~15%** — never pushed (graph built at `0db025a6`; origin far behind), never provisioned (cert).
+- **Production readiness (deploy/provision): ~15%** — never pushed (graph built at `0f257ca1`; origin far behind), never provisioned (cert).
 
 ## Critical blockers (carried from certification, unchanged by the graph)
 1. Never pushed / deployed. 2. ~40 secrets unprovisioned. 3. No external alerting. + code defects: LB-8 (a *missing renderer edge* the graph can locate), shipping-drop, LB-11.

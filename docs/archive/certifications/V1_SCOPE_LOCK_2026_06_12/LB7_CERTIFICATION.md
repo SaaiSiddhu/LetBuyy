@@ -1,6 +1,6 @@
 # LB-7 (Shipping Rates + GST) — CERTIFICATION
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` (LB-7 = uncommitted working tree) · **Verdict: (A) COMPLETE — pending commit only.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` (LB-7 = uncommitted working tree) · **Verdict: (A) COMPLETE — pending commit only.**
 
 ## Determination
 

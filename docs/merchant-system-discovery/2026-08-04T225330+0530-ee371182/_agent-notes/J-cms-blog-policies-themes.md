@@ -1,7 +1,7 @@
 # AGENT J — CMS, Blog, Policy Pages, Navigation, Domains, Themes
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182`. Read-only discovery. No file outside this note was modified.
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e`. Read-only discovery. No file outside this note was modified.
 
 Local `AGENTS.md` read before inspection: `apps/merchant-control-plane/AGENTS.md`,
 `apps/storefront-runtime/AGENTS.md`, `packages/theme-engine/AGENTS.md`, `packages/cms-core/AGENTS.md`,

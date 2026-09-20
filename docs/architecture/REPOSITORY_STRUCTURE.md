@@ -4,7 +4,7 @@
 
 ## One canonical repository
 
-As of `HEAD` `00894cc5`, this is the single repository. The two previously-nested, separate git repositories (`Ecommerce/LetBuyy`, System A; `Ecommerce/LetBuyy/Agrimore`, System B) were deleted in Stage 9 of the repository-consolidation phase, after their full history and uncommitted work were bundled and proven recoverable outside the repository tree. See `docs/migration/repository_consolidation/14_recovery_and_rollback.md`.
+As of `HEAD` `92f90e93`, this is the single repository. The two previously-nested, separate git repositories (`Ecommerce/LetBuyy`, System A; `Ecommerce/LetBuyy/Agrimore`, System B) were deleted in Stage 9 of the repository-consolidation phase, after their full history and uncommitted work were bundled and proven recoverable outside the repository tree. See `docs/migration/repository_consolidation/14_recovery_and_rollback.md`.
 
 ## Top-level layout
 

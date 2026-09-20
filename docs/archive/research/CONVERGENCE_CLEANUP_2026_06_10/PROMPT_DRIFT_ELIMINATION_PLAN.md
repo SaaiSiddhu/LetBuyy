@@ -2,7 +2,7 @@
 
 **Program:** Convergence Cleanup 2026-06-10 · **Phase:** 6 — PROMPT DRIFT ELIMINATION
 **Mode:** DISCOVERY ONLY. No code/architecture/prompt edits, no deletions, read-only git. This file is a *plan*, not an execution.
-**Repo state (re-verified fresh):** branch `stepup/main`, HEAD `5cf9e64e`, **+30** over `main`, working tree dirty (`78 ?? / 512 D / 410 M` via `git status --porcelain`).
+**Repo state (re-verified fresh):** branch `stepup/main`, HEAD `c4fc3cd6`, **+30** over `main`, working tree dirty (`78 ?? / 512 D / 410 M` via `git status --porcelain`).
 **Mandate:** find every prompt CAPABLE OF REINTRODUCING rejected architecture, and produce the plan to ELIMINATE that drift capacity (delete the pure hazards, quarantine the historical ones, and stand up the registry + perimeter guard so `docs/` can never refill).
 **All paths repo-relative to** `/Users/saai_sidd/Git/Letbuyy_Store`.
 
@@ -32,7 +32,7 @@
 
 **Discovery (fresh, this pass):**
 - Re-globbed the working tree (absolute paths, `node_modules` excluded) for `*PROMPT* *MISSION* *CODEX* *BLUEPRINT* *WAVE* *GOAL* *TERMINAL_* *RELAUNCH*` across root + `docs/` + the mandated subtrees (`docs/Codex_waves/`, `docs/agents/`, `docs/*-audit*/`, `docs/archive/{codex-prompts,build-missions,prompts}/`, `tasks/`, `memory/`, `.claude/`, `.codex/`). Census: **67 `*MISSION*.md`, 6 `*PROMPT*.md`, 10 `*BLUEPRINT*.md`** outside `node_modules` (Grep `files_with_matches`).
-- Read each candidate's head/full text and **re-verified offending lines fresh** (every quote in §3 is from a fresh Read/Grep at HEAD `5cf9e64e`, not carried over).
+- Read each candidate's head/full text and **re-verified offending lines fresh** (every quote in §3 is from a fresh Read/Grep at HEAD `c4fc3cd6`, not carried over).
 - Consulted the prior `REPOSITORY_TRUTH_AUDIT_2026_06_10/PROMPT_DRIFT_REPORT.md` and `CONVERGENCE_AUDIT_2026_06_10/PROMPT_DRIFT_REPORT.md` **only for completeness** (they surfaced the `docs/audit/` + `docs/audits/apps-platform/` clusters); all offending lines re-confirmed independently.
 
 **Authoritative reject-list (re-read fresh from the validators, not from memory):**
@@ -211,8 +211,8 @@ A new rule (extending `whole-repo-end-state-validator.mjs` or a sibling validato
 
 ## 8. Unknowns / Limits of this pass
 
-1. **Bash/git was unavailable for most of the pass** (workspace `mcp__workspace__bash` returned "process already running" repeatedly; one late call succeeded and re-confirmed HEAD `5cf9e64e` / +30 / `512 D · 410 M · 78 ??`). Tracked-vs-untracked status per file was therefore **not** re-derived this pass; the prior `CONVERGENCE_AUDIT` report found the `docs/Codex_waves/` corpus tracked-clean and the archive/validators/ledgers *untracked* (a `git clean -fd` would destroy the archive). **Before executing any DELETE/ARCHIVE, re-run `git status --porcelain -- <path>` per cluster** to choose `git rm` vs plain delete and to ensure the archive destination is committed.
-2. **Line numbers** are from the working tree at HEAD `5cf9e64e`; a few long offending lines were Grep-reported as "[Omitted long matching line]" (e.g., `CODEX_EXTENSION_PLATFORM_MISSION.md:12,24`) — the rejected content is confirmed on adjacent quoted lines, but exact column anchors for those were not captured.
+1. **Bash/git was unavailable for most of the pass** (workspace `mcp__workspace__bash` returned "process already running" repeatedly; one late call succeeded and re-confirmed HEAD `c4fc3cd6` / +30 / `512 D · 410 M · 78 ??`). Tracked-vs-untracked status per file was therefore **not** re-derived this pass; the prior `CONVERGENCE_AUDIT` report found the `docs/Codex_waves/` corpus tracked-clean and the archive/validators/ledgers *untracked* (a `git clean -fd` would destroy the archive). **Before executing any DELETE/ARCHIVE, re-run `git status --porcelain -- <path>` per cluster** to choose `git rm` vs plain delete and to ensure the archive destination is committed.
+2. **Line numbers** are from the working tree at HEAD `c4fc3cd6`; a few long offending lines were Grep-reported as "[Omitted long matching line]" (e.g., `CODEX_EXTENSION_PLATFORM_MISSION.md:12,24`) — the rejected content is confirmed on adjacent quoted lines, but exact column anchors for those were not captured.
 3. **Exhaustiveness of `docs/audit/` + `docs/audits/apps-platform/`**: classified at the cluster level (prescriptive build-program) from filenames + spot-reads (`docs/audit/18-new-services-to-build.md` read in full for the WASM/new-root quote); the ~31 descriptive sibling docs were not each read line-by-line. They are archived as clusters, so per-file re-read is not required for the *action*, only for finer per-file annotation.
 4. **`CODEX_API_GRAPHQL_MISSION.md` / several Codex_waves UX missions** were classified from the orchestrators' authoritative summaries + headers rather than a full read of each body; the action (ARCHIVE) is conservative and unaffected, but a full read would let some UX-only missions (design-system, settings, merchant-UX) potentially downgrade from "archive the program" to "keep as historical UX reference."
 5. **The minimal-vs-recommended DELETE line** (5 vs 9 files, §4 note) is a judgment call left explicit for the human ratifier; both are defensible.

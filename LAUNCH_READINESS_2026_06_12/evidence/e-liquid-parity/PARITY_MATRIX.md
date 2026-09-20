@@ -45,7 +45,7 @@ Rendering snapshots are produced by `scripts/liquid-parity/run-parity-matrix.mjs
 | **Data bindings** | Product/collection/cart/customer data surfaces resolve identically | Fixture assertion in `run-parity-matrix.mjs` |
 | **Editor round-trip** | Edit → preview → publish → render identical to committed config (CAP-C12) | Manual staging run; output logged to evidence/ |
 | **Preview** | Draft preview = published render for same config | Manual staging run |
-| **Checkout handoff** | Liquid storefront → checkout session identical params/signing (post-`e2e2d47e`) | Manual staging run; compare session tokens |
+| **Checkout handoff** | Liquid storefront → checkout session identical params/signing (post-`e469a7c0`) | Manual staging run; compare session tokens |
 | **SEO/meta** | Equivalent `<head>` output (title, og:*, structured data) | `capture-snapshot.mjs --mode head` |
 | **Performance** | Liquid p95 render ≤ React p95 × 1.25 | Document 4 monitoring dashboard; `X-Lb-Render-Engine` header buckets |
 | **Accessibility** | No regression on existing a11y checks | Staging axe-core run output |

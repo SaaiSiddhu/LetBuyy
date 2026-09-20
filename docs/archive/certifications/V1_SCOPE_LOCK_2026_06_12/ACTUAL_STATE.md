@@ -1,6 +1,6 @@
 # LETBUYY V1 — ACTUAL STATE (Phase 0 Truth Reconstruction)
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · **Method:** 5 parallel code-audit agents + direct gate/test/typecheck runs. **Code wins; no doc/old-report trusted without a file:line, test, validator, or commit.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · **Method:** 5 parallel code-audit agents + direct gate/test/typecheck runs. **Code wins; no doc/old-report trusted without a file:line, test, validator, or commit.**
 
 **Two facts gate the whole program:**
 - **COMMIT SEAM (sandbox):** `.git/index.lock` exists and is **un-removable** (`rm` → `Operation not permitted`). `git add`/`git commit` fail. Nothing can be committed in this environment — so every "complete" item below that isn't already in a commit is *validated-but-uncommitted*.
@@ -12,13 +12,13 @@
 
 | Item | Evidence | Commit |
 |---|---|---|
-| LB-1 storefront middleware | `apps/storefront-runtime/src/middleware.ts` exists, re-exports `proxy` (two agents independently confirmed — the old scope-lock "middleware missing" claim is **stale**) | `8d73fe7a` |
-| LB-2 Razorpay+COD-only checkout | `payments.test.ts #8` proves the 7 stripe/paypal storefront routes are deleted; `checkout-client.tsx` has 0 `/payments/stripe/checkout` | `8d73fe7a` |
-| LB-13 security trio | directory PII removed, replay guard, per-IP rate limits | `8d73fe7a` |
-| LB-3 refund chain | `services/api-gateway/src/routes/payments.ts:462+` — Razorpay `refund()` (537-544) → `postPaymentLedger` (558-577); step-up gated (492-502, 428); idempotent (`payment.refund:<id>`); over-refund guard (481-484) | `30744216` |
-| LB-4 payout release | `payouts.ts:555+` step-up (576-586) + atomic `claim_payout_statement_release` double-release guard (mig 160:357) + derived-balance check; live rail gated 503 until PA creds | `30744216` |
-| LB-5 variants E2E | matrix builder → real `variants[]` → cart `variant_id` | `04cbbbab` |
-| LB-6 collections E2E | assignment API/UI + `/collections/[slug]` route | `0b8a56e7` |
+| LB-1 storefront middleware | `apps/storefront-runtime/src/middleware.ts` exists, re-exports `proxy` (two agents independently confirmed — the old scope-lock "middleware missing" claim is **stale**) | `90368dc6` |
+| LB-2 Razorpay+COD-only checkout | `payments.test.ts #8` proves the 7 stripe/paypal storefront routes are deleted; `checkout-client.tsx` has 0 `/payments/stripe/checkout` | `90368dc6` |
+| LB-13 security trio | directory PII removed, replay guard, per-IP rate limits | `90368dc6` |
+| LB-3 refund chain | `services/api-gateway/src/routes/payments.ts:462+` — Razorpay `refund()` (537-544) → `postPaymentLedger` (558-577); step-up gated (492-502, 428); idempotent (`payment.refund:<id>`); over-refund guard (481-484) | `f53d6e2f` |
+| LB-4 payout release | `payouts.ts:555+` step-up (576-586) + atomic `claim_payout_statement_release` double-release guard (mig 160:357) + derived-balance check; live rail gated 503 until PA creds | `f53d6e2f` |
+| LB-5 variants E2E | matrix builder → real `variants[]` → cart `variant_id` | `db986077` |
+| LB-6 collections E2E | assignment API/UI + `/collections/[slug]` route | `140a73db` |
 
 **Foundation invariants — PRESERVED (must not regress):**
 - **Money:** DB-enforced double-entry — `enforce_ledger_transaction_balance()` + `CONSTRAINT TRIGGER ledger_entries_balance_enforced DEFERRABLE` (mig `139:172-198,378-382`); append-only (`reject_ledger_mutation` 358-376); capture/refund/payout/COD all post the canonical ledger; commission hard-zeroed (mig `162` default+backfill) — validators `canonical-ledger-only`, `no-self-custody-rail`, `commission-bps-zero` green. `money.test.ts`+`settlements.test.ts` = **13/13**.

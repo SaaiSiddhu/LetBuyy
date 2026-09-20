@@ -33,7 +33,7 @@ export const THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION = {
 
 Seven programs (Phases B–I) on branch `stepup/main` have transformed the storefront Liquid platform from a prototype to a production-grade, React-fallback-safe rendering engine. The core safety architecture is complete: per-section crash isolation, composition-engine outer catch, G4 version gate, and F5 chrome-fallback seam together ensure that any Liquid failure degrades gracefully to a full React page with no blank-page or HTTP 500 outcome.
 
-Five of the seven original ARB-gate blockers are **CLOSED** with code evidence. Two are **MITIGATED** (infrastructure built; no concrete usage yet required). Three items were found during Phase H/I security and QA work. One (I-F1, DOMPurify clobbering bug on the customer-register form) is **CLOSED** — the form field was renamed to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433` in commit 4eaf3e84; the register route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). Two (H-F2, H-F3) are MEDIUM/LOW: H-F2 is CLOSED (path-traversal guard in place), H-F3 is open LOW and does not block a cautious per-store rollout.
+Five of the seven original ARB-gate blockers are **CLOSED** with code evidence. Two are **MITIGATED** (infrastructure built; no concrete usage yet required). Three items were found during Phase H/I security and QA work. One (I-F1, DOMPurify clobbering bug on the customer-register form) is **CLOSED** — the form field was renamed to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433` in commit dbcf173a; the register route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). Two (H-F2, H-F3) are MEDIUM/LOW: H-F2 is CLOSED (path-traversal guard in place), H-F3 is open LOW and does not block a cautious per-store rollout.
 
 **Current verdict on the platform flip (ARB to adjudicate):**
 
@@ -42,7 +42,7 @@ Five of the seven original ARB-gate blockers are **CLOSED** with code evidence. 
 | Safety net (crash recovery + React fallback) | READY |
 | Core render-parity (20 section types + experience fonts + linklists + search) | READY |
 | Security — SSTI/XSS/prototype-pollution automated coverage | READY (unit scope) |
-| Security — DOMPurify clobbering bug (I-F1, no-JS customer-register name field) | **CLOSED** — renamed to `name="fullName"` in `theme-bundle.ts:2433` (commit 4eaf3e84); A11Y-5 asserts fix |
+| Security — DOMPurify clobbering bug (I-F1, no-JS customer-register name field) | **CLOSED** — renamed to `name="fullName"` in `theme-bundle.ts:2433` (commit dbcf173a); A11Y-5 asserts fix |
 | Performance — in-process budget (cold ≤ 150 ms, steady ≤ 50 ms) | READY (local benchmark) |
 | Performance — production profiling | NOT-CONNECTED (requires live Worker + Analytics Engine) |
 | Observability — structured telemetry emission points | CONNECTED (log emission exists) |
@@ -122,7 +122,7 @@ The seven original blockers are from `docs/storefront-liquid-discovery/11_GAP_AN
 |---|---|---|---|
 | Unit | CONNECTED | theme-engine 221/221 PASS; storefront-runtime 78/78 PASS; merchant-control-plane 15/15 PASS | Core schema, renderer, DOMPurify, crash recovery, SDK, experience fonts, blog/article/page/404/password/routes, auth, A11Y, security |
 | Integration | PARTIAL | CONNECTED: 78/78 contract tests; NOT-CONNECTED: live gateway + Supabase integration | Live integration harness not authored; no `pnpm test:integration` script exists |
-| Accessibility | PARTIAL | CONNECTED: 8 A11Y tests in 221/221; NOT-CONNECTED: axe-core in live browser | A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (I-F1 CLOSED, commit 4eaf3e84) |
+| Accessibility | PARTIAL | CONNECTED: 8 A11Y tests in 221/221; NOT-CONNECTED: axe-core in live browser | A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (I-F1 CLOSED, commit dbcf173a) |
 | Performance | PARTIAL | CONNECTED: F9 benchmark (cold=24 ms, steady=11 ms, p95=17 ms, total=288 ms, N=25, all under PROPOSED budget cold ≤ 150 ms / steady ≤ 50 ms); NOT-CONNECTED: production CPU/memory profiling | Local benchmark only; production Cloudflare Worker profiling requires `OTEL_EXPORTER_OTLP_ENDPOINT` |
 | SEO | NOT-CONNECTED | 0 tests | No Lighthouse CI or live URL; `<title>` emits `{{ shop.name }}` (correct); no `<meta name="description">` in current Liquid layout template |
 | Hydration | CONNECTED | 13 new + 40 existing in 78/78 PASS | All 10 lb-* islands; SSR data-attribute parity; `customElements` server-safe guard |
@@ -179,7 +179,7 @@ The following criteria must be evaluated by the ARB before authorizing the platf
 | Experience fonts load for all 6 presets (Aura/Craft/Dawn/Sense/Urban Kicks/Refresh) | CONNECTED: `D7 font loading wires experience fonts` test in 221/221 PASS | READY |
 | Navigation (`linklists`) renders in header/footer | CONNECTED: D1-A/D1-B tests in 78/78 PASS | READY |
 | No-JS customer login POST works | CONNECTED: E8 contract tests in 78/78 PASS | READY |
-| Customer register no-JS POST works with correct name field | CONNECTED: **I-F1 CLOSED** — field renamed to `name="fullName"` in `theme-bundle.ts:2433` (commit 4eaf3e84). Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` present and `name="name"` absent after DOMPurify (221/221 PASS). | **CLOSED** |
+| Customer register no-JS POST works with correct name field | CONNECTED: **I-F1 CLOSED** — field renamed to `name="fullName"` in `theme-bundle.ts:2433` (commit dbcf173a). Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` present and `name="name"` absent after DOMPurify (221/221 PASS). | **CLOSED** |
 | Blog and article pages render | CONNECTED: template keys implemented in Phase E; tests in 221/221 PASS | READY |
 | 404, password, CMS page render | CONNECTED: Phase E templates; tests in 221/221 PASS | READY |
 
@@ -239,7 +239,7 @@ The recommended progression from current state to a full platform flip:
 
 | Item | Owner | Status |
 |---|---|---|
-| Fix I-F1: rename `name="name"` → `name="fullName"` in customer-register Liquid template (`theme-bundle.ts`) and align gateway handler | Engineering | **CLOSED** (commit 4eaf3e84; `theme-bundle.ts:2433`; route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 green) |
+| Fix I-F1: rename `name="name"` → `name="fullName"` in customer-register Liquid template (`theme-bundle.ts`) and align gateway handler | Engineering | **CLOSED** (commit dbcf173a; `theme-bundle.ts:2433`; route reads `form.get('fullName') ?? form.get('name')`; A11Y-5 green) |
 | Wire `FEATURE_LIQUID` gateway flag to `featureGate()` in `services/api-gateway/src/index.ts` as a kill switch, or document it as intentionally dormant with ARB sign-off | ARB + Engineering | OPEN |
 | Apply migration 188 (`letbuyy_core_theme_row.sql`) to production database | Operations | Required for B-6 CLOSED in production |
 | Confirm live observability: at minimum, `wrangler tail --format=json` piped to a log aggregation sink capable of filtering `lb:canary:render` and `lb:canary:render:fallback` | Operations | NOT-CONNECTED |
@@ -280,7 +280,7 @@ The ARB convenes with the evidence from Gates 1 and 2. If all thresholds are met
 
 | ID | Severity | Description | Owner | Blocker for |
 |---|---|---|---|---|
-| I-F1 | ~~HIGH~~ **CLOSED** | DOMPurify 3.x clobbering bug on customer-register form — **FIXED** in commit 4eaf3e84. Field renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. Register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). | Engineering | **CLOSED — not a blocker** |
+| I-F1 | ~~HIGH~~ **CLOSED** | DOMPurify 3.x clobbering bug on customer-register form — **FIXED** in commit dbcf173a. Field renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. Register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). | Engineering | **CLOSED — not a blocker** |
 | H-F2 | **CLOSED** | Path traversal in `theme-artifact-exporter.ts` — fixed. `assertSafeArtifactPath()` (`packages/theme-engine/src/theme-artifact-exporter.ts:58–68`) guards all path composition points (lines 75, 82, 90, 116, 124). Throws `UnsafeThemeArtifactPathError` on absolute paths or `..` segments. Previously listed as OPEN MEDIUM; code evidence confirms closure. | Engineering | **CLOSED** |
 | H-F1 | **CLOSED** | Linter `forbidAttrs` — fixed. `for (const attr of forbidAttrs)` at `theme-linter.ts:101` iterates FORBID_ATTR dynamically from `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG`. Rule name is `forbidden-attr`. Previously listed as OPEN MEDIUM with wrong claim of hardcoded regex; code confirms the sanitizer is the single source of truth. | Engineering | **CLOSED** |
 | H-F3 | LOW | `theme-artifact-exporter.ts` lines 101–110: `settings_data` exported as-is. Code comment (lines 101–107) documents this as intentional: settings_data holds design tokens; BLOCKED_DROP_KEYS is a render-time defence, not an export-time one. Risk exists if untrusted merchant data reaches the export pipeline. | Engineering | Gate 2 — assess or formally risk-accept |
@@ -339,7 +339,7 @@ This package synthesizes evidence from the following committed documents:
 | B | `certification/EVIDENCE_REPORT.md` | Phase B static audit evidence |
 | C–I | `phase-{c..i}/PHASE_*_REPORT.md` | Per-phase implementation evidence |
 | H | `phase-h/PHASE_H_REPORT.md` | Security findings H-F1, H-F2, H-F3 |
-| I | `phase-i/PHASE_I_REPORT.md` | QA certification; I-F1 DOMPurify clobbering bug found and fixed (name="fullName", commit 4eaf3e84, A11Y-5 asserts); test authoring record |
+| I | `phase-i/PHASE_I_REPORT.md` | QA certification; I-F1 DOMPurify clobbering bug found and fixed (name="fullName", commit dbcf173a, A11Y-5 asserts); test authoring record |
 | I | `phase-i/QA_CERTIFICATION.md` | 16-category QA matrix; CONNECTED/NOT-CONNECTED breakdown |
 | J | `phase-j/ROLLOUT_READINESS_PACKAGE.md` | Activation mechanics; telemetry map; blocker reconciliation; open items |
 | 11 | `11_GAP_ANALYSIS.md` | Original gap analysis; source of 7 ARB blockers |

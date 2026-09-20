@@ -1,4 +1,4 @@
-<!-- PHASE 9 — CODEX REPOSITORY CONVERGENCE EXECUTION PROMPT. The crown deliverable of the LetBuyy Convergence Cleanup Program. This file is a PROMPT authored for a future Codex agent to FOLLOW; authoring it executed nothing — no code, schema, migration, commit, deletion, archive-move, validator-retarget, or git mutation was performed. Read-only git was used only to re-verify the operative facts inlined below. Baseline: stepup/main @ 5cf9e64e, working tree 512 D / 410 M / 79 ??. -->
+<!-- PHASE 9 — CODEX REPOSITORY CONVERGENCE EXECUTION PROMPT. The crown deliverable of the LetBuyy Convergence Cleanup Program. This file is a PROMPT authored for a future Codex agent to FOLLOW; authoring it executed nothing — no code, schema, migration, commit, deletion, archive-move, validator-retarget, or git mutation was performed. Read-only git was used only to re-verify the operative facts inlined below. Baseline: stepup/main @ c4fc3cd6, working tree 512 D / 410 M / 79 ??. -->
 
 # CODEX REPOSITORY CONVERGENCE EXECUTION PROMPT
 
@@ -6,7 +6,7 @@
 >
 > **THIS IS A SAFETY-CRITICAL CLEANUP.** A naive "clean up the repo" pass here is catastrophic: the only canon-conforming reality is an UNCOMMITTED working tree with ZERO git history, and committing it ARMS a CI gate that mandates an architecture the Constitution forbids. The whole point of this prompt is the guardrails. Obey them literally. When in doubt, HALT and escalate — never improvise, never fabricate, never delete without proof.
 >
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · **branch:** `stepup/main` · **HEAD:** `5cf9e64e` (`5cf9e64e7e62482adaf4b65e74d8cbca754a0a15`) · **+30 over `main`** (`git rev-list --count main..HEAD = 30`) · **deploy branch:** `main` (the ONLY branch production CI triggers from — `production-deploy.yml:5-6 on: push: branches:[main]`) · **working tree:** dirty (`512 D / 410 M / 79 ??`). Re-verify these at start; if any differs materially, HALT and report (§ STOP CONDITIONS).
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · **branch:** `stepup/main` · **HEAD:** `c4fc3cd6` (`c4fc3cd6898215f53fb462800ca526f649ce37ae`) · **+30 over `main`** (`git rev-list --count main..HEAD = 30`) · **deploy branch:** `main` (the ONLY branch production CI triggers from — `production-deploy.yml:5-6 on: push: branches:[main]`) · **working tree:** dirty (`512 D / 410 M / 79 ??`). Re-verify these at start; if any differs materially, HALT and report (§ STOP CONDITIONS).
 >
 > **Your ethos (non-negotiable, applies to YOU as you execute):** Never guess. Never fabricate. Never delete without proof. Archive before delete. Respect the Architecture Freeze, the Executable Architecture V1, the Strategic Winners, the Single Source of Truth, the Governance Constitution, and the Convergence Masterplan — all six are inlined operationally below. A stub must never read as `success`/`live`. A mock must never be presented as real. You evidence every claim with a cited `path:line` or exact command.
 
@@ -117,7 +117,7 @@ When ANY of the following holds, you HALT the current batch, record the reason a
 - **The governance gate goes red for any reason other than a planned, ARB-ratified retarget.** STOP and report; never silence it by editing the validator (Never-Do #10).
 - **A capability gap is encountered as if it were a cleanup item** (capture ledgering, payout client, recon wiring, step-up crypto, Liquid chrome, mobile login, alerting). Name it, record it as out-of-scope, escalate; do not build it.
 - **A `SKIPPED_HUMAN_DECISIONS.md` / `EXECUTABLE_HUMAN_REQUIRED.md` / `UNVERIFIED` item** blocks a step (keys/secrets/DNS/PITR/Sentry/WABA/live probes/mig-162 rewrite). HALT at the seam; proceed only with the human decision in hand.
-- **The baseline drifted materially** (HEAD ≠ `5cf9e64e`, branch ≠ `stepup/main`, lag ≠ 30, or the tree is no longer dirty in the expected shape). HALT and re-derive before any action.
+- **The baseline drifted materially** (HEAD ≠ `c4fc3cd6`, branch ≠ `stepup/main`, lag ≠ 30, or the tree is no longer dirty in the expected shape). HALT and re-derive before any action.
 
 **The known open `SKIP-*` register you must respect as HALT-or-escalate seams** (from `SKIPPED_HUMAN_DECISIONS.md`, verified present this program): `SKIP-GATE1-ARB-RATIFICATION`, `SKIP-GATE-OPS-SURVIVOR-ARB`, `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE`, `SKIP-D2-LIVE-ANON-GRANT-PROBE`, `SKIP-D3-IDENTITY-LIVE-PROVIDERS`, `SKIP-D4-LIVE-FORCE-COVERAGE-PROBE`, `SKIP-D5-LIVE-MONEY-RECONCILIATION`, `SKIP-D6-LIVE-CHECKOUT-CUTOVER`, `SKIP-D8-MOBILE-RELEASE-SIGNING-SECRETS`, `SKIP-D10-WHATSAPP-BSP-WABA-HSM`, `SKIP-D11-PRODUCT-DEAD-TABLE-WRITER-PROBE`, `SKIP-D11-PROVIDER-PAYMENT-ID-INDEX-LIVE-DB`, `SKIP-PROD-DEPLOY-PROMOTION`, `SKIP-PROD-DNS-CUTOVER`, `SKIP-PROVIDER-SECRETS`, `SKIP-W0-PITR-TIER`, `SKIP-W3-DNS-CUTOVER`, `SKIP-W3-SENTRY-DSN`, `SKIP-W4-LIVE-SECRET-ROTATION`, `SKIP-W4-MTLS-CF-ACCESS`, `SKIP-W7-MOBILE-TURNSTILE-SECRET`, `SKIP-W7-WHATSAPP-LIVE-CREDS`.
 
@@ -131,7 +131,7 @@ These three gates govern go/no-go for the entire program. **You may not start Ba
 
 The Phase-0 commit is a **privileged, clean-tree, human-gated** act. Confirm, before staging anything:
 - A human/ARB has authorized the `git add -A && git commit` on `stepup/main`.
-- The tree shape matches the expected baseline (`512 D / 410 M / 79 ??`, HEAD `5cf9e64e`).
+- The tree shape matches the expected baseline (`512 D / 410 M / 79 ??`, HEAD `c4fc3cd6`).
 - **If you lack authority to perform the privileged commit, HALT and require a human to confirm it is done** before you proceed to any deletion. Do not perform it yourself without that authority. (Law L1; `SKIP-D1`.)
 
 ### 5.2 — Gate 2: The survivability-unhook is ARB-decided AND applied in/before the commit (THE PIVOTAL GATE)
@@ -507,4 +507,4 @@ Substantive authority defers throughout to `GOVERNANCE_REWRITE_2026_06_10/LETBUY
 
 ---
 
-*End of the Codex Repository Convergence Execution Prompt (Convergence Cleanup Program, Phase 9). This file is the executing agent's complete, self-contained operating order. It encodes Rule #0 (never discard the working tree), the Things-You-Must-Never-Do list, the Stop-Conditions/Escalate-to-Human list, the three authority gates (with the pivotal unhook-before/with-commit sequencing), the eight Cleanup Laws operationally, the gated Batches/Phases 0–8 (each: precondition → actions → proof requirements → validation gate → roll-forward/abort), the Capability-Gap Out-of-Scope register, and the binary one-reality exit test. Authoring it executed nothing — no code, schema, migration, commit, deletion, archive-move, validator-retarget, or git mutation was performed; read-only git was used only to re-verify the operative facts inlined here. Baseline pinned at `stepup/main` @ `5cf9e64e`, working tree dirty (512 D / 410 M / 79 ??), 2026-06-10.*
+*End of the Codex Repository Convergence Execution Prompt (Convergence Cleanup Program, Phase 9). This file is the executing agent's complete, self-contained operating order. It encodes Rule #0 (never discard the working tree), the Things-You-Must-Never-Do list, the Stop-Conditions/Escalate-to-Human list, the three authority gates (with the pivotal unhook-before/with-commit sequencing), the eight Cleanup Laws operationally, the gated Batches/Phases 0–8 (each: precondition → actions → proof requirements → validation gate → roll-forward/abort), the Capability-Gap Out-of-Scope register, and the binary one-reality exit test. Authoring it executed nothing — no code, schema, migration, commit, deletion, archive-move, validator-retarget, or git mutation was performed; read-only git was used only to re-verify the operative facts inlined here. Baseline pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty (512 D / 410 M / 79 ??), 2026-06-10.*

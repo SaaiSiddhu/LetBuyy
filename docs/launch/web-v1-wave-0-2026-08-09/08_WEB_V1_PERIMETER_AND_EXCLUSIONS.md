@@ -2,7 +2,7 @@
 
 **Status:** Evidence artifact — NOT governance authority. Companion to `07_WEB_V1_SCOPE_REGISTER.md`.
 
-- **Repo SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343`
+- **Repo SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 - **Branch:** `stepup/main`
 - **Timestamp used:** 2026-08-09 (literal date supplied by task)
 - **Author:** Agent D — Web V1 Scope and Perimeter Auditor, Wave 0 Phase 1 (read-only)

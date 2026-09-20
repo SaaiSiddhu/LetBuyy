@@ -1,7 +1,7 @@
 # AGENT K — API, Data Model, RLS, Webhooks, Jobs, Integration Architecture
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182`. Read-only discovery. No files changed except this one.
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e`. Read-only discovery. No files changed except this one.
 
 **Governance read before inspection:** `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (via commander brief),
 root `AGENTS.md`, `CLAUDE.md`, `apps/merchant-control-plane/AGENTS.md`, `services/api-gateway/AGENTS.md`,

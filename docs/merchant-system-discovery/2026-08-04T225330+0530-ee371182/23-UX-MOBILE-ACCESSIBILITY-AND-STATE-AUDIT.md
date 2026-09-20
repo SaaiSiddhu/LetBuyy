@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | **Branch** | `stepup/main` |
-| **Commit** | `ee371182` |
+| **Commit** | `bf35062e` |
 | **Run date** | 2026-08-04 (+0530) |
 | **Scope** | Merchant-facing UX quality: page state triads (loading / empty / error+retry), destructive-action confirmation, list pagination, design-token and dark-mode coverage, India-first date and currency formatting, accessibility of the shared primitives and the highest-stakes dialog, and behaviour at ~360px. Surfaces covered: `apps/merchant-control-plane` (77 routes) and `apps/platform-console` (20 dashboard routes). `apps/mobile/merchant-app` (Flutter) is referenced only where it contradicts the web surface. |
-| **Evidence basis** | Agent notes `_agent-notes/M-quality-observability-operations.md` and `_agent-notes/B-merchant-ui-routes.md`, plus 14 targeted re-verification commands run by this author against working-tree source at commit `ee371182` (logged in §9.3). |
+| **Evidence basis** | Agent notes `_agent-notes/M-quality-observability-operations.md` and `_agent-notes/B-merchant-ui-routes.md`, plus 14 targeted re-verification commands run by this author against working-tree source at commit `bf35062e` (logged in §9.3). |
 | **METHOD DISCLOSURE** | **Nothing in this document was runtime-verified.** No page was rendered, no browser was opened, no screen reader was run, no contrast ratio was measured, no viewport was resized, and no automated accessibility scanner was executed against any merchant route. Every finding is static source reading. The ceiling status in this document is therefore `IMPLEMENTED_NOT_RUNTIME_VERIFIED`; the string `VERIFIED_E2E` does not appear as a verdict anywhere below. |
 | **Coverage disclosure** | The page scorecard in §5.1 is a **sample of 18 of 77 merchant routes** plus a **20-route console sample**. It is not exhaustive route coverage. The accessibility work in §8 is a **spot check of the shared component library and of the single highest-stakes dialog**. **It is not a WCAG audit and must not be cited as one.** |
 | **Secrets / PII** | No secrets or PII appear in this document. |
@@ -1165,7 +1165,7 @@ runtime observation  : NOT OBSERVED
 
 | Claim class | Confidence | Basis |
 |---|---|---|
-| Specific `path:line` facts | HIGH | 15 independent re-verifications against working-tree source at `ee371182`; two claims in the source notes were found wrong and corrected |
+| Specific `path:line` facts | HIGH | 15 independent re-verifications against working-tree source at `bf35062e`; two claims in the source notes were found wrong and corrected |
 | Counts taken from the notes and not re-counted (call-site totals, 51 undefined tokens, 44/77 triad coverage, 144 console palette classes) | MEDIUM-HIGH | scripted by the notes' authors; where this author re-counted with a narrower pattern the direction always matched, the magnitude sometimes differed by 10–40 % |
 | Rendering consequences of undefined tokens | MEDIUM | derived from the CSS invalid-at-computed-value-time rule; **no page was rendered** |
 | Accessibility conclusions | MEDIUM | correct as code reading of one dialog and the shared primitives; **no scanner, no screen reader, no keyboard walkthrough** — and this is explicitly not a WCAG audit |

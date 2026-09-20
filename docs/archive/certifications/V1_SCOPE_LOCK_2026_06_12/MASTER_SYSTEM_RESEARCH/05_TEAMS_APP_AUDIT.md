@@ -1,6 +1,6 @@
 # 05 — TEAMS / RBAC AUDIT
 
-**HEAD `cd5905be` · code-verified.** There is no separate "Teams app." Roles/permissions exist in two distinct places — and they are at very different maturity.
+**HEAD `c7c82847` · code-verified.** There is no separate "Teams app." Roles/permissions exist in two distinct places — and they are at very different maturity.
 
 | Surface | Status | Evidence |
 |---|---|---|

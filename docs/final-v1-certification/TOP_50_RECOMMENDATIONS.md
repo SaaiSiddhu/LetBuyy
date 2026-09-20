@@ -1,6 +1,6 @@
 # Top 50 Recommendations
 
-**HEAD `587dc988`. Actionable, ordered by leverage.**
+**HEAD `ae383bb8`. Actionable, ordered by leverage.**
 
 ## Do first — the launch gate (1–12)
 1. Fix LB-8: register an `announcementBar` renderer in `renderer-registry.tsx`.

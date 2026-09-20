@@ -52,7 +52,7 @@
 | Area | Declared Status | Live Status | Classification |
 |------|----------------|-------------|----------------|
 | **Incidents** | Incident model present (`production_incidents` table + incident-command worker + incident-response engine) | NOT_CONNECTED — needs live query `/api/incident-response?domain=X` | DETECTABLE |
-| **Deployment** | HEAD `b7bf1a00` (stepup/main); migration #174; migrate gate ON; rollback present | NOT_CONNECTED — live worker/Vercel versions need deploy APIs | DETECTABLE |
+| **Deployment** | HEAD `ab5b9065` (stepup/main); migration #174; migrate gate ON; rollback present | NOT_CONNECTED — live worker/Vercel versions need deploy APIs | DETECTABLE |
 | **Environment** | Declared: local, staging, production | NOT_CONNECTED | PARTIAL |
 | **Runtime** | 4 workers with `RUNTIME_TELEMETRY`; all 10 metrics emission wired | NOT_CONNECTED — latency/errors via Analytics Engine | DETECTABLE |
 | **Queues** | 5 business queues / 7 consumers (incl. 2 DLQs) declared | NOT_CONNECTED — queue depth/backlog via Cloudflare Queues | DETECTABLE |

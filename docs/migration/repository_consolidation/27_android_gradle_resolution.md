@@ -1,6 +1,6 @@
 # 27 — Android Gradle Resolution and APK Proof (Phase R)
 
-Starting HEAD `4a2217c8148c1c9c0955f60b257945012f3babe7`, final HEAD at commit `df2063c4` and after (see `git log` for the full sequence). Full stage-by-stage evidence, every command and its real output, is in `26_android_gradle_resolution_journal.md` — this document is the reader-facing summary.
+Starting HEAD `27553d81b28c5d710c09a529cf3a6628ec541b9f`, final HEAD at commit `dd6b8943` and after (see `git log` for the full sequence). Full stage-by-stage evidence, every command and its real output, is in `26_android_gradle_resolution_journal.md` — this document is the reader-facing summary.
 
 ## The blocker this phase closes
 
@@ -38,7 +38,7 @@ Both apps now have exactly one Gradle file per level.
 
 Verified via the strongest available evidence for both apps: `aapt dump badging` on the real compiled APK, not source config.
 
-`git diff 4a2217c8..HEAD --name-only -- '*pubspec.yaml'` is **empty** — zero Dart/Flutter package versions changed anywhere in this phase.
+`git diff 27553d81..HEAD --name-only -- '*pubspec.yaml'` is **empty** — zero Dart/Flutter package versions changed anywhere in this phase.
 
 ## Stage 5 — gradle.properties and real APKs
 
@@ -56,7 +56,7 @@ No release build attempted. No signing occurred (all debug, existing debug keyst
 
 ## Stage 6 — verification, and two disclosed findings
 
-Every field of customer_app's Play Store identity — `applicationId`, `signingConfigs` block, `key.properties`, `AndroidManifest.xml` (including deep links), `google-services.json`, `firebase_options.dart`, `versionCode`/`versionName` — confirmed byte-identical or hash-identical to the pre-Phase-R committed state (`4a2217c8`), same for admin_app. Workspace 20/20. Full regression: merchant_app 172/172 (canary), the other 4 suites at exact baseline (415/415 total). All 15 packages + customer_app + admin_app analyze clean; `phase_2` apps retain their 1 pre-existing, untouched error each. Phase Q's Dart compilation probe re-run and still passes for both apps — the Gradle-layer work did not disturb the Dart-layer fix. Governance gate: **105 PASS / 6 FAIL, exact match to baseline, same 6 failures by name, zero new**. node_modules hazard confirmed and restored; `pnpm-lock.yaml` byte-identical before and after. Every `git status` path attributed — the same 39 pre-existing other-session files, plus a handful of untracked artifacts (`.agents/`, migration SQL files, research docs) this session never created or touched.
+Every field of customer_app's Play Store identity — `applicationId`, `signingConfigs` block, `key.properties`, `AndroidManifest.xml` (including deep links), `google-services.json`, `firebase_options.dart`, `versionCode`/`versionName` — confirmed byte-identical or hash-identical to the pre-Phase-R committed state (`27553d81`), same for admin_app. Workspace 20/20. Full regression: merchant_app 172/172 (canary), the other 4 suites at exact baseline (415/415 total). All 15 packages + customer_app + admin_app analyze clean; `phase_2` apps retain their 1 pre-existing, untouched error each. Phase Q's Dart compilation probe re-run and still passes for both apps — the Gradle-layer work did not disturb the Dart-layer fix. Governance gate: **105 PASS / 6 FAIL, exact match to baseline, same 6 failures by name, zero new**. node_modules hazard confirmed and restored; `pnpm-lock.yaml` byte-identical before and after. Every `git status` path attributed — the same 39 pre-existing other-session files, plus a handful of untracked artifacts (`.agents/`, migration SQL files, research docs) this session never created or touched.
 
 **Three findings, all disclosed, none hidden:**
 

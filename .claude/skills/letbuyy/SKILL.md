@@ -194,7 +194,7 @@ A contract never says "fix the issues above". It stands alone for a fresh reader
 
 `stepup/main` is a **preserved alias** of the former integration branch (`LEGACY_INTEGRATED`), never
 advanced. Fast-forward-only promotion means **the SHA you tested is the SHA that ships**. Hotfixes take
-the same path, faster. `CURRENT` (2026-09-04): all three branches sit at `823aa5ee`; nothing is
+the same path, faster. `CURRENT` (2026-09-04): all three branches sit at `a751a2ff`; nothing is
 deployed anywhere; the Vercel project IDs in `config/vercel/projects.json` are placeholders;
 `production-deploy.yml` and `deploy-staging.yml` are `workflow_dispatch`-only (D-DEPLOY) until a
 DEPLOY-1 phase retargets them with verified cloud targets. Details: `references/merge.md`,
@@ -213,15 +213,15 @@ deploys, never touches the primary checkout, never runs the real gate lane, neve
 
 ---
 
-## 5. Repository facts every mode needs (baseline measured 2026-09-04 at `develop` = `823aa5ee`; the Governance
-and Database lines RE-MEASURED 2026-09-12 at `develop` = `de543446` by F-SKILLFACTS-1; the Root, Worktrees, Remote
-(stored refs only) and Packages lines RE-MEASURED 2026-09-12 at `develop` = `7d4c1711` by F-SKILLFACTS-2, which also
+## 5. Repository facts every mode needs (baseline measured 2026-09-04 at `develop` = `a751a2ff`; the Governance
+and Database lines RE-MEASURED 2026-09-12 at `develop` = `6edbbf0e` by F-SKILLFACTS-1; the Root, Worktrees, Remote
+(stored refs only) and Packages lines RE-MEASURED 2026-09-12 at `develop` = `0b0fa4d6` by F-SKILLFACTS-2, which also
 VERIFIED-UNCHANGED the five app ports and the four FROZEN roots. STILL NOT RE-VERIFIED and still as of 2026-09-04:
 the remote's network reachability, and the Flutter / Play Store figures. Re-measure before citing either.)
 
 ```
 Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on feature/claude-md-durable-architecture-memory (LEGACY_INTEGRATED)
-           at 823aa5ee. RE-MEASURED 2026-09-12 (F-SKILLFACTS-2): 38 modified + 385 untracked files owned by other
+           at a751a2ff. RE-MEASURED 2026-09-12 (F-SKILLFACTS-2): 38 modified + 385 untracked files owned by other
            sessions — the untracked count was 58 on 2026-09-04 and has grown by an order of magnitude; migrations
            208–210 are STILL untracked there. Read-only for this skill.
 Worktrees  RE-MEASURED 2026-09-12 (F-SKILLFACTS-2). With NO phase worktree live, `git worktree list` registers
@@ -235,7 +235,7 @@ Worktrees  RE-MEASURED 2026-09-12 (F-SKILLFACTS-2). With NO phase worktree live,
 Remote     https://github.com/SaaiSiddhu/Letbuyy_Store.git — UNREADABLE from this machine (gh account Edynox-hq → 404;
            git → not found). NOT RE-TESTED since 2026-09-04: verifying it needs a network call, and `gh` is in fact logged
            in to TWO accounts — Edynox-hq (active) and SRIESWARAN01 — so the 404 may not be the whole story. Stored refs
-           RE-MEASURED 2026-09-12 and unchanged: origin/{main,stepup/main}=5af69e0c · origin/develop=41b6ea49 (June), both
+           RE-MEASURED 2026-09-12 and unchanged: origin/{main,stepup/main}=f52abca7 · origin/develop=c2547049 (June), both
            ancestors of develop. Push = owner only.
 Apps       customer_web :9000 · merchant_web :9001 · identity-platform :9002 · marketing-site :9006 · admin_web :9007 (Next, next dev --webpack)
            Flutter: customer_app com.letbuyy.letbuyy SHIPPED (vc 4013, 1.0.10) · merchant_app com.letbuyy.store · admin_app RETIRED to RESERVED (FB-1, 2026-09-05; com.letbuyy.admin is a retired applicationId)
@@ -249,7 +249,7 @@ Database   database/supabase/migrations 175 tracked, highest 246 (re-measured 20
            · 49 tables FORCE RLS · money RPCs: create_checkout_order · confirm_order_payment_with_ledger · complete_order_refund · issue_gift_card
            · set_gift_card_status · restore_gift_card_on_refund · issue_gst_invoice · generated registry services/api-gateway/src/tenant/tenant-tables.registry.ts
 Governance node scripts/validate-governance.mjs --lane=gate --plan (SAFE) · 117 .mjs on disk, 113 in the gate lane after GOV-3
-           RE-MEASURED 2026-09-12 at develop=de543446 (F-SKILLFACTS-1), clean tree, `gate.sh --baseline`: failed=2.
+           RE-MEASURED 2026-09-12 at develop=6edbbf0e (F-SKILLFACTS-1), clean tree, `gate.sh --baseline`: failed=2.
            validators:sweep 111/113 — the ONLY reds are environment-validator and stale-artifact-validator, and BOTH are
            attributed: environment = 6 Google AIza keys in apps/customer_app's lineage-A Firebase config (FB-2/3/4 retire them)
            + 2 rzp_TEST keys in a donor fixture, NO live LetBuyy credential (F-SECSCAN-1); stale-artifact = a method artifact,

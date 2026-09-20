@@ -11,7 +11,7 @@ script), then applies all 127 files in `database/supabase/migrations/` in numeri
 in `database/supabase/seeds/` in order, then queries `public.themes`.
 
 **Run captured below: before migration 199 and the seed closure existed** (i.e. against
-`database/supabase/migrations/` at commit `3a04998d`, HEAD at the start of this phase). This is the
+`database/supabase/migrations/` at commit `92c7b67e`, HEAD at the start of this phase). This is the
 verbatim tool output from that run, not a reconstruction:
 
 ```

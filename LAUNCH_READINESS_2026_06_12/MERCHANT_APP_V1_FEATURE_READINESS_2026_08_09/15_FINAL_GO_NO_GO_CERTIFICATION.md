@@ -1,7 +1,7 @@
 # 15 — FINAL GO / NO-GO CERTIFICATION
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 ---
@@ -9,7 +9,7 @@
 # VERDICT: NO-GO
 
 For the frozen V1 scope in [`05_V1_SCOPE_FREEZE_AND_EXCLUSIONS.md`](05_V1_SCOPE_FREEZE_AND_EXCLUSIONS.md),
-at commit `ee371182`, on the evidence in this package.
+at commit `bf35062e`, on the evidence in this package.
 
 **This is not a close call**, and it is not a verdict about missing features.
 
@@ -121,7 +121,7 @@ at all.
 
 ## 7. Certification statement
 
-This package certifies **NO-GO** for a V1 launch of LetBuyy at commit `ee371182`.
+This package certifies **NO-GO** for a V1 launch of LetBuyy at commit `bf35062e`.
 
 It further certifies, positively and on executed evidence, that:
 

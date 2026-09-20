@@ -1,7 +1,7 @@
 # 02 — COMPLETE MERCHANT FEATURE INVENTORY
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 Generated/LCIS claims are hypotheses here; only direct source, executed commands, or cited
 `path:line` count as evidence.
@@ -11,7 +11,7 @@ Generated/LCIS claims are hypotheses here; only direct source, executed commands
 ## 1. How to read this
 
 188 merchant-facing capabilities were inventoried by 12 specialised read-only forensic auditors
-working in parallel over `ee371182`, each required to cite `path:line` or command output for every
+working in parallel over `bf35062e`, each required to cite `path:line` or command output for every
 claim. Scores use the model in [`00_README_AND_AUTHORITY.md`](00_README_AND_AUTHORITY.md):
 
 `10` reachable UI · `8` states/a11y · `10` client integration · `8` typed contracts + validation ·

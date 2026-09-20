@@ -8,25 +8,25 @@ This is the **second pass**: each first-pass risk carries a status tag — **RES
 
 Repository (file tools): `/Users/saai_sidd/Git/Letbuyy_Store`
 Repository (bash): `/sessions/brave-sweet-gates/mnt/Letbuyy_Store`
-Audited HEAD (second pass): `127a850e 2026-06-05 23:22:01 +0530 fix(consolidation): align local stack scripts governance` (`git log -1`)
-Total commits: 802 (`git rev-list --count HEAD`); **74 commits since the first-pass HEAD** `5346ced9` (`git rev-list --count 5346ced9..HEAD` = 74). First-pass baseline: 727 commits, 34 risks (0 Critical / 9 High / 15 Medium / 10 Low).
+Audited HEAD (second pass): `a8cd5fde 2026-06-05 23:22:01 +0530 fix(consolidation): align local stack scripts governance` (`git log -1`)
+Total commits: 802 (`git rev-list --count HEAD`); **74 commits since the first-pass HEAD** `e29821d3` (`git rev-list --count e29821d3..HEAD` = 74). First-pass baseline: 727 commits, 34 risks (0 Critical / 9 High / 15 Medium / 10 Low).
 
 ---
 
 ## Changes since first pass
 
-74 commits landed between `5346ced9` and `127a850e` (`git log --oneline 5346ced9..HEAD`), dominated by merges of remediation workstreams (`stream/letbuyy-remediation`, `stream/WS1-designsystem`, `stream/WS5-operations`, `stream/WS7-hardening`, `stream/WS9-settings`, `stream/WS10-devportal`). `git diff --stat 5346ced9..HEAD` = 344 files changed, +23,635 / −8,761. Operationally relevant deltas, each verified:
+74 commits landed between `e29821d3` and `a8cd5fde` (`git log --oneline e29821d3..HEAD`), dominated by merges of remediation workstreams (`stream/letbuyy-remediation`, `stream/WS1-designsystem`, `stream/WS5-operations`, `stream/WS7-hardening`, `stream/WS9-settings`, `stream/WS10-devportal`). `git diff --stat e29821d3..HEAD` = 344 files changed, +23,635 / −8,761. Operationally relevant deltas, each verified:
 
 1. **Webhook-service single-writer extraction (verified).** `services/webhook-service` no longer writes `orders`/`products`/`subscriptions`/`sites`/`billing_history` directly — `Grep "\.from\('(orders|products|subscriptions|sites|billing_history)'\)"` over `services/webhook-service/src` → **no matches**. Mutations route through new gateway-owned internal endpoints via the `API_GATEWAY_SERVICE` binding with `X-Internal-API-Secret` (`webhook-service/src/gateway-order-transitions.ts:14-46`, `gateway-billing-transitions.ts`, `gateway-events.ts`); the client **fails closed** when binding or secret is absent (`gateway-order-transitions.ts:19-25`).
 2. **New gateway internal mutation surface (verified — introduces a NEW risk).** `services/api-gateway/src/routes/storefront/internal-payment-routes.ts` (233 lines, new), `routes/internal-billing.ts` (197 lines, new), `routes/internal-events.ts` (61 lines, new). The payment routes' guard **fails open in non-production** (`internal-payment-routes.ts:71-76`, see §3.9 NEW); billing/events guards fail closed (`internal-billing.ts:49-53`, `internal-events.ts:20-24`).
 3. **Real per-workspace tests appeared in 2 of 12 deployables (verified).** `services/webhook-service/package.json` `"test": "node --test --experimental-strip-types test/*.test.mjs"` → **12 tests, 12 pass** (run in this audit); `services/queue-workers` same pattern → **2 tests, 2 pass**. The other 10 deployables (all 9 apps + api-gateway) keep `"test": "echo 'No tests yet' && exit 0"`.
-4. **New root-level tests (verified present, runner gap found).** `git diff --name-status 5346ced9..HEAD -- tests/` adds 10 test files: `tests/contracts/domain-event-contracts.test.ts`, `tests/contracts/storefront-internal-payment-routes.test.ts`, `tests/federation/{app-api-route-ownership,app-install-idempotency,app-install-store-ownership,app-review-verified-install,developer-portal-capability-messaging,marketplace-service-error-handling}.test.mjs`, `tests/performance/dual-model-consolidation.test.mjs`, `tests/theme-engine/theme-template-editor.test.mjs`. The 5 federation `.mjs` suites named in the remediation claims = **12 tests, 12 pass** when run. The two `.ts` contract tests **fail to load under the root runner** (`node --test` → `ERR_UNSUPPORTED_DIR_IMPORT` / `ERR_MODULE_NOT_FOUND` on extensionless imports) and are matched by **no** script — root `"test"` globs only `tests/*/*.test.mjs` (`package.json:43`); see §4.3.
+4. **New root-level tests (verified present, runner gap found).** `git diff --name-status e29821d3..HEAD -- tests/` adds 10 test files: `tests/contracts/domain-event-contracts.test.ts`, `tests/contracts/storefront-internal-payment-routes.test.ts`, `tests/federation/{app-api-route-ownership,app-install-idempotency,app-install-store-ownership,app-review-verified-install,developer-portal-capability-messaging,marketplace-service-error-handling}.test.mjs`, `tests/performance/dual-model-consolidation.test.mjs`, `tests/theme-engine/theme-template-editor.test.mjs`. The 5 federation `.mjs` suites named in the remediation claims = **12 tests, 12 pass** when run. The two `.ts` contract tests **fail to load under the root runner** (`node --test` → `ERR_UNSUPPORTED_DIR_IMPORT` / `ERR_MODULE_NOT_FOUND` on extensionless imports) and are matched by **no** script — root `"test"` globs only `tests/*/*.test.mjs` (`package.json:43`); see §4.3.
 5. **api-gateway `__tests__` additions.** `services/api-gateway/src/__tests__/cloudflare-queue-triggers.test.ts` is new (7 colocated `__tests__` files now), backing a new real queue-trigger producer `src/execution/cloudflare-queue-triggers.ts` (`planScheduledDispatchQueueTriggers`, `:92-137`). These are still **not** run by the package `test` script (no-op echo).
-6. **Deploy workflows: only matrix additions.** `git diff 5346ced9..HEAD -- .github/workflows/` touches **only** `deploy-production.yml` (+2: developer-portal in matrix + health URL) and `production-deploy.yml` (+4: developer-portal in preflight + matrix). The dual-trigger race, the ungated path's missing migration job, and the SKIP-on-missing-creds behavior are byte-identical otherwise (§1.1, §1.2). `tests/operations/production-deploy-workflow.test.mjs` now names `deploy-production.yml` the **`legacyWorkflow`** and asserts both matrices stay in sync (`:6, :90-97`) — the dual-workflow topology is codified, not removed.
+6. **Deploy workflows: only matrix additions.** `git diff e29821d3..HEAD -- .github/workflows/` touches **only** `deploy-production.yml` (+2: developer-portal in matrix + health URL) and `production-deploy.yml` (+4: developer-portal in preflight + matrix). The dual-trigger race, the ungated path's missing migration job, and the SKIP-on-missing-creds behavior are byte-identical otherwise (§1.1, §1.2). `tests/operations/production-deploy-workflow.test.mjs` now names `deploy-production.yml` the **`legacyWorkflow`** and asserts both matrices stay in sync (`:6, :90-97`) — the dual-workflow topology is codified, not removed.
 7. **app-marketplace / theme-marketplace API base URL fail-fast (verified).** Both now throw instead of defaulting to a staging host (`apps/app-marketplace/src/lib/api/client.ts:20-31`; `apps/theme-marketplace/src/lib/api/client.ts:20-21`). `identity-platform` and `platform-operations-portal` still default to staging (§3.10).
 8. **Governance/validators grew and now pass within budget.** `node scripts/validate-governance.mjs` → **"Governance validation passed (129 validators)"**, completing inside a 40s timeout (first pass: killed at 35s). New validators include `single-writer-ownership-validator.mjs` (+112 lines) and a `runtime-manifest-validator` extension; new 885-line `scripts/utilities/local-stack-up.mjs` local-stack orchestrator (not wired into any `package.json` script — `grep 'local-stack' package.json` → none).
 9. **Three new migrations** (`085_orders_items_reconcile.sql`, `086_products_variants_reconcile.sql`, `087_theme_template_drafts.sql`; `088` modified) — `database/supabase/migrations/` now 18 files. `000_baseline.sql` unchanged (same 3 tables without RLS). `node scripts/validators/migration-safety-validator.mjs` → passed.
-10. **Unchanged operational hot spots (verified by diff):** `services/api-gateway/src/middleware/rateLimit.ts`, `src/lib/storefront-cache.ts`, `packages/infrastructure/pooled-sql-adapter/`, `services/webhook-service/wrangler.toml`, `services/queue-workers/wrangler.toml` all absent from `git diff --stat 5346ced9..HEAD`; `services/api-gateway/wrangler.toml` gained only 6 lines (`*_QUEUE_NAME` vars). `infrastructure/observability/` and `infrastructure/monitoring/` untouched.
+10. **Unchanged operational hot spots (verified by diff):** `services/api-gateway/src/middleware/rateLimit.ts`, `src/lib/storefront-cache.ts`, `packages/infrastructure/pooled-sql-adapter/`, `services/webhook-service/wrangler.toml`, `services/queue-workers/wrangler.toml` all absent from `git diff --stat e29821d3..HEAD`; `services/api-gateway/wrangler.toml` gained only 6 lines (`*_QUEUE_NAME` vars). `infrastructure/observability/` and `infrastructure/monitoring/` untouched.
 
 ---
 
@@ -34,8 +34,8 @@ Total commits: 802 (`git rev-list --count HEAD`); **74 commits since the first-p
 
 Commands and tools run (all read-only against the codebase; the sole write is this report):
 
-- Baseline diffing: `git log -1`, `git rev-list --count`, `git log --oneline 5346ced9..HEAD`, `git diff --stat/--name-status 5346ced9..HEAD` scoped to `.github/`, `scripts/`, `tests/`, `services/`, `database/`, `infrastructure/`, `README.md`, `docs/governance/`, and the specific files cited in first-pass risks.
-- Deploy/infra re-read: full reads of `.github/workflows/production-deploy.yml` (448 lines) and `.github/workflows/deploy-production.yml` (170 lines) at HEAD; exact `git diff` of both vs `5346ced9`; `grep "schedule:" .github/workflows/` (no cron workflows); `grep "d1 migrations" .github/` (none); `grep -rn "vercel rollback"` (none outside this report).
+- Baseline diffing: `git log -1`, `git rev-list --count`, `git log --oneline e29821d3..HEAD`, `git diff --stat/--name-status e29821d3..HEAD` scoped to `.github/`, `scripts/`, `tests/`, `services/`, `database/`, `infrastructure/`, `README.md`, `docs/governance/`, and the specific files cited in first-pass risks.
+- Deploy/infra re-read: full reads of `.github/workflows/production-deploy.yml` (448 lines) and `.github/workflows/deploy-production.yml` (170 lines) at HEAD; exact `git diff` of both vs `e29821d3`; `grep "schedule:" .github/workflows/` (no cron workflows); `grep "d1 migrations" .github/` (none); `grep -rn "vercel rollback"` (none outside this report).
 - Test reality: `"test"` script census across all `apps/*/package.json` and `services/*/package.json`; `Grep "\"test\":"` over `packages/**/package.json` (none); executed `node --test --experimental-strip-types test/*.test.mjs` inside `services/webhook-service` (12/12 pass) and `services/queue-workers` (2/2 pass); executed the 5 new federation suites (12/12 pass); attempted both new `.ts` contract tests under `node --test --experimental-strip-types` (both fail to load: `ERR_UNSUPPORTED_DIR_IMPORT` for `storefront-internal-payment-routes.test.ts`, `ERR_MODULE_NOT_FOUND` on `packages/event-core/src/index` for `domain-event-contracts.test.ts`); full root suite `node --test tests/*/*.test.mjs` → 411 tests, **402 pass / 9 fail**, every sampled failure being `ERR_MODULE_NOT_FOUND` (e.g. `Cannot find package 'typescript'`) in this dependency-free environment.
 - Security re-verification: reads of `services/api-gateway/src/routes/internal-console.ts:38-66` (static token), `routes/storefront/internal-payment-routes.ts` (full), `routes/internal-billing.ts:49-53`, `routes/internal-events.ts:20-24`, `src/index.ts:360-410` (CORS), `apps/platform-console/src/lib/console-auth-server.ts:138-155` (TOTP + dev bypass), `apps/identity-platform/src/app/api/auth/signup/route.ts` (full; OTP echo), webhook signature path (`webhook-service/src/index.ts:228-229`, `app-lifecycle-dispatch.ts:59-63`); RLS recount via `comm -23` of `CREATE TABLE` vs `ENABLE ROW LEVEL SECURITY` in `000_baseline.sql`.
 - Observability re-verification: `Grep "writeDataPoint"` repo-wide (only forensic/mission docs); `Grep "prom-client|@opentelemetry"` over `**/package.json` (none); `Grep` for the four alert metric names (only `infrastructure/observability/*` + docs); `Grep "ensure_next_hot_table_partitions|detach_expired_hot_table_partitions"` (migration `079`, governance doc, and a text-assertion test `tests/performance/partition-retention.test.mjs` — no runtime caller).
@@ -50,8 +50,8 @@ Environment constraint (worse than first pass): repo-root `node_modules/` is now
 
 ### 1.1 Two parallel, overlapping production deploy workflows both trigger on push to `main` — **STILL-OPEN**
 **Severity: High — Likelihood: High**
-Unchanged at HEAD. Both `.github/workflows/production-deploy.yml` (`name: Production deploy`) and `.github/workflows/deploy-production.yml` (`name: Deploy Production`) declare `on: push: branches: [main]` (`production-deploy.yml:3-7`; `deploy-production.yml:3-6`) with **different concurrency groups** (`production-deploy`, `:12-14` vs `deploy-production`, `:11-13`), so GitHub will not serialize them — both run on the same `main` push and deploy the same targets (now **nine** Vercel apps each, developer-portal added to both matrices, plus three workers) by different mechanisms. `git diff 5346ced9..HEAD` on both files shows **only** the developer-portal matrix/preflight/health additions — the race is byte-identical otherwise. The situation is now **codified**: `tests/operations/production-deploy-workflow.test.mjs:6` loads `deploy-production.yml` as `legacyWorkflow` and `:90-97` asserts every production app appears in **both** workflows, institutionalizing the parallel topology rather than retiring it.
-- Evidence: both workflow headers at HEAD; `git diff 5346ced9..HEAD -- .github/workflows/{deploy-production,production-deploy}.yml` (matrix-only deltas); `tests/operations/production-deploy-workflow.test.mjs:6, 90-98`.
+Unchanged at HEAD. Both `.github/workflows/production-deploy.yml` (`name: Production deploy`) and `.github/workflows/deploy-production.yml` (`name: Deploy Production`) declare `on: push: branches: [main]` (`production-deploy.yml:3-7`; `deploy-production.yml:3-6`) with **different concurrency groups** (`production-deploy`, `:12-14` vs `deploy-production`, `:11-13`), so GitHub will not serialize them — both run on the same `main` push and deploy the same targets (now **nine** Vercel apps each, developer-portal added to both matrices, plus three workers) by different mechanisms. `git diff e29821d3..HEAD` on both files shows **only** the developer-portal matrix/preflight/health additions — the race is byte-identical otherwise. The situation is now **codified**: `tests/operations/production-deploy-workflow.test.mjs:6` loads `deploy-production.yml` as `legacyWorkflow` and `:90-97` asserts every production app appears in **both** workflows, institutionalizing the parallel topology rather than retiring it.
+- Evidence: both workflow headers at HEAD; `git diff e29821d3..HEAD -- .github/workflows/{deploy-production,production-deploy}.yml` (matrix-only deltas); `tests/operations/production-deploy-workflow.test.mjs:6, 90-98`.
 - Affected surface: all nine production Vercel apps + all three Cloudflare workers (concurrent same-target deploys, last-writer-wins).
 
 ### 1.2 Ungated deploy workflow has no migration step, no staging gate, and silently skips on missing credentials — **STILL-OPEN**
@@ -69,19 +69,19 @@ Unchanged. `migrate-production` in the gated workflow still: `db diff` → 30-da
 ### 1.4 Migration tooling has two diverging roots (Postgres major 15 vs 17) — **STILL-OPEN**
 **Severity: Medium — Likelihood: Medium**
 Unchanged. Root `supabase/` contains only `config.toml` with `major_version = 15` (`supabase/config.toml:13`; `ls supabase/` → `config.toml` only, no `migrations/`); `database/supabase/config.toml:11` says `major_version = 17`. The active migration set lives in `database/supabase/migrations/` (now **18 files**: `000_baseline.sql`, `073`–`089`; three added since first pass). Which config the Supabase CLI binds to still depends on invocation cwd, and the two configs still disagree on the Postgres major version.
-- Evidence: `supabase/config.toml:13` vs `database/supabase/config.toml:11`; `ls database/supabase/migrations/` (18 files); `git diff --name-status 5346ced9..HEAD -- database/` (085/086/087 added, 088 modified).
+- Evidence: `supabase/config.toml:13` vs `database/supabase/config.toml:11`; `ls database/supabase/migrations/` (18 files); `git diff --name-status e29821d3..HEAD -- database/` (085/086/087 added, 088 modified).
 - Affected surface: migration determinism; shadow-DB diffing during `db diff`/`db push`.
 
 ### 1.5 Cloudflare D1 migrations are not applied by either production deploy workflow — **STILL-OPEN**
 **Severity: Medium — Likelihood: Medium**
 Unchanged. `grep "d1 migrations" .github/` → no matches; `wrangler d1 migrations apply` remains only in `infrastructure/scripts/cloudflare/bootstrap-environment.mjs` (manual, mutation-approval-gated). The D1 binding and its single migration (`database/cloudflare/d1/migrations/0001_provider_execution_foundation.sql`) are unchanged since first pass (`infrastructure/` absent from the diffstat).
-- Evidence: `Grep "d1 migrations"` over `.github/` → none; `git diff --stat 5346ced9..HEAD -- infrastructure/` → no changes.
+- Evidence: `Grep "d1 migrations"` over `.github/` → none; `git diff --stat e29821d3..HEAD -- infrastructure/` → no changes.
 - Affected surface: `letbuyy-production-d1` schema drift vs worker code.
 
 ### 1.6 Rollback exists for Workers but no encoded rollback path for Vercel apps — **STILL-OPEN**
 **Severity: Medium — Likelihood: Medium**
 Unchanged. `grep -rn "vercel rollback"` across the repo matches only this report. The Worker rollback wrapper (`infrastructure/scripts/deploy/production-rollback.mjs`) and lineage manifest are unchanged. Recovery of a bad deploy of any of the **nine** production apps still depends on out-of-repo Vercel dashboard action.
-- Evidence: `Grep "vercel rollback"` → 1 file (`FORENSIC_REPORT/14-risk-assessment.md` itself); `infrastructure/` unchanged in `git diff --stat 5346ced9..HEAD`.
+- Evidence: `Grep "vercel rollback"` → 1 file (`FORENSIC_REPORT/14-risk-assessment.md` itself); `infrastructure/` unchanged in `git diff --stat e29821d3..HEAD`.
 - Affected surface: production app tier (nine Next.js apps).
 
 ### 1.7 Health checks are shallow (HTTP status only); error-tracking SaaS absent — **STILL-OPEN**
@@ -93,7 +93,7 @@ Unchanged. `deploy-production.yml:144-169` still asserts only `200`/`302` from e
 ### 1.8 Staging vs production separation: present and reasonably clean (positive control) — **UNCHANGED (positive)**
 **Severity: Low — Likelihood: Low**
 The env-separated topology (separate project-id secret sets, per-env worker names/routes/KV/D1/Hyperdrive/R2/queues, `develop → staging` / `main → production`) is unchanged, and the gated workflow's staging-E2E hard gate before production migration remains (`production-deploy.yml:108-157`). The residual foot-gun is also unchanged and now **compounds**: the base `[vars]` of `services/api-gateway/wrangler.toml:27` still hardcodes `ENVIRONMENT = "staging"`, so a bare `wrangler deploy` (no `--env production`) publishes a worker that self-identifies as staging — and the **new** internal-payment-route guard treats any `ENVIRONMENT !== 'production'` worker with a missing `INTERNAL_API_SECRET` as open (see §3.9 NEW). The only wrangler change this pass is six added `*_QUEUE_NAME` vars (`wrangler.toml:51-55, 130-134, 234-238`).
-- Evidence: `services/api-gateway/wrangler.toml:27, 51-55, 106, 210`; `git diff --stat 5346ced9..HEAD -- services/api-gateway/wrangler.toml` = +6.
+- Evidence: `services/api-gateway/wrangler.toml:27, 51-55, 106, 210`; `git diff --stat e29821d3..HEAD -- services/api-gateway/wrangler.toml` = +6.
 
 ---
 
@@ -119,7 +119,7 @@ Unchanged. The site loader still issues up to **five sequential** compat-fallbac
 
 ### 2.4 Rate limiting fails closed platform-wide when Redis is absent — **STILL-OPEN**
 **Severity: Medium — Likelihood: Medium**
-Unchanged: `services/api-gateway/src/middleware/rateLimit.ts` is absent from `git diff --stat 5346ced9..HEAD`; the `unavailable: true` → HTTP 503 fail-closed paths persist (current line refs `rateLimit.ts:726, 776, 846` among 18 `unavailable/503` sites). A Redis outage or missing `UPSTASH_REDIS_REST_*` secret still converts to a full-platform 503. Storefront caching still no-ops without the KV `CACHE` binding.
+Unchanged: `services/api-gateway/src/middleware/rateLimit.ts` is absent from `git diff --stat e29821d3..HEAD`; the `unavailable: true` → HTTP 503 fail-closed paths persist (current line refs `rateLimit.ts:726, 776, 846` among 18 `unavailable/503` sites). A Redis outage or missing `UPSTASH_REDIS_REST_*` secret still converts to a full-platform 503. Storefront caching still no-ops without the KV `CACHE` binding.
 - Evidence: diffstat (file unchanged); `Grep "unavailable: true|503"` over `rateLimit.ts` → 18 hits at the same logic sites.
 - Affected surface: entire `/v1` surface.
 
@@ -151,7 +151,7 @@ Boundary unchanged (`import 'server-only'` clients in apps; service-role only in
 ### 3.3 Three baseline tables ship without RLS — **STILL-OPEN**
 **Severity: Medium — Likelihood: Low**
 Re-derived at HEAD: `comm -23` of created vs RLS-enabled tables in `database/supabase/migrations/000_baseline.sql` still yields exactly **`contacts`, `employee_permissions`, `projects`** (baseline file unchanged in the diff; none of migrations 085-088 adds RLS to these).
-- Evidence: recomputed `comm -23` output this pass; `git diff --stat 5346ced9..HEAD -- database/supabase/migrations/000_baseline.sql` → no change.
+- Evidence: recomputed `comm -23` output this pass; `git diff --stat e29821d3..HEAD -- database/supabase/migrations/000_baseline.sql` → no change.
 
 ### 3.4 Static shared bearer token gates the platform-console API plane — **STILL-OPEN**
 **Severity: High — Likelihood: Medium**
@@ -171,12 +171,12 @@ Unchanged in behavior; line numbers shifted: the gateway CORS allow-list (`index
 
 ### 3.7 Input "sanitization" middleware logs-but-does-not-block — **STILL-OPEN (by design)**
 **Severity: Low — Likelihood: Low**
-Unchanged: `middleware/security.ts` absent from the services diff except where shared (`security.ts` itself not in `git diff --name-only 5346ced9..HEAD -- services/`); behavior as first pass (1 MB cap, log-only XSS detection, strong output headers).
+Unchanged: `middleware/security.ts` absent from the services diff except where shared (`security.ts` itself not in `git diff --name-only e29821d3..HEAD -- services/`); behavior as first pass (1 MB cap, log-only XSS detection, strong output headers).
 - Evidence: diff file list (security.ts unchanged).
 
 ### 3.8 Dependency currency / SCA overrides — **UNCHANGED (positive)**
 **Severity: Low — Likelihood: Low**
-`pnpm-lock.yaml` last changed at commit `b7978d81 2026-06-05 16:32` (before the first-pass HEAD); root `package.json` `pnpm.overrides` block intact (`packageManager: pnpm@10.6.2`). No dependency regression observed in the delta.
+`pnpm-lock.yaml` last changed at commit `2dbfe7e3 2026-06-05 16:32` (before the first-pass HEAD); root `package.json` `pnpm.overrides` block intact (`packageManager: pnpm@10.6.2`). No dependency regression observed in the delta.
 - Evidence: `git log -1 -- pnpm-lock.yaml`; `package.json` overrides + packageManager.
 
 ### 3.9 **NEW — Gateway internal payment-mutation routes fail OPEN in non-production environments**
@@ -196,7 +196,7 @@ Partially remediated, verified: `apps/app-marketplace/src/lib/api/client.ts:20-3
 Both first-pass findings persist verbatim:
 - Platform-console TOTP accepts a static `PLATFORM_CONSOLE_DEV_MFA_CODE` whenever `NODE_ENV !== 'production'` (`apps/platform-console/src/lib/console-auth-server.ts:140-144`), ahead of the real HOTP comparison (`:146-155`). Any non-production build of the console with that env var set has a fixed MFA code.
 - Identity signup echoes the emailed OTP back in the JSON response (`devOtp`) whenever `NODE_ENV !== 'production'` (`apps/identity-platform/src/app/api/auth/signup/route.ts:9-26`, attached at `:106` and `:137`). On a staging deployment built without `NODE_ENV=production`, email-verification OTPs are readable by the requester, defeating verification on that environment.
-- Evidence: exact lines above, re-read at HEAD; neither file appears in `git diff --name-only 5346ced9..HEAD`.
+- Evidence: exact lines above, re-read at HEAD; neither file appears in `git diff --name-only e29821d3..HEAD`.
 - Affected surface: non-production console MFA; non-production email verification integrity.
 
 ---
@@ -237,7 +237,7 @@ Improvement verified: `node scripts/validate-governance.mjs` completed with "Gov
 ### 5.1 Observability dashboards and alert rules reference metrics that no runtime emits — **STILL-OPEN (unchanged)**
 **Severity: High — Likelihood: High**
 Re-verified at HEAD, nothing changed: `infrastructure/observability/` and `infrastructure/monitoring/` are absent from the 74-commit diffstat. `Grep "writeDataPoint"` repo-wide matches **only** forensic reports and the two CODEX mission documents (which themselves flag it) — no runtime call. `Grep "prom-client|@opentelemetry"` over every `package.json` → none. The four alert metric names (`http_requests_total`, `http_server_errors_total`, `letbuyy_queue_dead_letter_total`, `letbuyy_replay_lag_seconds`) appear only in `prometheus-rules.yaml`, three Grafana dashboards, and audit/mission docs — no producer in `services/`, `packages/`, or `apps/`. Production alerting/SLO enforcement remains a contract artifact with no live pipeline.
-- Evidence: greps above (file lists captured this pass); `git diff --stat 5346ced9..HEAD -- infrastructure/` → empty.
+- Evidence: greps above (file lists captured this pass); `git diff --stat e29821d3..HEAD -- infrastructure/` → empty.
 - Affected surface: production alerting/SLO enforcement (effectively absent).
 
 ### 5.2 Single points of failure across all three runtime tiers; `FAILOVER_REGION` is still a label — **STILL-OPEN**
@@ -265,7 +265,7 @@ Unchanged: the gated workflow's `pg_dump`→`gpg`→artifact (7-day retention) s
 ### 5.6 Incident tooling documentation-grade; error-budget enforcement blocked on the missing metrics pipeline — **STILL-OPEN**
 **Severity: Medium — Likelihood: Medium**
 Unchanged in substance: `docs/governance/` gained 4 docs in the delta (`app-api-route-ownership.md` etc.) but the runbook/SLO surface and its dependency on non-emitted metrics (§5.1) are as first pass.
-- Evidence: `git diff --stat 5346ced9..HEAD -- docs/governance/` (+85/−17, governance prose only); `slo-catalog.yaml` unchanged.
+- Evidence: `git diff --stat e29821d3..HEAD -- docs/governance/` (+85/−17, governance prose only); `slo-catalog.yaml` unchanged.
 
 ### 5.7 Reserved service roots remain governance-only shells — **STILL-OPEN (now manifest-tracked)**
 **Severity: Low — Likelihood: Low**
@@ -306,8 +306,8 @@ Status split across the 37 tracked risks: **0 RESOLVED**, **3 REDUCED** (§3.10 
 
 ## Evidence Index
 
-- **Baseline / delta**: `git log -1` = `127a850e 2026-06-05 23:22`; `git rev-list --count HEAD` = 802; `git rev-list --count 5346ced9..HEAD` = 74; `git log --oneline -20` (workstream merges WS1/WS5/WS7/WS9/WS10 + letbuyy-remediation); `git diff --stat 5346ced9..HEAD` = 344 files, +23,635/−8,761; scoped `git diff --stat/--name-status` for `.github/`, `scripts/`, `tests/`, `services/`, `database/`, `infrastructure/`, `docs/governance/`, `README.md`, `pnpm-lock.yaml` (last change `b7978d81 2026-06-05 16:32`).
-- **Deploy workflows**: `.github/workflows/production-deploy.yml` (448 lines; preflight `:24-106` w/ 35 required secrets incl. developer-portal; staging-e2e `:108-157`; migrate+backup `:159-219`; workers `:221-296`; apps matrix `:298-364` (9 apps); required-jobs gate `:366-396`; smoke `:398-447`); `.github/workflows/deploy-production.yml` (170 lines; jobs `deploy-workers`/`deploy-apps`(9-app matrix `:85-94`)/`smoke-test-production`; SKIP steps `:73-75, 117-120, 130-132, 140-142`; health URLs `:151-169` incl. `developers.letbuyy.store`); exact diffs vs `5346ced9` (developer-portal additions only); `ci.yml:73-94` (changed-package filters, unchanged); `deploy-staging.yml:146-174` (hyphen staging hosts, unchanged); `grep "schedule:" .github/workflows/` → none; `grep "d1 migrations" .github/` → none; `tests/operations/production-deploy-workflow.test.mjs:1-98` (`legacyWorkflow` sync assertions `:90-98`).
+- **Baseline / delta**: `git log -1` = `a8cd5fde 2026-06-05 23:22`; `git rev-list --count HEAD` = 802; `git rev-list --count e29821d3..HEAD` = 74; `git log --oneline -20` (workstream merges WS1/WS5/WS7/WS9/WS10 + letbuyy-remediation); `git diff --stat e29821d3..HEAD` = 344 files, +23,635/−8,761; scoped `git diff --stat/--name-status` for `.github/`, `scripts/`, `tests/`, `services/`, `database/`, `infrastructure/`, `docs/governance/`, `README.md`, `pnpm-lock.yaml` (last change `2dbfe7e3 2026-06-05 16:32`).
+- **Deploy workflows**: `.github/workflows/production-deploy.yml` (448 lines; preflight `:24-106` w/ 35 required secrets incl. developer-portal; staging-e2e `:108-157`; migrate+backup `:159-219`; workers `:221-296`; apps matrix `:298-364` (9 apps); required-jobs gate `:366-396`; smoke `:398-447`); `.github/workflows/deploy-production.yml` (170 lines; jobs `deploy-workers`/`deploy-apps`(9-app matrix `:85-94`)/`smoke-test-production`; SKIP steps `:73-75, 117-120, 130-132, 140-142`; health URLs `:151-169` incl. `developers.letbuyy.store`); exact diffs vs `e29821d3` (developer-portal additions only); `ci.yml:73-94` (changed-package filters, unchanged); `deploy-staging.yml:146-174` (hyphen staging hosts, unchanged); `grep "schedule:" .github/workflows/` → none; `grep "d1 migrations" .github/` → none; `tests/operations/production-deploy-workflow.test.mjs:1-98` (`legacyWorkflow` sync assertions `:90-98`).
 - **Cloudflare worker config**: `services/api-gateway/wrangler.toml` — base `ENVIRONMENT = "staging"` `:27`; new `*_QUEUE_NAME` vars `:51-55, 130-134, 234-238` (the only +6 delta); `FAILOVER_REGION` `:49, 128, 232`; `services/webhook-service/wrangler.toml` and `services/queue-workers/wrangler.toml` unchanged (absent from diffstat).
 - **New internal mutation surface**: `services/api-gateway/src/routes/storefront/internal-payment-routes.ts` (233 lines; fail-open guard `:71-76`; payable read `:108-125`; reference `:128-150`; confirm `:153-181`; failure `:184-208`; event `:211-232`); `routes/internal-billing.ts` (fail-closed guard `:49-53`); `routes/internal-events.ts` (fail-closed guard `:20-24`); webhook clients `services/webhook-service/src/gateway-order-transitions.ts:14-67` (fail-closed `:19-25`; targets `/v1/storefront/internal/payments/confirm` `:59`), `gateway-billing-transitions.ts`, `gateway-events.ts`; `services/queue-workers/src/gateway-events.ts`; `Grep "\.from\('(orders|products|subscriptions|sites|billing_history)'\)"` over webhook-service src → none.
 - **Queue triggers**: `services/api-gateway/src/execution/cloudflare-queue-triggers.ts:40-137` (`planScheduledDispatchQueueTriggers`); `src/__tests__/cloudflare-queue-triggers.test.ts` (new; not in any package test script).

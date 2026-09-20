@@ -3,7 +3,7 @@
 Append-only. Every row names the command and the commit. A number without a commit is not evidence.
 DOC 06 (2026-06-10) rows are listed as **SUPERSEDED** where the tree has moved.
 
-## 2026-09-04 · `823aa5ee` (GOV-3, UX-0)
+## 2026-09-04 · `a751a2ff` (GOV-3, UX-0)
 
 | Fact | Command / source | Value |
 |---|---|---|
@@ -12,10 +12,10 @@ DOC 06 (2026-06-10) rows are listed as **SUPERSEDED** where the tree has moved.
 | DTCG interchange | `wc -c packages/typescript/ui/tokens.json` | 8,867 B (DOC 06: 8,345 — SUPERSEDED) |
 | Dart bridge | `grep -c 'static const' packages/dart/ui_kit/lib/src/tokens/letbuyy_tokens.dart`; classes | 183 consts; Primitive · Color · Typography · Spacing · Radius · Shadow · Density (DOC 06 "colours+spacing only" — SUPERSEDED) |
 | Ratchet metrics | `node scripts/validators/validate-design-system.mjs` (dirty primary tree; provisional) | appCssRawHex 142 · appCssNakedRgbHsl 786 · tailwindPaletteClasses 524 · appLocalLbTokenRedefs 275 · rawPxFontSize 592 · rawPxSpacing 1,556 · tsxInlineStyles 673 · tsxRawHex 2 · tsxArbitraryRadius 386 · tsxArbitraryShadow 9 · localWorkspaceImplementations 0 |
-| Ratchet metrics, clean tree | the same validator in the clean `LetBuyy-gov3` worktree at `823aa5ee` (gate rehearsal) | appCssRawHex 150 · appCssNakedRgbHsl 820 · tailwindPaletteClasses 523 · appLocalLbTokenRedefs 275 · rawPxFontSize 592 · rawPxSpacing 1,555 · tsxInlineStyles 673 · tsxRawHex 2 · tsxArbitraryRadius 386 · tsxArbitraryShadow 9 · localWorkspaceImplementations 0 — **these are the citable numbers**; the dirty-primary row above differs by the other sessions' in-flight edits (e.g. rgb/hsl 786 vs 820) |
+| Ratchet metrics, clean tree | the same validator in the clean `LetBuyy-gov3` worktree at `a751a2ff` (gate rehearsal) | appCssRawHex 150 · appCssNakedRgbHsl 820 · tailwindPaletteClasses 523 · appLocalLbTokenRedefs 275 · rawPxFontSize 592 · rawPxSpacing 1,555 · tsxInlineStyles 673 · tsxRawHex 2 · tsxArbitraryRadius 386 · tsxArbitraryShadow 9 · localWorkspaceImplementations 0 — **these are the citable numbers**; the dirty-primary row above differs by the other sessions' in-flight edits (e.g. rgb/hsl 786 vs 820) |
 | Ratchet baseline | `scripts/validators/design-system-baseline.json` (2026-08-14) | 156 · 821 · 535 · 339 · 612 · 1,581 · 673 · 5 · 388 · 9 · 0 — every clean-tree metric is at or below it |
 | HARD violations | same run on the **dirty primary** | **1**: `identity-platform: dark-mode reachability target file is missing` — manufactured by another session's uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts` (status `D` in the primary) |
-| HARD violations, clean tree | the same validator in the clean `LetBuyy-gov3` worktree at `823aa5ee` (gate rehearsal `6f750034`) | **0** — the validator PASSES on the committed tree; the ratchet metrics match the dirty-tree reading within the other session's in-flight files |
+| HARD violations, clean tree | the same validator in the clean `LetBuyy-gov3` worktree at `a751a2ff` (gate rehearsal `95595057`) | **0** — the validator PASSES on the committed tree; the ratchet metrics match the dirty-tree reading within the other session's in-flight files |
 | Exiled from the ratchet | baseline `scope.exiledApps` | `apps/marketing-site` |
 | `@letbuyy/ui` adoption (files importing / tsx files) | `grep -rl "from '@letbuyy/ui" apps/<app>/src`; `find … -name '*.tsx'` | customer_web 44/114 · merchant_web 122/141 · admin_web 21/33 · identity-platform 10/15 · marketing-site 33/69 |
 | `AppNavigation` adoption (files) | `grep -rl AppNavigation apps/<app>/src` | merchant_web 2 · admin_web 1 · customer_web 0 · identity 0 · marketing 0 (DOC 06: 2/9 apps — comparable) |

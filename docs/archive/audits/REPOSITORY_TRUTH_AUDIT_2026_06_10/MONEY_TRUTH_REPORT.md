@@ -1,8 +1,8 @@
 # MONEY TRUTH REPORT — LetBuyy Repository Truth Audit
 
 **Date:** 2026-06-10 · **Auditor axis:** Money truth (capture, refund, COD, settlement, payout, commission, webhooks)
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · **Branch:** `stepup/main` · **HEAD:** `5cf9e64e` ("fix(foundation): resolve final audit drift")
-**Working tree:** ~998 dirty paths. Money migrations `162/163/164/165/166` and all Phase A/B/D money validators are **untracked** (worktree-only). `main` is 30 commits behind `stepup/main` (merge-base = `main` tip `bf8c18c1`).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · **Branch:** `stepup/main` · **HEAD:** `c4fc3cd6` ("fix(foundation): resolve final audit drift")
+**Working tree:** ~998 dirty paths. Money migrations `162/163/164/165/166` and all Phase A/B/D money validators are **untracked** (worktree-only). `main` is 30 commits behind `stepup/main` (merge-base = `main` tip `4bcae19a`).
 
 > Discovery-only. Every claim cites file:line. Code over docs. Live provider/DB behavior is out of scope (see Unknowns).
 
@@ -198,7 +198,7 @@ UPDATE … SET status='processing', release_idempotency_key=…, release_claimed
 
 ## 9. HEAD vs Working Tree vs `main` Divergence Table
 
-| Finding | `main` (bf8c18c1) | HEAD `stepup/main` (5cf9e64e) | Working tree |
+| Finding | `main` (4bcae19a) | HEAD `stepup/main` (c4fc3cd6) | Working tree |
 |---|---|---|---|
 | Canonical ledger kernel (139/151) | present | present | present |
 | Ledger authority: release claim, reconciliation tables, capture/refund ledger columns (160) | **absent** (migrations end at 158) | present | present |

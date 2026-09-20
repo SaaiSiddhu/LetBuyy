@@ -1,7 +1,7 @@
 # 14 — HUMAN-REQUIRED ACTIONS
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 Every item here is `[HUMAN-REQUIRED]`: automation cannot perform it, and no amount of repository
@@ -32,7 +32,7 @@ protection/force-push policy is an account-level decision.
 
 **Current state (LOCAL RUNTIME):**
 ```
-git rev-parse HEAD                              ee3711829d857e986014c5811bb94d86ebc3d343
+git rev-parse HEAD                              bf35062eda22f4d881efd61fb1d36c8fc83baed1
 git rev-list --count main..stepup/main          106
 git rev-list --count origin/main..stepup/main   291
 ```

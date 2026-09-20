@@ -13,7 +13,7 @@ No production services were deployed from this environment.
 ## Release Version
 
 - Git branch: `main`
-- Latest local commit before deployment attempt: `955a7c3`
+- Latest local commit before deployment attempt: `0844215`
 - Intended Worker targets:
   - `services/api-gateway`
   - `services/webhook-service`

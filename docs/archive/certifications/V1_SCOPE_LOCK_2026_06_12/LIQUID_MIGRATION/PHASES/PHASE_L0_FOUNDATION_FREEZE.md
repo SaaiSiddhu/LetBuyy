@@ -1,6 +1,6 @@
 # PHASE L0 — FOUNDATION FREEZE LOCK
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only, no code. Shared conventions: "C0" = sandbox commit seam (human commits each phase); citations are file:line at HEAD; ART/R refer to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only, no code. Shared conventions: "C0" = sandbox commit seam (human commits each phase); citations are file:line at HEAD; ART/R refer to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`.
 
 1. **Purpose.** Ratify Full-Liquid scope and lock the constitutional gates before any render-layer change, so every later phase has an authoritative, code-true baseline and an agreed flip/deletion gate.
 2. **Repository Reality.** ART-17 (`:253-256`) already crowns Liquid as canonical renderer and freezes React "at parity"; the Liquid default-flip is gated on a "parity/security/perf harness"; React deletion is forbidden "before the data decision at the hardening wave." `theme-governance-validator.mjs:57-67` pins `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false` (`theme-governance.ts:14`) and the platform flip as `deferred`.

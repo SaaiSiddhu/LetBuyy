@@ -87,7 +87,7 @@ pnpm run lint:css
 
 The repository already has `jest-axe` in `packages/typescript/ui` and a Storybook (`:9009`,
 `test:visual` regression script); reuse that tooling rather than introducing a new stack. Storybook
-a11y addon and Lighthouse are not wired into CI at `823aa5ee` — say so when they were not run.
+a11y addon and Lighthouse are not wired into CI at `a751a2ff` — say so when they were not run.
 
 Manual, per touched screen, **required before sign-off**:
 

@@ -9,10 +9,10 @@
 | Field | Value |
 |---|---|
 | **Date** | 2026-08-09 |
-| **Baseline SHA** | `ee3711829d857e986014c5811bb94d86ebc3d343` (`ee371182`), human-approved |
+| **Baseline SHA** | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`bf35062e`), human-approved |
 | **Original repository** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — branch `stepup/main`, **production-linked**, read-only for this agent |
-| **Integration head** | `codex/web-v1-integration` @ `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6` in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
-| **Emergency branch** | `codex/emergency-appbridge-killswitch` @ `30fd96b5` in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch` |
+| **Integration head** | `codex/web-v1-integration` @ `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab` in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
+| **Emergency branch** | `codex/emergency-appbridge-killswitch` @ `6c3e17df` in worktree `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch` |
 | **Authority chain** | `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` → root `AGENTS.md` → nested `AGENTS.md` → `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` |
 | **Wave 1 work implemented by this document** | **None.** This is a handoff. No Wave 1 change was designed, written, staged or committed. |
 
@@ -25,12 +25,12 @@
 | ID | Command | Observed |
 |---|---|---|
 | H1 | `git rev-parse --abbrev-ref HEAD` | `stepup/main` (before **and** after all work) |
-| H2 | `git rev-parse HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` (before and after) |
+| H2 | `git rev-parse HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (before and after) |
 | H3 | `git status --porcelain=v1 \| wc -l` | **6826** (before and after) |
 | H4 | `git stash list \| wc -l` | **2** (before and after) |
-| H5 | `git log --oneline ee371182..codex/web-v1-integration` | **23** commits, listed verbatim in doc 27 §2 |
-| H6 | `git diff --shortstat ee371182 codex/web-v1-integration` | `155 files changed, 51757 insertions(+), 1003 deletions(-)` |
-| H7 | `git diff --shortstat ee371182 codex/emergency-appbridge-killswitch` | `14 files changed, 1356 insertions(+)` — **0 deletions** |
+| H5 | `git log --oneline bf35062e..codex/web-v1-integration` | **23** commits, listed verbatim in doc 27 §2 |
+| H6 | `git diff --shortstat bf35062e codex/web-v1-integration` | `155 files changed, 51757 insertions(+), 1003 deletions(-)` |
+| H7 | `git diff --shortstat bf35062e codex/emergency-appbridge-killswitch` | `14 files changed, 1356 insertions(+)` — **0 deletions** |
 | H8 | `git merge-base --is-ancestor codex/emergency-appbridge-killswitch codex/web-v1-integration` | **non-zero → NOT an ancestor.** The kill switch is *not* in the integration branch. |
 | H9 | `git rev-list --left-right --count HEAD...origin/stepup/main` | `17  0` |
 | H10 | `git rev-list --left-right --count origin/main...origin/stepup/main` | `0  274` |
@@ -97,7 +97,7 @@ are grouped by who can close them.
 
 | Blocker | Evidence | Why it gates Wave 1 entry |
 |---|---|---|
-| **DEPLOY-R1 / branch lag** (FBR-27, FBR-28) | `origin/main` == `origin/develop` == `41b6ea49c5da30a1409d4cc587d989d459288e45`, **274 behind** `origin/stepup/main` (H10). `main..codex/web-v1-integration` = **129** (H11). `branch-lag-guard-validator.mjs` now hard-asserts and **fails every branch ahead of `main`** (doc 23 §5.2 row #104). | `AGENTS.md:330` DEPLOY-R1: *"Nothing else ships until the pipeline can deploy the integration branch."* `production-deploy.yml` triggers on `main`. **Every Wave 0 repair is currently undeployable, and no Wave 1 branch can pass the gate.** The fix is `MERGE_RUNBOOK.md` executed by a **human** on protected branches — an agent may not fast-forward `main`. |
+| **DEPLOY-R1 / branch lag** (FBR-27, FBR-28) | `origin/main` == `origin/develop` == `c2547049c0b5666661536d076046415714fb7d03`, **274 behind** `origin/stepup/main` (H10). `main..codex/web-v1-integration` = **129** (H11). `branch-lag-guard-validator.mjs` now hard-asserts and **fails every branch ahead of `main`** (doc 23 §5.2 row #104). | `AGENTS.md:330` DEPLOY-R1: *"Nothing else ships until the pipeline can deploy the integration branch."* `production-deploy.yml` triggers on `main`. **Every Wave 0 repair is currently undeployable, and no Wave 1 branch can pass the gate.** The fix is `MERGE_RUNBOOK.md` executed by a **human** on protected branches — an agent may not fast-forward `main`. |
 | **17 unpushed commits on `stepup/main`** (FBR-26) | `git rev-list --left-right --count HEAD...origin/stepup/main` → `17 0` (H9) | Three of the 17 touch the ART-22-frozen `apps/theme-marketplace` (FBR-37) and need perimeter adjudication **before** the push. |
 | **Nothing from Wave 0 is pushed** (FBR-26, FBR-33) | `git branch -r \| grep -c codex/` → **0** (H12) | Five local branches + one integration branch exist only on this laptop. A local commit is not a fix. |
 | **GitHub branch protection is UNREADABLE** (FBR-23) | doc 09 §4, doc 19 — the available token cannot read protection settings | If protection matches `BRANCH_STRATEGY.md`, PRs into `stepup/main` would wait forever on five `ci / *` checks the repaired `ci.yml` now finally reports. A **repo owner** must read and reconcile it. |
@@ -111,13 +111,13 @@ are grouped by who can close them.
 | Blocker | Measured | Owner surface |
 |---|---|---|
 | **`platform-console` fails `next build`** (FBR-18, doc 23 §8.3) | `pnpm --filter @letbuyy/platform-console run build` → **exit 1**, `TS2344` in `apps/platform-console/src/app/(dashboard)/developers/page.tsx` — Next 16 requires `PageProps.searchParams` to be a `Promise`. **Invisible to all 110 validators and to `turbo typecheck` (exit 0).** | `apps/platform-console` |
-| **20 gate FAILs** (FBR-47, FBR-48, doc 23 §5.2) | `node scripts/validate-governance.mjs --lane=gate` → `PASS=90 FAIL=20 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1`, exit 1, on `fa5630aa`. **All 110 execute for the first time.** | repo-wide |
+| **20 gate FAILs** (FBR-47, FBR-48, doc 23 §5.2) | `node scripts/validate-governance.mjs --lane=gate` → `PASS=90 FAIL=20 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1`, exit 1, on `8ec05e21`. **All 110 execute for the first time.** | repo-wide |
 | — of which **≈4 are purely LCIS** (FBR-07) | `package-ownership` (21 manifests: 19 `packages/lcis-*`, `services/lcis-api`, `tools/central-intelligence`), `provider-isolation` (7 files, all `packages/lcis-adapters/**`), `typescript-governance` (~110 findings, 100 % `packages/lcis-*`), half of `dependency-manifest`/`undeclared-import` | `services/lcis-api` + 19 `packages/lcis-*` — **ARB classification required** |
 | — of which **2 are security-relevant** | `route-ownership-validator`: `services/api-gateway/src/routes/custom-domains.ts:GET:/domains:483` — tenant-table handler with no ownership/internal/session gate. `raw-error-message-validator`: `services/api-gateway/src/routes/resource-search.ts` returns raw `error.message`. | `services/api-gateway` |
 | **200 lint errors / 1,430 warnings across all 5 lint-capable apps** (FBR-17, doc 23 §7.2) | `merchant-control-plane` 122 errors · `marketing-site` 70 · `storefront-runtime` 4 · `platform-console` 3 · `identity-platform` 1. Dominant rule: `letbuyy-boundaries/no-new-next-api-route` ×68 in `merchant-control-plane` — the lint expression of `domain-boundary-validator`'s *"expected 129, found 188"* app-local API routes. | five Next apps |
 | **`lint:css` exit 2** (doc 23 §7.3) | one auto-fixable stylelint error, `color-hex-length`; `ci.yml:97` runs it in the `lint` job | design system |
 | **11 behavioural failures / 1,608** (FBR-19, doc 23 §9.1) | 11 with the Postgres fixture up; **30 without it** — the delta is 19 connection failures in `tests/executable/`, not logic | repo-wide `tests/` |
-| **Full gate never run on `fa5630aa` in a disposable checkout** (FBR-41) | doc 23 ran it **and it removed 57 directories** including every workspace `node_modules` (FBR-16, doc 23 §5.3). Running the gate **uninstalls the workspace.** | release engineering |
+| **Full gate never run on `8ec05e21` in a disposable checkout** (FBR-41) | doc 23 ran it **and it removed 57 directories** including every workspace `node_modules` (FBR-16, doc 23 §5.3). Running the gate **uninstalls the workspace.** | release engineering |
 
 > **Operational rule that must be written into every Wave 1 runbook:** `validate:governance` deletes
 > generated output including `node_modules`. Order any pipeline **gate → `pnpm install --frozen-lockfile` →
@@ -128,9 +128,9 @@ are grouped by who can close them.
 Both are documented in `30_CORRECTIONS_AND_STASH_HAZARD.md` and both are **still armed**. No agent may
 defuse either.
 
-1. **Two stashes.** `stash@{0}` (`b85eeb03…`, *"On stepup/main: inf-ext"*) holds **28 files, +1,128 /
+1. **Two stashes.** `stash@{0}` (`f8a6c8c7…`, *"On stepup/main: inf-ext"*) holds **28 files, +1,128 /
    −1,203** — a **third divergent body of uncommitted work**, unreachable from the baseline (its base
-   `122ed174` is 53 commits behind `ee371182`). Nine files carry a *different* real diff in the stash
+   `e0860c1d` is 53 commits behind `bf35062e`). Nine files carry a *different* real diff in the stash
    than in the dirty tree (`apps/identity-platform/src/app/onboarding/page.tsx`,
    `apps/merchant-control-plane/src/app/globals.css`, `packages/typescript/ui/src/app-shell.tsx`,
    `merchantNavigation.ts`, `AdminShell.tsx`, `select/page.tsx`, `tokens.ts`,
@@ -141,7 +141,7 @@ defuse either.
    `stash@{1}` is untracked-only (10 files, +214), including
    `apps/storefront-runtime/src/middleware.ts.bak` at +213.
    **Required posture: document only. No stash command beyond `list`/`show`.** The safe first step is a
-   human-approved `git tag` on `b85eeb03` so it survives reflog expiry — **recommended, not performed.**
+   human-approved `git tag` on `f8a6c8c7` so it survives reflog expiry — **recommended, not performed.**
 2. **The intent-to-add empty-blob trap.** Ten SQL files sit in the index as empty blob `e69de29b`
    while holding **789 lines / 43,929 bytes** on disk: migrations `196`, `197` and rollbacks `180`,
    `181`, `188`, `189`, `190`, `191`, `196`, `197`. `git diff --cached --numstat | wc -l` → **0**, so
@@ -383,12 +383,12 @@ switch. If the answer is "they fail", the deploy needs a drain window and the PR
 
 ### 6.1 Current status: ALREADY-GATED-BUT-NOT-REMOVED
 
-`codex/emergency-appbridge-killswitch` @ **`30fd96b5`** exists in
+`codex/emergency-appbridge-killswitch` @ **`6c3e17df`** exists in
 `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch`.
 
 | Fact | Evidence |
 |---|---|
-| Two commits: `ed6e5167` *"fail-closed hard gate over the frozen app-platform seam"* → `30fd96b5` *"close the three ungated app-platform seams the prefix gate missed"* | H5-equivalent `git log ee371182..codex/emergency-appbridge-killswitch` |
+| Two commits: `df4abd5d` *"fail-closed hard gate over the frozen app-platform seam"* → `6c3e17df` *"close the three ungated app-platform seams the prefix gate missed"* | H5-equivalent `git log bf35062e..codex/emergency-appbridge-killswitch` |
 | **14 files changed, 1,356 insertions(+), 0 deletions(−)** | H7 |
 | **NOT an ancestor of `codex/web-v1-integration`** | H8 — `git merge-base --is-ancestor` returns non-zero |
 | Not pushed, no PR, not deployed; `origin/codex/*` does not exist | H12 |
@@ -430,7 +430,7 @@ customer-reachable); `apps/merchant-control-plane/public/letbuyy-app-bridge.js` 
 
 **Ordering, non-negotiable:**
 
-1. **ARB reviews and approves the emergency branch** `30fd96b5` and its rollout.
+1. **ARB reviews and approves the emergency branch** `6c3e17df` and its rollout.
 2. **Two Next.js builds run before the UI half ships** (FBR-04):
    `pnpm --filter @letbuyy/merchant-control-plane build` and
    `pnpm --filter @letbuyy/platform-console build` — the latter is currently **exit 1** (§2.2), so
@@ -510,16 +510,16 @@ must state the revert SHA and the data-restore procedure. Do not conflate the tw
 
 **Forbidden alternatives**
 
-- **Do not fail open on an unresolved host.** Wave 0 commit `54b2401d` made
+- **Do not fail open on an unresolved host.** Wave 0 commit `f8b04288` made
   `apps/storefront-runtime` fail **closed** and gated `/preview`, which previously served a full render
   of **any** store — password-gated, preview-only, offline, or unpublished — to any anonymous caller.
   **That fix currently has no executed test** (FBR-39). Writing it is a requirement of this workstream,
   not an optional extra.
-- **Do not** resolve a handle by a non-unique column. Commit `d5562c75` closed cross-tenant handle
+- **Do not** resolve a handle by a non-unique column. Commit `c331f929` closed cross-tenant handle
   resolution: `subdomain` and `store_name` are unique only **within their own column**, so one handle
   could resolve to two tenants and return an arbitrary one. Any new lookup must be provably unique.
 - **Do not** hardcode a platform domain literal — `platform-domain-literal-validator.mjs` exists.
-  Wave 0 commit `90a5a3ee` already derives identity-platform's storefront hosts from the canonical
+  Wave 0 commit `fcf3ca1f` already derives identity-platform's storefront hosts from the canonical
   domain (DEPLOY-R3); follow that pattern.
 - **Do not** ship without `INTERNAL_API_SECRET` and `LETBUYY_API_BASE_URL` present. FBR-40: with the
   fail-closed change, a storefront deployed without both serves **503 for every store**. Previously it
@@ -566,7 +566,7 @@ domain, DB `site_domains` row) owns the revert, and rehearse it. Fail-closed beh
 - `apps/identity-platform/src/app/onboarding/`, `apps/identity-platform/src/app/select/` — **both have
   divergent stash versions** (`+144/−659` and `+33/−48`). Same caution.
 - `apps/merchant-control-plane/` — the merchant surface.
-- `sites` is the tenant root; `site_id` is the tenancy key everywhere. Commit `d5562c75` writes
+- `sites` is the tenant root; `site_id` is the tenancy key everywhere. Commit `c331f929` writes
   `sites.published`.
 - Enforcement: `scripts/validators/legacy-site-type-validator.mjs` (**currently FAIL** — marketing
   create page exposes portfolio/resume outside the legacy flag), `operational-lifecycle-validator.mjs`,
@@ -1253,7 +1253,7 @@ immediately **after** all work for this document:
 | Property | Before | After |
 |---|---|---|
 | Branch | `stepup/main` | `stepup/main` |
-| `HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | `git status --porcelain=v1 \| wc -l` | **6826** | **6826** |
 | `git stash list \| wc -l` | **2** | **2** |
 

@@ -3,7 +3,7 @@
 Investigation date: 2026-06-05 (second pass, post-remediation)
 
 > Forensic scope: document the *current* state of cross-component communication on the LetBuyy
-> platform after the remediation/consolidation merge (`develop` head `127a850e`). Every edge
+> platform after the remediation/consolidation merge (`develop` head `a8cd5fde`). Every edge
 > below cites file/line or config evidence. Where a path could not be proven from the
 > repository it is marked "not found in repository". This pass re-verifies the first-pass
 > findings against the post-remediation tree and maps the new internal surfaces.
@@ -22,8 +22,8 @@ Investigation date: 2026-06-05 (second pass, post-remediation)
 | D6 | **`payout.released` / `payout.failed` marked `reserved-human-gated`** (first-pass H-A3/A7: contracts without producers). Contracts now carry `implementationStatus: 'reserved-human-gated'` with `reservedReason` ("No payout release rail … human-gated"); still no emitter — intentionally. | VERIFIED (status formalized) | `event-core/src/index.ts:131-132,438-457`; grep `payout.released/payout.failed` in `services/` → contract refs only, no emit site |
 | D7 | **New governance validator `single-writer-ownership-validator.mjs` (suite now 129 validators, was 128).** Forbids webhook-service writes to `orders/products/subscriptions/sites/billing_history/outbox_events`, queue-workers writes to `outbox_events`, and api-gateway + queue-workers writes to `payment_webhook_events`; also forbids webhook-service calling the gateway-owned `*_with_ledger` order RPCs. Passing: "107 source files checked". | VERIFIED | `scripts/validators/single-writer-ownership-validator.mjs:22-62`; runner `scripts/validate-governance.mjs:129`; run output below |
 | D8 | **New asymmetry introduced:** outbox dispatch now upserts a `platform_queue_jobs` row with `queue_name='webhook-deliveries'` per event with subscriptions, but no consumer ever claims that queue name (both drains are limited to `analytics-events`/`search-indexing`/`payment-events`). Rows stay `queued` forever; actual partner delivery still flows via `webhook_deliveries` + webhook-service RPCs. | NEW (see 08 N-1) | `outbox-execution.adapter.ts:165-189`; `index.ts:196,552` (gateway queue names); `platform-queue-consumer.ts:21` (`PlatformQueueName` union) |
-| D9 | Internal payment routes were **extracted** from `storefront.ts` into `routes/storefront/internal-payment-routes.ts` (storefront.ts no longer contains `isInternalRequest`/`X-Internal-API-Secret`); the non-production no-secret trust survived the move (`internal-payment-routes.ts:73`). | VERIFIED (moved, behavior unchanged) | grep `isInternalRequest` in `storefront.ts` → none; `internal-payment-routes.ts:71-76`; commit `86e65460 refactor(storefront): split internal payment routes` |
-| D10 | Merge of 5 workstreams into `develop` (`ea12a143`, `f05557e1`, `e50eec28`, `320bb31f`, `5df85dab`, `f0f70a04`) + 3 `fix(consolidation)` commits (`eee2ca7e`, `4c97dafa`, `127a850e`). No unresolved conflict markers in `apps/`, `services/`, `packages/`, `scripts/`, `config/`; full governance suite passes (129/129). | VERIFIED CLEAN | `git log --oneline`; conflict-marker grep → empty; governance run below |
+| D9 | Internal payment routes were **extracted** from `storefront.ts` into `routes/storefront/internal-payment-routes.ts` (storefront.ts no longer contains `isInternalRequest`/`X-Internal-API-Secret`); the non-production no-secret trust survived the move (`internal-payment-routes.ts:73`). | VERIFIED (moved, behavior unchanged) | grep `isInternalRequest` in `storefront.ts` → none; `internal-payment-routes.ts:71-76`; commit `f1b3253b refactor(storefront): split internal payment routes` |
+| D10 | Merge of 5 workstreams into `develop` (`38879413`, `ee03071a`, `18ddd1d5`, `59d46886`, `fbc16178`, `eda7d714`) + 3 `fix(consolidation)` commits (`218a0905`, `98b7653c`, `a8cd5fde`). No unresolved conflict markers in `apps/`, `services/`, `packages/`, `scripts/`, `config/`; full governance suite passes (129/129). | VERIFIED CLEAN | `git log --oneline`; conflict-marker grep → empty; governance run below |
 
 ---
 
@@ -40,7 +40,7 @@ permitted report files. Commands / actions (second pass):
 - Re-traced event contracts (`packages/event-core/src/index.ts`, now 27 types) and routing (`packages/orchestration/src/event-runtime.ts:178-212`).
 - Re-grepped queue producers (`createCloudflareQueueProducer`/`queue.send`), table writers per service, dart-defines, conflict markers, root/workspace `test` scripts, CI workflows.
 - Ran `services/webhook-service` node tests (`node --test test/gateway-order-transitions.test.mjs` → 5 pass).
-- Git history inspected: `git log --oneline -15`, `git show --stat` for `eee2ca7e`, `4c97dafa`, `127a850e`.
+- Git history inspected: `git log --oneline -15`, `git show --stat` for `218a0905`, `98b7653c`, `a8cd5fde`.
 - Caveat: the repo-root `node_modules` present during the first pass (tsc/turbo/playwright) is **absent** in this pass, so the standalone `tsc --noEmit` repro for webhook-service/queue-workers could not be re-run; the tsconfig asymmetry was re-verified structurally instead (see 08 M-C1).
 
 ---
@@ -369,5 +369,5 @@ across 2 full runs + 6 individual validator runs.)
 | feature-flag governance doc + test | `docs/governance/feature-flag-governance.md`; `tests/feature-flags/gateway-feature-gates.test.mjs` | doc 14-22; test 10-52 |
 | ops portal client + new pages | `apps/platform-operations-portal/src/lib/api/client.ts`; `src/app/(dashboard)/operations/page.tsx` | client 19-68; page 12-74 |
 | storefront client (attestation + internal helper) | `apps/storefront-runtime/src/lib/api/client.ts` | 60-154 |
-| consolidation commits | git `eee2ca7e`, `4c97dafa`, `127a850e`; merges `ea12a143…f0f70a04` | `git show --stat` |
+| consolidation commits | git `218a0905`, `98b7653c`, `a8cd5fde`; merges `38879413…eda7d714` | `git show --stat` |
 | RPC defs | `database/supabase/migrations/000_baseline.sql` | 793-796 (claim_platform_queue_jobs), 941, 1398, 4161 |

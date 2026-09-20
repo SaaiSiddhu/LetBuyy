@@ -6,7 +6,7 @@
 
 **Version:** 1.0 — Forensic Edition  
 **Date:** 2026-06-19  
-**Repository Revision:** `stepup/main` @ `742192cf`  
+**Repository Revision:** `stepup/main` @ `57760d0c`  
 **Investigation Scope:** Complete forensic analysis of 83 intelligence engine files, 12 individual reports, all governance documents, and 50+ pre-built knowledge artifacts  
 **Auditors:** Four-agent forensic panel (core code analysis, documentation analysis, governance + graph structure analysis, gap + infrastructure analysis)
 

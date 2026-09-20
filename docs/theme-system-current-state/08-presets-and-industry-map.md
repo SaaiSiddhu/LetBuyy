@@ -15,7 +15,7 @@
 > by a real merchant; whether the composition layer is meant to ship or to be deleted.
 >
 > **Tree state.** Every source file cited here was checked with `git diff --numstat` and shows
-> **0 content changes vs `HEAD` (`ee371182`)** — `theme-presets.ts`, `industry-experience-map.ts`,
+> **0 content changes vs `HEAD` (`bf35062e`)** — `theme-presets.ts`, `industry-experience-map.ts`,
 > `experience-compositions.ts`, `theme-registry.ts`, `theme-engine/src/index.ts`, the editor
 > `page.tsx`, `ExperiencePicker.tsx`, `identity-platform/onboarding/page.tsx`. Every line number
 > below is therefore valid at both `HEAD` and in the working tree. (This is **not** true of the

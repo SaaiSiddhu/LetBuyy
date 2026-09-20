@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_MASTER_PROGRAM.md
 
-**The supreme roadmap — Full Liquid V1.** HEAD `0b8a56e7` · plan-only, no code. Companion to the 19 phase docs (`PHASES/PHASE_L0..L18`) + 6 master docs in this directory.
+**The supreme roadmap — Full Liquid V1.** HEAD `140a73db` · plan-only, no code. Companion to the 19 phase docs (`PHASES/PHASE_L0..L18`) + 6 master docs in this directory.
 
 ## Vision
 

@@ -4,7 +4,7 @@ Investigation date: 2026-06-05 (second pass, post-remediation)
 
 This report documents the *current observed state* of every application under `apps/` and `apps/mobile/`, and every service under `services/`, in the LetBuyy commerce monorepo. Every claim cites a file path and (where useful) line numbers or command output. Where something could not be found, it is written as "not found in repository". Prior-doc claims (root `CODEX_*`/`LETBUYY_*` ledgers, `FORENSIC_REPORT_OPERATIONS/`, `docs/`, `Audit/`, and prior `FORENSIC_REPORT/` content) were treated as unverified and independently checked against code; confirmed/contradicted notes appear inline.
 
-This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2026-06-05 17:58 IST). The repo has since advanced 68 commits (`63053d18..HEAD`) to `127a850e` (2026-06-05 23:22 IST), including remediation workstreams WS1 (ui), WS5 (operations portal), WS7 (scripts), WS9 (merchant settings hub), WS10 (developer portal), WS12, marketplace hardening (H5/H9/M5), and single-writer/gateway-events refactors of webhook-service + queue-workers. See "Changes since first pass" for the delta summary.
+This is a second-pass refresh of the first-pass report (scanned at `e29821d3`, 2026-06-05 17:58 IST). The repo has since advanced 68 commits (`cd71e612..HEAD`) to `a8cd5fde` (2026-06-05 23:22 IST), including remediation workstreams WS1 (ui), WS5 (operations portal), WS7 (scripts), WS9 (merchant settings hub), WS10 (developer portal), WS12, marketplace hardening (H5/H9/M5), and single-writer/gateway-events refactors of webhook-service + queue-workers. See "Changes since first pass" for the delta summary.
 
 ---
 
@@ -12,10 +12,10 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 
 - Repository root (file tools): `/Users/saai_sidd/Git/Letbuyy_Store`; (bash) `/sessions/brave-sweet-gates/mnt/Letbuyy_Store`.
 - Scans excluded: `node_modules`, `.git`, `.pnpm-store`, `.turbo`, `.dart_tool`, `build`, `test-results`, `artifacts`, `coverage`, `.next`.
-- Baseline: first-pass report content of this file; deltas established via `git diff --stat 63053d18..HEAD -- <path>` per runtime, then verified by reading current source.
+- Baseline: first-pass report content of this file; deltas established via `git diff --stat cd71e612..HEAD -- <path>` per runtime, then verified by reading current source.
 - Manifests read: changed `package.json`, `runtime.manifest.json`, `wrangler.toml`; unchanged runtimes confirmed byte-identical via `git diff` (0 lines for storefront-runtime, identity-platform, marketing-site, all `apps/mobile/*`, and all three `wrangler.toml` files).
 - Route/page inventory re-counted with `find … -name page.tsx`/`-name route.ts`; handler counts with `grep -rhoE "\.(get|post|put|patch|delete)\('"`.
-- Git HEAD at time of scan: `127a850e` dated `2026-06-05 23:22:01 +0530`; 68 commits since first-pass-era `63053d18` (`git rev-list --count`).
+- Git HEAD at time of scan: `a8cd5fde` dated `2026-06-05 23:22:01 +0530`; 68 commits since first-pass-era `cd71e612` (`git rev-list --count`).
 - Tooling note (same as first pass): the bash MCP intermittently returned "process already running" RPC errors; affected commands were re-run after a wait. The `Glob` file tool returned "No files found" for several valid paths in the secondary working directory; `find` via bash and `Grep`/`Read` against absolute paths were used as the source of truth.
 
 ### Cross-cutting facts observed (apply to all 9 Next.js apps unless noted)
@@ -26,7 +26,7 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 - Default API base URLs: **split state.** `apps/app-marketplace/src/lib/api/client.ts:20-31` and `apps/theme-marketplace/src/lib/api/client.ts:14-25` now **fail fast** — they throw `'Marketplace API base URL is not configured… refusing to fall back to a hardcoded staging host.'` when `LETBUYY_API_URL`/`NEXT_PUBLIC_API_URL`/`API_URL` are unset. By contrast `apps/identity-platform/src/lib/api/client.ts:14` and `apps/platform-operations-portal/src/lib/api/client.ts:13` still default to `https://api.staging.letbuyy.store`, and 22 `staging.letbuyy.store` literals remain across `apps/merchant-control-plane/src`, `apps/storefront-runtime/src`, `apps/marketing-site/src` (grep count), incl. `merchant-control-plane/src/proxy.ts:29`, `…/api/auth/logout/route.ts:18,25,55`, and hardcoded marketing CTA hrefs `marketing-site/src/components/Navbar.tsx:22,25`. `theme-marketplace` still defaults `ACCOUNTS_URL` to `https://staging.letbuyy.store` (`src/hooks/useAuth.ts:6`, `src/components/layout/navbar.tsx:16`).
 - `vercel.json`: 8 of 9 apps have one; `apps/developer-portal` **still has none** (verified `ls apps/developer-portal/vercel.json` → not found).
 - Cross-app session remains the shared `lb_session` httpOnly cookie via `@letbuyy/auth-core` `verifyLetbuyySessionCookieValue('merchant', …)`.
-- **CLAUDE.md Canonical Runtime Map updated** (commit `0c4a775e`, 2026-06-05 19:39 IST): it now lists all 9 web apps incl. `apps/developer-portal`, all 3 mobile apps, `services/{api-gateway, webhook-service, queue-workers}`, and the 6 reserved services marked "(reserved, not implemented)" (`CLAUDE.md:7-29`). This resolves both first-pass map mismatches.
+- **CLAUDE.md Canonical Runtime Map updated** (commit `9f09cf45`, 2026-06-05 19:39 IST): it now lists all 9 web apps incl. `apps/developer-portal`, all 3 mobile apps, `services/{api-gateway, webhook-service, queue-workers}`, and the 6 reserved services marked "(reserved, not implemented)" (`CLAUDE.md:7-29`). This resolves both first-pass map mismatches.
 
 ---
 
@@ -34,7 +34,7 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 
 | Runtime | One-line status (2026-06-05, post-remediation) |
 | --- | --- |
-| apps/storefront-runtime | Unchanged since first pass (git diff `63053d18..HEAD` = 0); full shopper storefront, real payments at storefront checkout, staging-default base URLs remain. |
+| apps/storefront-runtime | Unchanged since first pass (git diff `cd71e612..HEAD` = 0); full shopper storefront, real payments at storefront checkout, staging-default base URLs remain. |
 | apps/merchant-control-plane | WS9 rebuilt the entire `settings/*` hub on a `SettingsShell`/`SettingsPane` architecture; 61 pages / 62 API routes; 4 settings panes are explicit `BackendNeededPane` shells; `ats-score` StubPage remains; staging defaults remain. |
 | apps/identity-platform | Unchanged (diff = 0); tests exist but `test` script still echoes; staging-default API base remains. |
 | apps/marketing-site | Unchanged (diff = 0); CTAs still hardcode staging accounts hrefs. |
@@ -55,7 +55,7 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 
 ## apps/storefront-runtime — Shopper storefront (tenant data plane)
 
-- **Delta since first pass.** None — `git diff --stat 63053d18..HEAD -- apps/storefront-runtime` is empty. Everything below restates the verified first-pass state.
+- **Delta since first pass.** None — `git diff --stat cd71e612..HEAD -- apps/storefront-runtime` is empty. Everything below restates the verified first-pass state.
 - **Purpose.** Manifest `runtimeClassification: "tenant-data-plane"`; "Shopper storefront, public catalog, cart, checkout, customer account, and theme presentation runtime" (`apps/storefront-runtime/runtime.manifest.json:9-13`). ~17,887 LOC.
 - **Responsibilities (routes).** 23 pages, 21 API routes. Key pages: `/store/[subdomain]/page.tsx`, catch-all CMS pages, `/product/[productId]`, `/products`, `/shop`, `/cart`, `/checkout`, `/checkout/success`, `/checkout/paypal-return`, account suite, `/blog/[slug]`, legal pages, `/demo/urban-kicks`, `/preview`. API routes: `customer/*`, `orders/*`, `coupons/validate`, `reviews`, `store-lookup`, `themes`, `themes/install`, `seed`.
 - **Subdomain routing.** `src/proxy.ts` rewrites `<sub>.letbuyy.store` → `/store/<sub>/...` (lines 22-49); per-subdomain theme-preview cookie (lines 54-65).
@@ -174,7 +174,7 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 
 ## apps/mobile/merchant-app — Flutter merchant builder (mobile merchant control plane)
 
-- **Delta since first pass.** None — `git diff --stat 63053d18..HEAD -- apps/mobile` is empty. State restated:
+- **Delta since first pass.** None — `git diff --stat cd71e612..HEAD -- apps/mobile` is empty. State restated:
 - **Purpose.** "Native merchant operations, dashboard, builder, products, themes, preview, and store management surfaces"; pubspec `name: letbuyy_store` v`1.0.0+1`; ~35,190 LOC Dart, 112 files, 25 screens, 12 services.
 - **Integrations.** `AppConfig.apiBaseUrl` defaults to **production** `https://api.letbuyy.store/v1` (`lib/config/app_config.dart:5-22`); Razorpay key id via dart-define; `lb_session` token; dart-define contracts with `SKIP_NEEDS_HUMAN_*` placeholders.
 - **Known issues (TODOs, all STILL-OPEN).** `products_screen.dart:287,799,1076`; `orders_screen.dart:987`; `create_store_wizard.dart:279`; `pricing_screen.dart:249` & `upgrade_screen.dart:324` ("TODO: Integrate Razorpay"); `settings_screen.dart:299`; `auth/error_screen.dart:70`.
@@ -204,7 +204,7 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
   - `POST /v1/storefront/internal/payments/{reference,confirm,failure,event}` — order payment-state transitions via `PaymentExecutionAdapter` (`storefront/internal-payment-routes.ts:128-211`), registered into the storefront router (`storefront.ts:33`).
 - **App-store hardening (verified, see app-marketplace section):** H9 install/uninstall idempotency through `IdempotencyExecutionAdapter` with claim/complete/fail-release semantics (`app-store.ts:1978-1996, 2158-2168, 2197-2215, 2310-2319`); M5 server-generated show-once webhook signing secret (`:327, :2061, :2153-2154`); verified-install reviews (`:820-834`).
 - **payments.ts refactor.** Now 798 LOC (was larger) and delegates DB state changes to `PaymentExecutionAdapter`/`IdempotencyExecutionAdapter`/`EventExecutionAdapter`/`SubscriptionExecutionAdapter` (`payments.ts:9-12`); the execution adapters carry an explicit `runtimeBridge` declaring forbidden responsibilities (e.g. `payment-execution.adapter.ts:50-59`).
-- **Scheduled work / DO / GraphQL / queues.** Crons, Durable Object, GraphQL gates, 5 queue producers — unchanged (`wrangler.toml` byte-identical since `63053d18`). NEW `cloudflare-queue-triggers.ts` plans queue messages for scheduled-dispatch telemetry across the 5 queue bindings (lines 1-60).
+- **Scheduled work / DO / GraphQL / queues.** Crons, Durable Object, GraphQL gates, 5 queue producers — unchanged (`wrangler.toml` byte-identical since `cd71e612`). NEW `cloudflare-queue-triggers.ts` plans queue messages for scheduled-dispatch telemetry across the 5 queue bindings (lines 1-60).
 - **Dependencies / Consumers / External integrations / Data ownership / Auth model.** Unchanged from first pass (broadest workspace deps; every app + both implemented sibling workers consume it; Supabase primary writer ~127 tables; Hyperdrive/R2/KV/D1/DO/Analytics Engine/Queues; Razorpay/Stripe/PayPal/Cashfree/Resend/Upstash/Turnstile; `authMiddleware` 3-mode; `/operations/*` ops+super-admin gated; `/internal/console/*` token-gated).
 - **Known issues.** STILL-OPEN (all three TODO email stubs verbatim): `routes/employee.ts:287`, `routes/admin.ts:283` "TODO: Send invite email via Resend"; `routes/contacts.ts:48` "TODO: Send notification to store owner via Resend". STILL-OPEN: `/ai/generate` returns 503 `AI_PROVIDER_UNCONFIGURED` (`routes/ai.ts:146`); no LLM SDK present.
 - **Potential issues.** STILL-OPEN: `Env` still declares `UPSTASH_REDIS_REST_URL/TOKEN` as required (`index.ts:128-129`) while the rate limiter treats Redis as optional. STILL-OPEN: package `test` echoes "No tests yet" while now **7** test files exist under `src/__tests__/` (was 6; + `cloudflare-queue-triggers.test.ts`) — still not invoked by the package script.
@@ -264,9 +264,9 @@ This is a second-pass refresh of the first-pass report (scanned at `5346ced9`, 2
 
 ## Changes since first pass
 
-Window: `63053d18..127a850e` (68 commits, all dated 2026-06-05 IST). Merge commits at HEAD include `stream/WS5-operations` and `stream/WS10-devportal`. Per-runtime verified deltas:
+Window: `cd71e612..a8cd5fde` (68 commits, all dated 2026-06-05 IST). Merge commits at HEAD include `stream/WS5-operations` and `stream/WS10-devportal`. Per-runtime verified deltas:
 
-1. **CLAUDE.md Canonical Runtime Map fixed (RESOLVED).** Commit `0c4a775e` added `apps/developer-portal`, `services/queue-workers`, and all 6 reserved services with "(reserved, not implemented)" labels, plus the capability-owner sentence (`CLAUDE.md:11,21-29`). Both first-pass map mismatches are closed.
+1. **CLAUDE.md Canonical Runtime Map fixed (RESOLVED).** Commit `9f09cf45` added `apps/developer-portal`, `services/queue-workers`, and all 6 reserved services with "(reserved, not implemented)" labels, plus the capability-owner sentence (`CLAUDE.md:11,21-29`). Both first-pass map mismatches are closed.
 2. **Test scripts: 12/12 → 10/12 echo.** `services/webhook-service` and `services/queue-workers` now run `node --test --experimental-strip-types test/*.test.mjs` against 3 + 1 real test files. All 9 apps + api-gateway still echo "No tests yet" (api-gateway now has 7 unwired test files; identity-platform still 2 unwired).
 3. **Single-writer enforcement (webhook-service, queue-workers → api-gateway).** webhook-service no longer patches `orders`/subscription tables — mutations go through new internal-secret-gated gateway routes (`/v1/storefront/internal/payments/*`, `/v1/internal/billing/subscriptions/*`, `/v1/internal/events/domain`); its only remaining direct write is `payment_webhook_events`. queue-workers no longer writes `outbox_events`; it emits domain events via the gateway. Gateway grew matching execution adapters (`payment-execution`, `subscription-execution`) + 2 internal routers + an extracted `storefront/internal-payment-routes.ts`.
 4. **app-marketplace hardening landed (all 5 claims verified).** Fail-fast base URL (no staging default), `MarketplaceUnavailable` retryable error state replacing silent empty catalogs (H5), Idempotency-Key passthrough + gateway H9 claim/complete/fail-release on install/uninstall, M5 server-generated show-once webhook signing secret (client value never accepted), verified-install-only reviews (gateway 403).
@@ -311,12 +311,12 @@ Other still-open first-pass items re-verified this pass: gateway email-send TODO
 ## Evidence Index (every cited path)
 
 Root / config:
-- `/Users/saai_sidd/Git/Letbuyy_Store/CLAUDE.md` (lines 7-29; diff `63053d18..HEAD`, commit `0c4a775e`)
+- `/Users/saai_sidd/Git/Letbuyy_Store/CLAUDE.md` (lines 7-29; diff `cd71e612..HEAD`, commit `9f09cf45`)
 - `/Users/saai_sidd/Git/Letbuyy_Store/pnpm-workspace.yaml`
 - `/Users/saai_sidd/Git/Letbuyy_Store/package.json`
 - `/Users/saai_sidd/Git/Letbuyy_Store/scripts/validators/governance-common.mjs`
 - Root ledgers present (claims cross-checked, not relied on): `CODEX_MASTER_EXECUTION_LEDGER.md`, `CODEX_WS5_LEDGER.md`, `CODEX_WS7_LEDGER.md`, `CODEX_WS12_LEDGER.md`, `CODEX_FOUNDATION_*`, `FORENSIC_REPORT_OPERATIONS/`
-- Git: `git rev-list --count 63053d18..HEAD` = 68; HEAD `127a850e` 2026-06-05 23:22:01 +0530; `git diff --stat 63053d18..HEAD -- <runtime>` per section
+- Git: `git rev-list --count cd71e612..HEAD` = 68; HEAD `a8cd5fde` 2026-06-05 23:22:01 +0530; `git diff --stat cd71e612..HEAD -- <runtime>` per section
 
 apps/storefront-runtime (unchanged; first-pass citations remain valid):
 - `runtime.manifest.json`, `package.json`, `vercel.json`, `next.config.ts`, `src/proxy.ts`

@@ -1,7 +1,7 @@
 # DOCUMENT 2 — LAUNCH READINESS MASTER PROGRAM
 
 **The roadmap from a certified-frozen repository to first real merchants.**
-Basis: tree `533479cb`, gate GREEN. Local reality is launch-grade repo-side; **everything live is gated by human seams.** This program sequences them.
+Basis: tree `5c2d3993`, gate GREEN. Local reality is launch-grade repo-side; **everything live is gated by human seams.** This program sequences them.
 
 ## 0. PROGRAM SHAPE
 

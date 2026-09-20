@@ -3,7 +3,7 @@
 **Date:** 2026-08-09
 **Wave:** Web V1 — Wave 0, urgent out-of-band adjudication
 **Role:** Adjudicator over three independent lenses
-**Baseline commit:** `ee3711829d857e986014c5811bb94d86ebc3d343`
+**Baseline commit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 **Isolated worktree for code change:** `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/emergency-appbridge-killswitch` (branch `codex/emergency-appbridge-killswitch`)
 
 ---

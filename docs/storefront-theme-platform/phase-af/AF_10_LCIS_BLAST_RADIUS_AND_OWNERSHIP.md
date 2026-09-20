@@ -4,7 +4,7 @@
 **Status:** STALE (graph) / VERIFIED_CURRENT (git-grep fallback)
 **Date of audit:** 2026-07-17
 **Auditor:** AF.0 read-only discovery agent (claude-sonnet-4-6)
-**Branch/HEAD:** stepup/main @ 7e1441a6
+**Branch/HEAD:** stepup/main @ 80d0b1af
 
 ---
 
@@ -25,9 +25,9 @@ All graphify-out JSON files were generated at or before 2026-06-15. Today is 202
 ### 1.2 Built-at commit vs HEAD
 
 ```
-graph.json built_at_commit : 0db025a6  (2026-06-14T00:00:09+0530)
-HEAD at time of audit      : 7e1441a6  (2026-07-11T12:42:54+0530)
-Commits since graph build  : 58  (verified: git log --oneline 0db025a6..HEAD | wc -l)
+graph.json built_at_commit : 0f257ca1  (2026-06-14T00:00:09+0530)
+HEAD at time of audit      : 80d0b1af  (2026-07-11T12:42:54+0530)
+Commits since graph build  : 58  (verified: git log --oneline 0f257ca1..HEAD | wc -l)
 ```
 
 The 58 commits since the graph build include Phases B–AE of the Liquid transformation program — every theme-engine feature, migration 188–191, the marketplace gate, AI customization proxy, and the RLS closure on `theme_purchases`. These are precisely the symbols this workstream must audit. LCIS graph results for those symbols are HISTORICAL_ONLY; git-grep provides VERIFIED_CURRENT data for them.
@@ -70,12 +70,12 @@ For each target symbol, both methods are reported where available:
 
 | Method | Applies when | Freshness label |
 |--------|-------------|-----------------|
-| `node tools/graph-server/intelligence.mjs blast/consumers/rpc/table` | LCIS graph stale but symbol existed before 0db025a6 | HISTORICAL_ONLY |
+| `node tools/graph-server/intelligence.mjs blast/consumers/rpc/table` | LCIS graph stale but symbol existed before 0f257ca1 | HISTORICAL_ONLY |
 | `graphify explain <symbol>` | same | HISTORICAL_ONLY |
 | `git grep -r "..." --include="*.ts" -l` (no node_modules/.next) | all symbols, current tree | VERIFIED_CURRENT |
 | file read on migration SQL / TS routes | all symbols | VERIFIED_CURRENT |
 
-All LCIS blast/consumer counts below that are HISTORICAL_ONLY reflect the codebase state at commit 0db025a6 (2026-06-14). All git-grep counts reflect HEAD 7e1441a6 (2026-07-11).
+All LCIS blast/consumer counts below that are HISTORICAL_ONLY reflect the codebase state at commit 0f257ca1 (2026-06-14). All git-grep counts reflect HEAD 80d0b1af (2026-07-11).
 
 ---
 
@@ -112,7 +112,7 @@ themes domain: owners: ["@saai-sidd"]
 **Source:** `services/api-gateway/src/lib/supabase.ts:L17`
 **Ownership:** @saai-sidd (`/services/` rule)
 
-| Metric | LCIS value (HISTORICAL_ONLY, commit 0db025a6) | Current git-grep (VERIFIED_CURRENT) |
+| Metric | LCIS value (HISTORICAL_ONLY, commit 0f257ca1) | Current git-grep (VERIFIED_CURRENT) |
 |--------|----------------------------------------------|--------------------------------------|
 | Degree (edges) | 170 | — |
 | Blast: impacted nodes | 197 (3 layers: 169 → 26 → 2) | — |
@@ -340,7 +340,7 @@ services/api-gateway/src/__tests__/theme-update.test.ts         (test)
 
 **Current state (VERIFIED_CURRENT — from migration 191 source):**
 
-Migration 191 (`7e1441a6`) closed RISK-SEC-001: dropped both wide-open baseline policies and replaced with:
+Migration 191 (`80d0b1af`) closed RISK-SEC-001: dropped both wide-open baseline policies and replaced with:
 
 | Policy | Target role | Operation | Predicate |
 |--------|------------|-----------|-----------|
@@ -485,10 +485,10 @@ R-23 rule: every migration ships a paired rollback.
 |-----------|------|-----------|----------------------|-------------|
 | 186 | `186_v1_scale_commerce_os_coming_soon.sql` | **UNTRACKED** (not in git) | Inline: `-- Revert: set status = 'available', purchasable = true.` | PARTIAL (comment only, no separate rollback file) |
 | 187 | `187_v1_sites_site_settings.sql` | **UNTRACKED** (not in git) | Inline: `-- Rollback (forward-fix preferred): drop the column with IF EXISTS in a follow-up migration.` | PARTIAL (comment only) |
-| 188 | `188_letbuyy_core_theme_row.sql` | TRACKED (commit 40741cb8) | **NONE FOUND** | GAP |
-| 189 | `189_theme_persistence_idempotency.sql` | TRACKED (commit fa4e4786) | **NONE FOUND** | GAP |
-| 190 | `190_theme_library_q.sql` | TRACKED (commit 016da8f0) | **NONE FOUND** | GAP |
-| 191 | `191_theme_purchases_rls_tenant_scope.sql` | TRACKED (commit 7e1441a6) | **NONE FOUND** | GAP |
+| 188 | `188_letbuyy_core_theme_row.sql` | TRACKED (commit 7cdd42a1) | **NONE FOUND** | GAP |
+| 189 | `189_theme_persistence_idempotency.sql` | TRACKED (commit 1053d611) | **NONE FOUND** | GAP |
+| 190 | `190_theme_library_q.sql` | TRACKED (commit a0990ce7) | **NONE FOUND** | GAP |
+| 191 | `191_theme_purchases_rls_tenant_scope.sql` | TRACKED (commit 80d0b1af) | **NONE FOUND** | GAP |
 
 **Notes:**
 
@@ -500,19 +500,19 @@ R-23 rule: every migration ships a paired rollback.
 
 ## 6. Graph Staleness — Impact on Downstream Workstreams
 
-The following symbols/facts that LCIS should know about are **absent from or stale in the graph** because they were introduced in commits after 0db025a6:
+The following symbols/facts that LCIS should know about are **absent from or stale in the graph** because they were introduced in commits after 0f257ca1:
 
 | Symbol / Fact | When added (commit) | LCIS status |
 |--------------|-------------------|-------------|
-| parseLiquidThemePackageBundle (AI files: ai-optimizer, ai-personalization, ai-theme-generator, theme-ai-sdk) | Phase L (29f87115) | HISTORICAL_ONLY (stale consumers) |
+| parseLiquidThemePackageBundle (AI files: ai-optimizer, ai-personalization, ai-theme-generator, theme-ai-sdk) | Phase L (8c1ac94b) | HISTORICAL_ONLY (stale consumers) |
 | theme_editor_drafts policies (post-migration) | baseline | HISTORICAL_ONLY (correct) |
-| theme_purchases policies (post-migration 191) | 7e1441a6 | HISTORICAL_ONLY (stale — policies=[]) |
-| AI customization proxy route | Phase AC (83d61e0a) | ABSENT from graph |
-| media-library.ts gateway route | Phase Q / 016da8f0 | ABSENT from graph |
+| theme_purchases policies (post-migration 191) | 80d0b1af | HISTORICAL_ONLY (stale — policies=[]) |
+| AI customization proxy route | Phase AC (7654927d) | ABSENT from graph |
+| media-library.ts gateway route | Phase Q / a0990ce7 | ABSENT from graph |
 | theme-update-route.ts refactored | various | PARTIAL |
-| migration 189 idempotency_key on theme_releases | fa4e4786 | ABSENT from db-intel.json |
-| migration 190 owned_by_site_id / is_site_private on themes | 016da8f0 | ABSENT from db-intel.json |
-| migration 191 new RLS policies on theme_purchases | 7e1441a6 | ABSENT from db-intel.json |
+| migration 189 idempotency_key on theme_releases | 1053d611 | ABSENT from db-intel.json |
+| migration 190 owned_by_site_id / is_site_private on themes | a0990ce7 | ABSENT from db-intel.json |
+| migration 191 new RLS policies on theme_purchases | 80d0b1af | ABSENT from db-intel.json |
 | lcis-cli, lcis-core, lcis-mcp, lcis-pr-check packages | LCIS phases | ABSENT from graph |
 
 **Recommendation:** Run `graphify update . && pnpm graph:v3` (or at minimum `pnpm graph:db`) on a clean branch to produce a current graph before making AF_1 decisions that rely on blast-radius counts. This is not safe to do within this AF.0 audit.
@@ -568,7 +568,7 @@ The following evidence from this workstream is directly relevant to the Phase AF
 
 | Input | Evidence | Risk |
 |-------|----------|------|
-| LCIS graph is 27 days / 58 commits stale | `graph.json built_at_commit: 0db025a6`; HEAD: `7e1441a6`; 58 commits behind | MEDIUM — blast-radius numbers from LCIS cannot be trusted for theme-engine symbols; git-grep provides current consumer counts |
+| LCIS graph is 27 days / 58 commits stale | `graph.json built_at_commit: 0f257ca1`; HEAD: `80d0b1af`; 58 commits behind | MEDIUM — blast-radius numbers from LCIS cannot be trusted for theme-engine symbols; git-grep provides current consumer counts |
 | `getSupabaseAdmin` blast radius: 120+ files (CURRENT) | git-grep result; LCIS stale count: 115 files | Any API-gateway-level change has platform-wide blast; change-control required |
 | `@letbuyy/shared-types`: 154 consumer files (CURRENT) | git-grep result; LCIS blast=0 (direction issue, not real) | Widest-blast package; type changes require cross-runtime coordination |
 | `@letbuyy/theme-engine`: 68 consumer files (CURRENT) | git-grep result across storefront/merchant/gateway/frozen apps | Cross-runtime blast; frozen apps are build-time consumers |

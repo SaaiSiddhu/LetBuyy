@@ -6,7 +6,7 @@ rollout plan. **GOV-3 planned it; nothing here is executed.** Each item becomes 
 contract (`cto.md` §5) under `/letbuyy plan:` and runs through the normal lifecycle. Order is by
 value and risk (DOC 06 §6 and §10: honesty first, then merchant, then storefront, then the rest).
 
-## 0. What is canonical today (measured `823aa5ee`) and what is not
+## 0. What is canonical today (measured `a751a2ff`) and what is not
 
 | Surface | Canonical system exists? | Evidence | Status |
 |---|---|---|---|
@@ -16,7 +16,7 @@ value and risk (DOC 06 §6 and §10: honesty first, then merchant, then storefro
 | Theme controller | **Yes** — one provider, `letbuyy-theme`; `theme="auto"` banned | `DesignSystemRoot` only in merchant_web; toggles missing in merchant_web and identity | canonical; **reachability incomplete** |
 | Honesty badge | **Yes** — `ProviderModeBadge` (feedback.tsx:220), validator-enforced on 4 money consumers | `provider-mode-badge-validator` passes | canonical |
 | Feedback surfaces | **Yes** — Banner/Toast/Skeleton/EmptyState/SaveBar/ConfirmDialog/InlineError | `references/feedback.md` | canonical |
-| Ratchet + HARD gates | **Yes** — `validate-design-system.mjs`, ESLint rules, stylelint in CI (`ci.yml:98`) | passes on the committed tree; the dirty primary shows 1 HARD violation from another session's uncommitted deletion of `useAuthTheme.ts` | canonical; green on `823aa5ee` |
+| Ratchet + HARD gates | **Yes** — `validate-design-system.mjs`, ESLint rules, stylelint in CI (`ci.yml:98`) | passes on the committed tree; the dirty primary shows 1 HARD violation from another session's uncommitted deletion of `useAuthTheme.ts` | canonical; green on `a751a2ff` |
 | Flutter tokens bridge | **Yes** — `letbuyy_tokens.dart` with colour, type, spacing, radius, shadow, density (DOC 06's "colours+spacing only" is superseded) | 183 consts, 7 classes | canonical |
 | Flutter `ThemeData` consuming the bridge | **Unknown** — not measured this session | UX-R2 | to measure in UX-7 |
 | Flutter widget kit | **Partly** — `ui_kit` has the primitives but ships duplicates (`empty_state` vs `empty_state_widget`, `error_view` vs `error_widget`) and a `glass_container` | listing | **needs canonicalization** |

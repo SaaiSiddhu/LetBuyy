@@ -1,9 +1,9 @@
 # FINAL REPOSITORY TRUTH CERTIFICATION — LETBUYY
 
-**Date:** 2026-06-12 · **HEAD:** `da83ba92` (`stepup/main`, clean tree) · **Gate:** GREEN (106 gate-lane validators)
+**Date:** 2026-06-12 · **HEAD:** `f961e23a` (`stepup/main`, clean tree) · **Gate:** GREEN (106 gate-lane validators)
 **Mode:** Adversarial multi-agent deep research (8 parallel auditor agents covering 20 audit roles + independent counter-verification of every load-bearing finding)
 **Method:** Repository evidence only. No prior report, ledger, certification, or roadmap was trusted. Every claim below was attacked; what survived is certified.
-**Status of this file:** UNTRACKED deliverable. Tracking it requires a deliberate commit; per repo precedent (P0, commit `7a0342e0`), certification documents may require a `PROMPTS.md` registry row in the same commit to keep `prompt-perimeter-validator` green.
+**Status of this file:** UNTRACKED deliverable. Tracking it requires a deliberate commit; per repo precedent (P0, commit `4d900a02`), certification documents may require a `PROMPTS.md` registry row in the same commit to keep `prompt-perimeter-validator` green.
 
 ---
 
@@ -65,7 +65,7 @@ The program **succeeded** in disproving completeness. The repository is a conver
 | Microservice fleet | REMOVED | Reserved roots manifest-only; 4 canonical Workers only |
 | CQRS / event sourcing / saga | REMOVED | Replaced by transactional outbox (`outbox-execution.adapter.ts`); no projection/saga imports in active runtimes |
 | Self-custody payouts (razorpayx) | REMOVED | Rail = `razorpay_route` (`payouts.ts:121,135`); zero `razorpayx`/`fund_account` in services/packages; manual rail throws to human runbook |
-| Wasm app-functions runtime | **PARTIALLY REMOVED** | `app-functions-runtime.ts` (623 LOC, real `WebAssembly.compile/instantiate`) still present, **zero importers** (live caller severed by `e2e2d47e`); deletion BLOCKED by `SKIP-GRAPHQL-EXTENSIONS-SCOPE-ARB` |
+| Wasm app-functions runtime | **PARTIALLY REMOVED** | `app-functions-runtime.ts` (623 LOC, real `WebAssembly.compile/instantiate`) still present, **zero importers** (live caller severed by `e469a7c0`); deletion BLOCKED by `SKIP-GRAPHQL-EXTENSIONS-SCOPE-ARB` |
 | Extension registry runtime | **STILL ACTIVE** | `extension-routes.ts` (500 LOC) mounted via `app-store.ts:1456` → `index.ts:690`; live in staging |
 | GraphQL surface | **STILL ACTIVE** | 3,940 LOC mounted at `/storefront/graphql`, `/admin/graphql` (`index.ts:684-685,713`); prod flag "false", staging/default "true"; **flag middleware fails OPEN** (`featureFlags.ts:25` returns `!isProductionRuntime` when unset) |
 | Duplicate theme systems | REMOVED | Exactly 2 renderers (React + liquidjs), one canonical theme model; marketplace tables are commerce wrappers; mobile editor produces the same Liquid bundle |
@@ -96,7 +96,7 @@ The program **succeeded** in disproving completeness. The repository is a conver
 - Canary machinery (P5) is observability-only: `X-Lb-Render-Engine` is a **response** label hard-wired to `react` (reads an unset env var, `proxy.ts:171-172`), never an inbound selector; telemetry = `console.log` JSON (`composition-engine.tsx:385-394`), no sink. Parity: 0/200 matrix cells filled; snapshot corpus empty; `capture-snapshot.mjs:64` prints a hardcoded header string instead of reading the real header; harness not CI-wired (0 matches in `.github/`); only 3 of 10 matrix dimensions have code.
 
 ### CLAIM 9 — React Is Frozen → **FALSE as stated (MAJOR GAP)**
-- Only NEW `.tsx` files in `apps/storefront-runtime/src/components/sections/` are blocked against a 20-file allowlist (`no-new-react-sections-validator.mjs:9-37`). Routes, layout, product components, lib, and modifications to the existing 20 are unconstrained — and actively committed (`a05dab4c`, `62dd4b8b`, `79ecd20c`, `b32fc29e`, `e2e2d47e`).
+- Only NEW `.tsx` files in `apps/storefront-runtime/src/components/sections/` are blocked against a 20-file allowlist (`no-new-react-sections-validator.mjs:9-37`). Routes, layout, product components, lib, and modifications to the existing 20 are unconstrained — and actively committed (`8991f600`, `99bbb425`, `09381db5`, `da57fa11`, `e469a7c0`).
 - No React-deletion mechanism exists in code; deletion is explicitly forbidden until parity + ARB flip + G+30d (`LIQUID_ACTIVATION_PROGRAM.md:5,60-62`). Accurate statement: "new React *sections* are frozen; the React path is live, mutable, and the default."
 
 ### CLAIM 10 — Repository-Side Launch Work Complete → **FALSE (MAJOR GAP)** — Launch Readiness Score 4/10
@@ -106,7 +106,7 @@ The program **succeeded** in disproving completeness. The repository is a conver
 - MINOR: P2 deletions materially undone (blocked/aborted, §Claim 5); M1–M5 exist as one template, not 5 instantiated checklists (correctly a pilot-time action).
 
 ### SECTION I — Execution Ledger vs Git → **CERTIFIED (HONEST)**
-- **0 overclaims, 0 underclaims.** All 13 commits in `533479cb..HEAD` have matching rows; 11 substantive rows diff-verified (`git diff-tree`); foundation squash commit `e1d6fb18` exists. The one imperfection (P0 accidentally tracked the Codex twin prompt) is self-disclosed in row 200 and fixed in the next commit. No force-push/rewrite in the audited range; reflog intact (1,081 entries). `EXECUTABLE_HUMAN_REQUIRED.md`: 22 rows, 0 falsely marked done. `SKIPPED_HUMAN_DECISIONS.md` discloses the stale-prod risk more candidly than any prior audit. P0 same-commit rule satisfied in `7a0342e0`.
+- **0 overclaims, 0 underclaims.** All 13 commits in `5c2d3993..HEAD` have matching rows; 11 substantive rows diff-verified (`git diff-tree`); foundation squash commit `72e80c2b` exists. The one imperfection (P0 accidentally tracked the Codex twin prompt) is self-disclosed in row 200 and fixed in the next commit. No force-push/rewrite in the audited range; reflog intact (1,081 entries). `EXECUTABLE_HUMAN_REQUIRED.md`: 22 rows, 0 falsely marked done. `SKIPPED_HUMAN_DECISIONS.md` discloses the stale-prod risk more candidly than any prior audit. P0 same-commit rule satisfied in `4d900a02`.
 - MINOR: `Commit` column uses "this commit" in 3 rows; validator-count phrasing (105/106) is gate-lane, consistent.
 
 ---
@@ -115,7 +115,7 @@ The program **succeeded** in disproving completeness. The repository is a conver
 
 | # | Blocker | Type | Evidence |
 |---|---|---|---|
-| B1 | **Production branch ships the takeover.** `origin/main` = `41b6ea49` (2026-06-09), 170 commits behind HEAD; contains pre-fix `/api/auth/switch` (mints session for any `email_verified` body), `commission_bps: 300`, and lacks migrations 160/162/163/164 + the EdDSA verifier. Zero pushes have ever occurred; prod deploy guard is additionally unsatisfiable (origin has no `stepup/main` ref for `branch-lag-guard-validator` to fetch) | HUMAN seam (disclosed by SKIP-A2/D1/A4) | `git show origin/main:...` sentinels |
+| B1 | **Production branch ships the takeover.** `origin/main` = `c2547049` (2026-06-09), 170 commits behind HEAD; contains pre-fix `/api/auth/switch` (mints session for any `email_verified` body), `commission_bps: 300`, and lacks migrations 160/162/163/164 + the EdDSA verifier. Zero pushes have ever occurred; prod deploy guard is additionally unsatisfiable (origin has no `stepup/main` ref for `branch-lag-guard-validator` to fetch) | HUMAN seam (disclosed by SKIP-A2/D1/A4) | `git show origin/main:...` sentinels |
 | B2 | **Mandated branch invariant violated.** `main..stepup/main` = 6, law requires 0 (AGENTS.md:330 DEPLOY-R1; MERGE_RUNBOOK.md:9) — the exact "silent re-accumulation" DEPLOY-R1 forbids | REPO (one local command) | `git rev-list --count` |
 | B3 | **Active branch deploys ungated.** `deploy-staging.yml` (push → `stepup/main`) runs wrangler+vercel deploys with no governance gate and no untracked-migration guard; no validator scopes staging | REPO | `deploy-staging.yml:4-5`; grep = 0 |
 | B4 | **Gate blind to untracked migrations.** `sequential-migration-validator.mjs:9` reads `getTrackedFiles()` only; the historically-proven hole is unclosed in the gate lane | REPO | validator source |

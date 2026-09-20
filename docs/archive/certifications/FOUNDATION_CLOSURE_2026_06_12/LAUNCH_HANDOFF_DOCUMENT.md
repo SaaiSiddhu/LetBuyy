@@ -1,6 +1,6 @@
 # LAUNCH HANDOFF DOCUMENT — LETBUYY
 
-**DOC: FC-03 · Drafted 2026-06-12 at HEAD `da83ba92` · Effective: upon activation of FOUNDATION_FREEZE_CERTIFICATION.md (FC-02)**
+**DOC: FC-03 · Drafted 2026-06-12 at HEAD `f961e23a` · Effective: upon activation of FOUNDATION_FREEZE_CERTIFICATION.md (FC-02)**
 **Purpose:** the precise boundary between the Foundation Era (repository truth) and the Launch Readiness Era (real-world validation). Nothing in this document is foundation work; everything in it presumes B1a–B7 closed.
 
 ---

@@ -1,7 +1,7 @@
 # AGENT F — Customers, Privacy, Staff & RBAC — Discovery Notes
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182`. Read-only discovery. No files other than this one were touched.
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e`. Read-only discovery. No files other than this one were touched.
 
 Governance read before inspection:
 - `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (ART-05, ART-07, ART-08, ART-10, ART-11; R-10, R-13)

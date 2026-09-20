@@ -2,12 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | Storefront rendering engine (React vs Liquid), theme selection/editor/publish/release/rollback, ART-17 freeze governance, theme draft storage, subdomain + custom-domain routing, domain add/verify/SSL, domain purchase |
-| Evidence basis | Agent J notes (`_agent-notes/J-cms-blog-policies-themes.md`, static discovery) + agent L notes (`_agent-notes/L-runtime-build-test.md`, §5.5 / G-L-08 / G-L-09, the only executed evidence in this run) + first-hand re-verification of every load-bearing citation in this document against source at commit `ee371182` |
+| Evidence basis | Agent J notes (`_agent-notes/J-cms-blog-policies-themes.md`, static discovery) + agent L notes (`_agent-notes/L-runtime-build-test.md`, §5.5 / G-L-08 / G-L-09, the only executed evidence in this run) + first-hand re-verification of every load-bearing citation in this document against source at commit `bf35062e` |
 | **METHOD DISCLOSURE** | **Nothing in this document was runtime-verified by its author.** Every claim here is static code, schema, config or test-source reading, re-checked against the files cited. The single exception is the cross-referenced Liquid renderer defect (G-L-08) and the render-budget regression (G-L-09), which agent L obtained by actually executing `pnpm --filter @letbuyy/theme-engine test` and an instrumented probe; those are cited as `RUNTIME_OBSERVATION`, they are agent L's evidence, not this document's. No storefront was rendered, no store was seeded, no domain was verified, no theme was published during this pass. |
 | Secrets | No secrets or PII appear in this document. Environment variable **names** appear; no values. |
 
@@ -336,7 +336,7 @@ The state `pending` is where **MCP-DISC-631** lives: entry into `pending` consum
 | Theme mutations are ownership-checked | `theme-execution.adapter.ts:474-486` (`verifyStoreOwner`), every route in `themes.ts:609-745` resolves the custom user first | GOOD |
 | Theme publish is idempotent when a key is supplied | `theme-execution.adapter.ts:1383-1412` (pre-check scoped by `store_id`) and post-enrich `:1470-1495` | GOOD |
 | Merchant HTML on the Liquid path is allowlist-sanitized | `packages/theme-engine/src/theme-renderer.ts:170-231` (DOMPurify `USE_PROFILES:{html:true}`, explicit `ADD_TAGS`/`ADD_ATTR`, `FORBID_ATTR:['style']`, `FORBID_TAGS:['base','embed','object','script']`), applied at `:477,611,647,911,1351-1370`; the only content `dangerouslySetInnerHTML` in the storefront is `composition-engine.tsx:93` | GOOD (with MCP-DISC-639) |
-| Liquid engine is sandboxed | `theme-renderer.ts:733-740` — `strictFilters:true` (`:733`), `ownPropertyOnly:true` (`:735`), `outputEscape:'escape'` (`:736`), `jsTruthy:false` (`:737`), `parseLimit:300_000` (`:738`); limits at `:705-707` (`templateLimit:20_000`, `renderLimit:250`, `memoryLimit:2_000_000`). **Correction to the agent-J notes:** those notes cite `:1371-1385` for these options; on re-verification at `ee371182` the engine options are at `:733-740` and the limits at `:705-707`. The substance of the claim is unchanged. | GOOD (but see G-L-08: `renderLimit` is the defect vector) |
+| Liquid engine is sandboxed | `theme-renderer.ts:733-740` — `strictFilters:true` (`:733`), `ownPropertyOnly:true` (`:735`), `outputEscape:'escape'` (`:736`), `jsTruthy:false` (`:737`), `parseLimit:300_000` (`:738`); limits at `:705-707` (`templateLimit:20_000`, `renderLimit:250`, `memoryLimit:2_000_000`). **Correction to the agent-J notes:** those notes cite `:1371-1385` for these options; on re-verification at `bf35062e` the engine options are at `:733-740` and the limits at `:705-707`. The substance of the claim is unchanged. | GOOD (but see G-L-08: `renderLimit` is the defect vector) |
 | Dev engine override cannot be used in production | `apps/storefront-runtime/src/lib/theme-engine/template-resolver.ts:228-233` (`process.env.NODE_ENV === 'production'` → `{}`) | GOOD |
 
 ### 8.2 The invariant that is broken — renderer engine is merchant-settable [HIGH-STAKES]
@@ -797,7 +797,7 @@ The founder can call this area "done for V1" when **all** of the following hold.
 
 **Confidence: HIGH on structure, LOW on behaviour.**
 
-Every code citation in this document was re-opened and re-verified at commit `ee371182` — the governance constants, the engine-resolution order, the publish stamping, the two editor proxies that lift the Liquid keys, the schema exemption that removes exactly those keys from validation, the freeze validator's single-directory scan, the announcement-bar registration, the two dead frozen files, the domain claim/verify sequence, and the domain purchase payload. Those are facts about the tree.
+Every code citation in this document was re-opened and re-verified at commit `bf35062e` — the governance constants, the engine-resolution order, the publish stamping, the two editor proxies that lift the Liquid keys, the schema exemption that removes exactly those keys from validation, the freeze validator's single-directory scan, the announcement-bar registration, the two dead frozen files, the domain claim/verify sequence, and the domain purchase payload. Those are facts about the tree.
 
 **The main uncertainty is that none of it was run.** Specifically:
 

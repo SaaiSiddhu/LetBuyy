@@ -1,7 +1,7 @@
 # 01 — EXECUTIVE LAUNCH DECISION
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 ---
@@ -17,7 +17,7 @@ Not close, and not for the reason the repository's own documents suggest.
 > **LetBuyy's problem is not that too little was built. It is that almost nothing has been proven to
 > work.**
 
-188 merchant-facing capabilities were inventoried against `ee371182`. Mean score **45.5**. Nineteen
+188 merchant-facing capabilities were inventoried against `bf35062e`. Mean score **45.5**. Nineteen
 score ≥ 70. **None scores above 89. None is launch-proven.** But the shape matters more than the
 average: the single largest cluster — **78 capabilities in the 50–69 band** — is real, wired,
 tenant-aware code that cannot be certified, and in nearly every case it is capped by the *same*

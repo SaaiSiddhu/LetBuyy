@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | **Branch** | `stepup/main` |
-| **Commit** | `ee371182` |
+| **Commit** | `bf35062e` |
 | **Run date** | 2026-08-04 (+0530) |
 | **Scope** | Merchant inventory (levels, reservations, adjustments, transfers, locations), suppliers/vendors, purchase orders and receiving, and the **procurement-data reach** of input GST. Output-side GST (sales invoices, IRN/QR, TCS) belongs to document 14 and is not adjudicated here. |
 | **Evidence basis** | Static source reading of `database/supabase/migrations/`, `services/api-gateway/src/`, `services/webhook-service/src/`, `services/queue-workers/src/`, `packages/commerce-core/src/`, `packages/typescript/api-client/src/`, `apps/merchant-control-plane/src/`, `apps/storefront-runtime/src/`, `apps/mobile/merchant-app/lib/`, `tests/`, plus the Constitution and governance documents. Source notes: `_agent-notes/D-inventory-purchase-orders-input-gst.md`. All load-bearing citations in this document were re-opened and re-verified against source during authoring. |

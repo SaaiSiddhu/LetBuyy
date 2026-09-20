@@ -1,7 +1,7 @@
 # 09 — TEST, SECURITY AND QUALITY EVIDENCE
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 No generated artifact is treated as evidence here.
 
@@ -64,7 +64,7 @@ Per-lane results, run individually:
 
 **Ownership was proven, not assumed.** `git diff --numstat` on every file implicated by the
 `dependencies`, `migrations` and `security` failures returns **empty** — those files are
-byte-identical to `ee371182`, so those three failures are **pre-existing at HEAD**, not caused by
+byte-identical to `bf35062e`, so those three failures are **pre-existing at HEAD**, not caused by
 the working tree and not caused by this program.
 
 ### 3.1 The design-system failure is the user's uncommitted work
@@ -82,7 +82,7 @@ RATCHET regressions: appCssRawHex 0->156, appCssNakedRgbHsl 572->822,
 
 Attribution, measured directly:
 
-| File | raw hex at `ee371182` | raw hex in worktree |
+| File | raw hex at `bf35062e` | raw hex in worktree |
 |---|---|---|
 | `apps/developer-portal/src/app/globals.css` | **0** | **55** |
 | `apps/merchant-control-plane/src/app/globals.css` | 26 | 28 |

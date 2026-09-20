@@ -4,14 +4,14 @@
 
 | Field | Value |
 |---|---|
-| **Baseline SHA** | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| **Baseline SHA** | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | **Branch / worktree described** | `codex/web-v1-integration` at `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
-| **Tip SHA after this pass** | `83b7fb39` (11 local commits, none pushed) |
+| **Tip SHA after this pass** | `bac1779b` (11 local commits, none pushed) |
 | **Date** | 2026-08-09 |
 | **Toolchain** | Node `v26.5.1`, pnpm `10.6.2`, git `2.50.1 (Apple Git-155)`, Darwin 25.3.0 |
 | **Net change** | **134 files, +48,434 / −920** |
 
-**Safety statement.** No `supabase` command of any kind was run. No `git clean` / `stash` / `reset` / `checkout --` / `restore` / `chmod` / `worktree remove` / push / PR / deploy. No migration was applied. The original tree at `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` was re-measured at the end of this pass: `git status --porcelain | wc -l` → **6826** (unchanged), `HEAD` → `ee371182` (unchanged), `git stash list` → **2** (unchanged). The only writes into the original tree are this document and the scratch evidence under the two authorised paths.
+**Safety statement.** No `supabase` command of any kind was run. No `git clean` / `stash` / `reset` / `checkout --` / `restore` / `chmod` / `worktree remove` / push / PR / deploy. No migration was applied. The original tree at `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` was re-measured at the end of this pass: `git status --porcelain | wc -l` → **6826** (unchanged), `HEAD` → `bf35062e` (unchanged), `git stash list` → **2** (unchanged). The only writes into the original tree are this document and the scratch evidence under the two authorised paths.
 
 ---
 
@@ -27,7 +27,7 @@
 | **Total files in the branch's change set** | **134** |
 | Atomic commits | 11 |
 
-Six defects repaired here were **provably broken at `ee371182`**, each with an executed before/after:
+Six defects repaired here were **provably broken at `bf35062e`**, each with an executed before/after:
 
 | # | Defect | Executed proof |
 |---|---|---|
@@ -38,7 +38,7 @@ Six defects repaired here were **provably broken at `ee371182`**, each with an e
 | 5 | `sites.published` had readers + an index and **no writer** — admin said "live", storefront denied every request | source + migration + proxy corroborated; test contract retargeted, gateway unit suite **542 → 548 pass**, failures unchanged at 3 |
 | 6 | One handle could resolve to **two different tenants**, returning an arbitrary one | new `storefront-handle-resolution.test.ts`: 6/6 pass, including a control proving the removed predicate DID select the namesake tenant |
 
-Two regressions **this port itself introduced** were found by an individual run of all 108 gate-lane validators and fixed in commit `83b7fb39`. **Final attribution check: 0 of the 19 still-failing validators name any file in this branch's 134-file change set.**
+Two regressions **this port itself introduced** were found by an individual run of all 108 gate-lane validators and fixed in commit `bac1779b`. **Final attribution check: 0 of the 19 still-failing validators name any file in this branch's 134-file change set.**
 
 ---
 
@@ -47,7 +47,7 @@ Two regressions **this port itself introduced** were found by an individual run 
 ### 1.1 What was executed
 
 ```
-git archive ee371182 | tar -x                                (pristine baseline tree)
+git archive bf35062e | tar -x                                (pristine baseline tree)
 pnpm install --prefer-offline                                 -> exit 0
 python3 split_patch.py                                        (99 per-file chunks from
                                                                REAL_CONTENT_CHANGES_99.no-mode-flip.binary.patch)
@@ -82,7 +82,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ## 2. Per-fix register
 
 ### FIX 1 — `@letbuyy/ui` sidebar affordance, exact-match nav, hydration-safe toggle
-**Commit `039a23af`** · 6 files · doc 16 group N + 2 untracked
+**Commit `66be517f`** · 6 files · doc 16 group N + 2 untracked
 
 | | |
 |---|---|
@@ -96,12 +96,12 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 2 — Contact contract export; marketing-site build repair
-**Commit `40a8dffe`** · 5 files · doc 16 groups D, H, M
+**Commit `15dd4bea`** · 5 files · doc 16 groups D, H, M
 
 | | |
 |---|---|
 | **Files** | `packages/shared-types/src/index.ts`, `apps/marketing-site/src/app/[locale]/contact/page.tsx`, `packages/infrastructure/resend-adapter/index.ts`, `config/env/{production,staging}.env.example` |
-| **Diff summary** | `contact.ts`, `ContactForm.tsx`, `TicketLookup.tsx` and `services/api-gateway/src/routes/contact-public.ts` were **all already committed at `ee371182`** — but `contact.ts` was never re-exported from the package barrel, so every consumer imported symbols that did not exist. One line (`export * from './contact'`) restores the contract. The contact page mounts the form + ticket lookup and derives its published response promise from `CONTACT_TOPICS`. The Resend adapter keys its client cache **by API key** instead of using one module-level singleton, so the scoped public-form keys are genuinely isolated from transactional mail; it also sends text+html together and adds `replyTo`. |
+| **Diff summary** | `contact.ts`, `ContactForm.tsx`, `TicketLookup.tsx` and `services/api-gateway/src/routes/contact-public.ts` were **all already committed at `bf35062e`** — but `contact.ts` was never re-exported from the package barrel, so every consumer imported symbols that did not exist. One line (`export * from './contact'`) restores the contract. The contact page mounts the form + ticket lookup and derives its published response promise from `CONTACT_TOPICS`. The Resend adapter keys its client cache **by API key** instead of using one module-level singleton, so the scoped public-form keys are genuinely isolated from transactional mail; it also sends text+html together and adds `replyTo`. |
 | **Governance** | **ARCH-R15** (`AGENTS.md:103`) — cross-runtime contracts move through shared-package public exports. |
 | **Secret handling** | Env templates add **variable NAMES and placeholders only** (`CONTACT_RESEND_API_KEY`, `CONTACT_RESEND_FROM_EMAIL`, `CONTACT_NOTIFY_EMAIL`, `CONTACT_TEAM_INBOXES`), matching names already read at `services/api-gateway/src/index.ts:236-245`. Screened: only `re_PLACEHOLDER_contact_form_only` and `generate-with-openssl-rand-base64-32`. **No real value is in the repo.** |
 | **Tests (real exit codes)** | `pnpm --filter @letbuyy/marketing-site typecheck` — **BEFORE (both files at HEAD) exit 2, 24 TS errors**, first `ContactForm.tsx(7,5): TS2305 Module '"@letbuyy/shared-types"' has no exported member 'CONTACT_BUSINESS_TYPES'`; **AFTER exit 0**. `shared-types typecheck` → **0**. `api-gateway typecheck` → **0**. |
@@ -110,7 +110,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 3 — theme-engine: empty product/collection/search renders
-**Commit `d1c4fd7e`** · 33 files · doc 16 groups J + K + 10 untracked
+**Commit `9f584157`** · 33 files · doc 16 groups J + K + 10 untracked
 
 | | |
 |---|---|
@@ -126,7 +126,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 4 — identity-platform: DEPLOY-R3 storefront hosts
-**Commit `90a5a3ee`** · 4 files · doc 16 group C
+**Commit `fcf3ca1f`** · 4 files · doc 16 group C
 
 | | |
 |---|---|
@@ -141,7 +141,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 5 — merchant-control-plane: navigation IA, honest activation checklist, client-bundle fix
-**Commit `5d6fa5f2`** · 12 files · doc 16 group E (2 files held back, 3 rejected)
+**Commit `18453a97`** · 12 files · doc 16 group E (2 files held back, 3 rejected)
 
 | | |
 |---|---|
@@ -157,7 +157,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 6 — storefront-runtime: fail closed on unresolved access; gate `/preview`
-**Commit `54b2401d`** · 4 files · doc 16 group G + 1 untracked · **highest security value in this port**
+**Commit `f8b04288`** · 4 files · doc 16 group G + 1 untracked · **highest security value in this port**
 
 | | |
 |---|---|
@@ -174,7 +174,7 @@ An early backup loop used `$(basename $f)` on two files both named `page.tsx` (`
 ---
 
 ### FIX 7 — api-gateway: cross-tenant handle resolution, `sites.published`, fail-closed uniqueness
-**Commit `d5562c75`** · 10 files · doc 16 group L + 1 untracked · **highest consequence in this port**
+**Commit `c331f929`** · 10 files · doc 16 group L + 1 untracked · **highest consequence in this port**
 
 | Sub-fix | Detail |
 |---|---|
@@ -210,13 +210,13 @@ The 3 remaining unit failures are the same three present at baseline (`merchant 
 ---
 
 ### FIX 8 — tests: ANTI-R3 governance assertion; missing money fixture table
-**Commits `023a2e00` + `3a3b269d`** · 2 files (1 held back)
+**Commits `e0c8d39c` + `924584f6`** · 2 files (1 held back)
 
 | | |
 |---|---|
 | **8.1** | `tests/governance/foundation-wave3-production-safety.test.ts` — the test named *"domain defaults stay on letbuyy.com until DNS cutover is approved"* asserted the **opposite of its own name**: it required the banned literal in four source files. All four had already migrated to `letbuyy.com` (verified by grep: `marketing-site/src/lib/public-urls.ts:14`, `theme-marketplace/src/lib/public-urls.ts:8`, `app-marketplace/src/lib/site-url.ts:19`, `developer-portal/src/lib/site-url.ts:6`), so the assertion was **failing the suite for being correct**. **ANTI-R3** (`AGENTS.md:316`) + **DEPLOY-R3** (`AGENTS.md:332`). |
 | **8.2** | `tests/executable/foundation-wave1-money-postgres.test.mjs` — `resetDatabase()` never created `public.store_customers`, but `database/supabase/migrations/142_executable_payment_sessions.sql:28` declares `customer_id uuid REFERENCES public.store_customers(id) ON DELETE SET NULL`, so the fixture could never satisfy that FK. Verified structurally: HEAD's fixture contains **0** occurrences of `store_customers`, the migration **1**. |
-| **8.3 (follow-up `3a3b269d`)** | My own explanatory comment on 8.1 quoted the banned literal in prose, which the domain validator counts. Reworded — comment text only. Validator **exit 1 → 0**. |
+| **8.3 (follow-up `924584f6`)** | My own explanatory comment on 8.1 quoted the banned literal in prose, which the domain validator counts. Reworded — comment text only. Validator **exit 1 → 0**. |
 | **Tests (real exit codes)** | wave-3 governance suite — **BEFORE exit 1: 4 tests, 3 pass, 1 fail; AFTER exit 0: 4 tests, 4 pass, 0 fail.** |
 | **⚠ UNVERIFIED (E-D)** | `node --test tests/executable/foundation-wave1-money-postgres.test.mjs` → **exit 1**, `Error response from daemon: container … is not running`. The suite requires a live `letbuyy-executable-pg` docker Postgres which is not running and which this workflow will not start. **8.2 is verified structurally only.** |
 | **⚠ OPEN DESIGN QUESTION (E-E)** | Two of the four files this Web V1 governance test reaches into live in **frozen** surfaces (`theme-marketplace`, `app-marketplace`). A V1 governance test coupling itself to frozen apps warrants an explicit call. |
@@ -225,16 +225,16 @@ The 3 remaining unit failures are the same three present at baseline (`merchant 
 ---
 
 ### FIX 9 — discovery documentation packages
-**Commit `6289c26d`** · 58 files
+**Commit `d2168aef`** · 58 files
 
-26 files under `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182/` and 27 under `docs/theme-system-current-state/`, plus agent notes. **Evidence artifacts, not governance authority.**
+26 files under `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e/` and 27 under `docs/theme-system-current-state/`, plus agent notes. **Evidence artifacts, not governance authority.**
 
 **Screened before commit.**
 - **No mobile V1/V1.1 deferral assertion.** The only `DEFERRED` hits are the `SAFE-BUT-DEFERRED` scope-classification legend in `15-gap-register-and-priorities.md` — a statement about that engagement's authorization, not about mobile. **HUMAN DECISION 1 is not contradicted.**
 - **One App Bridge mention**, at `04-MERCHANT-ROUTE-AND-NAVIGATION-INVENTORY.md:306` — a Dart route-inventory row recording an existing unreachable screen. Documentation of state, not App Bridge code. The `codex/emergency-appbridge-killswitch` surface is untouched.
-- **Secret screen:** the only secret-shaped match across all 58 files is `sk_live_should_never_reach_liquid`, a deliberate negative-test fixture string quoted in prose. It is broken with an ellipsis in commit `83b7fb39` (see §4.2) so the secret scanner no longer flags it.
+- **Secret screen:** the only secret-shaped match across all 58 files is `sk_live_should_never_reach_liquid`, a deliberate negative-test fixture string quoted in prose. It is broken with an ellipsis in commit `bac1779b` (see §4.2) so the secret scanner no longer flags it.
 
-**Staleness notice (recorded in the commit).** Both packages are snapshots of `ee371182` taken **before** this branch's ports. Two rows of `15-gap-register-and-priorities.md` are already resolved here and must be read as historical: **GOV-02** (theme.schema.ts defines 6 `z.object` contracts locally) — fixed in `d5562c75`; **SET-02** (the `node:crypto` webpack fix is uncommitted and half-untracked, so a clean checkout builds neither app) — fixed in `5d6fa5f2` and `54b2401d`.
+**Staleness notice (recorded in the commit).** Both packages are snapshots of `bf35062e` taken **before** this branch's ports. Two rows of `15-gap-register-and-priorities.md` are already resolved here and must be read as historical: **GOV-02** (theme.schema.ts defines 6 `z.object` contracts locally) — fixed in `c331f929`; **SET-02** (the `node:crypto` webpack fix is uncommitted and half-untracked, so a clean checkout builds neither app) — fixed in `18453a97` and `f8b04288`.
 
 **Note.** 5 committed docs mention the banned domain literal in prose. `platform-domain-literal-validator.mjs` does not scan `docs/`, so this does not fail the gate. Recorded for transparency.
 
@@ -275,7 +275,7 @@ Its own header states it exists to prove **migration 196**'s replacement of the 
 
 | Class | Count | Confirmation |
 |---|---:|---|
-| `PRESERVE_OUTSIDE_WEB_V1` — `apps/mobile/merchant-app/**` + `pubspec.lock` | 12 tracked + 2 untracked | **Zero mobile files in this branch.** `git diff --name-only ee371182..HEAD` contains no `apps/mobile/` path. **HUMAN DECISION 1 honoured:** mobile is `HUMAN_DECISION_REQUIRED`; no deferral is asserted anywhere in this branch. |
+| `PRESERVE_OUTSIDE_WEB_V1` — `apps/mobile/merchant-app/**` + `pubspec.lock` | 12 tracked + 2 untracked | **Zero mobile files in this branch.** `git diff --name-only bf35062e..HEAD` contains no `apps/mobile/` path. **HUMAN DECISION 1 honoured:** mobile is `HUMAN_DECISION_REQUIRED`; no deferral is asserted anywhere in this branch. |
 | `PRESERVE_OUTSIDE_WEB_V1` — `apps/developer-portal/**` (frozen) | 13 tracked + 7 untracked | Zero `apps/developer-portal/` paths in this branch. |
 | `HUMAN_REVIEW` — migrations 196/197 + 8 rollbacks | 10 | Not ported. **No migration was applied or staged.** The empty-blob trap remains armed in the original tree (doc 16 E7) — untouched by this pass. |
 | `HUMAN_REVIEW` — the two deferral-asserting governance docs + the 18-doc readiness package | 2 tracked + 18 untracked | Not ported. |
@@ -294,7 +294,7 @@ An individual run of **all 108 gate-lane validators** (the gate itself fail-fast
 ### 4.2 `environment-validator`
 Three ported docs **quoted** the fixture literal `sk_live_should_never_reach_liquid` while explaining why the validator's existing finding is a false positive — which made the secret scanner flag the docs too (pattern `/\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9_=-]{20,}/`, `environment-validator.mjs:131`). An ellipsis was inserted mid-literal so the suffix falls under the 20-character threshold. The prose still names the fixture; **the fixtures themselves are untouched** — redacting them would weaken the security tests, which is exactly what those docs argue.
 
-Both fixed in commit `83b7fb39`.
+Both fixed in commit `bac1779b`.
 
 ---
 
@@ -331,19 +331,19 @@ The `fs.rmSync` hazard (doc 16 / task brief) was handled: `removeGeneratedArtifa
 | After the port, before §4 repairs | 86 | 20 | 1 |
 | **Final** | **87** | **19** | **1** |
 
-`platform-domain-literal-validator.mjs` is **proven failing at `ee371182`** (5 literals) and **passing now** — so the baseline had at least 20 failures and this port removed one.
+`platform-domain-literal-validator.mjs` is **proven failing at `bf35062e`** (5 literals) and **passing now** — so the baseline had at least 20 failures and this port removed one.
 
-**Final attribution check: for each of the 19 still-failing validators, its output was searched for every one of this branch's 134 changed paths. Zero matches.** The nearest entries — `packages/lcis-live/test/security.test.ts`, `packages/theme-engine/src/theme-safe-update.ts`, `packages/theme-engine/test/{dynamic-source-binding,theme-engine}.test.ts` — were each checked with `git diff --name-only ee371182..HEAD -- <path>` and none is in the change set.
+**Final attribution check: for each of the 19 still-failing validators, its output was searched for every one of this branch's 134 changed paths. Zero matches.** The nearest entries — `packages/lcis-live/test/security.test.ts`, `packages/theme-engine/src/theme-safe-update.ts`, `packages/theme-engine/test/{dynamic-source-binding,theme-engine}.test.ts` — were each checked with `git diff --name-only bf35062e..HEAD -- <path>` and none is in the change set.
 
 Still failing (all pre-existing): `validate-design-system`, `package-ownership`, `dependency-manifest`, `undeclared-import`, `provider-isolation`, `typescript-governance`, `custom-domain-target`, `merchant-domains-settings`, `route-ownership`, `legacy-site-type`, `domain-boundary`, `route-line-count`, `cms-slugify`, `date-format`, `api-client-runtime-base`, `marketing-dead-twin`, `raw-error-message`, `environment`, `prompt-perimeter`.
 
-> A baseline sweep against a pristine `git archive ee371182` extraction was attempted and **discarded as not comparable**: without generated artifacts and per-package `node_modules`, several validators crash with Node errors rather than failing cleanly (it reported 46 failures, an artefact of the extraction). Attribution by changed-file reference is used instead, and is stated as such.
+> A baseline sweep against a pristine `git archive bf35062e` extraction was attempted and **discarded as not comparable**: without generated artifacts and per-package `node_modules`, several validators crash with Node errors rather than failing cleanly (it reported 46 failures, an artefact of the extraction). Attribution by changed-file reference is used instead, and is stated as such.
 
 ---
 
 ## 6. Consolidated test evidence — every number executed in this worktree
 
-| Suite | Command | Baseline (`ee371182`) | Final | Verdict |
+| Suite | Command | Baseline (`bf35062e`) | Final | Verdict |
 |---|---|---|---|---|
 | `@letbuyy/ui` | `pnpm --filter @letbuyy/ui test` | exit 1 — 36 tests, 35 pass, 1 fail | exit 1 — **45 tests, 44 pass, 1 fail** | +9 tests, same pre-existing failure |
 | theme-engine | `pnpm --filter @letbuyy/theme-engine test` | exit 1 — 1726, 1722 pass, **4 fail** | **exit 0 — 1730, 1730 pass, 0 fail** | **4 failures repaired** |
@@ -363,17 +363,17 @@ Still failing (all pre-existing): `validate-design-system`, `package-ownership`,
 
 | SHA | Files | Subject |
 |---|---:|---|
-| `039a23af` | 6 | `feat(ui): sidebar active-state affordance, exact-match nav, hydration-safe theme toggle` |
-| `40a8dffe` | 5 | `fix(marketing,shared-types): export the contact contract and repair the contact page build` |
-| `d1c4fd7e` | 33 | `fix(theme-engine): repair empty product/collection/search renders and align experience compositions` |
-| `90a5a3ee` | 4 | `fix(identity-platform): derive storefront hosts from the canonical domain (DEPLOY-R3)` |
-| `5d6fa5f2` | 12 | `feat(merchant-control-plane): navigation IA, honest activation checklist, client-bundle fix` |
-| `54b2401d` | 4 | `fix(storefront-runtime): fail closed on unresolved store access and gate /preview on its token` |
-| `d5562c75` | 10 | `fix(api-gateway): close cross-tenant handle resolution, write sites.published, fail closed on uniqueness` |
-| `023a2e00` | 2 | `fix(tests): stop the wave-3 governance test demanding the banned domain literal; add the missing money fixture table` |
-| `6289c26d` | 58 | `docs: add the merchant-system and theme-system discovery evidence packages` |
-| `3a3b269d` | 1 | `fix(tests): reword the wave-3 comment so it stops carrying the banned domain literal` |
-| `83b7fb39` | 4 | `fix(ui,docs): remove the two validator regressions this port introduced` |
+| `66be517f` | 6 | `feat(ui): sidebar active-state affordance, exact-match nav, hydration-safe theme toggle` |
+| `15dd4bea` | 5 | `fix(marketing,shared-types): export the contact contract and repair the contact page build` |
+| `9f584157` | 33 | `fix(theme-engine): repair empty product/collection/search renders and align experience compositions` |
+| `fcf3ca1f` | 4 | `fix(identity-platform): derive storefront hosts from the canonical domain (DEPLOY-R3)` |
+| `18453a97` | 12 | `feat(merchant-control-plane): navigation IA, honest activation checklist, client-bundle fix` |
+| `f8b04288` | 4 | `fix(storefront-runtime): fail closed on unresolved store access and gate /preview on its token` |
+| `c331f929` | 10 | `fix(api-gateway): close cross-tenant handle resolution, write sites.published, fail closed on uniqueness` |
+| `e0c8d39c` | 2 | `fix(tests): stop the wave-3 governance test demanding the banned domain literal; add the missing money fixture table` |
+| `d2168aef` | 58 | `docs: add the merchant-system and theme-system discovery evidence packages` |
+| `924584f6` | 1 | `fix(tests): reword the wave-3 comment so it stops carrying the banned domain literal` |
+| `bac1779b` | 4 | `fix(ui,docs): remove the two validator regressions this port introduced` |
 
 Every message ends with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`. **Local only — nothing pushed, no PR, no deploy.**
 
@@ -385,7 +385,7 @@ Every message ends with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
 | # | Item | Why |
 |---|---|---|
-| **E-A** | **Liquid `renderLimit` 250 → 5_000** (`d1c4fd7e`). | Documented as a DoS limit in ~15 repo documents. Ported because it provably repairs 4 failing tests and 27 render aborts, and because no sanitizer/data-safety control changed — but a 20× relaxation warrants an explicit security sign-off **before the Liquid canary is widened**. |
+| **E-A** | **Liquid `renderLimit` 250 → 5_000** (`9f584157`). | Documented as a DoS limit in ~15 repo documents. Ported because it provably repairs 4 failing tests and 27 render aborts, and because no sanitizer/data-safety control changed — but a 20× relaxation warrants an explicit security sign-off **before the Liquid canary is widened**. |
 | **E-B** | **The storefront fail-closed path has no executed test.** | `proxy.ts` and the `/preview` loader are not covered by the 945-test suite. The two most valuable security fixes in this port rest on code review + adjacent-source corroboration only. |
 | **E-C** | **New hard launch prerequisite.** | With the gate failing closed, a storefront environment missing `INTERNAL_API_SECRET` or `LETBUYY_API_BASE_URL`/`NEXT_PUBLIC_API_URL` serves **503 for every store**. Correct under SEC-R1; must be in the launch checklist, not discovered at rollout. |
 | **E-D** | **`foundation-wave1-money-postgres` is UNVERIFIED.** | Requires a live `letbuyy-executable-pg` docker Postgres. Structural verification only. A money-lane fixture fix should not ship on a structural argument. |
@@ -415,7 +415,7 @@ Every message ends with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
 ```
 /Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration
-  git log ee371182..83b7fb39            <- the 11 commits; each message carries its own
+  git log bf35062e..bac1779b            <- the 11 commits; each message carries its own
                                            executed before/after with real exit codes
 
 /Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/

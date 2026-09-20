@@ -2,7 +2,7 @@
 
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
 **Date authored:** 2026-07-10
-**Branch:** `stepup/main` · **HEAD:** `29f87115`
+**Branch:** `stepup/main` · **HEAD:** `8c1ac94b`
 
 These ADRs govern architectural decisions for Phases M→AE. Each record includes a status, reversibility assessment, rationale grounded in actual repository evidence, and (where applicable) a `DEFERRED_NEEDS_HUMAN` marker for decisions that require ARB or business-authority approval before implementation may proceed.
 

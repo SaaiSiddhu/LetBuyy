@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | Merchant-facing catalog: products, variants/options, product media, publish/archive lifecycle, manual collections, smart collections, categories, tags, metafields, CSV import/export, catalog search/filter/sort, SEO handles, and the storefront propagation path for all of the above. Inventory quantities, locations, transfers, POs and gift cards are **out of scope** (agents D and B). |
 | Evidence basis | Static source, migration DDL, generated tenant registry, `wrangler.toml` config, test sources — plus **one** module-level runtime reproduction. |
@@ -621,7 +621,7 @@ Allocated from block **MCP-DISC-200 … MCP-DISC-229**. 25 gaps allocated (200-2
   - Offending call sites, all lacking a tenant predicate: `services/api-gateway/src/routes/products.ts:1074-1081` (`GET /products/:id`), `:689-697`, `:722-730`, `:945-953` (collections load/update/soft-delete); `services/api-gateway/src/execution/product-execution.adapter.ts:330-335` (`getOwnedProduct` → PATCH + DELETE), `:259-263` (`bulkAction` `.in('id', …)`), `:180-185` (`updateProduct`), `:581-584` (`refreshProductVariantJsonbCache`, reached unconditionally from the create path at `:155`); `services/api-gateway/src/routes/smart-collections.ts:160-165, 205-210, 227-232`; `services/api-gateway/src/routes/categories.ts:243-246`.
   - [RUNTIME_OBSERVATION] §10.1 — the real guard module rejects these exact shapes.
 - **Expected behavior:** a by-id read or write on a registered tenant table resolves the tenant first and filters on both `id` and the tenant column, or the guard accepts a two-step ownership pattern through an explicit, auditable helper.
-- **Root cause:** commit `49741343 feat(foundation): enforce wave 2 tenant isolation` introduced the fail-closed guard; `products.ts` and `product-execution.adapter.ts` were never adapted. The only guard test (`tests/governance/foundation-wave2-tenant.test.ts:58-76`) exercises a synthetic `.select('*').eq(scopeColumn, …)` shape, so the regression is invisible to CI.
+- **Root cause:** commit `214b6357 feat(foundation): enforce wave 2 tenant isolation` introduced the fail-closed guard; `products.ts` and `product-execution.adapter.ts` were never adapted. The only guard test (`tests/governance/foundation-wave2-tenant.test.ts:58-76`) exercises a synthetic `.select('*').eq(scopeColumn, …)` shape, so the regression is invisible to CI.
 - **Blast radius:** all product CRUD, all collections, all smart collections, category delete, CSV import, sample-product seeding, media-asset by-id reads. **Very likely the same pattern exists in other domains** (orders, customers, coupons) — flagged to the commander; outside this document's scope.
 - **Invariant tag:** [HIGH-STAKES] (tenancy)
 - **Dependencies:** none. This is the root blocker for MCP-DISC-207, MCP-DISC-210, MCP-DISC-221 and any executable test of the catalog.
@@ -1168,7 +1168,7 @@ The catalog domain is "done" only when **all** of the following hold. Each is st
 
 **Test-integrity gate**
 
-18. Each P0 gap has an executable test that fails on commit `ee371182` and passes after the fix. No file whose name or comment claims "end-to-end" is implemented as `readFileSync` + `assert.match`. The regex suite is retained only as an explicitly named architecture-shape gate, with the assertions pinning known-broken query shapes removed (MCP-DISC-208).
+18. Each P0 gap has an executable test that fails on commit `bf35062e` and passes after the fix. No file whose name or comment claims "end-to-end" is implemented as `readFileSync` + `assert.match`. The regex suite is retained only as an explicitly named architecture-shape gate, with the assertions pinning known-broken query shapes removed (MCP-DISC-208).
 
 ---
 
@@ -1228,7 +1228,7 @@ The catalog domain is "done" only when **all** of the following hold. Each is st
 
 ## 17. Confidence and the main uncertainty
 
-**Confidence: HIGH** that every gap in this document describes a real defect in the repository at commit `ee371182`. Every load-bearing claim was re-verified against source while writing this document — the `products` DDL, the absence of `product_categories`, the absence of `FORCE ROW LEVEL SECURITY` on `products`, the absence of any unique index on `products`, the single `bumpStorefrontCacheVersion` caller, the zero `revalidateTag` source hits, the absence of `site_id` from `packages/commerce-core/src/index.ts`, the CSV column sets, the storefront select lists and cascade, the tenant registry entries, the tenant guard's scope-marking logic, and the regex-only test files.
+**Confidence: HIGH** that every gap in this document describes a real defect in the repository at commit `bf35062e`. Every load-bearing claim was re-verified against source while writing this document — the `products` DDL, the absence of `product_categories`, the absence of `FORCE ROW LEVEL SECURITY` on `products`, the absence of any unique index on `products`, the single `bumpStorefrontCacheVersion` caller, the zero `revalidateTag` source hits, the absence of `site_id` from `packages/commerce-core/src/index.ts`, the CSV column sets, the storefront select lists and cascade, the tenant registry entries, the tenant guard's scope-marking logic, and the regex-only test files.
 
 **Confidence: MEDIUM-HIGH** on MCP-DISC-201 and MCP-DISC-202 specifically, and consequently on MCP-DISC-206.
 

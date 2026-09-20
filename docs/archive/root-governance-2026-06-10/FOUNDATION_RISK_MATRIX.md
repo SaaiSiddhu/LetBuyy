@@ -3,7 +3,7 @@
 > Generated at **PHASE A.5** (between the repository audit and Wave 0). One consolidated register of every risk the foundation step-up must hold, derived from `FOUNDATION_STEPUP_MISSION_REVIEW.md`, the forensics/challenge evidence, `LETBUYY_SINGLE_SOURCE_OF_TRUTH.md`, and PHASE A artifacts. Severity: **S0** catastrophic (data/money loss, breach, outage) · **S1** mission/build/CI failure · **S2** rollback/ordering gap · **S3** ambiguity. "Mitigation" names the wave/control that owns it. Codex re-verifies "Current state" against the live code at execution time (addresses are hints).
 
 ## PHASE A.5 Reconciliation
-- Verified against PHASE A commit `ff8f96c4` on `stepup/main`.
+- Verified against PHASE A commit `f84fabf5` on `stepup/main`.
 - PHASE A added build/repo risks not present in the seeded matrix: duplicate migration prefix `129`, tracked `artifacts/shopify-ux/**`, active source/build dependencies on several V2 quarantine packages, deploy workflows that still deploy dormant marketplace apps, and pre-existing user-owned dirty edits in frozen auth paths.
 - No new S0 lacks a named wave/control. New PHASE A drift is classified S1/S2 because it threatens build, migration, or governance correctness but is not itself a live money/tenancy cutover.
 

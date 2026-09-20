@@ -2,7 +2,7 @@
 
 **Discovery & decision only. No code, migrations, validators, architecture, or codex prompts were created or modified. Read-only git throughout.** This audit layers *convergence decisions* on top of the prior `REPOSITORY_TRUTH_AUDIT_2026_06_10/` evidence base (14 reports) — it names winners, single sources of truth, delete classes, and a converge-only roadmap.
 
-- **Repo baseline:** branch `stepup/main`, HEAD `5cf9e64e` (2026-06-10). Working tree **512 D / 410 M / ~78 ??**, uncommitted. Deploy branch `main` is **30 commits behind**.
+- **Repo baseline:** branch `stepup/main`, HEAD `c4fc3cd6` (2026-06-10). Working tree **512 D / 410 M / ~78 ??**, uncommitted. Deploy branch `main` is **30 commits behind**.
 - **Method:** shared premise seed (winner spine + authority reconciliation) → 6 parallel analytical phases → 2 convergence-planning phases → roadmap → executive synthesis. All load-bearing claims lead-spot-checked against source.
 
 ---
@@ -59,4 +59,4 @@ No features, no redesign, no new architecture, no codex prompts, no code/migrati
 
 ## Provenance
 
-11 files · ~3,410 lines · agent-based parallel audit on top of the 14-report truth audit · HEAD `5cf9e64e` · tree 512D/410M/78?? · 2026-06-10.
+11 files · ~3,410 lines · agent-based parallel audit on top of the 14-report truth audit · HEAD `c4fc3cd6` · tree 512D/410M/78?? · 2026-06-10.

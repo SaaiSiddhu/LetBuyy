@@ -1,6 +1,6 @@
 # REACT_DECOMMISSION_MAP.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · file-level, code-cited. Line counts via `wc -l`.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · file-level, code-cited. Line counts via `wc -l`.
 
 Every React-owned storefront capability, its owner files, dependencies, routes, APIs, and tests. Classification (KEEP / MIGRATE / DELETE) and proof are in `REACT_DELETION_PLAN.md`; this map is the inventory.
 

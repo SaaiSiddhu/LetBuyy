@@ -2,7 +2,7 @@
 
 > Every command was executed; every exit code and count below was read from real output.
 > **Environment:** macOS (darwin 25.3.0), Node v26.5.1, pnpm workspace, local Supabase
-> (`supabase_db_Letbuyy_Store`, PostgreSQL 17.6) in Docker. **Branch:** `stepup/main`, baseline `ee371182`.
+> (`supabase_db_Letbuyy_Store`, PostgreSQL 17.6) in Docker. **Branch:** `stepup/main`, baseline `bf35062e`.
 > **Mode:** local. **No live payment was initiated. No browser session was run.**
 
 ---

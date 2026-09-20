@@ -1,6 +1,6 @@
 # 02 — STOREFRONT AUDIT (apps/storefront-runtime)
 
-**HEAD `cd5905be` · code-verified. Status: implemented / partial / missing / broken.**
+**HEAD `c7c82847` · code-verified. Status: implemented / partial / missing / broken.**
 
 | Capability | Status | Evidence |
 |---|---|---|

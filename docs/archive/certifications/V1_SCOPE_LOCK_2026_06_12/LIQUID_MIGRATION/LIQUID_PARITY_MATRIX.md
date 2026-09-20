@@ -1,6 +1,6 @@
 # LIQUID_PARITY_MATRIX.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-cited. React (live) vs Liquid (built/dormant) parity per capability.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-cited. React (live) vs Liquid (built/dormant) parity per capability.
 
 **Parity % = how close the Liquid path is to matching the live React behavior end-to-end** (render + style + data + interactivity), per code. The in-repo `PARITY_MATRIX.md` render-validation matrix is **0/200 cells executed** — so no % below is *validation*-proven; they are code-completeness estimates.
 

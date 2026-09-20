@@ -2,16 +2,16 @@
 
 | Field | Value |
 |---|---|
-| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | **Branch** | `stepup/main` |
-| **Commit (pinned)** | `ee371182` |
+| **Commit (pinned)** | `bf35062e` |
 | **Run date** | 2026-08-04 (+0530); this document authored 2026-08-04 → 2026-08-05 (+0530) |
 | **Scope** | The canonical apps / services / packages / data / provider topology **as it actually is at HEAD** — the constitutional runtime set vs reality, the merchant-web / mobile / storefront / identity / platform-console boundaries, the reserved and frozen roots with proof, the unclassified LCIS estate, the real deploy matrix from the workflows, local dev ports, and where merchant data physically lives. |
 | **Evidence basis** | Agent A's Phase-1 notes (`_agent-notes/A-governance-topology.md`, read in full), re-verified and enriched at authoring time by direct reads of `config/runtime/production-topology.json`, `scripts/validators/governance-common.mjs`, `scripts/dev/ports.mjs`, `pnpm-workspace.yaml`, the four `wrangler.toml` files, `.github/workflows/*`, `config/env/production.env.example`, `services/api-gateway/src/index.ts`, `services/mobile-bff/src/index.ts`, `apps/merchant-control-plane/src/lib/api/client.ts`, and read-only `git ls-tree` / `find` / `grep` censuses. |
 | **METHOD DISCLOSURE** | **Nothing in this document was verified against a running LetBuyy system.** No app was built, booted, deployed, or contacted; no staging or production endpoint was called; no database was connected to. The only executions performed were read-only filesystem/git inspections of this working tree, plus one read-only re-run of `scripts/validators/sequential-migration-validator.mjs`. Every runtime status ceiling in this document is therefore **IMPLEMENTED_NOT_RUNTIME_VERIFIED**, and topology statements describe *declared and configured* topology, not *observed live* topology. |
 | **Secrets** | **No secrets or PII appear in this document.** Environment-variable NAMES, Cloudflare binding NAMES, queue NAMES, and public hostnames only. Cloudflare KV / D1 / Hyperdrive resource identifiers present in `wrangler.toml` were deliberately **not** copied here. |
 
-> **Observation-window warning (inherited and extended).** Agent A recorded a concurrent actor writing into the repository mid-audit (migration `196` at 23:05, seven rollbacks at 23:07). That has continued. **At authoring time the tree has moved again**: `database/supabase/migrations/` now holds **126** files on disk (highest `197_letbuyy_core_first_class_theme.sql`) and `database/supabase/rollback/` holds **48**. The committed tree at `ee371182` still holds **124** migrations (highest `195_contact_requests.sql`) and **40** rollbacks — verified by `git ls-tree -r --name-only HEAD`. Every count in this document is labelled **committed-tree** or **worktree**. Where they differ, the committed tree is the map; the worktree is the warning.
+> **Observation-window warning (inherited and extended).** Agent A recorded a concurrent actor writing into the repository mid-audit (migration `196` at 23:05, seven rollbacks at 23:07). That has continued. **At authoring time the tree has moved again**: `database/supabase/migrations/` now holds **126** files on disk (highest `197_letbuyy_core_first_class_theme.sql`) and `database/supabase/rollback/` holds **48**. The committed tree at `bf35062e` still holds **124** migrations (highest `195_contact_requests.sql`) and **40** rollbacks — verified by `git ls-tree -r --name-only HEAD`. Every count in this document is labelled **committed-tree** or **worktree**. Where they differ, the committed tree is the map; the worktree is the warning.
 
 ---
 
@@ -33,7 +33,7 @@ Five findings, stated directly:
 
 ## 2. Scope
 
-**In scope.** The physical and declared topology of the repository at commit `ee371182`: every root under `apps/`, `services/`, `packages/`, `tools/`, and `database/`; their classification under the governance machine lists; their deploy configuration; the merchant request path from browser to Postgres; local development ports; and the provider surface (Cloudflare, Vercel, Supabase, and the named third-party providers) as configured in-repo.
+**In scope.** The physical and declared topology of the repository at commit `bf35062e`: every root under `apps/`, `services/`, `packages/`, `tools/`, and `database/`; their classification under the governance machine lists; their deploy configuration; the merchant request path from browser to Postgres; local development ports; and the provider surface (Cloudflare, Vercel, Supabase, and the named third-party providers) as configured in-repo.
 
 **Out of scope for this document (owned elsewhere in this dossier).**
 
@@ -425,7 +425,7 @@ This is the highest-stakes merchant action that exists and the trace is worth re
 
 ### 6.6 Database file census — committed tree vs worktree
 
-| Measure | Committed tree @ `ee371182` | Worktree at authoring time |
+| Measure | Committed tree @ `bf35062e` | Worktree at authoring time |
 |---|---|---|
 | Migration files | **124** (`000_baseline` + `073…195` contiguous; `001–072` squashed into the baseline by design, `sequential-migration-validator.mjs:5-7`) | **126** (adds `196_theme_rls_tenant_hardening.sql`, 6,250 bytes; `197_letbuyy_core_first_class_theme.sql`, 19,974 bytes) |
 | Highest migration | `195_contact_requests.sql` | `197_letbuyy_core_first_class_theme.sql` |
@@ -528,7 +528,7 @@ Corroborating signal: `tenant-isolation-validator` is currently **FAILING** — 
 
 | Execution | By whom | Result |
 |---|---|---|
-| All 108 gate-lane validators, invoked individually with `node`, bypassing the destructive wrapper | Agent A (Phase 1) | **83 PASS / 25 FAIL** at HEAD `ee371182` on a dirty worktree |
+| All 108 gate-lane validators, invoked individually with `node`, bypassing the destructive wrapper | Agent A (Phase 1) | **83 PASS / 25 FAIL** at HEAD `bf35062e` on a dirty worktree |
 | Read-only `git ls-tree` / `git ls-files` / `find` / `grep` censuses | Agent A + this author | counts in this document |
 | `scripts/validators/sequential-migration-validator.mjs` (re-run at authoring time) | this author | **exit 0** — see §9.3, this is a finding |
 
@@ -970,7 +970,7 @@ For the **topology** to be declared complete and truthful — this is the map's 
 
 **The main uncertainty, stated once and plainly:**
 
-> **This document maps a repository, not a running system.** Every runtime, binding, queue, hostname, and provider relationship described here is read from configuration committed to git. Not one of them was observed to exist. The gap between "declared in `wrangler.toml`" and "running in Cloudflare" is exactly the gap that a 106-commit branch lag makes enormous — the deployed tree is `main` at `0b8a56e7`, and **this map describes `stepup/main` at `ee371182`, which has never been deployed.**
+> **This document maps a repository, not a running system.** Every runtime, binding, queue, hostname, and provider relationship described here is read from configuration committed to git. Not one of them was observed to exist. The gap between "declared in `wrangler.toml`" and "running in Cloudflare" is exactly the gap that a 106-commit branch lag makes enormous — the deployed tree is `main` at `140a73db`, and **this map describes `stepup/main` at `bf35062e`, which has never been deployed.**
 >
 > Two independent facts make that gap dangerous rather than merely academic: (1) no CI job runs on `stepup/main`, so nothing has typechecked or built this tree; and (2) the governance gate is RED, so the sanctioned deploy path would refuse this tree today anyway.
 >

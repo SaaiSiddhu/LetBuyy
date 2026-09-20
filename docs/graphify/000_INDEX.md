@@ -1,6 +1,6 @@
 # LetBuyy Graphify Master Program
 
-**Evidence source:** `graphify-out/graph.json` (real graph, queried directly with Python). **Graph built at commit `0db025a6`; repo HEAD now `fa1fcc76` → graph is 6 commits stale** (re-run `graphify update .` to refresh). Every quantitative claim below traces to a graph query or a cited file; nothing is assumed.
+**Evidence source:** `graphify-out/graph.json` (real graph, queried directly with Python). **Graph built at commit `0f257ca1`; repo HEAD now `3f5afd46` → graph is 6 commits stale** (re-run `graphify update .` to refresh). Every quantitative claim below traces to a graph query or a cited file; nothing is assumed.
 
 ## Headline graph facts
 - **52,246 nodes · 66,761 edges · 3,279 communities · 3,403 source files indexed.**

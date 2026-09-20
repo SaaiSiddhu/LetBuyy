@@ -31,7 +31,7 @@ Run each scenario class on staging-against-live-sandbox first, then production w
 | S8 | Payout release to merchant via Route | release entry; provider transfer idempotent on retry (CAP-C03); merchant payable decremented exactly once |
 | S9 | Payout failure (bad beneficiary) → retry after fix | failure does NOT decrement payable; retry releases once |
 | S10 | Refund after settlement (cross-window) | I3 holds across windows; suspense explained then cleared |
-| S11 | AI-credit purchase via payment link → webhook → credit grant | grant deferred until webhook+ledger evidence (commit `533479cb` behavior); ledger posting distinct from commerce flows |
+| S11 | AI-credit purchase via payment link → webhook → credit grant | grant deferred until webhook+ledger evidence (commit `5c2d3993` behavior); ledger posting distinct from commerce flows |
 | S12 | Mid-flow crash injection (kill worker between provider call and ledger post) | recovery job or reconciliation completes the post; no double entry |
 
 ## 3. RECONCILIATION PROCEDURES (operational, daily)

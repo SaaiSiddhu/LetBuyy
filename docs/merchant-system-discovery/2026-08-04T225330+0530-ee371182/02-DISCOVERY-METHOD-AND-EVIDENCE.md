@@ -1,8 +1,8 @@
 # 02 — Discovery Method and Evidence Standard
 
-**Run ID:** `2026-08-04T225330+0530-ee371182`
+**Run ID:** `2026-08-04T225330+0530-bf35062e`
 **Repository:** `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`
-**Branch:** `stepup/main` · **HEAD:** `ee3711829d857e986014c5811bb94d86ebc3d343` (short `ee371182`) · **HEAD attached**
+**Branch:** `stepup/main` · **HEAD:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (short `bf35062e`) · **HEAD attached**
 **Run window:** 2026-08-04 22:53:30 +0530 → 2026-08-05 (local), UTC start `2026-08-04T17:23:30Z`
 **Scope of this document:** how the discovery was performed, what was and was not verified, and the evidence rules every other document in this dossier obeys.
 
@@ -201,7 +201,7 @@ Contradictions that could not be safely resolved are marked `CONTRADICTORY_EVIDE
 
 Exactly three locations, all additive, all inside the sanctioned discovery output:
 
-1. `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182/` — the dossier and `_agent-notes/`
+1. `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e/` — the dossier and `_agent-notes/`
 2. `artifacts/merchant-system-discovery/` — the ZIP and its checksum
 3. Nothing else.
 

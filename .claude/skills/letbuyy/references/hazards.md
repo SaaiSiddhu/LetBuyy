@@ -69,14 +69,14 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
   files can manufacture a ratchet regression that exists in no commit. Measure committed content via
   `git ls-tree` + `git show HEAD:<path>` before blaming a commit; **never `--update`** to clear a red
   (UI-R7/ART-20). Its current HARD failure ("identity-platform: dark-mode reachability target file is
-  missing", `823aa5ee`) is a real missing file, not the ratchet.
+  missing", `a751a2ff`) is a real missing file, not the ratchet.
 - `tenant-isolation-validator` reds for the *next* session whenever a migration touches a tenant
   table and `services/api-gateway/src/tenant/tenant-tables.registry.ts` was not regenerated
   (`node scripts/generators/generate-tenant-table-registry.mjs`). Provenance-only drift, still a red gate.
 - `sequential-migration-validator` reds on **untracked** migrations and on gaps. As of 2026-09-04 the
   red was another session's uncommitted 208–210 in the primary checkout; those files are STILL untracked
   there (re-measured 2026-09-12), but in a clean worktree this validator PASSES — confirmed in the
-  2026-09-12 sweep at `develop` = `de543446`, where the only two reds are `environment-validator` and
+  2026-09-12 sweep at `develop` = `6edbbf0e`, where the only two reds are `environment-validator` and
   `stale-artifact-validator`.
 - `domain-boundary-validator` hard-asserts the app-local API route count, and
   `tests/federation/app-api-route-ownership.test.mjs` asserts the validator's **source text** carries
@@ -154,11 +154,11 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
 - LCIS (`pnpm graph:ui` → :3333, `tools/central-intelligence` → :3334) is dev-time tooling: query
   it before scanning the repository, never treat its output as authority over the validators.
 
-## Ambient reds on the committed tree — measured 2026-09-04 in a clean worktree at `823aa5ee` (GOV-3 gate rehearsal)
+## Ambient reds on the committed tree — measured 2026-09-04 in a clean worktree at `a751a2ff` (GOV-3 gate rehearsal)
 
 Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
 
-- **typecheck — CLOSED 2026-09-05 (F-INFRA-2, `cf25d0b7`). The lane is GREEN: 81 successful / 81
+- **typecheck — CLOSED 2026-09-05 (F-INFRA-2, `4724fe6d`). The lane is GREEN: 81 successful / 81
   tasks, exit 0.** It was 29 × `TS2322` in `cashfree-adapter`, `paypal-adapter`, `stripe-adapter`
   (`PaymentProviderName` no longer admitted the retired rails); the adapters were `SAFE_DELETE`d
   under **D-16**. Do not inherit this red — if typecheck is red on your branch, it is **yours**.
@@ -166,8 +166,8 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   number on this page and was read as a statistic for months.** 18 tasks did not run: turbo cancels a
   failing task's dependents, so that single red was **suppressing the typecheck of 16 packages,
   `@letbuyy/api-gateway` among them** — which is how a function imported but defined in no commit
-  left the canonical backend uncompilable on `develop` through every gate run (GW-1, `2c8d27e6`).
-  F-INFRA-1 (`e03d2e2b`) added `--continue` to every root turbo lane so a failure can no longer
+  left the canonical backend uncompilable on `develop` through every gate run (GW-1, `de769df5`).
+  F-INFRA-1 (`8331728e`) added `--continue` to every root turbo lane so a failure can no longer
   cancel the rest, and `gate.sh` now prints `(+N more)` and `[NO OUTPUT: <packages>]`.
   **Whenever a lane reports `N successful / M total` with `M > N`, the gap is work that never ran —
   read it as coverage lost, never as a summary statistic.**
@@ -191,7 +191,7 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   engagement contract test (green), then W2 moved a route band out of `public-routes.ts` and only the
   *public-routes* test was re-run — while the engagement test anchored on a marker W2 had removed.
 - **validator sweep** (each run individually). **Two of these were CLOSED by phase FB-1 on
-  2026-09-05** — measured side by side, the FB-1 worktree against `develop` at `19895c9c`:
+  2026-09-05** — measured side by side, the FB-1 worktree against `develop` at `ad490b84`:
   `foundation-antifabrication-gate` now **PASSES** (its only offender was the inert
   `firebase_bridge/src/commissionService.ts` hardcoded-payout literal, and the bridge is deleted), and
   `environment-validator`'s offender list dropped **14 → 7** (the six `admin_app` Firebase client-config
@@ -208,17 +208,17 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`), `raw-error-message-validator`,
   and the "untracked migration" variant of `sequential-migration`. `branch-lag-guard-validator` is
   green after the D-BRANCH retarget.
-- **`pnpm run test:contracts`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `de543446`:
+- **`pnpm run test:contracts`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `6edbbf0e`:
   **277 tests, 277 pass, 0 fail**. This entry previously read *202 tests, 195 pass, 7 fail … Phase M
   rename fallout … Owner: CI-1* and listed each failure by name. All seven were opened one at a time
   and **every one was a stale assertion, not a regression** — F-RENAMESTALE-1 (the `apps/customer-web/src`
   dash form and the literal `"apps/mobile/merchant-app"`), F-ARCHIVEPATH-1 (theme-editor dead-shell and
-  the TypeScript dead-source archive, both broken by commit `af492f21` rewriting archive path STRINGS
+  the TypeScript dead-source archive, both broken by commit `fd08b670` rewriting archive path STRINGS
   while renaming no archive file), F-CONTRACTSCOPE-1 (the retired `.store` target in a compatibility
   bridge, storefront reserved labels, the settings apps route twin). **Kept as history because the
   wording was the hazard:** "expected ambient failures, owner CI-1" is what let nine phases diff past
   them, and if this lane goes red again it is a NEW finding, not this one.
-- **`pnpm run test:unit:gateway`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `de543446`:
+- **`pnpm run test:unit:gateway`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `6edbbf0e`:
   **962 tests, 953 pass, 0 fail, 9 skipped**. This entry previously read *666 tests, 654 pass, 3 fail,
   the exact Phase M baseline set*. Two of that trio were repaired — F-WEBHOOKTEST-1 (`razorpay webhook
   verifies raw-body signatures…`, where the code was STRONGER than the test: the rejection had gained a

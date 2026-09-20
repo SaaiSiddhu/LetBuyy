@@ -4,8 +4,8 @@ Repository-**declared** intended state at HEAD. ⚠ Actual live versions require
 
 | Field | Value |
 |-------|-------|
-| HEAD | `4a91fa96` (stepup/main) |
-| Last tag | convergence-cabe148c |
+| HEAD | `d7f74037` (stepup/main) |
+| Last tag | convergence-3da1416c |
 | HEAD subject | lcis(v5): live operating intelligence — runtime obs, merchant/revenue/security, readiness scoring, AI decision engine |
 | Latest migration | `174_v1_gift_card_refund_restore.sql` (of 103) |
 | Workers | letbuyy-api, letbuyy-queue-workers, letbuyy-webhook, letbuyy-mobile-bff |

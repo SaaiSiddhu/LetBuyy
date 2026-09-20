@@ -1,6 +1,6 @@
 # Phase D — Authentication & Authorization Audit
 
-**HEAD `587dc988`. Asymmetric sole-issuer model — PRESERVED.**
+**HEAD `ae383bb8`. Asymmetric sole-issuer model — PRESERVED.**
 
 | Surface | Status | Evidence |
 |---|---|---|

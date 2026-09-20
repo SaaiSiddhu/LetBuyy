@@ -2,7 +2,7 @@
 
 **Forensic, discovery-only investigation. No code, migrations, validators, or architecture were created or modified. Read-only git throughout.**
 
-- **Repository state at audit:** branch `stepup/main`, HEAD `5cf9e64e` (2026-06-10 08:42 IST)
+- **Repository state at audit:** branch `stepup/main`, HEAD `c4fc3cd6` (2026-06-10 08:42 IST)
 - **Working tree:** massively dirty/uncommitted — **512 deleted, 410 modified, 76 untracked** paths from an executed Phases A–D13 program (`EXECUTION_LEDGER.md`, every row "not committed")
 - **Deploy branch `main`:** 30 commits behind `stepup/main`; carries none of the hardening
 - **Method:** 9 parallel axis auditors → 3 synthesis auditors → master synthesis; all top S0/critical claims independently spot-checked by the lead against source
@@ -63,4 +63,4 @@ Per the mission: no redesign, no roadmap, no new architecture, no code/migration
 
 ## Provenance
 
-13 reports · ~3,870 lines · agent-based parallel audit · HEAD `5cf9e64e` · tree 512D/410M/76?? · 2026-06-10.
+13 reports · ~3,870 lines · agent-based parallel audit · HEAD `c4fc3cd6` · tree 512D/410M/76?? · 2026-06-10.

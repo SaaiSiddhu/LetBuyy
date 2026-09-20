@@ -17,7 +17,7 @@
 | Fact | Value | Evidence |
 |---|---|---|
 | Branch | `stepup/main` | `git rev-parse --abbrev-ref HEAD` |
-| HEAD | `ee371182` — *feat(demo): mount Turnstile so the form works in production* | `git rev-parse HEAD` |
+| HEAD | `bf35062e` — *feat(demo): mount Turnstile so the form works in production* | `git rev-parse HEAD` |
 | Staged files | **0** | `git diff --cached --name-status` → empty |
 | Modified files (total) | **6 784** | `git status --porcelain \| awk '{print $1}' \| sort \| uniq -c` |
 | — of which **mode-only** (`100644`→`100755`) | **6 063** | `git diff --numstat \| awk '$1==0 && $2==0' \| wc -l` |
@@ -129,7 +129,7 @@ Two runs, one command set, two trees:
 
 | Tree | Validators run | Pass | **Fail** |
 |---|---|---|---|
-| **Clean `HEAD` (`ee371182`)** — detached worktree, no user edits | 107 | 85 | **22** |
+| **Clean `HEAD` (`bf35062e`)** — detached worktree, no user edits | 107 | 85 | **22** |
 | **Working tree** (with the user's 721 content changes + 11 untracked) | 107 | 83 | **24** |
 
 The clean-HEAD tree was produced non-destructively with
@@ -237,7 +237,7 @@ Recorded because they are the invariants this engagement must not break:
 
 | # | Command | Purpose | Exit | Notes |
 |---|---|---|---|---|
-| 1 | `git rev-parse --abbrev-ref HEAD` / `git rev-parse HEAD` | branch + HEAD | 0 | `stepup/main` @ `ee371182` |
+| 1 | `git rev-parse --abbrev-ref HEAD` / `git rev-parse HEAD` | branch + HEAD | 0 | `stepup/main` @ `bf35062e` |
 | 2 | `git status --porcelain`, `git diff --numstat`, `git ls-files --others --exclude-standard` | working-tree classification | 0 | 6 784 M / 721 real / 11 `??` |
 | 3 | `git worktree list` | worktree inventory | 0 | 12 prunable stale worktrees |
 | 4 | `docker ps` | local service availability | 0 | Supabase stack healthy, up 34 h |

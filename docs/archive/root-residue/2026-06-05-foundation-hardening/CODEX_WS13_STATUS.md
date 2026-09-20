@@ -4,7 +4,7 @@ Status: DONE LOCALLY - AWAITING HUMAN DEPLOYED STAGING PROOF.
 
 ## LOCAL SCOPE
 - X0 manifest contract, X1 per-store registry, X2 Admin UI extension host, X3 Checkout UI extension host, X4 theme app-block wiring, X5 Wasm Functions runtime, and X6 lifecycle/observability/developer handoff are implemented locally.
-- X0-X5 are committed through `bbc92bb1` with post-commit governance green.
+- X0-X5 are committed through `15f27e11` with post-commit governance green.
 - X6 passed the full local pre-commit gate.
 
 ## COMPLETED

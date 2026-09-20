@@ -1,6 +1,6 @@
 # 32 — Glossary
 
-**Run ID:** `2026-08-04T225330+0530-ee371182` · **Branch:** `stepup/main` · **Commit:** `ee371182` · **Date:** 2026-08-04
+**Run ID:** `2026-08-04T225330+0530-bf35062e` · **Branch:** `stepup/main` · **Commit:** `bf35062e` · **Date:** 2026-08-04
 
 Canonical terms used across this dossier. Where a term has a LetBuyy-specific meaning that differs from industry usage, the LetBuyy meaning governs and the difference is called out.
 

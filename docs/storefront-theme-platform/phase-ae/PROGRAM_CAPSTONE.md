@@ -48,7 +48,7 @@ Before the M→AE documentation program began, 11 phases of B→L work on `stepu
 | K | AI theme generator | `generateThemeFromBrief`, `ThemeBrief`, structured input only |
 | L | AI primitives + SDK | `analyzeThemeAccessibility`, `suggestAccessibilityFixes`, `theme-ai-sdk.ts`, `MODEL_BOUNDARY` |
 
-All B→L commits (11) are real ancestors of HEAD. Phase L = HEAD at program start (`29f87115`).
+All B→L commits (11) are real ancestors of HEAD. Phase L = HEAD at program start (`8c1ac94b`).
 
 ---
 
@@ -65,7 +65,7 @@ All B→L commits (11) are real ancestors of HEAD. Phase L = HEAD at program sta
 | S | Live preview inspector | `StorefrontPreviewBridge`; same-origin `postMessage`; origin check fail-closed; +33 storefront tests | 1048/1048 |
 | T | Section groups + nested blocks | `ThemeBundleTemplateSectionSchema` block depth enforcement; `SectionTreePanel.tsx` `BlockEntry.children`; RISK-T01–T06 registered | 1063/1063 |
 | U | Settings control renderer | Schema-field controls; rich setting types; RISK-SEC-U01/U02/U03, RISK-A11Y-U01/U02 registered | 1136/1136 |
-| V | Template system | Template management; `ThemeTemplatePanel`; Lane A+B; `36d6f342` / `e9462067` | 1385/1385 |
+| V | Template system | Template management; `ThemeTemplatePanel`; Lane A+B; `44497fbd` / `8de31807` | 1385/1385 |
 | W | Dynamic sources + custom data | `dynamic-source-binding.ts`; W-binding descriptor; `DynamicSourcePickerControl`; +56 engine tests | 1441/1441 |
 | X | Files & media library | `ThemeMediaLibraryClient`; `MediaPickerControl`; `ResourcePickerControl`; Cloudflare R2 integration routes; 8 findings resolved | 1441/1441 |
 | Y | Theme app extensions | `filterAppBlockSettings`; `AppBlockReferenceSchema`; `@app` block render pipeline; `MAX_APP_BLOCKS_PER_SLOT`; +28 tests | 1469/1469 |

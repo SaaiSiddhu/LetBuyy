@@ -1,6 +1,6 @@
 # 11 — V1 GAP ANALYSIS
 
-**HEAD `cd5905be` · code-verified.** V1 scope = web-only, React urban-kicks theme, India/INR, Razorpay+COD, manual fulfillment, email-only, 0% commission, owner-only merchants, staffed console. Ranked by launch-criticality.
+**HEAD `c7c82847` · code-verified.** V1 scope = web-only, React urban-kicks theme, India/INR, Razorpay+COD, manual fulfillment, email-only, 0% commission, owner-only merchants, staffed console. Ranked by launch-criticality.
 
 ## CRITICAL (blocks launch)
 

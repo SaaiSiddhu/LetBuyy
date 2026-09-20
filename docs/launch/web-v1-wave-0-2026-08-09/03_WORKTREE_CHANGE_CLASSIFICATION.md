@@ -7,7 +7,7 @@
 > | Field | Value |
 > |---|---|
 > | Repo | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` (original tree, read-only — no write, no git mutation) |
-> | Branch / HEAD | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
+> | Branch / HEAD | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 > | Date | 2026-08-09 |
 > | Commands used | `git status --porcelain=v1\|v2`, `git diff HEAD --numstat`, `git diff HEAD --raw`, `git diff HEAD --shortstat`, `git ls-files -s`, `git hash-object`, `git cat-file -s` |
 > | EXECUTED vs INFERRED | Every figure in this notice was EXECUTED this session against the original tree and its exit code observed. Nothing is INFERRED. |
@@ -57,7 +57,7 @@
 
 **Agent:** Agent B — Git and Working-Tree Forensics Auditor, Wave 0 Phase 1, read-only.
 
-**Repo SHA at time of audit (HEAD):** `ee3711829d857e986014c5811bb94d86ebc3d343`
+**Repo SHA at time of audit (HEAD):** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 **Branch:** `stepup/main`
 **Timestamp used:** 2026-08-09 (literal, per task brief)
 

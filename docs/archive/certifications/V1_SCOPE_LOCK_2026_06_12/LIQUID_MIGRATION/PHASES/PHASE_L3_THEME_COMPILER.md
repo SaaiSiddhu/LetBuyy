@@ -1,6 +1,6 @@
 # PHASE L3 — THEME COMPILER (portable JSON → Liquid bundle)
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **Longest single build; on the critical path only if merchant Liquid editing must ship by Open Beta — otherwise a parallel branch.**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **Longest single build; on the critical path only if merchant Liquid editing must ship by Open Beta — otherwise a parallel branch.**
 
 1. **Purpose.** Let the merchant editor persist edits as a Liquid bundle (today it emits portable JSON only; there is no compiler), so theme authoring (L13) and section depth become real for Full Liquid.
 2. **Repository Reality.** The editor publish path emits portable JSON (`editor/page.tsx` `buildDraftConfig:581-618`); the routes accept a `liquidBundle` (`editor/route.ts:29-40`, `editor/draft/route.ts:27-34`) but the UI never sends one. **No portable→Liquid compiler exists** (grep: only the reverse, `buildLiquidRuntimeSectionSchemas` `theme-bundle.ts:1206-1272`).

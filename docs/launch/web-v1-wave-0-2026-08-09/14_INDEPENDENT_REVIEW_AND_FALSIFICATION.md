@@ -4,7 +4,7 @@
 >
 > **Evidence artifact, not governance authority.** Appended after publication; inline `[CORRECTED]` markers appear at the affected rows. History is annotated, not rewritten.
 >
-> **Repo/branch/date:** `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`, `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343`, 2026-08-09. **Commands:** `git diff HEAD --numstat`, `git diff HEAD --raw`, `git ls-files -s`, `git hash-object`. **EXECUTED**, full set, no sampling.
+> **Repo/branch/date:** `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`, `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1`, 2026-08-09. **Commands:** `git diff HEAD --numstat`, `git diff HEAD --raw`, `git ls-files -s`, `git hash-object`. **EXECUTED**, full set, no sampling.
 >
 > **This falsification pass CONFIRMED a claim that is false.** Three rows below certify docs 03/04's figure of **"99 textual + 678 binary = 777 real content changes"** as CONFIRMED / "independently reproduced". The reproduction was real but the *interpretation* was inherited: Agent G re-derived `678` by re-running `awk '$1=="-"&&$2=="-"'` over the numstat — which reproduces docs 03/04's **classification**, not an independent test of it. `git diff --numstat` prints `- -` for a binary path in a diff **for any reason, including a mode-only change**. Re-running the same command that produced the error cannot detect the error.
 >
@@ -26,7 +26,7 @@
 
 **Status:** Evidence artifact. **NOT governance authority.** Subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` → root `AGENTS.md` → local `AGENTS.md` → canonical governance rewrite docs. Where anything below conflicts with those documents, the documents win.
 
-- **Repo SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343` (re-verified via `git rev-parse HEAD`)
+- **Repo SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (re-verified via `git rev-parse HEAD`)
 - **Branch:** `stepup/main`
 - **Timestamp used:** 2026-08-09 05:06 IST (system clock read directly)
 - **Auditor:** Agent G — Independent Evidence and Quality Reviewer, Wave 0 Phase 1, read-only
@@ -50,7 +50,7 @@ No secrets were found leaked into any of the 13 documents or into the raw-eviden
 
 | Claim | Verdict | Evidence |
 |---|---|---|
-| HEAD SHA `ee371182...`, branch `stepup/main` | **CONFIRMED** | `git rev-parse HEAD` / `git branch --show-current` re-run, identical |
+| HEAD SHA `bf35062e...`, branch `stepup/main` | **CONFIRMED** | `git rev-parse HEAD` / `git branch --show-current` re-run, identical |
 | Governance validator exits 1, Design-system governance fails with 2 hard invariants + 9 ratchet regressions (exact metric values quoted) | **CONFIRMED** | `node scripts/validate-governance.mjs` re-run live; exit code 1; output byte-for-byte matches (`appCssRawHex:156`, `tsxRawHex:5`, `rawPxSpacing:1584`, etc.) |
 | Rule-ID citations (ART-04, ART-22, NEVER-R3, AGENT-R13, ARCH-R1/R2/R6/R10, etc.) at their stated `path:line` | **CONFIRMED** | Independently opened `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md:123,289` and `AGENTS.md:185,364` — text matches verbatim |
 | 77 total `AGENTS.md` files, none under `scripts/`, `database/`, `.github/` | **CONFIRMED** | `rg --files -g AGENTS.md \| wc -l` → 77; `rg --files -g AGENTS.md scripts database .github` → empty (exit 1) |
@@ -63,7 +63,7 @@ No secrets were found leaked into any of the 13 documents or into the raw-eviden
 | Claim | Verdict | Evidence |
 |---|---|---|
 | `HEAD` = `stepup/main` = 106 commits ahead of local `main`, 291 ahead of `origin/main`, 17 ahead / 0 behind `origin/stepup/main` | **CONFIRMED** | Re-ran all three `git rev-list --left-right --count` commands fresh; identical results (106/0, 291/0, 17/0) |
-| `origin/develop` == `origin/main` (byte-identical SHA) | **CONFIRMED** | `git rev-list --left-right --count origin/main...origin/develop` → `0 0`; `git rev-parse` both → identical SHA `41b6ea49...` |
+| `origin/develop` == `origin/main` (byte-identical SHA) | **CONFIRMED** | `git rev-list --left-right --count origin/main...origin/develop` → `0 0`; `git rev-parse` both → identical SHA `c2547049...` |
 | `git ls-files --stage`: 6,852 files `100644`, 62 files `100755` in committed index | **CONFIRMED** | Re-ran independently, identical counts |
 | No submodules, no Git LFS | **CONFIRMED** | `.gitmodules` absent, `.gitattributes` has no `filter=lfs` entries — independently re-checked |
 | 13 worktrees, 12 of them stale at `origin/main`'s SHA and `prunable` | **Not independently re-verified** (out of this pass's time budget — `git worktree list` was not re-run; low-risk, does not affect any downstream conclusion) | — |
@@ -103,7 +103,7 @@ No secrets were found leaked into any of the 13 documents or into the raw-eviden
 
 | Claim | Verdict | Evidence |
 |---|---|---|
-| Graph built at commit `0db025a6...` (2026-06-14), 77 commits behind `HEAD` | **Not independently re-derived in this pass** (would require re-reading `graphify-out/graph.json`, which this reviewer did not open — the underlying git-distance methodology was already cross-verified once via Doc 05's identical claim, and the file-existence claim is corroborated by Doc 01/05's independent reads of the same file) — **CONFIRMED by consistency**, not by a fresh open of `graphify-out/graph.json` in this pass | — |
+| Graph built at commit `0f257ca1...` (2026-06-14), 77 commits behind `HEAD` | **Not independently re-derived in this pass** (would require re-reading `graphify-out/graph.json`, which this reviewer did not open — the underlying git-distance methodology was already cross-verified once via Doc 05's identical claim, and the file-existence claim is corroborated by Doc 01/05's independent reads of the same file) — **CONFIRMED by consistency**, not by a fresh open of `graphify-out/graph.json` in this pass | — |
 | `services/lcis-api` unlisted anywhere in the authority chain or the ZIP's 17 documents | **CONFIRMED** (cross-checked against Doc 01's independent finding of the same fact, and independently re-grepped `AGENTS.md`/Constitution/`LETBUYY_CANONICAL_SYSTEMS.md` in this pass) | `grep -n lcis-api AGENTS.md GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` → no output (re-run) |
 | RLS-FORCE no-op / 326-table claim marked UNVERIFIABLE by the source document itself | **Correctly labeled** — this reviewer also did not independently verify the 326-table RLS-FORCE claim (out of scope/time; would require enumerating `FORCE ROW LEVEL SECURITY` across 126 migrations) | — |
 
@@ -298,7 +298,7 @@ deploy, or production mutation.
 | Property | Before round 2 | After round 2 | Lead's recorded value | Match |
 |---|---|---|---|:--:|
 | branch | `stepup/main` | `stepup/main` | `stepup/main` | ✓ |
-| HEAD | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee3711829d857e986014c5811bb94d86ebc3d343` | same | ✓ |
+| HEAD | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | same | ✓ |
 | `git status --porcelain \| wc -l` | 6826 | 6826 | 6826 | ✓ |
 | `git stash list \| wc -l` | 2 | 2 | 2 | ✓ |
 
@@ -321,12 +321,12 @@ Re-measured directly:
 
 | Claim | Command | Result | Verdict |
 |---|---|---|:--:|
-| integration branch SHA | `git rev-parse HEAD` in the worktree | `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6` | ✓ |
-| 23 commits vs baseline | `git rev-list --count ee371182..HEAD` | **23** | ✓ |
-| 155 files, +51,757/−1,003 | `git diff --shortstat ee371182..HEAD` | `155 files changed, 51757 insertions(+), 1003 deletions(-)` | ✓ |
+| integration branch SHA | `git rev-parse HEAD` in the worktree | `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab` | ✓ |
+| 23 commits vs baseline | `git rev-list --count bf35062e..HEAD` | **23** | ✓ |
+| 155 files, +51,757/−1,003 | `git diff --shortstat bf35062e..HEAD` | `155 files changed, 51757 insertions(+), 1003 deletions(-)` | ✓ |
 | short-lived branch commit counts | `git rev-list --count` ×4 | ci-coverage **3**, validator-execution **2**, v1-perimeter **1**, local-environment **2** | ✓ |
-| killswitch **not** merged | `git merge-base --is-ancestor 30fd96b5 fa5630aa` | **NOT an ancestor** | ✓ |
-| killswitch commit count | `git rev-list --count ee371182..30fd96b5` | **2** | ✓ |
+| killswitch **not** merged | `git merge-base --is-ancestor 6c3e17df 8ec05e21` | **NOT an ancestor** | ✓ |
+| killswitch commit count | `git rev-list --count bf35062e..6c3e17df` | **2** | ✓ |
 | nothing pushed | `git for-each-ref refs/remotes/origin/codex/` | **0 refs** | ✓ |
 | nothing pushed (stronger) | `find .git/logs/refs/remotes -type f` mtimes | all four files **Aug 3 01:51** — frozen | ✓ |
 | remote-tracking reflog content | `git reflog show --date=iso refs/remotes/origin/stepup/main` | last two "update by push" entries dated **2026-08-01** and **2026-07-31** | ✓ |
@@ -335,7 +335,7 @@ Re-measured directly:
 `origin/stepup/main`. No `codex/*` remote ref exists.
 
 **A fact the package states but that deserves louder framing:** the local baseline
-`ee371182` is **17 commits ahead of `origin/stepup/main`** (`8d9dda77`). The Wave 0 baseline was
+`bf35062e` is **17 commits ahead of `origin/stepup/main`** (`75305725`). The Wave 0 baseline was
 never on the remote to begin with. That is not a Wave 0 defect, but it means "nothing was
 pushed" and "the remote reflects the baseline" are two very different statements, and only the
 first is true.
@@ -344,7 +344,7 @@ first is true.
 
 ## R2.3 — Governance gate: re-run by me, not read from a log
 
-I executed the gate lane myself in the integration worktree at `fa5630aa`:
+I executed the gate lane myself in the integration worktree at `8ec05e21`:
 
 ```
 $ node scripts/validate-governance.mjs --lane=gate
@@ -433,7 +433,7 @@ container hash one level up. That is the right construction, and it is a genuine
 the prior package.
 
 Spot-checked members drawn at random and re-hashed individually included
-`raw-evidence/appbridge-urgent/killswitch-raw/commit-ed6e5167.stat`, `raw-evidence/D/app_bridge_evidence.txt`,
+`raw-evidence/appbridge-urgent/killswitch-raw/commit-df4abd5d.stat`, `raw-evidence/D/app_bridge_evidence.txt`,
 `raw-evidence/w0-validator-execution/20_orchestration-tests.log`, `docs/12_…`, `docs/18_…`,
 `docs/24_…`, `raw-evidence/build-baseline/23_build_queue_workers.log`,
 `raw-evidence/g/identity-platform-lint-rerun.txt`, `raw-evidence/appbridge-urgent/probe-raw/matrix.md`,
@@ -507,7 +507,7 @@ I re-ran the certification's own evidence lines rather than trusting them:
 | git remote (stronger) | mtimes of `.git/logs/refs/remotes/**` | all **Aug 3 01:51** — a successful push necessarily rewrites one of these |
 | Cloudflare | `~/.wrangler/config` | **does not exist** |
 | Vercel | `~/.local/share/com.vercel.cli` | **does not exist** |
-| original HEAD | `git rev-parse HEAD` + reflog | never moved off `ee371182` |
+| original HEAD | `git rev-parse HEAD` + reflog | never moved off `bf35062e` |
 
 The certification also volunteers the one network operation that *did* occur — a `git fetch`
 (`.git/FETCH_HEAD` mtime **Aug 9 05:05**, which I confirmed) — and correctly classifies it as
@@ -722,9 +722,9 @@ Ranked. Items 1–3 are decisions only a human can make; 4–6 are actions.
 | Any claim falsified? | **One.** The Node-20 "result stability" argument (R2.4). Verdict unaffected; the sentence must be struck. |
 | Any secret leaked? | **No.** Zero credentials. One deliberate, disclosed, non-credential identifier retention that implies an internal-only handling rule. |
 | Is the ZIP sound? | **Yes** — digest matches, every member matches, self-reference correctly excluded, exclusions itemised. It is **not** a backup of the 99 preservation patches, and it is now one document out of date. |
-| Was anything mutated? | **No.** Original tree re-measured identical before and after: `stepup/main` @ `ee371182`, 6826 dirty, 2 stashes. Integration worktree status 1 before and after my gate run. No push, no PR, no deploy, no provider command, no Supabase command, no stash command, no `git add`, no `git commit`. |
+| Was anything mutated? | **No.** Original tree re-measured identical before and after: `stepup/main` @ `bf35062e`, 6826 dirty, 2 stashes. Integration worktree status 1 before and after my gate run. No push, no PR, no deploy, no provider command, no Supabase command, no stash command, no `git add`, no `git commit`. |
 
 *End of Round 2. Written 2026-08-09 by Agent G (round 2), read-only and independent. This section
 amends no governance document and confers no approval. The Constitution → root `AGENTS.md` →
 local `AGENTS.md` chain remains supreme; the 110 deterministic validators remain the authoritative
-gate, and they currently fail with 20 problems at `fa5630aa`.*
+gate, and they currently fail with 20 problems at `8ec05e21`.*

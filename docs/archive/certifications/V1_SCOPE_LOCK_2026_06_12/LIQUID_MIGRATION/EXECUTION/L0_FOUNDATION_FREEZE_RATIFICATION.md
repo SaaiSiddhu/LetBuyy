@@ -1,6 +1,6 @@
 # PHASE L0 — FOUNDATION FREEZE RATIFICATION
 
-**Program:** Full Liquid V1 → executed as **Hybrid Phase-1 (L0→L5)** for V1 · **HEAD:** `0b8a56e7` · **Date:** 2026-06-13
+**Program:** Full Liquid V1 → executed as **Hybrid Phase-1 (L0→L5)** for V1 · **HEAD:** `140a73db` · **Date:** 2026-06-13
 **Status:** L0 ratified (documentary — `PHASE_L0` §5 "Files To Modify: None"). No source changed.
 **Authority:** `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (ART-17/18, R-15) is supreme; repository truth overrides documentation.
 
@@ -35,7 +35,7 @@ at the hardening wave**. Therefore:
 
 ## 3. Immutable invariant baseline (recorded; no later phase may weaken)
 
-Verified at HEAD `0b8a56e7`:
+Verified at HEAD `140a73db`:
 
 1. **Render-path security** — DOMPurify `FORBID_ATTR:['style']` (`theme-renderer.ts:157`), `FORBID_TAGS:['base','embed','object','script']` (`:158`), `WHOLE_DOCUMENT:true` (`:163`); LiquidJS `strictFilters:true` (`:330`), `outputEscape:'escape'` (`:333`), `parseLimit 300_000` (`:335`), `renderLimit 250` (`:316/336`), `memoryLimit 2_000_000` (`:317/337`). ✅ verified.
 2. **Freeze** — `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` (`theme-governance.ts:14`); platform flip `status:'deferred'` (`:16`). ✅ verified. Stays asserted; `theme-governance-validator` stays green.

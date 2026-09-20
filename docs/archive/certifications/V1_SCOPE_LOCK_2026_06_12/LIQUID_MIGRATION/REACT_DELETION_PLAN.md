@@ -1,6 +1,6 @@
 # REACT_DELETION_PLAN.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-cited. Classifies every React-owned storefront artifact KEEP / MIGRATE / DELETE, with the validator lock that blocks each deletion and the order in which deletion is safe.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-cited. Classifies every React-owned storefront artifact KEEP / MIGRATE / DELETE, with the validator lock that blocks each deletion and the order in which deletion is safe.
 
 ## Governance rule for deletion (must follow)
 

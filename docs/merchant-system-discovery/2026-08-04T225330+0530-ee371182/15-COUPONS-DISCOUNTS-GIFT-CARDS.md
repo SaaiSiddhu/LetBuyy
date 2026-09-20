@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | **Branch** | `stepup/main` |
-| **Commit** | `ee371182` |
+| **Commit** | `bf35062e` |
 | **Run date** | 2026-08-04 (+0530) |
 | **Scope** | Merchant coupons/discounts (create → edit → delete → redeem → track), the typed 3-class discount engine, the legacy promotions model, gift cards (issue → deliver → redeem → restore), platform billing coupons (adjacent), and every UI, proxy, gateway route, RPC, table, RLS policy and test that touches them. |
 | **Evidence basis** | Agent I discovery notes (`_agent-notes/I-discounts-gift-cards.md`, 1233 lines) plus direct re-verification of 14 load-bearing source locations by this author (listed in §9.3). |
@@ -1280,7 +1280,7 @@ The domain is "complete" when all of the following hold. This is the contract a 
 
 **Confidence: HIGH on structure, code paths, and the presence of every defect described. ZERO on runtime behaviour.**
 
-Every defect in §11 was located by reading source, and the fifteen most load-bearing locations were independently re-verified by this author against the files at commit `ee371182` (§9.3). The winner-selection inversion, the unconditional restore call site, the missing returns restore, the per-call idempotency key, the `new Date(...).toISOString()` conversion, the absent staff-permission checks, the absent storefront gift-card input, and the regex-only test suite are all directly readable facts, not inferences.
+Every defect in §11 was located by reading source, and the fifteen most load-bearing locations were independently re-verified by this author against the files at commit `bf35062e` (§9.3). The winner-selection inversion, the unconditional restore call site, the missing returns restore, the per-call idempotency key, the `new Date(...).toISOString()` conversion, the absent staff-permission checks, the absent storefront gift-card input, and the regex-only test suite are all directly readable facts, not inferences.
 
 **The main uncertainty is that nothing was executed.** In particular:
 

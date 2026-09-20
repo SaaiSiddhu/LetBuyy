@@ -1,6 +1,6 @@
 # THEME_COMPILER_CONTRACT.md
 
-**Status:** FROZEN CONTRACT · **Program:** Full Liquid V1 (Phase L3) · **HEAD:** `0b8a56e7` · code-cited. Freezes the scope of the portable→Liquid compiler so it can never grow into a runtime.
+**Status:** FROZEN CONTRACT · **Program:** Full Liquid V1 (Phase L3) · **HEAD:** `140a73db` · code-cited. Freezes the scope of the portable→Liquid compiler so it can never grow into a runtime.
 
 ## Decision (frozen)
 

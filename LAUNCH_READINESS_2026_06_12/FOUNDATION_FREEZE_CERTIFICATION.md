@@ -1,6 +1,6 @@
 # DOCUMENT 1 — FOUNDATION FREEZE CERTIFICATION
 
-**Status:** CERTIFIED FROZEN as of 2026-06-12, tree `533479cb` (`main` == `stepup/main`, gate GREEN, 105 validators).
+**Status:** CERTIFIED FROZEN as of 2026-06-12, tree `5c2d3993` (`main` == `stepup/main`, gate GREEN, 105 validators).
 **Evidence basis:** `FINAL_SAFE_DELETION_CERTIFICATION_2026_06_12/`, `FINAL_TRUTH_AUDIT_2026_06_11/COMPLETION_REPORT.md`, gate output at HEAD, Constitution + root `AGENTS.md`.
 
 This document declares the six freezes that the Launch Readiness Program operates under, with the validator that enforces each one. A freeze is not a promise — it is a gate failure waiting to happen if violated.
@@ -28,7 +28,7 @@ One canonical append-only double-entry ledger is the only money truth. 0% platfo
 
 ### 1.5 Theme Ownership Frozen
 Liquid is the ratified ecosystem winner. The React storefront sections are a **frozen first-party fast-path** — 20 sections enumerated and pinned by the no-new-React-sections validator. Liquid default rendering is OFF by validator until the Phase E canary proves parity. **React deletion is forbidden until parity is proven and ARB approves the default flip** (`SKIP-CAP-LIQUID-CHROME`).
-**Enforced by:** no-new-React-sections validator, theme Liquid default-OFF enforcement, theme publish → canonical config (commit `1f5ef72b`).
+**Enforced by:** no-new-React-sections validator, theme Liquid default-OFF enforcement, theme publish → canonical config (commit `29e09477`).
 
 ### 1.6 Cleanup Program Closed
 `FINAL_SAFE_DELETION_CERTIFICATION_2026_06_12/` is the terminal cleanup artifact. No new repository-wide cleanup, convergence, or deletion program may be opened. The certified residual list is closed-end: one governed deletion (Wasm app-functions runtime + guard validator), ~16 env lines, 2 flags, 14 dep declarations, 9 merged branches, local junk, optional 44MB `artifacts/` move. Anything beyond that list requires ARB approval as a *new* decision, not "cleanup."

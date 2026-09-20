@@ -2,7 +2,7 @@
 
 Generated: 2026-06-09T19:21:18Z  
 Branch: `stepup/main`  
-Baseline commit: `41b6ea49c5da30a1409d4cc587d989d459288e45`  
+Baseline commit: `c2547049c0b5666661536d076046415714fb7d03`  
 Sources: `tsconfig.workspace.json`, `turbo.json`, package manifests.
 
 ## Root Build Commands

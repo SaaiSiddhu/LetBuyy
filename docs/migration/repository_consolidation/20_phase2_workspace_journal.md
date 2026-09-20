@@ -8,12 +8,12 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
-| S0 | Preflight and resume | COMPLETE | 3cef650f |
-| S1 | Confirm both conflicts | COMPLETE | 75017a24 |
-| S2 | Resolve flutter_secure_storage | COMPLETE | a8bfd8c9 |
-| S3 | Resolve quickcommerce_core | COMPLETE | 41eec308 |
-| S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | a31cea8c |
-| S5 | Verification | COMPLETE | 022e01e1 |
+| S0 | Preflight and resume | COMPLETE | 85d0aa7e |
+| S1 | Confirm both conflicts | COMPLETE | e0f0e9cf |
+| S2 | Resolve flutter_secure_storage | COMPLETE | 9ffddd2e |
+| S3 | Resolve quickcommerce_core | COMPLETE | a338aa4d |
+| S4 | Workspace membership | COMPLETE — 20/20 candidates now real members | 7a087726 |
+| S5 | Verification | COMPLETE | 7893052f |
 | S6 | Documentation | COMPLETE | (this commit) |
 
 ---
@@ -24,11 +24,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 ### Baseline reconciliation
 
-CTO baseline: `HEAD 91c54fd9  tracked 8341  changed 39  staged 0  untracked 60  deletions 1`. Governance gate 105/6. `merchant_app` 172/172. `customer_app`/`admin_app` analyze clean.
+CTO baseline: `HEAD cdae694e  tracked 8341  changed 39  staged 0  untracked 60  deletions 1`. Governance gate 105/6. `merchant_app` 172/172. `customer_app`/`admin_app` analyze clean.
 
 Measured:
 ```
-HEAD:      91c54fd92e78f94e49655070d46236349143d928   (EXACT MATCH)
+HEAD:      cdae694e453ddca06ce0d149e460f5c4bf959e3b   (EXACT MATCH)
 tracked:   8341                                         (EXACT MATCH)
 staged:    0                                             (EXACT MATCH)
 deletions: 1  (apps/identity-platform/src/lib/useAuthTheme.ts)  (EXACT MATCH)
@@ -190,7 +190,7 @@ Applied the risk ordering exactly; stopped at option 2 (never touched `apps/merc
 
 ### Commits this stage
 
-`bb7ccb4e`.
+`d1bc2fa5`.
 
 **S2 verdict: COMPLETE.**
 
@@ -238,7 +238,7 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 
 ### Commits this stage
 
-`2167d206`.
+`3996ee5f`.
 
 **S3 verdict: COMPLETE.**
 
@@ -296,7 +296,7 @@ Both apps' registrant files gained a `PathProviderPlugin` registration under uni
 
 ### Commits this stage
 
-`84263494`.
+`fb9dfc9a`.
 
 **S4 verdict: COMPLETE.**
 
@@ -318,7 +318,7 @@ Both apps' registrant files gained a `PathProviderPlugin` registration under uni
 | `apps/phase_2/rider_app` (now a real workspace member, not standalone) | **PASS — 1 issue** (`test/widget_test.dart:16:35`, `The name 'MyApp' isn't a class` — pre-existing scaffold boilerplate, see below). Note: the `flutter_lints` include-not-found warning present when this app was analyzed *standalone* in Phase N is now gone — as a workspace member, `flutter_lints` resolves through the shared workspace's unified package config even though `rider_app` itself never declared it as a dependency | **PARTIAL — 2 of 3 test files pass** (`test/app_test.dart`, `test/rider_delivery_flow_test.dart`); `test/widget_test.dart` fails to compile for the same pre-existing reason |
 | `apps/phase_2/store_ops_app` | **PASS — 1 issue**, identical shape to `rider_app` | **PARTIAL — 2 of 3 pass**, identical shape |
 
-**The pre-existing `test/widget_test.dart` failure in both `phase_2` apps is confirmed unchanged and out of scope** — Flutter's default `flutter create` scaffold boilerplate (`await tester.pumpWidget(const MyApp())`, referencing a placeholder class that was never either app's real class), present since Phase M's original establishment commit (`a9623d38`), untouched by any phase since. Recorded, not fixed, per the brief's own explicit instruction.
+**The pre-existing `test/widget_test.dart` failure in both `phase_2` apps is confirmed unchanged and out of scope** — Flutter's default `flutter create` scaffold boilerplate (`await tester.pumpWidget(const MyApp())`, referencing a placeholder class that was never either app's real class), present since Phase M's original establishment commit (`11dbbb19`), untouched by any phase since. Recorded, not fixed, per the brief's own explicit instruction.
 
 ### 5.3 — Every `packages/dart` member analyzed directly (not inferred from consuming apps)
 
@@ -337,7 +337,7 @@ This is a genuinely new check this phase performs that Phase N's own Stage 6 nev
 
 **Root cause 2 (the include-not-found warning in `marketplace_core`/`models`/`services`/`ui_kit`, all four):** each `analysis_options.yaml` declared `include: ../../analysis_options.yaml` (2 levels up) — copied verbatim from System A's own repo, where `packages/<name>/` was one directory level shallower than this repository's `packages/dart/<name>/`. Off by exactly the depth difference introduced by the `dart/` nesting this repo uses. Corrected to `../../../analysis_options.yaml` (3 levels), matching `packages/dart/core`'s own already-correct pattern.
 
-**Both fixed** (commit `c87d9f00`) — see that commit and the corresponding source diff for the exact one-line-per-file changes. Neither fix touched a dependency version, added/removed a package, or touched workspace membership; both are pure import/config-path corrections, squarely inside "complete a mechanical consequence of prior work," not scope creep into new functionality. Re-verified after the fix: all four `marketplace_*` packages analyze with zero issues; `apps/customer_app`/`apps/admin_app` (both consumers) re-confirmed clean; `apps/merchant_app` re-confirmed 172/172.
+**Both fixed** (commit `3fcb2511`) — see that commit and the corresponding source diff for the exact one-line-per-file changes. Neither fix touched a dependency version, added/removed a package, or touched workspace membership; both are pure import/config-path corrections, squarely inside "complete a mechanical consequence of prior work," not scope creep into new functionality. Re-verified after the fix: all four `marketplace_*` packages analyze with zero issues; `apps/customer_app`/`apps/admin_app` (both consumers) re-confirmed clean; `apps/merchant_app` re-confirmed 172/172.
 
 ### 5.4 — The real governance gate
 
@@ -370,7 +370,7 @@ All three unchanged from `12_final_verification.md`'s post-Phase-M green state a
 
 ### Commits this stage
 
-`c87d9f00` (the two discovered-and-fixed package defects — the only source changes Stage 5 itself produced; everything else was measurement).
+`3fcb2511` (the two discovered-and-fixed package defects — the only source changes Stage 5 itself produced; everything else was measurement).
 
 **S5 verdict: COMPLETE.**
 
@@ -386,7 +386,7 @@ Added a superseding note to `19_dart_package_recovery.md` (Phase N's own close-o
 
 ### Commits this stage
 
-`ca2d4b05`.
+`c9fab85a`.
 
 **S6 verdict: COMPLETE.**
 
@@ -394,4 +394,4 @@ Added a superseding note to `19_dart_package_recovery.md` (Phase N's own close-o
 
 ## Phase O — final summary
 
-All 6 stages (S0–S5 substantive work, S6 documentation) COMPLETE. 12 commits total (`3cef650f` through this journal's own closing commit). Both dependency conflicts resolved without ever touching `apps/merchant_app`'s dependency constraints — 172/172 confirmed unchanged at every checkpoint. All 20 of 20 candidate Dart pub workspace members are now real members; zero remain BLOCKED. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline on the first run this phase. Two pre-existing, mechanical defects in `packages/dart/marketplace_ui_kit` (found via a genuinely new verification step — direct package-level analysis, which Phase N never performed) were found and fixed, disclosed as separate from the two named conflicts. No dependency was added, removed, or upgraded beyond what the two conflicts required. D-0 was never touched. Nothing pushed, deployed, or rotated. Full detail for every claim above is in this journal's own stage-by-stage entries; `21_phase2_workspace_resolution.md` is the reader-facing summary.
+All 6 stages (S0–S5 substantive work, S6 documentation) COMPLETE. 12 commits total (`85d0aa7e` through this journal's own closing commit). Both dependency conflicts resolved without ever touching `apps/merchant_app`'s dependency constraints — 172/172 confirmed unchanged at every checkpoint. All 20 of 20 candidate Dart pub workspace members are now real members; zero remain BLOCKED. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline on the first run this phase. Two pre-existing, mechanical defects in `packages/dart/marketplace_ui_kit` (found via a genuinely new verification step — direct package-level analysis, which Phase N never performed) were found and fixed, disclosed as separate from the two named conflicts. No dependency was added, removed, or upgraded beyond what the two conflicts required. D-0 was never touched. Nothing pushed, deployed, or rotated. Full detail for every claim above is in this journal's own stage-by-stage entries; `21_phase2_workspace_resolution.md` is the reader-facing summary.

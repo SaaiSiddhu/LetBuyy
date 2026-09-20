@@ -1,7 +1,7 @@
 # 11 — PAYMENTS: LETBUYY-MANAGED PROVIDER, RAZORPAY ROUTE, SETTLEMENTS, PAYOUTS
 
-**Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-**Branch:** `stepup/main` · **Commit:** `ee371182` · **Run date:** 2026-08-04 (+0530)
+**Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+**Branch:** `stepup/main` · **Commit:** `bf35062e` · **Run date:** 2026-08-04 (+0530)
 **Scope:** the platform-managed (LetBuyy-account) collection path, Razorpay Route linked accounts and transfers, merchant KYC as it relates to money-out, platform fees (`commission_bps`), settlement ingest, payout statement creation and release, refund and reconciliation operations, canonical-ledger and RPC ownership, step-up (second factor), and the platform-console operator surfaces. Storefront checkout UX, COD order lifecycle, and the merchant-owned-gateway (BYOG) credential *storage* UI are covered by companion documents; where they touch money-out they are cited here.
 **Evidence basis:** Agent G notes (`_agent-notes/G-payments-refunds-payouts.md`, read in full) plus first-hand re-verification of ~25 source files, 6 migrations, 2 certification invariants, the payout transfer adapter, the KYC adapter, the reconciliation cron worker, and two governance documents. Every claim below carries a `path:line` citation.
 **METHOD DISCLOSURE: nothing in this document was runtime-verified.** No money path was executed, no provider call was made, no database was queried, no test was run. Every status is derived from static source reading. The ceiling for this entire domain is `IMPLEMENTED_NOT_RUNTIME_VERIFIED`; nothing here is `VERIFIED_E2E`.

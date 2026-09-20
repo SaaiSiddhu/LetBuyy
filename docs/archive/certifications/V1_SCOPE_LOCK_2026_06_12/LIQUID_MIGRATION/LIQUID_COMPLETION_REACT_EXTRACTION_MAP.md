@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_REACT_EXTRACTION_MAP.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · code-cited. KEEP / MIGRATE / DELETE per React artifact, with proof. Deletion is governed (ART-17: not before the hardening-wave data decision; archive + lockstep validator edit).
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · code-cited. KEEP / MIGRATE / DELETE per React artifact, with proof. Deletion is governed (ART-17: not before the hardening-wave data decision; archive + lockstep validator edit).
 
 ## DELETE (render layer — only at L17, after parity proof)
 

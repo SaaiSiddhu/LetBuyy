@@ -1,6 +1,6 @@
 # M→AE Program State
 
-**Updated:** 2026-07-11 (post Phase AE — PROGRAM COMPLETE) · **Branch:** `stepup/main` · **Starting HEAD (program):** `29f87115`
+**Updated:** 2026-07-11 (post Phase AE — PROGRAM COMPLETE) · **Branch:** `stepup/main` · **Starting HEAD (program):** `8c1ac94b`
 
 ## Scoreboard
 | Phase | Title | Status | Commit |
@@ -14,7 +14,7 @@
 | S | Live preview inspector | COMPLETE | _(see phase-s/PHASE_S_REPORT.md)_ |
 | T | Section groups + nested blocks | COMPLETE | _(see phase-t/PHASE_T_REPORT.md)_ |
 | U | Settings control renderer | COMPLETE | _(see phase-u/PHASE_U_REPORT.md)_ |
-| V | Template system | COMPLETE | `36d6f342` (Lane A+hardening) `e9462067` (Lane B) |
+| V | Template system | COMPLETE | `44497fbd` (Lane A+hardening) `8de31807` (Lane B) |
 | W | Dynamic sources + custom data | COMPLETE | _(see phase-w/PHASE_W_REPORT.md)_ |
 | X | Files & media library | COMPLETE | _(see phase-x/PHASE_X_REPORT.md)_ |
 | Y | Theme app extensions | **COMPLETE** | _(see phase-y/PHASE_Y_REPORT.md)_ |
@@ -34,7 +34,7 @@
 ## Verified baselines (do not re-derive)
 - theme-engine **643/643** entering M; **689/689** after Phase N (+46 tests, 20 suites); **1034/1034** after Phase O (+345 tests); **1695/1695** after Phase AC (+61 tests). storefront-runtime **687/687**, merchant **14 tasks**, gateway typecheck **32 tasks**.
 - `validate-governance.mjs` **EXIT=1** — pre-existing tenant-registry drift only (foreign WIP); anti-fabrication PASS.
-- All 11 B→L commits real + ancestors of HEAD. Phase L = HEAD (`29f87115`).
+- All 11 B→L commits real + ancestors of HEAD. Phase L = HEAD (`8c1ac94b`).
 - `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false` (theme-governance.ts:14). Frozen apps confirmed frozen.
 - Phase Q gates: api-gateway **41/41** (file-scoped, `theme-library-q.test.ts`) · merchant **39/39** (24 Q + 15 pre-existing) · typecheck 32/32 api-gateway tasks + 14/14 merchant turbo tasks. 3 pre-existing failures unchanged.
 - Phase R gates: merchant **65/65** (26 R + 25 Q + 14 pre-existing) · typecheck clean. No gateway, no migration, no new dependencies. 3 pre-existing failures unchanged.

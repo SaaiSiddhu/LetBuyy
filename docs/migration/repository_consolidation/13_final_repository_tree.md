@@ -1,6 +1,6 @@
 # 13 — Final Repository Tree
 
-Captured after Stage 9's deletion, `HEAD` `00894cc5`. One canonical git root; `Ecommerce/LetBuyy` and its nested `Agrimore` are gone from disk (fully preserved in the Stage 1 bundles/patches, see `14_recovery_and_rollback.md`).
+Captured after Stage 9's deletion, `HEAD` `92f90e93`. One canonical git root; `Ecommerce/LetBuyy` and its nested `Agrimore` are gone from disk (fully preserved in the Stage 1 bundles/patches, see `14_recovery_and_rollback.md`).
 
 ## `apps/` — 14 entries
 

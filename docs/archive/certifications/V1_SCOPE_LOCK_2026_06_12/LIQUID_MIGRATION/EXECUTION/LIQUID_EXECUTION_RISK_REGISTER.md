@@ -1,6 +1,6 @@
 # LIQUID_EXECUTION_RISK_REGISTER.md
 
-**Full Liquid V1 · HEAD `0b8a56e7` · plan-only.** Sev/Lik: H/M/L. Owner = accountable role.
+**Full Liquid V1 · HEAD `140a73db` · plan-only.** Sev/Lik: H/M/L. Owner = accountable role.
 
 | ID | Risk | Phase | Sev | Lik | Mitigation | Owner |
 |---|---|---|---|---|---|---|

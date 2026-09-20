@@ -2,7 +2,7 @@
 
 **Phase:** 4 of the Convergence Cleanup Program — SAFE DELETION. **Mode:** CLASSIFICATION ONLY. Nothing is deleted or modified. Read-only git. No new architecture. No commits. No codex prompts. This report is the only file written.
 
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch **`stepup/main`** @ HEAD **`5cf9e64e`** (re-verified this phase: `git rev-parse HEAD` = `5cf9e64e7e62482adaf4b65e74d8cbca754a0a15`) · **+30** over `main` (`git rev-list --count main..HEAD` = 30) · deploy branch **`main`** is the only branch production CI triggers from · working tree dirty **512 D / 410 M / 78 ??** (`git status --porcelain` re-counted this phase).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch **`stepup/main`** @ HEAD **`c4fc3cd6`** (re-verified this phase: `git rev-parse HEAD` = `c4fc3cd6898215f53fb462800ca526f649ce37ae`) · **+30** over `main` (`git rev-list --count main..HEAD` = 30) · deploy branch **`main`** is the only branch production CI triggers from · working tree dirty **512 D / 410 M / 78 ??** (`git status --porcelain` re-counted this phase).
 
 **Taxonomy (exactly 3 classes, as mandated):** **DELETE** (physically remove — junk, dead, zero-consumer, or already worktree-deleted) · **ARCHIVE** (historical value → move under `docs/archive/`; for already-archived-but-untracked the action is COMMIT) · **KEEP** (active, needed, canonical, or load-bearing — delete-never or delete-only-after-a-named-condition). Where a row is deletable only after a convergence condition, it is **KEEP (conditional)** with the exact precondition stated — it is NOT a present-tense DELETE.
 

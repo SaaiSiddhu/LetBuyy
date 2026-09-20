@@ -2,7 +2,7 @@
 
 **Canonical authority:** DOC 06 §4.6 (the nine states) and §4.10 (the honesty badge),
 `docs/ui-standards/{error-states,empty-states,loading-states,merchant-ux,forms-patterns}.md`, and
-the exported feedback surfaces of `@letbuyy/ui`. Measured 2026-09-04 at `823aa5ee`.
+the exported feedback surfaces of `@letbuyy/ui`. Measured 2026-09-04 at `a751a2ff`.
 
 **Fires when** a change touches any user-visible surface: a page, component, form, dialog, toast,
 banner, empty/error/loading state, a money or fulfilment surface, a Flutter screen or widget, or any
@@ -41,7 +41,7 @@ consequence, then a toast. Unsaved changes → `SaveBar` (saved/unsaved/saving).
 
 - **Server:** `services/api-gateway/src/lib/public-errors.ts` defines the fixed public message for
   every error code; `errorResponseSanitizer` is the only path to a client; `raw-error-message-validator`
-  polices both (ambient red at `823aa5ee` — attribute in CI-1, never silence). No stack trace, table
+  polices both (ambient red at `a751a2ff` — attribute in CI-1, never silence). No stack trace, table
   name, RPC name or provider payload ever reaches a user.
 - **Client:** map codes to plain language at the surface; never render `err.message` /
   `error instanceof Error ? error.message` to a user. Distinguish not-found · forbidden · validation

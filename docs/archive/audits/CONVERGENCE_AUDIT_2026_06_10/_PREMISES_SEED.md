@@ -3,7 +3,7 @@
 This file is the shared input for all 10 phases of the Convergence Audit (2026-06-10). It records the **authority reconciliation** and the **per-domain winner spine** that were already established and code-verified by the prior REPOSITORY_TRUTH_AUDIT_2026_06_10 (13 reports + master). Nothing here is new architecture — it is a restatement of winners the **ratified canon itself already names**, with the evidence pointers carried forward. All 10 phase reports must stay consistent with this spine; where a phase finds evidence that contradicts it, the phase must say so explicitly and cite the conflict.
 
 ## Repository state (audit baseline)
-- Branch `stepup/main`, HEAD `5cf9e64e` (2026-06-10). Working tree: **512 deleted / 410 modified / 76 untracked**. Deploy branch `main` is **30 commits behind** and ships the pre-hardening platform.
+- Branch `stepup/main`, HEAD `c4fc3cd6` (2026-06-10). Working tree: **512 deleted / 410 modified / 76 untracked**. Deploy branch `main` is **30 commits behind** and ships the pre-hardening platform.
 - **Temporal triplication** is the master fact: three realities per domain — `main` (condemned, deployable), `HEAD` (+30), `working tree` (hardened Phases A–D13 end-state, uncommitted, zero git history). `EXECUTION_LEDGER.md`: every row "not committed."
 
 ## Authority reconciliation (user ordering vs in-repo ordering)

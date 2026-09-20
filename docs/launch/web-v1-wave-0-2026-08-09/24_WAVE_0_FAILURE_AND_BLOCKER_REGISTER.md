@@ -10,9 +10,9 @@
 | Field | Value |
 |---|---|
 | **Date** | 2026-08-09 |
-| **Baseline SHA** | `ee3711829d857e986014c5811bb94d86ebc3d343` (`ee371182`) |
+| **Baseline SHA** | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`bf35062e`) |
 | **Branch / tree described** | `stepup/main` in the **production-linked original repository** `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`, **plus** the five isolated Wave 0 worktrees under `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees` (`web-v1-integration`, `w0-ci-coverage`, `w0-validator-execution`, `w0-v1-perimeter`, `w0-local-environment`, `emergency-appbridge-killswitch`) |
-| **Integration branch head at time of writing** | `fa5630aa` on `codex/web-v1-integration` (per doc 23 / the integration agent's report) — **local only, never pushed** |
+| **Integration branch head at time of writing** | `8ec05e21` on `codex/web-v1-integration` (per doc 23 / the integration agent's report) — **local only, never pushed** |
 | **Role of this agent** | READ-ONLY consolidation. No code was changed. No commit was made. |
 | **Sources** | Wave 0 deliverables `01`–`22`, `28`, `29` in this directory, plus the structured task-agent reports for preserve / baseline / ci / validators / perimeter / localenv / porting / integrate |
 
@@ -27,14 +27,14 @@ forward as a fact without re-derivation. Commands and observed results:
 
 | # | Command | Observed |
 |---|---|---|
-| E1 | `git rev-parse HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| E1 | `git rev-parse HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | E2 | `git branch --show-current` | `stepup/main` |
 | E3 | `git status --porcelain \| wc -l` | **6826** (unchanged before and after this task) |
 | E4 | `git rev-list --left-right --count HEAD...origin/main` | `291  0` |
 | E5 | `git rev-list --left-right --count HEAD...origin/stepup/main` | `17  0` |
 | E6 | `git rev-list --left-right --count HEAD...main` | `106  0` |
 | E7 | `git rev-list --left-right --count origin/main...origin/stepup/main` | `0  274` |
-| E8 | `git rev-parse origin/main` / `origin/develop` | both `41b6ea49c5da30a1409d4cc587d989d459288e45` |
+| E8 | `git rev-parse origin/main` / `origin/develop` | both `c2547049c0b5666661536d076046415714fb7d03` |
 | E9 | `sed -n '1,16p' .github/workflows/ci.yml` | `pull_request.branches = [develop, main]`; `push.branches = [develop, main]` — **`stepup/main` absent from both** (`.github/workflows/ci.yml:4-11`) |
 | E10 | `ls services/lcis-api` | `dist node_modules package.json src test tsconfig.json tsconfig.tsbuildinfo` — **no `runtime.manifest.json`, no `AGENTS.md`** |
 | E11 | `grep -rn "lcis-api\|lcis_api" AGENTS.md CLAUDE.md GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md \| wc -l` | **0** |
@@ -70,7 +70,7 @@ them:
    branch. The governance gate explicitly does not cover it (root `CLAUDE.md`). The one build signal
    that exists is negative: the api-gateway does not bundle at the baseline (FBR-21).
 2. **The full validator gate has never been observed green on any tree.** The post-merge integration
-   head `fa5630aa` was deliberately not gate-run because the now-reachable `fs.rmSync` sweep would
+   head `8ec05e21` was deliberately not gate-run because the now-reachable `fs.rmSync` sweep would
    delete that worktree's `node_modules` (FBR-16, FBR-41).
 3. **GitHub branch protection is unreadable** with the tokens available (FBR-23).
 4. **No deployed environment variable value was ever read** — not staging, not production, by design
@@ -136,7 +136,7 @@ remain open**, and the production runtime is still at the baseline state describ
 
 ## 3. The single most consequential structural fact
 
-> **The committed baseline `ee371182` is in a WORSE state than the dirty working tree it sits under,
+> **The committed baseline `bf35062e` is in a WORSE state than the dirty working tree it sits under,
 > in at least two independent ways.**
 
 | Property | Committed baseline (clean checkout) | Dirty original working tree |
@@ -145,10 +145,10 @@ remain open**, and the production runtime is still at the baseline state describ
 | Governance gate stops at | validator **#2** `tenant-isolation-validator` (docs 20, 21, 22 §6) | validator **#6** `validate-design-system` (doc 10) — because the regenerated `tenant-tables.registry.ts` exists only uncommitted |
 
 Both readings are honest measurements of different trees. The consequence is the load-bearing one:
-**any plan that treats `ee371182` as a clean, buildable starting point is proceeding on a false
+**any plan that treats `bf35062e` as a clean, buildable starting point is proceeding on a false
 premise**, and the uncommitted working tree is not noise — it contains content the baseline depends
 on. This is why the 6,826 dirty paths were preserved (doc 16) rather than discarded, and why
-doc 15 nonetheless confirms `ee371182` as the correct baseline (every alternative branch is a strict
+doc 15 nonetheless confirms `bf35062e` as the correct baseline (every alternative branch is a strict
 ancestor; choosing one would discard 17–291 commits for zero gain).
 
 ---
@@ -208,7 +208,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Owner surface:** `services/api-gateway`, `apps/merchant-control-plane`, `apps/platform-console`,
   `packages/theme-engine`.
 - **Recommended action:** ARB owns the rollout of `codex/emergency-appbridge-killswitch` head
-  `30fd96b5` (14 files, 1,356 insertions, **0 deletions**; 29+17+7+6 tests all passing, exit 0 —
+  `6c3e17df` (14 files, 1,356 insertions, **0 deletions**; 29+17+7+6 tests all passing, exit 0 —
   doc 29 §11). The kill switch is a **reversible gate**, not a removal: one environment variable
   re-opens everything. Permanent removal (~9,566 lines + the `app_*` tables) is Wave 1, ARB-gated
   under `AGENTS.md` §16.5.
@@ -270,7 +270,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 **FBR-05 — No deployed environment-variable value was ever read, in any environment**
 
 - **Evidence:** doc 29 §12.2 item 4 — every env shape in every test was reconstructed **verbatim from
-  `services/api-gateway/wrangler.toml` at `ee371182`**, never from deployed Cloudflare vars. Doc 07
+  `services/api-gateway/wrangler.toml` at `bf35062e`**, never from deployed Cloudflare vars. Doc 07
   and doc 08 record the same limitation for `FEATURE_EXTENSIONS`.
 - **Axis A: S1.** The repository guarantees only what the repository declares. A deployed positive
   override of `FEATURE_APP_PLATFORM` (or `FEATURE_EXTENSIONS`) would silently re-open the surface.
@@ -419,7 +419,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Wave:** Wave 1 cutover. **Owner surface:** `apps/merchant-control-plane`, `apps/storefront-runtime`.
 - **Recommended action:** ARB decides per capability: in-scope for V1 (and therefore in scope for
   test/QA/support), or gated. **Note the mitigation is partial:** `codex/w0-v1-perimeter` (commit
-  `2c84e1a9`) freezes the perimeter as a **ratchet** — it records 32 activation signals as
+  `eff77adc`) freezes the perimeter as a **ratchet** — it records 32 activation signals as
   **ALREADY LIVE** under a heading the validator hard-asserts contains the literal
   `"NOT A CLEAN STATE"`, and it fails on any *new* activation. **It disables nothing.** The nine
   capabilities remain reachable exactly as before.
@@ -455,8 +455,8 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 **FBR-37 — Three of the 17 unpushed commits modify the FROZEN `apps/theme-marketplace`**
 
-- **Evidence:** baseline agent (doc 15 §6.4) — `06d8d0fa` (platform header + brand/OG assets),
-  `3f148280` (platform footer, +1025/−71), `9160a2dd` (brand icons in `layout.tsx`); **15 files**.
+- **Evidence:** baseline agent (doc 15 §6.4) — `e3cfa867` (platform header + brand/OG assets),
+  `000a0fed` (platform footer, +1025/−71), `61dfa6d3` (brand icons in `layout.tsx`); **15 files**.
 - **Governing rule:** Constitution **ART-22** (`:289`) freezes app-marketplace and developer-portal;
   `LETBUYY_CANONICAL_SYSTEMS.md` row 36 keeps theme-marketplace machinery CANONICAL/dormant and
   row 23 records FROZEN *"not deleted for completeness"*. Whether cosmetic brand-asset edits to a
@@ -478,7 +478,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 - **Evidence (EXECUTED here, E18; measurement by docs 20, 21, 22 §6):**
   `scripts/validate-governance.mjs:201-203` — `if (result.status !== 0) { process.exit(result.status ?? 1); }`.
-  On a **clean checkout of `ee371182`** the gate exits 1 at validator **#2**
+  On a **clean checkout of `bf35062e`** the gate exits 1 at validator **#2**
   (`tenant-isolation-validator.mjs`). **106 of 108 gate-lane validators are in an unknown state — not
   skipped, not attempted, not evaluated.**
 - **Why the number differs from Phase 1:** doc 10 measured **#6** (`validate-design-system.mjs`)
@@ -492,8 +492,8 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
   and identity invariants.
 - **Axis B: BLOCKS-WAVE-0.** This is the defining Wave 0 defect.
 - **Wave:** Wave 0. **Owner surface:** `scripts/validate-governance.mjs`, `scripts/governance/`.
-- **Recommended action:** the repair exists — `codex/w0-validator-execution` (`369f7918`, `02b6374d`),
-  merged into `codex/web-v1-integration` as `3968e4b3`. All 108 now execute with typed statuses
+- **Recommended action:** the repair exists — `codex/w0-validator-execution` (`611ee20b`, `45958978`),
+  merged into `codex/web-v1-integration` as `5fa68c70`. All 108 now execute with typed statuses
   (`PASS 84 / FAIL 22 / BLOCKED 2 / SKIP 0 / NOT_APPLICABLE 1`, exit 1). **Push, review and merge it.**
 - **Status:** `REPAIRED-LOCAL-UNPUSHED`.
 
@@ -525,7 +525,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 | Tree | Hard invariants | Selected ratchet values | Source |
 |---|---|---|---|
 | Dirty original worktree | **2** (`marketing-site` + `developer-portal` dark-mode toggle) | `appCssRawHex` **156** (baseline 0), `appCssNakedRgbHsl` **822** (572), `appLocalLbTokenRedefs` **339** (112), `rawPxFontSize` **612** (533), `rawPxSpacing` **1584** (1365), `tsxInlineStyles` **673** (635), `tsxRawHex` **5** (0), `tsxArbitraryRadius` **388** (327), `tsxArbitraryShadow` **9** (8) | doc 10 §2 |
-| Clean checkout of `ee371182` | **1** (`marketing-site` only — developer-portal does not reproduce) | `appCssRawHex` **98**, `appLocalLbTokenRedefs` **220** | docs 20, 21 |
+| Clean checkout of `bf35062e` | **1** (`marketing-site` only — developer-portal does not reproduce) | `appCssRawHex` **98**, `appLocalLbTokenRedefs` **220** | docs 20, 21 |
 | Clean checkout, re-measured during porting | **1** + 9 ratchet regressions | — | doc 18 (explicit correction to the "2 + 9" figure in the task brief) |
 
 - **Governing rule:** `AGENTS.md:294` **UI-R7** — *"The drift ratchet MUST BLOCK new drift (fail the
@@ -663,7 +663,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 ---
 
-**FBR-41 — The full gate has never been run against the merged integration head `fa5630aa`**
+**FBR-41 — The full gate has never been run against the merged integration head `8ec05e21`**
 
 - **Evidence:** integration agent, stated plainly — the full `node scripts/validate-governance.mjs`
   was **deliberately not run**, because with fail-fast removed it reaches FBR-16's cleanup and would
@@ -672,7 +672,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Axis A: n/a** (an absence of measurement, not a defect).
 - **Axis B: BLOCKS-WAVE-0.** Wave 0 cannot be declared closed on an unmeasured integration head.
 - **Wave:** Wave 0. **Owner surface:** release engineering.
-- **Recommended action:** run the full gate in a **disposable** checkout of `fa5630aa` (or run
+- **Recommended action:** run the full gate in a **disposable** checkout of `8ec05e21` (or run
   `pnpm install` immediately after), record the typed status matrix, and publish it as the Wave 0
   closing measurement.
 - **Status:** `OPEN`.
@@ -681,7 +681,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 ### 4.4 Red lanes measured at the baseline
 
-> All four were executed by doc 10 on 2026-08-09 against `ee371182` on `stepup/main`, with raw logs
+> All four were executed by doc 10 on 2026-08-09 against `bf35062e` on `stepup/main`, with raw logs
 > archived. **This agent did not re-run them** (read-only remit). Doc 14 independently reproduced the
 > lint result byte-for-byte and the governance-gate result byte-for-byte; the `test:behavioral` and
 > `test:contracts` counts were **not** independently re-run by a second agent and are single-source.
@@ -751,7 +751,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
   "up". It is not.* Root cause: nine symbols imported by
   `services/api-gateway/src/routes/contact-public.ts` and `src/lib/contact-request-email.ts` from
   `@letbuyy/shared-types` do not exist there. `packages/shared-types/src/contact.ts` **is tracked at
-  `ee371182` and exports all nine**; `packages/shared-types/src/index.ts` **never re-exports it**
+  `bf35062e` and exports all nine**; `packages/shared-types/src/index.ts` **never re-exports it**
   (`grep -c "from './contact'"` → **0**). **The defect is one missing barrel line.** With the fix
   applied temporarily: bundle errors **17 → 0**, `GET /health` → **HTTP 200**, and
   `GET /v1/storefront/urban-kicks-demo/products?limit=1` → structured `404 NOT_FOUND` against the
@@ -761,7 +761,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Axis B: BLOCKS-LAUNCH.**
 - **Wave:** Wave 0 detection → Wave 1 integration. **Owner surface:** `packages/shared-types` — a named
   **change-control hotspot** in root `CLAUDE.md`, requiring a blast-radius review.
-- **Recommended action:** already ported to `codex/web-v1-integration` as `40a8dffe`
+- **Recommended action:** already ported to `codex/web-v1-integration` as `15dd4bea`
   (`fix(marketing,shared-types): export the contact contract and repair the contact page build`);
   doc 18 measured `apps/marketing-site` going from **tsc exit 2 (24 TS errors) → exit 0**. Run
   `pnpm graph:intel blast "@letbuyy/shared-types"` before merge, per root `CLAUDE.md`.
@@ -790,8 +790,8 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
   severe. Consequences do not change the class of the defect.
 - **Axis B: BLOCKS-WAVE-0.**
 - **Wave:** Wave 0. **Owner surface:** `.github/workflows`.
-- **Recommended action:** repaired on `codex/w0-ci-coverage` (`fedd9837`, `fed4e0ca`, `8395a48d`),
-  merged as `100aa85d`. `ci.yml` now triggers on `stepup/main` + `codex/web-v1-integration` for both
+- **Recommended action:** repaired on `codex/w0-ci-coverage` (`3a6831da`, `b3025df3`, `43671d96`),
+  merged as `f82b9372`. `ci.yml` now triggers on `stepup/main` + `codex/web-v1-integration` for both
   `pull_request` and `push`; `develop` was **deliberately retained** (removing it would delete an
   existing check — the non-weakening direction under ART-02 / R-18). A new gate-lane validator
   (`workflow-trigger-coverage-validator.mjs`, exit 0: *"16 workflows parsed; 4 gated branches and 8
@@ -870,7 +870,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 **FBR-27 — `main` and `develop` are frozen 274 commits behind; the DEPLOY-R1 keystone is open**
 
 - **Evidence (EXECUTED here, E4/E6/E7/E8):**
-  `origin/main` == `origin/develop` == `41b6ea49c5da30a1409d4cc587d989d459288e45` (2026-06-09).
+  `origin/main` == `origin/develop` == `c2547049c0b5666661536d076046415714fb7d03` (2026-06-09).
   `origin/main → origin/stepup/main` = **0 / 274**. `HEAD → origin/main` = **291 / 0**.
   `HEAD → main` (local) = **106 / 0**. All real work for ~2 months has landed on `stepup/main`.
   `main` has **not diverged** — it is simply stale.
@@ -953,7 +953,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Wave:** Wave 0. **Owner surface:** the original worktree.
 - **Recommended action:** doc 16 built the preservation area (214 files, 7.7 MB, every artifact
   SHA-256 indexed; index sha256 `ac6c0cb4114e3d6bd1edc34034095e3d16b1f670dfd405ac6fc8bbdf6cfd0a50`)
-  with a **round-trip proof**: `git archive ee371182 | tar -x` into a scratch dir (6,904 files),
+  with a **round-trip proof**: `git archive bf35062e | tar -x` into a scratch dir (6,904 files),
   `git apply --check` → exit 0, `git apply` → exit 0, then SHA-256 of all 99 reconstructed files vs
   the live worktree → **99/99 BYTE-IDENTICAL, 0 mismatches**. Use
   `REAL_CONTENT_CHANGES_99.no-mode-flip.binary.patch` (`f4f79390…`) to port.
@@ -1028,14 +1028,14 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 ### 4.7 Ported fixes carrying open risk
 
 > These are risks **introduced or surfaced by the Wave 0 porting work** on
-> `codex/web-v1-integration` (11 commits, `ee371182 → 83b7fb39`, 134 files, +48,434/−920), plus the
-> four merges to `fa5630aa`. Every one is unpushed.
+> `codex/web-v1-integration` (11 commits, `bf35062e → bac1779b`, 134 files, +48,434/−920), plus the
+> four merges to `8ec05e21`. Every one is unpushed.
 
 ---
 
 **FBR-38 — The Liquid `renderLimit` was raised 250 → 5,000: a 20× relaxation of a documented DoS budget**
 
-- **Evidence:** doc 18 escalation **E-A** — ported in `d1c4fd7e` because it **provably repairs 4
+- **Evidence:** doc 18 escalation **E-A** — ported in `9f584157` because it **provably repairs 4
   failing tests** (theme-engine 1722 pass / 4 fail → **1730 pass / 0 fail**; 27 → 0
   *"template render limit exceeded"*). Root cause: LiquidJS `renderLimit` is a **wall-clock** budget,
   so concurrent sections starved each other, rendering product/collection/search templates as an empty
@@ -1053,9 +1053,9 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 **FBR-39 — The two highest-value storefront security fixes have NO executed test**
 
-- **Evidence:** doc 18 escalation **E-B**. The fixes: (1) `d5562c75` closes **cross-tenant handle
+- **Evidence:** doc 18 escalation **E-B**. The fixes: (1) `c331f929` closes **cross-tenant handle
   resolution** — one handle could resolve to two different tenants and return an arbitrary one,
-  because `subdomain` and `store_name` are unique only within their own column; (2) `54b2401d` makes
+  because `subdomain` and `store_name` are unique only within their own column; (2) `f8b04288` makes
   the storefront **fail closed** on unresolved store access (it previously **failed OPEN**) and gates
   `/preview`, which had served a full render of **any** store — password-gated, preview-only, offline,
   or unpublished — to any anonymous caller. Both rest on **review plus adjacent-source corroboration
@@ -1131,7 +1131,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 
 **FBR-49 — Two validator regressions were introduced by the porting work and caught only by running validators individually**
 
-- **Evidence:** doc 18 — commit `83b7fb39` fixes (a) `sidebar-navigation.stories.tsx` importing an
+- **Evidence:** doc 18 — commit `bac1779b` fixes (a) `sidebar-navigation.stories.tsx` importing an
   undeclared `@storybook` package (**ARCH-R15**), and (b) three ported documents quoting a fixture
   secret literal, tripping `environment-validator`. **They were found by running all 108 gate-lane
   validators individually — the gate itself fail-fasts at #6 and never reaches 102 of them.**
@@ -1220,7 +1220,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 - **Evidence:** doc 22 §3 / §9.1 — `scripts/utilities/local-stack-up.mjs:124-146` requires Node ≥ 22
   while the CI web runtimes are on the 20 line. Not a conflict between two authoritative documents; a
   conflict between CI configuration and a utility script. Resolved by pinning the repo to the CI
-  web-runtime line (`623718a1` — `.nvmrc`, `.node-version`, root `engines.node >= 20.9.0`) and
+  web-runtime line (`d926569e` — `.nvmrc`, `.node-version`, root `engines.node >= 20.9.0`) and
   **recording** the script conflict rather than changing the script.
 - **Axis A: S3.** **Axis B: NON-BLOCKING.**
 - **Wave:** Wave 1 hygiene. **Owner surface:** toolchain.
@@ -1291,7 +1291,7 @@ branch) · `MITIGATED` (risk reduced, root cause open) · `HUMAN_DECISION_REQUIR
 | FBR-38 | Liquid `renderLimit` 250 → 5,000 | S1 | BLOCKS-LAUNCH | OPEN |
 | FBR-39 | Storefront fail-closed fixes untested | S1 | BLOCKS-WAVE-1 | OPEN |
 | FBR-40 | Two env vars become hard launch prerequisites | S3 | BLOCKS-LAUNCH | OPEN |
-| FBR-41 | Full gate never run on `fa5630aa` | — | BLOCKS-WAVE-0 | OPEN |
+| FBR-41 | Full gate never run on `8ec05e21` | — | BLOCKS-WAVE-0 | OPEN |
 | FBR-42 | `local-stack-down.mjs` destroys evidence, real `HOME` | S2 | BLOCKS-WAVE-1 | OPEN |
 | FBR-43 | `local-stack-up.mjs` unrunnable (db reset, App Bridge seed, frozen apps) | S2 | BLOCKS-WAVE-1 | OPEN |
 | FBR-44 | `theme-tenant-isolation.test.mjs` false-green shape | S2 | BLOCKS-WAVE-1 | HUMAN_DECISION_REQUIRED |
@@ -1312,7 +1312,7 @@ In dependency order. Every item is evidence-bearing; none is a status update.
 
 1. **Push the four repaired branches and the integration branch.** Nothing in Wave 0 is real until it
    leaves this laptop (FBR-26, FBR-33). This is also the durability fix.
-2. **Run the full gate on `fa5630aa` in a disposable checkout** and publish the typed status matrix
+2. **Run the full gate on `8ec05e21` in a disposable checkout** and publish the typed status matrix
    (FBR-41, FBR-16).
 3. **Decide `branch-lag-guard`** — it currently fails every branch (FBR-28). The option DEPLOY-R1
    actually mandates is (a) fast-forward `main`, which also closes FBR-27.
@@ -1347,7 +1347,7 @@ In dependency order. Every item is evidence-bearing; none is a status update.
   `wrangler`, no provider or deploy command, no `git reset --hard` / `clean` / `stash` /
   `checkout --` / `restore` / `chmod` / force-push / history rewrite / `worktree remove` / `prune`.
 - **The original production-linked working tree is unchanged.** `git status --porcelain | wc -l` =
-  **6826** before and after (E3). `HEAD` = `ee3711829d857e986014c5811bb94d86ebc3d343` before and after
+  **6826** before and after (E3). `HEAD` = `bf35062eda22f4d881efd61fb1d36c8fc83baed1` before and after
   (E1). Branch = `stepup/main` (E2).
 - **The only write is this file**, at
   `docs/launch/web-v1-wave-0-2026-08-09/24_WAVE_0_FAILURE_AND_BLOCKER_REGISTER.md`, inside the

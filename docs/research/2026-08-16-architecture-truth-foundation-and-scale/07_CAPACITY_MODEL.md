@@ -2,7 +2,7 @@
 
 > **RESEARCH — NOT AUTHORITY — NOT AN IMPLEMENTATION ORDER**
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 >
 > Inputs: implementation facts from `03_CURRENT_ARCHITECTURE_AS_BUILT.md` (`VERIFIED-SOURCE` / `VERIFIED-CONFIG`), vendor limits from `10_VENDOR_LIMITS_AND_COSTS.md` (primary-source, accessed 2026-08-16), workload bands from `06_10M_WORKLOAD_DEFINITION.md`.
 >

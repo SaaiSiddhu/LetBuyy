@@ -1,6 +1,6 @@
 # 03 — MERCHANT APP AUDIT (apps/merchant-control-plane)
 
-**HEAD `cd5905be` · code-verified.** Web admin = the V1 merchant surface. (The Flutter mobile merchant app is V2 — login blocked on prod, push absent, signing unprovisioned.)
+**HEAD `c7c82847` · code-verified.** Web admin = the V1 merchant surface. (The Flutter mobile merchant app is V2 — login blocked on prod, push absent, signing unprovisioned.)
 
 | Capability | Status | Evidence |
 |---|---|---|

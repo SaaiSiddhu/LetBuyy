@@ -1,9 +1,9 @@
 # 13 — ANDROID / iOS STORE RELEASE CHECKLIST
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`), working tree dirty and user-owned
+**Audited commit:** `bf35062e` (`stepup/main`), working tree dirty and user-owned
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
-Generated/LCIS claims carry no authority here; every row is STATIC (source at `ee371182`),
+Generated/LCIS claims carry no authority here; every row is STATIC (source at `bf35062e`),
 LOCAL RUNTIME (a command run on this machine, output recorded), or HUMAN-PROVIDED.
 
 > **Store-policy facts in this document were read from Apple's and Google's own current
@@ -235,7 +235,7 @@ before submission. See [`11_INFRA_PROVIDER_AND_ENVIRONMENT_READINESS.md`](11_INF
 
 ## 8. Submission gate — nothing may be submitted until every row is YES
 
-| # | Gate | State at `ee371182` |
+| # | Gate | State at `bf35062e` |
 |---|---|---|
 | G-1 | `flutter analyze` clean | **YES** — LOCAL RUNTIME, "No issues found!" |
 | G-2 | `flutter test` fully green | **YES** — LOCAL RUNTIME, 164/164 (after this program's fix; was 159 with 5 failures) |

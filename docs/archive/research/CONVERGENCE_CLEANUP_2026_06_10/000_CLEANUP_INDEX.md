@@ -2,7 +2,7 @@
 
 **Research + decision phase only. No code, migrations, validators, architecture, or commits were created or modified; nothing was deleted. Read-only git throughout.** This program produces the definitive cleanup strategy **and** the safe Codex execution prompt, layered on the two prior audits (`REPOSITORY_TRUTH_AUDIT_2026_06_10/` 14 reports, `CONVERGENCE_AUDIT_2026_06_10/` 10 reports). Per request, all 9 phases were **re-derived fresh** and independently re-verified against source.
 
-- **Baseline (re-confirmed live):** branch `stepup/main`, HEAD `5cf9e64e`, +30 over `main`, working tree **512 D / 410 M / 79 ??**, 1,254 markdown files.
+- **Baseline (re-confirmed live):** branch `stepup/main`, HEAD `c4fc3cd6`, +30 over `main`, working tree **512 D / 410 M / 79 ??**, 1,254 markdown files.
 - **Result of fresh re-derivation:** the 14 strategic winners survive with **zero overturns**; key counts refined (917 `getSupabaseAdmin` occurrences across 99 files all in api-gateway; 79 nested AGENTS.md; 62 merchant-control-plane routes confirmed to be **BFF proxies**, not a second DB backend; `.DS_Store` ×11).
 
 ---
@@ -52,4 +52,4 @@ Convergence (commit/archive/delete/retarget/collapse) cannot fix the ~6 genuine 
 
 ## Provenance
 
-9 deliverables + seed · ~3,260 lines · fresh agent-based re-derivation on top of 24 prior reports · HEAD `5cf9e64e` · tree 512D/410M/79?? · 2026-06-10.
+9 deliverables + seed · ~3,260 lines · fresh agent-based re-derivation on top of 24 prior reports · HEAD `c4fc3cd6` · tree 512D/410M/79?? · 2026-06-10.

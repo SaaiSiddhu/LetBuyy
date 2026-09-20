@@ -1,6 +1,6 @@
 # Phase E — Rate Limit Matrix
 
-**HEAD `587dc988`. ✅ limited · ⚠️ bucket-only · ❌ gap.**
+**HEAD `ae383bb8`. ✅ limited · ⚠️ bucket-only · ❌ gap.**
 
 | Endpoint | Dedicated limiter | Turnstile | Status |
 |---|---|---|---|

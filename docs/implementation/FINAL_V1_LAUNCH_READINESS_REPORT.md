@@ -12,9 +12,9 @@ Explicitly out of scope per the program brief: Liquid migration/parity/canary, R
 
 | Item | Commit | What landed | Evidence |
 |------|--------|-------------|----------|
-| **LB-9 Appearance Bridge** | `6b940067` | `sites.site_settings` (snake_case) selected by the gateway and mapped into the camelCase storefront theme tokens (`primary_color→primaryColor`, `font_family→fontFamily`+`headingFontFamily`, `border_radius→borderRadius`, `logo_url`), merchant appearance wins the merge → `layout.tsx :root`. | `tests/launch/lb9-appearance-bridge.test.mjs` (3) |
-| **LB-10 Email Dispatch** | core `5fcf8ced`, dispatch `f84b4d65` | `order_cancelled` / `order_refunded` templates + `planEmailNotificationForEvent` (core); producer `enqueueOrderLifecycleEmail` renders + enqueues `email.order_cancelled` / `email.order_refunded`; `PATCH /orders/:id` dispatches best-effort on terminal status; queue-workers recognises both jobs → existing Resend consumer. | `tests/launch/lb10-order-emails.test.mjs` (3), `tests/launch/lb10-dispatch.test.mjs` (4) |
-| **LB-11 Gift Cards COMPLETE** | `f5c72bb5` | Issuance + lifecycle cut over to the canonical `gift_card_accounts` + `gift_card_ledger_entries` + `gift_card_redemptions` model the checkout already redeems from. See §3. | `tests/launch/lb11-giftcards.test.mjs` (11), migration 173, money B3-B5 (4) |
+| **LB-9 Appearance Bridge** | `550bb1aa` | `sites.site_settings` (snake_case) selected by the gateway and mapped into the camelCase storefront theme tokens (`primary_color→primaryColor`, `font_family→fontFamily`+`headingFontFamily`, `border_radius→borderRadius`, `logo_url`), merchant appearance wins the merge → `layout.tsx :root`. | `tests/launch/lb9-appearance-bridge.test.mjs` (3) |
+| **LB-10 Email Dispatch** | core `bad39b21`, dispatch `5254cb6e` | `order_cancelled` / `order_refunded` templates + `planEmailNotificationForEvent` (core); producer `enqueueOrderLifecycleEmail` renders + enqueues `email.order_cancelled` / `email.order_refunded`; `PATCH /orders/:id` dispatches best-effort on terminal status; queue-workers recognises both jobs → existing Resend consumer. | `tests/launch/lb10-order-emails.test.mjs` (3), `tests/launch/lb10-dispatch.test.mjs` (4) |
+| **LB-11 Gift Cards COMPLETE** | `7261b6c0` | Issuance + lifecycle cut over to the canonical `gift_card_accounts` + `gift_card_ledger_entries` + `gift_card_redemptions` model the checkout already redeems from. See §3. | `tests/launch/lb11-giftcards.test.mjs` (11), migration 173, money B3-B5 (4) |
 
 ---
 

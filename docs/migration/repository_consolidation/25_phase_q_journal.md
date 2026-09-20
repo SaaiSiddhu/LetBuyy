@@ -9,11 +9,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
 | S0 | Preflight | COMPLETE | (this commit) |
-| S1 | Re-contain the three literal-carrying files (Part A) | COMPLETE | `aedfd9eb` |
-| S2 | Investigate the two flagged-but-clean files; environment-validator before/after | COMPLETE — 2 additional real secrets found, contained | `1aa27719` |
+| S1 | Re-contain the three literal-carrying files (Part A) | COMPLETE | `fa87d09e` |
+| S2 | Investigate the two flagged-but-clean files; environment-validator before/after | COMPLETE — 2 additional real secrets found, contained | `7b867c12` |
 | S3 | Part B evidence — the four-option table | COMPLETE | (folded into S4's commit) |
-| S4 | Part B execution — migrate all 15 font_awesome_flutter sites | COMPLETE | `02ad9b68` |
-| S5 | Remove unused font_awesome_flutter declarations (ui_kit, marketplace_ui_kit) | COMPLETE | `4fa55ead` |
+| S4 | Part B execution — migrate all 15 font_awesome_flutter sites | COMPLETE | `f13717bf` |
+| S5 | Remove unused font_awesome_flutter declarations (ui_kit, marketplace_ui_kit) | COMPLETE | `924ba5c9` |
 | S6 | Prove compilation + full regression sweep + governance gate | COMPLETE — real build blocked by unrelated pre-existing Android toolchain issue; probe fallback used, before/after captured | (this commit) |
 | S7 | Documentation | COMPLETE | (this commit) |
 
@@ -23,11 +23,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 ### Baseline reconciliation
 
-CTO baseline: `HEAD 9420221c  tracked 8365  changed 39  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. Toolchain Flutter 3.44.8 / Dart 3.12.2. Test suites: merchant_app 172, marketplace_core 165, marketplace_ui_kit 54, customer_app 13, admin_app 11 (415 total).
+CTO baseline: `HEAD 21e6d465  tracked 8365  changed 39  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. Toolchain Flutter 3.44.8 / Dart 3.12.2. Test suites: merchant_app 172, marketplace_core 165, marketplace_ui_kit 54, customer_app 13, admin_app 11 (415 total).
 
 Measured:
 ```
-HEAD:      9420221ca01683ee1274e60a524c040c07b0d69b  (EXACT MATCH)
+HEAD:      21e6d465eead634b2bbe65ce41ff6ad632ea364a  (EXACT MATCH)
 tracked:   8365                                        (EXACT MATCH)
 staged:    0                                            (EXACT MATCH)
 changed:   38  (CTO: 39 — the same recurring 1-file bookkeeping gap diagnosed in every prior phase's own S0 entry since Phase N; not re-derived here)
@@ -79,7 +79,7 @@ Read the sibling already-fixed files first rather than inventing a pattern: `pac
 
 A "redact before display" `sed -E "s/(=\s*')[^']*(')/\1[REDACTED]\2/g"` command silently failed to match (root cause not fully diagnosed; consistent with a BSD/macOS `sed -E` backreference quirk) and printed the full, unredacted content of `razorpay_config.dart` and `gemini_config.dart` — including both Razorpay values and the Gemini key — directly into this session's own tool output. Disclosed immediately, not minimized. Both values were already dead (owner-deleted at the provider, per this phase's own stated context) and already exposed in both GitHub remotes' published history, so this created no new external exposure — but it violated this phase's explicit "never display a literal" instruction and repeats a failure-mode this engagement has hit before. Switched to strictly content-blind methods (`grep -c`, `awk 'NR==X' | grep -c`, blind line-anchored `sed -i`) for all remaining Part A/Stage 2 work; no further incident of this specific kind (see S2 below for a second, smaller one).
 
-**S1 verdict: COMPLETE. Checkpoint: `aedfd9eb`.**
+**S1 verdict: COMPLETE. Checkpoint: `fa87d09e`.**
 
 ---
 
@@ -93,7 +93,7 @@ A "redact before display" `sed -E "s/(=\s*')[^']*(')/\1[REDACTED]\2/g"` command 
 
 Content-blind `grep -ocE` against all 5 patterns found 3 matches for `rzp_(live|test)_` (0 for the other 4). Line-number/prefix-only extraction (never displaying full lines) found: line 49 = `rzp_live_`, line 89 = `rzp_test_`, line 122 = `rzp_test_`.
 
-- **Line 49** (`openUpiPayment`'s checkout options map): confirmed genuine via content-blind SHA-256 hash comparison against `razorpay_config.dart`'s original pre-fix value (from `git show b2558ba1:...`) — **different hash, i.e. a distinct live Razorpay key**, not a duplicate of the one already fixed. Contained using the existing `RAZORPAY_KEY_ID` name (same purpose, different value).
+- **Line 49** (`openUpiPayment`'s checkout options map): confirmed genuine via content-blind SHA-256 hash comparison against `razorpay_config.dart`'s original pre-fix value (from `git show 1149e12a:...`) — **different hash, i.e. a distinct live Razorpay key**, not a duplicate of the one already fixed. Contained using the existing `RAZORPAY_KEY_ID` name (same purpose, different value).
 - **Lines 89, 122** (`openCardPayment`, `openAllPaymentMethods`): confirmed via exact-string `grep -c "rzp_test_1DP5mmOlF5G5ag"` = 2 to be Razorpay's own **publicly-documented sample test key**, already classified as a non-secret in this same engagement's Phase M finding (`12_final_verification.md`'s "Security finding" section, where the identical value was found — and fixed — in `services/compatibility/firebase_bridge/src/razorpayService.ts:21`). Left unchanged in this file, per this phase's own instruction: "If a file is flagged for a pattern that is not a secret, that is a finding to record, not a file to edit." `environment-validator.mjs` still flags this file post-fix — an expected, confirmed false positive on a public value, not a real finding.
 
 **Disclosed incident (second, smaller):** a `Read` call with `offset=78, limit=14` (intended range: lines 78-91, but I misjudged that this range included the flagged line 89) displayed `'key': 'rzp_test_1DP5mmOlF5G5ag',` directly in tool output. Disclosed immediately. Assessed as low-severity — this is the same publicly-documented Razorpay sample key described above, not a real credential — but it repeats the discipline break from S1, and is recorded as such rather than excused because the value happened to be harmless. Tightened back to content-blind-only methods (hash comparison, `awk 'NR==X' | grep -c`) for the remainder of the investigation.
@@ -140,7 +140,7 @@ services/compatibility/firebase_bridge/src/adminAuth.ts
 
 12 Firebase-client-identifier files (public per Google's documented model, already classified as non-secrets in `00c_credential_exposure_and_rotation.md` and re-confirmed in `12_final_verification.md`) + `adminAuth.ts` (same class, TypeScript, out of this Dart-focused phase's scope) + `custom_payment_service.dart` (the confirmed public-sample false positive above). **The validator does not fully pass** — it was never going to, given these known, pre-existing, already-classified false positives with no exemption mechanism in the validator's own source. This is a validator-tuning question for a later phase, exactly as the brief anticipated.
 
-**S2 verdict: COMPLETE — scope expanded beyond the brief's 3 named files by measured evidence (2 additional real secrets found and contained), 2 disclosed process incidents (both assessed low-severity, both non-repeating after correction). Checkpoint: `1aa27719`.**
+**S2 verdict: COMPLETE — scope expanded beyond the brief's 3 named files by measured evidence (2 additional real secrets found and contained), 2 disclosed process incidents (both assessed low-severity, both non-repeating after correction). Checkpoint: `7b867c12`.**
 
 ---
 
@@ -174,7 +174,7 @@ One incidental fix, unrelated to font_awesome itself: `icon_picker_helper.dart`'
 
 Zero sites were left unmigrated. Nothing required a genuine rendered-behaviour trade-off — the `.data` bridge covered every case B1's evidence gathering worried might force one.
 
-**S4 verdict: COMPLETE. Checkpoint: `02ad9b68`.**
+**S4 verdict: COMPLETE. Checkpoint: `f13717bf`.**
 
 ---
 
@@ -182,7 +182,7 @@ Zero sites were left unmigrated. Nothing required a genuine rendered-behaviour t
 
 Verified (not assumed) via `grep -rl "package:font_awesome_flutter" packages/dart/ui_kit/lib packages/dart/marketplace_ui_kit/lib` returning empty for both — zero imports in either package despite both declaring the dependency at `^10.7.0`. Removed the declaration line from both `pubspec.yaml`s. This was also load-bearing for S4's `pub get` to succeed at all (the unified workspace solver requires one font_awesome_flutter version across all 20 members), but is committed separately per this phase's own separate-concerns instruction, since it is a pure unused-dependency removal, not a functional migration.
 
-**S5 verdict: COMPLETE. Checkpoint: `4fa55ead`.**
+**S5 verdict: COMPLETE. Checkpoint: `924ba5c9`.**
 
 ---
 
@@ -243,6 +243,6 @@ Confirmed the documented node_modules hazard fired exactly as described: root `n
 
 ### 6.5 — Scope discipline
 
-`git diff 9420221c..HEAD --name-only -- '*pubspec.yaml'` → exactly 4 files: `apps/admin_app/pubspec.yaml`, `apps/customer_app/pubspec.yaml`, `packages/dart/marketplace_ui_kit/pubspec.yaml`, `packages/dart/ui_kit/pubspec.yaml`. All 4 are font_awesome_flutter-only changes (2 version bumps, 2 unused-declaration removals) — confirmed via full `git diff` content review, not just the file list. No other pubspec anywhere in the repo was touched.
+`git diff 21e6d465..HEAD --name-only -- '*pubspec.yaml'` → exactly 4 files: `apps/admin_app/pubspec.yaml`, `apps/customer_app/pubspec.yaml`, `packages/dart/marketplace_ui_kit/pubspec.yaml`, `packages/dart/ui_kit/pubspec.yaml`. All 4 are font_awesome_flutter-only changes (2 version bumps, 2 unused-declaration removals) — confirmed via full `git diff` content review, not just the file list. No other pubspec anywhere in the repo was touched.
 
 **S6 verdict: COMPLETE. Real build inconclusive (unrelated pre-existing Android/Kotlin toolchain issue); probe fallback fully proves the Dart-level fix with genuine before-failure/after-pass evidence. Full regression clean. Gate matches baseline exactly, zero new failures. Scope discipline confirmed.**

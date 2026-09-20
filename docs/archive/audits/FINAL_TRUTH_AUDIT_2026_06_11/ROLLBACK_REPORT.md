@@ -5,13 +5,13 @@
 | Scope | Forward action | Rollback path | Status |
 |---|---|---|---|
 | A0 prompt registration | Added the final convergence prompt registry row and tracked the final-truth audit bundle. | Revert the A0 commit. | Ready. |
-| A0 local snapshot tags | Created local annotated tags `convergence-cabe148c` and `pre-promotion-origin-41b6ea49`. | Tags are local-only; delete them only if the A0 snapshot is abandoned. | Ready. |
+| A0 local snapshot tags | Created local annotated tags `convergence-3da1416c` and `pre-promotion-origin-c2547049`. | Tags are local-only; delete them only if the A0 snapshot is abandoned. | Ready. |
 | A1 verification | No runtime/schema change. | No rollback required beyond reverting the evidence-only A1 commit. | Ready. |
 | A2 runbook fix | Updated remote promotion instructions and recorded `SKIP-A2-REMOTE-BRANCH-CONVERGENCE`. | Revert the A2 commit. | Ready; Codex changed no remote refs. |
 | A3 deploy gate wiring | Added governance-gate prerequisites, untracked migration rejection, production mobile-bff Turnstile secret wiring, and validator/test enforcement. | Revert the A3 commit. | Ready; Codex did not run deployment or mutate GitHub branch protection. |
 | A4/A5 G4 human block | Recorded that production promotion, live smoke, and post-promotion audit are skipped-human/blocking seams. | No rollback required for remote work because none was performed. Revert this evidence row if superseded by real G4 evidence. | Ready. |
 | A5 branch-lag monitor prep | Added scheduled branch-lag monitor workflow and validator/test enforcement. | Revert the A5 monitor commit. | Ready; Codex did not run or claim a live scheduled GitHub Actions result. |
-| A5 ledger freeze backfill | Backfilled stale pre-freeze ledger commit cells to `e1d6fb18`. | Revert the A5 ledger backfill commit. | Ready; docs-only evidence change. |
+| A5 ledger freeze backfill | Backfilled stale pre-freeze ledger commit cells to `72e80c2b`. | Revert the A5 ledger backfill commit. | Ready; docs-only evidence change. |
 | A4 G4 atom safety | Required checkout signing in production deploy, removed provider-money secret provisioning from the A4 go-live atom, added validator/test coverage, and wrote the human execution packet. | Revert the A4 atom-safety commit. | Ready; Codex changed no remote refs, provider secrets, DNS, production database, or deployment. |
 
 ## Promotion Rollback Requirements

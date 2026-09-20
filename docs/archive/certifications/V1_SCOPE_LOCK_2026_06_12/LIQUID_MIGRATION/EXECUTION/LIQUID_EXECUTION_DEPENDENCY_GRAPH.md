@@ -1,6 +1,6 @@
 # LIQUID_EXECUTION_DEPENDENCY_GRAPH.md
 
-**Full Liquid V1 · L0→L18 · HEAD `0b8a56e7` · plan-only.**
+**Full Liquid V1 · L0→L18 · HEAD `140a73db` · plan-only.**
 
 ```
 L0 Foundation Freeze

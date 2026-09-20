@@ -1,6 +1,6 @@
 # PHASE L16 — PRODUCTION ROLLOUT
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **Contains the human ARB governance act.**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **Contains the human ARB governance act.**
 
 1. **Purpose.** Make Liquid the default renderer for the cohort/platform — the constitutional platform-wide flip.
 2. **Repository Reality.** `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false` (`theme-governance.ts:14`); platform flip is `THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION` `status:'deferred', authority:'ARB'` (`:16-21`); `theme-governance-validator.mjs:57-67` fails the gate unless these stay as-is. `proxy.ts:171` emits `X-Lb-Render-Engine` for monitoring.

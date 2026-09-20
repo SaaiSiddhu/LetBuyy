@@ -108,7 +108,7 @@ All duration values below are labeled **PROPOSED**. All live metrics are labeled
 | Property | Value |
 |---|---|
 | **Activation lever** | Set canary alias in `sites.template_config` for the internal test store: `{ "liquidRenderingCanary": "true" }` — or publish a Liquid release for that store. |
-| **Entry criteria** | All Gate 0 pre-conditions in ARB_APPROVAL_PACKAGE.md §6 are met: I-F1 CLOSED (done, commit 4eaf3e84); migration 188 applied to production DB; `wrangler tail` log capture configured. |
+| **Entry criteria** | All Gate 0 pre-conditions in ARB_APPROVAL_PACKAGE.md §6 are met: I-F1 CLOSED (done, commit dbcf173a); migration 188 applied to production DB; `wrangler tail` log capture configured. |
 | **PROPOSED soak duration** | 2 days minimum. |
 | **Success metrics** | (1) `lb:canary:render` events observed for the test store with `engine='liquid'` — CONNECTED: emission at `composition-engine.tsx:663–677`. (2) Zero `lb:canary:render:fallback` events — CONNECTED: emission at `composition-engine.tsx:628–633`. (3) No `lb:liquid:block-error` events — CONNECTED: emission at `theme-renderer.ts:777`. (4) Page renders visually correct (manual verification or synthetic check for `<!-- lb:section-error -->` in HTML). |
 | **Live metric status** | `lb:canary:render` log: CONNECTED (emission point committed); live ingestion pipeline: NOT-CONNECTED (requires Cloudflare Logpush or `wrangler tail --format=json`, see OBSERVABILITY_AND_ALERTING.md §5.1). |
@@ -254,7 +254,7 @@ The following must be satisfied before any store is activated (Stage 0 entry):
 
 | Item | Status | Owner |
 |---|---|---|
-| I-F1 DOMPurify clobbering fix: `name="fullName"` in `theme-bundle.ts:2433` | **CLOSED** (commit 4eaf3e84; A11Y-5 green) | Engineering — done |
+| I-F1 DOMPurify clobbering fix: `name="fullName"` in `theme-bundle.ts:2433` | **CLOSED** (commit dbcf173a; A11Y-5 green) | Engineering — done |
 | Migration 188 (`188_letbuyy_core_theme_row.sql`) applied to production DB | Required for B-6 CLOSED in production | Operations |
 | `wrangler tail` log capture confirmed working against production Worker | Minimum viable observability | Operations |
 | UC-19: ARB decision on `FEATURE_LIQUID` gateway flag (wire as kill switch or document as dormant) | OPEN — ARB decision required | ARB + Engineering |

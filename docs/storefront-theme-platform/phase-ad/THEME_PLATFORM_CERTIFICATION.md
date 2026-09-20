@@ -5,8 +5,8 @@
 **Phases certified:** M through AC (15 phases)  
 **Certification date:** 2026-07-11  
 **Branch:** `stepup/main`  
-**Program baseline (Phase M):** `9186188e`  
-**Program close at certification (Phase AC):** `83d61e0a`  
+**Program baseline (Phase M):** `ff6720a9`  
+**Program close at certification (Phase AC):** `7654927d`  
 **Author:** AD certification sub-agent — read-only, no source edits, no git commands  
 **Audience:** ARB, engineering leadership, security reviewers, Phase AE authors  
 
@@ -34,7 +34,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase M — Repository Truth + Shopify Parity Baseline  
-**Commit anchor:** `9186188e`
+**Commit anchor:** `ff6720a9`
 
 **What shipped:** Discovery-only phase. No source edits. Produced 12 certification documents establishing the canonical state of the repository before the program began. Key findings: SHOPIFY_PARITY_MATRIX.md mapping 70 capability rows (37 COMPLETE / 15 PARTIAL / 13 MISSING / 4 NOT_CONNECTED / 1 STUB); SECURITY_MODEL.md inventorying the DOMPurify surface and Liquid SSTI controls; DATA_MODEL.md mapping the 5-table theme persistence schema; PREFLIGHT.md declaring `THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false` as the program invariant; RISK_REGISTER.md seeding RISK-SEC-001 (wide-open `theme_purchases` RLS, HIGH) and RISK-GOV-001 (tenant-registry drift, MEDIUM).
 
@@ -69,7 +69,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase P — Drafts / Revisions / Publish / Rollback  
-**Commit anchor:** `fa4e4786`
+**Commit anchor:** `1053d611`
 
 **What shipped:**  
 - `database/supabase/migrations/189_theme_persistence_idempotency.sql` — nullable `idempotency_key` + partial unique index on `theme_releases` (ARB-gated for production apply).  
@@ -81,7 +81,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase Q — Merchant Theme Library  
-**Commit anchor:** `016da8f0`
+**Commit anchor:** `a0990ce7`
 
 **What shipped:**  
 - `database/supabase/migrations/190_theme_library_q.sql` — `owned_by_site_id uuid NULL` + `is_site_private boolean DEFAULT false` on `themes`; two indexes (additive, idempotent; ARB-gated for production apply).  
@@ -140,7 +140,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase V — Template System  
-**Commit anchor:** `36d6f342` (Lane A + hardening), `e9462067` (Lane B)
+**Commit anchor:** `44497fbd` (Lane A + hardening), `8de31807` (Lane B)
 
 **What shipped:**  
 - `packages/theme-engine/src/template-registry.ts` (600 lines) — `TEMPLATE_TYPE_REGISTRY` (23 base keys), `parseTemplateKey`, `validateTemplateKey` (6 constraints + consecutive-slash hardening), `resolveAlternateTemplate`, `getAllowedDropsForTemplate`, `findExcessiveVariantCounts`, `MAX_TEMPLATE_VARIANTS_PER_TYPE=20`.  
@@ -233,7 +233,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase AB — Safe Theme Updates / Versioning  
-**Commit anchor:** `016da8f0` (referenced in PHASE_AB_REPORT.md)
+**Commit anchor:** `a0990ce7` (referenced in PHASE_AB_REPORT.md)
 
 **What shipped:**  
 - `packages/theme-engine/src/theme-safe-update.ts` (862 lines) — `planThemeSafeUpdate` (pure, deterministic), `computeThemeUpdateDiff`, `classifyUpdateSetting`, `UpdateVersionRejectedError`, `UpdateDowngradeError`; NO-DATA-LOSS LAW enforced; version flow: G4 gate → direction check → G migration → per-section classify+carry → `parseThemeDocument`; W-binding check fires before token check; T nested blocks carried recursively; retained sections with dropped block types surface `lostContent.blocks` in diff.conflicts.  
@@ -248,7 +248,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 ---
 
 ### Phase AC — AI-Assisted Customization  
-**Commit anchor:** `83d61e0a`
+**Commit anchor:** `7654927d`
 
 **What shipped:**  
 - `packages/theme-engine/src/ai-color-system.ts` — WCAG 2.1 AA contrast math (Weber-Fechner model); parametric palette generator; deterministic, no LLM call.  
@@ -270,7 +270,7 @@ Each entry lists the commit anchor (where available), the primary deliverables, 
 
 ## Section 3 — Whole-Program Gate Matrix
 
-All counts measured at `83d61e0a` (HEAD, Phase AC close).
+All counts measured at `7654927d` (HEAD, Phase AC close).
 
 | Gate | Command | Result | PASS / FAIL / TOTAL | Notes |
 |------|---------|--------|---------------------|-------|
@@ -288,7 +288,7 @@ All counts measured at `83d61e0a` (HEAD, Phase AC close).
 | validate-governance tenant | `node scripts/validate-governance.mjs` (sub-gate) | FAIL | EXIT=1 | **Pre-existing RISK-GOV-001 — see §3.2** |
 | sequential-migration-validator | `node scripts/validators/sequential-migration-validator.mjs` | FAIL | EXIT=1 | **Pre-existing untracked WIP 186/187 — see §3.2** |
 
-**Count note (storefront-runtime 915 vs PROGRAM_STATE ~795):** PROGRAM_STATE recorded 795 passing storefront-runtime tests during phases S → AB. The actual count at HEAD is 915. The delta is 120 lb-l static-contract tests in `tests/launch/lb-l-ai-theme-platform.test.mjs` (created in Phase L commit `29f87115`). These tests reference Phase-AC files (`ai-intent-parser.ts`, `AICustomizationPanel.tsx`, `AINotConnectedResult`) that did not exist until Phase AC. They failed and were excluded from passing counts in phases S → AB; Phase AC committed those files, resolving all 120. The 915 count is the stable post-AC baseline; 0 failures.
+**Count note (storefront-runtime 915 vs PROGRAM_STATE ~795):** PROGRAM_STATE recorded 795 passing storefront-runtime tests during phases S → AB. The actual count at HEAD is 915. The delta is 120 lb-l static-contract tests in `tests/launch/lb-l-ai-theme-platform.test.mjs` (created in Phase L commit `8c1ac94b`). These tests reference Phase-AC files (`ai-intent-parser.ts`, `AICustomizationPanel.tsx`, `AINotConnectedResult`) that did not exist until Phase AC. They failed and were excluded from passing counts in phases S → AB; Phase AC committed those files, resolving all 120. The 915 count is the stable post-AC baseline; 0 failures.
 
 ---
 
@@ -302,7 +302,7 @@ These 3 failures are CONFIRMED FOREIGN PRE-EXISTING user WIP. No M→AC commit t
 | `not ok 130` | `executive analytics migration creates rollup tables with service-role and super-admin RLS` | `ENOENT` for `129_internal_os_executive_analytics_rollups.sql` — migration file absent from user WIP (`internal-os-executive-analytics.test.ts`) | **NO** — `internal-os-executive-analytics.test.ts` not modified by any M→AC commit |
 | `not ok 298` | `storefront runtime no longer owns payment route handlers` | Regex `/storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/` not matched — payment routing refactor in user WIP (`payments.test.ts`) | **NO** — `payments.test.ts` not modified by any M→AC commit |
 
-**Blast-radius:** these failures have no dependency path through any M→AC deliverable. `git diff 9186188e..HEAD` on `ai.test.ts`, `internal-os-executive-analytics.test.ts`, and `payments.test.ts` returns 0 diff lines.
+**Blast-radius:** these failures have no dependency path through any M→AC deliverable. `git diff ff6720a9..HEAD` on `ai.test.ts`, `internal-os-executive-analytics.test.ts`, and `payments.test.ts` returns 0 diff lines.
 
 ---
 
@@ -312,13 +312,13 @@ These 3 failures are CONFIRMED FOREIGN PRE-EXISTING user WIP. No M→AC commit t
 `services/api-gateway/src/tenant/tenant-tables.registry.ts` is out of sync with the schema-derived tenant table registry. This failure pre-dates Phase M. No M→AC commit touched `tenant-tables.registry.ts`. The anti-fabrication sub-gate PASSES (1319 active source files, 0 temporary entries). Remediation: run `scripts/generators/generate-tenant-table-registry.mjs`. This is a foreign-WIP concern; the M→AC program documented but did not worsen it.
 
 **sequential-migration-validator — untracked migrations 186 and 187:**  
-`database/supabase/migrations/186_v1_scale_commerce_os_coming_soon.sql` and `187_v1_sites_site_settings.sql` are on disk but not committed. Both are explicitly listed in PROGRAM_STATE.md as FOREIGN user WIP. No M→AC commit added or modified either file. The program's own migrations are: 188 (letbuyy-core theme row, committed `40741cb8`), 189 (theme persistence idempotency, committed Phase P), 190 (theme library Q, committed Phase Q) — all theme-scoped, all committed, all require ARB/human sign-off before production application.
+`database/supabase/migrations/186_v1_scale_commerce_os_coming_soon.sql` and `187_v1_sites_site_settings.sql` are on disk but not committed. Both are explicitly listed in PROGRAM_STATE.md as FOREIGN user WIP. No M→AC commit added or modified either file. The program's own migrations are: 188 (letbuyy-core theme row, committed `7cdd42a1`), 189 (theme persistence idempotency, committed Phase P), 190 (theme library Q, committed Phase Q) — all theme-scoped, all committed, all require ARB/human sign-off before production application.
 
 ---
 
 ## Section 4 — Integrity Attestation
 
-Four seams that must remain unchanged for the M→AC program window. Evidence is based on `git diff 9186188e..HEAD` plus direct file reads at HEAD.
+Four seams that must remain unchanged for the M→AC program window. Evidence is based on `git diff ff6720a9..HEAD` plus direct file reads at HEAD.
 
 ---
 
@@ -330,7 +330,7 @@ Four seams that must remain unchanged for the M→AC program window. Evidence is
 Evidence:
 - Direct file read at HEAD confirms line 14 reads exactly the above.
 - `theme-governance-validator.mjs` output: *"Liquid default OFF"*.
-- `git diff 9186188e..HEAD -- packages/theme-engine/src/theme-governance.ts` shows only additive import lines from new phase symbols; line 14 is **not in any diff hunk**.
+- `git diff ff6720a9..HEAD -- packages/theme-engine/src/theme-governance.ts` shows only additive import lines from new phase symbols; line 14 is **not in any diff hunk**.
 - The `THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION` block at line 16 records `authority: 'ARB'` and `status: 'deferred'`.
 
 **The flag has NOT been flipped. Liquid rendering is OFF for all stores by default. ARB must explicitly authorise the flip before any production deployment enables Liquid rendering by default. This certification does not authorise the flip.**
@@ -378,7 +378,7 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
 
 **Seam:** `services/api-gateway/src/execution/theme-execution.adapter.ts:699–710`
 
-The `db.rpc('publish_theme_release', { ... })` call was introduced in Phase P (`fa4e4786`) with 10 named parameters:
+The `db.rpc('publish_theme_release', { ... })` call was introduced in Phase P (`1053d611`) with 10 named parameters:
 
 ```typescript
 const { data, error } = await this.db.rpc('publish_theme_release', {
@@ -395,7 +395,7 @@ const { data, error } = await this.db.rpc('publish_theme_release', {
 });
 ```
 
-`git diff fa4e4786..HEAD` on `theme-execution.adapter.ts` shows **zero `+`/`−` lines** for `rpc('publish_theme_release'` or any `p_` parameter.
+`git diff 1053d611..HEAD` on `theme-execution.adapter.ts` shows **zero `+`/`−` lines** for `rpc('publish_theme_release'` or any `p_` parameter.
 
 The Phase AB report mentions adding `p_expected_current_release_version` as an ARB-gated follow-up — **that parameter is NOT present in the current call**; it is planned, not implemented. **RPC call signature is unchanged.**
 
@@ -405,7 +405,7 @@ The Phase AB report mentions adding `p_expected_current_release_version` as an A
 
 **Seam:** `services/api-gateway/src/routes/payments.ts`, `services/api-gateway/src/routes/checkout/` directory, `services/api-gateway/src/routes/orders.ts`
 
-`git diff 9186188e..HEAD` on each of the above paths returns **0 diff lines**. `git log 9186188e..HEAD` on those paths returns **no commits**. All commits to `services/api-gateway/src/routes/` in the M→AC window are theme-scoped (`feat(theme): ...` commit messages).
+`git diff ff6720a9..HEAD` on each of the above paths returns **0 diff lines**. `git log ff6720a9..HEAD` on those paths returns **no commits**. All commits to `services/api-gateway/src/routes/` in the M→AC window are theme-scoped (`feat(theme): ...` commit messages).
 
 The six canonical money RPCs (`create_checkout_order`, `confirm_order_payment_with_ledger`, `complete_order_refund`, `issue_gift_card`, `set_gift_card_status`, `restore_gift_card_on_refund`) do not appear as `rpc()` call sites in `packages/theme-engine/src/`. Grep returns 2 hits — both in test comments, not RPC invocations.
 
@@ -541,10 +541,10 @@ The minimum ARB package for flipping the Liquid canary to production default:
 | sequential-migration-validator | EXIT 1 (186/187 untracked) | EXIT 1 (186/187 pre-existing WIP) | YES — pre-existing |
 | `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` | `false` at line 14 | `false` at line 14 | YES |
 | `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG` | Unchanged since Phase M | No `+`/`−` lines in any M→AC diff | YES |
-| `publish_theme_release` RPC signature | Unchanged since Phase P | No `+`/`−` lines since `fa4e4786` | YES |
+| `publish_theme_release` RPC signature | Unchanged since Phase P | No `+`/`−` lines since `1053d611` | YES |
 | Money ledger / checkout routes | Untouched | 0 diff lines in entire M→AC window | YES |
 | Fabrication check (LLM imports in theme-engine/src/) | ZERO | ZERO | YES |
 
 ---
 
-*This document was produced on `stepup/main` at HEAD `83d61e0a` by the Phase AD read-only certification sub-agent. No source files were modified. No git commands were executed. The orchestrator is responsible for committing this document under the programme's two-lane merge rule. The PHASE_AD_CERTIFICATION.md in this same directory is the phase-specific gate report; this document is the whole-program certification covering all 15 phases (M → AC).*
+*This document was produced on `stepup/main` at HEAD `7654927d` by the Phase AD read-only certification sub-agent. No source files were modified. No git commands were executed. The orchestrator is responsible for committing this document under the programme's two-lane merge rule. The PHASE_AD_CERTIFICATION.md in this same directory is the phase-specific gate report; this document is the whole-program certification covering all 15 phases (M → AC).*

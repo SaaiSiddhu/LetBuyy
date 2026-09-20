@@ -1,6 +1,6 @@
 # Production Plan
 
-**HEAD `587dc988`. The definitive path to production. Verdict: NOT READY today; READY FOR PILOT after the gate below.**
+**HEAD `ae383bb8`. The definitive path to production. Verdict: NOT READY today; READY FOR PILOT after the gate below.**
 
 ## The gate to production (must all be true)
 | # | Gate | Owner | Evidence when done |
@@ -31,4 +31,4 @@ Liquid renderer (React urban-kicks is V1), app marketplace, developer/theme mark
 ## Final certification verdict
 **NOT READY** for 100 beta merchants + real money today (unshipped, unprovisioned, 3 code defects, no paging). **READY FOR PILOT** once gates 1–16 close (~3–4 weeks). The platform is architecturally sound and money/identity/tenancy-certified; the remaining work is operational + three small fixes — not redesign.
 
-*Correction of record: the earlier "S0 — LB-1 routing regression / storefronts unreachable" was a false positive. Next.js 16 renamed the middleware entry to `proxy.ts`; LB-1 is satisfied. Certified against code at HEAD `587dc988`.*
+*Correction of record: the earlier "S0 — LB-1 routing regression / storefronts unreachable" was a false positive. Next.js 16 renamed the middleware entry to `proxy.ts`; LB-1 is satisfied. Certified against code at HEAD `ae383bb8`.*

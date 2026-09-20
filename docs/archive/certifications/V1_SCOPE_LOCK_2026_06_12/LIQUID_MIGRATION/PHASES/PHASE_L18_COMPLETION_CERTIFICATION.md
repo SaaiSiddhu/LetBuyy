@@ -1,6 +1,6 @@
 # PHASE L18 — LIQUID COMPLETION CERTIFICATION
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. The terminal sign-off.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. The terminal sign-off.
 
 1. **Purpose.** Certify that LetBuyy V1 is Full Liquid: every customer-facing route renders Liquid, React render layer removed, all guarantees preserved — and record the evidence.
 2. **Repository Reality.** Certification is documentary; it asserts the cumulative evidence of L0-L17 against the Constitution (ART-17/18, R-15) and the foundation invariants.

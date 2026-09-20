@@ -1,6 +1,6 @@
 # Phase B — Cross-App Integration Audit
 
-**HEAD `587dc988`. Every integration traced to code.**
+**HEAD `ae383bb8`. Every integration traced to code.**
 
 ## Storefront Runtime ↔ API Gateway — **PASS** (one defect)
 - `next.config.ts:108–115` rewrites `/api/storefront/:subdomain/:path*` → `${gateway}/storefront/...`. Customer-scoped calls carry HS256 `X-LetBuyy-Customer-Session`; internal calls HMAC-signed (`createLetbuyyInternalAppHeaders`).

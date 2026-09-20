@@ -39,7 +39,7 @@ promotion is refused and the divergence is a finding (`MERGE_RUNBOOK.md` §Diver
 Push order for a first-time sync of all three: `develop`, then `staging`, then `main` — the
 production-deploy branch-lag guard resolves `origin/staging`, so `staging` must exist remotely before
 a `main` deploy is dispatched. `origin/develop` (June 2026) and `origin/main`/`origin/stepup/main`
-(2026-08-15) are all ancestors of `823aa5ee`, so every first push is a fast-forward.
+(2026-08-15) are all ancestors of `a751a2ff`, so every first push is a fast-forward.
 
 ## 4. Cloud checklist — per lineage (manual until DEPLOY-1 rewrites the workflows)
 

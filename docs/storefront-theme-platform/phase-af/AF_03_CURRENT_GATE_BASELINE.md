@@ -5,7 +5,7 @@ failures); governance gate EXIT=1 (tenant-registry drift); sequential-migration 
 (2 untracked migration files on disk). All typecheck passes. No git-status mutation from any
 read-only command executed here.
 
-**HEAD:** 7e1441a6  
+**HEAD:** 80d0b1af  
 **Branch:** stepup/main  
 **Date observed:** 2026-07-17  
 **Baseline dirty-file count (before/after):** 378 / 378 (no delta from any command run here)
@@ -145,7 +145,7 @@ The `createAiCreditPurchaseAdapter` is imported (line 3) and used for status fie
 (`adapter.available`, `adapter.mode`, `adapter.provider`) but `adapter.purchase()` is never
 called in the route source. This is a code-test mismatch: the test expects the purchase method
 to be wired but the route intentionally does not wire it.  
-Classification: **BROKEN** (pre-existing at HEAD 7e1441a6, not introduced by this workstream).
+Classification: **BROKEN** (pre-existing at HEAD 80d0b1af, not introduced by this workstream).
 
 **Failure 2 — `executive analytics migration creates rollup tables with service-role and super-admin RLS`**  
 File: `services/api-gateway/src/__tests__/internal-os-executive-analytics.test.ts:21`  
@@ -154,7 +154,7 @@ Root cause: The test reads `database/supabase/migrations/129_internal_os_executi
 which does not exist. The only migration 129 on disk is `129_mobile_customer_segments.sql`. Migration
 169 (`169_internal_os_executive_analytics_rollups.sql`) contains the analytics rollup tables, but the
 test hardcodes the wrong migration number/name.  
-Classification: **BROKEN** (pre-existing at HEAD 7e1441a6; the test was written with the wrong
+Classification: **BROKEN** (pre-existing at HEAD 80d0b1af; the test was written with the wrong
 migration number).
 
 **Failure 3 — `storefront runtime no longer owns payment route handlers`**  
@@ -166,7 +166,7 @@ line 99 has comment: `// V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2
 calls `storefrontBrowserApiFetch(subdomain, '/payments/razorpay/order')` and `.../razorpay/verify`.
 Stripe and PayPal are not wired. The test was written to enforce a future state (full provider migration
 from storefront-owned routes to gateway-proxied calls) that is explicitly deferred to LB-2.  
-Classification: **BROKEN** (pre-existing at HEAD 7e1441a6; Stripe/PayPal deferred per LB-2).
+Classification: **BROKEN** (pre-existing at HEAD 80d0b1af; Stripe/PayPal deferred per LB-2).
 
 ---
 
@@ -249,7 +249,7 @@ Tenant isolation validator failed:
 **Status:** BROKEN
 
 Root cause: The committed `services/api-gateway/src/tenant/tenant-tables.registry.ts` (last
-regenerated at commit `b921623f`) does not match what `deriveTenantTablesFromMigrations()` would
+regenerated at commit `366cd319`) does not match what `deriveTenantTablesFromMigrations()` would
 produce from the current migration set. Three tracked migrations added after the registry was last
 regenerated create new site-scoped tables that are absent from the committed registry:
 

@@ -4,7 +4,7 @@
 `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, root `AGENTS.md`, and the relevant local
 `AGENTS.md` files.
 
-- **Repo SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343`
+- **Repo SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 - **Branch:** `stepup/main`
 - **Date used:** 2026-08-09
 - **Mode:** Read-only. No `pnpm lcis` write/mutating command was invoked; no LCIS server process was
@@ -14,7 +14,7 @@
   read-only audit pass and neither service was already running.
 - **What was executed vs. inferred:** file-existence, mtimes, embedded commit SHAs, and validator/
   migration/workflow counts were all executed with real commands (transcript in raw evidence).
-  Claims about *why* LCIS's `pnpm lcis health` reports `graphCommit 0db025a6...` are inferred from
+  Claims about *why* LCIS's `pnpm lcis health` reports `graphCommit 0f257ca1...` are inferred from
   the embedded `built_at_commit` field inside `graphify-out/graph.json`, which is the same value —
   this agent did not run `pnpm lcis health` itself.
 - **What remains unverified:** the ZIP's LCIS doc (10) reports live output from `pnpm lcis`
@@ -49,23 +49,23 @@ All four locations named in the task exist: `graphify-out/`, `docs/central-intel
 
 ```bash
 $ grep -n "built_at_commit" graphify-out/graph.json | head -1
-"built_at_commit": "0db025a6b8529dfac74fd781f944a49fcd2563fd"
+"built_at_commit": "0f257ca1992d4473634c3893f87f633c48eff470"
 
-$ grep -rn "0db025a6" graphify-out/GRAPH_REPORT.md
-- Built from commit: `0db025a6`
+$ grep -rn "0f257ca1" graphify-out/GRAPH_REPORT.md
+- Built from commit: `0f257ca1`
 
-$ git log -1 --format="%H %cI %s" 0db025a6
-0db025a6b8529dfac74fd781f944a49fcd2563fd 2026-06-14T00:00:09+05:30 v1-completion-cert: FINAL_V1_CERTIFICATION + DEPLOYMENT_GAP_REPORT
+$ git log -1 --format="%H %cI %s" 0f257ca1
+0f257ca1992d4473634c3893f87f633c48eff470 2026-06-14T00:00:09+05:30 v1-completion-cert: FINAL_V1_CERTIFICATION + DEPLOYMENT_GAP_REPORT
 
-$ git log -1 --format="%H %cI %s" ee371182   # HEAD
-ee3711829d857e986014c5811bb94d86ebc3d343 2026-08-04T22:03:49+05:30 feat(demo): mount Turnstile so the form works in production
+$ git log -1 --format="%H %cI %s" bf35062e   # HEAD
+bf35062eda22f4d881efd61fb1d36c8fc83baed1 2026-08-04T22:03:49+05:30 feat(demo): mount Turnstile so the form works in production
 
-$ git rev-list --count 0db025a6..ee371182
+$ git rev-list --count 0f257ca1..bf35062e
 77
 ```
 
-- The graph was built at `0db025a6` on **2026-06-14**.
-- `HEAD` at audit time is `ee371182` on **2026-08-04** (committer date; the working tree audited
+- The graph was built at `0f257ca1` on **2026-06-14**.
+- `HEAD` at audit time is `bf35062e` on **2026-08-04** (committer date; the working tree audited
   is `2026-08-09`, further ahead again — see doc 05 §5.1 for the uncommitted-changes count).
 - **77 commits** separate the graph build from `HEAD`.
 - `graphify-out/` file mtimes (`ls -la`) cluster 14–20 Jun 2026, consistent with the embedded

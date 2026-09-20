@@ -1,6 +1,6 @@
 # FOUNDATION CLOSURE 2026-06-12 — INDEX
 
-**Baseline:** HEAD `da83ba92` (`stepup/main`) · all 7 blockers re-verified STILL VALID · documentation only, nothing executed.
+**Baseline:** HEAD `f961e23a` (`stepup/main`) · all 7 blockers re-verified STILL VALID · documentation only, nothing executed.
 
 | Doc | File | Role |
 |---|---|---|
@@ -12,4 +12,4 @@
 
 **Execution order:** CP-0 (track+register, same-commit) → B4 → B3 → B5 → B6 → B7 → B2 → B1-a (HUMAN push) → FC-02 activation → handoff (FC-03). B1-b (production deploy) = first act of Launch Readiness.
 
-**Registration warning:** tracking this directory and `FINAL_REPOSITORY_TRUTH_CERTIFICATION_2026_06_12/` requires `PROMPTS.md` rows in the SAME commit (prompt-perimeter validator; P0 precedent `7a0342e0`) — exactly one of FC-04/FC-05 marked CANONICAL.
+**Registration warning:** tracking this directory and `FINAL_REPOSITORY_TRUTH_CERTIFICATION_2026_06_12/` requires `PROMPTS.md` rows in the SAME commit (prompt-perimeter validator; P0 precedent `4d900a02`) — exactly one of FC-04/FC-05 marked CANONICAL.

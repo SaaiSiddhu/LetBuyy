@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | `apps/merchant-control-plane` (77 web pages, 130 same-origin API proxies, all navigation definitions) + `apps/mobile/merchant-app` (Flutter, 64 screen files, 91 registered route ids) at route/screen level |
 | Evidence basis | Agent B notes (`_agent-notes/B-merchant-ui-routes.md`, read in full) + first-party re-verification in this document: scripted route/state/fetch extraction over `apps/merchant-control-plane/src/app`, scripted `var(--lb-*)` resolution diff, and direct reads of `merchantNavigation.ts`, `settings-navigation.ts`, `TrialBanner.tsx`, `tokens.ts`, and the Flutter `routes.dart` / screen graph |

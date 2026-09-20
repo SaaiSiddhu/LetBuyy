@@ -1,12 +1,12 @@
 # 10 — LCIS FINDINGS AND INDEPENDENT RECONCILIATION
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`)
+**Audited commit:** `bf35062e` (`stepup/main`)
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 **LCIS is a source-derived intelligence aid. It is not authority and it is not runtime proof**
 (DOC-R1, DOC-R2, ANTI-R8). Nothing in this package is accepted because LCIS said it. Every LCIS
-claim below carries an independent verdict established by reading source at `ee371182` or by
+claim below carries an independent verdict established by reading source at `bf35062e` or by
 executing a command.
 
 ---
@@ -30,10 +30,10 @@ reconciliation auditor.
 ```
 pnpm lcis health
   nodeCount 52246 · edgeCount 66761 · status "healthy"
-  graphCommit 0db025a6b8529dfac74fd781f944a49fcd2563fd
+  graphCommit 0f257ca1992d4473634c3893f87f633c48eff470
 
 git rev-parse HEAD
-  ee3711829d857e986014c5811bb94d86ebc3d343
+  bf35062eda22f4d881efd61fb1d36c8fc83baed1
 ```
 
 The graph was built at a **different commit** — 77 commits and ~2,549 files behind HEAD — and the

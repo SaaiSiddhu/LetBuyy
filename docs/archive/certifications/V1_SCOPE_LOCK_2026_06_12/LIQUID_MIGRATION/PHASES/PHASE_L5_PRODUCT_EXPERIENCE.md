@@ -1,6 +1,6 @@
 # PHASE L5 — PRODUCT EXPERIENCE
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render `/product/:id` through a Liquid `product` template with real data and a working add-to-cart/variant experience.
 2. **Repository Reality.** The product route delegates to `StorefrontCompositionEngine` (`product/[productId]/page.tsx:75`) and feeds a real `product` drop (`productToLiquidDrop` `composition-engine.tsx:229`); a `product-detail.liquid` section exists but is orphaned (no `product` template references it, so the route falls back to `index` `template-resolver.ts:127-137`); the body today is React `product-details-client.tsx` (555 lines). The `lb-variant-picker` island toggles selection but does **not** recompute price.

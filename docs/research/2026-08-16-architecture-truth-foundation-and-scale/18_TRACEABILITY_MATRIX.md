@@ -2,7 +2,7 @@
 
 > **RESEARCH — NOT AUTHORITY — NOT AN IMPLEMENTATION ORDER**
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 
 ---
 
@@ -271,7 +271,7 @@ Before the full register, the short list. These are the only rows where the evid
 | `ARCH-RESEARCH-148` | The storefront compose fork is still the live compose path (LEG-046 / R-15 one-renderer) | S2 | `VERIFIED-SOURCE` | `05` §drift | `05`, `15` | Zero-importer proof on the fork | — | impl | STORE |
 | `ARCH-RESEARCH-149` | Dual theme draft systems persist (LEG-047) | S2 | `VERIFIED-SOURCE` | `05` §drift | `05` | Zero-writer proof on the loser | — | impl | STORE |
 | `ARCH-RESEARCH-150` | **339 app-local `--lb-*` token redefinitions are baselined as passing** — ART-20's one-token-source is not achieved for web CSS | S2 | `VERIFIED-SOURCE` | design-system ratchet baseline; `05` §drift | `05` | Ratchet the baseline to 0; count failures | — | impl | DS |
-| `ARCH-RESEARCH-151` | The only benchmark measures a **single-process in-memory render at concurrency 1**, and its assertion was recently loosened (commit `5824b25d`) | S2 | `VERIFIED-TEST` | `tests/performance/` benchmark; `git log` `5824b25d` | `13` | Re-run at realistic concurrency on the real runtime | — | impl | QA |
+| `ARCH-RESEARCH-151` | The only benchmark measures a **single-process in-memory render at concurrency 1**, and its assertion was recently loosened (commit `bf599a3e`) | S2 | `VERIFIED-TEST` | `tests/performance/` benchmark; `git log` `bf599a3e` | `13` | Re-run at realistic concurrency on the real runtime | — | impl | QA |
 | `ARCH-RESEARCH-152` | `FEATURE_LIQUID` is configured in all three environments but **read by no runtime code** | S3 | `VERIFIED-SOURCE` | `services/api-gateway/wrangler.toml:41,:133,:248`; no consumer | `04`, `05` | Flip the flag; observe no behaviour change | — | impl | STORE |
 
 ### 3.14 Security
@@ -594,4 +594,4 @@ A register that silently resolves its own contradictions is lying by omission. T
 2. **Run the falsifying test before the fix**, wherever one exists — 172 of 177 rows have one. A fix applied to a mis-stated finding is worse than no fix, and the adversarial pass corrected **81%** of what it examined.
 3. **Check the authority column before writing code.** 116 rows need nobody's permission; 44 need a recorded ARB decision; 3 need an amendment; 11 need a provider, a drill, or a person.
 4. **Treat the 16 `†` rows as unchallenged.** They come from `data` and `flow-commerce` — the two dimensions no adversary reviewed — and four of the packet's most consequential money findings (`048`, `049`, `050`, `159`) are among them.
-5. **Nothing here describes production.** `VERIFIED-LIVE` appears zero times in this packet. Every row above describes a repository at commit `5af69e0c` — what is *deployed* remains the open question `04_LIVE_DEPLOYMENT_TRUTH.md` exists to record.
+5. **Nothing here describes production.** `VERIFIED-LIVE` appears zero times in this packet. Every row above describes a repository at commit `f52abca7` — what is *deployed* remains the open question `04_LIVE_DEPLOYMENT_TRUTH.md` exists to record.

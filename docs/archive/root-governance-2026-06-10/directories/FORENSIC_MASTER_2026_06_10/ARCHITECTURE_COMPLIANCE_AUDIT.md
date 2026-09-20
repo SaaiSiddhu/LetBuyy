@@ -274,7 +274,7 @@ The honest characterization: **V1's P0 engineering is roughly two-thirds genuine
 ### 11.2 Where each constitution actually governs
 
 - **AGENTS.md governs the machine**: all 196 gate validators trace to AGENTS-era concepts; `node scripts/validate-governance.mjs` is what CLAUDE.md/CI require.
-- **V1 governs recent human work**: migrations `139–156` are literally named `executable_*` and comment "LetBuyy Executable Architecture V1 foundation kernel" (`139:1-4`); foundation waves (`FOUNDATION_STEPUP_LEDGER.md`, commits `aa763b76…5cf9e64e`) implement V1's P0 list; a handful of *new* validators encode V1 outcomes (`beta-readiness-validator.mjs` Turnstile, `foundation-antifabrication-gate.mjs` honesty, `compensation-governance-validator.mjs`).
+- **V1 governs recent human work**: migrations `139–156` are literally named `executable_*` and comment "LetBuyy Executable Architecture V1 foundation kernel" (`139:1-4`); foundation waves (`FOUNDATION_STEPUP_LEDGER.md`, commits `0395cad2…c4fc3cd6`) implement V1's P0 list; a handful of *new* validators encode V1 outcomes (`beta-readiness-validator.mjs` Turnstile, `foundation-antifabrication-gate.mjs` honesty, `compensation-governance-validator.mjs`).
 - **Nobody reconciled them**: no validator reads `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` (grep in `scripts/`: zero references), and AGENTS.md was never regenerated post-freeze.
 
 ---

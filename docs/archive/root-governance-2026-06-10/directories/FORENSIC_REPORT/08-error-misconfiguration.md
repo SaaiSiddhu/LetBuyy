@@ -5,8 +5,8 @@ Investigation date: 2026-06-05 (second pass, post-remediation)
 > Forensic scope: hunt for broken imports, missing registrations/configurations/env vars,
 > missing event subscribers/emitters, missing webhook topics, unenforced flags, and missing
 > dependency wiring on the LetBuyy platform — re-verified after the remediation/consolidation
-> merge (`develop` head `127a850e`, merges of WS1/WS5/WS7/WS9/WS10 + letbuyy-remediation plus
-> three `fix(consolidation)` commits `eee2ca7e`/`4c97dafa`/`127a850e`). Every finding cites
+> merge (`develop` head `a8cd5fde`, merges of WS1/WS5/WS7/WS9/WS10 + letbuyy-remediation plus
+> three `fix(consolidation)` commits `218a0905`/`98b7653c`/`a8cd5fde`). Every finding cites
 > file/line or command output. Impact statements are factual. Items that could not be proven
 > are marked "not found in repository".
 
@@ -39,9 +39,9 @@ Merge-damage check: no unresolved conflict markers in `apps/`, `services/`, `pac
 `scripts/`, `config/` (grep `^<<<<<<< ` → empty); `undeclared-import`, `dependency-graph`
 (48 roots / 138 edges), `circular-import`, `event-schema`, `single-writer` validators all pass
 individually; full suite passes 129/129. The three `fix(consolidation)` commits repaired:
-merged settings types in merchant-control-plane + 3 ops-portal IndexTables (`eee2ca7e` — current
-files read clean), the scheduled-dispatch trigger typing + ops page (`4c97dafa`), and moved
-`scripts/dev/local-stack-*.mjs` → `scripts/utilities/` (`127a850e`). No residual breakage from
+merged settings types in merchant-control-plane + 3 ops-portal IndexTables (`218a0905` — current
+files read clean), the scheduled-dispatch trigger typing + ops page (`98b7653c`), and moved
+`scripts/dev/local-stack-*.mjs` → `scripts/utilities/` (`a8cd5fde`). No residual breakage from
 those areas was found in this pass.
 
 ---
@@ -57,7 +57,7 @@ Read-only; no repository files modified except the two permitted report files. A
 5. Ran `node --test test/gateway-order-transitions.test.mjs` in webhook-service → 5/5 pass (Node v22.22.0 strips types natively).
 6. Greps: conflict markers; `patchSupabaseRows|upsertSupabaseRows|insertSupabaseRows` per worker; `payment_webhook_events` across services; `queue.send|createCloudflareQueueProducer`; `FEATURE_LIQUID`; `fromEnvironment(` (multiline) across `apps/mobile` + `packages/dart`; table-writer enumeration for `analytics_event_stream|notifications|search_documents|platform_queue_jobs`.
 7. Config reads: all three `wrangler.toml`; `config/env/templates/{mobile.dart-defines,worker.env}.example`; root + worker `package.json` scripts; `.github/workflows/*` test invocations.
-8. Git: `git log --oneline -15`; `git show --stat` for `eee2ca7e`/`4c97dafa`/`127a850e`; `git status --porcelain`.
+8. Git: `git log --oneline -15`; `git show --stat` for `218a0905`/`98b7653c`/`a8cd5fde`; `git status --porcelain`.
 9. **Tooling caveat (changed since first pass):** the repo-root `node_modules` (which previously provided `tsc`) is absent in this environment, so the standalone `tsc --noEmit` reproductions for webhook-service/queue-workers could not be repeated; M-C1 is re-verified structurally from the tsconfigs + import lists.
 10. **Live-repo caveat:** concurrent processes modified *other* `FORENSIC_REPORT/*.md` files during this audit (`git status`: 03/04/05/06/09/12/14 modified); no `apps/`/`services/`/`packages/` source file changed mid-audit this pass. Sole untracked non-ignored file: `.claude/settings.local.json` (matches the stale-artifact validator's "1 untracked" count).
 
@@ -69,7 +69,7 @@ Read-only; no repository files modified except the two permitted report files. A
 
 ### C-GOV-1 — Governance suite non-determinism on api-gateway routes — **RESOLVED**
 - **First pass:** one `validate-governance.mjs` run failed on `routes/analytics.ts` + `routes/storefront.ts` (execution-layer authority) while those files were being edited concurrently; later runs passed.
-- **Second pass evidence:** 2 full suite runs → exit 0; `execution-layer-validator.mjs` ×4 → `passed (64 execution foundation files checked; 12 execution adapters enforced)` every time (adapter count grew 11→12 with `subscription-execution.adapter.ts`). The mid-audit edits are now committed history (`86e65460 refactor(storefront): split internal payment routes`, `10d47da3 fix(events): centralize outbox event writes`, `4d888ea6 fix(events): register theme event contracts honestly`).
+- **Second pass evidence:** 2 full suite runs → exit 0; `execution-layer-validator.mjs` ×4 → `passed (64 execution foundation files checked; 12 execution adapters enforced)` every time (adapter count grew 11→12 with `subscription-execution.adapter.ts`). The mid-audit edits are now committed history (`f1b3253b refactor(storefront): split internal payment routes`, `e518315e fix(events): centralize outbox event writes`, `600fe573 fix(events): register theme event contracts honestly`).
 - **Status:** no failing state reproducible in the current tree.
 
 ### C-A1 — Theme events emitted with no registered contract — **RESOLVED** (theme scope)
@@ -143,7 +143,7 @@ Read-only; no repository files modified except the two permitted report files. A
 ### L-N1 (new) — `platform_queue_jobs` rows with `queue_name='webhook-deliveries'` have no consumer
 - **Location:** producer `services/api-gateway/src/execution/outbox-execution.adapter.ts:165-189` (`enqueueWebhookDeliveryJob`, one row per outbox event that fanned out webhook deliveries, `job_type: 'webhook.deliver'`).
 - **Evidence:** both drains claim only `analytics-events`/`search-indexing`/`payment-events` (`index.ts:196,552`; `platform-queue-consumer.ts:21` union; `operations.ts:536` manual consume list; `claim_platform_queue_jobs` is per-queue-name, `000_baseline.sql:793-796`). The cron preflight filters to the 3 names (`index.ts:242-247`), so these rows neither trigger nor receive work. Actual partner delivery flows through `webhook_deliveries` + webhook-service RPCs, independent of these rows.
-- **Observed impact:** rows accumulate in `queued` status indefinitely; they appear in the `/v1/operations/jobs` listing (filterable) but are dead weight. Introduced by the remediation (commit `10d47da3 fix(events): centralize outbox event writes` window).
+- **Observed impact:** rows accumulate in `queued` status indefinitely; they appear in the `/v1/operations/jobs` listing (filterable) but are dead weight. Introduced by the remediation (commit `e518315e fix(events): centralize outbox event writes` window).
 
 ### L-N2 (new) — `API_GATEWAY_SERVICE` binding absent from both workers' top-level (default) wrangler env
 - **Location:** `services/webhook-service/wrangler.toml` and `services/queue-workers/wrangler.toml` declare `[[env.staging.services]]`/`[[env.production.services]]` only (webhook `:60-62,99-101`; queue-workers `:191-193,293-295`); the top-level config (which also declares queue consumers, queue-workers `:36-95`) has no `[[services]]` block, and `INTERNAL_API_SECRET` is a secret not present in any `[vars]`.
@@ -246,5 +246,5 @@ Isolated re-runs: `execution-layer-validator.mjs` ×4 → pass ("12 execution ad
 | Internal-auth schemes | `apps/storefront-runtime/src/lib/api/client.ts`; `routes/internal-console.ts`; `webhook-service/src/index.ts` | client 102-116, 142-154; console 44-45; wh 526-555 |
 | Preview origin fallback | `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` | 25-33, 44 |
 | Workstream ledger residue | glob `**/CODEX_*`; `docs/archive/root-residue/2026-06-05-foundation-hardening/` | paths listed in L-N3 |
-| Consolidation commits | git `eee2ca7e`, `4c97dafa`, `127a850e` + 6 merge commits | `git log`/`git show --stat` |
+| Consolidation commits | git `218a0905`, `98b7653c`, `a8cd5fde` + 6 merge commits | `git log`/`git show --stat` |
 | Live-repo state | `git status --porcelain` | 8 FORENSIC_REPORT files modified by concurrent agents; 1 untracked `.claude/settings.local.json` |

@@ -1,7 +1,7 @@
 # 11 — INFRASTRUCTURE, PROVIDER AND ENVIRONMENT READINESS
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09` · **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`stepup/main`)
+**Audited commit:** `bf35062e` (`stepup/main`)
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.
 
 **Environment variables appear by NAME ONLY. No value, key, token or connection string is
@@ -116,7 +116,7 @@ locally and is correctly ignored (`.gitignore:93`). `SEC-R2` / `R-21` hold.
 
 ## 6. Provider modes — every one is mock or unconnected
 
-| Provider | Mode at `ee371182` | Sentinel / evidence |
+| Provider | Mode at `bf35062e` | Sentinel / evidence |
 |---|---|---|
 | Razorpay (payments) | **Not connected** | `RAZORPAY_KEY_ID = SKIP_NEEDS_HUMAN_PRODUCTION_RAZORPAY_KEY_ID` in `dart-defines/production.json` |
 | Cloudflare Turnstile | **Not connected** (site keys real, secret/token absent) | `TURNSTILE_TOKEN = SKIP_NEEDS_HUMAN_MOBILE_TURNSTILE_TOKEN` |

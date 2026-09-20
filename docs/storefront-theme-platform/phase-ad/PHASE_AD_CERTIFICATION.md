@@ -4,8 +4,8 @@
 **Phase:** AD — Certification + Canary Readiness Package
 **Certification date:** 2026-07-11
 **Branch:** `stepup/main`
-**HEAD at certification:** `83d61e0a` (Phase AC — AI-assisted customization)
-**Program window certified:** `9186188e` (Phase M baseline) → `83d61e0a` (Phase AC close)
+**HEAD at certification:** `7654927d` (Phase AC — AI-assisted customization)
+**Program window certified:** `ff6720a9` (Phase M baseline) → `7654927d` (Phase AC close)
 **Author:** AD certification sub-agent (read-only; no source changes; no git; orchestrator commits)
 
 ---
@@ -61,7 +61,7 @@ Evidence: exit code 0 on typecheck; final TAP lines
 storefront-runtime" through Phase AC. The actual measured count at HEAD is 915
 (120 higher). The storefront-runtime test script runs 12 external test files
 including `tests/launch/lb-l-ai-theme-platform.test.mjs` (749 sub-tests, created
-in Phase L commit `29f87115`). lb-l is a static-contract suite: tests that
+in Phase L commit `8c1ac94b`). lb-l is a static-contract suite: tests that
 reference as-yet-unbuilt Phase-AC files (ai-intent-parser.ts,
 AICustomizationPanel.tsx, AINotConnectedResult, etc.) failed during phases S→AB
 and were excluded from passing counts. After Phase AC committed those files, all
@@ -106,7 +106,7 @@ regressions. Evidence by failure description and root cause:
 | `not ok 130` | `executive analytics migration creates rollup tables with service-role and super-admin RLS` | `ENOENT: no such file .../129_internal_os_executive_analytics_rollups.sql` — migration file absent from WIP | FOREIGN |
 | `not ok 298` | `storefront runtime no longer owns payment route handlers` | Regex `/storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/` not matched — user WIP payment routing refactor in progress | FOREIGN |
 
-None of these files were touched by any M→AC commit (git diff `9186188e..HEAD` on
+None of these files were touched by any M→AC commit (git diff `ff6720a9..HEAD` on
 the relevant test and route files shows 0 lines changed for the test that looks
 for `adapter.purchase`, 0 lines for the executive-analytics migration, and 0
 lines for the payments route). PROGRAM_STATE pre-dates this certification and
@@ -194,7 +194,7 @@ export const THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false;
 
 Confirmed by: `grep -n "THEME_LIQUID_RENDERING_DEFAULT_ENABLED" packages/theme-engine/src/theme-governance.ts` returns line 14. Also confirmed by `theme-governance-validator.mjs` output: "Liquid default OFF".
 
-No M→AC commit touches this line. `git diff 9186188e..HEAD -- packages/theme-engine/src/theme-governance.ts` shows only additive imports of new phase symbols; line 14 is unchanged.
+No M→AC commit touches this line. `git diff ff6720a9..HEAD -- packages/theme-engine/src/theme-governance.ts` shows only additive imports of new phase symbols; line 14 is unchanged.
 
 **The flag has NOT been flipped. ARB must authorise flipping it.**
 
@@ -238,7 +238,7 @@ export const LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG: DOMPurifyConfig = {
 **Evidence:** `services/api-gateway/src/execution/theme-execution.adapter.ts:699–710`
 
 The `db.rpc('publish_theme_release', { ... })` call in `publishReleaseSnapshot()`
-was added in Phase P (commit `fa4e4786`). Its parameter block:
+was added in Phase P (commit `1053d611`). Its parameter block:
 
 ```typescript
 const { data, error } = await this.db.rpc('publish_theme_release', {
@@ -256,7 +256,7 @@ const { data, error } = await this.db.rpc('publish_theme_release', {
 ```
 
 Post-Phase-P commits that touched `theme-execution.adapter.ts` (phases Q and the
-Phase AB commit `016da8f0`): `git diff fa4e4786..HEAD` on the adapter shows no
+Phase AB commit `a0990ce7`): `git diff 1053d611..HEAD` on the adapter shows no
 `+` or `-` line for `rpc('publish_theme_release'` or any `p_` parameter name. The
 only Phase AB note nearby is a comment: "adding p_expected_current_release_version
 to the SECURITY DEFINER RPC (ARB-gated)" — that addition is PLANNED, not
@@ -268,7 +268,7 @@ implemented (ARB-gated, not in this program window).
 
 ### 4.4 Money ledger / checkout / payment RPCs — untouched
 
-**Evidence:** `git diff 9186188e..HEAD` on canonical money paths shows 0 lines
+**Evidence:** `git diff ff6720a9..HEAD` on canonical money paths shows 0 lines
 changed:
 
 - `services/api-gateway/src/routes/payments.ts` — 0 diff lines
@@ -279,7 +279,7 @@ The canonical money RPCs (`create_checkout_order`, `confirm_order_payment_with_l
 `complete_order_refund`, `issue_gift_card`, `set_gift_card_status`,
 `restore_gift_card_on_refund`) do not appear in `packages/theme-engine/src/`
 (grep returns 2 hits — both in test comments, not RPC calls). None of the M→AC
-program route commits (`git log 9186188e..HEAD -- services/api-gateway/src/routes/`)
+program route commits (`git log ff6720a9..HEAD -- services/api-gateway/src/routes/`)
 touch a non-theme route: every commit in that directory is
 `feat(theme): ...` scoped.
 
@@ -374,7 +374,7 @@ canary to production default:
 
 ---
 
-*Certification evidence gathered on `stepup/main` at HEAD `83d61e0a` by the
+*Certification evidence gathered on `stepup/main` at HEAD `7654927d` by the
 Phase AD read-only certification sub-agent. No source files were modified. No
 git commands were executed. The orchestrator is responsible for committing this
 document under the programme's two-lane merge rule.*

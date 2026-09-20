@@ -2,7 +2,7 @@
 
 **Package:** `LAUNCH_READINESS_2026_06_12/MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/`
 **Date:** 2026-08-09
-**Audited commit:** `ee371182` (`ee3711829d857e986014c5811bb94d86ebc3d343`) on branch `stepup/main`
+**Audited commit:** `bf35062e` (`bf35062eda22f4d881efd61fb1d36c8fc83baed1`) on branch `stepup/main`
 **Program:** Merchant App V1 — repository forensics, scope freeze, completion, launch execution
 
 ---
@@ -41,7 +41,7 @@ RLS+FORCE+GUC tenancy, modular monolith, one region), 0% transaction fee, or nev
 ### 3.1 Commit and branch
 
 ```
-HEAD                              ee3711829d857e986014c5811bb94d86ebc3d343
+HEAD                              bf35062eda22f4d881efd61fb1d36c8fc83baed1
 branch                            stepup/main
 git rev-list --count main..stepup/main          106
 git rev-list --count origin/main..stepup/main   291
@@ -77,7 +77,7 @@ Every claim in this package carries one of these labels. They are not interchang
 
 | Label | Meaning |
 |---|---|
-| **STATIC** | Proven by reading source at `ee371182`, cited `path:line`. |
+| **STATIC** | Proven by reading source at `bf35062e`, cited `path:line`. |
 | **LOCAL RUNTIME** | Proven by executing something on this machine; the command and its output are recorded. |
 | **STAGING** | Proven against a deployed staging environment. **Nothing in this package carries this label.** |
 | **PRODUCTION** | Proven against production. **Nothing in this package carries this label.** |
@@ -93,7 +93,7 @@ Every claim in this package carries one of these labels. They are not interchang
    disagreement is recorded in
    [`10_LCIS_FINDINGS_AND_INDEPENDENT_RECONCILIATION.md`](10_LCIS_FINDINGS_AND_INDEPENDENT_RECONCILIATION.md).
 2. **The LCIS code graph is stale relative to HEAD.** `pnpm lcis health` reports
-   `graphCommit 0db025a6b8529dfac74fd781f944a49fcd2563fd`; HEAD is `ee371182`.
+   `graphCommit 0f257ca1992d4473634c3893f87f633c48eff470`; HEAD is `bf35062e`.
 3. **Nothing here is deployed.** No claim of "live", "deployed", or "in production" is made
    anywhere in this package. Completion percentages measure the **working tree**, not
    production.
@@ -109,7 +109,7 @@ This package **does not delete, overwrite, or contradict**
 That document classified `apps/mobile/merchant-app` as **V2 at ~68%** (§3, "Mobile app
 (built ~68%, push dead, signing unprovisioned → V2)"). This program was asked to re-derive
 the V1 scope from *current* state with the merchant app as the candidate centre. The prior
-classification is therefore treated as a **prior hypothesis re-tested at `ee371182`**, and
+classification is therefore treated as a **prior hypothesis re-tested at `bf35062e`**, and
 the re-test result — including where it is **confirmed** — is recorded in
 [`05_V1_SCOPE_FREEZE_AND_EXCLUSIONS.md`](05_V1_SCOPE_FREEZE_AND_EXCLUSIONS.md) §"Prior
 mobile-V2 classification".

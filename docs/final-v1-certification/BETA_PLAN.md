@@ -1,6 +1,6 @@
 # Beta Plan (Closed Beta → Pilot → 100 Merchants)
 
-**HEAD `587dc988`. After Launch Plan exit criteria are met.**
+**HEAD `ae383bb8`. After Launch Plan exit criteria are met.**
 
 ## Stage 1 — Closed beta (5 merchants, ~2 weeks)
 - Hand-onboard 5 friendly merchants (owner-operated; teams deferred).

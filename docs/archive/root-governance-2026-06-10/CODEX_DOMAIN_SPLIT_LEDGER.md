@@ -191,4 +191,4 @@ Captured with the existing dirty working tree preserved. Required target branch 
     - Behavioral tests passed 462/462.
     - Flutter analyze passed with no issues.
     - Governance validation passed 163/163 validators.
-    - Branch/PR blocker: existing `stream/domain-split-foundation` has unique commit `3dd08f41`; switching from current dirty `stream/letbuyy-ui-v2` was refused because user-owned dirty files would be overwritten. No stash, reset, force branch update, commit, push, or PR was performed.
+    - Branch/PR blocker: existing `stream/domain-split-foundation` has unique commit `562b1959`; switching from current dirty `stream/letbuyy-ui-v2` was refused because user-owned dirty files would be overwritten. No stash, reset, force branch update, commit, push, or PR was performed.

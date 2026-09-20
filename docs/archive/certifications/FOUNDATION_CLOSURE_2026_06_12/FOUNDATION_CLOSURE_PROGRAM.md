@@ -1,17 +1,17 @@
 # FOUNDATION CLOSURE PROGRAM — LETBUYY
 
-**DOC: FC-01 · Date: 2026-06-12 · Baseline HEAD: `da83ba92` (`stepup/main`, clean tree, gate green 106)**
+**DOC: FC-01 · Date: 2026-06-12 · Baseline HEAD: `f961e23a` (`stepup/main`, clean tree, gate green 106)**
 **Authority:** subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (DOC 01) and root `AGENTS.md` (DOC 02). This program changes NOTHING by itself — documentation only. Execution happens only via the registered execution prompt (FC-04/FC-05).
 **Input:** `FINAL_REPOSITORY_TRUTH_CERTIFICATION_2026_06_12/FINAL_REPOSITORY_TRUTH_CERTIFICATION.md` (7 blockers B1–B7).
 **Objective:** every blocker closed with committed evidence → `FOUNDATION_FREEZE_CERTIFICATION.md` activates → **FOUNDATION ERA CLOSED** → handoff to Launch Readiness.
 
 ---
 
-## PHASE A — BLOCKER RE-VERIFICATION (fresh evidence, 2026-06-12, HEAD `da83ba92`)
+## PHASE A — BLOCKER RE-VERIFICATION (fresh evidence, 2026-06-12, HEAD `f961e23a`)
 
 | # | Blocker | Re-verified state | Evidence (re-checked this session) | Verdict |
 |---|---|---|---|---|
-| B1 | Production reality divergence | origin/main = `41b6ea49` (2026-06-09 12:25 IST), **170 commits behind** `stepup/main`; zero pushes ever; origin lacks a `stepup/main` ref the prod branch-lag guard resolves (MERGE_RUNBOOK.md:60) | `git rev-list --count origin/main..stepup/main` = 170; `git log origin/main -1` | **STILL VALID** |
+| B1 | Production reality divergence | origin/main = `c2547049` (2026-06-09 12:25 IST), **170 commits behind** `stepup/main`; zero pushes ever; origin lacks a `stepup/main` ref the prod branch-lag guard resolves (MERGE_RUNBOOK.md:60) | `git rev-list --count origin/main..stepup/main` = 170; `git log origin/main -1` | **STILL VALID** |
 | B2 | Branch invariant violation | `git rev-list --count main..stepup/main` = **6** (law mandates 0: MERGE_RUNBOOK.md:9,34; AGENTS.md DEPLOY-R1 :330) | command output = 6 | **STILL VALID** |
 | B3 | Active-branch deploy ungated | `.github/workflows/deploy-staging.yml` (push → `stepup/main`) contains **0** occurrences of `validate-governance`/`validate:governance`; no untracked-migration guard; `deployment-safety-validator.mjs:72-91` scopes only main+production | grep count = 0 | **STILL VALID** |
 | B4 | Untracked-migration blind spot | `sequential-migration-validator.mjs:1,9` imports and iterates `getTrackedFiles()` only; never compares tracked-vs-disk | validator source lines 1, 9 | **STILL VALID** |
@@ -19,7 +19,7 @@
 | B6 | AI-credit purchase un-ledgered | `services/api-gateway/src/routes/ai.ts:1063-1112` builds `purchaseRecord`, returns it in JSON with `credit_grant_deferred_until_canonical_ledger: true`; **no insert, no RPC, no ledger row, no webhook consumer** (0 matches in queue-workers); S11 (`scripts/money-certification/scenarios/s11*.mjs:2-3,48,118`) defines the intended contract: payment link → webhook → ledger evidence → grant unlock | route source; S11 source | **STILL VALID** |
 | B7 | Shared internal signing secrets | One `STAGING_INTERNAL_API_SECRET` fanned to api-gateway, webhook-service, queue-workers AND Vercel app builds (`staging-deploy.yml:88,89,115,134,152,232`); same pattern in prod (`production-deploy.yml:315-319`); matrix lists one shared set for all 5 Next apps (`config/env/staging-production-secret-matrix.json:29-79`); `set-secrets.mjs` generates **one value per suffix per env** (`generatedSecretSuffixes` incl. `INTERNAL_API_SECRET`, `AUTH_SECRET`, `CUSTOMER_SESSION_SECRET`) | workflow + matrix + script sources | **STILL VALID** |
 
-**No blocker is partially fixed. No blocker is obsolete. All seven stand at HEAD `da83ba92`.**
+**No blocker is partially fixed. No blocker is obsolete. All seven stand at HEAD `f961e23a`.**
 
 Useful pre-existing machinery discovered during re-verification (reduces closure cost):
 - `governance-common.mjs:196` already exports `getUntrackedFiles()` (used by `stale-artifact-validator`) → B4 is a small-diff fix.
@@ -37,7 +37,7 @@ Useful pre-existing machinery discovered during re-verification (reduces closure
 
 ### B4 — Untracked-migration blind spot *(execute FIRST)*
 
-**Root cause.** `sequential-migration-validator.mjs` (added `fa3228cf`) filters `getTrackedFiles()` — the git index — so a migration present on disk but never `git add`ed cannot enter `prefixes`/`byNum`. The gate's file universe is split: most content validators walk disk (`phaseBEntries`), migration validators read git. The historically probe-proven hole (untracked 162–166 invisible) survived P2.2.
+**Root cause.** `sequential-migration-validator.mjs` (added `f7062d46`) filters `getTrackedFiles()` — the git index — so a migration present on disk but never `git add`ed cannot enter `prefixes`/`byNum`. The gate's file universe is split: most content validators walk disk (`phaseBEntries`), migration validators read git. The historically probe-proven hole (untracked 162–166 invisible) survived P2.2.
 
 **Risk.** A schema change can exist locally, pass the gate, ship to staging via B3's ungated path (compounding), and silently diverge from the committed migration chain. Deploy-time `supabase db push` ordering breaks; recovery requires forensic diffing. Likelihood: medium (it already happened once). Impact: high (schema truth).
 
@@ -154,7 +154,7 @@ Useful pre-existing machinery discovered during re-verification (reduces closure
 
 ### B2 — `main..stepup/main` invariant violation *(execute SIXTH — final repo-side act)*
 
-**Root cause.** P1 ran `git branch -f main stepup/main` once (`762e84bf` era) and no later step re-ran it; `stepup/main` advanced 6 commits (P4→P2.1-blocked) and the lag "silently re-accumulated" — the exact failure mode AGENTS.md DEPLOY-R1 (:330) forbids. The invariant is enforced remotely (`LETBUYY_ENFORCE_BRANCH_LAG=1` in `production-deploy.yml:36`) but only *warned* locally.
+**Root cause.** P1 ran `git branch -f main stepup/main` once (`d7606e85` era) and no later step re-ran it; `stepup/main` advanced 6 commits (P4→P2.1-blocked) and the lag "silently re-accumulated" — the exact failure mode AGENTS.md DEPLOY-R1 (:330) forbids. The invariant is enforced remotely (`LETBUYY_ENFORCE_BRANCH_LAG=1` in `production-deploy.yml:36`) but only *warned* locally.
 
 **Risk.** Pushing per the runbook with main≠stepup publishes a stale `main` → the production workflow (push→main) builds 6-commits-old code, and the runbook's own invariant gate (MERGE_RUNBOOK.md:9) blocks step 4. B1 cannot close while B2 is open.
 
@@ -174,7 +174,7 @@ Useful pre-existing machinery discovered during re-verification (reduces closure
 
 ### B1 — Production reality divergence *(execute SEVENTH — HUMAN SEAM)*
 
-**Root cause.** Deliberate governance: `MERGE_RUNBOOK.md:16` forbids pushing until the human owner completes branch protection; no human has executed the seam since `41b6ea49` (2026-06-09). Everything after — 170 commits including the `/api/auth/switch` takeover fix, `commission_bps 300→0`, RLS hardening 160/162/163/164, the EdDSA verifier — exists only locally. Compounding: the prod branch-lag guard resolves `origin/stepup/main` (MERGE_RUNBOOK.md:60), a ref that does not exist on the remote yet.
+**Root cause.** Deliberate governance: `MERGE_RUNBOOK.md:16` forbids pushing until the human owner completes branch protection; no human has executed the seam since `c2547049` (2026-06-09). Everything after — 170 commits including the `/api/auth/switch` takeover fix, `commission_bps 300→0`, RLS hardening 160/162/163/164, the EdDSA verifier — exists only locally. Compounding: the prod branch-lag guard resolves `origin/stepup/main` (MERGE_RUNBOOK.md:60), a ref that does not exist on the remote yet.
 
 **Risk.** The deployed product continues to ship a known unauthenticated account takeover and a 3% rake the business has publicly killed. Every day of non-push is unmitigated production exposure + growing divergence. This is simultaneously the era's exit door and its most urgent security remediation.
 

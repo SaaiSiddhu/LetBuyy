@@ -1,6 +1,6 @@
 # Agent M — Cross-Domain QA, Accessibility, Observability & Operations
 
-Run: `2026-08-04T225330+0530-ee371182` · Branch `stepup/main` · Commit `ee371182`
+Run: `2026-08-04T225330+0530-bf35062e` · Branch `stepup/main` · Commit `bf35062e`
 Scope A: QA/UX/A11y across the merchant surface. Scope B: observability, audit trails, DLQ/reconciliation, operator tooling, support readiness, backup/recovery.
 
 ---
@@ -11,7 +11,7 @@ Scope A: QA/UX/A11y across the merchant surface. Scope B: observability, audit t
 
 **Status ceiling.** Nothing here is `VERIFIED_E2E`. I observed no runtime request/response and no persistence. Static reading caps at `IMPLEMENTED_NOT_RUNTIME_VERIFIED`. Where I *executed* a repository script (validators, unit tests) I tag the result `BUILD_RESULT` / `RUNTIME_OBSERVATION` **of that script only** — never of the product.
 
-**Working-tree caveat (important).** The worktree carries ~6,784 pre-existing user modifications on top of `ee371182`. The validator results in §2.5 therefore describe **the working tree the user is holding**, not a clean checkout of `ee371182`. I state this explicitly at each executed result and never present it as HEAD state.
+**Working-tree caveat (important).** The worktree carries ~6,784 pre-existing user modifications on top of `bf35062e`. The validator results in §2.5 therefore describe **the working tree the user is holding**, not a clean checkout of `bf35062e`. I state this explicitly at each executed result and never present it as HEAD state.
 
 **Sampling is explicit.** The merchant app has 77 `page.tsx` routes; I scored a **sample of 22** in detail and ran a coarse regex signal pass over all 77. The console has 24 pages; I scored **10**. Accessibility is a **spot check of the shared primitives plus the highest-stakes dialogs** — this is not a WCAG audit and I make no WCAG-conformance claim.
 
@@ -945,7 +945,7 @@ Provisional IDs `G-M-nn`. `[HIGH-STAKES]` = money/payments/refunds/gift cards/pa
 ## 7. Unknowns (honest)
 
 - **Whether any of this is true at runtime.** No service was started. Every status is `IMPLEMENTED_NOT_RUNTIME_VERIFIED` or lower, except the validator/test executions explicitly tagged.
-- **Whether the design-system regression exists at clean `ee371182`.** I measured the working tree with ~6,784 modifications.
+- **Whether the design-system regression exists at clean `bf35062e`.** I measured the working tree with ~6,784 modifications.
 - **Whether Analytics Engine data is actually being written in production.** The bindings, datasets, and emission code all exist. Verifying data arrival requires Cloudflare credentials — `BLOCKED_EXTERNAL`.
 - **Whether the step-up `jti` is consumed to prevent replay.** The token format includes `jti` (`security-controls.ts:41`); I did not trace consumption. Agent G's scope.
 - **Whether the gateway independently caps cumulative refunds** against the captured amount. This determines whether G-M-10 is P1 or P0. Agent G's scope.

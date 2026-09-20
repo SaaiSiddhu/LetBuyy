@@ -1,7 +1,7 @@
 # LetBuyy Mobile-First Responsive Rules
 
 Grounded in `letbuyyBreakpointTokens` (`packages/typescript/ui/src/tokens.ts`), DOC 06 §4.8 / UX-R17 /
-UX-R18, and `docs/ui-standards/mobile-first-guidelines.md`. Measured 2026-09-04 at `823aa5ee`.
+UX-R18, and `docs/ui-standards/mobile-first-guidelines.md`. Measured 2026-09-04 at `a751a2ff`.
 
 ---
 

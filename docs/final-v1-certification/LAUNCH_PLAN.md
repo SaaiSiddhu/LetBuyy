@@ -1,6 +1,6 @@
 # Launch Plan
 
-**HEAD `587dc988`. From current state to first real order. ~3–4 weeks, gated by ops + 3 code fixes, not architecture.**
+**HEAD `ae383bb8`. From current state to first real order. ~3–4 weeks, gated by ops + 3 code fixes, not architecture.**
 
 ## Week 0 — Code freeze prep (parallel, ~3–5 dev-days)
 - Fix LB-8 (announcement renderer), shipping-drop (forward `shippingRateId`), LB-11 (gift-card nav + redemption UI or hide).

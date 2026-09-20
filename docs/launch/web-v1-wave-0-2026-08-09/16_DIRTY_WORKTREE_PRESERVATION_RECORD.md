@@ -4,7 +4,7 @@
 
 | Field | Value |
 |---|---|
-| **Repo SHA (HEAD)** | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| **Repo SHA (HEAD)** | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | **Branch described** | `stepup/main` in the ORIGINAL working tree `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` |
 | **Worktree used for code changes** | **None.** This agent made zero code changes. It is read-only with respect to the original tree; it wrote only into the two authorised evidence/deliverable paths. |
 | **Date** | 2026-08-09 |
@@ -17,7 +17,7 @@
 
 ## 0. Executive summary — what this record proves, and the two corrections it forces
 
-1. **Every real content change is preserved and reconstructible.** The 99 real content changes were captured as a `git diff --binary` patch set. Applying that patch to a *clean* extraction of `ee371182` reproduces **99/99 files byte-for-byte identical** to the live dirty worktree (SHA-256 compared per file). This is an executed proof, not an assertion — see §5.
+1. **Every real content change is preserved and reconstructible.** The 99 real content changes were captured as a `git diff --binary` patch set. Applying that patch to a *clean* extraction of `bf35062e` reproduces **99/99 files byte-for-byte identical** to the live dirty worktree (SHA-256 compared per file). This is an executed proof, not an assertion — see §5.
 2. **CORRECTION 1 (material).** The prior register's headline figure of **777 real content changes (99 textual + 678 binary) is wrong. The true figure is 99.** All 678 "binary content changes" are **mode-only flips misread as content changes**, because `git diff --numstat` prints `-\t-` for *any* binary path in a diff — including one whose only delta is the permission bit. Proven by comparing the git blob hash of every worktree file against its index blob: **678/678 identical**. See §3.
 3. **CORRECTION 2 (small but real).** The prior register `04_CONTENT_VS_MODE_CHANGE_REGISTER.md` narrates 98 of the 99 textual changes. **`apps/merchant-control-plane/src/app/globals.css` (+271/−73) is missing from it entirely** — a real, sizeable Web-V1-surface change that was unaccounted for until this pass. See §2.3.
 4. **The work is NOT already committed anywhere durable.** All 99 post-image blobs exist in the object database, but *only* because a single Codex CLI turn-diff checkpoint ref holds them — and that ref points at a **tree**, not a commit, and is on no branch. `git log --all --find-object` returns nothing for them. If that ref is pruned and the worktree is cleaned, the work is gone. See §6.
@@ -29,7 +29,7 @@
 ## 1. Commands executed (all exit 0 unless stated)
 
 ```
-git rev-parse HEAD                                        -> ee3711829d857e986014c5811bb94d86ebc3d343
+git rev-parse HEAD                                        -> bf35062eda22f4d881efd61fb1d36c8fc83baed1
 git status --porcelain=v1 | wc -l                          -> 6826
 git status --porcelain=v2 -z                               (parsed programmatically, NUL-safe)
 git diff --numstat -z                                      -> 6795 rows
@@ -41,7 +41,7 @@ git hash-object -- <path>                                  (worktree blob per pa
 git cat-file -s e69de29b...                                -> 0        (empty-blob proof)
 git diff --binary -- <path>                                (99 per-file patches)
 git diff --binary -- <99 paths>                            (combined patch)
-git archive ee371182 | tar -x -C <scratch>                 (clean baseline, read-only)
+git archive bf35062e | tar -x -C <scratch>                 (clean baseline, read-only)
 git apply --check <patch>  ; git apply <patch>             (round-trip, exit 0 both)
 git rev-list --all --objects                               -> 39870 objects
 git for-each-ref                                           (ref inventory)
@@ -195,7 +195,7 @@ Every one of the 6,826 dirty paths plus all 123 untracked files was screened aga
 This is the core claim of this record, and it was **executed**, not reasoned about.
 
 ```
-1. git archive ee3711829d857e986014c5811bb94d86ebc3d343 | tar -x -C <scratch>/rt2
+1. git archive bf35062eda22f4d881efd61fb1d36c8fc83baed1 | tar -x -C <scratch>/rt2
    -> 6904 files, a pristine baseline containing NONE of the dirty changes
 2. cd <scratch>/rt2 && git apply --check REAL_CONTENT_CHANGES_99.binary.patch   -> exit 0
 3. cd <scratch>/rt2 && git apply         REAL_CONTENT_CHANGES_99.binary.patch   -> exit 0
@@ -227,7 +227,7 @@ This is a Codex CLI turn-diff snapshot: an editor-tool implementation detail. It
 
 **Conclusion: zero of the 99 real content changes are "already in a commit."** Every one of them depends on (a) the dirty working tree staying untouched, or (b) the patch set produced by this pass. That is precisely why the patches exist.
 
-Branch context re-confirmed (consistent with doc `02`): `stepup/main` = `ee371182`; `origin/stepup/main` = `8d9dda77` (17 unpushed local commits); `main` and `origin/main`/`origin/develop` = `41b6ea49`; five Wave 0 worktree branches and `codex/emergency-appbridge-killswitch` all sit at `ee371182`.
+Branch context re-confirmed (consistent with doc `02`): `stepup/main` = `bf35062e`; `origin/stepup/main` = `75305725` (17 unpushed local commits); `main` and `origin/main`/`origin/develop` = `c2547049`; five Wave 0 worktree branches and `codex/emergency-appbridge-killswitch` all sit at `bf35062e`.
 
 ---
 
@@ -250,7 +250,7 @@ Full per-file register: `preservation/DISPOSITION_REGISTER.tsv` (99 tracked rows
 | A — `EXECUTION_LEDGER.md`, `LAUNCH_READINESS_2026_06_12/000_LAUNCH_READINESS_INDEX.md` | 2 | **HUMAN_REVIEW** | Both **assert a mobile V1.1 deferral**. The index diff literally reads: *"Re-tests the prior `V1_SCOPE_LOCK_2026_06_12` mobile-as-V2 classification and **upholds it**, restated as V1.1 gated on four named items."* This contradicts **HUMAN DECISION 1** (mobile = `HUMAN_DECISION_REQUIRED`, not deferred) and the governance chain: `AGENTS.md:79` lists `apps/mobile/merchant-app` in the canonical topology with no V1 split, and `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md:99` (row 28, Mobile) marks it **CANONICAL**. No ARB amendment authorising a deferral was found. **Must not be ported as written.** The ledger row additionally narrates the App-Bridge gating and so overlaps the separate `codex/emergency-appbridge-killswitch` escalation. |
 | B — `apps/developer-portal/**` | 13 | **PRESERVE_OUTSIDE_WEB_V1** | Frozen surface (`CLAUDE.md` frozen-runtime policy; root `AGENTS.md`). Not a deploy target, not Web V1 scope. Preserved as patches `003`–`015`. |
 | C — `apps/identity-platform` URL helpers + 3 consumers | 4 | **PORT_TO_WEB_V1** | Removes banned `letbuyy.store` literals — **DEPLOY-R3** (`AGENTS.md:332`). Verified in §8. |
-| D — `apps/marketing-site/src/app/[locale]/contact/page.tsx` | 1 | **PORT_TO_WEB_V1** | Web V1 marketing surface; coheres with tip commits `4ac324e7`/`ee371182`. |
+| D — `apps/marketing-site/src/app/[locale]/contact/page.tsx` | 1 | **PORT_TO_WEB_V1** | Web V1 marketing surface; coheres with tip commits `3b6e52bf`/`bf35062e`. |
 | E — `apps/merchant-control-plane/**` (incl. the previously-unregistered `globals.css`) | 13 | **PORT_TO_WEB_V1** | Core Web V1 runtime. `next.config.ts` checked for false-green hazards: **no `ignoreBuildErrors`, no `ignoreDuringBuilds`** — it adds `devIndicators:false`, `serverExternalPackages:['jsdom']`, and a `NormalModuleReplacementPlugin` for `node:crypto`. |
 | F — `apps/mobile/merchant-app/**` + `pubspec.lock` | 12 | **PRESERVE_OUTSIDE_WEB_V1** | **HUMAN DECISION 1.** Preserved as patches `034`–`045` and never merged into the Web V1 integration branch. Classified `HUMAN_DECISION_REQUIRED` at the capability level; **not** "MOBILE_V1_1", **not** "deferred". |
 | G — `apps/storefront-runtime/**` | 3 | **PORT_TO_WEB_V1** | Fail-closed access-mode hardening (`SEC-R1` cited in the code comment) + build config. |
@@ -340,7 +340,7 @@ Each was re-derived from the **actual diff**, not from the ledger prose. Two of 
 
 ### Fix 8 — Mobile V1 capability policy · `lib/app/routes.dart` (+33/−1) + untracked `lib/config/v1_capability_policy.dart` (127 lines) + `test/v1_capability_policy_test.dart` (143 lines)
 - **Still exists:** yes. Every route resolves through `AppRoutes.generateRoute`, which now consults `V1CapabilityPolicy.availabilityFor(spec.id)` and substitutes `_gatedPage()` when unavailable — so the screen is **never constructed** and cannot issue requests as a routing side effect. The rationale (91 routes, 36 `/features/*` aliases, 31 screens reachable from 2–3 paths, app marketplace from 3 — so hiding nav entries hides nothing) is coherent.
-- **Dependency check:** `../widgets/shared/capability_gate.dart` **exists and is already tracked** (committed in `c50d4d59`). `v1_capability_policy.dart` is **untracked** → atomic-set dependency (§7.2).
+- **Dependency check:** `../widgets/shared/capability_gate.dart` **exists and is already tracked** (committed in `29393e5e`). `v1_capability_policy.dart` is **untracked** → atomic-set dependency (§7.2).
 - **ESCALATION — do not action in this workflow.** `_forbidden` gates `AppRouteId.apps`, `AppRouteId.featureAppMarketplace`, and `AppRouteId.featureEmbeddedAppBridge`, citing ART-16/ART-22/NEVER-R3/R-12. **This directly overlaps the separate urgent App-Bridge security task on `codex/emergency-appbridge-killswitch`.** Per the standing instruction, no App-Bridge / app-store / marketplace code was touched, read for modification, or ported here. Recorded as an open cross-workflow escalation only.
 - **Also note:** `v1_capability_policy.dart` cites `LAUNCH_READINESS_2026_06_12/MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/05_V1_SCOPE_FREEZE_AND_EXCLUSIONS.md` as its **scope authority** — a document classified `HUMAN_REVIEW` in §7.2 precisely because it asserts the deferral HUMAN DECISION 1 forbids. The policy's `_deferred` map therefore rests on contested authority. `_forbidden` rests on the Constitution and does not.
 - **Test evidence:** 143 lines of tests exist on disk; **not executed. UNVERIFIED.**
@@ -385,7 +385,7 @@ This is a **third body of uncommitted work**, distinct from the working tree and
 5. **The `id.letbuyy.store` string** in `apps/storefront-runtime/.next/server/chunks/4898.js` (a generated build artifact) — its source origin was not located.
 6. **`stash@{1}`** contents were not enumerated beyond `git stash show` returning zero files.
 7. **Cause of the 6,696-file `644→755` flip.** Consistent with a bulk copy/extract; git cannot prove it and this record does not claim it.
-8. **Whether the `PORT_TO_WEB_V1` set applies cleanly onto the Web V1 integration branch.** It was proven to apply onto a clean `ee371182` extraction; that branch is currently also at `ee371182`, so it should — but that was not executed.
+8. **Whether the `PORT_TO_WEB_V1` set applies cleanly onto the Web V1 integration branch.** It was proven to apply onto a clean `bf35062e` extraction; that branch is currently also at `bf35062e`, so it should — but that was not executed.
 
 ## 11. Escalations requiring a human
 

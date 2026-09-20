@@ -1,6 +1,6 @@
 # CHECKOUT_BOUNDARY_DECISION.md
 
-**Status:** FROZEN DECISION · **Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · **Authority:** Constitution §234 / ART (hosted checkout) + ART-17/18. Code-cited; repository truth.
+**Status:** FROZEN DECISION · **Program:** Full Liquid V1 · **HEAD:** `140a73db` · **Authority:** Constitution §234 / ART (hosted checkout) + ART-17/18. Code-cited; repository truth.
 
 ## Decision (frozen)
 

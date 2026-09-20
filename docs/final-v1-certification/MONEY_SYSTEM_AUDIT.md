@@ -1,6 +1,6 @@
 # Phase F — Money System Audit
 
-**HEAD `587dc988`. Score: 90/100. Money invariants PRESERVED.**
+**HEAD `ae383bb8`. Score: 90/100. Money invariants PRESERVED.**
 
 ## Canonical ledger — SOUND
 - Double-entry balance enforced by `enforce_ledger_transaction_balance()` (mig `139:172–198`) as a `DEFERRABLE` constraint trigger + inside `post_ledger_transaction`.

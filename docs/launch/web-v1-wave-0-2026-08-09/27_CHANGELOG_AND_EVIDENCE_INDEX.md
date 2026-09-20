@@ -8,9 +8,9 @@
 | Field | Value |
 |---|---|
 | **Date** | 2026-08-09 |
-| **Baseline SHA** | `ee3711829d857e986014c5811bb94d86ebc3d343` (`ee371182`), human-approved |
+| **Baseline SHA** | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`bf35062e`), human-approved |
 | **Original repository** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`, branch `stepup/main` — **production-linked**, read-only for this agent |
-| **Integration head** | `codex/web-v1-integration` @ `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6` |
+| **Integration head** | `codex/web-v1-integration` @ `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab` |
 | **Push state** | **NOTHING IS PUSHED.** `git branch -r \| grep -c codex/` → **0**. No PR. No deploy. |
 
 ---
@@ -21,17 +21,17 @@
 
 | ID | Command | Observed |
 |---|---|---|
-| C1 | `git rev-parse --abbrev-ref HEAD` / `rev-parse HEAD` | `stepup/main` / `ee3711829d857e986014c5811bb94d86ebc3d343` — before **and** after |
+| C1 | `git rev-parse --abbrev-ref HEAD` / `rev-parse HEAD` | `stepup/main` / `bf35062eda22f4d881efd61fb1d36c8fc83baed1` — before **and** after |
 | C2 | `git status --porcelain=v1 \| wc -l` | **6826** — before and after |
 | C3 | `git stash list \| wc -l` | **2** — before and after |
-| C4 | `git log --oneline --no-decorate ee371182..codex/web-v1-integration` | **23** commits (§2, verbatim) |
-| C5 | `git log --oneline --no-decorate ee371182..<each short-lived branch>` | §3, verbatim |
-| C6 | `git diff --shortstat ee371182 <branch>` | §2/§3 diffstats |
+| C4 | `git log --oneline --no-decorate bf35062e..codex/web-v1-integration` | **23** commits (§2, verbatim) |
+| C5 | `git log --oneline --no-decorate bf35062e..<each short-lived branch>` | §3, verbatim |
+| C6 | `git diff --shortstat bf35062e <branch>` | §2/§3 diffstats |
 | C7 | `git merge-base --is-ancestor codex/emergency-appbridge-killswitch codex/web-v1-integration` | non-zero → **NOT an ancestor** |
 | C8 | `git rev-list --left-right --count HEAD...origin/stepup/main` | `17  0` |
 | C9 | `git rev-list --left-right --count origin/main...origin/stepup/main` | `0  274` |
 | C10 | `git rev-list --count main..codex/web-v1-integration` | **129** |
-| C11 | `git rev-parse origin/main` | `41b6ea49c5da30a1409d4cc587d989d459288e45` |
+| C11 | `git rev-parse origin/main` | `c2547049c0b5666661536d076046415714fb7d03` |
 | C12 | `git branch -r \| grep -c "codex/"` | **0** |
 | C13 | `git worktree list` | 6 Wave 0 worktrees + the original (§3.6) |
 | C14 | `find … raw-evidence -type f \| wc -l`, `du -sh` | **421 files / 17 MB** (§6) |
@@ -56,7 +56,7 @@ no build, no lint, no test, no governance gate, no Supabase command, and no prov
 
 ---
 
-## 2. The integration branch — `codex/web-v1-integration` @ `fa5630aa`
+## 2. The integration branch — `codex/web-v1-integration` @ `8ec05e21`
 
 Worktree: `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration`
 
@@ -64,7 +64,7 @@ Worktree: `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web
 |---|---|
 | Commits vs baseline | **23** |
 | Diff vs baseline | **155 files changed, 51,757 insertions(+), 1,003 deletions(−)** |
-| Structure | 11 fix-porting commits (`ee371182` → `83b7fb39`, **134 files, +48,434/−920**) then **4 `--no-ff` merges** of the short-lived branches |
+| Structure | 11 fix-porting commits (`bf35062e` → `bac1779b`, **134 files, +48,434/−920**) then **4 `--no-ff` merges** of the short-lived branches |
 | Merge conflicts | **zero** |
 | Ahead of local `main` | **129** commits — which is why `branch-lag-guard-validator` fails it |
 | Pushed? | **No.** No remote ref exists. |
@@ -73,38 +73,38 @@ Worktree: `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web
 
 | SHA | Subject | Kind |
 |---|---|---|
-| `fa5630aa` | `merge(wave-0): freeze the Web V1 scope perimeter as an enforced ratchet` | merge (`--no-ff`) |
-| `3968e4b3` | `merge(wave-0): run and report every validator instead of failing fast` | merge (`--no-ff`) |
-| `100aa85d` | `merge(wave-0): CI trigger coverage for the Web V1 integration branch` | merge (`--no-ff`) |
-| `5021f845` | `merge(wave-0): local environment toolchain pin into the Web V1 integration branch` | merge (`--no-ff`) |
-| `83b7fb39` | `fix(ui,docs): remove the two validator regressions this port introduced` | port |
-| `3a3b269d` | `fix(tests): reword the wave-3 comment so it stops carrying the banned domain literal` | port |
-| `6289c26d` | `docs: add the merchant-system and theme-system discovery evidence packages` | port |
-| `023a2e00` | `fix(tests): stop the wave-3 governance test demanding the banned domain literal; add the missing money fixture table` | port |
-| `d5562c75` | `fix(api-gateway): close cross-tenant handle resolution, write sites.published, fail closed on uniqueness` | port — **security** |
-| `54b2401d` | `fix(storefront-runtime): fail closed on unresolved store access and gate /preview on its token` | port — **security** |
-| `5d6fa5f2` | `feat(merchant-control-plane): navigation IA, honest activation checklist, client-bundle fix` | port |
-| `90a5a3ee` | `fix(identity-platform): derive storefront hosts from the canonical domain (DEPLOY-R3)` | port |
-| `d1c4fd7e` | `fix(theme-engine): repair empty product/collection/search renders and align experience compositions` | port — **carries FBR-38** |
-| `40a8dffe` | `fix(marketing,shared-types): export the contact contract and repair the contact page build` | port — **unblocks the gateway bundle** |
-| `039a23af` | `feat(ui): sidebar active-state affordance, exact-match nav, hydration-safe theme toggle` | port |
-| `2c84e1a9` | `feat(governance): freeze the Web V1 scope perimeter as an enforced ratchet` | from `codex/w0-v1-perimeter` |
-| `02b6374d` | `feat(governance): run and report every validator instead of failing fast` | from `codex/w0-validator-execution` |
-| `8395a48d` | `ci(governance): add workflow trigger coverage validator and reconcile BRANCH_STRATEGY` | from `codex/w0-ci-coverage` |
-| `369f7918` | `fix(governance): make silently non-blocking validator findings block` | from `codex/w0-validator-execution` |
-| `fed4e0ca` | `ci(governance): report every gate step instead of fail-fasting` | from `codex/w0-ci-coverage` |
-| `fedd9837` | `ci(workflows): gate the Web V1 integration branch in ci.yml` | from `codex/w0-ci-coverage` |
-| `4f3ded6f` | `chore(local-env): gitignore the isolated local-stack scratch root` | from `codex/w0-local-environment` |
-| `623718a1` | `chore(toolchain): pin repo-level Node to the CI web-runtime line` | from `codex/w0-local-environment` |
+| `8ec05e21` | `merge(wave-0): freeze the Web V1 scope perimeter as an enforced ratchet` | merge (`--no-ff`) |
+| `5fa68c70` | `merge(wave-0): run and report every validator instead of failing fast` | merge (`--no-ff`) |
+| `f82b9372` | `merge(wave-0): CI trigger coverage for the Web V1 integration branch` | merge (`--no-ff`) |
+| `87cc6327` | `merge(wave-0): local environment toolchain pin into the Web V1 integration branch` | merge (`--no-ff`) |
+| `bac1779b` | `fix(ui,docs): remove the two validator regressions this port introduced` | port |
+| `924584f6` | `fix(tests): reword the wave-3 comment so it stops carrying the banned domain literal` | port |
+| `d2168aef` | `docs: add the merchant-system and theme-system discovery evidence packages` | port |
+| `e0c8d39c` | `fix(tests): stop the wave-3 governance test demanding the banned domain literal; add the missing money fixture table` | port |
+| `c331f929` | `fix(api-gateway): close cross-tenant handle resolution, write sites.published, fail closed on uniqueness` | port — **security** |
+| `f8b04288` | `fix(storefront-runtime): fail closed on unresolved store access and gate /preview on its token` | port — **security** |
+| `18453a97` | `feat(merchant-control-plane): navigation IA, honest activation checklist, client-bundle fix` | port |
+| `fcf3ca1f` | `fix(identity-platform): derive storefront hosts from the canonical domain (DEPLOY-R3)` | port |
+| `9f584157` | `fix(theme-engine): repair empty product/collection/search renders and align experience compositions` | port — **carries FBR-38** |
+| `15dd4bea` | `fix(marketing,shared-types): export the contact contract and repair the contact page build` | port — **unblocks the gateway bundle** |
+| `66be517f` | `feat(ui): sidebar active-state affordance, exact-match nav, hydration-safe theme toggle` | port |
+| `eff77adc` | `feat(governance): freeze the Web V1 scope perimeter as an enforced ratchet` | from `codex/w0-v1-perimeter` |
+| `45958978` | `feat(governance): run and report every validator instead of failing fast` | from `codex/w0-validator-execution` |
+| `43671d96` | `ci(governance): add workflow trigger coverage validator and reconcile BRANCH_STRATEGY` | from `codex/w0-ci-coverage` |
+| `611ee20b` | `fix(governance): make silently non-blocking validator findings block` | from `codex/w0-validator-execution` |
+| `b3025df3` | `ci(governance): report every gate step instead of fail-fasting` | from `codex/w0-ci-coverage` |
+| `3a6831da` | `ci(workflows): gate the Web V1 integration branch in ci.yml` | from `codex/w0-ci-coverage` |
+| `2a48d56a` | `chore(local-env): gitignore the isolated local-stack scratch root` | from `codex/w0-local-environment` |
+| `d926569e` | `chore(toolchain): pin repo-level Node to the CI web-runtime line` | from `codex/w0-local-environment` |
 
 ### 2.2 What the four highest-value ported commits actually changed
 
 | Commit | Change | Why it matters |
 |---|---|---|
-| `40a8dffe` | added `export * from './contact';` at `packages/shared-types/src/index.ts:4` | Nine symbols imported by `services/api-gateway/src/routes/contact-public.ts` and `src/lib/contact-request-email.ts` did not exist on the barrel. At the baseline the gateway **failed to bundle with 17 esbuild errors** while `workerd` still bound `127.0.0.1:8787` and every request hung. **A one-line fix.** `apps/marketing-site` went `tsc` exit 2 (24 errors) → exit 0. |
-| `d5562c75` | cross-tenant handle resolution closed; `sites.published` written; fail-closed on uniqueness | `subdomain` and `store_name` are unique only within their own column, so one handle could resolve to two tenants and return an arbitrary one. **No executed test — FBR-39.** |
-| `54b2401d` | storefront fails **closed** on unresolved store access; `/preview` gated on its token | `/preview` previously served a full render of **any** store — password-gated, preview-only, offline, or unpublished — to any anonymous caller. **No executed test — FBR-39.** Also makes `INTERNAL_API_SECRET` + `LETBUYY_API_BASE_URL` hard launch prerequisites (FBR-40). |
-| `d1c4fd7e` | Liquid `renderLimit` **250 → 5,000** | Repairs 4 failing theme-engine tests (1,722 pass / 4 fail → **1,730 pass / 0 fail**; 27 → 0 *"template render limit exceeded"*). Root cause: LiquidJS `renderLimit` is a **wall-clock** budget, so concurrent sections starved each other. **A documented DoS control relaxed 20× — FBR-38, security sign-off required.** |
+| `15dd4bea` | added `export * from './contact';` at `packages/shared-types/src/index.ts:4` | Nine symbols imported by `services/api-gateway/src/routes/contact-public.ts` and `src/lib/contact-request-email.ts` did not exist on the barrel. At the baseline the gateway **failed to bundle with 17 esbuild errors** while `workerd` still bound `127.0.0.1:8787` and every request hung. **A one-line fix.** `apps/marketing-site` went `tsc` exit 2 (24 errors) → exit 0. |
+| `c331f929` | cross-tenant handle resolution closed; `sites.published` written; fail-closed on uniqueness | `subdomain` and `store_name` are unique only within their own column, so one handle could resolve to two tenants and return an arbitrary one. **No executed test — FBR-39.** |
+| `f8b04288` | storefront fails **closed** on unresolved store access; `/preview` gated on its token | `/preview` previously served a full render of **any** store — password-gated, preview-only, offline, or unpublished — to any anonymous caller. **No executed test — FBR-39.** Also makes `INTERNAL_API_SECRET` + `LETBUYY_API_BASE_URL` hard launch prerequisites (FBR-40). |
+| `9f584157` | Liquid `renderLimit` **250 → 5,000** | Repairs 4 failing theme-engine tests (1,722 pass / 4 fail → **1,730 pass / 0 fail**; 27 → 0 *"template render limit exceeded"*). Root cause: LiquidJS `renderLimit` is a **wall-clock** budget, so concurrent sections starved each other. **A documented DoS control relaxed 20× — FBR-38, security sign-off required.** |
 
 Also on the port: `tests/security/theme-tenant-isolation.test.mjs` was **withheld** (FBR-44 — it reports
 0 tests / exit 0 without a database), `apps/merchant-control-plane/src/app/globals.css` was **withheld**
@@ -120,13 +120,13 @@ developer scratch harness would have been publicly served from the merchant admi
 All local. All in their own worktree under
 `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/`. **None pushed.**
 
-### 3.1 `codex/w0-ci-coverage` @ `8395a48d` — 3 commits, **9 files, +870/−18**
+### 3.1 `codex/w0-ci-coverage` @ `43671d96` — 3 commits, **9 files, +870/−18**
 
 | SHA | Subject |
 |---|---|
-| `8395a48d` | `ci(governance): add workflow trigger coverage validator and reconcile BRANCH_STRATEGY` |
-| `fed4e0ca` | `ci(governance): report every gate step instead of fail-fasting` |
-| `fedd9837` | `ci(workflows): gate the Web V1 integration branch in ci.yml` |
+| `43671d96` | `ci(governance): add workflow trigger coverage validator and reconcile BRANCH_STRATEGY` |
+| `b3025df3` | `ci(governance): report every gate step instead of fail-fasting` |
+| `3a6831da` | `ci(workflows): gate the Web V1 integration branch in ci.yml` |
 
 Closes FBR-22 and FBR-24. `ci.yml` now triggers on `stepup/main` **and** `codex/web-v1-integration` for
 both `pull_request` and `push`; `develop` was **deliberately retained** (removing an existing check is
@@ -136,14 +136,14 @@ the weakening direction under ART-02 / R-18). `architecture-governance.yml` gain
 `workflow-trigger-coverage-validator.mjs` (exit 0: *"16 workflows parsed; 4 gated branches and 8 deploy
 lanes checked"*) + `tests/ci/workflow-trigger-coverage.test.mjs` (exit 0). **Zero deploy-workflow
 triggers modified**; all 8 deploy lanes proven unreachable from any `codex/*` branch, with a seeded
-regression (`NEG-2`) that catches adding `codex/**` to `production-deploy.yml`. Merged as `100aa85d`.
+regression (`NEG-2`) that catches adding `codex/**` to `production-deploy.yml`. Merged as `f82b9372`.
 
-### 3.2 `codex/w0-validator-execution` @ `02b6374d` — 2 commits, **7 files, +1,529/−64**
+### 3.2 `codex/w0-validator-execution` @ `45958978` — 2 commits, **7 files, +1,529/−64**
 
 | SHA | Subject |
 |---|---|
-| `02b6374d` | `feat(governance): run and report every validator instead of failing fast` |
-| `369f7918` | `fix(governance): make silently non-blocking validator findings block` |
+| `45958978` | `feat(governance): run and report every validator instead of failing fast` |
+| `611ee20b` | `fix(governance): make silently non-blocking validator findings block` |
 
 Closes FBR-08 and FBR-13 — **the defining Wave 0 repair.** `scripts/validate-governance.mjs:201-203`
 exited on the first non-zero status, so at the committed baseline the gate died at validator **#2**
@@ -156,9 +156,9 @@ an explicit `advisory()` channel; `warn()` survives only as a deprecated alias; 
 validator on disk for remaining `warn(` callers. **No environment escape hatch was added, deliberately.**
 The `fs.rmSync` purge at `:179` was re-anchored to the repo root, refuses to run when `cwd != repoRoot`,
 plans before deleting, refuses git-tracked paths, and **BLOCKS** `stale-artifact-validator` on refusal
-rather than passing. Merged as `3968e4b3`.
+rather than passing. Merged as `5fa68c70`.
 
-### 3.3 `codex/w0-v1-perimeter` @ `2c84e1a9` — 1 commit, **6 files, +911**
+### 3.3 `codex/w0-v1-perimeter` @ `eff77adc` — 1 commit, **6 files, +911**
 
 `feat(governance): freeze the Web V1 scope perimeter as an enforced ratchet`
 
@@ -180,25 +180,25 @@ flag** — absorbing a new activation requires a reviewable human edit. The ratc
 Two negative tests proved it fails: creating an empty `services/api-gateway/src/routes/sms.ts` → exit 1
 (new activation), and adding a bogus baseline entry for the INACTIVE `cqrs::runtime_wiring` → exit 1
 (stale baseline). Both fixtures were removed immediately; `git status --short` showed no residue.
-Merged as `fa5630aa`.
+Merged as `8ec05e21`.
 
-### 3.4 `codex/w0-local-environment` @ `4f3ded6f` — 2 commits, **4 files, +13/−1**
+### 3.4 `codex/w0-local-environment` @ `2a48d56a` — 2 commits, **4 files, +13/−1**
 
 | SHA | Subject |
 |---|---|
-| `4f3ded6f` | `chore(local-env): gitignore the isolated local-stack scratch root` |
-| `623718a1` | `chore(toolchain): pin repo-level Node to the CI web-runtime line` |
+| `2a48d56a` | `chore(local-env): gitignore the isolated local-stack scratch root` |
+| `d926569e` | `chore(toolchain): pin repo-level Node to the CI web-runtime line` |
 
 Pins Node to the **20** line (`.nvmrc`, `.node-version`, root `engines.node >= 20.9.0`) matching
 `ci.yml` / staging / production `NODE_VERSION`. Records rather than "fixes" FBR-52 (`local-stack-up.mjs`
-demands ≥ 22). Merged as `5021f845`.
+demands ≥ 22). Merged as `87cc6327`.
 
-### 3.5 `codex/emergency-appbridge-killswitch` @ `30fd96b5` — 2 commits, **14 files, +1,356, 0 deletions**
+### 3.5 `codex/emergency-appbridge-killswitch` @ `6c3e17df` — 2 commits, **14 files, +1,356, 0 deletions**
 
 | SHA | Subject |
 |---|---|
-| `30fd96b5` | `fix(governance): close the three ungated app-platform seams the prefix gate missed` |
-| `ed6e5167` | `fix(governance): fail-closed hard gate over the frozen app-platform seam` |
+| `6c3e17df` | `fix(governance): close the three ungated app-platform seams the prefix gate missed` |
+| `df4abd5d` | `fix(governance): fail-closed hard gate over the frozen app-platform seam` |
 
 **Verified NOT an ancestor of `codex/web-v1-integration`** (C7) — a separate ARB-governed review path,
 deliberately. Status **`GATED_WITH_RESIDUAL_RISK`**. 59 proving tests pass with a falsification pass
@@ -211,16 +211,16 @@ deployed environment-variable value was ever read, in any environment, by design
 
 | Worktree | Branch | Head |
 |---|---|---|
-| `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` | `stepup/main` | `ee371182` |
-| `…/letbuyy-w0-worktrees/web-v1-integration` | `codex/web-v1-integration` | `fa5630aa` |
-| `…/letbuyy-w0-worktrees/w0-ci-coverage` | `codex/w0-ci-coverage` | `8395a48d` |
-| `…/letbuyy-w0-worktrees/w0-validator-execution` | `codex/w0-validator-execution` | `02b6374d` |
-| `…/letbuyy-w0-worktrees/w0-v1-perimeter` | `codex/w0-v1-perimeter` | `2c84e1a9` |
-| `…/letbuyy-w0-worktrees/w0-local-environment` | `codex/w0-local-environment` | `4f3ded6f` |
-| `…/letbuyy-w0-worktrees/emergency-appbridge-killswitch` | `codex/emergency-appbridge-killswitch` | `30fd96b5` |
+| `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` | `stepup/main` | `bf35062e` |
+| `…/letbuyy-w0-worktrees/web-v1-integration` | `codex/web-v1-integration` | `8ec05e21` |
+| `…/letbuyy-w0-worktrees/w0-ci-coverage` | `codex/w0-ci-coverage` | `43671d96` |
+| `…/letbuyy-w0-worktrees/w0-validator-execution` | `codex/w0-validator-execution` | `45958978` |
+| `…/letbuyy-w0-worktrees/w0-v1-perimeter` | `codex/w0-v1-perimeter` | `eff77adc` |
+| `…/letbuyy-w0-worktrees/w0-local-environment` | `codex/w0-local-environment` | `2a48d56a` |
+| `…/letbuyy-w0-worktrees/emergency-appbridge-killswitch` | `codex/emergency-appbridge-killswitch` | `6c3e17df` |
 
 `git worktree list` also reports 12 **prunable** entries under a different, unrelated repository path
-(`/Users/saai_sidd/Git/Letbuyy_Store/…`) at `41b6ea49`. **No `git worktree prune` was run** — pruning is
+(`/Users/saai_sidd/Git/Letbuyy_Store/…`) at `c2547049`. **No `git worktree prune` was run** — pruning is
 a destructive operation and was excluded by the mandate.
 
 ---
@@ -233,7 +233,7 @@ Location: `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/docs/launc
 
 | # | Document | Purpose |
 |---|---|---|
-| 01 | `01_AUTHORITY_AND_ARCHITECTURE_BASELINE.md` | The authority chain and the architecture baseline at `ee371182`. **Header mislabels a porcelain v2 count as v1** (cosmetic — doc 30 §1). |
+| 01 | `01_AUTHORITY_AND_ARCHITECTURE_BASELINE.md` | The authority chain and the architecture baseline at `bf35062e`. **Header mislabels a porcelain v2 count as v1** (cosmetic — doc 30 §1). |
 | 02 | `02_GIT_BASELINE_AND_BRANCH_GRAPH.md` | Branch graph, remotes, lag counts at the baseline. |
 | 03 | `03_WORKTREE_CHANGE_CLASSIFICATION.md` | First classification of the 6,826 dirty paths. **Its "777 real content changes" figure is REFUTED — the true figure is 99.** |
 | 04 | `04_CONTENT_VS_MODE_CHANGE_REGISTER.md` | Per-path content-vs-mode register, 15 groups A–O. **Its "36 binary changes in frozen `apps/theme-marketplace`" finding is RETRACTED**, and it **under-registered** `apps/merchant-control-plane/src/app/globals.css` (+271/−73), so its groups sum to 98, not 99. |
@@ -247,7 +247,7 @@ Location: `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store/docs/launc
 | 12 | `12_LOCAL_ENVIRONMENT_ISOLATION_PLAN.md` | The isolation design; raises the production Supabase link as its first critical finding. |
 | 13 | `13_REPRODUCIBILITY_AND_TOOLCHAIN_BASELINE.md` | Toolchain pins. **§1 arithmetic is wrong: 6785+777+10+31 = 7603 ≠ its own stated 6826** — it conflates the raw porcelain `M` count (6,785) with the true zero-diff subset (6,018). |
 | 14 | `14_INDEPENDENT_REVIEW_AND_FALSIFICATION.md` | Independent reproduction: lint byte-for-byte, governance gate byte-for-byte. |
-| 15 | `15_BASELINE_DECISION_RECORD.md` | Why `ee371182` is the baseline: every alternative branch is a strict ancestor; choosing one discards 17–291 commits for zero gain. |
+| 15 | `15_BASELINE_DECISION_RECORD.md` | Why `bf35062e` is the baseline: every alternative branch is a strict ancestor; choosing one discards 17–291 commits for zero gain. |
 | 16 | `16_DIRTY_WORKTREE_PRESERVATION_RECORD.md` | **Authoritative on the dirty tree.** 214 preserved files, 7.7 MB, round-trip proof: 99/99 reconstructed files **byte-identical**, 0 mismatches. |
 | 17 | `17_BRANCH_AND_WORKTREE_TOPOLOGY.md` | Branch + worktree topology. |
 | 18 | `18_REVIEWED_FIX_PORTING_REGISTER.md` | The 11-commit port, decision by decision, with escalations E-A/E-B/E-C. |
@@ -289,7 +289,7 @@ Chronological by the phase that produced it. **Every number below was measured b
 
 ### 5.1 The governance gate went from unmeasured to measured
 
-| Property | Before Wave 0 | After Wave 0 (on `fa5630aa`) |
+| Property | Before Wave 0 | After Wave 0 (on `8ec05e21`) |
 |---|---|---|
 | Gate-lane validators | 108 declared | **110** (baseline 108 + `web-v1-scope-perimeter` + `workflow-trigger-coverage`) |
 | Validators that actually executed | **2** on a clean checkout (gate died at `#2 tenant-isolation-validator`); 6 on the dirty tree (died at `#6 validate-design-system`) | **all 110** |
@@ -347,7 +347,7 @@ call to Supabase Cloud, Razorpay, Resend, Turnstile or any LetBuyy production pr
 
 Doc 28/29: **83 routes** enumerated at runtime from `appStoreRouter.routes` + `appApiRouter.routes`. In
 a **production-shaped** environment (`FEATURE_EXTENSIONS = "false"`, `ENVIRONMENT`/`APP_ENV`/`NODE_ENV`
-= `production`, env reconstructed **verbatim** from `services/api-gateway/wrangler.toml` at `ee371182`),
+= `production`, env reconstructed **verbatim** from `services/api-gateway/wrangler.toml` at `bf35062e`),
 **19 of 83 execute their handler for a caller with no credential of any kind**, nine returning
 `200 {"success":true,…}`. `POST /v1/app-store/oauth/token` negotiates (`400 VALIDATION`, *"grant_type
 must be authorization_code or refresh_token"*). `POST /v1/app-store/bridge/fetch` responds. **Only 2 of
@@ -457,7 +457,7 @@ primary evidence**), `root-package-scripts.txt`, `catch-without-exit-heuristic.t
 | `lens1-gateway-mounts.md`, `lens2-ui-config-shapes.md`, `lens3-executable-proof.md` | Three independent lenses on the same question, so the verdict does not rest on one method |
 | `probe-raw/` (11 files) | `enumerate.mts`, `probe2.mts`, `probe3-isolated.mts` + the per-environment JSON results: `production.json`, `production-noflag.json`, `staging.json`, `staging-extfalse.json`, `staging-noflag.json`, `local.json`, `isolated.json`, `matrix.md` — **this is where "19 of 83" comes from** |
 | `reproduction-probes/` | `tmp-appbridge-probe`, `tmp-appbridge-mount-probe`, `tmp-probe-cfg-bypass` — reproduction harnesses |
-| `killswitch-raw/` (10 files) | `commit-ed6e5167.patch`/`.stat`, `gateway-suite.log`, `behavioral.log`, `gov.log`, `tsc-gateway.log`, `ui-ks.log`, `ks-final.log`, **`ks-falsify.log`** (the falsification pass), `appbridge-existing.log` |
+| `killswitch-raw/` (10 files) | `commit-df4abd5d.patch`/`.stat`, `gateway-suite.log`, `behavioral.log`, `gov.log`, `tsc-gateway.log`, `ui-ks.log`, `ks-final.log`, **`ks-falsify.log`** (the falsification pass), `appbridge-existing.log` |
 | `30_final_test_results.txt` | The 59 passing proving tests |
 | `31_bypass_reproduction_and_closure.txt` | The three seams the prefix gate missed, reproduced and closed |
 | `32_falsification_and_regression.txt` | **Proof that the tests fail when the gate is absent** |
@@ -497,7 +497,7 @@ independently re-run and remain single-source.
 |---|---|
 | `MANIFEST.json` | The index; per doc 16 its sha256 is `ac6c0cb4114e3d6bd1edc34034095e3d16b1f670dfd405ac6fc8bbdf6cfd0a50` |
 | `SHA256SUMS.tsv` | SHA-256 of every preserved artifact |
-| `ROUNDTRIP_PROOF.tsv` | **The proof:** `git archive ee371182 \| tar -x` into a scratch dir (6,904 files) → `git apply --check` exit 0 → `git apply` exit 0 → SHA-256 of all 99 reconstructed files vs the live worktree → **99/99 BYTE-IDENTICAL, 0 mismatches** |
+| `ROUNDTRIP_PROOF.tsv` | **The proof:** `git archive bf35062e \| tar -x` into a scratch dir (6,904 files) → `git apply --check` exit 0 → `git apply` exit 0 → SHA-256 of all 99 reconstructed files vs the live worktree → **99/99 BYTE-IDENTICAL, 0 mismatches** |
 | `REAL_CONTENT_CHANGES_99.no-mode-flip.binary.patch` | **The patch to port with** (`f4f79390…`) |
 | `REAL_CONTENT_CHANGES_99.binary.patch` | The mode-flip-inclusive variant |
 | `BINARY_MODE_ONLY_PROOF.tsv` | The 678/678 identical-blob proof that refuted "777" |
@@ -572,7 +572,7 @@ Wave 0 refuted itself four times, and the refutations are the most valuable outp
    authorising a deferral, and the scope registry **rejects** `WEB_V1_DEFERRED`, `MOBILE_V1_1` and
    `WEB_V1_REQUIRED` for it in code.
 8. **Two hazards discovered late and present in no earlier document** (doc 30):
-   **Hazard A** — two stashes; `stash@{0}` (`b85eeb03…`) holds 28 files (+1,128/−1,203), a **third
+   **Hazard A** — two stashes; `stash@{0}` (`f8a6c8c7…`) holds 28 files (+1,128/−1,203), a **third
    divergent body of uncommitted work**, unreachable from the baseline, including four **already-committed**
    migrations and three **deletion-only** `wrangler.toml` changes. **Document only — no stash command
    beyond `list`/`show`.**
@@ -599,7 +599,7 @@ tree each was measured on.
 | Property | Before | After |
 |---|---|---|
 | Branch | `stepup/main` | `stepup/main` |
-| `HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | `git status --porcelain=v1 \| wc -l` | **6826** | **6826** |
 | `git stash list \| wc -l` | **2** | **2** |
 

@@ -219,7 +219,7 @@ The following observations were measured during preparation of this work order o
 
 ## 3.1 Repository and branch leads
 
-- Preparation HEAD was `5af69e0c080503765dec361eae2128ba860cf529` on `stepup/main`.
+- Preparation HEAD was `f52abca7ef6b2ddfc39f03b38206779cbe543e46` on `stepup/main`.
 - At that moment, local `main`, `stepup/main`, `origin/main`, and `origin/stepup/main` pointed to the same commit.
 - The worktree contained user-owned modifications in `apps/merchant-control-plane/**` and `packages/typescript/ui/**`.
 - A governance run reported 110/110 validators passing, but this is not proof that builds, behavioral suites, production providers, or production traffic are healthy.

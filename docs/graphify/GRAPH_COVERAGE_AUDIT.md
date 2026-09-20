@@ -1,6 +1,6 @@
 # Phase 1 — Graph Coverage Audit
 
-**Graph @ `0db025a6` (6 commits behind HEAD `fa1fcc76`). All counts from `graph.json`.**
+**Graph @ `0f257ca1` (6 commits behind HEAD `3f5afd46`). All counts from `graph.json`.**
 
 ## Totals
 | Metric | Value |
@@ -29,7 +29,7 @@ packages: dart 1,865 · typescript 1,282 · shared-types 1,086 · theme-engine 4
 - **Database — CRITICAL.** Only **2 nodes** under `database/` for **103 migrations**. Tables, views, RPCs, triggers, policies, indexes are **not** in the graph. SQL extraction was not active this run. → Phase 9 uses migrations directly.
 - **Reserved services are stubs.** analytics-pipeline, checkout-runtime, event-bus, media-service, notification-service, search-service each show exactly **73 nodes** — identical manifest/AGENTS.md boilerplate, **no real implementation** (matches CLAUDE.md "reserved, manifest-only"). Not missing — confirmed empty.
 - **Reserved mobile roots** (`apps/mobile/shopper-app`, `operator-app`) — not present as implemented trees.
-- **Staleness:** graph misses the last 6 commits (HEAD moved `0db025a6`→`fa1fcc76`). Re-run `graphify update .`.
+- **Staleness:** graph misses the last 6 commits (HEAD moved `0f257ca1`→`3f5afd46`). Re-run `graphify update .`.
 
 ## Verdict
 **Code-graph coverage ≈ 95%** (TS/Dart/JS/docs) and well-connected (0.24% orphans). **Schema-graph coverage ≈ 2%.** The graph is a high-fidelity application-code map with a database-shaped hole; close it by enabling SQL indexing and re-running.

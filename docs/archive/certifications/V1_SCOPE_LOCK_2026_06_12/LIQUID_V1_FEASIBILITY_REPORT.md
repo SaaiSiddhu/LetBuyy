@@ -1,6 +1,6 @@
 # LETBUYY — LIQUID V1 FEASIBILITY REPORT
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · **Method:** 5 parallel code-audit agents + direct recon. **Repository evidence only — code wins, no assumptions, no governance theory.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · **Method:** 5 parallel code-audit agents + direct recon. **Repository evidence only — code wins, no assumptions, no governance theory.**
 
 ## VERDICT
 
@@ -106,4 +106,4 @@ Adds: Liquid templates **and** composition routing for `cart`/`customers/*`/`ord
 
 ---
 
-*Every load-bearing claim cites file:line and was confirmed by 5 independent code audits at HEAD `0b8a56e7`. Parity state read from the in-repo matrix. No flag was flipped, no code changed — research only.*
+*Every load-bearing claim cites file:line and was confirmed by 5 independent code audits at HEAD `140a73db`. Parity state read from the in-repo matrix. No flag was flipped, no code changed — research only.*

@@ -12,7 +12,7 @@
 
 Phase V touches `apps/merchant-control-plane/package.json` (test script addition — `theme-editor-v.test.mjs` appended). This file carries prior user modifications; the hunk appends one entry and does not conflict. **This change MUST NOT be committed without review of the hunk against the surrounding foreign WIP.**
 
-No new database migrations. No gateway changes. No production deployment is implied by this phase completion. Rollback = revert commits `36d6f342` and `e9462067`.
+No new database migrations. No gateway changes. No production deployment is implied by this phase completion. Rollback = revert commits `44497fbd` and `8de31807`.
 
 ---
 
@@ -199,11 +199,11 @@ Wiring into `page.tsx` rides as WIP alongside the foreign `page.tsx` edits, iden
 
 ## 7. Hardening
 
-Six findings from the code-review pass were resolved in a single atomic commit (`36d6f342`):
+Six findings from the code-review pass were resolved in a single atomic commit (`44497fbd`):
 
 | Finding | Severity | Resolution |
 |---------|----------|------------|
-| Lane A files unstaged (template-registry.ts, test, index.ts export, theme-document.ts) | CRITICAL | Staged and committed atomically as `36d6f342` |
+| Lane A files unstaged (template-registry.ts, test, index.ts export, theme-document.ts) | CRITICAL | Staged and committed atomically as `44497fbd` |
 | `findExcessiveVariantCounts` not wired into `ThemeDocumentSchema.superRefine` | MEDIUM | Wired into superRefine check #6; new test rejects 21-variant doc |
 | `toThemeDocumentV2` narrowing undocumented / unguarded | MEDIUM | Pre-conversion sanity pass added; docblock updated |
 | Consecutive-slash keys not rejected by `validateTemplateKey` | LOW | `key.includes('//')` guard added as constraint 4b; test added |
@@ -228,7 +228,7 @@ All existing behavior is preserved:
 ## 9. Rollback
 
 Rollback = revert commits in order:
-1. `git revert 36d6f342` — reverts Lane A + hardening (template-registry.ts, test, index.ts export, theme-document.ts superRefine additions, hardening fixes).
-2. `git revert e9462067` — reverts Lane B (TemplateSwitcherPanel.tsx, theme-editor-v.test.mjs, package.json test entry).
+1. `git revert 44497fbd` — reverts Lane A + hardening (template-registry.ts, test, index.ts export, theme-document.ts superRefine additions, hardening fixes).
+2. `git revert 8de31807` — reverts Lane B (TemplateSwitcherPanel.tsx, theme-editor-v.test.mjs, package.json test entry).
 
 After revert, theme-engine returns to 1141 tests, merchant to 196 tests, and `ThemeDocumentTemplateSchema.key` loses the path-safety guard.

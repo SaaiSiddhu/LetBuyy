@@ -67,7 +67,7 @@ Gate: every S0 has a named mitigation; committed before Wave 0.
 Status:        complete-with-SKIPs
 Started:       2026-06-09T19:33:00Z
 Completed:     2026-06-09T19:38:30Z
-Branch:        stepup/wave-0-truth-harness (merged to stepup/main: yes, 92d1a9fa)
+Branch:        stepup/wave-0-truth-harness (merged to stepup/main: yes, 5781ae00)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave0; planted fake UTR fails gate; real Postgres ledger test executes post_ledger_transaction)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -84,7 +84,7 @@ Next wave:     Wave 1 — Money Fixes (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T19:40:53Z
 Completed:     2026-06-09T20:00:36Z
-Branch:        stepup/wave-1-money (merged to stepup/main: yes, 8f7a7cfa)
+Branch:        stepup/wave-1-money (merged to stepup/main: yes, aae6eca6)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave1; validates capture/refund ledger posting contracts, wallet backfill/reconciliation, payout claim safety, and rollback on fixture)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -101,7 +101,7 @@ Next wave:     Wave 2 — Tenant Isolation (precondition met: yes)
 Status:        complete
 Started:       2026-06-09T20:03:00Z
 Completed:     2026-06-09T20:17:38Z
-Branch:        stepup/wave-2-tenant-isolation (merged to stepup/main: yes, 49741343)
+Branch:        stepup/wave-2-tenant-isolation (merged to stepup/main: yes, 214b6357)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave2; exhaustive registry fail-closed test over 261 tenant tables, scoped mutation proof, and tenant-isolation validator)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -118,7 +118,7 @@ Next wave:     Wave 3 — Production Safety (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T20:20:45Z
 Completed:     2026-06-09T20:28:15Z
-Branch:        stepup/wave-3-production-safety (merged to stepup/main: yes, 57977e74)
+Branch:        stepup/wave-3-production-safety (merged to stepup/main: yes, b0ccc9ce)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave3; validates rate-limit fail-closed behavior, mock registrar gating, shared-env preflight, and .store public URL defaults)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -135,7 +135,7 @@ Next wave:     Wave 4 — Session Security (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T20:31:00Z
 Completed:     2026-06-09T20:56:00Z
-Branch:        stepup/wave-4-session-security (merged to stepup/main: yes, 8ceb83d1)
+Branch:        stepup/wave-4-session-security (merged to stepup/main: yes, 105a294e)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave4; validates dedicated internal signing/JTI, fail-closed internal perimeter, session migration apply/down, session rotation/reuse revocation, MFA/per-principal TOTP governance)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -152,7 +152,7 @@ Next wave:     Wave 5 — Design Governance (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:01:00Z
 Completed:     2026-06-09T21:10:39Z
-Branch:        stepup/wave-5-design-governance (merged to stepup/main: yes, aa763b76)
+Branch:        stepup/wave-5-design-governance (merged to stepup/main: yes, 0395cad2)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave5; validates design ratchet pass/fail behavior, marketing exile, no local workspace shell implementation, and mobile token parity)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -169,7 +169,7 @@ Next wave:     Wave 6 — Theme Governance (precondition met after merge: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:13:00Z
 Completed:     2026-06-09T21:22:35Z
-Branch:        stepup/wave-6-theme-governance (merged to stepup/main: yes, 86de8653)
+Branch:        stepup/wave-6-theme-governance (merged to stepup/main: yes, 8d9c392e)
 Build:         green (pnpm run build)
 Tests:         green (pnpm run test:foundation:wave6; validates 24 built-in section schemas, WARN/ENFORCE registry audit, schema migration runner, fallback governance, and Liquid default-off)
 Dependency-graph: green (pnpm run validate:dependencies)
@@ -186,7 +186,7 @@ Next wave:     Wave 7 — Beta Readiness (precondition met: yes)
 Status:        complete-with-SKIPs
 Started:       2026-06-09T21:26:00Z
 Completed:     2026-06-09T21:45:14Z
-Branch:        stepup/wave-7-beta-readiness (merged to stepup/main: yes, 68192089)
+Branch:        stepup/wave-7-beta-readiness (merged to stepup/main: yes, 1f26badd)
 Build:         green (pnpm run build; Flutter debug APK build also green)
 Tests:         green (pnpm run test:foundation:wave7; validates mobile Turnstile BFF verification, hosted checkout order/capture posting, sandbox COD/WhatsApp, focused Flutter login test, and beta-readiness validator)
 Dependency-graph: green (pnpm run validate:dependencies)

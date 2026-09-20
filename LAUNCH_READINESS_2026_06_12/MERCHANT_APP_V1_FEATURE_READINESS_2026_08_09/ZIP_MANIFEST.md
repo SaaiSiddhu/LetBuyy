@@ -2,7 +2,7 @@
 
 **Package:** `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09`
 **Generated:** 2026-08-09
-**Audited commit:** `ee371182` (`ee3711829d857e986014c5811bb94d86ebc3d343`) on `stepup/main`
+**Audited commit:** `bf35062e` (`bf35062eda22f4d881efd61fb1d36c8fc83baed1`) on `stepup/main`
 **Working tree:** dirty and user-owned (6,821 paths listed; only 84 with real content changes — the
 rest are file-mode flips). All changes described in this package are **uncommitted**.
 **Authority:** Evidence package. Subordinate to DOC 01 (Constitution), root `AGENTS.md`, DOC 03.

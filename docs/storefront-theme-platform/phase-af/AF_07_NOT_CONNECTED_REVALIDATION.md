@@ -1,7 +1,7 @@
 # AF_07 — NOT-CONNECTED Seam Revalidation
 
 **Workstream:** AF-G  
-**Status:** COMPLETE — 12 seams verified against current source on HEAD 7e1441a6, branch stepup/main  
+**Status:** COMPLETE — 12 seams verified against current source on HEAD 80d0b1af, branch stepup/main  
 **Date:** 2026-07-17  
 **Method:** Read-only grep/find/Read across repo; no builds run; working tree unchanged (378 dirty files pre-existing at session start; no delta introduced by this audit).
 

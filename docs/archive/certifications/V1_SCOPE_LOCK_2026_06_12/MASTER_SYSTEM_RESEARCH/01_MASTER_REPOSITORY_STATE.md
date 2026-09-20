@@ -1,6 +1,6 @@
 # 01 — MASTER REPOSITORY STATE
 
-**Date:** 2026-06-13 · **HEAD:** `cd5905be` · read-only, code-verified this session. Numbers are filesystem counts, not estimates.
+**Date:** 2026-06-13 · **HEAD:** `c7c82847` · read-only, code-verified this session. Numbers are filesystem counts, not estimates.
 
 ## Census (filesystem truth)
 
@@ -23,7 +23,7 @@
 
 ## The two defining facts
 
-1. **Never pushed / never deployed.** Local HEAD `cd5905be` is **211 commits ahead of `origin/main`** (still `41b6ea49`, "show turnstile on auth forms"). Production deploys on push to `main` — so the entire converged platform has **never reached the deploy branch**; zero production deploys have fired.
+1. **Never pushed / never deployed.** Local HEAD `c7c82847` is **211 commits ahead of `origin/main`** (still `c2547049`, "show turnstile on auth forms"). Production deploys on push to `main` — so the entire converged platform has **never reached the deploy branch**; zero production deploys have fired.
 2. **React-V1 blockers are closing but not closed.** As of this HEAD: LB-9 (appearance bridge), LB-10 (cancelled/refunded emails), LB-12 (shopper register route) now have implementations on disk (verify completeness); **LB-8 (announcement bar renderer) and LB-11 (hide dead gift-card surface) remain open.**
 
 ## Two-track reality
@@ -33,6 +33,6 @@
 
 ## Mount caveat (operational truth)
 
-The file-tools mount and the bash mount have at times shown different HEADs/subtrees this session. **bash (`/sessions/.../Letbuyy_Store`, HEAD `cd5905be`) is ground truth**; verify there. This document and 02–13 are grounded in the bash mount.
+The file-tools mount and the bash mount have at times shown different HEADs/subtrees this session. **bash (`/sessions/.../Letbuyy_Store`, HEAD `c7c82847`) is ground truth**; verify there. This document and 02–13 are grounded in the bash mount.
 
 See `13_FINAL_EXECUTIVE_SUMMARY.md` for the scored readiness and the path to launch.

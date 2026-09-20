@@ -8,7 +8,7 @@ WS7 production hardening is green for fresh local stack boot, real J1-J5 federat
 
 - Worktree: `/Users/saai_sidd/Git/lb-ws7`
 - Branch: `stream/WS7-hardening`
-- Prior WS7 hardening commits: `2265a55 docs(ws7): record production hardening evidence`, `bc4a996 chore(ws7): harden local stack orchestration`
+- Prior WS7 hardening commits: `0d57518 docs(ws7): record production hardening evidence`, `3f60710 chore(ws7): harden local stack orchestration`
 - Ownership honored: edited `scripts/dev/**` plus root mission/status ledgers; did not edit `apps/**` or `packages/typescript/**`.
 
 ## Phase Summary

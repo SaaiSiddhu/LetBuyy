@@ -262,7 +262,7 @@ posts to the canonical ledger idempotently.
 | COD orders are created `confirmed` immediately | live `create_order_with_inventory_reservations` prosrc line 175 `CASE WHEN p_payment_method = 'cod' THEN 'confirmed' ELSE 'pending' END` |
 | `create_checkout_order` posts **zero** COD ledger entries | `grep -c 'cod_receivable\|post_settlement_ledger'` over the live `create_checkout_order` prosrc = **0** |
 | The only `cod_receivable` posting is at remittance — and it **debits** the account | `database/supabase/migrations/165_d5_canonical_money_paths.sql:353-395` (`reconcile_cod_remittance_with_ledger`) |
-| The Razorpay capture path **does** post double-entry (three repo docs saying otherwise are stale) | live `confirm_order_payment_with_ledger` prosrc — `post_settlement_ledger_transaction(… debit pa_clearing … credit merchant_payable …)`, introduced by `database/supabase/migrations/168_b1_b2_capture_refund_ledgering.sql` (commit `4efbdddd`) |
+| The Razorpay capture path **does** post double-entry (three repo docs saying otherwise are stale) | live `confirm_order_payment_with_ledger` prosrc — `post_settlement_ledger_transaction(… debit pa_clearing … credit merchant_payable …)`, introduced by `database/supabase/migrations/168_b1_b2_capture_refund_ledgering.sql` (commit `c428dcf2`) |
 
 **Note the direction problem, which is a finance question, not an engineering one.** `PAY-R2`
 specifies `cod_receivable` **at confirm**, relieved at remittance. The live remittance function
@@ -556,7 +556,7 @@ the rollback*).
 | — | The canary's own observability signal is wrong: `X-Lb-Render-Engine` is stamped from a global env var, not the per-store decision, so it reports `react` for Liquid stores | `apps/storefront-runtime/src/proxy.ts:175` vs `theme-governance.ts:154-161`; the env var is declared **nowhere** in `config/`, `.github/`, `infrastructure/` |
 | — | The theme-engine suite is **red** on the canonical ART-17 renderer: 4 Liquid tests fail with empty commerce loops | `cd packages/theme-engine && npx tsx --test test/*.test.ts` → EXIT=1, `tests 1726 / pass 1722 / fail 4`; `test/liquid-l3-compiler.test.ts:61`, `liquid-l5-product.test.ts:45`, `liquid-l6-collection.test.ts:46`, `liquid-l7-search.test.ts` |
 | — | The theme-specific validators are nevertheless **green**, pinning Liquid default OFF and the flip decision `deferred` | `node scripts/validators/theme-governance-validator.mjs` → EXIT=0; `scripts/validators/theme-governance-validator.mjs:57-99`; `no-new-react-sections-validator.mjs` → EXIT=0 |
-| — | The authoritative ARB gate list is `docs/storefront-theme-platform/phase-ad/CANARY_READINESS_ARB_PACKAGE.md` (commit `7337f297`, 2026-07-11) — §5 Stage 7 = platform-wide flip **under ARB authority only** | `git log -1 --date=short -- docs/storefront-theme-platform/phase-ad/CANARY_READINESS_ARB_PACKAGE.md` |
+| — | The authoritative ARB gate list is `docs/storefront-theme-platform/phase-ad/CANARY_READINESS_ARB_PACKAGE.md` (commit `9b4ad6fb`, 2026-07-11) — §5 Stage 7 = platform-wide flip **under ARB authority only** | `git log -1 --date=short -- docs/storefront-theme-platform/phase-ad/CANARY_READINESS_ARB_PACKAGE.md` |
 
 **State this plainly for the record: Liquid currently has no working rollback.** `THEME-R6` names the
 per-theme `renderer.engine` switch as *the* rollback. Flipping it back to React on a store using any
@@ -756,7 +756,7 @@ gates a decision above.
 | # | Question | Gates | What would resolve it |
 |---|---|---|---|
 | Q-1 | Has the ARB **ever formally recorded** the `FEATURE_LIQUID` decision? No committed governance document does — only repeated "ARB decision required" entries in the phase-j and phase-ad packages | **D-08** | An ARB minute, committed |
-| Q-2 | Is `docs/storefront-theme-platform/phase-af` (AF_00…AF_13, **entirely uncommitted**) an accepted artifact or abandoned WIP? Its `AF_1_STOP` verdict is the newest theme-governance statement in the tree but has **no commit and no ARB signature** | **D-09** | An ownership ruling. Note AF_12's "clean clone cannot compile `@letbuyy/theme-engine`" blocker is **CLOSED at HEAD** — `git cat-file -e HEAD:packages/theme-engine/src/{industry-experience-map,theme-bundle-core,experience-fonts}.ts` all succeed at `ee371182` — so the package is stale on that point while its gate-red finding still reproduces |
+| Q-2 | Is `docs/storefront-theme-platform/phase-af` (AF_00…AF_13, **entirely uncommitted**) an accepted artifact or abandoned WIP? Its `AF_1_STOP` verdict is the newest theme-governance statement in the tree but has **no commit and no ARB signature** | **D-09** | An ownership ruling. Note AF_12's "clean clone cannot compile `@letbuyy/theme-engine`" blocker is **CLOSED at HEAD** — `git cat-file -e HEAD:packages/theme-engine/src/{industry-experience-map,theme-bundle-core,experience-fonts}.ts` all succeed at `bf35062e` — so the package is stale on that point while its gate-red finding still reproduces |
 | Q-3 | Has migration **188** actually been applied to the **production** Supabase instance? Confirmed applied locally; no repo artifact records production apply state, and `CANARY_READINESS_ARB_PACKAGE` §5 Stage 0 makes this a hard prerequisite | **D-12**, **D-09** | A production `psql` probe. There is **no** `supabase_migrations.schema_migrations` table locally, so applied state is inferable only from data shape — the migration ledger mechanism itself needs identifying |
 | Q-4 | Is `apps/storefront-runtime` actually reachable at a `*.vercel.app` hostname in production, or fronted exclusively by Cloudflare with the origin locked down? | The severity of the access-gate bypass (**§4**, authorized) hinges **entirely** on this | A DNS/edge configuration probe |
 | Q-5 | Which database role does `HYPERDRIVE` / `DATABASE_URL` resolve to at runtime, and does it carry `BYPASSRLS`? If it is the `postgres` superuser, the pooled-SQL storefront readers are **outside RLS entirely** and rest solely on their `store_id = $1` predicates | **U-3**, and the whole RLS-as-backstop premise (`SEC-R9`) | A `SELECT current_user, rolbypassrls` probe from the deployed worker |
@@ -818,7 +818,7 @@ theme-relevant — `apps/storefront-runtime/src/lib/webpack/node-crypto-client-s
 this engagement's output.
 
 **The governance baseline is 22, not 2.** The inherited handoff claimed *"two pre-existing governance
-failures."* Measured at clean `HEAD` (`ee371182`) in a detached worktree with no user edits, the true
+failures."* Measured at clean `HEAD` (`bf35062e`) in a detached worktree with no user edits, the true
 count is **22 of 107** validators failing; the working tree shows **24**, and the 2 extra are
 user-owned artifacts (untracked `supabase/config.toml` → `migration-safety-validator`;
 `scripts/.DS_Store` → `tooling-governance-validator`). `node scripts/validate-governance.mjs` was
@@ -837,5 +837,5 @@ the seed that creates that row runs **after** migrations.
 ---
 
 *Document 17 of the theme-system current-state series. Compiled 2026-08-04 against branch
-`stepup/main` @ `ee371182`. Every claim carries a `path:line`, a table/RPC/migration name, a `psql`
+`stepup/main` @ `bf35062e`. Every claim carries a `path:line`, a table/RPC/migration name, a `psql`
 result, or a command + exit code. Nothing on this docket was changed by this engagement.*

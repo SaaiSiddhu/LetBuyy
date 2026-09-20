@@ -1,6 +1,6 @@
 # PHASE L14 — PARITY VALIDATION PROGRAM
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **The constitutional flip/deletion gate (ART-17).**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **The constitutional flip/deletion gate (ART-17).**
 
 1. **Purpose.** Prove Liquid matches React across all surfaces — the parity/security/perf harness ART-17 requires before any default-flip (L16) or React deletion (L17).
 2. **Repository Reality.** `LAUNCH_READINESS_2026_06_12/evidence/e-liquid-parity/PARITY_MATRIX.md` = **200 cells PENDING** (20 sections × 10 dimensions); harness `scripts/liquid-parity/run-parity-matrix.mjs` exists but never executed; the only real render test asserts XSS escaping (no data-binding proof); islands have zero behavioral coverage. `THEME_LIQUID_PARITY_REQUIRED_SECTION_COUNT=20` (`theme-governance.ts:15`).

@@ -5,10 +5,10 @@
 > **Document type:** The **procedural / supremacy-declaring** constitution of the Convergence Cleanup Program. The binding law for **how** the convergence is allowed to proceed and **how** drift is permanently prevented afterward.
 > **Document ID:** CLEANUP-CONSTITUTION (Phase 7 of the Convergence Cleanup Program of 2026-06-10).
 > **Date authored:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`.
-> **Baseline (re-verified this phase):** branch `stepup/main` @ HEAD `5cf9e64e7e62482adaf4b65e74d8cbca754a0a15` · **+30** over `main` (`git rev-list --count main..HEAD = 30`) · working tree **512 D / 410 M / 79 ??** (`git status --porcelain` re-counted this phase; the prior `78 ??` has moved to `79 ??`).
+> **Baseline (re-verified this phase):** branch `stepup/main` @ HEAD `c4fc3cd6898215f53fb462800ca526f649ce37ae` · **+30** over `main` (`git rev-list --count main..HEAD = 30`) · working tree **512 D / 410 M / 79 ??** (`git status --porcelain` re-counted this phase; the prior `78 ??` has moved to `79 ??`).
 > **Status:** **AUTHORED. SUBORDINATE TO THE PRODUCT CONSTITUTION. NOT YET ARB-RATIFIED** (the open `SKIP-GATE1` seam — see §5).
 > **Authority for every winner, invariant, and "what LetBuyy is" cited here:** the ratified product canon, in order — `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (DOC 01) → root `AGENTS.md` (= promoted `LETBUYY_AGENTS_V2`, DOC 02) → `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03).
-> **Evidence base (the "why," not authority):** the six prior Convergence Cleanup phase reports in this directory — `REPOSITORY_FORENSICS_REPORT.md` (Phase 1), `STRATEGIC_WINNERS_FINAL.md` (Phase 2), `SAFE_DELETION_PLAN.md` (Phase 4), `DOCUMENT_CONVERGENCE_PLAN.md` (Phase 5), `PROMPT_DRIFT_ELIMINATION_PLAN.md` (Phase 6) — every claim re-derived against `stepup/main` @ `5cf9e64e`.
+> **Evidence base (the "why," not authority):** the six prior Convergence Cleanup phase reports in this directory — `REPOSITORY_FORENSICS_REPORT.md` (Phase 1), `STRATEGIC_WINNERS_FINAL.md` (Phase 2), `SAFE_DELETION_PLAN.md` (Phase 4), `DOCUMENT_CONVERGENCE_PLAN.md` (Phase 5), `PROMPT_DRIFT_ELIMINATION_PLAN.md` (Phase 6) — every claim re-derived against `stepup/main` @ `c4fc3cd6`.
 
 ---
 
@@ -266,4 +266,4 @@ Each row takes a "two authorities" / duplicate-authority case the Phase-1 forens
 >
 > **This document adds no substance to the authority chain — it restates the chain and binds the execution.** It is subordinate to the product Constitution; where they conflict, the product Constitution governs and this document is void to the extent of the conflict. **Status: AUTHORED; ARB-ratification pending (`SKIP-GATE1`).**
 
-*End of the LetBuyy Cleanup Governance Constitution (Convergence Cleanup Program, Phase 7). Discovery / decision text only — no code, schema, git state, architecture, or other document was modified by authoring this file. Authority deferred throughout to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`. Evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty (512 D / 410 M / 79 ??), 2026-06-10.*
+*End of the LetBuyy Cleanup Governance Constitution (Convergence Cleanup Program, Phase 7). Discovery / decision text only — no code, schema, git state, architecture, or other document was modified by authoring this file. Authority deferred throughout to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`. Evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty (512 D / 410 M / 79 ??), 2026-06-10.*

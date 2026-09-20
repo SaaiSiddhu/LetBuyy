@@ -1,6 +1,6 @@
 # M→AE Program — Preflight Inventory
 
-**Date:** 2026-07-10 · **Branch:** `stepup/main` (not `main`, not production ✓) · **Starting HEAD:** `29f87115`
+**Date:** 2026-07-10 · **Branch:** `stepup/main` (not `main`, not production ✓) · **Starting HEAD:** `8c1ac94b`
 
 This is the immutable preflight record for the LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor program (Phases M→AE). It captures the verified repository truth **before** any M→AE work.
 
@@ -12,17 +12,17 @@ This is the immutable preflight record for the LetBuyy Liquid Theme Platform + S
 ## B→L commit chain — VERIFIED REAL (all `commit` type + ancestors of HEAD)
 | Phase | Commit | Type | Ancestor of HEAD |
 |-------|--------|------|------------------|
-| B | 073bcbfe | commit | ✓ |
-| C | 70a40c2a | commit | ✓ |
-| E | 0e3d763e | commit | ✓ |
-| D | def512cb | commit | ✓ |
-| F | fc89b0f1 | commit | ✓ |
-| G | 40741cb8 | commit | ✓ |
-| H | fb3f660a | commit | ✓ |
-| I | 4eaf3e84 | commit | ✓ |
-| J | cea10b67 | commit | ✓ |
-| K | 9dc84080 | commit | ✓ |
-| L | 29f87115 | commit | ✓ (= HEAD) |
+| B | 93419c58 | commit | ✓ |
+| C | be56a6fd | commit | ✓ |
+| E | 7b111a94 | commit | ✓ |
+| D | 4546f27b | commit | ✓ |
+| F | 51d9dd74 | commit | ✓ |
+| G | 7cdd42a1 | commit | ✓ |
+| H | 06d3cc85 | commit | ✓ |
+| I | dbcf173a | commit | ✓ |
+| J | 77a5872f | commit | ✓ |
+| K | b71b93bf | commit | ✓ |
+| L | 8c1ac94b | commit | ✓ (= HEAD) |
 
 The B→L program's commit claims are **TRUE**. Phase L is committed at HEAD.
 

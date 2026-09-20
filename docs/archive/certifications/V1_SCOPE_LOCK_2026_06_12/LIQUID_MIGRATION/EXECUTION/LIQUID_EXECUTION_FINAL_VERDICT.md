@@ -1,6 +1,6 @@
 # LIQUID_EXECUTION_FINAL_VERDICT.md
 
-**Full Liquid V1 · HEAD `0b8a56e7` · repository evidence only. No optimism.**
+**Full Liquid V1 · HEAD `140a73db` · repository evidence only. No optimism.**
 
 ## Question
 

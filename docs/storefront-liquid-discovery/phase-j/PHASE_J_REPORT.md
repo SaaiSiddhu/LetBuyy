@@ -19,7 +19,7 @@ Phase J is a documentation-only phase. It produced five planning and evidence do
 | Rollback runbook | `ROLLBACK_RUNBOOK.md` | On-call rollback procedures for Stage 1 (per-store canary) and Stage 2 (post-flip platform-wide). Three per-store manual levers and two platform levers. Cache window detail and escalation chain. |
 | Observability design | `OBSERVABILITY_AND_ALERTING.md` | Signal catalog (10 signals, CONNECTED/NOT-CONNECTED), proposed alert threshold table (9 alerts), 4-row dashboard layout design, and the exact wiring steps to go live. |
 | Release notes | `RELEASE_NOTES.md` | Phase B–I narrative for merchant, developer, and operator audiences. Includes ARB-gate blocker reconciliation, what is behind the ARB flag, and telemetry reference. |
-| Risk closure amendment | `certification/RISK_CLOSURE_REPORT.md §13` | Phase J amendment adding summary counts, a review-issue disposition table (H-F1, H-F2 confirmed CLOSED; I-F1 CLOSED in commit 4eaf3e84 via `name="fullName"`, A11Y-5 asserts), and the honest readiness verdict. |
+| Risk closure amendment | `certification/RISK_CLOSURE_REPORT.md §13` | Phase J amendment adding summary counts, a review-issue disposition table (H-F1, H-F2 confirmed CLOSED; I-F1 CLOSED in commit dbcf173a via `name="fullName"`, A11Y-5 asserts), and the honest readiness verdict. |
 
 ---
 
@@ -76,7 +76,7 @@ Every claim in the Phase J package is classified as CONNECTED (verifiable from c
 
 | ID | Severity | Finding | Status |
 |---|---|---|---|
-| I-F1 | ~~HIGH~~ **CLOSED** | DOMPurify 3.x clobbering bug on customer-register form — **FIXED** in commit 4eaf3e84. Field renamed from `name="name"` to `name="fullName"` in `theme-bundle.ts:2433`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). | **CLOSED — not a GO gate** |
+| I-F1 | ~~HIGH~~ **CLOSED** | DOMPurify 3.x clobbering bug on customer-register form — **FIXED** in commit dbcf173a. Field renamed from `name="name"` to `name="fullName"` in `theme-bundle.ts:2433`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). | **CLOSED — not a GO gate** |
 | H-F3 | LOW | `settings_data` exported verbatim in `theme-artifact-exporter.ts` without BLOCKED_DROP_KEYS filter. Code comment (lines 101–107) documents as intentional. | OPEN — acknowledged design choice; risk low if settings_data holds only design tokens |
 | UC-19 | LOW | `FEATURE_LIQUID` gateway flag declared but `featureGate()` never called. Zero runtime effect. | OPEN — ARB decision needed: wire as kill switch or document as intentionally dormant |
 

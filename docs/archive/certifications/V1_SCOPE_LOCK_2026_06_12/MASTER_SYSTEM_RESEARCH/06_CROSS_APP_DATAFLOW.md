@@ -1,6 +1,6 @@
 # 06 — CROSS-APP DATA FLOW
 
-**HEAD `cd5905be` · code-verified.** The architecture is a **modular monolith**: `api-gateway` (Hono Worker) owns the write/commerce truth; the Next.js apps are thin views that call it through a typed `@letbuyy/api-client`; async work fans out through 5 Cloudflare queues to `queue-workers`. There is **one** data backbone, not parallel ones.
+**HEAD `c7c82847` · code-verified.** The architecture is a **modular monolith**: `api-gateway` (Hono Worker) owns the write/commerce truth; the Next.js apps are thin views that call it through a typed `@letbuyy/api-client`; async work fans out through 5 Cloudflare queues to `queue-workers`. There is **one** data backbone, not parallel ones.
 
 ## The integration map
 

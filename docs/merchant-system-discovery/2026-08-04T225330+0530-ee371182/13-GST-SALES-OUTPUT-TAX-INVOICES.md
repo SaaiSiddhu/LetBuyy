@@ -1,10 +1,10 @@
 # 13 — GST: Sales / Output Tax and Invoices
 
-**Run ID:** `2026-08-04T225330+0530-ee371182`
+**Run ID:** `2026-08-04T225330+0530-bf35062e`
 **Repository:** `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`
-**Branch:** `stepup/main` · **Commit:** `ee371182` · **Run date:** 2026-08-04 (+0530)
+**Branch:** `stepup/main` · **Commit:** `bf35062e` · **Run date:** 2026-08-04 (+0530)
 **Scope:** India GST on the merchant's **sales** — merchant tax profile and GSTIN handling, place of supply, computation and rounding, inclusive/exclusive pricing, discounts, shipping tax, gift-card treatment, invoice creation, numbering, immutability, credit/debit notes, IRN/QR/e-invoice status, refund tax consequences, and reporting/exports. Input tax (purchases/ITC) is covered only where the sales model depends on it; the purchasing domain itself belongs to the purchasing/inventory document.
-**Evidence basis:** the Phase-1 agent notes at `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182/_agent-notes/H-gst-invoices-reports.md`, read in full, plus direct re-verification of every load-bearing claim against source on this commit (migrations `144`, `170`, `168`, `000_baseline`; `packages/checkout-core/src/index.ts`; `services/api-gateway/src/execution/order-execution.adapter.ts`; `services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`; `services/api-gateway/src/routes/tax.ts`; `services/api-gateway/src/routes/billing.ts`; `services/api-gateway/src/routes/stores.ts`; the storefront and merchant UIs).
+**Evidence basis:** the Phase-1 agent notes at `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e/_agent-notes/H-gst-invoices-reports.md`, read in full, plus direct re-verification of every load-bearing claim against source on this commit (migrations `144`, `170`, `168`, `000_baseline`; `packages/checkout-core/src/index.ts`; `services/api-gateway/src/execution/order-execution.adapter.ts`; `services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`; `services/api-gateway/src/routes/tax.ts`; `services/api-gateway/src/routes/billing.ts`; `services/api-gateway/src/routes/stores.ts`; the storefront and merchant UIs).
 
 **METHOD DISCLOSURE — nothing in this document was runtime-verified.** No server was started, no order was placed, no migration was applied, and no database was connected to. Every status here is a structural deduction from source code and schema. The ceiling for any capability in this document is `IMPLEMENTED_NOT_RUNTIME_VERIFIED`; nothing is `VERIFIED_E2E`. The `BROKEN` gradings are deterministic code-path deductions, not observed failures.
 
@@ -75,7 +75,7 @@ Three consequences follow immediately and do not require a CA to state:
 
 **Corrections made to the source notes during re-verification** (stated explicitly, as required):
 
-| Notes claim | Re-verified position on `ee371182` |
+| Notes claim | Re-verified position on `bf35062e` |
 |---|---|
 | `services/api-gateway/src/routes/stores.ts:725-727` holds the `sites` update allow-list | Content confirmed, **line numbers differ**: the allow-list is `stores.ts:762-771` — `tax_inclusive` at `:767`, `legal_name`/`gstin`/`gst_state_code`/`invoice_prefix` at `:768`, `invoice_number_next` at `:769` |
 | `billing.ts:143-146` tax split and `:143-144` IRN | Content confirmed, **line numbers refined**: `cgst_minor: 0` at `:143`, `sgst_minor: 0` at `:144`, `igst_minor: input.taxMinor` at `:145`, `irn` at `:149`, `qr_payload` at `:150`, `.upsert(` at `:134` |

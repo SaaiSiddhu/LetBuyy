@@ -2,7 +2,7 @@
 
 > **Document type:** The wave-by-wave execution roadmap for the Strategic Canonicalization program — the single ordered plan that sequences every strategic-winner action onto the directive's 9 waves (0–8), with squad assignment, sizing, dependencies, validation gates, and the critical path. Architecture Review Board (ARB) program-lead deliverable.
 > **Date:** 2026-06-10
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `5cf9e64e`, dirty, 2026-06-10).
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `c4fc3cd6`, dirty, 2026-06-10).
 > **Constitution:** `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` + `LETBUYY_FINAL_ARCHITECTURE_FREEZE.md` (the single canonical destination). The maximalist `LETBUYY_CHECKOUT_PLATFORM_ARCHITECTURE.md` (22 services / 1M merchants / Wasm) and the `AGENTS.md` 9-app end-state are the **rejected** visions.
 > **Companion gate:** `TESTING_AND_VALIDATION_MASTER_PLAN.md` (same directory) — the test taxonomy that gates each wave exit. **No wave exits until its validation gate is green; no system is deleted until its deletion-validation is green.**
 > **Authoritative inputs (read in full):** `_ANCHOR_DECISIONS_SPINE.md` (A0–A9), `STRATEGIC_WINNERS_MASTER_PLAN.md` (32-domain winner ledger + 9-cluster ABR blocks), `CANONICAL_ARCHITECTURE_MATRIX.md` (component-level classifications + action IDs), `PRODUCTION_READINESS_GAP_REPORT.md` (W-00…W-37 completion% + eng-weeks + critical path — **the sequencing driver**), the eight domain deliverables (THEME/IDENTITY/MONEY/TENANT/UI_UX/LEGACY/SAFE_DELETION/PLATFORM), and `FORENSIC_MASTER_2026_06_10/LETBUYY_MASTER_EXECUTION_PLAN.md` (Phases A–E + ISSUE-001…291) + `TOP_250_PLATFORM_ISSUES.md`.

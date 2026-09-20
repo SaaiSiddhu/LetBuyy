@@ -2,7 +2,7 @@
 
 - **Date:** 2026-09-19 · **For:** any engineer or AI advisor guiding the founder without access to the audit conversation.
 - **Main report:** [`LETBUYY_UNIFIED_COMMERCE_CURRENT_STATE_AND_GAP_REPORT.md`](./LETBUYY_UNIFIED_COMMERCE_CURRENT_STATE_AND_GAP_REPORT.md) (section numbers below refer to it).
-- **Snapshot audited:** LetBuyy `develop` = `bda7f7f8` (2026-09-12) in the `LetBuyy-develop` worktree; the workspace checkout `Projects/Start_Up/LetBuyy` is a stale branch at `823aa5ee`, 611 commits behind. Agrimore = `Projects/Start_Up/Agrimore_Supabase`, branch `foundation-rebuild` @ `6a33bf8`, with a large uncommitted cleanup in flight. File:line references resolve against those SHAs.
+- **Snapshot audited:** LetBuyy `develop` = `88a9bf6f` (2026-09-12) in the `LetBuyy-develop` worktree; the workspace checkout `Projects/Start_Up/LetBuyy` is a stale branch at `a751a2ff`, 611 commits behind. Agrimore = `Projects/Start_Up/Agrimore_Supabase`, branch `foundation-rebuild` @ `6a33bf8`, with a large uncommitted cleanup in flight. File:line references resolve against those SHAs.
 - Prepared as a single-agent session (no subagents, no delegation). Nothing was implemented, deployed, committed or pushed; no secret values appear here.
 
 ---
@@ -106,7 +106,7 @@ Conditions before any reuse: fix the auth response parsing defect (`payload.user
 ## 9. Links
 
 - Main report sections: §6 store builder · §7 marketplace/identity/cart · §8 tenancy/roles · §9 catalogue/pricing · §10 inventory/custody (20-shirts scenario) · §11 quick commerce and Agrimore primitives · §12 POS · §13 money · §14 security · §15 infrastructure · §17 traces · §18 tests · §19 reuse matrix · §21 backlog · §23 decisions.
-- Key LetBuyy files (develop @ `bda7f7f8`): `services/api-gateway/src/index.ts` (mounts), `routes/inventory.ts`, `routes/storefront/checkout-payment-routes.ts`, `execution/order-execution.adapter.ts`, `lib/tenant-context.ts`, `middleware/staff-permission.ts`, `services/webhook-service/src/index.ts`, `apps/identity-platform/src/lib/auth/identity-issued-session.ts`, `apps/customer_web/src/proxy.ts`, `apps/admin_web/src/app/api/console-auth/login/route.ts`, migrations `139`, `141`, `166`, `168`, `211`, `216`, `217`, `219`, `223`, `234`, `246`, `tests/executable/*`, `scripts/governance/run-executable-suites.mjs`.
+- Key LetBuyy files (develop @ `88a9bf6f`): `services/api-gateway/src/index.ts` (mounts), `routes/inventory.ts`, `routes/storefront/checkout-payment-routes.ts`, `execution/order-execution.adapter.ts`, `lib/tenant-context.ts`, `middleware/staff-permission.ts`, `services/webhook-service/src/index.ts`, `apps/identity-platform/src/lib/auth/identity-issued-session.ts`, `apps/customer_web/src/proxy.ts`, `apps/admin_web/src/app/api/console-auth/login/route.ts`, migrations `139`, `141`, `166`, `168`, `211`, `216`, `217`, `219`, `223`, `234`, `246`, `tests/executable/*`, `scripts/governance/run-executable-suites.mjs`.
 - Key Agrimore files: `docs/product/PDR-0002-partner-commerce-model.md`, `docs/decisions/ADR-0004…0008`, `supabase/migrations/000003_geography_and_stores.sql`, `000008_delivery_dispatch.sql`, `000011_rpc_checkout.sql`, `000012_rpc_delivery.sql`, `supabase/functions/_shared/worker_context.ts`, `workers/api-gateway/src/routes.ts`.
 - Decision register: `.claude/skills/letbuyy/references/decisions.md`; prior evidence: `docs/evidence/integration/2026-09-12-develop-integration.md`, `docs/evidence/production-readiness/2026-08-24-readiness-evidence.md`.
 

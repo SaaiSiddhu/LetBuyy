@@ -3,7 +3,7 @@
 > **Document type:** Architecture Decision Record (ADR set) — the constitutional capstone of the Strategic Canonicalization program. The single authoritative statement of **what LetBuyy IS**, ratified by the Architecture Review Board.
 > **Date:** 2026-06-10
 > **Author:** Architecture Review Board (ABR), chair.
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty.
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty.
 > **Status:** **ACCEPTED.** This record **supersedes** the competing definitions of the platform: it ratifies `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` + `LETBUYY_FINAL_ARCHITECTURE_FREEZE.md` (together, "V1+Freeze") as the **sole constitution**; it **formally rejects** the maximalist `LETBUYY_CHECKOUT_PLATFORM_ARCHITECTURE.md` (1M-merchant / 22-service / Wasm-runtime vision) and the `AGENTS.md` 9-app end-state as **active topology**; and it directs `AGENTS.md` and the validator suite to be **regenerated from / retargeted to V1**.
 > **Authority over prior records:** this ADR sits above the nine domain deliverables and the two summary deliverables of the Strategic Canonicalization program (the 11 siblings listed in §0.3) and above `FORENSIC_MASTER_2026_06_10/` (the evidence base). Where any sibling and this record disagree on *what is canonical*, this record governs; where they disagree on *evidence*, the forensic master governs and this record is wrong and must be corrected. No code is modified by this document.
 
@@ -537,4 +537,4 @@ This record is the platform's single authoritative statement of what LetBuyy IS.
 - **`pnpm turbo build` green baseline** across workspaces (assumed by the dead-package deletions; not executed in-audit).
 - **Live deployment state** of every "complete" wave is ~0% (the 30-commit lag) — completion% measures the working tree, not production.
 
-*End of Final Architecture Decision Record. Status: ACCEPTED, 2026-06-10. Supersedes the competing constitutions; ratifies V1+Freeze. Evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty.*
+*End of Final Architecture Decision Record. Status: ACCEPTED, 2026-06-10. Supersedes the competing constitutions; ratifies V1+Freeze. Evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty.*

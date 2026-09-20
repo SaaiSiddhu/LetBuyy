@@ -59,11 +59,11 @@ These are the human-gated items that prevent COMPLETE status. The append-only le
 
 ## Key Commits
 
-- Final status report creation: `a8f2eb7 docs(federation): record final blocked status`
-- Final ledger reference cleanup: `54acebb docs(federation): finalize status ledger references`
-- Latest implementation commit: `63105f6 test(federation): align final gate smoke contracts`
-- F8 suite commit: `9ec6931 test(federation): add real-stack e2e journeys`
-- F7 gate commit: `65a971e chore(federation): record phase f7 gate`
+- Final status report creation: `1df6c4c docs(federation): record final blocked status`
+- Final ledger reference cleanup: `eb56455 docs(federation): finalize status ledger references`
+- Latest implementation commit: `9e17fc4 test(federation): align final gate smoke contracts`
+- F8 suite commit: `24f4d65 test(federation): add real-stack e2e journeys`
+- F7 gate commit: `83425d7 chore(federation): record phase f7 gate`
 
 ## Final Determination
 

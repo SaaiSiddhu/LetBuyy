@@ -1,6 +1,6 @@
 # LIQUID_V1_LAUNCH_READINESS.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · maps Full-Liquid program phases (L0–L17) to readiness gates. Effort is verifier-sized; weeks assume 2–3 engineers with the parallelization in the master program.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · maps Full-Liquid program phases (L0–L17) to readiness gates. Effort is verifier-sized; weeks assume 2–3 engineers with the parallelization in the master program.
 
 ## Readiness gates (what each tier requires)
 

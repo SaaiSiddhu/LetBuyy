@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_FINAL_VERDICT.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · repository evidence only. No optimism, no assumptions.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · repository evidence only. No optimism, no assumptions.
 
 ## 1. Can LetBuyy become fully Liquid?
 

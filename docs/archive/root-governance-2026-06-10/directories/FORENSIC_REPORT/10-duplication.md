@@ -4,7 +4,7 @@ Investigation date: 2026-06-05 (second pass, post-remediation)
 
 > Forensic, documentation-only pass. Nothing was modified, deleted, moved, or renamed. Each finding cites side-by-side paths with line references and quantifies copy counts. "Duplication" is reported at three levels: **copy-paste** (byte/near-identical bodies), **structural** (same shape re-implemented per workspace), and **conceptual/layered** (the same model expressed in several layers by design).
 >
-> **Second pass:** re-verified against the post-remediation tree (~68 commits, `63053d18..HEAD`). The original body is preserved with line numbers corrected where files moved; new duplication introduced by the remediation streams is documented in §11 and summarised in **"Changes since first pass"**.
+> **Second pass:** re-verified against the post-remediation tree (~68 commits, `cd71e612..HEAD`). The original body is preserved with line numbers corrected where files moved; new duplication introduced by the remediation streams is documented in §11 and summarised in **"Changes since first pass"**.
 
 ---
 
@@ -12,16 +12,16 @@ Investigation date: 2026-06-05 (second pass, post-remediation)
 
 | Cluster (first-pass claim) | Second-pass status | Evidence |
 |---|---|---|
-| `hmacSha256Hex`/`timingSafeEqual*`/`sha256Hex` copies (incl. re-declared copies inside `routes/storefront.ts`) | **STILL-OPEN, unmoved** — the storefront split (commit `86e65460` "split internal payment routes") extracted `routes/storefront/internal-payment-routes.ts` (233 lines) but did **not** touch the crypto copies: `storefront.ts` (now 4,833 lines) still re-declares `timingSafeEqualHex` (line 1791), `hmacSha256Hex` (1804), `sha256Hex` (1819) — the first two remain **byte-identical** to `lib/crypto.ts:10-21,23-36`. The new `internal-payment-routes.ts` contains **no** crypto helpers (0 grep hits) and did not duplicate further. Totals unchanged: `hmacSha256Hex` 4 impls, `timingSafeEqual*` 6 declarations across 5 files, `sha256Hex` 5 impls. | grep counts §3; `sed -n '1791,1830p' storefront.ts` vs `lib/crypto.ts` |
+| `hmacSha256Hex`/`timingSafeEqual*`/`sha256Hex` copies (incl. re-declared copies inside `routes/storefront.ts`) | **STILL-OPEN, unmoved** — the storefront split (commit `f1b3253b` "split internal payment routes") extracted `routes/storefront/internal-payment-routes.ts` (233 lines) but did **not** touch the crypto copies: `storefront.ts` (now 4,833 lines) still re-declares `timingSafeEqualHex` (line 1791), `hmacSha256Hex` (1804), `sha256Hex` (1819) — the first two remain **byte-identical** to `lib/crypto.ts:10-21,23-36`. The new `internal-payment-routes.ts` contains **no** crypto helpers (0 grep hits) and did not duplicate further. Totals unchanged: `hmacSha256Hex` 4 impls, `timingSafeEqual*` 6 declarations across 5 files, `sha256Hex` 5 impls. | grep counts §3; `sed -n '1791,1830p' storefront.ts` vs `lib/crypto.ts` |
 | 6 per-app API client wrappers | **STILL-OPEN** — same 6 `lib/api/client.ts` factories + `platform-console/src/lib/console-api.ts`; the new `apps/developer-portal` did *not* add a 7th wrapper (its `lib/` has `developer-surface.ts`/`reference.ts`, no api client). | `grep -rln createLetbuyyApiClient apps` → 6 clients + console (+1 new test file) |
-| `getApiBaseUrl()` 6 copies | **STILL-OPEN, count corrected to 7** — a 7th copy at `apps/marketing-site/src/app/create/page.tsx:14` (variant) was present at first pass but under-counted; no new copies were added since 63053d18 (`git diff` on that file is empty). | `grep -rln "function getApiBaseUrl" apps` → 7 |
+| `getApiBaseUrl()` 6 copies | **STILL-OPEN, count corrected to 7** — a 7th copy at `apps/marketing-site/src/app/create/page.tsx:14` (variant) was present at first pass but under-counted; no new copies were added since cd71e612 (`git diff` on that file is empty). | `grep -rln "function getApiBaseUrl" apps` → 7 |
 | `formatDate()` 27 copies | **STILL-OPEN, now 26** — WS5 consolidated platform-operations-portal from 3 copies to 1; WS9/console work *moved* copies into new files rather than removing them: merchant settings now carries 5 copies (incl. the `AppsSettingsClient.tsx`/dead `AppsSettingsContent.tsx` pair, one each), platform-console moved copies into 4 new `*IndexTable.tsx` components + `console-api.ts`. Still no shared TS `formatDate` anywhere (`packages/` grep → Dart only). Net 26 = 19 merchant + 5 console + 1 ops + 1 app-marketplace. | `grep -rl "function formatDate" apps` → 26 |
 | `formatCurrency()` 6–7 copies | **STILL-OPEN, now 5** — `settings/shipping/page.tsx` and the analytics inline-arrow copy were rewritten without it; remaining: customers, dashboard/page, dashboard/DashboardClient, gift-cards, app-marketplace `[slug]`. Still no shared helper. | `grep -rl "function formatCurrency" apps` → 5 |
 | `slugify()` 3 copies + 1 canonical | **STILL-OPEN, unchanged** — same 3 page copies at the same lines (`posts:91`, `pages:67`, `online-store/pages:106`) vs `cms-core/src/index.ts:239 slugifyCmsTitle`. WS9 added no copies and consolidated none. | grep §4c |
 | Marketing-site dead twin set (~9 pairs) | **STILL-OPEN, unchanged** — all twins present, `page.tsx` imports the same live family. | §5a |
 | Theme-editor monolith vs modular set | **STILL-OPEN, partially bridged** — NEW `SchemaFormRenderer.tsx` is now shared by *both* the live monolith (`editor/page.tsx:45,1784,1796,1822`) and the dead modular set (`ThemeSettingsPanel`, `RightSidebar`), so one panel-renderer is single-source; the other 7 components + `SectionItem` + 2 hooks remain a parallel dead implementation. | §5b updated |
 | `getSupabaseAdmin()` 2× | **STILL-OPEN, unchanged** — `api-gateway/src/lib/supabase.ts` (live, now also `getSupabaseAdminFromEnv`) vs dead `packages/typescript/utils/src/supabase.ts` (package untouched). | §6 |
-| Gateway-events clients (NEW since first pass) | **NEW duplication** — `services/webhook-service/src/gateway-events.ts` and `services/queue-workers/src/gateway-events.ts` are functionally identical `emitGatewayDomainEvent` implementations (same types, same URL, same guards, same error strings; differ only in formatting and where `GatewayServiceBinding` is declared), both created in the *same commit* `10d47da3`. The same fetch-the-gateway-with-internal-secret boilerplate also appears in webhook-service `gateway-order-transitions.ts` (`gatewayOrderMutation`) and `gateway-billing-transitions.ts` → **4 copies** of the pattern across 2 services. See §11. | §11 |
+| Gateway-events clients (NEW since first pass) | **NEW duplication** — `services/webhook-service/src/gateway-events.ts` and `services/queue-workers/src/gateway-events.ts` are functionally identical `emitGatewayDomainEvent` implementations (same types, same URL, same guards, same error strings; differ only in formatting and where `GatewayServiceBinding` is declared), both created in the *same commit* `e518315e`. The same fetch-the-gateway-with-internal-secret boilerplate also appears in webhook-service `gateway-order-transitions.ts` (`gatewayOrderMutation`) and `gateway-billing-transitions.ts` → **4 copies** of the pattern across 2 services. See §11. | §11 |
 | Marketplace logger + unavailable component (NEW) | **NEW duplication** — `apps/app-marketplace/src/lib/logger.ts` ≡ `apps/theme-marketplace/src/lib/logger.ts` (byte-identical except the `app:` name string and one docstring word); `MarketplaceUnavailable.tsx` (app-marketplace, 44 lines) vs `marketplace-unavailable.tsx` (theme-marketplace, 27 lines) are the same component re-implemented per marketplace. See §11. | §11 |
 | Root ledger root↔archive duplicates (NEW) | **NEW duplication (docs)** — `CODEX_MASTER_EXECUTION_LEDGER.md` (269,700 B) and `CODEX_WS12_LEDGER.md` byte-identical at root *and* in `docs/archive/root-residue/2026-06-05-foundation-hardening/`; `CODEX_WS7_LEDGER.md` in both, diverged (54 vs 51 lines); two parallel root mission docs (`CODEX_FOUNDATION_HARDENING_MISSION.md` 268 lines vs `CODEX_FOUNDATION_REMEDIATION_MISSION.md` 237 lines) describe the same forensic remediation. | Phase 9 §9a; `diff -q` |
 
@@ -113,13 +113,13 @@ apps/identity-platform/src/lib/api/client.ts
 apps/storefront-runtime/src/lib/api/client.ts:31-…  (variant: LETBUYY_API_BASE_URL / NEXT_PUBLIC_API_BASE_URL)
 apps/marketing-site/src/app/create/page.tsx:14-…   (7th — URL-parsing variant, defaults to https://api.letbuyy.store/v1)
 ```
-Evidence: `grep -rln "function getApiBaseUrl" apps` → **7** files. Second pass: the `create/page.tsx` copy existed at the first-pass commit (added in `ba5fada9`, before 63053d18) and was under-counted in the first pass; the post-remediation diff touched none of the 7 (`git diff 63053d18..HEAD -- apps/marketing-site/src/app/create/page.tsx` → empty). STILL-OPEN.
+Evidence: `grep -rln "function getApiBaseUrl" apps` → **7** files. Second pass: the `create/page.tsx` copy existed at the first-pass commit (added in `618210f6`, before cd71e612) and was under-counted in the first pass; the post-remediation diff touched none of the 7 (`git diff cd71e612..HEAD -- apps/marketing-site/src/app/create/page.tsx` → empty). STILL-OPEN.
 
 ---
 
 ## 3. Duplicate cryptographic utilities — **copy-paste, 4–6× each** *(second pass: re-verified, unmoved by the storefront split)*
 
-**Second-pass context:** commit `86e65460` ("refactor(storefront): split internal payment routes") extracted `services/api-gateway/src/routes/storefront/internal-payment-routes.ts` (233 lines; imported and registered at `storefront.ts:33,1826`). The split moved the internal payment handlers out but **left every local crypto copy in `storefront.ts`** (now 4,833 lines) — the copies only shifted line numbers (1656→1791, 1669→1804, 1684→1819). The new `internal-payment-routes.ts` contains **zero** crypto declarations (grep for `hmacSha256|sha256Hex|timingSafe` → 0), so the split neither consolidated nor further duplicated the helpers. All counts below re-verified at HEAD.
+**Second-pass context:** commit `f1b3253b` ("refactor(storefront): split internal payment routes") extracted `services/api-gateway/src/routes/storefront/internal-payment-routes.ts` (233 lines; imported and registered at `storefront.ts:33,1826`). The split moved the internal payment handlers out but **left every local crypto copy in `storefront.ts`** (now 4,833 lines) — the copies only shifted line numbers (1656→1791, 1669→1804, 1684→1819). The new `internal-payment-routes.ts` contains **zero** crypto declarations (grep for `hmacSha256|sha256Hex|timingSafe` → 0), so the split neither consolidated nor further duplicated the helpers. All counts below re-verified at HEAD.
 
 ### 3a. `hmacSha256Hex` — 4 independent implementations (STILL-OPEN)
 The same HMAC-SHA256→hex helper (Web Crypto `subtle.importKey` + `subtle.sign`) appears in four places:
@@ -214,13 +214,13 @@ Both `Navbar.tsx` and `Header.tsx` are nav components importing `BrandLogo` + `n
 ### 5b. Theme-editor: monolith vs unused modular set — **structural** *(second pass: still dual, one shared renderer)*
 The merchant theme editor exists twice: as the **live monolith** `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx` and as an **unused modular decomposition** under `src/components/theme-editor/` (`EditorHeader`, `LeftSidebar`, `CenterPanel`, `RightSidebar`, `ThemeSettingsPanel`, `AddSectionModal`, `IconRail`, + new dead `SectionItem` — all 0 external refs, Phase 9 §2c). The monolith re-implements the panels inline rather than importing the modular components → the same editor UI expressed twice.
 
-Second pass: commit `280f6e83` added `SchemaFormRenderer.tsx` to the same directory and it is the one piece **shared by both implementations** — the live monolith imports it (`editor/page.tsx:45`, used 3×) and the dead modular `ThemeSettingsPanel.tsx`/`RightSidebar.tsx` import it too. So one settings-form renderer is now single-source while the surrounding editor shell remains duplicated (and the dead shell was icon-polished in the same commit without being wired). The first-pass "useEditorHistory in use" note is corrected in Phase 9 §2c: the hook is reachable only from the dead set.
+Second pass: commit `866cdbc1` added `SchemaFormRenderer.tsx` to the same directory and it is the one piece **shared by both implementations** — the live monolith imports it (`editor/page.tsx:45`, used 3×) and the dead modular `ThemeSettingsPanel.tsx`/`RightSidebar.tsx` import it too. So one settings-form renderer is now single-source while the surrounding editor shell remains duplicated (and the dead shell was icon-polished in the same commit without being wired). The first-pass "useEditorHistory in use" note is corrected in Phase 9 §2c: the hook is reachable only from the dead set.
 
 ### 5c. Flutter: standalone widget vs inline `_buildX` — **structural**
 In `apps/mobile/merchant-app`, multiple screens re-implement a widget inline instead of importing the standalone version. Confirmed example: `screens/products/products_screen.dart:761 _buildProductCard()` vs the unused `widgets/products/product_card.dart` (Phase 9 §11). Same for dashboard cards (`bento_grid`, `glass_stat_card`, `insights_grid` unused while dashboard screens build inline). *(Second pass: unchanged — same inline builds, same unused widgets.)*
 
 ### 5d. Settings-apps pane: live client vs orphaned predecessor — **NEW duplicate pair (second pass)**
-`apps/merchant-control-plane/src/app/[store]/settings/apps/` now contains two implementations of the same apps-settings pane: the **live** `AppsSettingsClient.tsx` (285 lines, imported by `page.tsx:4`) and the **orphaned** `AppsSettingsContent.tsx` (311 lines, 0 inbound refs). At first-pass commit 63053d18 `page.tsx` imported `AppsSettingsContent`; the WS9 rework swapped the import to `AppsSettingsClient` without removing the old file. Both define their own `formatDate` (counted in §4a). Same supersede-without-delete pattern as the marketing-site twins (§5a).
+`apps/merchant-control-plane/src/app/[store]/settings/apps/` now contains two implementations of the same apps-settings pane: the **live** `AppsSettingsClient.tsx` (285 lines, imported by `page.tsx:4`) and the **orphaned** `AppsSettingsContent.tsx` (311 lines, 0 inbound refs). At first-pass commit cd71e612 `page.tsx` imported `AppsSettingsContent`; the WS9 rework swapped the import to `AppsSettingsClient` without removing the old file. Both define their own `formatDate` (counted in §4a). Same supersede-without-delete pattern as the marketing-site twins (§5a).
 
 ---
 
@@ -278,11 +278,11 @@ Theme section/block definitions appear in `packages/theme-engine/src/{theme-bund
 
 ---
 
-## 11. NEW duplication introduced post-first-pass (second pass, `63053d18..HEAD`)
+## 11. NEW duplication introduced post-first-pass (second pass, `cd71e612..HEAD`)
 
 ### 11a. `gateway-events.ts` twins + the internal-mutation fetch boilerplate — **copy-paste, 4 copies across 2 services**
 
-The events-centralization commit `10d47da3` ("fix(events): centralize outbox event writes") created **two functionally identical clients in the same commit**:
+The events-centralization commit `e518315e` ("fix(events): centralize outbox event writes") created **two functionally identical clients in the same commit**:
 
 ```
 services/webhook-service/src/gateway-events.ts   (51 lines, 4-space indent, double quotes;
@@ -294,10 +294,10 @@ Both export the same `GatewayEventEnv` / `GatewayDomainEventInput` interfaces an
 
 The same fetch-the-gateway-with-internal-secret skeleton (binding guard → secret guard → `env.API_GATEWAY_SERVICE.fetch('https://api-gateway' + path, POST + X-Internal-API-Secret)` → json/text fallback → throw on !ok) is additionally re-implemented in two more webhook-service modules added in the same window:
 ```
-services/webhook-service/src/gateway-order-transitions.ts:14-…    gatewayOrderMutation()   (commit 9b5e0604)
-services/webhook-service/src/gateway-billing-transitions.ts:14-…  (billing variant)         (commit 964c46d1)
+services/webhook-service/src/gateway-order-transitions.ts:14-…    gatewayOrderMutation()   (commit cdd33494)
+services/webhook-service/src/gateway-billing-transitions.ts:14-…  (billing variant)         (commit 088f3990)
 ```
-→ **4 copies** of the pattern (grep `"API_GATEWAY_SERVICE binding is required"` → 4 source files + 4 test files). All four files are new since the first pass (`git ls-tree 63053d18 services/*/src` shows neither service had them). Classification: **NEW copy-paste duplication** — the consolidation of outbox writes behind the gateway de-duplicated the *write path* but duplicated the *client*.
+→ **4 copies** of the pattern (grep `"API_GATEWAY_SERVICE binding is required"` → 4 source files + 4 test files). All four files are new since the first pass (`git ls-tree cd71e612 services/*/src` shows neither service had them). Classification: **NEW copy-paste duplication** — the consolidation of outbox writes behind the gateway de-duplicated the *write path* but duplicated the *client*.
 
 ### 11b. Marketplace `lib/logger.ts` pair — **copy-paste, 2 byte-identical-modulo-name copies**
 
@@ -355,18 +355,18 @@ The root-residue archive (Phase 9 §9a) left/created exact duplicates:
 | D18 | No duplicate DB tables; partitions are not dup | 249 distinct `CREATE TABLE` (250 at second pass); `_partitioned`/`_default` triples from migrations 079-083 |
 | D19 | Supabase vs D1 disjoint | D1 `0001_provider_execution_foundation.sql` = provider_execution_evidence/replay_restoration_lineage/rollback_lineage only |
 
-### Second-pass evidence (2026-06-05, post-remediation, `63053d18..HEAD` = 68 commits)
+### Second-pass evidence (2026-06-05, post-remediation, `cd71e612..HEAD` = 68 commits)
 
 | # | Claim | Evidence (path:line / count) |
 |---|---|---|
-| D20 | Storefront split did not move/consolidate crypto copies | `routes/storefront/internal-payment-routes.ts` (233 lines, commit 86e65460) — grep `hmacSha256\|sha256Hex\|timingSafe` → 0; `storefront.ts` (4,833 lines) local copies at :1791/:1804/:1819; `sed -n '1791,1830p'` ≡ `lib/crypto.ts:10-36` |
-| D21 | `getApiBaseUrl` = 7 copies; none added/removed post-pass | `grep -rln "function getApiBaseUrl" apps` → 7 (6 clients + `marketing-site/src/app/create/page.tsx:14`); the 7th added pre-63053d18 (commit ba5fada9); `git diff 63053d18..HEAD` on it → empty |
+| D20 | Storefront split did not move/consolidate crypto copies | `routes/storefront/internal-payment-routes.ts` (233 lines, commit f1b3253b) — grep `hmacSha256\|sha256Hex\|timingSafe` → 0; `storefront.ts` (4,833 lines) local copies at :1791/:1804/:1819; `sed -n '1791,1830p'` ≡ `lib/crypto.ts:10-36` |
+| D21 | `getApiBaseUrl` = 7 copies; none added/removed post-pass | `grep -rln "function getApiBaseUrl" apps` → 7 (6 clients + `marketing-site/src/app/create/page.tsx:14`); the 7th added pre-cd71e612 (commit 618210f6); `git diff cd71e612..HEAD` on it → empty |
 | D22 | `formatDate` 26 / `formatCurrency` 5 / `slugify` 3+1 | greps at HEAD; merchant 19 + console 5 (4 new `*IndexTable.tsx` + console-api) + ops 1 + app-marketplace 1; shipping/analytics currency copies dropped; slugify lines unchanged (`posts:91`, `pages:67`, `online-store/pages:106`, `cms-core:239`) |
-| D23 | Gateway-events twins functionally identical, same commit | `services/webhook-service/src/gateway-events.ts` vs `services/queue-workers/src/gateway-events.ts` — same interfaces/URL/guards/error strings, formatting-only diff; both `git log --diff-filter=A` → 10d47da3 |
-| D24 | Internal-mutation fetch boilerplate ×4 | grep `"API_GATEWAY_SERVICE binding is required"` → 4 src files (`gateway-events.ts` ×2, `gateway-order-transitions.ts` [9b5e0604], `gateway-billing-transitions.ts` [964c46d1]) + 4 tests; `git ls-tree 63053d18 services/{webhook-service,queue-workers}/src` lacks all 4 |
+| D23 | Gateway-events twins functionally identical, same commit | `services/webhook-service/src/gateway-events.ts` vs `services/queue-workers/src/gateway-events.ts` — same interfaces/URL/guards/error strings, formatting-only diff; both `git log --diff-filter=A` → e518315e |
+| D24 | Internal-mutation fetch boilerplate ×4 | grep `"API_GATEWAY_SERVICE binding is required"` → 4 src files (`gateway-events.ts` ×2, `gateway-order-transitions.ts` [cdd33494], `gateway-billing-transitions.ts` [088f3990]) + 4 tests; `git ls-tree cd71e612 services/{webhook-service,queue-workers}/src` lacks all 4 |
 | D25 | Marketplace logger pair byte-identical-modulo-name | `apps/{app,theme}-marketplace/src/lib/logger.ts` (34 lines each); diff = `app:` string + 1 docstring word; `grep -rln "Minimal structured logger"` → 2 |
 | D26 | Marketplace unavailable component pair | `app-marketplace/src/components/MarketplaceUnavailable.tsx` (44) vs `theme-marketplace/src/components/marketplace-unavailable.tsx` (27); diff shows same skeleton, different copy/export style; both imported by pages/services |
-| D27 | AppsSettings live/orphaned pair | `settings/apps/AppsSettingsClient.tsx` (285, imported `page.tsx:4`) vs `AppsSettingsContent.tsx` (311, 0 refs; was imported at `git show 63053d18:…/apps/page.tsx`) |
-| D28 | SchemaFormRenderer shared by monolith + dead modular set | `editor/page.tsx:45,1784,1796,1822`; `theme-editor/{ThemeSettingsPanel,RightSidebar}.tsx` import `./SchemaFormRenderer`; all added in 280f6e83 |
+| D27 | AppsSettings live/orphaned pair | `settings/apps/AppsSettingsClient.tsx` (285, imported `page.tsx:4`) vs `AppsSettingsContent.tsx` (311, 0 refs; was imported at `git show cd71e612:…/apps/page.tsx`) |
+| D28 | SchemaFormRenderer shared by monolith + dead modular set | `editor/page.tsx:45,1784,1796,1822`; `theme-editor/{ThemeSettingsPanel,RightSidebar}.tsx` import `./SchemaFormRenderer`; all added in 866cdbc1 |
 | D29 | Root↔archive ledger duplicates | `diff -q` → `CODEX_MASTER_EXECUTION_LEDGER.md` (269,700 B) + `CODEX_WS12_LEDGER.md` identical root vs `docs/archive/root-residue/2026-06-05-foundation-hardening/`; `CODEX_WS7_LEDGER.md` 54 vs 51 lines; missions 268 vs 237 lines both citing `FORENSIC_REPORT/16` |
 | D30 | New gateway modules non-duplicative; ui Badge vs dead storefront badge | internal-billing/events/subscription-adapter/queue-triggers/internal-payment-routes greps → 0 helper re-declarations; `@letbuyy/ui/src/index.ts:10` exports `Badge` while `storefront-runtime/src/components/ui/badge.tsx` stays dead (Phase 9 §2a) |

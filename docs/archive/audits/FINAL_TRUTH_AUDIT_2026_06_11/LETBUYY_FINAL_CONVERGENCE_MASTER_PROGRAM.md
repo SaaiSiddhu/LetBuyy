@@ -2,7 +2,7 @@
 
 **Program:** LetBuyy Final Convergence · **Document 5 of 5 (master)** · **Status:** PLAN ONLY — no code changes authorized by this document
 **Purpose:** combine the four implementation plans into one dependency-ordered, gated execution program suitable for Codex execution, ARB review, and long-term governance.
-**Audited HEAD:** `cabe148c` (`main`==`stepup/main`, clean) · **Remote:** `origin/main`==`41b6ea49` (127 behind).
+**Audited HEAD:** `3da1416c` (`main`==`stepup/main`, clean) · **Remote:** `origin/main`==`c2547049` (127 behind).
 **Constraint banner:** no new services · no microservices · no CQRS · no event sourcing · no extension/Wasm runtime expansion · no marketplace architecture · respect every strategic winner (Liquid, canonical-ledger SSOT, identity-platform sole issuer, RLS+GUC, modular monolith, one region, 0% commission, Constitution). All work lives in the existing 5 active apps + 4 active services + packages + queue-workers.
 
 ---

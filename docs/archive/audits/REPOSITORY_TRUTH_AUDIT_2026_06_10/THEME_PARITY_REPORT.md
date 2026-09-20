@@ -1,6 +1,6 @@
 # THEME SYSTEM TRUTH — Parity Report (CRITICAL axis)
 
-Repository Truth Audit 2026-06-10 · branch `stepup/main` · HEAD `5cf9e64e` · working tree dirty (998 entries)
+Repository Truth Audit 2026-06-10 · branch `stepup/main` · HEAD `c4fc3cd6` · working tree dirty (998 entries)
 Scope: React renderer vs Liquid renderer — completeness, parity, runtime routing, sanitizer, editor, publishing, marketplace.
 Method: code-first verification. Every claim cites `path:lines`. HEAD vs working-tree state is flagged wherever they differ. Discovery only.
 

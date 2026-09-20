@@ -1,6 +1,6 @@
 # LIQUID_GAP_ANALYSIS.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-cited. Every missing Liquid capability, by build category.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-cited. Every missing Liquid capability, by build category.
 
 > **Theme:** the *read/render* half is real and complete; nearly every *authoring / seeding / styling / flip* surface is missing. And — corrected from the feasibility report — the *commerce backends* (cart/account/orders) already exist and are engine-agnostic, so most gaps are **template authoring**, not backend.
 

@@ -1,6 +1,6 @@
 # PHASE L15 — CANARY PROGRAM
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Flip Liquid on for a small, controlled set of real stores and soak before any platform default change.
 2. **Repository Reality.** `resolveThemeLiquidRenderingEnabled` reads `liquidRenderingCanary` from `template_config`/`themeSettings`/`releaseManifest` (`theme-governance.ts:144-168`); `store-service.ts:655-657,706` surfaces it; `template-resolver.ts:229-233` gates the bundle on it. **No DB column, no writer, no operator endpoint** — the flag lives only in JSON, set by no product surface. Default `false`.

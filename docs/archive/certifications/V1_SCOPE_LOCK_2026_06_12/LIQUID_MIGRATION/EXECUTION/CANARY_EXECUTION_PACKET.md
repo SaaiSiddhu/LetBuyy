@@ -1,6 +1,6 @@
 # CANARY EXECUTION PACKET (L15)
 
-**Date:** 2026-06-13 · **HEAD:** `cf4f6f6f` · Repository truth. Canary stays OFF by default.
+**Date:** 2026-06-13 · **HEAD:** `77b681f1` · Repository truth. Canary stays OFF by default.
 
 ## Mechanism (already built — repo-side)
 - **Per-store flag:** `resolveThemeLiquidRenderingEnabled` (`theme-governance.ts:144-168`) reads `template_config.liquidRenderingCanary` (also theme/release/renderer manifests). Default `false` (`THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false`), platform flip `deferred`.

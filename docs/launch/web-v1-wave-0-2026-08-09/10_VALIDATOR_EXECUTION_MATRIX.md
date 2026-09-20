@@ -2,7 +2,7 @@
 
 > **UPDATED 2026-08-09 (Wave 0, Phase 2 — validator-runner truthfulness repair).**
 > **Evidence artifact, not governance authority.**
-> Sections **1–4 below are the original PRE-REPAIR matrix and are preserved verbatim for comparison.** They describe the fail-fast runner as it existed at baseline SHA `ee3711829d857e986014c5811bb94d86ebc3d343`, measured inside the **dirty original working tree**.
+> Sections **1–4 below are the original PRE-REPAIR matrix and are preserved verbatim for comparison.** They describe the fail-fast runner as it existed at baseline SHA `bf35062eda22f4d881efd61fb1d36c8fc83baed1`, measured inside the **dirty original working tree**.
 > Sections **5–8 are new** and record the **POST-REPAIR full-execution matrix**, measured on branch `codex/w0-validator-execution` in a **clean isolated worktree** at the same SHA. All 108 gate-lane validators now execute.
 > Two numbers in the pre-repair sections do **not** reproduce against the committed tree — see §6 "Reconciliation with the pre-repair matrix". Neither section's numbers may be reused without remeasuring and stating which tree state was measured.
 > Full repair rationale, safety audit, and open escalations: **`20_VALIDATOR_RUNNER_REPAIR_EVIDENCE.md`**.
@@ -13,7 +13,7 @@
 
 **Status:** Evidence artifact — NOT governance authority.
 **Agent:** Agent E — CI and Validator Truthfulness Auditor (Wave 0, Phase 1, read-only)
-**Repo SHA at audit time:** `ee3711829d857e986014c5811bb94d86ebc3d343` (HEAD, branch `stepup/main`)
+**Repo SHA at audit time:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (HEAD, branch `stepup/main`)
 **Timestamp used:** 2026-08-09
 **Independently recomputed — no prior count trusted.** The task brief explicitly says not to trust prior "107/108" claims. This document recomputes the validator inventory from the current `scripts/validate-governance.mjs` source and from `scripts/validators/*.mjs` on disk, then actually runs the gate and records exactly what executed.
 
@@ -115,7 +115,7 @@ EXIT_CODE=1
 
 ## 4. What this means for "is the gate green"
 
-At SHA `ee371182` on `stepup/main`, independently and freshly measured on 2026-08-09:
+At SHA `bf35062e` on `stepup/main`, independently and freshly measured on 2026-08-09:
 - **Governance gate (108 validators): RED** — fails at validator 6/108, 102 never run.
 - **Lint: RED** — 1 real ESLint error (not just warnings).
 - **Typecheck: RED** — 1 real `tsc` type error.
@@ -145,7 +145,7 @@ None of this should be read as "the codebase is broken" in an absolute sense —
 
 | Field | Value |
 |---|---|
-| Repo SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` (Wave 0 baseline) + 2 local commits `369f7918`, `02b6374d` |
+| Repo SHA | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (Wave 0 baseline) + 2 local commits `611ee20b`, `45958978` |
 | Branch / worktree | `codex/w0-validator-execution` in `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-validator-execution` (clean isolated worktree — **not** the dirty original tree) |
 | Date | 2026-08-09 |
 | Node | `v26.5.1` |

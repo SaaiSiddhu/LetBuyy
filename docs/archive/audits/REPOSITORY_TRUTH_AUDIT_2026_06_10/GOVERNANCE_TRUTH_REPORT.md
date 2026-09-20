@@ -2,7 +2,7 @@
 
 **Axis:** Governance Truth (canonical source, supersession, contradiction, validator system, audit-history fate)
 **Auditor role:** ARB + repository archaeologist. **Discovery only — no repo file modified except this report.**
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ `5cf9e64e` ("fix(foundation): resolve final audit drift") · working tree dirty: **512 deleted / 410 modified / 76 untracked** (`git status --short | awk` counts).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ `c4fc3cd6` ("fix(foundation): resolve final audit drift") · working tree dirty: **512 deleted / 410 modified / 76 untracked** (`git status --short | awk` counts).
 **Date:** 2026-06-10.
 
 Every claim below states where it holds: **(WT)** = working tree, **(HEAD)** = HEAD of `stepup/main`, **(main)** = branch `main`.
@@ -99,7 +99,7 @@ Legend: **CANONICAL** = operative law today (WT) · **KEEP** = retain as-is · *
 | `EXECUTION_LEDGER.md` | ?? | **KEEP** (program accountability; required by `whole-repo-end-state-validator.mjs:122-144`) + **COMMIT!** | 40 rows, all "not committed" |
 | `SKIPPED_HUMAN_DECISIONS.md` | ?? | **KEEP** (22 human seams; required by end-state validator lines 146-169) + **COMMIT!** | read in full |
 | `EXECUTABLE_HUMAN_REQUIRED.md` | tracked, clean | **KEEP** but **merge with SKIPPED registry** (duplication §6.3) | 19 HR-* rows overlap SKIP-* rows (WhatsApp, Turnstile, checkout DNS, PA-split) |
-| `MERGE_RUNBOOK.md` | tracked, clean (committed 881dfa8a) | **DANGEROUS / SUPERSEDED** — describes the *old* `stream/letbuyy-foundation-v2` + `stream/letbuyy-ui-foundation` → `develop` merge; those branches no longer exist (`git branch -a`); yet `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE` (`SKIPPED_HUMAN_DECISIONS.md:10`) directs the maintainer to "run the merge runbook" for the **stepup/main → main** promotion | `MERGE_RUNBOOK.md:1-49` |
+| `MERGE_RUNBOOK.md` | tracked, clean (committed 7d8373e2) | **DANGEROUS / SUPERSEDED** — describes the *old* `stream/letbuyy-foundation-v2` + `stream/letbuyy-ui-foundation` → `develop` merge; those branches no longer exist (`git branch -a`); yet `SKIP-D1-MERGE-RUNBOOK-DIRTY-TREE` (`SKIPPED_HUMAN_DECISIONS.md:10`) directs the maintainer to "run the merge runbook" for the **stepup/main → main** promotion | `MERGE_RUNBOOK.md:1-49` |
 | `README.md` | tracked, clean | KEEP (defers to AGENTS.md; no stale topology) | `README.md:3` |
 | `memory/lessons.md` | tracked, clean | **ARCHIVE candidate** — 2026-03-01 lessons citing dead paths (`backend/supabase/`, `apps/web/consumer/admin/`) | `memory/lessons.md:3,11` |
 | `config/governance/` (`anti-fabrication-allowlist.json`, `README.md`) | tracked | KEEP (consumed by anti-fabrication gate) | dir listing |
@@ -137,7 +137,7 @@ Legend: **CANONICAL** = operative law today (WT) · **KEEP** = retain as-is · *
 
 ### 5.1 The headline: HEAD ↔ working-tree regime divergence (quantified)
 
-| Dimension | HEAD (`5cf9e64e`) / `main` | Working tree | Delta |
+| Dimension | HEAD (`c4fc3cd6`) / `main` | Working tree | Delta |
 |---|---|---|---|
 | Root `AGENTS.md` | scan-generated 2026-06-08 | hand-authored AGENTS_V2 | 405/388 of 793 lines |
 | Root .md files | 65 | 7 | −58 (60 deleted, 2 added untracked) |

@@ -1,6 +1,6 @@
 # 07 — DATABASE AUDIT (Supabase Postgres)
 
-**HEAD `cd5905be` · code-verified.** Counts from `000_baseline.sql` (the bulk) + ~100 incremental migrations.
+**HEAD `c7c82847` · code-verified.** Counts from `000_baseline.sql` (the bulk) + ~100 incremental migrations.
 
 ## Shape
 

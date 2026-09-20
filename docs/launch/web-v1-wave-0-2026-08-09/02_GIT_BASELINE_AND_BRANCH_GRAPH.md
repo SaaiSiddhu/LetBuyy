@@ -8,7 +8,7 @@
 
 **Timestamp used:** 2026-08-09 (literal date supplied by the task brief; no system clock call was made).
 
-**Repo SHA at time of audit (HEAD):** `ee3711829d857e986014c5811bb94d86ebc3d343`
+**Repo SHA at time of audit (HEAD):** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 
 **Branch at time of audit:** `stepup/main`
 
@@ -22,7 +22,7 @@
 
 ```
 $ git rev-parse HEAD
-ee3711829d857e986014c5811bb94d86ebc3d343
+bf35062eda22f4d881efd61fb1d36c8fc83baed1
 
 $ git branch --show-current
 stepup/main
@@ -55,17 +55,17 @@ Resolved SHAs immediately after fetch:
 
 | Ref | SHA |
 |---|---|
-| `HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
-| `stepup/main` (local) | `ee3711829d857e986014c5811bb94d86ebc3d343` |
-| `main` (local) | `0b8a56e7a6ace926e57cfb4849f6be513159b22c` |
-| `origin/main` | `41b6ea49c5da30a1409d4cc587d989d459288e45` |
-| `origin/stepup/main` | `8d9dda77303c931651fd2f36c34d5d031459eeb8` |
-| `origin/develop` | `41b6ea49c5da30a1409d4cc587d989d459288e45` (**identical to `origin/main`**) |
-| `ee371182` (short SHA, as named in the brief) | `ee3711829d857e986014c5811bb94d86ebc3d343` — **identical to `HEAD`** |
+| `HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
+| `stepup/main` (local) | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
+| `main` (local) | `140a73db9da787ef5973512b8efd400a22ff43ac` |
+| `origin/main` | `c2547049c0b5666661536d076046415714fb7d03` |
+| `origin/stepup/main` | `7530572521952939cff017ce32b5d58adeec3bd7` |
+| `origin/develop` | `c2547049c0b5666661536d076046415714fb7d03` (**identical to `origin/main`**) |
+| `bf35062e` (short SHA, as named in the brief) | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` — **identical to `HEAD`** |
 
-Confirmed: `HEAD == stepup/main (local) == ee371182`. The brief's "commit ee371182" is simply the current tip of the checked-out branch, not a separate historical commit to diff against.
+Confirmed: `HEAD == stepup/main (local) == bf35062e`. The brief's "commit bf35062e" is simply the current tip of the checked-out branch, not a separate historical commit to diff against.
 
-Confirmed: local `main` (`0b8a56e7`) is **not** identical to `origin/main` (`41b6ea49`) — the local `main` branch is itself stale relative to its own remote.
+Confirmed: local `main` (`140a73db`) is **not** identical to `origin/main` (`c2547049`) — the local `main` branch is itself stale relative to its own remote.
 
 ## 3. Merge-base and recomputed divergence (`git rev-list --left-right --count A...B`)
 
@@ -73,12 +73,12 @@ All six materially distinct ref pairs were computed directly (not inferred from 
 
 | A (left) | B (right) | merge-base | A-only commits | B-only commits | Command |
 |---|---|---|---|---|---|
-| `HEAD` | `main` (local) | `0b8a56e7…` | **106** | 0 | `git rev-list --left-right --count HEAD...main` |
-| `HEAD` | `origin/main` | `41b6ea49…` | **291** | 0 | `git rev-list --left-right --count HEAD...origin/main` |
-| `HEAD` | `origin/stepup/main` | `8d9dda77…` | **17** | 0 | `git rev-list --left-right --count HEAD...origin/stepup/main` |
-| `main` (local) | `origin/main` | `41b6ea49…` | 185 | 0 | `git rev-list --left-right --count main...origin/main` |
-| `main` (local) | `origin/stepup/main` | `0b8a56e7…` | 0 | 89 | `git rev-list --left-right --count main...origin/stepup/main` |
-| `origin/main` | `origin/stepup/main` | `41b6ea49…` | 0 | 274 | `git rev-list --left-right --count origin/main...origin/stepup/main` |
+| `HEAD` | `main` (local) | `140a73db…` | **106** | 0 | `git rev-list --left-right --count HEAD...main` |
+| `HEAD` | `origin/main` | `c2547049…` | **291** | 0 | `git rev-list --left-right --count HEAD...origin/main` |
+| `HEAD` | `origin/stepup/main` | `75305725…` | **17** | 0 | `git rev-list --left-right --count HEAD...origin/stepup/main` |
+| `main` (local) | `origin/main` | `c2547049…` | 185 | 0 | `git rev-list --left-right --count main...origin/main` |
+| `main` (local) | `origin/stepup/main` | `140a73db…` | 0 | 89 | `git rev-list --left-right --count main...origin/stepup/main` |
+| `origin/main` | `origin/stepup/main` | `c2547049…` | 0 | 274 | `git rev-list --left-right --count origin/main...origin/stepup/main` |
 
 All six commands exited 0.
 
@@ -87,7 +87,7 @@ All six commands exited 0.
 - **"~106 commits"** (HEAD vs local `main`): **recomputed exact value is 106.** Matches the historical figure exactly (not merely "~106" — it is precisely 106 at the moment of this audit).
 - **"~291 commits"** (HEAD vs `origin/main`): **recomputed exact value is 291.** Matches exactly.
 - No historical figure was supplied for HEAD vs `origin/stepup/main` (the actual push-relevant divergence): **HEAD is 17 commits ahead of its own remote-tracking branch, with 0 commits behind.** This means the current branch has **17 local, unpushed commits** relative to `origin/stepup/main` as of this audit. This is the single most launch-relevant number in this table (it, not the 291, is what would need pushing to update the remote branch of the same name) and it was not present in the brief's historical figures — noted as a **gap in the prior audit's framing**, not a conflict.
-- `origin/develop` and `origin/main` are byte-identical SHAs (`41b6ea49…`), i.e. `develop` is not diverged from `main` on the remote at this time.
+- `origin/develop` and `origin/main` are byte-identical SHAs (`c2547049…`), i.e. `develop` is not diverged from `main` on the remote at this time.
 
 ### Interpretation (structural only, not a merge recommendation)
 
@@ -102,12 +102,12 @@ Exit code: 0. Output (13 worktrees total):
 
 | Path | HEAD SHA | Branch | Note |
 |---|---|---|---|
-| `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` | `ee371182` | `[stepup/main]` | **this audit's working tree** |
-| `/private/tmp/claude-501/.../scratchpad/wt-main` | `41b6ea49` | detached HEAD | `prunable` |
-| `/Users/saai_sidd/Git/Letbuyy_Store/.claude/worktrees/agent-a1bd13d85c3105715` | `41b6ea49` | `[worktree-agent-a1bd13d85c3105715]` | `prunable` |
-| ...9 more `agent-*` worktrees, all identical pattern... | `41b6ea49` | `[worktree-agent-*]` | `prunable`, 11 total |
+| `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` | `bf35062e` | `[stepup/main]` | **this audit's working tree** |
+| `/private/tmp/claude-501/.../scratchpad/wt-main` | `c2547049` | detached HEAD | `prunable` |
+| `/Users/saai_sidd/Git/Letbuyy_Store/.claude/worktrees/agent-a1bd13d85c3105715` | `c2547049` | `[worktree-agent-a1bd13d85c3105715]` | `prunable` |
+| ...9 more `agent-*` worktrees, all identical pattern... | `c2547049` | `[worktree-agent-*]` | `prunable`, 11 total |
 
-All 12 non-primary worktrees sit at `41b6ea49` (== `origin/main`) and are flagged `prunable` by git itself (their filesystem paths are gone or stale). None of them is this audit's working tree and none was touched. This is reported as an observation (housekeeping candidate — stale agent worktrees), not acted upon (read-only mandate).
+All 12 non-primary worktrees sit at `c2547049` (== `origin/main`) and are flagged `prunable` by git itself (their filesystem paths are gone or stale). None of them is this audit's working tree and none was touched. This is reported as an observation (housekeeping candidate — stale agent worktrees), not acted upon (read-only mandate).
 
 ## 5. Submodules and Git LFS
 

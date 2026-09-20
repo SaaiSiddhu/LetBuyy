@@ -1,6 +1,6 @@
 # PARITY EXECUTION PACKET (L14)
 
-**Date:** 2026-06-13 · **HEAD:** `cf4f6f6f` · Repository truth. No fabricated parity/screenshots/metrics.
+**Date:** 2026-06-13 · **HEAD:** `77b681f1` · Repository truth. No fabricated parity/screenshots/metrics.
 
 ## What is already done (repo-side)
 - **Engine-side parity VERIFIED** — Liquid renders correct structure/data/security for every customer-facing route (`PARITY_REPORT.md`; theme-engine render suites 56/56).

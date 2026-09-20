@@ -1,6 +1,6 @@
 # PHASE L1 — BUNDLE PERSISTENCE
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Make a real store ship a schema-valid Liquid bundle so the existing read path renders Liquid (nothing renders Liquid until a bundle is persisted).
 2. **Repository Reality.** The only producer of `liquidBundle` is `buildBundleTemplateConfig` (`schema-registry-execution.adapter.ts:164-187`) via theme-package upload. On publish/install, `buildReleaseArtifacts` re-detects it (`theme-execution.adapter.ts:601-607`) and writes `theme_releases.template_snapshot`/`release_manifest` + `sites.template_config`. **If `themes.default_template` carries a bundle, install auto-propagates it.** urban-kicks is seeded React/`theme-engine-v1` (`database/supabase/seeds/urban-kicks-theme.sql`, no bundle).

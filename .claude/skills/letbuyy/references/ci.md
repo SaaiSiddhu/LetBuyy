@@ -1,6 +1,6 @@
 # GitHub Actions — what runs, why the owner may get "Run failed" mail, how to read a red run
 
-**Measured 2026-09-04 at `develop` = `823aa5ee`.** Re-measure before quoting.
+**Measured 2026-09-04 at `develop` = `a751a2ff`.** Re-measure before quoting.
 
 ## 0. The signal is unreadable from this machine (finding, not a verdict)
 
@@ -28,7 +28,7 @@ gh run view <run-id> --repo SaaiSiddhu/Letbuyy_Store --log-failed | sed 's/\x1b\
 GitHub e-mails the account that **triggered** a run when it fails. Nothing was pushed since
 2026-08-15, so today's mail can only come from **scheduled** workflows: `branch-lag-monitor.yml`
 (hourly, `17 * * * *`) fails whenever `origin/main` is behind `origin/stepup/main` — they were level at
-`5af69e0c`, so it should pass until the owner's first push moves one of them; after GOV-3 it measures
+`f52abca7`, so it should pass until the owner's first push moves one of them; after GOV-3 it measures
 `main` against `staging` instead. `full-security-audit.yml` (Mondays 04:30 UTC) needs
 `ANTHROPIC_API_KEY`; `hot-table-partition-maintenance.yml` (monthly) runs plan-only without secrets.
 Reducing mail honestly means fixing or retiring failing jobs, never muting notifications.
@@ -69,7 +69,7 @@ now asserts "exactly one production deploy workflow, reachable only from `main` 
 
 ## 3. What would be red today — attributed from local evidence (CI itself unread)
 
-| Job | Local reproduction — rows marked RE-MEASURED are from a clean worktree at `develop` = `de543446` (2026-09-12); the rest are still the `823aa5ee` GOV-3 rehearsal (2026-09-04). Details in `hazards.md` § Ambient reds | Class | Owner action |
+| Job | Local reproduction — rows marked RE-MEASURED are from a clean worktree at `develop` = `6edbbf0e` (2026-09-12); the rest are still the `a751a2ff` GOV-3 rehearsal (2026-09-04). Details in `hazards.md` § Ambient reds | Class | Owner action |
 |---|---|---|---|
 | CI · typecheck | **RE-MEASURED 2026-09-12: typecheck now exits 0, CLEAN.** The 29 `TS2322` in the retired cashfree/paypal/stripe adapters are gone — `letbuyy-ambient-red-masked-the-gateway-build` records that this red used to hide the api-gateway build, because turbo cancels dependents | stale code after the rail retirement | deletion-gated cleanup (DEL-R2), CI-1 |
 | CI · lint | **RE-MEASURED 2026-09-12, UNCHANGED and exact:** `@letbuyy/customer-web#lint` 921 problems / 38 errors, first offender `apps/customer_web/scripts/liquid-parity-harness.mjs`. The 38 split 37 `no-hardcoded-hex` (CAP-C77 — none of them wants a token) + 1 `no-new-next-api-route` (CAP-C76). Only this package exits non-zero; the other four apps emit warnings only | governance debt | CI-1 |
@@ -79,7 +79,7 @@ now asserts "exactly one production deploy workflow, reachable only from `main` 
 | CI · merge-safety-gate (behavioral, Flutter) | behavioral suite needs the ephemeral Postgres in CI; merchant_app 172/172 at Phase S | unknown until read | read the run |
 | CI · mobile-merchant | macOS runner: analyze + test + debug APK + iOS no-codesign | iOS never built locally (no Xcode); `UNKNOWN_LIVE_STATE` | read the run |
 | CI · secret-hygiene | validators only; no gitleaks in this repo | passes locally | — |
-| Branch lag monitor | `origin/main` vs `origin/stepup/main` level at `5af69e0c` → passes; after GOV-3 measures `staging` | policy | push all three branches together |
+| Branch lag monitor | `origin/main` vs `origin/stepup/main` level at `f52abca7` → passes; after GOV-3 measures `staging` | policy | push all three branches together |
 | Deploy Staging / Production deploy | not triggerable by push any more | — | dispatch only after DEPLOY-1 |
 
 ## 4. Rules for every mode

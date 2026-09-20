@@ -1,7 +1,7 @@
 # DELETION CANDIDATE REGISTRY — Repository Truth Audit 2026-06-10
 
 **Axis:** Deletion-candidate classification (repository-wide). **DISCOVERY ONLY — nothing was deleted; this file is the only write.**
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` (2026-06-10) · working tree dirty **512 D / 410 M / 77 ??** (`git status --porcelain` count at audit time).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` (2026-06-10) · working tree dirty **512 D / 410 M / 77 ??** (`git status --porcelain` count at audit time).
 **Baseline:** classifications are against the **working tree** (the intended end-state of executed Phases A–D13, all uncommitted per `EXECUTION_LEDGER.md`). HEAD/`main` divergence is flagged wherever it changes a verdict. `main` is 30 commits behind `stepup/main`; production CI deploys only from `main`.
 **Evidence base:** the nine wave-1 axis reports in this directory (cited as `GOV`, `ARCH`, `PROMPT`, `CODE`, `DB`, `THEME`, `IDENT`, `MONEY`, `MOBILE` + section), plus this auditor's own spot-verification (cited as `path:line` or a shell probe described inline). Every row carries evidence; where evidence is insufficient the class is **NEEDS-EVIDENCE**, never DELETE.
 
@@ -146,7 +146,7 @@
 | `docs/runbooks/` (20) | KEEP most (incident-sev1, deployment-rollback, secret-rotation, queue-dlq-redrive, staging-*, foundation-wave*, custom-domain-cname, app-marketplace-* while gateway app-store routes live). **ARCHIVE [DAP]**: `regional-failover.md`, `survivability-suite.md`, `infra-recovery.md` (last two validator-required, `survivability-governance-validator.mjs:28-29`), `chaos-drill.md`, `event-replay.md`, `live-certification-execute.md` | [DAP] | ARCH §4.3; validator read; shell listing |
 | `docs/design-system/` (incl. `empty-states/` 18-motif SVG library), `docs/seo/` (entity+SEO playbook), `docs/research/` (shopify product intelligence), `docs/env-setup/` | KEEP (live reference material) | | shell listing; memory (canonical-domain, empty-states); PROMPT §3.4 (research benign) |
 | `docs/conflicts/`, `docs/future-roadmap/` | Contain only generated READMEs enumerating dead `FORENSIC_REPORT/*` rows → covered by the generated-tree **DELETE**; remove emptied dirs | | ARCH §4.3 |
-| `docs/mobile-migration-blueprint/` | **Empty directory** (missions deleted 2026-06-06 in `47f29bc6`, no archive copy — git-history-only) | **DELETE** (empty husk) | | PROMPT §3.6; shell probe (`ls` empty) |
+| `docs/mobile-migration-blueprint/` | **Empty directory** (missions deleted 2026-06-06 in `aed02212`, no archive copy — git-history-only) | **DELETE** (empty husk) | | PROMPT §3.6; shell probe (`ls` empty) |
 | `docs/auth/2026-06-09-*` untracked report sets | KEEP (report-class evidence) | [COMMIT!] | PROMPT §6.6 |
 | `_GOVERNANCE_SPINE.md` | **MISSING** — cited 26× by 5 of the 7 canonical docs; does not exist anywhere | Not a deletion row: **author it or strip the citations** (canon integrity gap) | | ARCH §6.1 |
 
@@ -309,7 +309,7 @@ Single condition for the batch: **SKIP-D11-PRODUCT-DEAD-TABLE-WRITER-PROBE** (li
 | 5 | Root `build/` (161 MB), `.dart_tool/`, `.tmp/`, `test-results/`, `.pnpm-store/`, `.turbo/` | Machine-local caches/residue, all gitignored or empty |
 | 6 | `legacy/` empty dir husk | files=0 (after committing the 37 tracked deletions) |
 | 7 | `tests/projections/` empty dir | files=0 |
-| 8 | `docs/mobile-migration-blueprint/` empty dir | `ls` empty; contents git-history-only since `47f29bc6` |
+| 8 | `docs/mobile-migration-blueprint/` empty dir | `ls` empty; contents git-history-only since `aed02212` |
 | 9 | `apps/storefront-runtime/src/app/demo/urban-kicks/` | Demo residue, live-routed |
 | 10 | `firebasestorage.googleapis.com` remotePattern (`next.config.ts:43`) | Firebase tree is archive-only; whitelist is a dangling trust grant |
 | 11 | 3 frozen-app rows in `staging-deploy.yml:189-200` + 4 frozen-app entries in `config/vercel/projects.json:79-137` | Direct drift vs frozen/not-deployed topology law |

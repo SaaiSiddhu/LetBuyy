@@ -1,7 +1,7 @@
 # LETBUYY EXECUTIVE TRUTH REPORT
 
 **Convergence Audit 2026-06-10 · Phase 10 — Final Executive Truth (capstone synthesis)**
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` · deploy branch `main` **30 commits behind** (the only branch production CI triggers from) · working tree **512 D / 410 M / 78 ??** (re-verified this phase).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` · deploy branch `main` **30 commits behind** (the only branch production CI triggers from) · working tree **512 D / 410 M / 78 ??** (re-verified this phase).
 **Mode:** DISCOVERY / SYNTHESIS ONLY. No implementation, no redesign, no new architecture, no codex prompts. Read-only git. This report synthesizes all 9 prior Convergence-Audit reports + the premise seed, which themselves built on the 14-report `REPOSITORY_TRUTH_AUDIT_2026_06_10/`. Every claim carries a citation (report name + `path:line`).
 
 ---
@@ -236,7 +236,7 @@ The ordering, therefore: **(1) ARB records the survivability repeal → (2) Phas
 
 - **Synthesis basis:** all **9 prior Convergence-Audit reports** (`_PREMISES_SEED.md`, `REPOSITORY_TRUTH_REPORT.md`, `DUPLICATE_AUTHORITY_REPORT.md`, `SINGLE_SOURCE_OF_TRUTH_PLAN.md`, `STRATEGIC_WINNER_DECISIONS.md`, `DELETE_CANDIDATES.md`, `PROMPT_DRIFT_REPORT.md`, `FOUNDATION_GAP_REPORT.md`, `ARCHITECTURAL_DRIFT_REPORT.md`, `REPOSITORY_CONVERGENCE_ROADMAP.md`) + the **14-report `REPOSITORY_TRUTH_AUDIT_2026_06_10/`** as the code-verified citation base (carrying the 3.1/10 health and 2.3/5.5 readiness scores).
 - **Mode:** Discovery / synthesis only. Read-only git. No file modified except this report. No implementation, no redesign, no new architecture, no codex prompts.
-- **Repository state (re-verified this phase):** branch `stepup/main` @ HEAD **`5cf9e64e`**; deploy branch `main` **30 commits behind**; working tree **512 D / 410 M / 78 ??**.
+- **Repository state (re-verified this phase):** branch `stepup/main` @ HEAD **`c4fc3cd6`**; deploy branch `main` **30 commits behind**; working tree **512 D / 410 M / 78 ??**.
 - **Corrected numbers (lead-verified, resolving inter-agent conflicts, re-confirmed live this phase):** `getSupabaseAdmin` = **915 call sites (917 incl. tests)**, 2 definitions in `services/api-gateway/src/lib/supabase.ts`; nested non-root `AGENTS.md` = **79 on disk** (89 tracked at HEAD; a subset scan-generated). Where prior phases diverged ([SEED-CONFLICT, magnitude] on the admin count 664–917 and nested AGENTS.md 38–79), these corrected figures are authoritative; **the winner spine is unchanged**.
 - **Out of scope (UNVERIFIED):** all live infrastructure/DB/provider/CI-history state — which of `main`/HEAD/working-tree actually serves production, whether 162–166 were applied out-of-band, the per-page call-graph trace gating second-backend deletion, live `pg_policies`/grants, and ARB intent on multi-region. None resolvable by read-only git (`REPOSITORY_CONVERGENCE_ROADMAP.md:482-493`).
 - **Date:** 2026-06-10.

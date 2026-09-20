@@ -1,6 +1,6 @@
 # PHASE L4 — LIQUID CHROME (Header / Footer / Navigation)
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Make a Liquid page fully Liquid — today the layout renders React header/footer even over a Liquid body (CAP-C08) — and bind navigation menus into the Liquid header.
 2. **Repository Reality.** `layout.tsx:214,224` renders React `StorefrontSectionGroupRenderer` for header/footer over ALL bodies, including Liquid; `theme-governance-validator.mjs:114` tracks the CAP-C08 gap. `navigation_menus` table exists (`000_baseline.sql:9855`, RLS ENABLE `:25148`) and is consumed by React `dynamic-header.tsx`. The Liquid header section fixture exists (`theme-bundle.ts:964-982`).

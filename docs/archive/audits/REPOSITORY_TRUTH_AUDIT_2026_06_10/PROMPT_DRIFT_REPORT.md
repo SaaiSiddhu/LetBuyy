@@ -1,7 +1,7 @@
 # PROMPT DRIFT REPORT — Repository Truth Audit 2026-06-10
 
 **Axis:** PROMPT TRUTH (prompt / mission / execution-artifact inventory and drift)
-**Auditor:** PROMPT TRUTH subagent · **Date:** 2026-06-10 · **Repo state:** branch `stepup/main`, HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift", 2026-06-10), working tree dirty (512 D / 410 M / 76 ?? per `git status --porcelain` counts). Discovery only — no repository changes made except this report.
+**Auditor:** PROMPT TRUTH subagent · **Date:** 2026-06-10 · **Repo state:** branch `stepup/main`, HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift", 2026-06-10), working tree dirty (512 D / 410 M / 76 ?? per `git status --porcelain` counts). Discovery only — no repository changes made except this report.
 
 ---
 
@@ -44,7 +44,7 @@ Classes: **ACTIVE** (treated as live instruction), **OBSOLETE** (mission complet
 
 | Artifact | Location-now | Class | Evidence | Disposition |
 |---|---|---|---|---|
-| `AGENTS.md` | WT (modified vs HEAD) | **ACTIVE** | Promoted V2 hand-authored law, "Date: 2026-06-10 … pinned at stepup/main @ 5cf9e64e" (AGENTS.md:1-11); promotion = EXECUTION_LEDGER.md:5 (PHASE-A-HARD-001) | KEEP |
+| `AGENTS.md` | WT (modified vs HEAD) | **ACTIVE** | Promoted V2 hand-authored law, "Date: 2026-06-10 … pinned at stepup/main @ c4fc3cd6" (AGENTS.md:1-11); promotion = EXECUTION_LEDGER.md:5 (PHASE-A-HARD-001) | KEEP |
 | `CLAUDE.md` | WT (modified) | **ACTIVE** | Governance pointer (excluded from prompt audit per brief); points at AGENTS.md→Constitution | KEEP |
 | `EXECUTION_LEDGER.md` | WT-?? (untracked) | **ACTIVE** | Required verbatim by validator: `whole-repo-end-state-validator.mjs:122-144` asserts 18 action-IDs present; all rows say "not committed" | KEEP + commit |
 | `SKIPPED_HUMAN_DECISIONS.md` | WT-?? (untracked) | **ACTIVE** | Validator asserts 19 SKIP-IDs (`whole-repo-end-state-validator.mjs:146-169`) | KEEP + commit |
@@ -129,7 +129,7 @@ From `git log --all --diff-filter=A -- '*MISSION*' '*PROMPT*'` (70 historical pa
 
 | Artifact | Last seen | Evidence | Disposition |
 |---|---|---|---|
-| `docs/mobile-migration-blueprint/CODEX_MOBILE_FOUNDATION_EXECUTION_MISSION.md` (+`_V2`), `CODEX_LETBUYY_MANAGED_PAYMENTS_AND_FINAL_PARITY_MISSION.md`, `CODEX_MOBILE_FOUNDATION_{LEDGER,STATUS}.md`, `FIREBASE_DECOMMISSION_PLAN.md` | deleted in `47f29bc6` 2026-06-06 "chore(foundation): reconcile broad merge governance" | `git show --stat 47f29bc6` shows -204/-261/-203 line deletions; `find` returns no copy anywhere | Recoverable via `git show 47f29bc6^:<path>` if history needed; no action required |
+| `docs/mobile-migration-blueprint/CODEX_MOBILE_FOUNDATION_EXECUTION_MISSION.md` (+`_V2`), `CODEX_LETBUYY_MANAGED_PAYMENTS_AND_FINAL_PARITY_MISSION.md`, `CODEX_MOBILE_FOUNDATION_{LEDGER,STATUS}.md`, `FIREBASE_DECOMMISSION_PLAN.md` | deleted in `aed02212` 2026-06-06 "chore(foundation): reconcile broad merge governance" | `git show --stat aed02212` shows -204/-261/-203 line deletions; `find` returns no copy anywhere | Recoverable via `git show aed02212^:<path>` if history needed; no action required |
 | `AGENT_PROMPT_claude_setup.md` | HIST | Absent everywhere; `docs/archive/prompts/claude-setup-prompt.md` is the probable renamed successor — **UNVERIFIED** rename | none |
 | `CODEX_FOUNDATION_HARDENING_MISSION_V2.md` | HIST | Absent everywhere; `docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_FOUNDATION_HARDENING_MISSION.md` exists (no V2) — **UNVERIFIED** whether V2 content preserved | none |
 
@@ -244,7 +244,7 @@ PHASE-C-FORCED-DECISIONS "Resolved the ops-console survivor to `apps/platform-co
 - **docs/: NOT ARCHIVED, NOT REGISTERED.** ~55 mission/prompt files remain live and tracked outside `docs/archive/` (§3.3-3.4), including 12+ DANGEROUS ones and 6 paste-ready "/goal" terminal relaunchers. The legacy register has **no LEG row** for any of them — LEG-074/075 scoped to `tasks/executable/` and root docs. AGENTS.md DOC-R4 ("MUST git mv superseded docs to docs/archive/") condemns them in principle but nothing enumerates or enforces it below the root.
 - **Registry: NONE.** No index of prompts exists. `docs/README.md` is a stale generated topic index (2026-06-08) that doesn't list prompts; the only generated cross-references to prompts are incidental (`docs/database/README.md:103`, `docs/products/README.md:105`). The single machine-known prompt is `docs/archive/codex-prompts/CODEX_MASTER_IMPLEMENTATION_PROMPT.md`.
 - **Evasion precedent on record:** `CODEX_INTERNAL_OS_FOUNDATION_STATUS.md:20` — mission artifacts deliberately placed under `docs/` because root validators reject them. The pattern will recur for any future mission unless the enforcement perimeter extends below root or a prompt registry/archive ratchet is added.
-- **History: ≥6 prompts are git-history-only** (mobile-migration-blueprint set, deleted 2026-06-06 in `47f29bc6`) — acceptable as git history, but no archive copy exists.
+- **History: ≥6 prompts are git-history-only** (mobile-migration-blueprint set, deleted 2026-06-06 in `aed02212`) — acceptable as git history, but no archive copy exists.
 
 Discovery-level recommended end-state (not actioned): `git mv docs/Codex_waves docs/archive/`; `git mv` the five audit-dir mission sets + `docs/CODEX_LETBUYY_FOUNDATION_MISSION.md` + the `LETBUYY_MASTER_EXECUTION_PLAN`/P0-P4/`LETBUYY_CODEX_IMPLEMENTATION_MASTER` family + `docs/agents/` into dated archive folders; rewrite-or-archive `tasks/todo.md` and `memory/lessons.md` and amend AGENT-R16 to point at living equivalents; commit the untracked archives; optionally extend `whole-repo-end-state-validator` (or a new prompt-archive ratchet) to fail on `*MISSION*`/`*PROMPT*` files outside `docs/archive/`.
 

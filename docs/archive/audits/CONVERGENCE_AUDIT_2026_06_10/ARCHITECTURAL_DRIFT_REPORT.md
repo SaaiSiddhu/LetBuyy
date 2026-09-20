@@ -2,7 +2,7 @@
 
 **Phase:** 8 — ARCHITECTURAL DRIFT (CODE / DOCS / PROMPTS / VALIDATORS / DATABASE / TOPOLOGY != ARCHITECTURE)
 **Mode:** DISCOVERY ONLY. No code changes, no new architecture, no codex prompts. Read-only git.
-**Date:** 2026-06-10 · **Branch:** `stepup/main` @ HEAD `5cf9e64e` · **Working tree:** 512 D / 410 M / 76 ?? (temporal triplication: `main` = deployable+condemned, `HEAD` = +30, working tree = hardened end-state, uncommitted, zero git history).
+**Date:** 2026-06-10 · **Branch:** `stepup/main` @ HEAD `c4fc3cd6` · **Working tree:** 512 D / 410 M / 76 ?? (temporal triplication: `main` = deployable+condemned, `HEAD` = +30, working tree = hardened end-state, uncommitted, zero git history).
 **Authority basis:** `_PREMISES_SEED.md` reconciliation (V1/Freeze *content* supreme per user; Constitution + root AGENTS_V2 + Canonical Systems = its promoted embodiment) + the 6 REPOSITORY_TRUTH_AUDIT_2026_06_10 axis reports, re-read through the single lens **"where does the artifact disagree with the architecture?"**
 
 ---

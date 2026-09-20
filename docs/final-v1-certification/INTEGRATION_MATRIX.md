@@ -1,6 +1,6 @@
 # Phase B — Integration Matrix
 
-**HEAD `587dc988`. PASS / PARTIAL / FAIL with evidence.**
+**HEAD `ae383bb8`. PASS / PARTIAL / FAIL with evidence.**
 
 | Integration | Status | Evidence | Note |
 |---|---|---|---|

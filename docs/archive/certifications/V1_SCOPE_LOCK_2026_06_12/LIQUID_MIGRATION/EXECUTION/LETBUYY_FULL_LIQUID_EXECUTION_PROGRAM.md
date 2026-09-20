@@ -1,6 +1,6 @@
 # LETBUYY_FULL_LIQUID_EXECUTION_PROGRAM.md
 
-**The execution program — Full Liquid V1 (L0→L18).** HEAD `0b8a56e7` · plan-only. Per-phase 20-section contracts live in `../PHASES/PHASE_L*.md`; this is the execution layer adding Human/ARB gates, effort, and the run protocol. Reads: Constitution, AGENTS, CLAUDE, the 8 `LIQUID_COMPLETION_*` docs, `CHECKOUT_BOUNDARY_DECISION.md`, `THEME_COMPILER_CONTRACT.md`.
+**The execution program — Full Liquid V1 (L0→L18).** HEAD `140a73db` · plan-only. Per-phase 20-section contracts live in `../PHASES/PHASE_L*.md`; this is the execution layer adding Human/ARB gates, effort, and the run protocol. Reads: Constitution, AGENTS, CLAUDE, the 8 `LIQUID_COMPLETION_*` docs, `CHECKOUT_BOUNDARY_DECISION.md`, `THEME_COMPILER_CONTRACT.md`.
 
 ## Run protocol (every phase, no exception)
 

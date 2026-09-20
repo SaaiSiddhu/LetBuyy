@@ -1,13 +1,13 @@
 # FOUNDATION FREEZE CERTIFICATION — LETBUYY
 
-**DOC: FC-02 · Drafted 2026-06-12 at HEAD `da83ba92` · STATUS: ARMED, NOT ACTIVE**
+**DOC: FC-02 · Drafted 2026-06-12 at HEAD `f961e23a` · STATUS: ARMED, NOT ACTIVE**
 **Activation clause:** this certification becomes ACTIVE only when all seven `CLOSURE-B*` rows (FC-01 §Definition of Done) exist in `EXECUTION_LEDGER.md` at a SHA where the gate is green, the tree is clean, and `main == stepup/main == origin/main`. Until then it binds nothing and certifies nothing. Signing it early is itself a governance violation.
 
 ---
 
 ## 1. ARCHITECTURE — FROZEN
 
-**Certified state (already true at `da83ba92`, survives closure unchanged):** one modular monolith (`services/api-gateway`, single Worker, hosts checkout/payments/payouts/wallet/settlements/orders/themes) + 4 satellite Workers (webhook-service, queue-workers, mobile-bff) + 5 Vercel apps + 1 Flutter app; one region; reserved roots manifest-only (2 files each); zero Dockerfiles; zero frozen→active imports; deprecated aliases exist only under `docs/archive/`.
+**Certified state (already true at `f961e23a`, survives closure unchanged):** one modular monolith (`services/api-gateway`, single Worker, hosts checkout/payments/payouts/wallet/settlements/orders/themes) + 4 satellite Workers (webhook-service, queue-workers, mobile-bff) + 5 Vercel apps + 1 Flutter app; one region; reserved roots manifest-only (2 files each); zero Dockerfiles; zero frozen→active imports; deprecated aliases exist only under `docs/archive/`.
 
 **MAY change:** route/handler additions inside existing runtimes; internal refactors that keep the import graph acyclic and runtime count fixed; activation of a reserved root ONLY via human-approved scope (CLAUDE.md) with source+tests+deploy config in one reviewed change.
 **MAY NEVER change (without constitutional amendment):** runtime count/topology; introduction of microservices, CQRS, event sourcing, saga orchestration, an event-bus runtime, multi-region; resurrection of deprecated aliases; un-freezing `apps/{app-marketplace, developer-portal, theme-marketplace, platform-operations-portal}` as deploy targets; deletion of the GraphQL/extensions surface other than through the open ARB seam `SKIP-GRAPHQL-EXTENSIONS-SCOPE-ARB`.
@@ -58,7 +58,7 @@ At activation, the foundation program itself terminates: REPOSITORY_TRUTH → CO
 
 | Field | Value |
 |---|---|
-| Closure SHA (repo-side, executor) | `f5e7036d` (CLOSURE-B2 commit — last content commit; `main == stepup/main` at this SHA) |
+| Closure SHA (repo-side, executor) | `f55fe6e4` (CLOSURE-B2 commit — last content commit; `main == stepup/main` at this SHA) |
 | Gate validator count at closure | 107 (106 baseline + B7c secret-topology-validator; B4/B3 extensions carried no new count) |
 | CLOSURE-B4 ledger line | EXECUTION_LEDGER.md line 211 |
 | CLOSURE-B3 ledger line | EXECUTION_LEDGER.md line 214 |
@@ -73,4 +73,4 @@ At activation, the foundation program itself terminates: REPOSITORY_TRUTH → CO
 
 **Human action to activate:** complete B1-a per `EXECUTABLE_HUMAN_REQUIRED.md` row `HR-B1A-FOUNDATION-PUSH` → append `CLOSURE-B1A` row → fill in remaining _pending-human_ fields → sign. On completion: FOUNDATION ERA — CLOSED. Successor authority: `LAUNCH_HANDOFF_DOCUMENT.md`.
 
-**STATUS (executor): ARMED. All CLOSURE-B4/B3/B5/B6/B7/B2 rows committed, gate green (107), main == stepup/main == f5e7036d. Pending human: B1-a push + branch protection + CLOSURE-B1A row.**
+**STATUS (executor): ARMED. All CLOSURE-B4/B3/B5/B6/B7/B2 rows committed, gate green (107), main == stepup/main == f55fe6e4. Pending human: B1-a push + branch protection + CLOSURE-B1A row.**

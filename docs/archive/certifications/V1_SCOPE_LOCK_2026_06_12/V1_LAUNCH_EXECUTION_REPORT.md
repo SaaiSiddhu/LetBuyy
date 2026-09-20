@@ -2,7 +2,7 @@
 
 **Program:** V1_SCOPE_LOCK_2026_06_12 (launch execution, Batches 1–7 = LB-1…LB-13)
 **Authority:** `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_SCOPE_LOCK.md` · `EXECUTION_LEDGER.md` (rows `V1-LAUNCH-CP0` → `V1-LAUNCH-B5`)
-**Report date:** 2026-06-13 · **Repo HEAD:** `0b8a56e7` (v1-launch-b4) · working tree carries uncommitted Batch 5
+**Report date:** 2026-06-13 · **Repo HEAD:** `140a73db` (v1-launch-b4) · working tree carries uncommitted Batch 5
 **Rule applied:** Repository evidence wins. Wishlist loses. No overclaim.
 
 ---
@@ -37,13 +37,13 @@ Plus **9 human/provisioning tracks (H-1…H-9)** that no code can close (push-to
 
 | # | Blocker | Batch | Status | Evidence |
 |---|---|---|---|---|
-| LB-1 | Storefront `middleware.ts` re-export of `proxy` | 1 | ✅ committed | `8d73fe7a`; `apps/storefront-runtime/src/middleware.ts` |
-| LB-2 | Cut Stripe/PayPal/Cashfree from checkout UI | 1 | ✅ committed | `8d73fe7a` |
-| LB-13 | Security trio (PII leak · replay guard · rate limits) | 1 | ✅ committed | `8d73fe7a` |
-| LB-3 | Refund chain (Razorpay refund + UI + step-up TOTP) | 2 | ✅ committed | `30744216` |
-| LB-4 | Payout release UI (shared step-up + Route flow) | 2 | ✅ committed | `30744216` |
-| LB-5 | Variants E2E | 3 | ✅ committed | `04cbbbab` |
-| LB-6 | Collections E2E | 4 | ✅ committed | `0b8a56e7` |
+| LB-1 | Storefront `middleware.ts` re-export of `proxy` | 1 | ✅ committed | `90368dc6`; `apps/storefront-runtime/src/middleware.ts` |
+| LB-2 | Cut Stripe/PayPal/Cashfree from checkout UI | 1 | ✅ committed | `90368dc6` |
+| LB-13 | Security trio (PII leak · replay guard · rate limits) | 1 | ✅ committed | `90368dc6` |
+| LB-3 | Refund chain (Razorpay refund + UI + step-up TOTP) | 2 | ✅ committed | `f53d6e2f` |
+| LB-4 | Payout release UI (shared step-up + Route flow) | 2 | ✅ committed | `f53d6e2f` |
+| LB-5 | Variants E2E | 3 | ✅ committed | `db986077` |
+| LB-6 | Collections E2E | 4 | ✅ committed | `140a73db` |
 | LB-7 | Merchant shipping rates honored + GST invocation | 5 | 🟩 **validated, UNCOMMITTED** | `V1-LAUNCH-B5` ledger row; see §4 |
 | LB-8 | AnnouncementBar renderer (theme T1) | 6 | ❌ not started | — |
 | LB-9 | Appearance bridge (theme T2) | 6 | ❌ not started | — |
@@ -57,10 +57,10 @@ Plus **9 human/provisioning tracks (H-1…H-9)** that no code can close (push-to
 
 | Batch | Scope | Commit / row | Tests | Status |
 |---|---|---|---|---|
-| **Batch 1** — Foundation | LB-1, LB-2, LB-13 | `8d73fe7a` | lb1×4, lb2×6, lb13×4 | ✅ committed |
-| **Batch 2** — Money flows | LB-3, LB-4 | `30744216` | lb3×4, lb34×7 | ✅ committed |
-| **Batch 3** — Catalog core | LB-5 | `04cbbbab` | lb5×12 | ✅ committed |
-| **Batch 4** — Discovery | LB-6 | `0b8a56e7` | lb6×10 + fed×3 | ✅ committed |
+| **Batch 1** — Foundation | LB-1, LB-2, LB-13 | `90368dc6` | lb1×4, lb2×6, lb13×4 | ✅ committed |
+| **Batch 2** — Money flows | LB-3, LB-4 | `f53d6e2f` | lb3×4, lb34×7 | ✅ committed |
+| **Batch 3** — Catalog core | LB-5 | `db986077` | lb5×12 | ✅ committed |
+| **Batch 4** — Discovery | LB-6 | `140a73db` | lb6×10 + fed×3 | ✅ committed |
 | **Batch 5** — Commerce completion | LB-7 + GST | `V1-LAUNCH-B5` (uncommitted) | **lb7×28 + reconciled lb6 count** | 🟩 **validated, pending commit** |
 | **Batch 6** — Theme completion | LB-8, LB-9, T1–T4 | — | — | ❌ not started |
 | **Batch 7** — Buyer trust | LB-10, LB-11, LB-12 | — | — | ❌ not started |
@@ -209,4 +209,4 @@ git commit -m "v1-launch-b5: LB-7 shipping rates honored + GST invocation; recon
 
 ---
 
-*Provenance: live `node`/`git`/`tsc` runs at working-tree state on 2026-06-13 (HEAD `0b8a56e7`); `EXECUTION_LEDGER.md` rows `V1-LAUNCH-CP0`…`V1-LAUNCH-B5`; `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_SCOPE_LOCK.md`. Batches 1–4 "committed/green" are from their commit-time ledger rows; Batch 5 figures are from this session's runs.*
+*Provenance: live `node`/`git`/`tsc` runs at working-tree state on 2026-06-13 (HEAD `140a73db`); `EXECUTION_LEDGER.md` rows `V1-LAUNCH-CP0`…`V1-LAUNCH-B5`; `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_SCOPE_LOCK.md`. Batches 1–4 "committed/green" are from their commit-time ledger rows; Batch 5 figures are from this session's runs.*

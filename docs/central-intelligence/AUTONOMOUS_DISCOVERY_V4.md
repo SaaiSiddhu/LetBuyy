@@ -11,7 +11,7 @@
 | Open blockers | 5 | blocker report |
 | Open gap docs | 4 | gap/cert docs |
 | Latest migration | 174 | migrations |
-| HEAD | `4a91fa96` (stepup/main) | git |
+| HEAD | `d7f74037` (stepup/main) | git |
 
 New since v3: the decision/memory layer, the runtime topology graph (telemetry-bound), deployment-state, and the execution backlog. Live runtime/deploy metrics remain telemetry/API-bound (not fabricated). The 107 deterministic validators stay authoritative.
 

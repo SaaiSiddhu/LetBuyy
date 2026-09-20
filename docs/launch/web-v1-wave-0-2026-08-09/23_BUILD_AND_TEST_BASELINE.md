@@ -5,10 +5,10 @@
 | Field | Value |
 |---|---|
 | Date | **2026-08-09** |
-| Repo SHA measured | **`fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6`** (branch HEAD at measurement) |
+| Repo SHA measured | **`8ec05e210e2282bbaa70fd39bbf61904cb9e21ab`** (branch HEAD at measurement) |
 | Branch | `codex/web-v1-integration` (local commits only — **not pushed**) |
 | Worktree | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/web-v1-integration` |
-| Wave 0 baseline for comparison | `ee3711829d857e986014c5811bb94d86ebc3d343` (human-approved) |
+| Wave 0 baseline for comparison | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (human-approved) |
 | Toolchain observed | node **v26.5.1** · pnpm **10.6.2** · docker **29.6.2** |
 | Raw evidence | `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/build-baseline/` (`00_COMMAND_LEDGER.tsv` + 37 per-command logs) |
 
@@ -49,7 +49,7 @@ Every command in §3 carries the classification **`isolated local worktree`**. C
 | Secrets in evidence | none. No `.env*` file was read, and no secret **value** appears in any log or in this document — env var **names** only | this document; logs |
 | Original repository | **untouched** except the two permitted output paths (this document, and `raw-evidence/build-baseline/`). No git state-changing command was run against it | §15 |
 
-**Toolchain deviation, recorded not hidden:** the worktree pins Node **20** (`.nvmrc`, `.node-version`, added by commit `623718a1` and merged as `5021f845`), and `ci.yml:21` pins `NODE_VERSION: "20"`. The only Node on this machine is **v26.5.1** (`/opt/homebrew/bin/node`; no nvm/fnm/volta/asdf install, no Node 20 available). Every result below is therefore **measured on Node 26, not on the CI/repo-pinned Node 20**. Root `engines.node` is `">=20.9.0"` — a floor — so Node 26 satisfies it and nothing refused to run. But **no claim in this document should be read as a Node 20 result**, and §12.6 turns out to be a case where the Node version may matter directly.
+**Toolchain deviation, recorded not hidden:** the worktree pins Node **20** (`.nvmrc`, `.node-version`, added by commit `d926569e` and merged as `87cc6327`), and `ci.yml:21` pins `NODE_VERSION: "20"`. The only Node on this machine is **v26.5.1** (`/opt/homebrew/bin/node`; no nvm/fnm/volta/asdf install, no Node 20 available). Every result below is therefore **measured on Node 26, not on the CI/repo-pinned Node 20**. Root `engines.node` is `">=20.9.0"` — a floor — so Node 26 satisfies it and nothing refused to run. But **no claim in this document should be read as a Node 20 result**, and §12.6 turns out to be a case where the Node version may matter directly.
 
 ---
 
@@ -165,7 +165,7 @@ The 20 failures, with the validator's own message (verbatim, truncated):
 
 **Concentration finding:** 4 of the 20 failures (#15, #23, #25, and half of #17/#18) are caused **entirely by `packages/lcis-*` and `services/lcis-api`** — the LCIS surface Phase 1 flagged as absent from every governance topology document and marked UNRESOLVED / human classification required. That escalation is not cosmetic: it is currently responsible for roughly **a fifth of the gate failures**, and the `typescript-governance-validator` failure alone accounts for ~110 findings. Classifying LCIS is now a prerequisite for a green gate. **Not resolved here** — it needs the human decision Phase 1 asked for.
 
-**Both Phase-1 "soft-fail" validators are now hard.** Phase 1 recorded `branch-lag-guard-validator.mjs` and `pricing-catalog-validator.mjs` as using `reporter.warn()` and therefore unable to block. Both were repaired by this branch's validator-runner merge (`3968e4b3`); `git diff` vs the baseline shows +17 lines in branch-lag-guard and +7 in pricing-catalog, and both now use `reporter.assert`. Consequence: `branch-lag-guard` **now genuinely fails** (#104) where it previously could only warn, and `pricing-catalog` now genuinely **passes** (#87) rather than being unable to fail. Two former blind spots are closed.
+**Both Phase-1 "soft-fail" validators are now hard.** Phase 1 recorded `branch-lag-guard-validator.mjs` and `pricing-catalog-validator.mjs` as using `reporter.warn()` and therefore unable to block. Both were repaired by this branch's validator-runner merge (`5fa68c70`); `git diff` vs the baseline shows +17 lines in branch-lag-guard and +7 in pricing-catalog, and both now use `reporter.assert`. Consequence: `branch-lag-guard` **now genuinely fails** (#104) where it previously could only warn, and `pricing-catalog` now genuinely **passes** (#87) rather than being unable to fail. Two former blind spots are closed.
 
 ### 5.3 HAZARD CONFIRMED — the gate wipes the workspace install (WAVE 0)
 
@@ -266,7 +266,7 @@ BUNDLE OK — warnings=0 errors=0
   .tmp/w0-build-baseline/gw-out/index.js   18.1mb
 ```
 
-- **0 errors, 0 warnings. Zero unresolved `@letbuyy/*` specifiers.** **Doc 22 §5's blocker is resolved on this branch** — commit `40a8dffe` ("fix(marketing,shared-types): export the contact contract and repair the contact page build") added `export * from './contact';` at `packages/shared-types/src/index.ts:4`. The one-line fix doc 22 found only as an uncommitted working-tree change is now committed and merged.
+- **0 errors, 0 warnings. Zero unresolved `@letbuyy/*` specifiers.** **Doc 22 §5's blocker is resolved on this branch** — commit `15dd4bea` ("fix(marketing,shared-types): export the contact contract and repair the contact page build") added `export * from './contact';` at `packages/shared-types/src/index.ts:4`. The one-line fix doc 22 found only as an uncommitted working-tree change is now committed and merged.
 - Doc 22 §6's second baseline defect is also closed: `tenant-isolation-validator.mjs` is **#2 PASS** here, because the tenant registry regeneration (59 insertions) that existed only in the original repo's working tree is committed on this branch (`git diff` vs baseline: `+59/-5` on `services/api-gateway/src/tenant/tenant-tables.registry.ts`).
 - **Three earlier attempts at row 14 exited 1 and were harness errors, not repo defects** — first `esbuild` was unresolvable from the scratchpad, then from the worktree root, then 25 "Could not resolve 'crypto'/'path'/…" errors appeared because bare node builtins were not in the `external` list. They are in the ledger for honesty. Crucially, **even those failing runs contained zero `@letbuyy/*` resolution errors**, which independently corroborates the barrel fix.
 - Bundle size, measured: **18,959,660 bytes raw / 2,690,959 bytes gzipped (~2.57 MiB)**. Under Cloudflare's 10 MiB paid Worker limit. **INFERRED, not verified:** wrangler's own bundle would differ — it polyfills rather than externalizes node builtins, so the real artifact is larger than 2.57 MiB. That `jsdom` and `liquidjs` appear in a Worker bundle at all is worth a Wave 1 look; it was not investigated here.
@@ -410,13 +410,13 @@ The dedicated security/auth test surface is **green**. That is a genuinely posit
 | `node scripts/validators/sequential-migration-validator.mjs` | **0** | no untracked files, no duplicate prefixes, no gaps after baseline |
 | `node scripts/validators/rollback-integrity-validator.mjs` | **0** | 3 rollback manifests checked |
 
-All three also pass inside the gate (#42, #43, #83). **UNVERIFIED:** these are *static* checks. Whether the full 124-file chain applies cleanly to a fresh database was **not** re-measured here — doc 22 §4.2 measured it (124/124 applied) at the baseline, on a different worktree, and that result is not re-asserted for `fa5630aa`. Applying migrations against any remote is forbidden and was not attempted.
+All three also pass inside the gate (#42, #43, #83). **UNVERIFIED:** these are *static* checks. Whether the full 124-file chain applies cleanly to a fresh database was **not** re-measured here — doc 22 §4.2 measured it (124/124 applied) at the baseline, on a different worktree, and that result is not re-asserted for `8ec05e21`. Applying migrations against any remote is forbidden and was not attempted.
 
 ---
 
 ## 11. Phase 1 vs this measurement — re-measured, not copied
 
-| Metric | Phase 1 @ `ee371182` (dirty original tree) | **This run @ `fa5630aa`** | Direction |
+| Metric | Phase 1 @ `bf35062e` (dirty original tree) | **This run @ `8ec05e21`** | Direction |
 |---|---|---|---|
 | `pnpm install --frozen-lockfile` | UNVERIFIED (never run) | **exit 0**, lockfile md5 unchanged | now **verified** |
 | Gate validators declared | 108 (comment says 107) | **110** (+`web-v1-scope-perimeter`, +`workflow-trigger-coverage`) | +2 |
@@ -430,7 +430,7 @@ All three also pass inside the gate (#42, #43, #83). **UNVERIFIED:** these are *
 | `test:contracts` | 13 fail / 200 | **12 fail / 200** | ~flat |
 | Gateway unit tests | not reported | 3 fail / 551 | newly measured |
 | Executable Postgres tests | not reported | 18 pass / **2 fail** / 15 human-required-skip | newly measured |
-| api-gateway can bundle | **NO** — 17 esbuild errors (doc 22 §5) | **YES** — 0 errors (barrel fix committed as `40a8dffe`) | **fixed** |
+| api-gateway can bundle | **NO** — 17 esbuild errors (doc 22 §5) | **YES** — 0 errors (barrel fix committed as `15dd4bea`) | **fixed** |
 | Real `next build` per app | UNVERIFIED (doc 13 §6) | 4 of 5 PASS; **`platform-console` FAILS** | newly measured |
 
 Three of Phase 1's four RED numbers moved. One (`lint`) was **understated**, not overstated — the Phase 1 figure was an artifact of turbo aborting on the first failure.
@@ -458,7 +458,7 @@ This matters because many repo test scripts enumerate **explicit file paths** ra
 
 **12.7 — Two security-relevant gate failures now visible for the first time. (WAVE 1, prioritize.)** `route-ownership-validator` #39: `custom-domains.ts:GET:/domains:483` is a tenant-table handler with **no ownership/internal/session gate**. `raw-error-message-validator` #66: `resource-search.ts` returns raw `error.message` to callers for `SEARCH_ERROR`. Both were invisible while the gate died at #2/#6. Neither was reachable through the passing `tests/security/` + `tests/auth/` suites — validators are the only thing catching them.
 
-**12.8 — Design-system drift is large and still rising.** 9 ratchet metrics regressed against baseline (worst: `rawPxSpacing` 1365→1568, `appCssNakedRgbHsl` 572→849, `appLocalLbTokenRedefs` 112→220) plus 1 hard invariant. One metric improved. Phase 1 reported "2 hard invariants + 9 ratchet regressions"; this branch shows **1 hard + 9**, consistent with commit `83b7fb39` having removed the two regressions the port introduced. **WAVE 1.**
+**12.8 — Design-system drift is large and still rising.** 9 ratchet metrics regressed against baseline (worst: `rawPxSpacing` 1365→1568, `appCssNakedRgbHsl` 572→849, `appLocalLbTokenRedefs` 112→220) plus 1 hard invariant. One metric improved. Phase 1 reported "2 hard invariants + 9 ratchet regressions"; this branch shows **1 hard + 9**, consistent with commit `bac1779b` having removed the two regressions the port introduced. **WAVE 1.**
 
 **12.9 — `dependency-manifest-validator` and its alias produce false positives.** Both report `packages/lcis-live/test/security.test.ts imports something` and `theme-engine/src/theme-safe-update.ts imports ${fromVersion}` — the validator is treating a template literal and a placeholder word as package names. Two of the 20 gate failures are the **same** finding reported twice by a validator and its 1-line delegation alias. **WAVE 1 (validator fix).**
 
@@ -505,7 +505,7 @@ This matters because many repo test scripts enumerate **explicit file paths** ra
 - **No remote was contacted.** No push, no PR, no deploy, no provider API call. `wrangler` was deliberately avoided (§2).
 - **The original repository `/Users/…/Letbuyy_Store` was not modified** other than the two permitted output paths: this document, and `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/build-baseline/`. Its dirty working tree (6,826 paths) was neither cleaned, stashed, reset, checked out, restored, chmod-ed, committed, nor staged.
 - **No prohibited git operation was run** anywhere: no `reset --hard`, no `clean`, no `stash`, no `checkout -- <path>`, no `restore`, no force push, no history rewrite, no `worktree remove/prune`, no bulk chmod, no bulk delete.
-- **No commit was made on `codex/web-v1-integration` by this workstream.** HEAD is still `fa5630aa7b5728af3aadec9bb8a9d99f2abc25a6`. This task measures; it does not change code.
+- **No commit was made on `codex/web-v1-integration` by this workstream.** HEAD is still `8ec05e210e2282bbaa70fd39bbf61904cb9e21ab`. This task measures; it does not change code.
 - **Final worktree state:** one uncommitted path, `packages/theme-engine/src/theme-cli.ts`, mode `100644 → 100755`, zero content change. It was already present when this workstream began and is caused by `pnpm install` chmod-ing the package's declared `bin` target — exactly as doc 22 §10 documented. It was deliberately **left alone**, since correcting it would require a forbidden `git checkout --`.
 - **Scratch files** were written only to `<worktree>/.tmp/w0-build-baseline/` (the esbuild harness and its output). Verified gitignored: `git check-ignore -v` → `.gitignore:132:.tmp/`. `git status` shows no untracked file.
 - **The docker Postgres fixture** was started and stopped with the repository's own script. The container is `exited`, **not removed**; its volume is preserved; no `docker volume rm`, `docker rm`, or `docker system prune` was run. The 12 dormant `supabase_*_Letbuyy_Store` containers belonging to the production-linked repo were never listed for modification, started, stopped, or removed.

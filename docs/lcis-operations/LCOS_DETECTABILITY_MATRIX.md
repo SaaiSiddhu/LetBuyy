@@ -71,7 +71,7 @@ Honesty contract: every live value is real-source or `NOT_CONNECTED + exact env-
 
 | Signal | Classification | dataSource (structural) | liveSource | env-var / binding / RPC |
 |---|---|---|---|---|
-| Active deploys / deploy in progress | PARTIAL | `deployment-intelligence-v5.json` → `declaredHead:4a91fa96`; 5 Vercel apps + 4 Workers declared | Vercel Deployments API + GitHub Actions status API | `VERCEL_TOKEN`; `GITHUB_TOKEN` |
+| Active deploys / deploy in progress | PARTIAL | `deployment-intelligence-v5.json` → `declaredHead:d7f74037`; 5 Vercel apps + 4 Workers declared | Vercel Deployments API + GitHub Actions status API | `VERCEL_TOKEN`; `GITHUB_TOKEN` |
 | Release health score | PARTIAL | `deployment-intelligence-v5.json` → `rollbackPresent:true`, `missingRollback:0` | Vercel + GitHub Actions run status | `VERCEL_TOKEN`; `GITHUB_TOKEN` |
 | Rollback availability | DETECTABLE | `deployment-intelligence-v5.json` → `rollbackPresent:true`, `missingRollback:0`; declared structural | N/A — structural | N/A |
 | Failed deploys | PARTIAL | `deployment-intelligence-v5.json` → pipeline order + `migrateGate:true` | GitHub Actions workflow run status API | `GITHUB_TOKEN` |

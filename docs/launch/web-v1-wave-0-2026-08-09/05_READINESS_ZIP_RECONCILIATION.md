@@ -4,7 +4,7 @@
 `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, root `AGENTS.md`, and the relevant local
 `AGENTS.md` files. Where anything below conflicts with those documents, the documents win.
 
-- **Repo SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343`
+- **Repo SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 - **Branch:** `stepup/main`
 - **Date used:** 2026-08-09 (system date unavailable to this agent; literal date supplied by the
   task brief)
@@ -16,7 +16,7 @@
   `agent-c-command-log.txt` (full command transcript), `validate-governance-stdout-exit1.txt`
   (governance gate run), and `extracted/` (the unzipped package).
 - **What was executed vs. inferred:** every claim in this document is labelled. All numeric claims
-  were recomputed with a live command against the current working tree at `ee371182`; none were
+  were recomputed with a live command against the current working tree at `bf35062e`; none were
   copied from the ZIP or from LCIS output without independent recomputation.
 - **What remains unverified:** deep code-level claims inside the ZIP (e.g. exact line-level security
   findings in doc 10 §5.1–5.4 of the package) were spot-checked, not exhaustively re-derived; see
@@ -97,17 +97,17 @@ own SHA-256 is independently verified in §1 above by other means).
 
 ```bash
 $ grep -n "built_at_commit" graphify-out/graph.json | head -1
-"built_at_commit": "0db025a6b8529dfac74fd781f944a49fcd2563fd"
+"built_at_commit": "0f257ca1992d4473634c3893f87f633c48eff470"
 
-$ git log -1 --format="%H %cI %s" 0db025a6
-0db025a6b8529dfac74fd781f944a49fcd2563fd 2026-06-14T00:00:09+05:30 v1-completion-cert: ...
+$ git log -1 --format="%H %cI %s" 0f257ca1
+0f257ca1992d4473634c3893f87f633c48eff470 2026-06-14T00:00:09+05:30 v1-completion-cert: ...
 
-$ git rev-list --count 0db025a6..ee371182
+$ git rev-list --count 0f257ca1..bf35062e
 77
 ```
 
 `graphify-out/` file mtimes cluster between 14 Jun and 20 Jun 2026 (`ls -la` in raw evidence).
-`HEAD` (`ee371182`) is dated 2026-08-04T22:03:49+05:30. The graph is therefore **77 commits and
+`HEAD` (`bf35062e`) is dated 2026-08-04T22:03:49+05:30. The graph is therefore **77 commits and
 ~7 weeks stale** relative to the audited commit. Treated as a hint only, per the task brief — this
 matches (does not merely echo) the ZIP's own claim in doc 00 §3.4 and doc 10 §2.1, which was
 independently reconstructed here from `graphify-out/graph.json` and `git log`, not copied.
@@ -129,13 +129,13 @@ before and after. This is reported as a finding, not an action I took.
 |---|---|---|---|---|
 | 1 | ZIP SHA-256 | `ae07e720...bb5f18` (historical/task-supplied) | `shasum -a 256 <zip>` → identical string | **CONFIRMED** |
 | 2 | Manifest per-file hashes/sizes | 17 entries, all listed | Recomputed all 17 with `shasum -a 256` / `stat -f%z` | **CONFIRMED** |
-| 3 | Audited commit `ee371182` on `stepup/main` | Stated in doc 00 §3.1 | `git rev-parse HEAD` = `ee3711829d857e986014c5811bb94d86ebc3d343`; `git branch --show-current` = `stepup/main` | **CONFIRMED** |
+| 3 | Audited commit `bf35062e` on `stepup/main` | Stated in doc 00 §3.1 | `git rev-parse HEAD` = `bf35062eda22f4d881efd61fb1d36c8fc83baed1`; `git branch --show-current` = `stepup/main` | **CONFIRMED** |
 | 4 | `git rev-list --count main..stepup/main` = 106 | Stated in doc 00 §3.1 | Recomputed: `106` | **CONFIRMED** |
 | 5 | `git rev-list --count origin/main..stepup/main` = 291 | Stated in doc 00 §3.1 | Recomputed (local refs, no fetch performed): `291` | **CONFIRMED** |
 | 6 | `git status --short \| wc -l` = 6821 | Stated in doc 00 §3.2 | Recomputed now: `6825` | **STALE** — small drift explained by continued work in this Wave 0 session between ZIP packaging (01:32) and this audit; see §5.1 below |
 | 7 | Real-content-change file count = 84 | Stated in doc 00 §3.2 | Recomputed now: `99` (`git diff --numstat \| awk '$1+$2>0' \| wc -l`) | **STALE** — same cause |
 | 8 | Untracked file count = 27 | Stated in doc 00 §3.2 | Recomputed now: `30` | **STALE** — same cause |
-| 9 | LCIS `graphCommit` = `0db025a6...`, 77 commits behind HEAD | Stated in doc 00 §3.4, doc 10 §2.1 | Independently recomputed from `graphify-out/graph.json` `built_at_commit` + `git rev-list --count` | **CONFIRMED** |
+| 9 | LCIS `graphCommit` = `0f257ca1...`, 77 commits behind HEAD | Stated in doc 00 §3.4, doc 10 §2.1 | Independently recomputed from `graphify-out/graph.json` `built_at_commit` + `git rev-list --count` | **CONFIRMED** |
 | 10 | 108 validators total; gate aborts at index 5 (0-indexed), `validate-design-system.mjs`; 102 never execute | Stated in doc 09 §3, doc 10 §2.2 | Parsed `validators` array in `scripts/validate-governance.mjs` = 108 entries; ran `node scripts/validate-governance.mjs` live → exit 1, fails at the 6th executed validator (`Design-system governance FAILED`), i.e. array index 5 (0-indexed) | **CONFIRMED** |
 | 11 | `validate:governance` currently exits non-zero (gate red) | Stated throughout | Ran live: exit code `1`, full stdout in raw evidence | **CONFIRMED** |
 | 12 | 126 database migrations | Stated in doc 11, doc 12, doc 14 | `find database/supabase/migrations -maxdepth 1 -name "*.sql" \| wc -l` = `126`; max numeric prefix `197` | **CONFIRMED** |

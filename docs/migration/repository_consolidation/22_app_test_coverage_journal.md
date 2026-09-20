@@ -8,13 +8,13 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 | Stage | Title | Verdict | Checkpoint SHA |
 |---|---|---|---|
-| S0 | Preflight and resume | COMPLETE | 84f8dfa8 |
-| S1 | Map the testable surface | COMPLETE | d3073d58 |
-| S2 | Establish the harness | COMPLETE | ca16401d |
-| S3 | marketplace_core tests | COMPLETE (189 tests) | 79c11790 |
-| S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | c556f278 |
-| S5 | App-level Firebase-free files | COMPLETE (18 tests, 1 file blocked) | 2241ccb8 |
-| S6 | Anti-theatre proof + full verification | COMPLETE | 49af75fb |
+| S0 | Preflight and resume | COMPLETE | f615aa4f |
+| S1 | Map the testable surface | COMPLETE | 4bcff38a |
+| S2 | Establish the harness | COMPLETE | e5dd5f7b |
+| S3 | marketplace_core tests | COMPLETE (189 tests) | 1ed9f2de |
+| S4 | marketplace_ui_kit tests | COMPLETE (64 tests) | 900aaa58 |
+| S5 | App-level Firebase-free files | COMPLETE (18 tests, 1 file blocked) | 0cc2d095 |
+| S6 | Anti-theatre proof + full verification | COMPLETE | 98fbe6d3 |
 | S7 | Documentation | COMPLETE | (this commit) |
 
 ---
@@ -25,11 +25,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 ### Baseline reconciliation
 
-CTO baseline: `HEAD 00e8840c  tracked 8343  changed 39  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. `merchant_app` 172/172. All 15 `packages/dart` members analyze clean. `customer_app`/`admin_app` analyze clean, zero test files. `phase_2` apps: 1 error each (dead `widget_test.dart` boilerplate).
+CTO baseline: `HEAD cf019faa  tracked 8343  changed 39  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. `merchant_app` 172/172. All 15 `packages/dart` members analyze clean. `customer_app`/`admin_app` analyze clean, zero test files. `phase_2` apps: 1 error each (dead `widget_test.dart` boilerplate).
 
 Measured:
 ```
-HEAD:      00e8840c3bd52b8049d21a7ed105d97792f8c713  (EXACT MATCH)
+HEAD:      cf019faa2ed5dd2553764f9e545c34b360354600  (EXACT MATCH)
 tracked:   8343                                        (EXACT MATCH)
 staged:    0                                            (EXACT MATCH)
 deletions: 1  (apps/identity-platform/src/lib/useAuthTheme.ts)  (EXACT MATCH)
@@ -224,7 +224,7 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 
 ### Commits this stage
 
-`1fb67d6a`.
+`a60b3ba2`.
 
 **S2 verdict: COMPLETE.**
 
@@ -270,7 +270,7 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 
 ### Commits this stage
 
-`8114a1c3` (validators/formatters/responsive, 157 tests), `2b935596` (exceptions/failures/web_utils, 32 tests).
+`25910b3e` (validators/formatters/responsive, 157 tests), `d12a95d6` (exceptions/failures/web_utils, 32 tests).
 
 **S3 verdict: COMPLETE (for the PURE tier; WIDGET/STATEFUL helpers explicitly deferred, listed above, not silently dropped).**
 
@@ -311,7 +311,7 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 
 ### Commits this stage
 
-`8973948b` (9 widgets + AppTheme, 44 tests), `afc26852` (CustomTextField, 10 tests).
+`e15aecc1` (9 widgets + AppTheme, 44 tests), `65ef0e38` (CustomTextField, 10 tests).
 
 **S4 verdict: COMPLETE.**
 
@@ -359,7 +359,7 @@ $ cd apps/merchant_app && flutter test 2>&1 | tail -3
 
 ### Commits this stage
 
-`d0d3dd91`.
+`d6f6bfd9`.
 
 **S5 verdict: COMPLETE — every genuinely testable in-scope file covered; the one blocked file (`unified_search_header.dart`) is disclosed with a fully traced root cause, not silently skipped.**
 
@@ -421,7 +421,7 @@ Dart dead source validator failed:
 ### 6.4 — Zero dependency changes, confirmed
 
 ```
-$ git diff 00e8840c..HEAD --name-only -- '*pubspec.yaml'
+$ git diff cf019faa..HEAD --name-only -- '*pubspec.yaml'
 (empty)
 ```
 
@@ -429,7 +429,7 @@ $ git diff 00e8840c..HEAD --name-only -- '*pubspec.yaml'
 
 ### Commits this stage
 
-`09198114` (removal of the 3 dead-code test files — the only source change Stage 6 itself produced; everything else was measurement and the anti-theatre proof's temporary, fully-restored edits).
+`e821eacb` (removal of the 3 dead-code test files — the only source change Stage 6 itself produced; everything else was measurement and the anti-theatre proof's temporary, fully-restored edits).
 
 **S6 verdict: COMPLETE. Anti-theatre proof genuine for all 5 sampled tests. Governance gate at the exact known-good baseline after root-causing and resolving a real, high-value discovery — not just a green checkmark chased for its own sake.**
 
@@ -443,7 +443,7 @@ Added §11 to `17_remaining_migration_backlog.md` and updated §10's branch-ahea
 
 ### Commits this stage
 
-`249a1a78`.
+`bc369ae0`.
 
 **S7 verdict: COMPLETE.**
 
@@ -451,4 +451,4 @@ Added §11 to `17_remaining_migration_backlog.md` and updated §10's branch-ahea
 
 ## Phase P — final summary
 
-All 7 stages COMPLETE. 16 commits total (`84f8dfa8` through this journal's own closing commit). **243 new tests**, all confirmed genuinely load-bearing via a direct anti-theatre proof on 5 samples, added across `apps/customer_app` (13), `apps/admin_app` (11), `packages/dart/marketplace_core` (165), and `packages/dart/marketplace_ui_kit` (54) — zero new dependencies, `git diff 00e8840c..HEAD --name-only -- '*pubspec.yaml'` confirmed empty. `apps/merchant_app` stayed at 172/172 throughout. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline, after root-causing and resolving one real interim regression (not just silencing it). Two significant, previously-undiscovered findings — a likely compile blocker in `customer_app`/`admin_app` unrelated to this phase, and a live duplicate of institutionally-archived dead code in `marketplace_core` — were traced to their root cause and left unfixed, exactly as this phase's rules require. Zero application source was modified. Full detail for every claim above is in this journal's own stage-by-stage entries; `23_app_test_coverage.md` is the reader-facing summary.
+All 7 stages COMPLETE. 16 commits total (`f615aa4f` through this journal's own closing commit). **243 new tests**, all confirmed genuinely load-bearing via a direct anti-theatre proof on 5 samples, added across `apps/customer_app` (13), `apps/admin_app` (11), `packages/dart/marketplace_core` (165), and `packages/dart/marketplace_ui_kit` (54) — zero new dependencies, `git diff cf019faa..HEAD --name-only -- '*pubspec.yaml'` confirmed empty. `apps/merchant_app` stayed at 172/172 throughout. Governance gate: 105 PASS / 6 FAIL, matching the known-good baseline, after root-causing and resolving one real interim regression (not just silencing it). Two significant, previously-undiscovered findings — a likely compile blocker in `customer_app`/`admin_app` unrelated to this phase, and a live duplicate of institutionally-archived dead code in `marketplace_core` — were traced to their root cause and left unfixed, exactly as this phase's rules require. Zero application source was modified. Full detail for every claim above is in this journal's own stage-by-stage entries; `23_app_test_coverage.md` is the reader-facing summary.

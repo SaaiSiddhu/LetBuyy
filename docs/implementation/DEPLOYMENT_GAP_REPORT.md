@@ -1,5 +1,5 @@
 # LETBUYY V1 — DEPLOYMENT GAP REPORT
-**Repository truth · HEAD `eb38a220` · branch `stepup/main`**
+**Repository truth · HEAD `254af28c` · branch `stepup/main`**
 
 Only **real** blockers are listed. Each is an external/operator action — no repository-side code blockers remain.
 

@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| **Run ID** | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | **Branch** | `stepup/main` |
-| **Commit** | `ee371182` |
+| **Commit** | `bf35062e` |
 | **Run date** | 2026-08-04 (+0530) |
 | **Scope** | Merchant-facing customer records, customer privacy/DPDP/DSR, merchant staff lifecycle, staff RBAC, step-up as it applies to customer + staff + refund-completion routes, merchant audit logging, PII-in-logs. |
 | **Evidence basis** | Agent F notes (`_agent-notes/F-customers-staff-rbac.md`, read in full) + independent re-verification of the 12 highest-stakes claims directly from source in this session. |

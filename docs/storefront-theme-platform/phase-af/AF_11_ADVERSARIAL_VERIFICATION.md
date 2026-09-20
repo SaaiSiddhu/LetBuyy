@@ -1,7 +1,7 @@
 # AF_11 — Adversarial Verification
 
 **Phase:** AF.0 · **Author:** Root integrator (Claude Code, Opus 4.8), read-only
-**Branch / HEAD:** `stepup/main` / `7e1441a6` · **Evidence:** 2026-07-18 IST
+**Branch / HEAD:** `stepup/main` / `80d0b1af` · **Evidence:** 2026-07-18 IST
 **Method note:** The parallel adversarial subagents were interrupted by a session limit and returned only partial output. To preserve rigor without fabricating, the root integrator completed all five passes **inline with independent read-only checks** (exact commands shown). Every verdict below is backed by a command result or `path:line`, not by a subagent's unfinished text.
 
 **Headline:** One adversarially-**CONFIRMED CRITICAL** defect (build-integrity: committed `index.ts` exports 3 untracked files). No greenwashing found *in the AF artifacts themselves* — they honestly flag the stale "green" claims that live in `CLAUDE.md`. No new CRITICAL/HIGH cross-tenant escape beyond what AF_05 already documents.

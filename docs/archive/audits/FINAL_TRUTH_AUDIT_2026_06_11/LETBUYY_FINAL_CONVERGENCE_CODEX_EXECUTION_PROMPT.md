@@ -24,7 +24,7 @@ Supporting truth: `FINAL_TRUTH_AUDIT_2026_06_11/LETBUYY_FINAL_REPOSITORY_TRUTH_R
 
 **Conflict rule:** if this prompt and a plan document disagree, the plan document wins. If a plan and the Constitution/AGENTS.md disagree, the Constitution/AGENTS.md wins. Never resolve a conflict by inventing a third option.
 
-**Repository coordinates at program start:** `HEAD = cabe148c`, `main == stepup/main` (clean tree), `origin/main == origin/develop == 41b6ea49` (127 commits behind — the condemned reality). The gate passes on the current tree. Your job is to execute Phases A–F so the converged reality is promoted, money is one ledger, Liquid is the runtime winner, duplicates are gone, the repo is certified single-reality, and only then capability is built — without ever violating the rules below.
+**Repository coordinates at program start:** `HEAD = 3da1416c`, `main == stepup/main` (clean tree), `origin/main == origin/develop == c2547049` (127 commits behind — the condemned reality). The gate passes on the current tree. Your job is to execute Phases A–F so the converged reality is promoted, money is one ledger, Liquid is the runtime winner, duplicates are gone, the repo is certified single-reality, and only then capability is built — without ever violating the rules below.
 
 ---
 
@@ -32,7 +32,7 @@ Supporting truth: `FINAL_TRUTH_AUDIT_2026_06_11/LETBUYY_FINAL_REPOSITORY_TRUTH_R
 
 Drive LetBuyy from "converged in a local branch" to **ONE REALITY**, defined as four simultaneous truths:
 
-1. **One Reality** — the converged tree (`cabe148c` lineage) is the deployed tree; `origin/main` no longer ships the account-takeover `/api/auth/switch`, the 3% rake, or the missing migrations 160–167. The governance gate runs inside the deploy pipeline.
+1. **One Reality** — the converged tree (`3da1416c` lineage) is the deployed tree; `origin/main` no longer ships the account-takeover `/api/auth/switch`, the 3% rake, or the missing migrations 160–167. The governance gate runs inside the deploy pipeline.
 2. **One Money System** — every path money can move (capture, refund, COD, settlement, payout, gift-card, AI-credit) posts balanced, append-only, idempotent entries to the **canonical ledger**. No mutable balance is truth. No second ledger, wallet, or settlement system exists.
 3. **One Theme Runtime** — **Liquid** renders production storefronts; React is removed only after 100% capability + rendering + snapshot + editor parity is *proven*. Until then React stays frozen.
 4. **One Authority** — a single law chain (Constitution → AGENTS.md → Canonical Systems), one prompt registry, one validator suite with teeth, no diverged law copy, no frozen-app deploy shape, no ghost config.
@@ -83,12 +83,12 @@ You may not start B/C before A reaches G4. You may not start D before B and C re
 
 Convert Doc 1 into these executable checkpoints. Most of Phase A's pointer/secret/DNS actions are `[SKIPPED-HUMAN]`; your job is the code/config/validation that makes the human seam safe, plus driving the sequence.
 
-**A0 — Self-registration & snapshot.** Register this prompt in `PROMPTS.md` (see Placement section). Record the promotion baseline in `EXECUTION_LEDGER.md`: tag intent `convergence-cabe148c` and `pre-promotion-origin-41b6ea49` (the tag *commands* are `[SKIPPED-HUMAN]` if they touch the remote; local annotated tags you may create). **Validation:** gate green after registration. **Stop condition:** if registration can't pass the gate, halt.
+**A0 — Self-registration & snapshot.** Register this prompt in `PROMPTS.md` (see Placement section). Record the promotion baseline in `EXECUTION_LEDGER.md`: tag intent `convergence-3da1416c` and `pre-promotion-origin-c2547049` (the tag *commands* are `[SKIPPED-HUMAN]` if they touch the remote; local annotated tags you may create). **Validation:** gate green after registration. **Stop condition:** if registration can't pass the gate, halt.
 
 **A1 — Repository verification.** Run, and record outputs:
 ```
 git status --short                        # must be empty (gitignore .claude/ first, as its own reviewed commit)
-git rev-parse --short HEAD                 # cabe148c lineage
+git rev-parse --short HEAD                 # 3da1416c lineage
 git rev-list --count main..stepup/main     # must be 0
 node scripts/validate-governance.mjs --lane=gate   # must be green (92 validators)
 pnpm install --frozen-lockfile             # materialize workspace symlinks BEFORE tests (jose/zod resolution)
@@ -102,7 +102,7 @@ node --test tests/governance/phase-b-validators.test.mjs   # 16/16
 
 **A4 — Atomic go-live (human-executed; you prepare and gate).** The new code fails closed without secrets, so ordering is mandatory and you must **not** reorder it: (1) secrets provisioned `[SKIPPED-HUMAN]` (identity JWKs SKIP-D3, checkout signing SKIP-D6, mobile Turnstile SKIP-W7 — and fix the workflow so mobile-bff actually receives `TURNSTILE_SECRET_KEY`); (2) migrate 160→167 in order (each has a paired rollback in `database/supabase/rollback/`); (3) deploy workers+apps to `*.letbuyy.com`; (4) DNS `[SKIPPED-HUMAN]` after the Terraform collision is reconciled (Doc 4 D-CFG3); (5) smoke. **Keep provider-money secrets OUT of this atom** so the schema rollback path stays clean (no live money will have moved). **Validation/smoke gates (G4):** merchant login issues an identity-signed session; `/api/auth/switch` denies an unproven cross-account switch; anon cannot read `orders` (migration 163 live probe); commission reads 0; no `…_MODE="live"` subsystem returns a fabricated success.
 
-**A5 — Post-promotion audit.** Confirm `origin/main == origin/stepup/main == cabe148c`; backfill the stale "not committed" column on `EXECUTION_LEDGER.md` rows 1–46 to freeze commit `e1d6fb18`; record live-probe evidence; obtain the 3 ARB signatures `[SKIPPED-HUMAN]` (GATE-1, ops-survivor, survivability repeal); stand up a scheduled branch-lag monitor.
+**A5 — Post-promotion audit.** Confirm `origin/main == origin/stepup/main == 3da1416c`; backfill the stale "not committed" column on `EXECUTION_LEDGER.md` rows 1–46 to freeze commit `72e80c2b`; record live-probe evidence; obtain the 3 ARB signatures `[SKIPPED-HUMAN]` (GATE-1, ops-survivor, survivability repeal); stand up a scheduled branch-lag monitor.
 
 **Rollback requirement (Phase A):** before A4, the human must hold: prior worker/app deployment IDs, an encrypted DB backup, and the two tags. If login or capture smoke fails and is not fixable in the window, roll back code (re-pin artifacts) + schema (apply 167→160 reverse) + DNS to the snapshot. Record every rollback in the Rollback Report.
 

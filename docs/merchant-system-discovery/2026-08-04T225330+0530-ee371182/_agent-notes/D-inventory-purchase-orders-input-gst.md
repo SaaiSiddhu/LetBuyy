@@ -1,7 +1,7 @@
 # AGENT D — Inventory, Suppliers, Purchase Orders, Input-GST — Discovery Notes
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182`. Phase 1 = discovery only. Nothing in this repo was modified except this file.
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e`. Phase 1 = discovery only. Nothing in this repo was modified except this file.
 
 Authority chain read before inspection: `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (ART-14, ART-15, ART-08),
 root `AGENTS.md`, `CLAUDE.md`, `apps/merchant-control-plane/AGENTS.md`, `services/api-gateway/AGENTS.md`,

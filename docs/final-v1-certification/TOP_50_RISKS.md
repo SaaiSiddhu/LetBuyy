@@ -1,10 +1,10 @@
 # Top 50 Risks
 
-**HEAD `587dc988`. Risk = could-cause-harm, ranked by severity × likelihood.**
+**HEAD `ae383bb8`. Risk = could-cause-harm, ranked by severity × likelihood.**
 
 ## Critical (1–8)
 1. Money/auth outage pages nobody (dry-run alerting) → silent revenue loss.
-2. Gate can move with code — a guard test was edited alongside a feature change (`56fecb4f`); legitimate here, but proves the gate isn't tamper-evident.
+2. Gate can move with code — a guard test was edited alongside a feature change (`9c3f2157`); legitimate here, but proves the gate isn't tamper-evident.
 3. Shared `INTERNAL_API_SECRET` is the real per-request merchant trust root; legacy-accept ON → fleet blast radius.
 4. First deploy ships 217 unrun-in-prod commits + 103 migrations in one shot.
 5. Payouts settle without KYC verification → compliance exposure.

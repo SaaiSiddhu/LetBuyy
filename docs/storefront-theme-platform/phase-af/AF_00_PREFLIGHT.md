@@ -22,8 +22,8 @@
 |-------|-------|---------|
 | Absolute root | `/Users/saai_sidd/Git/Letbuyy_Store` | `git rev-parse --show-toplevel` |
 | Current branch | `stepup/main` | `git branch --show-current` |
-| HEAD SHA | `7e1441a6538585be7ca1f1fb028c008e7893ddb4` | `git rev-parse HEAD` |
-| HEAD short | `7e1441a6` | — |
+| HEAD SHA | `80d0b1af653411aeb024b4d7f4a3e0eb06f09198` | `git rev-parse HEAD` |
+| HEAD short | `80d0b1af` | — |
 | Detached HEAD? | **No** — `refs/heads/stepup/main` | `git symbolic-ref -q HEAD` |
 | Upstream | **None configured** for `stepup/main` | `git rev-parse --abbrev-ref @{u}` → fatal |
 | Remotes (names only) | `origin` | `git remote` |
@@ -31,9 +31,9 @@
 | Node | `v22.22.3` | `node --version` |
 | pnpm | `10.6.2` | `pnpm --version` |
 
-**Branch-intent check:** `stepup/main` is the intended LetBuyy programme branch (it is the branch the entire B→AE programme committed to, and the archive-claimed export head `7e1441a6` matches the current HEAD exactly). HEAD is **not** detached. → No `PREFLIGHT_STOP` on branch grounds.
+**Branch-intent check:** `stepup/main` is the intended LetBuyy programme branch (it is the branch the entire B→AE programme committed to, and the archive-claimed export head `80d0b1af` matches the current HEAD exactly). HEAD is **not** detached. → No `PREFLIGHT_STOP` on branch grounds.
 
-**Latest commit (HEAD):** `7e1441a6 feat(theme): add marketplace partner-submission validation gate + close theme_purchases RLS (Phase AE)` — this is the Phase AE commit produced immediately before Phase AF; consistent with the archive claim that `7e1441a6` is the AE/export head. Full ancestry reconstruction is deferred to Workstream AF-B (`AF_02`).
+**Latest commit (HEAD):** `80d0b1af feat(theme): add marketplace partner-submission validation gate + close theme_purchases RLS (Phase AE)` — this is the Phase AE commit produced immediately before Phase AF; consistent with the archive claim that `80d0b1af` is the AE/export head. Full ancestry reconstruction is deferred to Workstream AF-B (`AF_02`).
 
 ---
 
@@ -67,7 +67,7 @@ No cluster is `OWNED_BY_AF`. AF.0 introduces exactly one owned path: `docs/store
 
 - **Modified historical migrations (tracked, edited in working tree):** `100_app_discovery_foundation.sql`, `109_orders_money_width.sql`, `111_customer_credentials_source_of_truth.sql`, `142_executable_payment_sessions.sql`, plus `config.toml`. Editing already-numbered historical migrations is a migration-immutability concern — **flagged for AF-D**, not touched here.
 - **Untracked migrations:** `186_v1_scale_commerce_os_coming_soon.sql`, `187_v1_sites_site_settings.sql` (the historically "foreign WIP" pair), plus `database/supabase/.branches/` and untracked `rollback/176..178` files.
-- **Migrations 188/189/190/191 are NOT in the dirty list** → consistent with them being committed/tracked (188–190 in earlier phases; 191 in the Phase AE commit `7e1441a6`). AF-D verifies.
+- **Migrations 188/189/190/191 are NOT in the dirty list** → consistent with them being committed/tracked (188–190 in earlier phases; 191 in the Phase AE commit `80d0b1af`). AF-D verifies.
 
 ### 2.3 Governance-file drift signal — [carried to AF-A / AF-I]
 
@@ -79,9 +79,9 @@ No cluster is `OWNED_BY_AF`. AF.0 introduces exactly one owned path: `docs/store
 
 ## 3. Worktree safety (VERIFIED_CURRENT) — [record only, not removed]
 
-`git worktree list` shows the main worktree plus **11 agent worktrees** under `.claude/worktrees/agent-*`, **all pinned at commit `41b6ea49`** on branches `worktree-agent-*`.
+`git worktree list` shows the main worktree plus **11 agent worktrees** under `.claude/worktrees/agent-*`, **all pinned at commit `c2547049`** on branches `worktree-agent-*`.
 
-- `41b6ea49` = `fix(identity): show turnstile on auth forms (2026-06-09)` and is a **verified ancestor of HEAD** (`git merge-base --is-ancestor 41b6ea49 HEAD` → YES). These are stale/orphaned isolated agent worktrees left over from prior workflow runs.
+- `c2547049` = `fix(identity): show turnstile on auth forms (2026-06-09)` and is a **verified ancestor of HEAD** (`git merge-base --is-ancestor c2547049 HEAD` → YES). These are stale/orphaned isolated agent worktrees left over from prior workflow runs.
 - Each has uncommitted content (10 have 1 dirty file, 1 has 10 dirty files). They are **FOREIGN_WIP / stale-agent** worktrees.
 - They live under `.claude/worktrees/` — a **different path tree** from AF.0's `docs/.../phase-af/` write target. **No overlap.**
 - No in-progress rebase/merge/cherry-pick/bisect exists in the main worktree.
@@ -107,7 +107,7 @@ No cluster is `OWNED_BY_AF`. AF.0 introduces exactly one owned path: `docs/store
 
 ## 5. Historical inputs treated as hypotheses (not truth)
 
-The archive/programme claims (HEAD `7e1441a6`; B→L anchor `29f87115`; Phase-M `9186188e`; Phase-AC `83d61e0a`; foundation SHAs `073bcbfe`…`29f87115`; AE gates theme-engine 1726/1726, storefront 915/915, merchant 771/771, api-gateway ~537/540, governance EXIT=1, sequential-migration EXIT=1; migrations 186/187 foreign; 188–191 committed-unapplied; Liquid default `false`; 7 NOT-CONNECTED seams; 55-entry risk register 50 OPEN) are **hypotheses**. Only HEAD `7e1441a6` on `stepup/main` and the untracked-186/187 status are confirmed *so far*. Everything else is verified by the discovery fleet (AF-B/C/D/F/G) against current evidence, and any disproven number will be discarded.
+The archive/programme claims (HEAD `80d0b1af`; B→L anchor `8c1ac94b`; Phase-M `ff6720a9`; Phase-AC `7654927d`; foundation SHAs `93419c58`…`8c1ac94b`; AE gates theme-engine 1726/1726, storefront 915/915, merchant 771/771, api-gateway ~537/540, governance EXIT=1, sequential-migration EXIT=1; migrations 186/187 foreign; 188–191 committed-unapplied; Liquid default `false`; 7 NOT-CONNECTED seams; 55-entry risk register 50 OPEN) are **hypotheses**. Only HEAD `80d0b1af` on `stepup/main` and the untracked-186/187 status are confirmed *so far*. Everything else is verified by the discovery fleet (AF-B/C/D/F/G) against current evidence, and any disproven number will be discarded.
 
 ---
 

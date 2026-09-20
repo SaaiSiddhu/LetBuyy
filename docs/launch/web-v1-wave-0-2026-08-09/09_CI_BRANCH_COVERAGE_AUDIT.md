@@ -2,7 +2,7 @@
 
 **Status:** Evidence artifact — NOT governance authority. Subordinate to `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, root `AGENTS.md`, and local `AGENTS.md` files.
 **Agent:** Agent E — CI and Validator Truthfulness Auditor (Wave 0, Phase 1, read-only)
-**Repo SHA at audit time:** `ee3711829d857e986014c5811bb94d86ebc3d343` (HEAD)
+**Repo SHA at audit time:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (HEAD)
 **Branch:** `stepup/main`
 **Timestamp used:** 2026-08-09 (literal date supplied by the task; system date not queried)
 **Working tree at audit time:** dirty (`git status --short` showed a large number of pre-existing `M` entries before this audit touched anything — not caused by this audit; this audit wrote only new files under `docs/launch/...` and `artifacts/local-operational-proof/...`)
@@ -19,16 +19,16 @@
 
 ```
 $ git branch --show-current          → stepup/main
-$ git rev-parse HEAD                 → ee3711829d857e986014c5811bb94d86ebc3d343
-$ git log -1 origin/develop          → 41b6ea49c5da30a1409d4cc587d989d459288e45 (2026-06-09)
-$ git log -1 origin/main             → 41b6ea49c5da30a1409d4cc587d989d459288e45 (2026-06-09)  [IDENTICAL to origin/develop]
-$ git log -1 origin/stepup/main      → 8d9dda77303c931651fd2f36c34d5d031459eeb8 (2026-08-01)
+$ git rev-parse HEAD                 → bf35062eda22f4d881efd61fb1d36c8fc83baed1
+$ git log -1 origin/develop          → c2547049c0b5666661536d076046415714fb7d03 (2026-06-09)
+$ git log -1 origin/main             → c2547049c0b5666661536d076046415714fb7d03 (2026-06-09)  [IDENTICAL to origin/develop]
+$ git log -1 origin/stepup/main      → 7530572521952939cff017ce32b5d58adeec3bd7 (2026-08-01)
 $ git merge-base --is-ancestor origin/develop origin/main → true (develop is an ancestor of / identical to main)
 $ git log origin/main..origin/stepup/main --oneline | wc -l → 274
 $ git log origin/stepup/main..origin/main --oneline | wc -l → 0
 ```
 
-**Finding F-09-01 (high):** `origin/main` and `origin/develop` are pinned at the *same* commit (`41b6ea4`, 2026-06-09) and are **274 commits behind** `origin/stepup/main` (last commit `8d9dda7`, 2026-08-01). All real work for roughly two months has landed on `stepup/main`. `main` has 0 commits not on `stepup/main` — it has not diverged, it is simply stale.
+**Finding F-09-01 (high):** `origin/main` and `origin/develop` are pinned at the *same* commit (`c254704`, 2026-06-09) and are **274 commits behind** `origin/stepup/main` (last commit `7530572`, 2026-08-01). All real work for roughly two months has landed on `stepup/main`. `main` has 0 commits not on `stepup/main` — it has not diverged, it is simply stale.
 
 No `codex/web-v1-integration` branch exists yet (`git branch -a` / `git ls-remote` show none). This is expected per the task brief — it is a later Wave 0 deliverable — and is recorded here only as current-state fact, not a defect.
 

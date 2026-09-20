@@ -1,6 +1,6 @@
 # LIQUID_COMPLETION_EXECUTION_ORDER.md
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. The exact sequence (with what parallelizes).
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. The exact sequence (with what parallelizes).
 
 ## Strict serial backbone (must be in this order)
 

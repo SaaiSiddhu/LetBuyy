@@ -4,7 +4,7 @@ Status: BLOCKED - AWAITING HUMAN STAGING PROOF, with local unblocked work comple
 
 ## LOCAL GATE
 - Result: PASS WITH HUMAN/BACKEND SKIPS.
-- Commit range: G0-G6 complete through `a57821bc` (`feat(api): add rest shim parity contract`).
+- Commit range: G0-G6 complete through `347154c1` (`feat(api): add rest shim parity contract`).
 - REST compatibility: `/v1` remains mounted and externally unchanged for the migrated parity slice.
 
 ## COMPLETED
@@ -21,7 +21,7 @@ Status: BLOCKED - AWAITING HUMAN STAGING PROOF, with local unblocked work comple
 - `pnpm turbo typecheck` -> PASS (58/58 tasks).
 - `pnpm run lint` -> PASS (9/9 tasks, existing warnings only).
 - `pnpm run test` -> PASS (321/321 tests).
-- `pnpm run validate:governance` after `a57821bc` -> PASS (128/128 validators) after removing generated local `scripts/.DS_Store`.
+- `pnpm run validate:governance` after `347154c1` -> PASS (128/128 validators) after removing generated local `scripts/.DS_Store`.
 
 ## SKIPPED - NEEDS HUMAN
 - Deployed staging GraphQL and bulk proof requires staging gateway deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, and R2/queue bindings for bulk JSONL result proof.

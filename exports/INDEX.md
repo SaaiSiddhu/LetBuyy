@@ -1,6 +1,6 @@
 # LetBuyy Theme Platform — Documentation Archive
 
-**Exported:** 2026-07-11 · **Repo HEAD at export:** `7e1441a6` · **Branch:** `stepup/main`
+**Exported:** 2026-07-11 · **Repo HEAD at export:** `80d0b1af` · **Branch:** `stepup/main`
 **Total documents:** 152 (`storefront-theme-platform/` = 110 · `storefront-liquid-discovery/` = 42)
 
 This archive bundles the complete documentation for the LetBuyy Liquid theme
@@ -57,7 +57,7 @@ TEST_REPORT, plus a domain reference doc where relevant):
 | AD | `phase-ad/` | Certification + canary readiness (ARB package, NOT_CONNECTED register) |
 | **AE** | `phase-ae/` | **Marketplace + partner readiness — the final phase** (`PARTNER_READINESS.md`, `PROGRAM_CAPSTONE.md`) |
 
-**Phase AE highlights** (final commit `7e1441a6`):
+**Phase AE highlights** (final commit `80d0b1af`):
 - `validateThemeForMarketplace` — a pure, deterministic, fail-closed partner-submission gate composing the Stage K / AA / Y / N validators.
 - Closed **RISK-SEC-001** (HIGH, carried since Phase M) via migration 191 — tightened the wide-open `theme_purchases` RLS to service-role pass-through + `user_id = auth.uid()` scope.
 - Hardened **FIND-AE-SEC-001** (MEDIUM) in-phase — the CSS-injection scanner now covers all legitimate nesting depths and rejects over-deep bundles fail-closed (`AA:settings-too-deep`), locked by tests AE-AA-07/08.

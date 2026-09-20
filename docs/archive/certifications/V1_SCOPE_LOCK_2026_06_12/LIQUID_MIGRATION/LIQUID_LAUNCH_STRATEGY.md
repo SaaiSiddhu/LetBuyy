@@ -1,6 +1,6 @@
 # LIQUID_LAUNCH_STRATEGY.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-grounded. One recommendation.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-grounded. One recommendation.
 
 ## The two options
 

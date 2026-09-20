@@ -1,7 +1,7 @@
 # MOBILE TRUTH REPORT — Repository Truth Audit 2026-06-10
 
 Axis: mobile (merchant Flutter app, reserved mobile roots, mobile-bff, Dart token bridge, mobile release lanes).
-State audited: branch `stepup/main`, HEAD `5cf9e64e` (2026-06-10), **dirty working tree** (Phases A–D13 uncommitted). All paths relative to repo root. Worktree state is the primary subject; HEAD deltas are called out explicitly.
+State audited: branch `stepup/main`, HEAD `c4fc3cd6` (2026-06-10), **dirty working tree** (Phases A–D13 uncommitted). All paths relative to repo root. Worktree state is the primary subject; HEAD deltas are called out explicitly.
 
 ---
 
@@ -214,7 +214,7 @@ Verdict: **not generated filler** — assertions are specific and load-bearing �
 
 ## 10. HEAD vs Worktree (mobile axis)
 
-| Item | HEAD `5cf9e64e` | Worktree (uncommitted) |
+| Item | HEAD `c4fc3cd6` | Worktree (uncommitted) |
 |---|---|---|
 | `routes.dart` | imports parity catalog; unknown routes fell back to `MerchantFeatureScreen` (`HEAD routes.dart:764-776`) | parity gone; 36 `/features/*` remapped to real screens (none navigable) |
 | `lib/screens/parity/*` (2 files) | present | **deleted** |

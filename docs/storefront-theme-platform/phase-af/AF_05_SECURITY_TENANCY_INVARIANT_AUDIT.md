@@ -2,15 +2,15 @@
 
 **Status:** COMPLETE — Read-only discovery audit; zero source mutations applied.
 **Auditor:** Subagent AF-E (Claude Sonnet 4.6); initially 2026-07-17; all evidence re-verified 2026-07-18.
-**HEAD verified:** `7e1441a6` (stepup/main — Phase AE: marketplace gate + theme_purchases RLS closure)
-**Phase M baseline:** `9186188e` (discovery baseline for delta comparison)
+**HEAD verified:** `80d0b1af` (stepup/main — Phase AE: marketplace gate + theme_purchases RLS closure)
+**Phase M baseline:** `ff6720a9` (discovery baseline for delta comparison)
 **Git status count at audit start:** 378 (pre-existing working-tree changes); confirmed 378 at audit end — zero audit-induced delta.
 
 ---
 
 ## 1. Executive Summary
 
-Core auth invariants (customer HS256 vs. merchant ES256 separation, step-up on refunds/payouts, gateway-only service-role, verifySiteOwnership before theme mutations) are **VERIFIED_CURRENT** in source. The most material security finding — `theme_purchases` wide-open RLS (RISK-SEC-001, first surfaced in Phase M) — was **closed by migration 191** (Phase AE commit `7e1441a6`). Six lower-severity gaps remain open:
+Core auth invariants (customer HS256 vs. merchant ES256 separation, step-up on refunds/payouts, gateway-only service-role, verifySiteOwnership before theme mutations) are **VERIFIED_CURRENT** in source. The most material security finding — `theme_purchases` wide-open RLS (RISK-SEC-001, first surfaced in Phase M) — was **closed by migration 191** (Phase AE commit `80d0b1af`). Six lower-severity gaps remain open:
 
 1. `validateSafeThemeJson` (theme-engine) recurses without a depth counter — DoS/stack-overflow on deeply nested `template_config` payloads.
 2. `theme_editor_drafts` RLS policies check only `sites.user_id = auth.uid()`, missing `sites.custom_user_id = auth.uid()` (present in `theme_instances` and `theme_instance_drafts`). Affects only direct Supabase-auth clients; gateway bypasses via `service_role`.
@@ -19,7 +19,7 @@ Core auth invariants (customer HS256 vs. merchant ES256 separation, step-up on r
 5. `themes` table public read policy `USING (true)` — no explicit `is_site_private = false` filter — relies on `is_active = false` data discipline to exclude site-private themes from direct authenticated client reads.
 6. `resource_id` in `storefront_translations` POST is not validated against resources owned by that store (data-quality concern; not a tenant-isolation bypass due to `store_id` scoping).
 
-No money/checkout/payment/Razorpay/GST source path changed between Phase M (`9186188e`) and HEAD (`7e1441a6`). The canonical-ledger-only invariant is intact in theme-related code (no `payment_transactions`/`refunds`/`payouts` inserts in theme routes).
+No money/checkout/payment/Razorpay/GST source path changed between Phase M (`ff6720a9`) and HEAD (`80d0b1af`). The canonical-ledger-only invariant is intact in theme-related code (no `payment_transactions`/`refunds`/`payouts` inserts in theme routes).
 
 **THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false is VERIFIED_CURRENT** (`packages/theme-engine/src/theme-governance.ts:14`).
 
@@ -38,7 +38,7 @@ wc -l services/api-gateway/src/execution/theme-execution.adapter.ts
 # Migration files
 ls database/supabase/migrations/ | sort | tail -20
 # Money path diff
-git diff --name-only 9186188e..HEAD | grep -E "checkout|payment|razorpay|payout|gst|ledger"
+git diff --name-only ff6720a9..HEAD | grep -E "checkout|payment|razorpay|payout|gst|ledger"
 # git status delta
 git status --porcelain | wc -l  # before = 378; after = 378 (no delta)
 ```
@@ -166,7 +166,7 @@ All destructive theme routes are also gated by `authMiddleware` registered on th
 
 **Status: VERIFIED_CURRENT (migration exists on disk; live DB state NOT_CONNECTED)**
 
-`database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` (commit `7e1441a6`):
+`database/supabase/migrations/191_theme_purchases_rls_tenant_scope.sql` (commit `80d0b1af`):
 - Drops `"Users create theme purchases" WITH CHECK (true)` and `"Users view own theme purchases" USING (true)` (both wide-open, present since baseline:24159,24201)
 - Creates `tp_service_role` (ALL for `service_role`)
 - Creates `tp_authenticated_select` (SELECT WHERE `user_id = auth.uid()`)
@@ -254,7 +254,7 @@ Non-canonical exceptions (both are email field updates, not money fields):
 **Status: VERIFIED_CURRENT (zero changes)**
 
 ```
-git diff --name-only 9186188e..HEAD | grep -E "checkout|payment|razorpay|payout|gst|ledger"
+git diff --name-only ff6720a9..HEAD | grep -E "checkout|payment|razorpay|payout|gst|ledger"
 # Output: (empty — no matches)
 ```
 
@@ -383,7 +383,7 @@ A test asserts `BINDING_BLOCKED_KEYS` is a superset of `BLOCKED_DROP_KEYS` (`dyn
 | BLOCKED_DROP_KEYS parity (renderer + binding) | `theme-renderer.ts:1030`; `dynamic-source-binding.ts:42-56` |
 | walkStringLeaves depth cap = 12, fail-closed | `theme-marketplace-contract.ts:128,136-146` |
 | CSS sanitizer 11-vector SAFE-CSS LAW | `custom-css-sanitizer.ts:1-424` |
-| Money path files unchanged Phase M to HEAD | `git diff --stat 9186188e..HEAD` — 0 matches on checkout/payment/razorpay/payout/gst |
+| Money path files unchanged Phase M to HEAD | `git diff --stat ff6720a9..HEAD` — 0 matches on checkout/payment/razorpay/payout/gst |
 | No money table direct inserts in theme routes | grep confirmed 0 `.from('payment_transactions').insert` |
 | ART-22: frozen apps not touched | No changes to `apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace` in theme commits |
 

@@ -38,7 +38,7 @@ executed, by GOV-3.
   bound to backend `provider_mode`; a stub never renders `success`.
 - Single agent. No design "explorations" that fan out.
 
-## 2. The canonical inventory (measured 2026-09-04 at `823aa5ee`; re-verify paths)
+## 2. The canonical inventory (measured 2026-09-04 at `a751a2ff`; re-verify paths)
 
 ```
 Tokens       packages/typescript/ui/src/tokens.ts (1,749 lines; 307 --lb-* variables) → tokens.json (DTCG, 8,867 B)
@@ -66,11 +66,11 @@ Gates        validate-design-system.mjs (ratchet + HARD) · generate-design-toke
              stylelint installed; `pnpm run lint:css` runs in ci.yml's lint job (:98) · token-source-single-validator · shell-single-validator · provider-mode-badge-validator
 ```
 
-Adoption at `823aa5ee` (files importing, per app): `@letbuyy/ui` customer_web 44/114 tsx ·
+Adoption at `a751a2ff` (files importing, per app): `@letbuyy/ui` customer_web 44/114 tsx ·
 merchant_web 122/141 · admin_web 21/33 · identity 10/15 · marketing 33/69. `AppNavigation`
 merchant_web 2 · admin_web 1 · others 0. `ThemeToggleButton` customer_web 1 · admin_web 1 ·
 marketing 1 · merchant_web 0 · identity 0. `DesignSystemRoot` merchant_web 1, others 0. Ratchet at
-`823aa5ee`: 8 of 11 metrics **below** the 2026-08-14 baseline, 3 level, **0 HARD violations on the
+`a751a2ff`: 8 of 11 metrics **below** the 2026-08-14 baseline, 3 level, **0 HARD violations on the
 committed tree** (the validator passes in a clean worktree). The dirty primary checkout reports one —
 `identity-platform: dark-mode reachability target file is missing` — manufactured by another
 session's uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; it is that

@@ -1,6 +1,6 @@
 # REACT_DELETION_EXECUTION_PLAN.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-cited. The governance for removing React after Full Liquid is validated. **No deletion may occur before parity proof.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-cited. The governance for removing React after Full Liquid is validated. **No deletion may occur before parity proof.**
 
 ## Supreme rule (Constitution ART-17, `LETBUYY_CONSTITUTION.md:256`)
 

@@ -65,7 +65,7 @@ policy  = { title, body }        // storefront_policies
 ## PART C — Theme architecture (Phase 10) — every theme, every surface
 
 ### C1. Audit — current state
-- **Only Urban Kicks ships a Liquid bundle** (commit `742192cf`); `resolveLiquidBundle` returns `undefined` → React for all other themes (`template-resolver.ts:110-125`).
+- **Only Urban Kicks ships a Liquid bundle** (commit `57760d0c`); `resolveLiquidBundle` returns `undefined` → React for all other themes (`template-resolver.ts:110-125`).
 - **Demo-fixture fallback** in the production mapper: `store-service.ts:670-673` returns `createUrbanKicksLiquidThemeBundleFixture()` when a store's bundle is missing → a real store can inherit the demo theme.
 - Default `themeId='urban-kicks'` (`store-service.ts:557`).
 

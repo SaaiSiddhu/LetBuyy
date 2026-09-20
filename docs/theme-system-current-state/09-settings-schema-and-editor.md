@@ -15,7 +15,7 @@
 > schema shape is intended to win (§2.4); whether the `node:crypto` working-tree changes are
 > deliberate work-in-progress or an accidental omission from a commit (§5).
 >
-> **Tree state.** `git diff --numstat` shows **0 content changes vs `HEAD` (`ee371182`)** for every
+> **Tree state.** `git diff --numstat` shows **0 content changes vs `HEAD` (`bf35062e`)** for every
 > source file cited here except the two `next.config.ts` files and the untracked storefront webpack
 > stub, which are the subject of §6. All other line numbers are valid at both `HEAD` and in the
 > working tree. (The *security* surface is a different story — see

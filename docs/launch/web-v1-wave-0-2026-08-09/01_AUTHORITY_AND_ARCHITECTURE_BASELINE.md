@@ -7,7 +7,7 @@
 > | Field | Value |
 > |---|---|
 > | Repo | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` (original tree, read-only) |
-> | Branch / HEAD | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
+> | Branch / HEAD | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 > | Date | 2026-08-09 |
 >
 > **What was wrong (severity: cosmetic, no downstream figure affected).** The header line below attributed the dirty-path count `6825` to `git status --porcelain=v1`. That count was produced by Agent B's `git status --porcelain=v2` run (see `03_WORKTREE_CHANGE_CLASSIFICATION.md` §1, which states `--porcelain=v2` explicitly). Doc 01 re-labelled a v2 figure as v1.
@@ -17,7 +17,7 @@
 > **Evidence (EXECUTED this session, exit 0 each):**
 > ```
 > $ git rev-parse --abbrev-ref HEAD          → stepup/main
-> $ git rev-parse HEAD                       → ee3711829d857e986014c5811bb94d86ebc3d343
+> $ git rev-parse HEAD                       → bf35062eda22f4d881efd61fb1d36c8fc83baed1
 > $ git status --porcelain=v1 | wc -l        → 6826
 > $ git status --porcelain=v2 | wc -l        → 6826
 > ```
@@ -31,7 +31,7 @@
 
 - **Repo:** `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`
 - **Branch:** `stepup/main`
-- **HEAD SHA at time of audit:** `ee3711829d857e986014c5811bb94d86ebc3d343` (verified via `git rev-parse HEAD`)
+- **HEAD SHA at time of audit:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (verified via `git rev-parse HEAD`)
 - **Working tree:** dirty (**[CORRECTED 2026-08-09]** `git status --porcelain=v2` → 6825 lines at audit start — the original text credited this to `--porcelain=v1`, but the figure came from Agent B's v2 run; both forms emit one line per path and were re-measured at **6826 each** on 2026-08-09, so the correction is a labelling fix only. This is a pre-existing repo state, not a change made by this audit — this audit made no repository writes other than this deliverable and its evidence file)
 - **Timestamp used:** 2026-08-09 (per task instruction; system clock read `Sun Aug 9 04:48:03 IST 2026`)
 - **Auditor:** Agent A — Authority and Architecture Auditor, Wave 0 Phase 1, read-only

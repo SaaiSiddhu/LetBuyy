@@ -1,6 +1,6 @@
 # REACT DECOMMISSION PACKET (L17)
 
-**Date:** 2026-06-13 · **HEAD:** `cf4f6f6f` · **PREPARATION ONLY — no React is deleted in this packet.**
+**Date:** 2026-06-13 · **HEAD:** `77b681f1` · **PREPARATION ONLY — no React is deleted in this packet.**
 
 ## Constitutional gate (hard)
 **ART-17 (`LETBUYY_CONSTITUTION.md:256`) forbids deleting React before the data decision at the hardening wave.** L17 may proceed only after: (1) L14 parity green in production, (2) L15 canary clean + a stable production window, (3) the signed hardening-wave data decision. No automation may make that decision — `HR-LIQUID-REACT-DECOMMISSION`.

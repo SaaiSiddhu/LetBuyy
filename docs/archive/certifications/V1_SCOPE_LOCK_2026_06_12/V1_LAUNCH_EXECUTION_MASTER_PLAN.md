@@ -1,6 +1,6 @@
 # LETBUYY V1 — LAUNCH EXECUTION MASTER PLAN
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · **Mode:** plan (no code written). Synthesizes `LB7_CERTIFICATION.md` + `LB8…LB12_IMPLEMENTATION_STRATEGY.md`. **Repository-truth only.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · **Mode:** plan (no code written). Synthesizes `LB7_CERTIFICATION.md` + `LB8…LB12_IMPLEMENTATION_STRATEGY.md`. **Repository-truth only.**
 
 ## 0. Gating reality
 

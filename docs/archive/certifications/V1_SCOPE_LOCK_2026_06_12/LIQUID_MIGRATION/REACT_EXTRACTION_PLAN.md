@@ -1,6 +1,6 @@
 # REACT_EXTRACTION_PLAN.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · file-level, code-cited. Classification for Full-Liquid target: **KEEP-TEMP** (compatibility fast-path per ART-17, frozen, deleted at hardening wave) · **MIGRATE** (reimplement as Liquid) · **DELETE** (only after parity proof + the hardening-wave data decision). Lines via `wc -l`.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · file-level, code-cited. Classification for Full-Liquid target: **KEEP-TEMP** (compatibility fast-path per ART-17, frozen, deleted at hardening wave) · **MIGRATE** (reimplement as Liquid) · **DELETE** (only after parity proof + the hardening-wave data decision). Lines via `wc -l`.
 
 > ART-17 forbids deleting React "before the data decision at the hardening wave." So nothing here is DELETE-now; the React storefront render layer is **KEEP-TEMP → frozen at parity → DELETE at L17 after `REACT_DELETION_EXECUTION_PLAN.md` proof gates pass.** No new React-per-section capability may be added (ART-17 forbids).
 

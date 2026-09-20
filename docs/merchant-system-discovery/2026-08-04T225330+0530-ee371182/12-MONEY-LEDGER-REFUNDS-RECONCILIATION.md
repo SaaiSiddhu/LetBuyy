@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | The canonical append-only double-entry ledger; every money RPC and its idempotency/locking/constraint properties; the money state machines; the direct-money-write (canonical-ledger-only) audit; refund, gift-card and COD intersections; step-up cryptography as it gates money; money representation (paise vs rupee) |
 | Evidence basis | Agent G notes (`_agent-notes/G-payments-refunds-payouts.md`, read in full) plus **independent re-verification from source** of every load-bearing claim reproduced here — migrations 000/119/139/140/160/165/168/170/174, `packages/billing-core`, `packages/payments`, `services/api-gateway` money routes, `scripts/money-certification`, `scripts/validators/canonical-ledger-only-validator.mjs`, root `AGENTS.md` |

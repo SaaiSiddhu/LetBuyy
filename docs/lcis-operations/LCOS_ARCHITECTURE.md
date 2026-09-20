@@ -256,7 +256,7 @@ All merchants share one schema / one deploy pipeline / one DB. Finding M-1 is st
 `customer-funnel.json` and `customer-retention.json` do not exist in `graphify-out/`. Their data is subsumed by `customer-intelligence.json` → `graphs.funnel` and `graphs.retention`. The service reads the two present artifacts and does not surface the absence as an error.
 
 **DeploymentOperationsService — Artifact Staleness**
-`deployment-intelligence-v5.json` was generated 2026-06-14; current git HEAD is `742192cf`. The service must surface this delta with `ArtifactAgeWarning` so callers know the structural state may lag. Live HEAD and live deployed version are NOT_CONNECTED.
+`deployment-intelligence-v5.json` was generated 2026-06-14; current git HEAD is `57760d0c`. The service must surface this delta with `ArtifactAgeWarning` so callers know the structural state may lag. Live HEAD and live deployed version are NOT_CONNECTED.
 
 **IncidentOperationsService — No Incident Store**
 There is no live incident table or integration in the repo. `incident-intelligence-v5.json` is a structural model with one payments example. The service surfaces: 22-domain runbook index (DETECTABLE), blast radius per domain (DETECTABLE via BlastRadiusService), recovery protocol per domain (DETECTABLE), and all live detection signals (NOT_CONNECTED). Active incident count is NOT_DETECTABLE until an incident-store adapter is added.

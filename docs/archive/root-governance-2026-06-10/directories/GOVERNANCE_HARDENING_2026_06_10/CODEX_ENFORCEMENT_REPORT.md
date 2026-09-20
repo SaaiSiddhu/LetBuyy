@@ -2,7 +2,7 @@
 
 > **Document type:** ARB governance red-team. **Phase 6 of the Governance Hardening program.** This report does **not** write architecture and proposes **no new systems**; every fix is a governance-strengthening act (rule text, a validator/CI gate, or a ratification/retarget step).
 > **Question under test:** *Today, can Codex/Claude (or an engineer) still create the exact architecture drift the 7-doc governance rewrite was written to forbid?*
-> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at working tree, `stepup/main` @ `5cf9e64e`.
+> **Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at working tree, `stepup/main` @ `c4fc3cd6`.
 > **Authority reviewed:** `GOVERNANCE_REWRITE_2026_06_10/` (000_INDEX · CONSTITUTION · AGENTS_V2 · CANONICAL_SYSTEMS · LEGACY_ELIMINATION · FOUNDATION_ROADMAP · UI_UX_GOVERNANCE).
 > **Live enforcement reviewed:** root `AGENTS.md`, `scripts/validate-governance.mjs`, `scripts/validators/*` (189 files), `scripts/validators/governance-common.mjs`, `scripts/validators/runtime-manifest-validator.mjs`, `scripts/validators/repository-intelligence-validator.mjs`, `scripts/validators/theme-governance-validator.mjs`, `scripts/validators/session-security-validator.mjs`, `scripts/validators/single-writer-ownership-validator.mjs`, `.github/workflows/production-deploy.yml`.
 
@@ -166,4 +166,4 @@ The Constitution makes money its strongest prose (`ART-10/11/12/13`, `R-5…R-10
 - The six anon RLS-to-PUBLIC GRANTs (the live S0 backdrop to these enforcement gaps) are set by Supabase's managed bootstrap, not repo SQL — an anon-key probe is required before final S0 sign-off (Const §14.4); it does not change the *enforcement* findings here but bounds the urgency.
 - Full mechanical detection of "a parallel second system" (CODEX-G-007) is only partially achievable; the residual relies on `WIN-R2` escalation discipline — a known limit, not a solvable gate.
 
-*End of CODEX_ENFORCEMENT_REPORT. No repository code or other governance docs were modified in producing this report. All `path:line` citations were read directly from the working tree at `5cf9e64e`.*
+*End of CODEX_ENFORCEMENT_REPORT. No repository code or other governance docs were modified in producing this report. All `path:line` citations were read directly from the working tree at `c4fc3cd6`.*

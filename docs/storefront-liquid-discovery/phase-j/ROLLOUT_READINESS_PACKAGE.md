@@ -124,7 +124,7 @@ The seven original ARB-gate blockers are from `docs/storefront-liquid-discovery/
 **Original:** `CenterPanel` sends `LETBUYY_THEME_EDITOR_SELECTION`; `EditorPreviewSectionFrame` listens for `letbuyy:theme-editor:section-selected`. Key mismatch breaks section-selection highlight in the theme editor.
 
 **Current state: CLOSED.**
-Evidence: `StorefrontPreviewBridge` at `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` (Phase C, commit 073bcbfe area). Imports `EDITOR_LEGACY_SELECTION_MESSAGE = 'LETBUYY_THEME_EDITOR_SELECTION'` from `packages/theme-engine/src/editor-bridge-protocol.ts:6`. Listens for the legacy message type (line 83), calls `selectSection()` (line 89), which re-posts as `letbuyy:theme-editor:section-selected`. `EditorPreviewSectionFrame` receives the namespaced event. C-04 is CLOSED. Protocol centralized in `editor-bridge-protocol.ts` (Phase C C5).
+Evidence: `StorefrontPreviewBridge` at `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` (Phase C, commit 93419c58 area). Imports `EDITOR_LEGACY_SELECTION_MESSAGE = 'LETBUYY_THEME_EDITOR_SELECTION'` from `packages/theme-engine/src/editor-bridge-protocol.ts:6`. Listens for the legacy message type (line 83), calls `selectSection()` (line 89), which re-posts as `letbuyy:theme-editor:section-selected`. `EditorPreviewSectionFrame` receives the namespaced event. C-04 is CLOSED. Protocol centralized in `editor-bridge-protocol.ts` (Phase C C5).
 
 ### B-2: `newsletter` / `newsletter-signup` type split (silent section miss)
 
@@ -209,7 +209,7 @@ Items from Phase I that are NOT resolved and require Phase J or ARB attention:
 
 | ID | Severity | File | Description |
 |---|---|---|---|
-| I-F1 | ~~HIGH~~ **CLOSED** | `theme-bundle.ts:2433` (register template) | DOMPurify 3.x clobbering bug — **FIXED** in commit 4eaf3e84. Field renamed from `name="name"` to `name="fullName"`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). |
+| I-F1 | ~~HIGH~~ **CLOSED** | `theme-bundle.ts:2433` (register template) | DOMPurify 3.x clobbering bug — **FIXED** in commit dbcf173a. Field renamed from `name="name"` to `name="fullName"`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). |
 | H-F2 | **CLOSED** | `packages/theme-engine/src/theme-artifact-exporter.ts` | `assertSafeArtifactPath()` (lines 58–68) called at all path composition points (75, 82, 90, 116, 124). Throws `UnsafeThemeArtifactPathError` on absolute paths or `..` segments. Previously OPEN MEDIUM; code confirms closure. |
 | H-F3 | LOW | `theme-artifact-exporter.ts:101–110` | `settings_data` exported as-is. Code comment (lines 101–107) documents this as intentional: settings_data holds design tokens; BLOCKED_DROP_KEYS is a render-time defence. Risk remains if untrusted merchant data reaches the export pipeline. Acknowledge or formally risk-accept. |
 | H-F1 | **CLOSED** | `theme-linter.ts:64,101` | `for (const attr of forbidAttrs)` at line 101 iterates FORBID_ATTR from `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG`. Rule is named `forbidden-attr`. Previously OPEN MEDIUM with wrong claim of hardcoded regex; code confirms single source of truth. |
@@ -225,7 +225,7 @@ Items from Phase I that are NOT resolved and require Phase J or ARB attention:
 |---|---|---|
 | Unit | CONNECTED | 221/221 theme-engine, 78/78 storefront-runtime, 15/15 merchant |
 | Integration (contract) | PARTIAL | Contract tests CONNECTED (78/78 includes 8 contract test files); live gateway integration NOT-CONNECTED |
-| Accessibility | PARTIAL | 8 A11Y assertions CONNECTED; axe-core browser scan NOT-CONNECTED; I-F1 (name clobbering) CLOSED — A11Y-5 asserts `name="fullName"` survives DOMPurify (commit 4eaf3e84) |
+| Accessibility | PARTIAL | 8 A11Y assertions CONNECTED; axe-core browser scan NOT-CONNECTED; I-F1 (name clobbering) CLOSED — A11Y-5 asserts `name="fullName"` survives DOMPurify (commit dbcf173a) |
 | Performance | PARTIAL | F9 benchmark CONNECTED (cold=24ms, steady=11ms, total=288ms, all PASS vs budget); production profiling NOT-CONNECTED |
 | SEO | NOT-CONNECTED | 0 SEO tests exist; live Lighthouse CI requires deployed storefront URL |
 | Hydration | CONNECTED | 40+13=53 island assertions in 78/78 |
@@ -257,7 +257,7 @@ The ARB would evaluate the following before authorizing the platform-wide flip:
 - The number of stores currently on the Liquid path in production is unknown (requires a live Supabase query).
 
 **Open product bugs (status as of 2026-07-10):**
-- I-F1 (DOMPurify clobbering on customer-register form) — **CLOSED** in commit 4eaf3e84. Field renamed to `name="fullName"` in `theme-bundle.ts:2433`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts the fix (221/221 PASS). This item is not a GO gate.
+- I-F1 (DOMPurify clobbering on customer-register form) — **CLOSED** in commit dbcf173a. Field renamed to `name="fullName"` in `theme-bundle.ts:2433`. Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts the fix (221/221 PASS). This item is not a GO gate.
 
 **ARB-exclusive decisions:**
 - Whether to wire `FEATURE_LIQUID` as a gateway kill switch before flipping.

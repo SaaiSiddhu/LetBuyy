@@ -1,7 +1,7 @@
 # STRATEGIC WINNER DECISIONS — Convergence Audit Phase 4
 
 **Phase:** 4 — Strategic Winner Decisions (DISCOVERY/DECISION ONLY)
-**Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` · `main` @ `bf8c18c1` (30 commits behind, the only deploy branch) · working tree dirty (512 D / 410 M / 78 ??)
+**Date:** 2026-06-10 · **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` · `main` @ `4bcae19a` (30 commits behind, the only deploy branch) · working tree dirty (512 D / 410 M / 78 ??)
 **Inputs:** `_PREMISES_SEED.md` (winner spine) + the 13 prior REPOSITORY_TRUTH_AUDIT reports; every score is grounded in those reports' `path:line` citations, spot-re-verified against live code where load-bearing (verification log §Appendix).
 **Mode:** Read-only. The only file written is this report. No code, no architecture, no codex prompts. Hard calls, per the user's aggressive-deletion / no-prod-constraints mandate.
 

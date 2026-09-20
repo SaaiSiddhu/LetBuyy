@@ -50,13 +50,13 @@ Classification tags follow the repository's own scheme: `OWNER_DECISION`, `OPEN_
 
 | Item | Value |
 |---|---|
-| Workspace checkout | `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/claude-md-durable-architecture-memory`, HEAD `823aa5ee` (2026-09-04). Working tree: 38 modified, 1 deleted, 15 untracked files owned by other sessions. **0 ahead / 611 behind `develop`.** Read-only for this audit (skill rule). |
-| Audited code snapshot | `LetBuyy-develop` worktree, branch `develop`, HEAD `bda7f7f8` (2026-09-12 11:04 +0530), **clean tree before and after every test run** (`git status --porcelain` = 0). 111 phase merges since `823aa5ee`. |
-| Other branches | `staging` = `main` = `823aa5ee`; `stepup/main` = `08c6f872` (preserved alias). `develop` is not pushed anywhere (D-12); the remote `SaaiSiddhu/Letbuyy_Store` is unreadable from this machine. |
+| Workspace checkout | `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/claude-md-durable-architecture-memory`, HEAD `a751a2ff` (2026-09-04). Working tree: 38 modified, 1 deleted, 15 untracked files owned by other sessions. **0 ahead / 611 behind `develop`.** Read-only for this audit (skill rule). |
+| Audited code snapshot | `LetBuyy-develop` worktree, branch `develop`, HEAD `88a9bf6f` (2026-09-12 11:04 +0530), **clean tree before and after every test run** (`git status --porcelain` = 0). 111 phase merges since `a751a2ff`. |
+| Other branches | `staging` = `main` = `a751a2ff`; `stepup/main` = `e72aef17` (preserved alias). `develop` is not pushed anywhere (D-12); the remote `SaaiSiddhu/Letbuyy_Store` is unreadable from this machine. |
 | Agrimore comparison snapshot | `/Users/saai_siddharth/Projects/Start_Up/Agrimore_Supabase`, branch `foundation-rebuild`, HEAD `6a33bf8` (2026-09-19). The index holds an uncommitted cleanup in flight: 1,225 staged deletions (mostly `legacy_archive_v2/`), 104 adds, 45 renames, 12 modifications. The audit read the index/working-tree state, not HEAD. |
 | LCIS intelligence layer | Both servers (`:3333`, `:3334`) were down and were not started; the repository was scanned directly. |
 
-**All file:line references below resolve against `develop` = `bda7f7f8`**, not against the workspace checkout, unless a path is prefixed `Agrimore_Supabase:`.
+**All file:line references below resolve against `develop` = `88a9bf6f`**, not against the workspace checkout, unless a path is prefixed `Agrimore_Supabase:`.
 
 ### 3.2 Method
 
@@ -72,7 +72,7 @@ Classification tags follow the repository's own scheme: `OWNER_DECISION`, `OPEN_
 - **No cloud visibility.** Deployed state is `UNKNOWN_LIVE_STATE` throughout.
 - **No live provider credentials** were used or needed; no payments, SMS, or payouts were attempted.
 - **Flutter apps were not built.** Prior evidence (memory: Phase Q) shows `merchant_app` and `customer_app` compiled once; not re-verified here.
-- **Next builds were not re-run.** The 2026-09-12 evidence records all five `next build`s green at `56b521f6` (`docs/evidence/integration/2026-09-12-develop-integration.md` §Measurement 3). Historical, not fresh.
+- **Next builds were not re-run.** The 2026-09-12 evidence records all five `next build`s green at `9532074b` (`docs/evidence/integration/2026-09-12-develop-integration.md` §Measurement 3). Historical, not fresh.
 - **Agrimore Flutter/Next apps were not built or run.**
 
 ---
@@ -493,7 +493,7 @@ No vulnerability is claimed reproduced; the RLS red-team suite is the only secur
 
 ## 18. Tests executed, results and unverified claims
 
-All commands ran in `LetBuyy-develop` at `bda7f7f8`; the tree was clean before and after (`git status --porcelain` → 0). No test touched an existing database: every Postgres suite ran through `scripts/governance/run-executable-suites.mjs`, which starts a uniquely named `postgres:16-alpine` container (`letbuyy-exec-<pid>-<uptime>`), replays every migration into it and removes it. The pre-existing stopped container `letbuyy-executable-pg` (created 2026-08-05) was not touched.
+All commands ran in `LetBuyy-develop` at `88a9bf6f`; the tree was clean before and after (`git status --porcelain` → 0). No test touched an existing database: every Postgres suite ran through `scripts/governance/run-executable-suites.mjs`, which starts a uniquely named `postgres:16-alpine` container (`letbuyy-exec-<pid>-<uptime>`), replays every migration into it and removes it. The pre-existing stopped container `letbuyy-executable-pg` (created 2026-08-05) was not touched.
 
 | Check | Command | Result | Depth | Limitation |
 |---|---|---|---|---|
@@ -655,7 +655,7 @@ External setup: see §15 list (Supabase/Cloudflare/Vercel, Razorpay live + POS p
 
 **Governing and ledger documents read:** `CLAUDE.md`; `.claude/skills/letbuyy/SKILL.md` and `references/{decisions,hazards}.md`; `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` (grep); `EXECUTION_LEDGER.md` rows `PHASE-F-INTEG-1`, `PHASE-F-E2E-0/0b/0c`; `docs/evidence/integration/2026-09-12-develop-integration.md`; `docs/evidence/production-readiness/2026-08-24-readiness-evidence.md`; `docs/migration/repository_consolidation/17_remaining_migration_backlog.md`; `docs/active/BRANCH_DISPOSITIONS.md` (0 ACTIVE rows at audit time).
 
-**Key LetBuyy source consulted (develop @ `bda7f7f8`):** `services/api-gateway/src/index.ts:722-857`; `routes/{inventory,checkout,payments,orders,returns,payouts,settlements,shipping,shipping-labels,custom-domains,themes,channel-listings,kyc,onboarding,employee,stores}.ts`; `routes/storefront/{public-routes,cart-routes,checkout-payment-routes,internal-payment-routes,buyer-account-routes,buyer-realm-wiring,marketplace-detail-routes}.ts`; `execution/{order,payment,product}-execution.adapter.ts`; `lib/{tenant-context,auth-user,order-ownership,provider-payment-verification,identity-session-verifier}.ts`; `middleware/{staff-permission,rateLimit,internal-perimeter,customer-session,buyer-session,auth}.ts`; `services/webhook-service/src/index.ts`; `services/queue-workers/src/*`, `wrangler.toml`; `apps/identity-platform/src/lib/auth/identity-issued-session.ts`, `src/app/api/{auth,buyer}/*`; `apps/customer_web/src/proxy.ts`, `next.config.ts:139-143`, `src/lib/api/browser-client.ts`, `src/app/store/[subdomain]/checkout/checkout-client.tsx`; `apps/admin_web/src/app/api/console-auth/login/route.ts`; `packages/theme-engine/src/theme-renderer.ts`; `packages/infrastructure/razorpay-adapter/index.ts`; migrations `000_baseline.sql`, `139`, `141`, `145`, `159`, `166`, `168`, `211`, `216`, `217`, `219`, `223`, `234`, `246`; `scripts/governance/run-executable-suites.mjs`; `tests/executable/*`.
+**Key LetBuyy source consulted (develop @ `88a9bf6f`):** `services/api-gateway/src/index.ts:722-857`; `routes/{inventory,checkout,payments,orders,returns,payouts,settlements,shipping,shipping-labels,custom-domains,themes,channel-listings,kyc,onboarding,employee,stores}.ts`; `routes/storefront/{public-routes,cart-routes,checkout-payment-routes,internal-payment-routes,buyer-account-routes,buyer-realm-wiring,marketplace-detail-routes}.ts`; `execution/{order,payment,product}-execution.adapter.ts`; `lib/{tenant-context,auth-user,order-ownership,provider-payment-verification,identity-session-verifier}.ts`; `middleware/{staff-permission,rateLimit,internal-perimeter,customer-session,buyer-session,auth}.ts`; `services/webhook-service/src/index.ts`; `services/queue-workers/src/*`, `wrangler.toml`; `apps/identity-platform/src/lib/auth/identity-issued-session.ts`, `src/app/api/{auth,buyer}/*`; `apps/customer_web/src/proxy.ts`, `next.config.ts:139-143`, `src/lib/api/browser-client.ts`, `src/app/store/[subdomain]/checkout/checkout-client.tsx`; `apps/admin_web/src/app/api/console-auth/login/route.ts`; `packages/theme-engine/src/theme-renderer.ts`; `packages/infrastructure/razorpay-adapter/index.ts`; migrations `000_baseline.sql`, `139`, `141`, `145`, `159`, `166`, `168`, `211`, `216`, `217`, `219`, `223`, `234`, `246`; `scripts/governance/run-executable-suites.mjs`; `tests/executable/*`.
 
 **Agrimore source consulted (`foundation-rebuild` @ `6a33bf8`, index state):** `AGENTS.md`; `docs/product/PDR-0001…0003`; `docs/decisions/ADR-0001…0012` (0002–0008 read in part); `docs/engineering/PRODUCTION_LAUNCH_PLAN.md`; `docs/cleanup/REPOSITORY_CLEANUP_PLAN.md`; `SKIPPED_TASKS.md`; `supabase/migrations/000001…000024` (0003, 0005, 0007, 0008, 0010, 0011, 0012 in detail); `supabase/functions/*` (confirm-payment, _shared/worker_context.ts, _shared/auth.ts); `workers/api-gateway/src/{index,routes}.ts`, `handlers/api.ts`, `middleware/auth.ts`, `upstream/supabase.ts`; `workers/realtime-gateway/src/realtime/auth.ts`; `packages/agrimore_api`; `apps/*` directory shapes; `supabase/tests/*`.
 

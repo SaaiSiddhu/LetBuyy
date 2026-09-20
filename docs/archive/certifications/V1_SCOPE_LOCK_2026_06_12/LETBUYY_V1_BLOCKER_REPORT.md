@@ -1,6 +1,6 @@
 # LETBUYY V1 — BLOCKER REPORT
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · **Recommendation: 🔴 NO-GO**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · **Recommendation: 🔴 NO-GO**
 
 This is the Phase 9 *"otherwise"* output: not all of LB-7…LB-12 are complete, so per the program's own stop condition a blocker report — not a certification — is generated. Every blocker cites code. Foundation winners (money, identity, tenancy, the 123-validator gate) are **intact and verified** (see `ACTUAL_STATE.md`); the blockers below are launch-scope completion + two structural seams.
 

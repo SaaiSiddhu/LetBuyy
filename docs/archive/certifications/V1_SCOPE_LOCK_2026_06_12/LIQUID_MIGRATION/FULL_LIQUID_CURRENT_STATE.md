@@ -1,6 +1,6 @@
 # FULL_LIQUID_CURRENT_STATE.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-verified (5-turn audit body + this turn's recon). Target = **Full Liquid V1** (Constitution ART-17). No code changed.
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-verified (5-turn audit body + this turn's recon). Target = **Full Liquid V1** (Constitution ART-17). No code changed.
 
 ## Constitutional frame (this is not opinion — it's law)
 

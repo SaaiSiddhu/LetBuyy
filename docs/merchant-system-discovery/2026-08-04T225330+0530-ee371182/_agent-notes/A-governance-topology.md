@@ -2,7 +2,7 @@
 
 **Mission:** LetBuyy Merchant System Discovery, Phase 1 (discovery only).
 **Repo:** `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`
-**Branch:** `stepup/main` · **HEAD:** `ee371182` · **Worktree:** DIRTY (6784 modified, 20 untracked — user-owned, untouched)
+**Branch:** `stepup/main` · **HEAD:** `bf35062e` · **Worktree:** DIRTY (6784 modified, 20 untracked — user-owned, untouched)
 **Scope of my writes:** this file only. No other file was created, edited, or deleted. No git state-changing command was run.
 
 > ### ⚠️ OBSERVATION-WINDOW WARNING — THE WORKTREE MUTATED DURING THIS RUN
@@ -19,7 +19,7 @@
 
 ## 0. HEADLINE (read this first)
 
-1. **The deploy meta-blocker (ART-03 / DEPLOY-R1) has re-accumulated and is worse than any prior report.** Local `main` = `0b8a56e7`; `stepup/main` = `ee371182`; `git rev-list --count main..stepup/main` = **106**. `production-deploy.yml` triggers on push to `main`, so a production deploy today would ship a 106-commit-stale tree. MERGE_RUNBOOK.md:9 mandates this be `0`.
+1. **The deploy meta-blocker (ART-03 / DEPLOY-R1) has re-accumulated and is worse than any prior report.** Local `main` = `140a73db`; `stepup/main` = `bf35062e`; `git rev-list --count main..stepup/main` = **106**. `production-deploy.yml` triggers on push to `main`, so a production deploy today would ship a 106-commit-stale tree. MERGE_RUNBOOK.md:9 mandates this be `0`.
 2. **The 108-validator governance gate is RED on the current worktree.** I ran every gate-lane validator individually: **83 PASS / 25 FAIL**. Every prior-truth document that claims "gate GREEN" is describing a different (earlier, clean) tree.
 3. **CI does not run on the canonical integration branch.** `.github/workflows/ci.yml:4-11` triggers only on `develop` and `main`. `stepup/main` — the branch BRANCH_STRATEGY.md names as the integration branch and the branch every feature PR targets — gets **no** `ci / typecheck`, `ci / lint`, `ci / build`, `ci / unit-tests`, or `ci / merge-safety-gate`.
 4. **Topology is largely honest and enforced.** Production deploy matrix = exactly 4 Workers + 5 Vercel apps = the constitutional 8 + `platform-console`. All six reserved services and both reserved mobile roots are genuinely manifest-only (2 files each). All four frozen apps are excluded from build/lint/typecheck and from every deploy matrix.
@@ -155,7 +155,7 @@ Same for `apps/mobile/shopper-app` and `apps/mobile/operator-app`. Zero `.ts`/`.
 - `canonicalRuntimeRoots` = 10 (6 + 4)
 - `frozenAppRoots` (4), `reservedServiceRoots` (6), `reservedMobileRuntimeRoots` (2), `deprecatedAppAliasRoots` (7 + `apps/mobile/operator-team-app`), `forbiddenRuntimeSubtrees` (`apps/storefront-runtime/consumer-storefront`)
 
-Validator runs (read-only, individually invoked at HEAD `ee371182`):
+Validator runs (read-only, individually invoked at HEAD `bf35062e`):
 ```
 runtime-topology-validator                exit=0  10 canonical runtime roots, 8 topology edges
 runtime-manifest-validator                exit=0  10 active runtime manifests
@@ -306,7 +306,7 @@ Notable secrets set (NAMES only — no values read or recorded):
 | `staging-deploy.yml` | **push trigger DISABLED** (comment `:3-7`: "'develop' branch is fully merged and stale (deleted 2026-06-12) … Active staging deploy lane is deploy-staging.yml"); `workflow_dispatch` only | not inspected as active | 4 Workers + 5 Vercel apps |
 | `staging-runtime-deployment.yml` | `push: [main, release/**]` + path filters + dispatch (`:11-24`) | validate job present | Cloudflare primitives + the 4 Workers |
 
-**This closes a prior blocker.** `FINAL_REPOSITORY_TRUTH_CERTIFICATION.md` §CLAIM 2 declared as a **BLOCKER**: "`deploy-staging.yml:4-5` deploys the active branch `stepup/main` to staging … with **zero** governance/validate step and **no** untracked-migration guard (counter-verified: grep for validate/governance/ls-files = 0 hits)". At HEAD `ee371182` that is **REFUTED** — both controls are present. Status of that prior blocker: **RESOLVED**.
+**This closes a prior blocker.** `FINAL_REPOSITORY_TRUTH_CERTIFICATION.md` §CLAIM 2 declared as a **BLOCKER**: "`deploy-staging.yml:4-5` deploys the active branch `stepup/main` to staging … with **zero** governance/validate step and **no** untracked-migration guard (counter-verified: grep for validate/governance/ls-files = 0 hits)". At HEAD `bf35062e` that is **REFUTED** — both controls are present. Status of that prior blocker: **RESOLVED**.
 
 Residual: three staging workflows still exist where ART-03 mandates one. Two are dispatch/path-gated rather than deleted. **Status: PARTIAL** (G-A-08).
 
@@ -325,7 +325,7 @@ Jobs: `typecheck`, `secret-hygiene`, `lint`, `unit-tests`, `merge-safety-gate`, 
 `.github/BRANCH_STRATEGY.md:23-29` specifies for `stepup/main`:
 > Required checks: `ci / typecheck`, `ci / lint`, `ci / build`, `ci / unit-tests`, `ci / governance`.
 
-**Those five checks can never report on a `stepup/main` PR, because `ci.yml` does not trigger on `stepup/main` at all.** `develop` is documented as retired (`BRANCH_STRATEGY.md:10`) and `origin/develop` is a stale pointer at `41b6ea49` (= `origin/main`). So the CI workflow's only live trigger surface is `main` — a branch nobody is supposed to push to directly.
+**Those five checks can never report on a `stepup/main` PR, because `ci.yml` does not trigger on `stepup/main` at all.** `develop` is documented as retired (`BRANCH_STRATEGY.md:10`) and `origin/develop` is a stale pointer at `c2547049` (= `origin/main`). So the CI workflow's only live trigger surface is `main` — a branch nobody is supposed to push to directly.
 
 What *does* run on a `stepup/main` PR: `architecture-governance.yml` (`pull_request` with path filters, **no branch filter**, `:4-30`) — it runs `pnpm run validate:governance`, `validate:design-system`, `lint:css`, `validate:design-tokens`, `validate:mobile-tokens`, `validate:runtime`, `validate:deployment`, `validate:topology`, `validate:dependencies`, `production-readiness-validator`. Also `lcis-pr-analysis.yml` (all PRs) and `graph-intelligence.yml` (path-filtered).
 
@@ -493,7 +493,7 @@ Git identity in use: `SaaiSiddhu`. CODEOWNERS handle: `@saai-sidd`. I did not ve
 
 ## 8. DOCUMENTATION DRIFT — PROVEN-FALSE STATEMENTS
 
-Every row below is a statement I can prove false at HEAD `ee371182`.
+Every row below is a statement I can prove false at HEAD `bf35062e`.
 
 | # | Doc statement | Citation | Reality | Evidence |
 |---|---|---|---|---|
@@ -514,7 +514,7 @@ Every row below is a statement I can prove false at HEAD `ee371182`.
 | D-15 | "**LB-12** shopper registration … no register form/route" | `V1_SCOPE_LOCK_2026_06_12/ACTUAL_STATE.md:55` | **IMPLEMENTED** — `services/api-gateway/src/routes/storefront/customer-registration.ts:33` (`POST /customer/register`), `apps/storefront-runtime/src/app/api/customer/register/route.ts`, `packages/typescript/api-client/src/index.ts:5470` | file read |
 | D-16 | "**Gift cards** … Issuance writes `gift_cards`; checkout redeems `gift_card_accounts` → issued codes unredeemable" | `V1_SCOPE_LOCK_2026_06_12/ACTUAL_STATE.md:43` | **IMPLEMENTED** — `services/api-gateway/src/routes/gift-cards.ts:19-21,88` uses the canonical `gift_card_accounts` model via `db.rpc('issue_gift_card')`; migrations 173/174 exist | file read + `EXECUTION_LEDGER.md` rows `V1-LAUNCH-LB11`, `V1-COMPLETION-REFUND-RESTORE` |
 | D-17 | "**LB-10** … no `order_cancelled`/`order_refunded` email type" | `V1_SCOPE_LOCK_2026_06_12/ACTUAL_STATE.md:35` | **IMPLEMENTED** per `EXECUTION_LEDGER.md` row `V1-LAUNCH-LB10-DISPATCH` (`enqueueOrderLifecycleEmail`) — **I did not verify the source** | DOC_CLAIM only; hand to Agent-orders |
-| D-18 | `HR-B1A-FOUNDATION-PUSH` pre-condition "`git status --porcelain` empty" and "`main` and `stepup/main` must both show `f5e7036d`" | `EXECUTABLE_HUMAN_REQUIRED.md:25` | Worktree has 6784 M / 20 ??; `f5e7036d` is not any current ref | `git status`, `git rev-parse` |
+| D-18 | `HR-B1A-FOUNDATION-PUSH` pre-condition "`git status --porcelain` empty" and "`main` and `stepup/main` must both show `f55fe6e4`" | `EXECUTABLE_HUMAN_REQUIRED.md:25` | Worktree has 6784 M / 20 ??; `f55fe6e4` is not any current ref | `git status`, `git rev-parse` |
 | D-19 | `MERGE_RUNBOOK.md:9` "Required local invariant: `git rev-list --count main..stepup/main` returns `0`" | `MERGE_RUNBOOK.md:9` | Returns **106** | git |
 | D-20 | `MERGE_RUNBOOK.md:33` expects "`git status --short` is empty" before promotion | `MERGE_RUNBOOK.md:33` | 6804 entries | git |
 | D-21 | `CLAUDE.md:81` "`getSupabaseAdmin` (**115 files**)" | `CLAUDE.md:81` | **121 files / 1028 references** across apps+services+packages | grep |
@@ -522,7 +522,7 @@ Every row below is a statement I can prove false at HEAD `ee371182`.
 | D-23 | `.github/BRANCH_STRATEGY.md:25` required checks `ci / typecheck|lint|build|unit-tests|governance` on `stepup/main` | `.github/BRANCH_STRATEGY.md:25` | `ci.yml:4-11` never triggers on `stepup/main` — those checks cannot report | file read |
 | D-24 | `services/queue-workers/AGENTS.md:3` "Reserved background job runtime" / "Status: Incubating" | file | `ARCH-R1` lists it as canonical runtime **#2**, actively deployed to production | `AGENTS.md:71`, `production-deploy.yml:242` |
 | D-25 | `CAPABILITY_BACKLOG.md` gap IDs jump CAP-C12 → CAP-C15 | `CAPABILITY_BACKLOG.md:18-19` | **CAP-C13 and CAP-C14 do not exist** anywhere in the file. Either retired without a supersession note (violating `DOC-R4`) or a numbering error | grep |
-| D-26 | Constitution header "**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`. Evidence pinned at `stepup/main` @ `5cf9e64e`" | `LETBUYY_CONSTITUTION.md:7` | Repo now at `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`; `5cf9e64e` is ~hundreds of commits stale. Cosmetic but it is the supreme document's own provenance line | — |
+| D-26 | Constitution header "**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store`. Evidence pinned at `stepup/main` @ `c4fc3cd6`" | `LETBUYY_CONSTITUTION.md:7` | Repo now at `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`; `c4fc3cd6` is ~hundreds of commits stale. Cosmetic but it is the supreme document's own provenance line | — |
 
 Also worth recording (not strictly "false", but materially incomplete):
 - `AGENTS.md` Appendix B (`:397-401`) still lists `LETBUYY_CONSTITUTION.md` and `LETBUYY_CANONICAL_SYSTEMS.md` as possibly-not-existing ("until they physically exist, follow V1+Freeze"). Both exist. Minor.
@@ -534,7 +534,7 @@ Also worth recording (not strictly "false", but materially incomplete):
 
 ### 9.1 Named human seams H1–H9 (exact definitions, verbatim)
 
-Source of record: `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_BLOCKER_REPORT.md:44-53` (dated 2026-06-13, HEAD `0b8a56e7`), duplicated in `V1_SCOPE_LOCK_2026_06_12/ACTUAL_STATE.md:63-72`.
+Source of record: `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_BLOCKER_REPORT.md:44-53` (dated 2026-06-13, HEAD `140a73db`), duplicated in `V1_SCOPE_LOCK_2026_06_12/ACTUAL_STATE.md:63-72`.
 
 | # | Seam | Required action | Owner | Dependency | Risk | Launch impact (verbatim) |
 |---|---|---|---|---|---|---|
@@ -553,8 +553,8 @@ Source of record: `V1_SCOPE_LOCK_2026_06_12/LETBUYY_V1_BLOCKER_REPORT.md:44-53` 
 
 | Seam | Current state | Evidence |
 |---|---|---|
-| C0 | **RESOLVED.** `.git/index.lock` is gone; 106 commits landed on `stepup/main` after `0b8a56e7`; `EXECUTION_LEDGER.md` has 246 rows including post-`0b8a56e7` `V1-LAUNCH-*` and `V1-COMPLETION-*` entries | git; `EXECUTION_LEDGER.md` tail |
-| H1 | **OPEN, and worse.** Local `main` = `0b8a56e7` (106 behind). `origin/main` = `41b6ea49`, `origin/stepup/main` = `8d9dda77`, `origin/develop` = `41b6ea49`. Last local fetch: **Jul 31 23:53** — so remote state as I see it may itself be stale; I did not fetch. `origin/main..stepup/main` = 291 commits by local remote-tracking refs (**treat as approximate**). `origin/develop` still exists, contradicting `BRANCH_STRATEGY.md:10` and `HR-B1A` step 4 | git |
+| C0 | **RESOLVED.** `.git/index.lock` is gone; 106 commits landed on `stepup/main` after `140a73db`; `EXECUTION_LEDGER.md` has 246 rows including post-`140a73db` `V1-LAUNCH-*` and `V1-COMPLETION-*` entries | git; `EXECUTION_LEDGER.md` tail |
+| H1 | **OPEN, and worse.** Local `main` = `140a73db` (106 behind). `origin/main` = `c2547049`, `origin/stepup/main` = `75305725`, `origin/develop` = `c2547049`. Last local fetch: **Jul 31 23:53** — so remote state as I see it may itself be stale; I did not fetch. `origin/main..stepup/main` = 291 commits by local remote-tracking refs (**treat as approximate**). `origin/develop` still exists, contradicting `BRANCH_STRATEGY.md:10` and `HR-B1A` step 4 | git |
 | H2 | **OPEN.** `release-preflight` in `production-deploy.yml:60-160` enumerates **31 required production secret names** and hard-fails if any is absent. I recorded names only, never values. `SKIP-PROVIDER-SECRETS` open | workflow |
 | H3 | **OPEN.** `SKIP-PROD-DNS-CUTOVER`, `SKIP-D5-DNS-TERRAFORM-APPLY`, `SKIP-W3-DNS-CUTOVER` all open | `SKIPPED_HUMAN_DECISIONS.md:9,11,~` |
 | H4 | **OPEN + SCOPE GREW.** The seam says "000→170"; the tree now has through **195** (+ untracked 196). Anyone executing H4 from the doc will under-migrate by 25 files | migrations dir |
@@ -594,12 +594,12 @@ Source: `CAPABILITY_BACKLOG.md:7-22`. Header (`:3`) is explicit: *"These are not
 
 ### 9.3 `FINAL_REPOSITORY_TRUTH_CERTIFICATION_2026_06_12` — the best prior document, scored
 
-Dated 2026-06-12, HEAD `da83ba92` (clean tree). Self-described adversarial 8-agent audit. Verdict: **"Foundation Era verdict: NOT COMPLETE"**, certification **withheld**.
+Dated 2026-06-12, HEAD `f961e23a` (clean tree). Self-described adversarial 8-agent audit. Verdict: **"Foundation Era verdict: NOT COMPLETE"**, certification **withheld**.
 
 Its scoreboard (`§1`) — **these are the source's own numbers, not mine, and I did not re-derive them**:
 Strategic Winners 5.5/10 · Strategic Losers 5/10 · Architecture 6/10 · Governance 5/10 · Money 6.5/10 · Identity 4/10 · Liquid 3/10 · Cleanup 4/10 · Launch Readiness 4/10 · **Repository Reality 5/10** ("Local tree ~7/10; production reality ~1/10 — the repo is two realities").
 
-Its seven named blocker-grade facts, and my corroboration at `ee371182`:
+Its seven named blocker-grade facts, and my corroboration at `bf35062e`:
 
 | # | Blocker | My verdict |
 |---|---|---|
@@ -612,7 +612,7 @@ Its seven named blocker-grade facts, and my corroboration at `ee371182`:
 | 7 | "one shared `INTERNAL_API_SECRET` across ~10 runtimes makes internal identity assertions forgeable from any compromised runtime" | **PARTIALLY ADDRESSED.** `config/env/staging-production-secret-matrix.json` now names 9 per-caller secrets + `INTERNAL_API_KEYRING`; `production-deploy.yml` sets per-service values. But `HR-SECRET-ROTATION` explicitly records `INTERNAL_AUTH_LEGACY_ACCEPT` **defaults ON** and the legacy shared secret is still accepted until a human flips it (= H5). And `services/webhook-service/src/index.ts:584` still does `env.INTERNAL_API_SECRET \|\| env.AUTH_SECRET` — the exact fallback `SEC-R7` calls DEAD |
 
 Its closure list `§5`: B2 (re-point `main`), B3 (gate active-branch deploy), B4 (tracked-vs-disk migration check), B5 (make I1–I8 assert), B6 (ledger or remove AI-credit), B7 (per-runtime secrets / enforce EdDSA issuer outside prod), plus B1 (human push).
-**My read of the B-list at `ee371182`: B3 ✅, B4 ✅, B5 ✅(repo-side), B6 partial, B7 partial, B2 ❌ (regressed — now 106), B1 ❌.**
+**My read of the B-list at `bf35062e`: B3 ✅, B4 ✅, B5 ✅(repo-side), B6 partial, B7 partial, B2 ❌ (regressed — now 106), B1 ❌.**
 
 ### 9.4 Other prior-truth documents — one-line skeptical verdicts
 
@@ -623,11 +623,11 @@ Its closure list `§5`: B2 (re-point `main`), B3 (gate active-branch deploy), B4
 | `SKIPPED_HUMAN_DECISIONS.md` | live registry, 60 rows | **Honest.** Every row has a "what is mocked in the meantime" column that refuses to fake success. **Zero rows marked RESOLVED** — including `SKIP-A2-REMOTE-BRANCH-CONVERGENCE` which `HR-B1A` step 8 says to resolve after the push |
 | `EXECUTION_LEDGER.md` | 246 rows, 280 KB | **Detailed and self-critical** (e.g. `V1-COMPLETION-BUILD` admits `next build` would have failed on 4 type errors that the gate never catches — corroborating the "gate does not cover next build" warning). I did not audit it row-by-row |
 | `MERGE_RUNBOOK.md` | 79 lines | **Currently unexecutable** — both pre-conditions false (D-19, D-20). Guardrail 1 ("Do not run `git clean`, `git reset --hard`, blanket `git restore`") is correct and I obeyed it |
-| `V1_SCOPE_LOCK_2026_06_12/*` | 2026-06-13 @ `0b8a56e7` | **MATERIALLY STALE.** 5 of its 6 blockers (LB-8/9/10/11/12) are now implemented (D-13…D-17). Its H1–H9 table is still the canonical seam definition and is still accurate as a *seam list*. **Do not use its status columns.** |
-| `LAUNCH_READINESS_2026_06_12/*` | 2026-06-12 @ `533479cb` | **Program design, not status.** `LAUNCH_CERTIFICATION.md` §2 has a 16-row GO/NO-GO with 11 non-waivable ⛔ rows — a good acceptance frame for the final dossier. Its "no self-certification" rule is unsatisfiable under the current single-owner CODEOWNERS (§7) |
+| `V1_SCOPE_LOCK_2026_06_12/*` | 2026-06-13 @ `140a73db` | **MATERIALLY STALE.** 5 of its 6 blockers (LB-8/9/10/11/12) are now implemented (D-13…D-17). Its H1–H9 table is still the canonical seam definition and is still accurate as a *seam list*. **Do not use its status columns.** |
+| `LAUNCH_READINESS_2026_06_12/*` | 2026-06-12 @ `5c2d3993` | **Program design, not status.** `LAUNCH_CERTIFICATION.md` §2 has a 16-row GO/NO-GO with 11 non-waivable ⛔ rows — a good acceptance frame for the final dossier. Its "no self-certification" rule is unsatisfiable under the current single-owner CODEOWNERS (§7) |
 | `FOUNDATION_CLOSURE_2026_06_12/*` | 2026-06-12 | Contains `FOUNDATION_FREEZE_CERTIFICATION.md` with "_pending-human_" fields per `HR-B1A` step 7. Not signed |
 | `FINAL_TRUTH_AUDIT_2026_06_11/*` | 2026-06-11 | Contains `G4_HUMAN_EXECUTION_PACKET.md` (the go-live atom) and `LIQUID_CAPABILITY_MATRIX.md` (cited by CAP-C08) |
-| `CONVERGENCE_AUDIT_2026_06_10/*` | 2026-06-10 @ `5cf9e64e` | Oldest. "Repository Health 3.1/10, Production Readiness 2.3/10 from `main`". Its "deploy branch `main` is **30 commits behind**" is now 106. Its winner list matches the Constitution |
+| `CONVERGENCE_AUDIT_2026_06_10/*` | 2026-06-10 @ `c4fc3cd6` | Oldest. "Repository Health 3.1/10, Production Readiness 2.3/10 from `main`". Its "deploy branch `main` is **30 commits behind**" is now 106. Its winner list matches the Constitution |
 | `PROMPTS.md` | live registry, 16 rows | Registry is real and `prompt-perimeter-validator` genuinely checks tree-vs-registry — it currently **FAILS** on unregistered `V1_SCOPE_LOCK_2026_06_12/LIQUID_MIGRATION/` prompt-class files |
 
 **Claimed completion percentages:** I searched all prior-truth directories for `N% complete|ready|done|coverage|green|passing`. **Zero matches.** The programs express state as X/10 scores, GO/NO-GO rows, and seam counts — never a completion percentage. `LETBUYY_CONSTITUTION.md:459` explicitly says "completion-% measures the working tree, not production". **This is a point in the documentation's favour and should be preserved in the final dossier.**
@@ -685,7 +685,7 @@ Consistent usage across other phase docs:
 - **Domain:** Governance / CI
 - **Status:** `BROKEN`
 - **Impact:** Both `deploy-staging.yml` and `production-deploy.yml` fail at their `governance-gate` job. Nothing can be deployed by the sanctioned path. Every "gate GREEN" statement in the prior-truth corpus is currently false.
-- **Evidence:** `scripts/validate-governance.mjs:15-124` (108 validators); RUNTIME_OBSERVATION — 83 PASS / 25 FAIL at HEAD `ee371182` (full table in §5.2). Committed-tree failures confirmed by `git ls-files`: `package-ownership-validator` (~40 offenders), `typescript-governance-validator`, `provider-isolation-validator`.
+- **Evidence:** `scripts/validate-governance.mjs:15-124` (108 validators); RUNTIME_OBSERVATION — 83 PASS / 25 FAIL at HEAD `bf35062e` (full table in §5.2). Committed-tree failures confirmed by `git ls-files`: `package-ownership-validator` (~40 offenders), `typescript-governance-validator`, `provider-isolation-validator`.
 - **Expected:** `node scripts/validate-governance.mjs --lane=gate` exits 0 (`R-18`, `LETBUYY_CONSTITUTION.md:419`).
 - **Root cause:** Mixed. (a) The LCIS estate (20 packages + 1 service) was added without the AGENTS.md / tsconfig / provider-isolation conformance every other package has. (b) Real merchant-surface regressions (`merchant-domains-settings-validator`, `custom-domain-target-validator`, `platform-domain-literal-validator`, `route-line-count-validator`). (c) The user's uncommitted work (untracked migration 196, modified `themes.ts`, modified `create-store/route.ts`).
 - **Blast radius:** All deploys; all merges that would be gated.
@@ -955,8 +955,8 @@ Consistent usage across other phase docs:
 ### G-A-18 — Branch-lag meta-blocker (ART-03 / DEPLOY-R1 / R-20) has re-accumulated to 106 commits
 - **Domain:** Deployment / Governance
 - **Status:** `BROKEN`
-- **Impact:** `production-deploy.yml:3-8` triggers on push to `main`. Local `main` = `0b8a56e7`. Everything landed in the last 106 commits — every LB-8/9/10/11/12 fix, the gift-card canonical model, the theme migrations 171–195 — is undeployable via the sanctioned path. `ANTI-R11` names this exact failure mode ("MUST NOT treat working-tree completion as production state").
-- **Evidence:** `git rev-list --count main..stepup/main` = **106**; `git rev-parse main` = `0b8a56e7`; `git rev-parse stepup/main` = `ee371182`. `MERGE_RUNBOOK.md:9` ("Required local invariant: … returns `0`"); `AGENTS.md:330` (`DEPLOY-R1`: "MUST NOT let the lag silently re-accumulate"); `LETBUYY_CONSTITUTION.md:421` (`R-20`). `branch-lag-guard-validator.mjs` **exits 0 locally** and only prints an informational line ("Local working branch is 106 commit(s) ahead of main; CI enforces the live release-branch comparison") — the enforcement path is `LETBUYY_ENFORCE_BRANCH_LAG=1` in the workflow (`production-deploy.yml:37-41`), so the local run does not fail. `origin/develop` still exists at `41b6ea49` despite `BRANCH_STRATEGY.md:10` retiring it and `HR-B1A` step 4 saying to delete it.
+- **Impact:** `production-deploy.yml:3-8` triggers on push to `main`. Local `main` = `140a73db`. Everything landed in the last 106 commits — every LB-8/9/10/11/12 fix, the gift-card canonical model, the theme migrations 171–195 — is undeployable via the sanctioned path. `ANTI-R11` names this exact failure mode ("MUST NOT treat working-tree completion as production state").
+- **Evidence:** `git rev-list --count main..stepup/main` = **106**; `git rev-parse main` = `140a73db`; `git rev-parse stepup/main` = `bf35062e`. `MERGE_RUNBOOK.md:9` ("Required local invariant: … returns `0`"); `AGENTS.md:330` (`DEPLOY-R1`: "MUST NOT let the lag silently re-accumulate"); `LETBUYY_CONSTITUTION.md:421` (`R-20`). `branch-lag-guard-validator.mjs` **exits 0 locally** and only prints an informational line ("Local working branch is 106 commit(s) ahead of main; CI enforces the live release-branch comparison") — the enforcement path is `LETBUYY_ENFORCE_BRANCH_LAG=1` in the workflow (`production-deploy.yml:37-41`), so the local run does not fail. `origin/develop` still exists at `c2547049` despite `BRANCH_STRATEGY.md:10` retiring it and `HR-B1A` step 4 saying to delete it.
 - **Prior history of the same defect:** 30 commits (`CONVERGENCE_AUDIT_2026_06_10/000_CONVERGENCE_INDEX.md`), then 6 (`FINAL_REPOSITORY_TRUTH_CERTIFICATION.md` §CLAIM 2), now 106. **It has never stayed closed.**
 - **Missing link:** the guard is CI-only and CI only runs on `main`/`develop` (G-A-03), so nothing on the working branch ever fails on lag. `branch-lag-monitor.yml` runs hourly on a schedule — but only against the default branch, and `SKIP-A5-BRANCH-LAG-MONITOR-LIVE` records that its live activation is unproven.
 - **Blast radius:** total — nothing ships.
@@ -1016,9 +1016,9 @@ Reuse these; do not re-derive.
 
 | Fact | Value | How I got it |
 |---|---|---|
-| HEAD | `ee371182` on `stepup/main` | `git rev-parse` |
-| local `main` | `0b8a56e7` — **106 behind** | `git rev-list --count main..stepup/main` |
-| `origin/main` / `origin/stepup/main` / `origin/develop` | `41b6ea49` / `8d9dda77` / `41b6ea49` (stale, fetched Jul 31) | `git rev-parse` |
+| HEAD | `bf35062e` on `stepup/main` | `git rev-parse` |
+| local `main` | `140a73db` — **106 behind** | `git rev-list --count main..stepup/main` |
+| `origin/main` / `origin/stepup/main` / `origin/develop` | `c2547049` / `75305725` / `c2547049` (stale, fetched Jul 31) | `git rev-parse` |
 | Worktree | 6784 modified, 20 untracked | `git status --porcelain` |
 | Gate-lane validators | **108** (+1 report lane); 112 `.mjs` files in `scripts/validators/` | `scripts/validate-governance.mjs:15-124` |
 | Gate result at HEAD | **83 PASS / 25 FAIL** | individual runs |

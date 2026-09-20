@@ -1,6 +1,6 @@
 # LetBuyy Iconography and Licensing
 
-Measured 2026-09-04 at `823aa5ee`. Licences must be **re-read from the official source** before any
+Measured 2026-09-04 at `a751a2ff`. Licences must be **re-read from the official source** before any
 new asset is added; nothing below was re-verified online this session.
 
 ---

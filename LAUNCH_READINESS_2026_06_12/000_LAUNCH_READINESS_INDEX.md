@@ -1,6 +1,6 @@
 # LETBUYY LAUNCH READINESS PROGRAM — INDEX
 
-**Date:** 2026-06-12 · **Mode:** CTO + Principal Architect + Program Director · **Basis tree:** `main` == `stepup/main` @ `533479cb`, gate GREEN (105 validators), Safe Deletion Certification complete.
+**Date:** 2026-06-12 · **Mode:** CTO + Principal Architect + Program Director · **Basis tree:** `main` == `stepup/main` @ `5c2d3993`, gate GREEN (105 validators), Safe Deletion Certification complete.
 
 This directory is the complete launch-readiness program. It is **documentation only** — no code, no file modifications were performed in producing it. It builds strictly on ratified evidence: the Constitution chain, `SKIPPED_HUMAN_DECISIONS.md` (56 seams), `CAPABILITY_BACKLOG.md` (16 gaps), `MERGE_RUNBOOK.md`, `EXECUTABLE_HUMAN_REQUIRED.md`, `FINAL_TRUTH_AUDIT_2026_06_11/` (G4 packet + Reality-Promotion / Money-Unification / Liquid-Convergence plans), and `FINAL_SAFE_DELETION_CERTIFICATION_2026_06_12/`.
 
@@ -22,7 +22,7 @@ This directory is the complete launch-readiness program. It is **documentation o
 
 | Package | Date | Purpose |
 |---|---|---|
-| `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/` | 2026-08-09 | Merchant App V1 forensics, scope freeze, implementation and launch certification at `ee371182`. 18 documents. Verdict **NO-GO**. Evidence/implementation class — subordinate to DOC 01, root `AGENTS.md`, DOC 03; it redefines no constitutional decision. Re-tests the prior `V1_SCOPE_LOCK_2026_06_12` mobile-as-V2 classification and **upholds it**, restated as V1.1 gated on four named items (Class B, ARB review). No `PROMPTS.md` row required — no basename matches the prompt-class regex. |
+| `MERCHANT_APP_V1_FEATURE_READINESS_2026_08_09/` | 2026-08-09 | Merchant App V1 forensics, scope freeze, implementation and launch certification at `bf35062e`. 18 documents. Verdict **NO-GO**. Evidence/implementation class — subordinate to DOC 01, root `AGENTS.md`, DOC 03; it redefines no constitutional decision. Re-tests the prior `V1_SCOPE_LOCK_2026_06_12` mobile-as-V2 classification and **upholds it**, restated as V1.1 gated on four named items (Class B, ARB review). No `PROMPTS.md` row required — no basename matches the prompt-class regex. |
 
 ## Standing constraints (apply to every document)
 

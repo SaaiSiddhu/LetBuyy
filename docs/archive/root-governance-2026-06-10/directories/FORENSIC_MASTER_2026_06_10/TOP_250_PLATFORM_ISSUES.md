@@ -2,7 +2,7 @@
 
 **LetBuyy Forensic Master Audit · 2026-06-10**
 **Lead synthesis auditor — consolidated issue register across all 12 forensic phases**
-**Evidence baseline:** working tree `stepup/main` @ `5cf9e64e`, dirty tree, 2026-06-10.
+**Evidence baseline:** working tree `stepup/main` @ `c4fc3cd6`, dirty tree, 2026-06-10.
 
 ---
 
@@ -88,7 +88,7 @@ The phase registers individually rated S0 = 0 in PAY/CHK/DB/SEC/UIUX/THEME/MOB/P
 
 | Rank | ISSUE-ID | Sev | Area | Root Cause | Impact | Fix | Recommended Fix | Source IDs |
 |---:|---|---|---|---|---|---|---|---|
-| 1 | ISSUE-001 | S0 | Security/Release | Account-takeover fix for `/api/auth/switch` exists only as an uncommitted working-tree edit; HEAD + all branches mint a session for any verified email behind a JS-readable CSRF cookie (`switch/route.ts`; HEAD `5cf9e64e`) | Unauthenticated full takeover of any merchant/staff account on every buildable/deployable artifact | S | Commit + deploy the fix (validateSession + `lb_accounts` membership + rate-limit) and its test; cherry-pick to `main`/`develop`; tag as a security release; ban uncommitted security fixes | AUTH-001, TOPO-001 |
+| 1 | ISSUE-001 | S0 | Security/Release | Account-takeover fix for `/api/auth/switch` exists only as an uncommitted working-tree edit; HEAD + all branches mint a session for any verified email behind a JS-readable CSRF cookie (`switch/route.ts`; HEAD `c4fc3cd6`) | Unauthenticated full takeover of any merchant/staff account on every buildable/deployable artifact | S | Commit + deploy the fix (validateSession + `lb_accounts` membership + rate-limit) and its test; cherry-pick to `main`/`develop`; tag as a security release; ban uncommitted security fixes | AUTH-001, TOPO-001 |
 | 2 | ISSUE-002 | S0 | Release topology | Production deploy branch `main` is 30 commits behind `stepup/main`; `production-deploy.yml` triggers only on `main`; merge never executed | Money fixes, tenant isolation, session security, theme governance — all "complete" — cannot reach staging/prod; deployed estate runs pre-wave code | S | Execute `MERGE_RUNBOOK` to fast-forward `develop`→`main`; until then treat all wave claims as "not shipped" | TOPO-002 |
 | 3 | ISSUE-003 | S0 | RBAC/RLS | `super_admin_allowlist` policy `service_role_manage_allowlist USING(true) WITH CHECK(true)` has no `TO` clause → applies to PUBLIC; consumed by `rbac.ts:215-233` (`000_baseline.sql:26669`) | Any authenticated/anon user self-inserts → full platform super-admin; defeats the entire ops RBAC (Attack #2) | S | `TO service_role` (or `auth.role()='service_role'`) USING+CHECK; deny anon writes; add INSERT-audit trigger; verify PostgREST does not expose the table | FND-005, AUTH-003 |
 | 4 | ISSUE-004 | S0 | RLS/Ownership | `sites` baseline policy `service_role_sites USING(true)` is PUBLIC; ownership columns writable (`000_baseline.sql:26725`) | Account/store takeover via anon ownership-column write (Attack #3) + anon read of all stores | S | Add `TO service_role`; restrict writes; audit `user_id`/`custom_user_id` mutation; policy-lint forbidding `USING(true)` without role/predicate | FND-003 |

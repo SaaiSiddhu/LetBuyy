@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182` |
+| Run ID | `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | The merchant order lifecycle end to end: order creation, status transitions, fulfilment, shipping rates/serviceability/carriers/labels/tracking, COD (placement → confirmation → delivery → collection → remittance → reconciliation), cancellations, returns and refunds — across `apps/merchant-control-plane`, `apps/mobile/merchant-app`, `apps/storefront-runtime` (order-create path only), `services/api-gateway`, `services/webhook-service`, `services/queue-workers`, `packages/checkout-core`, `packages/infrastructure/logistics-adapter`, and `database/supabase/migrations`. |
 | Evidence basis | Static source reading of gateway routes, app proxies, UI, adapters and SQL migrations, re-verified against the working tree while authoring this document. Evidence types used: `UI_CODE`, `PROXY_CODE`, `API_CLIENT_CODE`, `GATEWAY_CODE`, `SERVICE_CODE`, `DB_SCHEMA`, `RPC_FUNCTION`, `RLS_POLICY`, `WEBHOOK_OR_JOB`, `UNIT_TEST`, `PROVIDER_OR_CONFIG_EVIDENCE`, `DOC_CLAIM`, and exactly one `RUNTIME_OBSERVATION`. |

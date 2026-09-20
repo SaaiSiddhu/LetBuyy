@@ -2,7 +2,7 @@
 
 **Status:** Evidence artifact — NOT governance authority.
 **Agent:** Agent E — CI and Validator Truthfulness Auditor (Wave 0, Phase 1, read-only)
-**Repo SHA at audit time:** `ee3711829d857e986014c5811bb94d86ebc3d343` (HEAD, branch `stepup/main`)
+**Repo SHA at audit time:** `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (HEAD, branch `stepup/main`)
 **Timestamp used:** 2026-08-09
 **Method:** every claim below is anchored to a file:line read directly from the repository during this session, or to a live command this audit executed. No claim is carried over from the readiness ZIP, prior audit reports, or LCIS output.
 

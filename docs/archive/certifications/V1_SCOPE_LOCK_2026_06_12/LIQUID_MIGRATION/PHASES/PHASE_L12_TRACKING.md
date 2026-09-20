@@ -1,6 +1,6 @@
 # PHASE L12 — ORDER TRACKING
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render the order-status / tracking timeline through Liquid.
 2. **Repository Reality.** Tracking is a view over the same order read APIs (status + tracking number); React renders a 4-step timeline (`account/orders/page.tsx:33-45`, `orders-client.tsx`). Fulfillment sets `orders.tracking_number`/`carrier` (`create_order_fulfillment` RPC, `order-execution.adapter.ts:465-476`). V1 fulfillment is manual (merchant-entered tracking number) — no live carrier integration.

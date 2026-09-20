@@ -3,7 +3,7 @@
 **Document type:** Discovery (read-only; no implementation decisions)
 **Audit date:** 2026-07-03
 **Branch audited:** `stepup/main`
-**Last verified commit:** `742192cf feat(theme-engine): make Urban Kicks a first-class Liquid theme`
+**Last verified commit:** `57760d0c feat(theme-engine): make Urban Kicks a first-class Liquid theme`
 **Auditors:** Subagent fleet (static code analysis; no LCIS live probe)
 **Status:** VERIFIED — all factual claims in §6 checked against repo files
 
@@ -101,7 +101,7 @@ Migration 180 (`database/supabase/migrations/180_urban_kicks_liquid_theme.sql`) 
 
 ### 2.3 Theme identity layer
 
-Commit `742192cf` introduced a canonical `letbuyy-core` alias over the existing `urban-kicks` theme:
+Commit `57760d0c` introduced a canonical `letbuyy-core` alias over the existing `urban-kicks` theme:
 
 - `LETBUYY_CORE_THEME_SLUG = 'letbuyy-core'` (`packages/theme-engine/src/theme-bundle-core.ts:31`)
 - `URBAN_KICKS_THEME_SLUG = 'urban-kicks'` (legacy; DB still stores this slug)

@@ -172,8 +172,8 @@ $ git diff --cached -- apps/identity-platform/src/app/api/auth/switch/route.ts
   → EMPTY  (the fix is NOT staged)
 
 $ git log --oneline -- apps/identity-platform/src/app/api/auth/switch/route.ts
-  92022068 feat(identity): use shared api client transport
-  a5b1719b refactor(apps): normalize actor runtime roots
+  e4b8003e feat(identity): use shared api client transport
+  aece6de9 refactor(apps): normalize actor runtime roots
   → neither commit is the security fix; the last committed change is a transport refactor
 
 $ for b in main develop origin/main origin/develop stepup/main stepup/wave-4-session-security; do

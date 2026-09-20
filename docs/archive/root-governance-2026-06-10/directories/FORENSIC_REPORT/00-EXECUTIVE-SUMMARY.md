@@ -1,10 +1,10 @@
 # LetBuyy Platform — Forensic Investigation: Executive Summary
 
-**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e` on `develop`)
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `a8cd5fde` on `develop`)
 **Scope:** Entire LetBuyy monorepo — merchant admin, theme system, storefront runtime, apps ecosystem, OAuth/billing/permissions, database, APIs, events, workers, queues, CI/CD, infrastructure.
 **Role:** Forensic documentation of *current state only*. No codebase file was written, modified, deleted, moved, or renamed; the only writes were the report files in `FORENSIC_REPORT/`. Every finding cites file‑level evidence.
 
-This is the **second pass**. A first investigation (same date, AM) produced reports `01`–`17`; a Codex remediation run + five merged workstreams then landed **68 commits / 292 files / +21,140 −8,527** (`63053d18..HEAD`). This pass re‑verified every prior finding against current source, marked each **RESOLVED / PARTIAL / STILL‑OPEN**, and documents **new issues the remediation itself introduced**. The 10 highest‑stakes claims were independently re‑checked (8 confirmed, 2 partially, 0 refuted; log in [`17-evidence-appendix.md`](17-evidence-appendix.md)).
+This is the **second pass**. A first investigation (same date, AM) produced reports `01`–`17`; a Codex remediation run + five merged workstreams then landed **68 commits / 292 files / +21,140 −8,527** (`cd71e612..HEAD`). This pass re‑verified every prior finding against current source, marked each **RESOLVED / PARTIAL / STILL‑OPEN**, and documents **new issues the remediation itself introduced**. The 10 highest‑stakes claims were independently re‑checked (8 confirmed, 2 partially, 0 refuted; log in [`17-evidence-appendix.md`](17-evidence-appendix.md)).
 
 ---
 

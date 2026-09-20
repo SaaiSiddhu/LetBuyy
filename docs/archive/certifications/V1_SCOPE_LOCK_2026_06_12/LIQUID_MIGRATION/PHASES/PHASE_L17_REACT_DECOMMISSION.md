@@ -1,6 +1,6 @@
 # PHASE L17 — REACT DECOMMISSION
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **Constitutionally gated — no deletion before the hardening-wave data decision (ART-17).**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **Constitutionally gated — no deletion before the hardening-wave data decision (ART-17).**
 
 1. **Purpose.** Remove the React storefront render layer so Liquid is the one canonical renderer (R-15), per the full `REACT_DELETION_EXECUTION_PLAN.md`.
 2. **Repository Reality.** ART-17 (`:256`) forbids "deleting React before the data decision at the hardening wave." A validator lock-web protects React: `no-new-react-sections-validator.mjs:9-30` (frozen Set of 20), `theme-governance-validator.mjs:69-72,98-101` (parity==20 + count==20), `typescript-dead-source-validator.mjs:141-144` (hard `exists()` on `product-details-client.tsx`), `domain-boundary-validator.mjs:209` (route count==127). Governed deletion = archive to `docs/archive/dead-code/` + de-reference + lockstep validator edit (same commit).

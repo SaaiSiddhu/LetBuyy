@@ -4,7 +4,7 @@
 **Phase:** AF.0 (Governance Closure + Repository Truth Reset)
 **Workstream:** AF-I — Canonical context-brain drift
 **Author:** AF.0 discovery agent (claude-sonnet-4-6), read-only
-**Evidence pinned at:** `stepup/main` HEAD `7e1441a6` · 2026-07-17
+**Evidence pinned at:** `stepup/main` HEAD `80d0b1af` · 2026-07-17
 **Git status count before this write:** 378 entries (unchanged after; only `docs/storefront-theme-platform/phase-af/AF_09_CANONICAL_CONTEXT_DRIFT.md` is the new write)
 
 ---
@@ -123,7 +123,7 @@ This was the migration state at AGENTS_V2 authoring (2026-06-10). Current reposi
 
 ```
 Evidence: ls database/supabase/migrations/ | grep "^[0-9]" | wc -l → 120 tracked migration files
-  Highest: 191_theme_purchases_rls_tenant_scope.sql (HEAD commit 7e1441a6)
+  Highest: 191_theme_purchases_rls_tenant_scope.sql (HEAD commit 80d0b1af)
   Note: 186_v1_scale_commerce_os_coming_soon.sql and 187_v1_sites_site_settings.sql are UNTRACKED
 ```
 
@@ -147,9 +147,9 @@ AGENTS.md Appendix B (lines 400-401): `"LETBUYY_CONSTITUTION.md (DOC 01) and LET
 
 **Drift type:** STALE / resolved-but-still-listed. Suggested correction: update Appendix B to say "DOC 01 and DOC 03 are now physically committed at `GOVERNANCE_REWRITE_2026_06_10/`; the V1+Freeze fallback caveat is closed."
 
-### 4.4 "evidence pinned at stepup/main @ 5cf9e64e" (HISTORICAL_ONLY)
+### 4.4 "evidence pinned at stepup/main @ c4fc3cd6" (HISTORICAL_ONLY)
 
-Both the Constitution (line 7) and AGENTS.md header (line 9) cite evidence pinned at `5cf9e64e`. Current HEAD is `7e1441a6` (Phase AE commit, 2026-07-11). The pinned SHA is ~30+ commits behind HEAD. This is not a defect (documents are law and don't need to track HEAD), but it is confusing: any agent grepping for the "pinned" commit will not find it at HEAD.
+Both the Constitution (line 7) and AGENTS.md header (line 9) cite evidence pinned at `c4fc3cd6`. Current HEAD is `80d0b1af` (Phase AE commit, 2026-07-11). The pinned SHA is ~30+ commits behind HEAD. This is not a defect (documents are law and don't need to track HEAD), but it is confusing: any agent grepping for the "pinned" commit will not find it at HEAD.
 
 **Drift type:** HISTORICAL_ONLY. No correction needed to the Constitution itself; the evidence pin is a point-in-time marker, not a forward tracking pointer.
 
@@ -312,7 +312,7 @@ These launch readiness figures were from the pre-launch audit dated 2026-06-19. 
 | D-06 | AGENTS.md | "replay 000→161" (TEST-R10) | Max committed is 191 | STALE | Update TEST-R10 to "replay 000→191" |
 | D-07 | AGENTS.md | "the real 91 / 419, max migration 161" (header) | 120 tracked migration files, max 191; ~417 tables per 2026-06-15 snapshot | STALE | Update header note to reflect current programme HEAD counts |
 | D-08 | AGENTS.md | Appendix B: "until DOC 01/DOC 03 physically exist, follow V1+Freeze as fallback" | Both files physically exist at `GOVERNANCE_REWRITE_2026_06_10/` | STALE (resolved-but-listed) | Remove/update the "until they physically exist" caveat; DOC 01 and DOC 03 are present |
-| D-09 | AGENTS.md | Evidence pinned at `5cf9e64e` | HEAD is `7e1441a6` (~30+ commits forward) | HISTORICAL_ONLY | Note is a point-in-time marker; no critical change needed but should be refreshed |
+| D-09 | AGENTS.md | Evidence pinned at `c4fc3cd6` | HEAD is `80d0b1af` (~30+ commits forward) | HISTORICAL_ONLY | Note is a point-in-time marker; no critical change needed but should be refreshed |
 | D-10 | PROGRAM_STATE.md | "Active risks" lists RISK-SEC-001 (HIGH, → AE) as open | RISK-SEC-001 FIXED in Phase AE (mig 191, PROGRAM_STATE.md Phase AE section; RISK_REGISTER.md line 8) | STALE (resolved-but-listed) | Update Active risks header to mark RISK-SEC-001 as FIXED |
 | D-11 | PROGRAM_STATE.md | "~360 modified/untracked files from prior user work" | Current `git status --porcelain | wc -l` → 378 entries | STALE_MINOR | Update to "~378 entries" or accept as approximate |
 | D-12 | SHOPIFY_PARITY_MATRIX.md | Row 25: "Media library / asset picker — MISSING" | Phase X added MediaLibrary.tsx + gateway route; should be PARTIAL | STALE | Update row 25 status to PARTIAL; update summary MISSING count from 13 to ≤10 |
@@ -393,4 +393,4 @@ This workstream (AF-I) contributes the following verified inputs to the AF_1 STO
 
 ---
 
-*End of AF_09_CANONICAL_CONTEXT_DRIFT.md. No source files were modified by this workstream. Evidence is pinned at `stepup/main` HEAD `7e1441a6`, 2026-07-17. Git status count after write: 379 entries (this file added).*
+*End of AF_09_CANONICAL_CONTEXT_DRIFT.md. No source files were modified by this workstream. Evidence is pinned at `stepup/main` HEAD `80d0b1af`, 2026-07-17. Git status count after write: 379 entries (this file added).*

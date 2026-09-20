@@ -342,7 +342,7 @@ All endpoints are served from the LCIS graph server. Context Intelligence endpoi
 
 ## Proven Results
 
-All figures are from the real pipeline run on commit `742192cf` / `0db025a6b8`:
+All figures are from the real pipeline run on commit `57760d0c` / `0f257ca199`:
 
 | Metric | Value |
 |--------|-------|

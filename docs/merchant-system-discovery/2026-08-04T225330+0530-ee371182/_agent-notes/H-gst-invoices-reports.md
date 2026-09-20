@@ -1,7 +1,7 @@
 # AGENT H — GST, Invoices, Sales/Output Tax, Purchase/Input Tax, Reporting
 
-**Run:** `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-**Branch/commit:** `stepup/main` @ `ee371182`
+**Run:** `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+**Branch/commit:** `stepup/main` @ `bf35062e`
 **Scope:** India GST data + execution model, invoices, credit notes, e-invoice/IRP, refund tax
 consequences, reports/exports, tests.
 **Method:** read-only static inspection of migrations, gateway routes, `@letbuyy/checkout-core`,

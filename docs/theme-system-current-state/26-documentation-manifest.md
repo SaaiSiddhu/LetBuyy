@@ -115,7 +115,7 @@ was modified to force it into or out of Git**, and nothing was committed.
 ## 6. Provenance
 
 - **Repository:** `/Users/saai_siddharth/Projects/Start_Up/Letbuyy_Store`
-- **Branch:** `stepup/main` · **Baseline HEAD:** `ee371182`
+- **Branch:** `stepup/main` · **Baseline HEAD:** `bf35062e`
 - **Working tree:** user-owned and preserved — 6 784 modified (6 063 mode-only), 721 real content
   changes, 11 untracked, all stamped before this engagement began
 - **Method:** read-only discovery (14 agents) → documentation → ARB-authorized implementation, each round

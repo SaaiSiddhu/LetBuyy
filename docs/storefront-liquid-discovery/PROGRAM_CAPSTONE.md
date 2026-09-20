@@ -17,16 +17,16 @@ The LetBuyy Liquid storefront is a structurally complete, safety-gated, determin
 
 | Phase | Commit | One-Liner |
 |-------|--------|-----------|
-| **B** | `073bcbfe` | Architecture certification: 56 register items evaluated against source; 12 CLOSED-VERIFIED, 26 OPEN-CONFIRMED-RISK, 7 REFUTED; certified the dual-renderer storefront structure and identified the 7 ARB-gate blockers |
-| **C** | `70a40c2a` | Critical platform fixes: Liquid crash recovery (per-section/region/layout try/catch), React fallback on invalid bundle, Urban Kicks branding leak closed, newsletter alias wired, postMessage bridge fixed (B-1 + B-2 closed) |
-| **D** | `def512cb` | Data completeness: linklists/navigation drop wired (B-4), fonts wired + CSP extended (B-3), search drop, hero-banner parity, BLOCKED_DROP_KEYS +4 keys, contentPage alias, registration no-JS parity |
-| **E** | `0e3d763e` | Template completion: blog, article, CMS page, 404, password Liquid templates; routes drop parity; collection-banner; customer login no-JS — all 15/15 route types now have Liquid bundle entries (100% template coverage) |
-| **F** | `fc89b0f1` | Performance engineering: LiquidJS `cache:true` intra-request LRU (P3-1), `Promise.allSettled` parallel section rendering (P3-2), lb-logout Web Component island + CSRF guard, benchmark harness, 5 hardening items (H1–H5) |
-| **G** | `40741cb8` | Schema governance: section migration engine wired (`applySectionSchemaMigrations` on publish), bundle `schema_version` G4 gate (B-5 mitigated), experience overlay G6 validation, `letbuyy-core` DB row via migration 188 (B-6 closed), settings canonicalization utility (B-7 mitigated) |
-| **H** | `fb3f660a` | Developer experience: public SDK facade (`theme-sdk.ts`), Liquid artifact exporter (`.liquid` files on disk), 5-rule linter (`lintThemeBundle`), theme packager, CLI (`letbuyy-theme validate/lint/compile/export`), Urban Kicks + letbuyy-core example artifacts committed, 5 developer docs |
-| **I** | `4eaf3e84` | Enterprise QA certification: 48 new tests across 4 files — A11y (8 WCAG-aligned markup assertions), Security (13 XSS/SSTI/prototype-pollution/drop-limit tests), Hydration parity (13 for islands 5–10 + lb-logout), SSR contracts (13 dual-content-type dispatch, 303 redirect, storeId injection); found I-F1 (HIGH: DOMPurify clobbering strips `name="name"` from register form) |
-| **J** | `cea10b67` | Production rollout readiness: 5-document ARB package (rollout runbook, canary ramp plan, observability design, rollback runbook, release notes); confirmed 5/7 ARB blockers CLOSED, 2 MITIGATED; verdict: structurally ready for per-store canary, platform-wide flip not yet approved |
-| **K** | `9dc84080` | Theme platform primitives: epoch version comparator (`theme-version.ts`), upgrade planner (`theme-upgrade.ts`), 5-stage install validation pipeline (`theme-install.ts`), publish manifest builder (`theme-publish.ts`), analytics event contract (`theme-analytics.ts`); 55 freeze-compliance contract tests formally asserted frozen-app boundaries on every test run |
+| **B** | `93419c58` | Architecture certification: 56 register items evaluated against source; 12 CLOSED-VERIFIED, 26 OPEN-CONFIRMED-RISK, 7 REFUTED; certified the dual-renderer storefront structure and identified the 7 ARB-gate blockers |
+| **C** | `be56a6fd` | Critical platform fixes: Liquid crash recovery (per-section/region/layout try/catch), React fallback on invalid bundle, Urban Kicks branding leak closed, newsletter alias wired, postMessage bridge fixed (B-1 + B-2 closed) |
+| **D** | `4546f27b` | Data completeness: linklists/navigation drop wired (B-4), fonts wired + CSP extended (B-3), search drop, hero-banner parity, BLOCKED_DROP_KEYS +4 keys, contentPage alias, registration no-JS parity |
+| **E** | `7b111a94` | Template completion: blog, article, CMS page, 404, password Liquid templates; routes drop parity; collection-banner; customer login no-JS — all 15/15 route types now have Liquid bundle entries (100% template coverage) |
+| **F** | `51d9dd74` | Performance engineering: LiquidJS `cache:true` intra-request LRU (P3-1), `Promise.allSettled` parallel section rendering (P3-2), lb-logout Web Component island + CSRF guard, benchmark harness, 5 hardening items (H1–H5) |
+| **G** | `7cdd42a1` | Schema governance: section migration engine wired (`applySectionSchemaMigrations` on publish), bundle `schema_version` G4 gate (B-5 mitigated), experience overlay G6 validation, `letbuyy-core` DB row via migration 188 (B-6 closed), settings canonicalization utility (B-7 mitigated) |
+| **H** | `06d3cc85` | Developer experience: public SDK facade (`theme-sdk.ts`), Liquid artifact exporter (`.liquid` files on disk), 5-rule linter (`lintThemeBundle`), theme packager, CLI (`letbuyy-theme validate/lint/compile/export`), Urban Kicks + letbuyy-core example artifacts committed, 5 developer docs |
+| **I** | `dbcf173a` | Enterprise QA certification: 48 new tests across 4 files — A11y (8 WCAG-aligned markup assertions), Security (13 XSS/SSTI/prototype-pollution/drop-limit tests), Hydration parity (13 for islands 5–10 + lb-logout), SSR contracts (13 dual-content-type dispatch, 303 redirect, storeId injection); found I-F1 (HIGH: DOMPurify clobbering strips `name="name"` from register form) |
+| **J** | `77a5872f` | Production rollout readiness: 5-document ARB package (rollout runbook, canary ramp plan, observability design, rollback runbook, release notes); confirmed 5/7 ARB blockers CLOSED, 2 MITIGATED; verdict: structurally ready for per-store canary, platform-wide flip not yet approved |
+| **K** | `b71b93bf` | Theme platform primitives: epoch version comparator (`theme-version.ts`), upgrade planner (`theme-upgrade.ts`), 5-stage install validation pipeline (`theme-install.ts`), publish manifest builder (`theme-publish.ts`), analytics event contract (`theme-analytics.ts`); 55 freeze-compliance contract tests formally asserted frozen-app boundaries on every test run |
 | **L** | *(uncommitted)* | AI Theme Platform SDK: WCAG 2.1 contrast math (the one safety guardrail that did not exist before), parametric palette generator (5 variants, fail-closed WCAG AA), typography pairing (5 intents from EXPERIENCE_FONT_REGISTRY), section-order generator, A11y advisory mapper, bundle optimizer, merchant personalization, unified Merchant AI SDK facade; MODEL_BOUNDARY explicitly NOT-CONNECTED; 6 adversarial hardening findings fixed |
 
 ---
@@ -180,16 +180,16 @@ The following risks from the Phase B register remain OPEN as of Phase L. All are
 
 | Phase | Commit SHA | Commit message excerpt |
 |-------|-----------|----------------------|
-| B | `073bcbfe` | phase-b(certification): architecture certification of storefront/Liquid discovery corpus |
-| C | `70a40c2a` | phase-c(storefront): critical platform fixes - Liquid crash recovery, React fallback, Urban Kicks leak, newsletter alias, postMessage hardening |
-| D | `def512cb` | phase-d(storefront): data completeness - linklists, settings parity, drops, fonts, search, hero, registration no-JS |
-| E | `0e3d763e` | phase-e(storefront): template completion - blog, article, CMS page, 404, password, routes parity, login no-JS |
-| F | `fc89b0f1` | phase-f(storefront): performance engineering - parse cache, parallel sections, chrome seam, password/logout hardening |
-| G | `40741cb8` | phase-g(storefront): schema governance - migration engine wired, version gate, canonicalization, letbuyy-core row, experience validation |
-| H | `fb3f660a` | phase-h(storefront): developer platform - theme SDK, compiler/validator/linter/packager, .liquid artifact exporter, CLI, examples, docs |
-| I | `4eaf3e84` | phase-i(storefront): enterprise QA - a11y/security/SSR-hydration/regression coverage + honest infra-bound catalog + real bug fix |
-| J | `cea10b67` | phase-j(storefront): production rollout prep - ARB package, phased canary ramp, rollback runbook, observability design, release notes |
-| K | `9dc84080` | phase-k(storefront): theme platform - versioning/compatibility, upgrade planning, install validation, publish manifest, analytics contract |
+| B | `93419c58` | phase-b(certification): architecture certification of storefront/Liquid discovery corpus |
+| C | `be56a6fd` | phase-c(storefront): critical platform fixes - Liquid crash recovery, React fallback, Urban Kicks leak, newsletter alias, postMessage hardening |
+| D | `4546f27b` | phase-d(storefront): data completeness - linklists, settings parity, drops, fonts, search, hero, registration no-JS |
+| E | `7b111a94` | phase-e(storefront): template completion - blog, article, CMS page, 404, password, routes parity, login no-JS |
+| F | `51d9dd74` | phase-f(storefront): performance engineering - parse cache, parallel sections, chrome seam, password/logout hardening |
+| G | `7cdd42a1` | phase-g(storefront): schema governance - migration engine wired, version gate, canonicalization, letbuyy-core row, experience validation |
+| H | `06d3cc85` | phase-h(storefront): developer platform - theme SDK, compiler/validator/linter/packager, .liquid artifact exporter, CLI, examples, docs |
+| I | `dbcf173a` | phase-i(storefront): enterprise QA - a11y/security/SSR-hydration/regression coverage + honest infra-bound catalog + real bug fix |
+| J | `77a5872f` | phase-j(storefront): production rollout prep - ARB package, phased canary ramp, rollback runbook, observability design, release notes |
+| K | `b71b93bf` | phase-k(storefront): theme platform - versioning/compatibility, upgrade planning, install validation, publish manifest, analytics contract |
 | L | *(uncommitted)* | phase-l(storefront): AI theme platform SDK — deterministic palette/typography/layout generators, WCAG 2.1 contrast math, merchant personalization |
 
 ---

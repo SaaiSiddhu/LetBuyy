@@ -2,7 +2,7 @@
 
 **Phase:** 2 of 10 — DUPLICATE AUTHORITY. This phase reframes the prior **duplicate *reality*** (which two-or-more implementations exist) into **duplicate *authority*** (which implementation has the *right to own a domain*), and for every conflict it appends a **DECISION**: Canonical Winner · Migration Needed? · Delete Immediately? · Archive? · Keep Temporarily? · Risk (S0–S3).
 **Mode:** DISCOVERY ONLY. No file changed except this report. Read-only git. No implementation, no new architecture, no codex prompts.
-**Repo state:** branch `stepup/main` @ HEAD `5cf9e64e` (2026-06-10); deploy branch `main` @ `bf8c18c1` (30 commits behind); working tree dirty (512 D / 410 M / 76 ??). Authority calls bind to `CONVERGENCE_AUDIT_2026_06_10/_PREMISES_SEED.md` (winner spine) and extend `REPOSITORY_TRUTH_AUDIT_2026_06_10/DUPLICATE_REALITY_REPORT.md` (the duplicate map). Where this phase's evidence contradicts the seed, it is flagged **[SEED-CONFLICT]**.
+**Repo state:** branch `stepup/main` @ HEAD `c4fc3cd6` (2026-06-10); deploy branch `main` @ `4bcae19a` (30 commits behind); working tree dirty (512 D / 410 M / 76 ??). Authority calls bind to `CONVERGENCE_AUDIT_2026_06_10/_PREMISES_SEED.md` (winner spine) and extend `REPOSITORY_TRUTH_AUDIT_2026_06_10/DUPLICATE_REALITY_REPORT.md` (the duplicate map). Where this phase's evidence contradicts the seed, it is flagged **[SEED-CONFLICT]**.
 **Canon for Winner calls:** root `AGENTS.md` (promoted AGENTS_V2), `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, `…/LETBUYY_CANONICAL_SYSTEMS.md` (DOC 03 winner registry), and ratified ABRs in `STRATEGIC_CANONICALIZATION_2026_06_10/`.
 
 ---

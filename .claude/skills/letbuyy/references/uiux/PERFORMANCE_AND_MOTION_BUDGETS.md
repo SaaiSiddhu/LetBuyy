@@ -3,7 +3,7 @@
 **"Fast" is a measurement, not an adjective.** Budgets below are **PROVISIONAL_DIRECTION** until a
 phase measures them on a real device profile and records the numbers in `EVIDENCE_LEDGER.md`; the
 motion rules are law (`tokens.ts` motion tokens + `prefers-reduced-motion` kill switch, DOC 06 §4.1).
-Nothing here is a claim about current performance — none has been measured at `823aa5ee`.
+Nothing here is a claim about current performance — none has been measured at `a751a2ff`.
 
 ---
 

@@ -337,4 +337,4 @@ The following is a discovery-derived sequencing. No implementation directives sh
 
 ---
 
-*This document is discovery-only. Specific implementation timing, resourcing, and ARB sign-off are determined outside this document. All path claims in this document have been verified against the repository at commit `742192cf` (branch `stepup/main`, 2026-07-04).*
+*This document is discovery-only. Specific implementation timing, resourcing, and ARB sign-off are determined outside this document. All path claims in this document have been verified against the repository at commit `57760d0c` (branch `stepup/main`, 2026-07-04).*

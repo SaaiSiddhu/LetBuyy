@@ -1,7 +1,7 @@
 # 16 — BLOG, PAGES, POLICY PAGES, NAVIGATION, CMS
 
-- **Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-- **Branch:** `stepup/main` · **Commit:** `ee371182` · **Run date:** 2026-08-04 (+0530), authored 2026-08-05
+- **Run ID:** `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+- **Branch:** `stepup/main` · **Commit:** `bf35062e` · **Run date:** 2026-08-04 (+0530), authored 2026-08-05
 - **Scope:** merchant-authored content — blog posts, comments, categories/tags, custom pages, **policy pages**, navigation menus, custom domains as they affect content addressing, and the stored-XSS posture of merchant-authored HTML on both storefront render paths.
 - **Evidence basis:** Agent J notes (`_agent-notes/J-cms-blog-policies-themes.md`, read in full) plus first-hand re-verification of every load-bearing claim in this document against the working tree at authoring time (source files, DDL, validators).
 - **METHOD DISCLOSURE:** **Nothing in this document was runtime-verified.** No dev server was started, no database was queried, no build was run, no test was executed. Every status is derived from static source, schema and configuration reading. The ceiling for any capability here is `IMPLEMENTED_NOT_RUNTIME_VERIFIED`; nothing is `VERIFIED_E2E`.

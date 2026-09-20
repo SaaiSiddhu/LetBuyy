@@ -1,6 +1,6 @@
 # LIQUID_MIGRATION_MASTER_PROGRAM.md
 
-**Date:** 2026-06-13 · **HEAD:** `0b8a56e7` · code-grounded. Phases L0–L12. **Plan only — no code, no commits.**
+**Date:** 2026-06-13 · **HEAD:** `140a73db` · code-grounded. Phases L0–L12. **Plan only — no code, no commits.**
 
 **Legend:** [HYBRID] = required for the Option-A V1 launch · [FULL] = additional for full-Liquid / React deletion · effort is verifier-sized, not inflated. All phases inherit the **commit seam (C0)** (sandbox `.git/index.lock` blocks commits — a human commits each phase) and the gate's untracked-migration guard.
 

@@ -1,6 +1,6 @@
 # PHASE L10 — CUSTOMER ACCOUNTS
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render account pages (profile, addresses, wishlist) through Liquid over the existing `/api/customer/*` BFF routes.
 2. **Repository Reality.** All account endpoints exist and are engine-agnostic: `/api/customer/{session,profile,addresses,wishlist,wishlist/sync,set-password}` (BFF over the gateway). React account pages (`account/{settings,addresses,wishlist}/page.tsx`) call them. `composition-engine.tsx:323` hardcodes `customer:null` (drop not server-populated). No wishlist island exists.

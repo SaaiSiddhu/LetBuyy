@@ -1,13 +1,13 @@
 # LIQUID V1 CERTIFICATION PACKET (L18)
 
-**Date:** 2026-06-13 · **HEAD:** `cf4f6f6f` · Repository truth. **This is the certification *dossier*, not a completion certificate** — `LIQUID_V1_CERTIFICATION.md` (the GREEN cert) can only be issued after L14–L17 actually pass. No evidence here is fabricated.
+**Date:** 2026-06-13 · **HEAD:** `77b681f1` · Repository truth. **This is the certification *dossier*, not a completion certificate** — `LIQUID_V1_CERTIFICATION.md` (the GREEN cert) can only be issued after L14–L17 actually pass. No evidence here is fabricated.
 
 ## Verdict
 > **Liquid engine + render surface: COMPLETE and engine-verified end-to-end.**
 > **Production activation (parity-on-staging → canary → flip → React deletion): GATED on deployment + ARB + a constitutional data decision.**
 
 ## Phase history (this program, all gate-green commits)
-`2185229f` LB-7 → `3a283f4c` L1 → `b848f2ce` L2 → `fce881cf` L3 → `2407598a` L4 → `d550f283` L5 → `f620380a` L6 → `4ad22b67` L7 → `4a2abd72` L8 → `8564b4e7` L9 → `eed42894` L10 → `c636c57a` L11 → `141d1c90` L12 → `5d7f15a3` L13 → `33797c36` L14-parity-record → `cf4f6f6f` bundle-refresh(172).
+`35a2709b` LB-7 → `05f3adb6` L1 → `27a57510` L2 → `2ac56b61` L3 → `c76780e7` L4 → `ecbe7760` L5 → `b75feea3` L6 → `fd4aea57` L7 → `81c94b01` L8 → `702da62b` L9 → `0e76ac58` L10 → `f3e005ae` L11 → `f81d8c01` L12 → `50980f6b` L13 → `e2272492` L14-parity-record → `77b681f1` bundle-refresh(172).
 
 ## Evidence index
 | Area | Evidence | Status |

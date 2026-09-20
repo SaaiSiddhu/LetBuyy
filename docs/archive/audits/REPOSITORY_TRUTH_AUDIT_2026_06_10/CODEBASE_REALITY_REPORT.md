@@ -3,7 +3,7 @@
 - Audit date: 2026-06-10
 - Axis: CODEBASE REALITY (actual topology, ownership, package graph, deploy configs, dead code, local runnability)
 - Method: discovery-only. Code/config/build-graph inspection + read-only git + one read-only gate run. Documentation cited only to show drift.
-- Repo state at audit: branch `stepup/main`, HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift", 2026-06-10). Working tree dirty: **512 deleted, 410 modified, 76 untracked** (`git status --short | awk '{print $1}' | sort | uniq -c`). `main` is at `bf8c18c1` (2026-06-09); `stepup/main` is **30 commits ahead of main, 0 behind** (`git rev-list --count`). All Phase A–D13 changes recorded in `EXECUTION_LEDGER.md` are **uncommitted** (every row says "not committed").
+- Repo state at audit: branch `stepup/main`, HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift", 2026-06-10). Working tree dirty: **512 deleted, 410 modified, 76 untracked** (`git status --short | awk '{print $1}' | sort | uniq -c`). `main` is at `4bcae19a` (2026-06-09); `stepup/main` is **30 commits ahead of main, 0 behind** (`git rev-list --count`). All Phase A–D13 changes recorded in `EXECUTION_LEDGER.md` are **uncommitted** (every row says "not committed").
 
 ---
 
@@ -216,7 +216,7 @@ Production wrangler vars carry **committed `SKIP_NEEDS_HUMAN_*` placeholders** f
 
 ## 11. HEAD vs Working Tree vs main — Divergence Notes
 
-- **Three-layer divergence:** `main` (`bf8c18c1`, 2026-06-09, the only branch production CI deploys from) ← `stepup/main` +30 commits (waves 0–7 foundation work, Turnstile fixes, identity foundation) ← **uncommitted working tree** (Phases A–D13: 512 D / 410 M / 76 ??). The auth/identity/RLS/money hardening (migrations 162–166, `identity-session-verifier`, `tenant-transaction`, new validators) exists **only** in the uncommitted layer.
+- **Three-layer divergence:** `main` (`4bcae19a`, 2026-06-09, the only branch production CI deploys from) ← `stepup/main` +30 commits (waves 0–7 foundation work, Turnstile fixes, identity foundation) ← **uncommitted working tree** (Phases A–D13: 512 D / 410 M / 76 ??). The auth/identity/RLS/money hardening (migrations 162–166, `identity-session-verifier`, `tenant-transaction`, new validators) exists **only** in the uncommitted layer.
 - Gate evidence: branch-lag validator output "Local working branch is 30 commit(s) ahead of main"; `production-deploy.yml:32-37` enforces `stepup/main` merged-to-main before release (added in the uncommitted D1 work — i.e., the enforcement of merging is itself unmerged).
 - **Prod deploy matrix:** HEAD = 9 Vercel apps (incl. frozen four); worktree = 5. **Staging matrix unchanged at 8 (3 frozen apps still deployed).**
 - pnpm-workspace: HEAD already explicit; worktree removes 8 rejected packages. tsconfig.workspace: worktree removes search-core + runtime-composition refs, keeps dangling `typescript/utils`.

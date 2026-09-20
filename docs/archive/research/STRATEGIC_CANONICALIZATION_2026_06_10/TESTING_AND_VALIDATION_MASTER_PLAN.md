@@ -2,7 +2,7 @@
 
 > **Document type:** The testing and validation master plan that **gates** the wave-by-wave roadmap — the full test taxonomy (9 classes) for every migration/winner, the high-rigor suites, the CI gating, the coverage targets, and the validation-gates→wave-exit matrix. Architecture Review Board (ARB) program-lead deliverable; the companion gate to `IMPLEMENTATION_EXECUTION_ROADMAP.md`.
 > **Date:** 2026-06-10
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `5cf9e64e`, dirty, 2026-06-10).
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `c4fc3cd6`, dirty, 2026-06-10).
 > **Constitution:** `LETBUYY_EXECUTABLE_ARCHITECTURE_V1.md` + `LETBUYY_FINAL_ARCHITECTURE_FREEZE.md`.
 > **Authoritative inputs (read in full):** `PRODUCTION_READINESS_GAP_REPORT.md §5` (test-coverage reality — the honest current state), `MONEY_SYSTEM_CANONICALIZATION_PLAN.md` (the reconciliation harness + money-rigor rule + deletion-validation ladder), `TENANT_ISOLATION_CANONICALIZATION_PLAN.md §9` (the RT-1…RT-9 cross-tenant red-team suite), `THEME_MIGRATION_MASTER_PLAN.md` (render-parity + Security suite), `IDENTITY_MIGRATION_MASTER_PLAN.md` (the asymmetric-cutover contract + AUTH §12 walkthroughs), `UI_UX_UNIFICATION_MASTER_PLAN.md` (screenshot-diff + ratchet), `SAFE_DELETION_PLAN.md §2` (the deletion-validation taxonomy V-IMPORT/BUILD/TEST/GOV/SMOKE), and the forensic `LETBUYY_MASTER_EXECUTION_PLAN.md` + `TOP_250_PLATFORM_ISSUES.md`.
 

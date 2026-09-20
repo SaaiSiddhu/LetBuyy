@@ -1,6 +1,6 @@
 # `develop` integration measurement — 2026-09-12
 
-**Commit measured: `7b96adb1`.** Both measurements below were executed at that exact commit, in the
+**Commit measured: `c9d3f31d`.** Both measurements below were executed at that exact commit, in the
 `LetBuyy-develop` worktree, in one session. Classification: `VERIFIED_REPOSITORY_FACT` for what was
 run and what it printed; nothing here is a production-readiness claim (see *What this is not*).
 
@@ -10,15 +10,15 @@ Nine phase branches merged into `develop` on 2026-09-11 and 2026-09-12:
 
 | merge | phase |
 |---|---|
-| `58a53611` | F-DRIFT-1 — app-store column predicate |
-| `184ede37` | F-ROUTELEN-4 — internal-console route size |
-| `42dd0034` | F-ORDERDETAIL-1 — customer order-detail fields |
-| `58c9a231` | F-PENDINGCOD-1 — orders `pending` filter |
-| `4b55b4fb` | F-COMMITTED-1 — release decrements `committed_quantity` |
-| `e8f602ea` | F-DIRECTORY-1 — public store directory draft exposure |
-| `1fe51b75` | F-QUALIFY-2 — parameter-default measurement |
-| `f58d135f` | F-WIRETYPE-1 — checkout wire-contract duplicates |
-| `f43fc46c` | F-WIRETYPE-2 — internal payment union enforcement |
+| `93d71412` | F-DRIFT-1 — app-store column predicate |
+| `07396860` | F-ROUTELEN-4 — internal-console route size |
+| `0240e497` | F-ORDERDETAIL-1 — customer order-detail fields |
+| `0686a4da` | F-PENDINGCOD-1 — orders `pending` filter |
+| `d51b1422` | F-COMMITTED-1 — release decrements `committed_quantity` |
+| `2d38e470` | F-DIRECTORY-1 — public store directory draft exposure |
+| `bac3bcf8` | F-QUALIFY-2 — parameter-default measurement |
+| `f19f4691` | F-WIRETYPE-1 — checkout wire-contract duplicates |
+| `b1b83a5b` | F-WIRETYPE-2 — internal payment union enforcement |
 
 Every one was gated on its own branch against its own base, and every one reported a zero delta
 against a same-session baseline. **A per-phase gate cannot see an interaction between two phases that
@@ -43,7 +43,7 @@ three `ALTER DEFAULT PRIVILEGES` grants — rather than a harness that happens t
 ## Measurement 2 — the gate at the integration tip
 
 ```
-scripts/gate.sh   branch=develop  sha=7b96adb1   failed=4
+scripts/gate.sh   branch=develop  sha=c9d3f31d   failed=4
 
 typecheck                   exit=0
 lint                        exit=1
@@ -56,7 +56,7 @@ tests:ci                    exit=0
 ```
 
 **The load-bearing comparison is the SET, not the count.** The ten failing test names and the failing
-validator pair (`environment-validator`, `stale-artifact-validator`) at `7b96adb1` are *identical* to
+validator pair (`environment-validator`, `stale-artifact-validator`) at `c9d3f31d` are *identical* to
 the per-phase baselines each of the nine phases measured against its own base. No merge introduced a
 failure that appears only once the changes are combined. A matching `failed=4` alone would not have
 shown that — a count can stay level while one failure is traded for another.
@@ -67,7 +67,7 @@ this tip by name, not by filename: `storefront-directory-exposure`, `wire-contra
 
 ## Measurement 3 — the five Next app builds, which the gate does not cover
 
-**Measured at `56b521f6`**, not at `7b96adb1`. `git diff --name-status 7b96adb1..56b521f6` is three
+**Measured at `9532074b`**, not at `c9d3f31d`. `git diff --name-status c9d3f31d..9532074b` is three
 Markdown files — `EXECUTION_LEDGER.md`, `docs/active/BRANCH_DISPOSITIONS.md` and this document — and
 **zero code files**, so the build result carries over; saying so is cheaper than pretending the two
 commits were the same one.
@@ -157,5 +157,5 @@ done for any of the nine phases above — see the section above for the attempt 
 blocker. Five successful `next build`s prove the apps compile and their routes resolve; they prove
 nothing about whether a buyer can complete a checkout. Nothing here substitutes for that.
 
-`develop` is **508** commits ahead of `staging` and `main`, which both sit at `823aa5ee` (`git rev-list --count staging..develop` at `7b96adb1`). Promotion is
+`develop` is **508** commits ahead of `staging` and `main`, which both sit at `a751a2ff` (`git rev-list --count staging..develop` at `c9d3f31d`). Promotion is
 fast-forward only and requires the owner's word in the same message.

@@ -64,7 +64,7 @@ The primary navigation map for AI agents. Contains the top-300 files by global P
 ```json
 {
   "generatedAt": "2026-06-19T17:52:31.531Z",
-  "gitHead": "742192cf",
+  "gitHead": "57760d0c",
   "repoStats": {
     "nodeCount": 52246,
     "edgeCount": 66761,

@@ -11,10 +11,10 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 | S0 | Preflight, baseline reconciliation, rollback reference | COMPLETE | (this commit) |
 | S1 | Determine empirically which files Gradle evaluates | COMPLETE | (this commit) |
 | S2 | The applicationId divergence | COMPLETE | (this commit) |
-| S3 | Delete the dead duplicates | COMPLETE | `d49007f7` (customer_app), `170fbe85` (admin_app) |
-| S4 | Align the toolchain | COMPLETE | `d1616b2e` (customer_app), `4175bff4` (admin_app) |
-| S5 | The stray gradle.properties, and a real APK | COMPLETE | `2c67ac56` |
-| S6 | Verification | COMPLETE — 3 disclosed findings (below) | `df2063c4` |
+| S3 | Delete the dead duplicates | COMPLETE | `25ad34fa` (customer_app), `e48d9cf1` (admin_app) |
+| S4 | Align the toolchain | COMPLETE | `ea96a8da` (customer_app), `e8cec53e` (admin_app) |
+| S5 | The stray gradle.properties, and a real APK | COMPLETE | `60d607d9` |
+| S6 | Verification | COMPLETE — 3 disclosed findings (below) | `dd6b8943` |
 | S7 | Documentation | PENDING | |
 
 ---
@@ -23,11 +23,11 @@ Repository: `/Users/saai_siddharth/Projects/Start_Up/LetBuyy`, branch `feature/c
 
 ### Baseline reconciliation
 
-CTO baseline: `HEAD 4a2217c8  changed 40  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. Toolchain Flutter 3.44.8 / Dart 3.12.2.
+CTO baseline: `HEAD 27553d81  changed 40  staged 0  untracked 58  deletions 1`. Gate 105/6. Workspace 20/20. Toolchain Flutter 3.44.8 / Dart 3.12.2.
 
 Measured:
 ```
-HEAD:      4a2217c8148c1c9c0955f60b257945012f3babe7  (EXACT MATCH)
+HEAD:      27553d81b28c5d710c09a529cf3a6628ec541b9f  (EXACT MATCH)
 changed:   40                                          (EXACT MATCH)
 staged:    0                                            (EXACT MATCH)
 deletions: 1                                            (EXACT MATCH)
@@ -359,7 +359,7 @@ Both admin_app build attempts (before AND after alignment) printed `Upgrading gr
 
 ### Scope discipline
 
-`git diff 4a2217c8..HEAD --name-only -- '*pubspec.yaml'` → **empty**. Zero Dart/Flutter package versions changed, anywhere, this entire phase.
+`git diff 27553d81..HEAD --name-only -- '*pubspec.yaml'` → **empty**. Zero Dart/Flutter package versions changed, anywhere, this entire phase.
 
 **S4 verdict: COMPLETE. customer_app required all three toolchain changes to build (Kotlin was the actual cause, confirmed by isolating each variable); admin_app never needed them but was aligned per instruction, with its pre- and post-alignment builds both independently verified successful and identity-unchanged.**
 
@@ -371,7 +371,7 @@ Both admin_app build attempts (before AND after alignment) printed `Upgrading gr
 
 `apps/customer_app/android/gradle.properties` carried 2 uncommitted lines (`android.builtInKotlin=false`, `android.newDsl=false`) since Phase Q. During this phase's own build attempts, the identical 2 lines were auto-added to `apps/admin_app/android/gradle.properties` too — the same Flutter Android migrator behavior, triggered fresh.
 
-Tested whether they're actually necessary: reverted customer_app's file to its true committed (flag-less) state via `git show HEAD:apps/customer_app/android/gradle.properties > apps/customer_app/android/gradle.properties`, then ran `flutter build apk --debug` again. Result: build succeeded (`✓ Built build/app/outputs/flutter-apk/app-debug.apk`), but the build's own output printed `Upgrading gradle.properties` **twice** and silently re-added the identical two lines during that very build. This is decisive: the flags are not an optional, one-time artifact — Flutter's own tooling unconditionally rewrites them on every `flutter build` invocation for this SDK/AGP generation, regardless of the file's starting state. Restoring the file (`git show HEAD:<path> > <path>`) would be pointless — the very next build reintroduces the same two lines. Leaving it permanently uncommitted is worse (permanent, recurring working-tree drift for the same reason). **Committed both files** (`2c67ac56`), each with an explanation citing this exact test.
+Tested whether they're actually necessary: reverted customer_app's file to its true committed (flag-less) state via `git show HEAD:apps/customer_app/android/gradle.properties > apps/customer_app/android/gradle.properties`, then ran `flutter build apk --debug` again. Result: build succeeded (`✓ Built build/app/outputs/flutter-apk/app-debug.apk`), but the build's own output printed `Upgrading gradle.properties` **twice** and silently re-added the identical two lines during that very build. This is decisive: the flags are not an optional, one-time artifact — Flutter's own tooling unconditionally rewrites them on every `flutter build` invocation for this SDK/AGP generation, regardless of the file's starting state. Restoring the file (`git show HEAD:<path> > <path>`) would be pointless — the very next build reintroduces the same two lines. Leaving it permanently uncommitted is worse (permanent, recurring working-tree drift for the same reason). **Committed both files** (`60d607d9`), each with an explanation citing this exact test.
 
 ### 5.2 — Real APK build, all three apps, final committed state
 
@@ -408,11 +408,11 @@ No release build was attempted. No signing occurred (all three are debug builds,
 | Field | customer_app | admin_app |
 |---|---|---|
 | `applicationId` (compiled APK, `aapt dump badging`) | `com.letbuyy.letbuyy` ✓ | `com.letbuyy.admin` ✓ |
-| `signingConfigs` block in `app/build.gradle` | byte-identical to `4a2217c8` (diff empty) | byte-identical to `4a2217c8` (diff empty) |
+| `signingConfigs` block in `app/build.gradle` | byte-identical to `27553d81` (diff empty) | byte-identical to `27553d81` (diff empty) |
 | `key.properties` | untouched — mtime **Dec 14, 2025**, predates this entire session by ~8.5 months (content-blind check, see disclosed incident below) | untouched — mtime **Dec 13, 2025** (content-blind check) |
-| `AndroidManifest.xml` (deep-link intent filters + everything else) | byte-identical to `4a2217c8` (diff empty) | byte-identical to `4a2217c8` (diff empty) |
-| `google-services.json` | hash-identical to `4a2217c8` | hash-identical to `4a2217c8` |
-| `firebase_options.dart` | hash-identical to `4a2217c8` | hash-identical to `4a2217c8` |
+| `AndroidManifest.xml` (deep-link intent filters + everything else) | byte-identical to `27553d81` (diff empty) | byte-identical to `27553d81` (diff empty) |
+| `google-services.json` | hash-identical to `27553d81` | hash-identical to `27553d81` |
+| `firebase_options.dart` | hash-identical to `27553d81` | hash-identical to `27553d81` |
 | `versionCode`/`versionName` (pubspec.yaml `version:` vs. compiled APK) | `1.0.10+4013` → APK reports `versionCode='4013' versionName='1.0.10-debug'` (`-debug` is the standard Flutter debug-build suffix, not a version change) — matches | `1.0.0+1` → APK reports `versionCode='1' versionName='1.0.0-debug'` — matches |
 
 **Disclosed incident: a secret value was displayed in tool output.** While diffing `customer_app/android/key.properties` against its (nonexistent, since the file was never git-tracked) committed counterpart, `git show` returned empty and the resulting `diff` rendered the **entire file content as "added"** — printing `storePassword=letbuyy123`, `keyPassword=letbuyy123`, `keyAlias=letbuyy`, `storeFile=key.jks` directly into this session's tool output. This is customer_app's **real release-signing keystore password**, not a dead or already-public value like prior incidents earlier in this engagement — the most sensitive class of value this whole phase exists to protect. Disclosed immediately, not minimized. The file itself was never written, modified, deleted, renamed, or read for any purpose other than this one accidental display — confirmed by its mtime (Dec 14, 2025, ~8.5 months before this session) and by a follow-up content-blind hash check. No keytool command was ever run, no signing occurred, no release build was attempted. Switched to strictly content-blind verification (mtime + SHA-256 only, never full-content diff) for every remaining credential-adjacent file this stage, including admin_app's own `key.properties`.
@@ -441,7 +441,7 @@ Got dependencies!
 
 All 15 `packages/dart` members: **clean** (`No issues found!`, individually confirmed for each). `customer_app`, `admin_app`: **clean**. `phase_2/rider_app`, `phase_2/store_ops_app`: 1 pre-existing error each (`test/widget_test.dart`'s dead `MyApp` boilerplate) — expected, untouched, matches every prior phase's baseline exactly.
 
-**Disclosed finding, not previously checked by any prior phase's own acceptance bar: `merchant_app` shows 80 analyze issues (55 info, 25 warning, 0 error).** Confirmed via `git diff 4a2217c8..HEAD --name-only -- apps/merchant_app/lib apps/merchant_app/test` returning **empty** that this phase touched zero Dart/lib files in merchant_app — these 80 issues are entirely pre-existing (deprecated Flutter API usage such as `activeColor`→`activeThumbColor`, `value`→`initialValue`, one unused local variable in `section_settings_sheet.dart`, plus a deprecated-API note in its own test file). No prior phase's acceptance criteria ever required merchant_app to analyze clean — Phase Q's own bar was "15 packages + **both** apps" (customer_app/admin_app only). This phase's own acceptance criterion #5 ("all 15 packages and five apps analyze clean") is the first time merchant_app has been held to this bar, and it does not meet it. All 80 issues are info/warning severity, zero errors — consistent with merchant_app's own real APK build succeeding cleanly in S4/S5. Reported honestly rather than silently omitted or worked around; not fixed, since editing merchant_app's Dart source is out of this phase's Gradle-only scope.
+**Disclosed finding, not previously checked by any prior phase's own acceptance bar: `merchant_app` shows 80 analyze issues (55 info, 25 warning, 0 error).** Confirmed via `git diff 27553d81..HEAD --name-only -- apps/merchant_app/lib apps/merchant_app/test` returning **empty** that this phase touched zero Dart/lib files in merchant_app — these 80 issues are entirely pre-existing (deprecated Flutter API usage such as `activeColor`→`activeThumbColor`, `value`→`initialValue`, one unused local variable in `section_settings_sheet.dart`, plus a deprecated-API note in its own test file). No prior phase's acceptance criteria ever required merchant_app to analyze clean — Phase Q's own bar was "15 packages + **both** apps" (customer_app/admin_app only). This phase's own acceptance criterion #5 ("all 15 packages and five apps analyze clean") is the first time merchant_app has been held to this bar, and it does not meet it. All 80 issues are info/warning severity, zero errors — consistent with merchant_app's own real APK build succeeding cleanly in S4/S5. Reported honestly rather than silently omitted or worked around; not fixed, since editing merchant_app's Dart source is out of this phase's Gradle-only scope.
 
 ### 6.5 — Phase Q's Dart compilation probe, re-run
 

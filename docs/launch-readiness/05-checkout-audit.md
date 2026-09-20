@@ -100,7 +100,7 @@
 - Payment failure recording: `record_order_payment_failure_with_ledger` RPC
 - Idempotency on all payment RPCs
 - `checkout-client.tsx` — full Razorpay SDK integration (Razorpay class, handler, prefill, modal)
-- LB-2 committed: "Razorpay+COD-only checkout: 7 stripe/paypal storefront routes deleted" (commit `8d73fe7a`)
+- LB-2 committed: "Razorpay+COD-only checkout: 7 stripe/paypal storefront routes deleted" (commit `90368dc6`)
 
 **What is missing (environment, not code):**
 - Live Razorpay credentials (H2 — human seam)

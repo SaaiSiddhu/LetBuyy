@@ -2,7 +2,7 @@
 
 > **RESEARCH — NOT AUTHORITY — NOT AN IMPLEMENTATION ORDER**
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 >
 > This is decision support for the founder and the ARB. It recommends; it does not authorise. No code, migration, governance document, or provider state was changed by this study.
 

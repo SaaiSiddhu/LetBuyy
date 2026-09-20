@@ -4,9 +4,9 @@
 **Program window covered:** B→L (baseline Liquid/storefront foundations) + M→AC (Shopify-class merchant editor)  
 **Certification date:** 2026-07-11  
 **Branch:** `stepup/main`  
-**HEAD at issue:** `83d61e0a` (Phase AC — AI-assisted customization)  
-**Program baseline (Phase M):** `9186188e`  
-**B→L baseline (Phase L):** `29f87115`  
+**HEAD at issue:** `7654927d` (Phase AC — AI-assisted customization)  
+**Program baseline (Phase M):** `ff6720a9`  
+**B→L baseline (Phase L):** `8c1ac94b`  
 **Author:** AD certification sub-agent (read-only; no source edits; no git)  
 **Companion document:** `docs/storefront-theme-platform/phase-ad/PHASE_AD_CERTIFICATION.md`
 
@@ -109,7 +109,7 @@ export const THEME_LIQUID_RENDERING_DEFAULT_ENABLED = false;
 
 Confirmed by:
 - `node scripts/validators/theme-governance-validator.mjs` output: `Liquid default OFF`
-- `git diff 9186188e..83d61e0a -- packages/theme-engine/src/theme-governance.ts` returns
+- `git diff ff6720a9..7654927d -- packages/theme-engine/src/theme-governance.ts` returns
   **0 lines changed** on this constant across the entire M→AC program window
 
 #### 4.1.3 What is missing
@@ -124,7 +124,7 @@ change affecting all stores not individually overridden.
 
 #### 4.1.4 Why disconnected by design
 
-The B→L discovery program (commit `29f87115`) confirmed that Liquid rendering was approximately
+The B→L discovery program (commit `8c1ac94b`) confirmed that Liquid rendering was approximately
 55% merchant-ready with 7 ARB-gate blockers outstanding. The canary flag preserves the React
 fallback as the safe default while the Liquid path matures. Per `PROGRAM_STATE.md` baseline:
 `THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false (theme-governance.ts:14). Frozen apps confirmed
@@ -679,12 +679,12 @@ resolved or not applicable:
 
 | Item | Resolution | Evidence |
 |------|-----------|---------|
-| B-1 (postMessage key mismatch) | RESOLVED in Phase C (`70a40c2a`) | `StorefrontPreviewBridge` in `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` bridges `LETBUYY_THEME_EDITOR_SELECTION` via same-origin postMessage. Phase B certification R-10 REFUTED. |
+| B-1 (postMessage key mismatch) | RESOLVED in Phase C (`be56a6fd`) | `StorefrontPreviewBridge` in `apps/storefront-runtime/src/app/preview/storefront-preview-bridge.tsx` bridges `LETBUYY_THEME_EDITOR_SELECTION` via same-origin postMessage. Phase B certification R-10 REFUTED. |
 | B-2 (newsletter vs newsletter-signup type split) | RESOLVED in Phases C+D | `PORTABLE_TO_LIQUID_TYPE_OVERRIDES` in `portable-to-liquid.ts:46` maps `newsletter → newsletter-signup` at compile time. |
-| B-3 (fonts not wired) | RESOLVED in Phase D (`def512cb`) | `buildGoogleFontsHref` wired in `storefront-runtime` layout; CSP extended. |
-| B-4 (linklists absent) | RESOLVED in Phase D (`def512cb`) | `navToLinklists()` converts `StoreModel.navigation` to Shopify-convention `linklists`; wired in `buildLiquidScope`. |
-| B-6 (letbuyy-core DB row) | COMMITTED, conditionally resolved | Migration `188_letbuyy_core_theme_row.sql` committed in `40741cb8` (idempotent `INSERT … ON CONFLICT DO NOTHING`). Row absent until migration 188 applied to production DB (`RISK-DATA-001`). |
-| Money ledger contact (canonical RPCs) | UNTOUCHED by M→AC | `git diff 9186188e..HEAD` on payments, orders, checkout routes returns 0 lines changed. No theme-engine source calls canonical money RPCs except in test comments. |
+| B-3 (fonts not wired) | RESOLVED in Phase D (`4546f27b`) | `buildGoogleFontsHref` wired in `storefront-runtime` layout; CSP extended. |
+| B-4 (linklists absent) | RESOLVED in Phase D (`4546f27b`) | `navToLinklists()` converts `StoreModel.navigation` to Shopify-convention `linklists`; wired in `buildLiquidScope`. |
+| B-6 (letbuyy-core DB row) | COMMITTED, conditionally resolved | Migration `188_letbuyy_core_theme_row.sql` committed in `7cdd42a1` (idempotent `INSERT … ON CONFLICT DO NOTHING`). Row absent until migration 188 applied to production DB (`RISK-DATA-001`). |
+| Money ledger contact (canonical RPCs) | UNTOUCHED by M→AC | `git diff ff6720a9..HEAD` on payments, orders, checkout routes returns 0 lines changed. No theme-engine source calls canonical money RPCs except in test comments. |
 | DOMPurify sanitizer config | UNTOUCHED by M→AC | `LIQUID_RENDERED_HTML_DOMPURIFY_CONFIG` block at `theme-renderer.ts:170-231` byte-identical to Phase M baseline. No `FORBID_ATTR`, `FORBID_TAGS`, `ADD_ATTR`, or `CUSTOM_ELEMENT_HANDLING` lines changed. |
 | `publish_theme_release` RPC signature | UNTOUCHED by M→AC | Call at `theme-execution.adapter.ts:699-710` signature (10 parameters) unchanged since Phase P. `p_expected_current_release_version` (ARB-gated follow-up from Phase AB) is NOT present. |
 
@@ -697,7 +697,7 @@ documented here to prevent any future reviewer from interpreting them as program
 
 | Gate | Failure | Pre-dates program | Evidence |
 |------|---------|-------------------|---------|
-| `node scripts/validate-governance.mjs` EXIT=1 | Tenant-tables registry drift: `services/api-gateway/src/tenant/tenant-tables.registry.ts` out of sync with schema-derived registry | Yes — present before Phase M baseline (`9186188e`) | `git log 9186188e..HEAD -- services/api-gateway/src/tenant/tenant-tables.registry.ts` returns no commits; no M→AC commit touches this file. Fix: `node scripts/generators/generate-tenant-table-registry.mjs`. Risk: `RISK-GOV-001`. |
+| `node scripts/validate-governance.mjs` EXIT=1 | Tenant-tables registry drift: `services/api-gateway/src/tenant/tenant-tables.registry.ts` out of sync with schema-derived registry | Yes — present before Phase M baseline (`ff6720a9`) | `git log ff6720a9..HEAD -- services/api-gateway/src/tenant/tenant-tables.registry.ts` returns no commits; no M→AC commit touches this file. Fix: `node scripts/generators/generate-tenant-table-registry.mjs`. Risk: `RISK-GOV-001`. |
 | `node scripts/validators/sequential-migration-validator.mjs` EXIT=1 | Migrations 186 (`186_v1_scale_commerce_os_coming_soon.sql`) and 187 (`187_v1_sites_site_settings.sql`) on disk but not committed | Yes — explicitly listed as FOREIGN WIP in `PROGRAM_STATE.md` | `git log -- database/supabase/migrations/186_*.sql` and `187_*.sql` return empty. No M→AC commit added or modified either file. |
 
 The anti-fabrication sub-gate within `validate-governance.mjs` **passes** (1319 active source
@@ -720,7 +720,7 @@ files, 0 temporary entries).
 ## 9. Certification attestation
 
 This register was produced by the Phase AD certification sub-agent (read-only; no source edits;
-no git operations) from direct file reads of the repository at HEAD `83d61e0a` on 2026-07-11.
+no git operations) from direct file reads of the repository at HEAD `7654927d` on 2026-07-11.
 
 Every NOT-CONNECTED claim is grounded in at least one of:
 - A direct `Read` tool inspection of the cited source file and line

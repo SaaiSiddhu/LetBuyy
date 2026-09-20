@@ -1,6 +1,6 @@
 # 24 — Compile Blocker Fix and Credential Re-Containment (Phase Q)
 
-Starting HEAD `9420221ca01683ee1274e60a524c040c07b0d69b`, final HEAD `4fa55ead...` (see `git log` for the full 6-commit sequence). Full stage-by-stage evidence, including every command and its real output, is in `25_phase_q_journal.md` — this document is the reader-facing summary of what changed and why.
+Starting HEAD `21e6d465eead634b2bbe65ce41ff6ad632ea364a`, final HEAD `924ba5c9...` (see `git log` for the full 6-commit sequence). Full stage-by-stage evidence, including every command and its real output, is in `25_phase_q_journal.md` — this document is the reader-facing summary of what changed and why.
 
 ## Part A — Re-containing the recovered credentials
 

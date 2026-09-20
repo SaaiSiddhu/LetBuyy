@@ -17,7 +17,7 @@ All paths are repo-relative. Status values: `COMPLETE` | `PARTIAL` | `MISSING` |
 | Component | Path | Status | Notes |
 |-----------|------|--------|-------|
 | ThemeBundle schema model (JSON-contract + Liquid bundles) | `theme-bundle.ts` | COMPLETE | Full Zod schemas for both bundle variants; `KNOWN_LIQUID_BUNDLE_SCHEMA_VERSIONS = ['2026-06-liquid-sections']`; **23** Liquid section files via `createLiquidParitySectionFiles()` (lines 822–1232; 23 `createLiquidSectionFile` entries including `header`, `footer`, `testimonials`, `marquee` — verified by grep, not 22 as earlier docs stated); `UnsupportedLiquidBundleSchemaVersionError` fail-closed |
-| LetBuyy Core alias layer (urban-kicks → letbuyy-core) | `theme-bundle-core.ts` | PARTIAL | `resolveCanonicalThemeSlug` and `createLetbuyyCoreLiquidThemeBundleFixture()` exist; DB migration 188 committed (40741cb8); create-store path still assigns `slug='urban-kicks'` (file:20-22 deferred comment) |
+| LetBuyy Core alias layer (urban-kicks → letbuyy-core) | `theme-bundle-core.ts` | PARTIAL | `resolveCanonicalThemeSlug` and `createLetbuyyCoreLiquidThemeBundleFixture()` exist; DB migration 188 committed (7cdd42a1); create-store path still assigns `slug='urban-kicks'` (file:20-22 deferred comment) |
 | Theme section/settings registry | `theme-registry.ts` | FROZEN | 12 named `SectionSchema` objects + `THEME_SETTINGS_SCHEMA` (5 groups); `getSectionSchemas()` / `getThemeSettingsSchema()` static pass-throughs; **FROZEN per ART-17** — new sections go to `built-in-section-schemas.ts` |
 | 25-type built-in section catalog | `built-in-section-schemas.ts` | COMPLETE | `BUILT_IN_SECTION_TYPES` const tuple of 25 types; `BUILT_IN_SECTION_SCHEMAS` merges 12 frozen + 13 new; `collectBuiltInSectionSchemaGaps()` validates coverage; 4 types lack Liquid section files (see gaps) |
 | Section schema migration engine + registry | `section-schema-migrations.ts` | PARTIAL | `REGISTERED_SECTION_SCHEMA_MIGRATIONS = Object.freeze([])` (line 33) intentionally empty; `CURRENT_SECTION_SCHEMA_VERSION = '2026-07-sections-v1'`; engine fully wired; every stored section is `'unversioned'` |
@@ -60,7 +60,7 @@ All paths are repo-relative. Status values: `COMPLETE` | `PARTIAL` | `MISSING` |
 
 4. **Section schema migration registry is empty** — `REGISTERED_SECTION_SCHEMA_MIGRATIONS = Object.freeze([])` (section-schema-migrations.ts:33). Engine is wired and correct. If M→AE adds new section settings fields, add backward-compat entries to the registry; all stored sections are currently `'unversioned'`.
 
-5. **letbuyy-core create-store path** — Code alias (migration 188, 40741cb8) is committed, but the create-store execution path still assigns `slug='urban-kicks'`. New stores do not receive the canonical `'letbuyy-core'` slug until that path is updated (theme-bundle-core.ts:20-22).
+5. **letbuyy-core create-store path** — Code alias (migration 188, 7cdd42a1) is committed, but the create-store execution path still assigns `slug='urban-kicks'`. New stores do not receive the canonical `'letbuyy-core'` slug until that path is updated (theme-bundle-core.ts:20-22).
 
 6. **Theme analytics zero emission** — `ThemeAnalyticsEvent` types defined; `theme-execution.adapter.ts` emits nothing. Active stores using Liquid, render-engine distribution, and GMV attribution are unresolvable without wiring emission calls.
 

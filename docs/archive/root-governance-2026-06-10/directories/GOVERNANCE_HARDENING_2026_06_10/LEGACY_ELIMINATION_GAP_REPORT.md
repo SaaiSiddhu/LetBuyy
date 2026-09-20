@@ -186,4 +186,4 @@ These are UNVERIFIED gates the plan itself flags; this audit **does not** resolv
 
 ---
 
-*End of LEGACY_ELIMINATION_GAP_REPORT.md — Phase 4, Governance Hardening. Audits completeness only; changes no deletion decision. 18 findings (2 CRITICAL, 5 MAJOR, 11 MINOR). Subject corpus: `GOVERNANCE_REWRITE_2026_06_10/` DOC 03/04/05 + Constitution + AGENTS_V2; source layer `STRATEGIC_CANONICALIZATION_2026_06_10/` SAFE_DELETION_PLAN + LEGACY_ERADICATION_REGISTER. Evidence pinned at `stepup/main` @ `5cf9e64e`, 2026-06-10.*
+*End of LEGACY_ELIMINATION_GAP_REPORT.md — Phase 4, Governance Hardening. Audits completeness only; changes no deletion decision. 18 findings (2 CRITICAL, 5 MAJOR, 11 MINOR). Subject corpus: `GOVERNANCE_REWRITE_2026_06_10/` DOC 03/04/05 + Constitution + AGENTS_V2; source layer `STRATEGIC_CANONICALIZATION_2026_06_10/` SAFE_DELETION_PLAN + LEGACY_ERADICATION_REGISTER. Evidence pinned at `stepup/main` @ `c4fc3cd6`, 2026-06-10.*

@@ -2,7 +2,7 @@
 
 **Axis:** Database Truth (Supabase/Postgres + Cloudflare D1)
 **Date:** 2026-06-10
-**Repo state:** branch `stepup/main`, HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift"), working tree massively dirty.
+**Repo state:** branch `stepup/main`, HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift"), working tree massively dirty.
 **Scope:** Repository-state audit only. **No live DB access.** All "final state" claims are derived from static parsing of the migration chain, not from a live catalog. Live-DB seams are tracked explicitly in the Unknowns section and in `SKIPPED_HUMAN_DECISIONS.md`.
 
 ---
@@ -201,7 +201,7 @@ Some of these are intentional (public read of `themes`/`plans`, anonymous lead/c
 **The runner:** `scripts/supabase/run-migrations.mjs` calls `pnpm exec supabase db push --project-ref <ref>`; `config/supabase/{staging,production}.json` are **placeholder-only** (`PRODUCTION_PROJECT_REF_PLACEHOLDER`) and the runner throws if the ref still says PLACEHOLDER — so **migrations have never been applied to a real project from this config** (or the real config lives in CI secrets). The production CI path (`.github/workflows/production-deploy.yml:254`) runs `supabase db push --db-url <secret> --include-all`. `--include-all` applies every file in `database/supabase/migrations/` ordered by filename.
 
 **Deployment risk of the untracked 162–166:**
-- `supabase db push` operates on the **working-tree files**, so a CI checkout of HEAD `5cf9e64e` (clean) would push **only 000–161** and **silently omit 162–166**. The four CRITICAL fixes (commission-zero, live-data-leak RLS, app_tenant GUC, canonical money paths) and the checkout authority (166) **would not deploy**. Their effect exists only on this one dirty working tree.
+- `supabase db push` operates on the **working-tree files**, so a CI checkout of HEAD `c4fc3cd6` (clean) would push **only 000–161** and **silently omit 162–166**. The four CRITICAL fixes (commission-zero, live-data-leak RLS, app_tenant GUC, canonical money paths) and the checkout authority (166) **would not deploy**. Their effect exists only on this one dirty working tree.
 - **`migration-safety-validator.mjs` is blind to them:** it iterates `getTrackedFiles()` (line 28), and untracked files are not tracked — so the safety gate **cannot see 162–166 at all**. They could contain any hazard and pass CI.
 - The `rls-force-coverage-validator` *does* `readFile("database/supabase/migrations/164_d4_tenant_role_guc.sql")` directly (line 11) and asserts on its contents — so it reads the untracked file from disk and passes **on the local dirty tree**, but in clean CI that `readFile` would throw (file absent) → the validator would **fail/error in a clean checkout**. This is a hidden coupling: the governance suite currently depends on an uncommitted file existing on disk.
 

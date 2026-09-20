@@ -4,7 +4,7 @@
 >
 > ## `PROPOSED — NOT RATIFIED`
 >
-> Audited commit `5af69e0c080503765dec361eae2128ba860cf529` · branch `stepup/main` · 2026-08-16.
+> Audited commit `f52abca7ef6b2ddfc39f03b38206779cbe543e46` · branch `stepup/main` · 2026-08-16.
 >
 > Nothing in this document amends anything. Under DOC 01 §14.1 a constitutional amendment requires an ARB act citing a **named, evidenced trigger**. This packet supplies draft text and evidence so that the ARB *can* deliberate; it does not deliberate for them, and it does not recommend that any amendment be taken **now**.
 

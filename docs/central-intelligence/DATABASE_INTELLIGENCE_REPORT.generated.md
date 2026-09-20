@@ -58,4 +58,4 @@ Every money mutation is a SECURITY DEFINER RPC called via `db.rpc` (the `canonic
 - **Tenant tables without a regex-detected RLS `ENABLE`:** 20 → compensation_actions, outbox_consumptions, ledger_accounts, ledger_transactions, ledger_entries, settlements, reserves, payouts, payout_items, recon_breaks, billing_mandates, merchant_billing_invoices. *These are NOT confirmed violations — `rls-force-coverage-validator` passes, so they are either service-role-only/ledger tables or use an RLS pattern this parser does not detect. Verify before acting.*
 - **Policies matching `USING (true)` (excluding service_role):** 34. *`no-public-using-true-validator` passes, so these are service-role-scoped; this heuristic over-counts. Authoritative source is the validator.*
 
-_Graph: 52,246 nodes / 66,761 edges @ 0db025a6 · DB intel generated 2026-06-14T03:04:41Z._
+_Graph: 52,246 nodes / 66,761 edges @ 0f257ca1 · DB intel generated 2026-06-14T03:04:41Z._

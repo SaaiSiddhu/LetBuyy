@@ -195,7 +195,7 @@ All series in `merchant-intelligence.json`, `customer-intelligence.json`, and `m
 - Method once ≥24 hourly points available: SMA-6h (6-period hourly moving average). Alert when SMA-6h error rate exceeds 1%.
 
 **Deployment frequency**
-- Source: `deployment-intelligence-v5.json` `state` field records `declaredHead: "4a91fa96"`, `latestMigration: {n: 174, file: "174_v1_gift_card_refund_restore.sql"}`, `totalMigrations: 103`. These are point-in-time snapshots, not a time series.
+- Source: `deployment-intelligence-v5.json` `state` field records `declaredHead: "d7f74037"`, `latestMigration: {n: 174, file: "174_v1_gift_card_refund_restore.sql"}`, `totalMigrations: 103`. These are point-in-time snapshots, not a time series.
 - Method: count of `production-deploy.yml` workflow runs per week (source: GitHub Actions API, `GITHUB_TOKEN`). SMA-4w once ≥4 weeks available.
 
 ---
@@ -275,7 +275,7 @@ Cross-check via: `SELECT * FROM refresh_money_ledger_site_reconciliation(site_id
 | Razorpay cost per tier | DETECTABLE (rate only) | `fee = 0.02 × GMV` (ratio model; no historical GMV to apply it to yet) | `payment_transactions` table, `total_minor` column (live Supabase rows needed) |
 | Cloudflare Workers cost | DETECTABLE (rate: $0.30/million req) | `cost = rate × request_count`; OLS on monthly request_count at ≥3 pts | Analytics Engine / RUNTIME_TELEMETRY; `adapters[0]` in `telemetry-intelligence.json` |
 | Supabase Postgres cost | DETECTABLE (rate: $25/mo + $0.125/GB) | `cost = 25 + 0.125 × db_size_gb + egress_cost`; storage trend OLS at ≥3 pts | Supabase usage dashboard; db size metric (not in repo) |
-| Deployment frequency (deploys/week) | PARTIAL — 1 point (current HEAD `4a91fa96`, migration n=174) | SMA-4w at ≥4 weeks; 1 structural snapshot now — DETERMINISTIC TREND NOT YET POSSIBLE | GitHub Actions API, `production-deploy.yml` run history (`GITHUB_TOKEN`) |
+| Deployment frequency (deploys/week) | PARTIAL — 1 point (current HEAD `d7f74037`, migration n=174) | SMA-4w at ≥4 weeks; 1 structural snapshot now — DETERMINISTIC TREND NOT YET POSSIBLE | GitHub Actions API, `production-deploy.yml` run history (`GITHUB_TOKEN`) |
 
 ---
 

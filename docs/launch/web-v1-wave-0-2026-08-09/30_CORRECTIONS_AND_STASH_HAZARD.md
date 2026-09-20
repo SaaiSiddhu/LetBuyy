@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | **Repo** | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — the **original, production-linked** tree |
-| **Branch / HEAD** | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| **Branch / HEAD** | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | **Worktree** | the original checkout (not `letbuyy-w0-worktrees/*`; the integration branch was not consulted for any figure here) |
 | **Date** | 2026-08-09 |
 | **Agent** | Wave 0 Doc Correction agent |
@@ -18,7 +18,7 @@
 | Measurement | Before | After |
 |---|---|---|
 | `git rev-parse --abbrev-ref HEAD` | `stepup/main` | `stepup/main` |
-| `git rev-parse HEAD` | `ee3711829d857e986014c5811bb94d86ebc3d343` | `ee3711829d857e986014c5811bb94d86ebc3d343` |
+| `git rev-parse HEAD` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 | `git status --porcelain \| wc -l` | `6826` | `6826` |
 | `git stash list \| wc -l` | `2` | `2` |
 
@@ -143,7 +143,7 @@ Three independent defects:
 
 Cross-checks, all EXECUTED: 6,696 + 89 + 10 = **6,795** = `git diff HEAD --numstat | wc -l` ✓ · 89 + 10 = **99** ✓ · porcelain `M` = 6,018 + 678 + 89 = **6,785** ✓ · 6,795 + 31 = 6,826 ✓.
 
-Doc 13's load-bearing conclusion is **unaffected**: `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`, `supabase/config.toml` each return `0 0`, so its dependency analysis is still valid against committed `ee371182` content.
+Doc 13's load-bearing conclusion is **unaffected**: `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`, `supabase/config.toml` each return `0 0`, so its dependency analysis is still valid against committed `bf35062e` content.
 
 ### 1.5 Doc 01: porcelain v1/v2 mislabel (cosmetic — and materially a non-issue)
 
@@ -184,10 +184,10 @@ stash@{1}: On stream/letbuyy-ui-v2: branch-consolidation-local-artifacts
 
 | | `stash@{0}` | `stash@{1}` |
 |---|---|---|
-| Object SHA | `b85eeb03e89cbf20ce5a8bf3894d7a203b7ec3e9` | `4d73cfe4b5dfcb21a0e760b795f8a204fb708c33` |
+| Object SHA | `f8a6c8c7f508614204a13b936518ffa9ef5bd64b` | `4d73cfe4b5dfcb21a0e760b795f8a204fb708c33` |
 | Created | 2026-06-14 21:40:13 +0530 | 2026-06-08 22:32:43 +0530 |
-| Based on | `122ed174` — **53 commits behind** baseline `ee371182` | `17152bbe` (on `stream/letbuyy-ui-v2`) |
-| Ancestor of `ee371182`? | **No** — unreachable from the baseline | No |
+| Based on | `e0860c1d` — **53 commits behind** baseline `bf35062e` | `ae4bacb4` (on `stream/letbuyy-ui-v2`) |
+| Ancestor of `bf35062e`? | **No** — unreachable from the baseline | No |
 | Tracked diff | **28 files, +1,128 / −1,203** | **empty** |
 | Untracked payload | — | **10 files, +214** (a `.~lock…xlsx#` file, 8 visual-regression failure PNGs, and `apps/storefront-runtime/src/middleware.ts.bak` at +213) |
 
@@ -238,12 +238,12 @@ stash@{1}: On stream/letbuyy-ui-v2: branch-consolidation-local-artifacts
 ### 2.2 Plain statement of the hazard
 
 - **A third divergent body of uncommitted work exists.** Alongside (i) the dirty working tree and (ii) the Codex integration worktrees, `stash@{0}` is a third, older, *incompatible* version of live files — including four **already-committed** database migrations (money, payments, credentials), gateway idempotency and auth code, and three `wrangler.toml` worker configs whose stashed change is **deletion-only**.
-- **It is unreachable from the baseline.** `git merge-base --is-ancestor stash@{0} HEAD` → false. Its base `122ed174` is 53 commits behind `ee371182`, so replaying it is a rebase, not a fast-forward.
+- **It is unreachable from the baseline.** `git merge-base --is-ancestor stash@{0} HEAD` → false. Its base `e0860c1d` is 53 commits behind `bf35062e`, so replaying it is a rebase, not a fast-forward.
 - **It is destructible.** `git stash drop` / `git stash clear`, and eventual reflog expiry, would destroy it irrecoverably. It is not protected by any tag or branch.
 - **Modifying committed migrations is a governance concern in its own right.** Migrations `100/109/111/142` are already applied at baseline (124/124 migrations apply cleanly on the isolated local stack per `22_LOCAL_STACK_EXECUTION_EVIDENCE.md`). A stash that rewrites them would break migration immutability if applied. **Not adjudicated here** — flagged for a human/ARB decision.
 - **`stash@{1}` is low-value but non-empty:** its tracked diff is empty; its payload is 10 untracked files — a stale editor lock file, 8 visual-regression failure screenshots, and `apps/storefront-runtime/src/middleware.ts.bak` (213 lines). A `.bak` of storefront middleware is worth a glance before anyone discards it.
 
-**Required posture:** document only. **No stash command beyond `list`/`show` may be run in the original tree.** If the work is wanted, the safe first step is a human-approved `git tag` on `b85eeb03` so it survives reflog expiry — recommended, **not performed here**.
+**Required posture:** document only. **No stash command beyond `list`/`show` may be run in the original tree.** If the work is wanted, the safe first step is a human-approved `git tag` on `f8a6c8c7` so it survives reflog expiry — recommended, **not performed here**.
 
 ---
 

@@ -2,7 +2,7 @@
 
 > **Document type:** Single-page-ish source of truth — the component-level classification matrix across ALL domains, the canonical target-architecture diagram, and the platform-wide classification totals (Architecture Review Board, companion to `STRATEGIC_WINNERS_MASTER_PLAN.md`).
 > **Date:** 2026-06-10
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty.
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty.
 > **How to read:** one row per significant component across every domain. **Classification** is the verbatim spine legend. **Winner-or-replaced-by** names what survives (for CANONICAL/TRANSITIONAL/FROZEN) or what replaces it (for LEGACY/DEAD). **Wave** is when it lands/dies. **Owner-squad** is who owns it. **Forensic/Action IDs** trace to the sibling deliverables + the forensic master.
 > **Source of every row:** `_ANCHOR_DECISIONS_SPINE.md` (A0–A9) + the nine domain deliverables + `FORENSIC_MASTER_2026_06_10/`. This matrix invents nothing; it densifies the winners those documents fixed.
 
@@ -412,4 +412,4 @@ graph TB
 - **Full RLS/FORCE coverage per tenant table** (≈41–76/261 confirmed in migrations) needs live `pg_policies` introspection.
 - **`pnpm turbo build` green baseline** across the workspaces (assumed by the dead-package deletions; not executed — runtime > sandbox timeout).
 
-*End of Canonical Architecture Matrix. One row per significant component; evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty, 2026-06-10. Companion narrative: `STRATEGIC_WINNERS_MASTER_PLAN.md`.*
+*End of Canonical Architecture Matrix. One row per significant component; evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty, 2026-06-10. Companion narrative: `STRATEGIC_WINNERS_MASTER_PLAN.md`.*

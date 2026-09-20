@@ -7,7 +7,7 @@
 | **Date** | 2026-06-10 |
 | **Author** | Principal Platform Engineer, Architecture Review Board |
 | **Repo** | `/Users/saai_sidd/Git/Letbuyy_Store` |
-| **Branch / HEAD** | `stepup/main` @ `5cf9e64e` |
+| **Branch / HEAD** | `stepup/main` @ `c4fc3cd6` |
 | **Cross-ref** | Each `DEL-xxx` block deletes the correspondingly-numbered `LEG-xxx` row from the register. |
 
 ---
@@ -647,4 +647,4 @@ Every deletion is gated by a subset of these six checks. The block's Pre-/Post-d
 7. **W4:** theme schema/compose/draft deletions (DEL-045…047) once Liquid is at parity; the live React renderer stays frozen.
 8. **W5:** schema canonicalization + long-tail DDL (DEL-034…038, 043, 050…062).
 
-*End of Safe Deletion Plan. Cross-referenced to `LEGACY_ERADICATION_REGISTER.md`. Evidence pinned at `stepup/main` @ `5cf9e64e`, 2026-06-10.*
+*End of Safe Deletion Plan. Cross-referenced to `LEGACY_ERADICATION_REGISTER.md`. Evidence pinned at `stepup/main` @ `c4fc3cd6`, 2026-06-10.*

@@ -2,7 +2,7 @@
 
 **Workstream:** AF-A (Governance & topology truth)
 **Phase:** AF.0 read-only discovery · **Author:** Root integrator (Claude Code, Opus 4.8), read-only
-**Branch / HEAD:** `stepup/main` / `7e1441a6`
+**Branch / HEAD:** `stepup/main` / `80d0b1af`
 **Evidence timestamp:** 2026-07-17/18 IST
 **Status:** VERIFIED_CURRENT (topology + validator inventory + law chain) · governance gate BROKEN (EXIT=1, two explained causes)
 **Working-tree delta from this workstream:** only this file is written; no build/validator with a mutating side-effect was run by AF-A (see §5).

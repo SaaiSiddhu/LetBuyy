@@ -1,6 +1,6 @@
 # Phase I — Deployment Matrix
 
-**HEAD `587dc988`. ✅ ready · ⚠️ configured-not-provisioned · ❌ blocked.**
+**HEAD `ae383bb8`. ✅ ready · ⚠️ configured-not-provisioned · ❌ blocked.**
 
 | Component | Config | Provisioned | Status |
 |---|---|---|---|

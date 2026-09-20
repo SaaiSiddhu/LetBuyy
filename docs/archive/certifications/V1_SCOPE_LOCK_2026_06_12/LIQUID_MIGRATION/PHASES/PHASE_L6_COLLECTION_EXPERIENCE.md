@@ -1,6 +1,6 @@
 # PHASE L6 — COLLECTION EXPERIENCE
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render `/collections/:slug` (and `/shop`) through a Liquid `collection` template with the real collection + its products.
 2. **Repository Reality.** The collection route delegates to the composition engine (`collections/[slug]/page.tsx:128`) and fetches real products via `getCollectionWithProducts`; but `buildLiquidCommerceContext` reconstructs `collection` from `plan.route` + scraped products and **discards the real title/description** (`composition-engine.tsx:301-308`); no `collection` template exists (→ `index` fallback). `product-grid` parity section iterates `{% for item in collection.products %}` (`theme-bundle.ts:1059`).

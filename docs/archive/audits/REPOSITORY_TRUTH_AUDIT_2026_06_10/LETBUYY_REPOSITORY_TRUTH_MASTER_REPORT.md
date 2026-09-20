@@ -1,7 +1,7 @@
 # LETBUYY REPOSITORY TRUTH — MASTER REPORT
 
 **Repository Truth Audit 2026-06-10 · FINAL SYNTHESIS**
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift", 2026-06-10 08:42 +0530) · `main` @ `bf8c18c1` (2026-06-09, the **only** production deploy trigger, 30 commits behind) · working tree **512 deleted / 410 modified / 76→77 untracked** (wave-1 baseline 76 `??`; the 77th entry is this audit directory itself — verified `git status --porcelain` 2026-06-10).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift", 2026-06-10 08:42 +0530) · `main` @ `4bcae19a` (2026-06-09, the **only** production deploy trigger, 30 commits behind) · working tree **512 deleted / 410 modified / 76→77 untracked** (wave-1 baseline 76 `??`; the 77th entry is this audit directory itself — verified `git status --porcelain` 2026-06-10).
 **Mode:** DISCOVERY ONLY. This report synthesizes the 12 evidence-backed axis reports in this directory. No redesign, no roadmap. Every item traces to a report finding; citations carry `path:line` plus the source report. Required actions appear only as **what must become true**.
 
 ---
@@ -577,7 +577,7 @@ All post-commit (the global precondition); highest-confidence rows (DELETION_REG
 5. Root `build/` (161 MB Flutter test cache), `.dart_tool/`, `.tmp/`, `test-results/`, `.pnpm-store/`, `.turbo/` — machine-local.
 6. `legacy/` empty husk (after committing the 37 tracked deletions; archive copies in `docs/archive/firebase-legacy/`).
 7. `tests/projections/` empty dir.
-8. `docs/mobile-migration-blueprint/` empty dir (contents git-history-only since `47f29bc6`).
+8. `docs/mobile-migration-blueprint/` empty dir (contents git-history-only since `aed02212`).
 9. `apps/storefront-runtime/src/app/demo/urban-kicks/` — live-routed demo residue.
 10. `firebasestorage.googleapis.com` remotePattern (`storefront next.config.ts:43`) — dangling trust grant.
 11. 3 frozen-app rows in `staging-deploy.yml:189-200` + 4 frozen-app entries in `config/vercel/projects.json:79-137`.
@@ -625,7 +625,7 @@ All out-of-scope seams, merged from the 12 reports. Nothing below was guessed; e
 8. Duplicate-index physical state + plan proof (SKIP-D11) (DB §11.4).
 9. EXECUTE grant state of `backfill_wallet_ledger_to_canonical` (PostgreSQL function default = PUBLIC) (MONEY §11).
 10. Whether any production store row carries `liquidRenderingCanary: true` or a `liquidBundle` (no setter exists; presumed none) (THEME §11).
-11. Whether `main`'s payout adapter at `bf8c18c1` fabricates UTRs or fails (inferred from migration absence, not read line-by-line) (READINESS §11.2).
+11. Whether `main`'s payout adapter at `4bcae19a` fabricates UTRs or fails (inferred from migration absence, not read line-by-line) (READINESS §11.2).
 
 **C. Live providers (not exercised):**
 12. Cloudflare Turnstile siteverify verdicts — the mobile double-spend is code-derived; real (non-test) site keys are pinned (MOBILE §11; IDENT §9).
@@ -653,7 +653,7 @@ All out-of-scope seams, merged from the 12 reports. Nothing below was guessed; e
 
 **Audit:** Repository-wide forensic truth audit, 2026-06-10 — multi-agent, discovery-only (no repository file modified except the reports in this directory). Two waves: nine axis reports (wave 1), then three synthesis/classification reports (wave 2), then this master synthesis.
 
-**Repo state at audit:** branch `stepup/main` @ HEAD `5cf9e64e` ("fix(foundation): resolve final audit drift", 2026-06-10 08:42 +0530); `main` @ `bf8c18c1` (2026-06-09) — 30 commits behind, fast-forwardable, and the only production deploy trigger. Working tree massively dirty: **512 deleted / 410 modified / 76 untracked** at wave-1 baseline; **77 untracked** re-verified at synthesis time (`git status --porcelain` — the 77th entry is `REPOSITORY_TRUTH_AUDIT_2026_06_10/` itself; the DELETION_CANDIDATE_REGISTRY's "77 ??" and the wave-1 reports' "76 ??" are both correct for their timestamps). One stale `stash@{0}` ("On stream/letbuyy-ui-v2: branch-consolidation-local-artifacts"). All Phase A–D13 changes per `EXECUTION_LEDGER.md` (40 rows, every row "not committed"). Three temporal realities — `main` / HEAD / working tree — were distinguished per finding throughout.
+**Repo state at audit:** branch `stepup/main` @ HEAD `c4fc3cd6` ("fix(foundation): resolve final audit drift", 2026-06-10 08:42 +0530); `main` @ `4bcae19a` (2026-06-09) — 30 commits behind, fast-forwardable, and the only production deploy trigger. Working tree massively dirty: **512 deleted / 410 modified / 76 untracked** at wave-1 baseline; **77 untracked** re-verified at synthesis time (`git status --porcelain` — the 77th entry is `REPOSITORY_TRUTH_AUDIT_2026_06_10/` itself; the DELETION_CANDIDATE_REGISTRY's "77 ??" and the wave-1 reports' "76 ??" are both correct for their timestamps). One stale `stash@{0}` ("On stream/letbuyy-ui-v2: branch-consolidation-local-artifacts"). All Phase A–D13 changes per `EXECUTION_LEDGER.md` (40 rows, every row "not committed"). Three temporal realities — `main` / HEAD / working tree — were distinguished per finding throughout.
 
 **The 12 source reports** (all in `REPOSITORY_TRUTH_AUDIT_2026_06_10/`):
 

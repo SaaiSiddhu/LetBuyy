@@ -17,7 +17,7 @@ pnpm graph:ui         # → http://localhost:3333  (visual explorer)
 | Edges | **66,761** |
 | Communities | **3,279** |
 | Files | 3,677 |
-| Built at commit | `0db025a6` |
+| Built at commit | `0f257ca1` |
 | graph.json | 43.7 MB (**gitignored** — rebuild locally) |
 
 ## Languages

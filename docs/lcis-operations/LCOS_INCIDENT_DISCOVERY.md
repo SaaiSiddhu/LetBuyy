@@ -95,7 +95,7 @@ Top-level fields present in the file:
 | `whichQueues` | `["EVENT_QUEUE"]` | DETECTABLE (wrangler.toml) |
 | `whichWorkers` | `["letbuyy-api","letbuyy-queue-workers","letbuyy-webhook"]` | DETECTABLE (wrangler.toml) |
 | `whichDeployments.worker` | `"letbuyy-api"` | DETECTABLE |
-| `whichDeployments.head` | `"4a91fa96"` | PARTIAL — git SHA at graph-generation time; live HEAD requires `git rev-parse HEAD` or Cloudflare deploy API |
+| `whichDeployments.head` | `"d7f74037"` | PARTIAL — git SHA at graph-generation time; live HEAD requires `git rev-parse HEAD` or Cloudflare deploy API |
 | `whichDeployments.branch` | `"stepup/main"` | PARTIAL — captured at generation time; live branch from `git branch --show-current` |
 | `whichDeployments.latestMigration` | `"174_v1_gift_card_refund_restore.sql"` | PARTIAL — file-name is DETECTABLE; whether it is applied in production requires Supabase migration history |
 | `whatRollback` | rollback command string | DETECTABLE (script exists at path) |
@@ -366,7 +366,7 @@ It must not embed the rollback command string directly or replicate gate sequenc
 | Overall launch verdict (NO-GO, 5 open blockers) | DETECTABLE | `graphify-out/production-readiness-v2.json` → `summary` |
 | Domain owner (all 22 domains owned by `@saai-sidd`) | DETECTABLE | `graphify-out/runbooks.json` → `<domain>.owner` |
 | Tenant scope for any incident | DETECTABLE | `graphify-out/incident-intelligence-v5.json` → `answers.whichMerchants` (ALL tenants, shared schema) |
-| Deployed git HEAD (`4a91fa96`) | PARTIAL | Captured at `2026-06-14T05:53:49Z` graph-generation time; live HEAD: `git rev-parse HEAD` or Cloudflare deployments API |
+| Deployed git HEAD (`d7f74037`) | PARTIAL | Captured at `2026-06-14T05:53:49Z` graph-generation time; live HEAD: `git rev-parse HEAD` or Cloudflare deployments API |
 | Whether migration 174 is applied in production | PARTIAL | File name DETECTABLE from `incident-intelligence-v5.json`; live application state: NOT_CONNECTED — Supabase `supabase_migrations.schema_migrations` via `SUPABASE_SERVICE_ROLE_KEY` |
 | Incident records (historical log) | NOT_CONNECTED | No incident table in the repo; source: external incident tracker or `site_incidents` table (not observed in schema) |
 | Live error rates per worker | NOT_CONNECTED | Cloudflare Analytics Engine, dataset `RUNTIME_TELEMETRY` (env var: `RUNTIME_TELEMETRY` binding declared in `wrangler.toml`) |

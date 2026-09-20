@@ -1,6 +1,6 @@
 # 08 — INFRASTRUCTURE AUDIT
 
-**HEAD `cd5905be` · code-verified from `wrangler.toml`, `vercel.json`, env templates, workflows.** Architecture facts are repo-proven; capacity/cost are marked as architecture-bounded estimates grounded in published platform limits (the repo does not contain runtime metrics or the billing plan).
+**HEAD `c7c82847` · code-verified from `wrangler.toml`, `vercel.json`, env templates, workflows.** Architecture facts are repo-proven; capacity/cost are marked as architecture-bounded estimates grounded in published platform limits (the repo does not contain runtime metrics or the billing plan).
 
 ## Current architecture (repo-proven)
 

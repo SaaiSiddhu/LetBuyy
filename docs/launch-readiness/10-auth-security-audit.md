@@ -142,7 +142,7 @@
 - Rate limiting (Upstash Redis)
 - CSRF protection
 - Security page (merchant): `settings/security/page.tsx`
-- LB-13 security trio committed (commit `8d73fe7a`): "directory PII removed, replay guard, per-IP rate limits"
+- LB-13 security trio committed (commit `90368dc6`): "directory PII removed, replay guard, per-IP rate limits"
 
 **What is missing:**
 - CAP-C06: Live step-up certification (TOTP + HMAC in production, not just test)

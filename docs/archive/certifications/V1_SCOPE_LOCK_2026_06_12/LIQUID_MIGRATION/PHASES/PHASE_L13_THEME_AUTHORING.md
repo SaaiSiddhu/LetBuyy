@@ -1,6 +1,6 @@
 # PHASE L13 — THEME AUTHORING (+ Publishing)
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only. **Deferrable if Open Beta ships one fixed Liquid theme.**
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only. **Deferrable if Open Beta ships one fixed Liquid theme.**
 
 1. **Purpose.** Let a merchant author, preview, and publish a Liquid theme via the editor (so theme settings/customization persist as Liquid, not portable JSON that strips the bundle).
 2. **Repository Reality.** The editor emits portable JSON; routes accept `liquidBundle` (`editor/route.ts:29-40`, `editor/draft/route.ts:27-34`) but the UI never sends one; preview is the real storefront `/preview` (always React today because no bundle). Publish writes `theme_releases.template_snapshot` + `sites.template_config` (`theme-execution.adapter.ts:634,765`). No Liquid code editor exists.

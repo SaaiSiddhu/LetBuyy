@@ -7,7 +7,7 @@
 > | Field | Value |
 > |---|---|
 > | Repo | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` (original tree, read-only) |
-> | Branch / HEAD | `stepup/main` @ `ee3711829d857e986014c5811bb94d86ebc3d343` |
+> | Branch / HEAD | `stepup/main` @ `bf35062eda22f4d881efd61fb1d36c8fc83baed1` |
 > | Date | 2026-08-09 |
 > | Commands used | `git status --porcelain`, `git diff HEAD --numstat`, `git diff HEAD --raw`, `git ls-files -s`, `git hash-object` |
 > | EXECUTED vs INFERRED | Every figure below EXECUTED this session; exit codes observed. Nothing INFERRED. |
@@ -35,7 +35,7 @@
 >
 > Cross-checks: 6,696 + 89 + 10 = **6,795** = `git diff HEAD --numstat | wc -l` ✓ · 89 + 10 = **99** real content changes ✓ · 6,018 + 678 + 99 = 6,795 ✓ · porcelain `M`=6,785 = 6,018 + 678 + 89 ✓ (the 10 show as `A`, not `M`).
 >
-> **Impact on this document's conclusions: none.** §1's load-bearing claim — that `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc` and `supabase/config.toml` each return `0 0` and so the dependency analysis is valid against committed `ee371182` content — is unaffected and still stands. Only the framing counts were wrong. The **direction** of §1's warning is if anything strengthened: a fresh `git clone` of `ee371182` reproduces **99** files of real drift plus 31 untracked paths, and the mode-only noise (6,696 paths, not 6,018) is larger than stated.
+> **Impact on this document's conclusions: none.** §1's load-bearing claim — that `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc` and `supabase/config.toml` each return `0 0` and so the dependency analysis is valid against committed `bf35062e` content — is unaffected and still stands. Only the framing counts were wrong. The **direction** of §1's warning is if anything strengthened: a fresh `git clone` of `bf35062e` reproduces **99** files of real drift plus 31 untracked paths, and the mode-only noise (6,696 paths, not 6,018) is larger than stated.
 >
 > **Found by:** Wave 0 Doc Correction agent, by re-adding §1's own four numbers and then re-deriving each bucket from raw git output. **See:** `30_CORRECTIONS_AND_STASH_HAZARD.md`.
 
@@ -45,7 +45,7 @@
 - Agent: F — Local Environment and Reproducibility Auditor, Wave 0 Phase 1 (read-only)
 - Repo root: `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store`
 - Branch: `stepup/main`
-- HEAD SHA at time of audit: `ee3711829d857e986014c5811bb94d86ebc3d343`
+- HEAD SHA at time of audit: `bf35062eda22f4d881efd61fb1d36c8fc83baed1`
 - Timestamp used: literal date **2026-08-09**
 - Mode: read-only. `pnpm install` was **never run** by this audit — every dependency-resolution claim below comes from **static comparison of `pnpm-lock.yaml` against every workspace `package.json`**, not from executing pnpm.
 - Raw evidence: `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/F/00_git_and_tool_versions.txt`, `04_lockfile_vs_package_json_check.txt`, `05_toolchain_pins.txt`
@@ -54,7 +54,7 @@
 
 ## 1. Working tree is not a clean checkout of HEAD — this matters for how to read every claim below
 
-`git status --short` reports **6,826** changed/untracked paths against `ee371182`. This was independently re-verified, not taken from any prior report. Breaking it down (`git diff --name-status` / `git diff --numstat`, both run fresh):
+`git status --short` reports **6,826** changed/untracked paths against `bf35062e`. This was independently re-verified, not taken from any prior report. Breaking it down (`git diff --name-status` / `git diff --numstat`, both run fresh):
 
 > **[CORRECTED 2026-08-09] — the four bullets below sum to 7,603, not 6,826. Read the corrected table underneath them, not the bullets.**
 
@@ -75,11 +75,11 @@
 
 Real content changes = 89 + 10 = **99**. Tracked diff rows = 6,696 + 99 = **6,795** = `git diff HEAD --numstat | wc -l` ✓. Porcelain `M` = 6,018 + 678 + 89 = **6,785** ✓.
 
-**Load-bearing fact for this document:** the files this reproducibility analysis actually depends on — `package.json` (root), `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`, `supabase/config.toml` — were individually checked with `git diff --numstat` and each returned `0 0` (no content diff, mode-only at most). So the dependency-resolution analysis below is valid against the **committed** `ee371182` content, not against some drifted local edit. This was verified, not assumed.
+**Load-bearing fact for this document:** the files this reproducibility analysis actually depends on — `package.json` (root), `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`, `supabase/config.toml` — were individually checked with `git diff --numstat` and each returned `0 0` (no content diff, mode-only at most). So the dependency-resolution analysis below is valid against the **committed** `bf35062e` content, not against some drifted local edit. This was verified, not assumed.
 
-This 6,826-file dirty state is otherwise out of scope for a read-only audit to remediate (and this audit did not touch it), but it should be surfaced to whoever owns the Wave 0 baseline decision: **a "reproducible checkout" claim for this specific working directory needs the caveat that it is not currently `git clean`.** A fresh `git clone` of `ee371182` would not reproduce the ~~777-file~~ **[CORRECTED: 99-file]** content drift or the 10 new migration files ~~, only the mode-only noise would disappear~~ **[CORRECTED: nor the 31 untracked paths; the mode-only noise — 6,696 paths, not 6,018 — is the only bucket that would disappear]**.
+This 6,826-file dirty state is otherwise out of scope for a read-only audit to remediate (and this audit did not touch it), but it should be surfaced to whoever owns the Wave 0 baseline decision: **a "reproducible checkout" claim for this specific working directory needs the caveat that it is not currently `git clean`.** A fresh `git clone` of `bf35062e` would not reproduce the ~~777-file~~ **[CORRECTED: 99-file]** content drift or the 10 new migration files ~~, only the mode-only noise would disappear~~ **[CORRECTED: nor the 31 untracked paths; the mode-only noise — 6,696 paths, not 6,018 — is the only bucket that would disappear]**.
 
-> **[ADDED 2026-08-09]** A third divergent body of uncommitted work exists that this document never accounted for: **two git stashes**, `stash@{0}` ("On stepup/main: inf-ext", 28 files, based 53 commits behind the baseline) and `stash@{1}` ("On stream/letbuyy-ui-v2", 10 untracked-only files). All 28 of `stash@{0}`'s paths are also dirty right now, 9 of them with a *different* real content diff. Reproducibility from `ee371182` therefore has three drift sources, not one. **No stash command other than read-only `list`/`show` was run.** See `30_CORRECTIONS_AND_STASH_HAZARD.md` §2.
+> **[ADDED 2026-08-09]** A third divergent body of uncommitted work exists that this document never accounted for: **two git stashes**, `stash@{0}` ("On stepup/main: inf-ext", 28 files, based 53 commits behind the baseline) and `stash@{1}` ("On stream/letbuyy-ui-v2", 10 untracked-only files). All 28 of `stash@{0}`'s paths are also dirty right now, 9 of them with a *different* real content diff. Reproducibility from `bf35062e` therefore has three drift sources, not one. **No stash command other than read-only `list`/`show` was run.** See `30_CORRECTIONS_AND_STASH_HAZARD.md` §2.
 
 ---
 
@@ -132,7 +132,7 @@ Mismatches found: 2
 
 Both "mismatches" are **expected, not defects**: neither path matches any glob in `pnpm-workspace.yaml` (`apps/*`, `apps/mobile/*`, a fixed list of `packages/*`, `packages/typescript/*`, `services/*`) — `docs/archive/**` is explicitly archived/historical, and `tools/central-intelligence` is deliberately outside the pnpm workspace (it has its own untracked `package-lock.json`, see §5). So:
 
-**All 55 real pnpm-workspace members have dependency declarations that are fully in sync with `pnpm-lock.yaml`** — zero missing entries, zero extra/orphaned entries, across every app, service, and package. This is strong evidence the lockfile is not stale relative to `package.json` across the workspace, as of `ee371182`.
+**All 55 real pnpm-workspace members have dependency declarations that are fully in sync with `pnpm-lock.yaml`** — zero missing entries, zero extra/orphaned entries, across every app, service, and package. This is strong evidence the lockfile is not stale relative to `package.json` across the workspace, as of `bf35062e`.
 
 Full script output persisted at `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/F/04_lockfile_vs_package_json_check.txt`.
 

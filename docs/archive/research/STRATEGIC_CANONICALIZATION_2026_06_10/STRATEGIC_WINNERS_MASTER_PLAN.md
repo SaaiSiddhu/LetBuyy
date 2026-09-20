@@ -3,7 +3,7 @@
 > **Document type:** Strategic-winner synthesis across all 32 platform domains — the canonical "what survives at 10,000 merchants" verdict for the LetBuyy ecosystem (Architecture Review Board, capstone deliverable of the Strategic Canonicalization program).
 > **Date:** 2026-06-10
 > **Author role:** Architecture Review Board (ABR) chair, synthesizing the nine domain deliverables into one strategic-winner ledger.
-> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `5cf9e64e`, dirty, 2026-06-10).
+> **Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` (working tree, evidence pinned at `stepup/main` @ `c4fc3cd6`, dirty, 2026-06-10).
 > **Companion:** `CANONICAL_ARCHITECTURE_MATRIX.md` (same directory) — the denser component-level reference matrix + target diagram + classification totals. This plan is the narrative; that matrix is the table.
 
 ---
@@ -385,4 +385,4 @@ No reconciliation changed a Strategic Winner. Every winner in §2 traces to its 
 
 **Traceability:** every winner call in §2 carries its source-doc ID. Forensic anchoring runs through `FORENSIC_MASTER_2026_06_10/TOP_250_PLATFORM_ISSUES.md` (ISSUE-001…291) and the per-phase audit IDs (AUTH/PAY/DB/FND/CHK/THEME/TOPO/UIUX/MOB). The denser component-level view, the target diagram, and the platform-wide classification totals are in the companion `CANONICAL_ARCHITECTURE_MATRIX.md`.
 
-*End of Strategic Winners Master Plan. Aggregated from the nine domain deliverables + the anchor spine; evidence pinned at `stepup/main` @ `5cf9e64e`, working tree dirty, 2026-06-10.*
+*End of Strategic Winners Master Plan. Aggregated from the nine domain deliverables + the anchor spine; evidence pinned at `stepup/main` @ `c4fc3cd6`, working tree dirty, 2026-06-10.*

@@ -6,7 +6,7 @@ Constitution's "never decide alone" list (§11.2 / `AGENT-R15`), that decision i
 to make. Zero behaviour changed to produce this document; see the Confirmation section at the end
 for the `git diff` proof.
 
-**Baseline commit:** `2e4dc449` (HEAD at the start of this phase). Re-check `git log -1` before
+**Baseline commit:** `918660d6` (HEAD at the start of this phase). Re-check `git log -1` before
 relying on any `path:line` citation in this packet past that commit — this repository has
 concurrent, actively-committing sessions.
 
@@ -119,7 +119,7 @@ front door onto the same legacy-shaped session, and Phase I1's `tests/auth/sessi
 already proves its mint-once/redeem-once behaviour (not re-proven here).
 
 **Same secret, both shapes, both runtimes:** `CUSTOMER_SESSION_SECRET`, declared for every Next.js
-app and for the Worker per the S1 (`a28d9f58`) precedent's own inventory of where
+app and for the Worker per the S1 (`31dc4865`) precedent's own inventory of where
 `CUSTOMER_SESSION_SECRET` is declared.
 
 **`identity-platform`'s actual capability today** — the real, live merchant-realm template this
@@ -215,14 +215,14 @@ verify-only mechanism needs inventing — copy `identity-session-verifier.ts`'s 
 **New secrets/keys named, not provisioned:** either (i) none — reuse
 `LETBUYY_IDENTITY_PRIVATE_JWK`/`LETBUYY_IDENTITY_PUBLIC_JWKS` for both realms, distinguished only by
 the `realm`/`token_use`/`aud` claims, or (ii) a dedicated `LETBUYY_IDENTITY_CUSTOMER_PRIVATE_JWK` /
-`LETBUYY_IDENTITY_CUSTOMER_PUBLIC_JWKS` pair, mirroring how the `a28d9f58` precedent gave
+`LETBUYY_IDENTITY_CUSTOMER_PUBLIC_JWKS` pair, mirroring how the `31dc4865` precedent gave
 `lb_accounts` its own secret rather than reusing `AUTH_SECRET`. **Not decided here — see W7.**
 
 ---
 
 ## W3 — Migration sequence (dual-read drain shape)
 
-Modeled on `a28d9f58`'s shape — dedicated key + verify-only legacy fallback + observable drain
+Modeled on `31dc4865`'s shape — dedicated key + verify-only legacy fallback + observable drain
 signal + re-issue-under-new-key-on-legacy-hit — with the three places the analogy breaks called out
 at each step it matters.
 
@@ -262,7 +262,7 @@ consumer-by-consumer in this packet (see W7).
 **Step 4 — Drain window.** Bounded by the **longer** of the two current TTLs — 7 days
 (`LETBUYY_CUSTOMER_SESSION_TTL_SECONDS`) — plus the cookie's own `maxAge`, so every already-issued
 legacy-shaped cookie a buyer is still holding has naturally expired. Observable signal, mirroring
-`a28d9f58`'s `verifiedWithLegacyKey` flag and structured log line exactly: both
+`31dc4865`'s `verifiedWithLegacyKey` flag and structured log line exactly: both
 `verifyCustomerSession` (primary) and `verifyCustomerSessionToken` (legacy) branches in the dual-read
 verifier from Step 2 should emit a structured, redacted log line on every hit (`{ level: 'info',
 service: ..., route: 'auth.customer-session', reason: 'legacy_hs256_verification', shape: 'primary'
@@ -375,7 +375,7 @@ the legacy path's payload validator) with `normalizeCustomerSessionId`'s guarant
 correction). If any current customer id or store id in production genuinely exceeds 128 characters
 or contains a control character, tightening this check would newly reject an otherwise-valid
 session for that customer — **not verified in this packet; a reviewer implementing this fix should
-query production customer/store id lengths first**, the same discipline `a28d9f58` used before
+query production customer/store id lengths first**, the same discipline `31dc4865` used before
 touching `lb_accounts` (confirming zero non-identity-platform callers before changing behaviour).
 
 **Test:** a new, narrowly-scoped test (not touching `identity-redteam.test.ts`) asserting the
@@ -398,7 +398,7 @@ successful outcome of this document, not a gap in it.
 
 - **Whether the customer realm should share `LETBUYY_IDENTITY_PRIVATE_JWK` with the merchant realm
   or get a dedicated key.** Sharing is simpler to ship; a dedicated key gives cleaner blast-radius
-  isolation if one realm's key is ever compromised (the `a28d9f58` precedent chose "dedicated" for
+  isolation if one realm's key is ever compromised (the `31dc4865` precedent chose "dedicated" for
   exactly this reason when it de-shared `lb_accounts` from `AUTH_SECRET`). Not resolved here.
 - **The new customer-session token's TTL.** Neither of the two current values (30 min, 7 days)
   was validated as correct for the new design; this needs its own reasoning about buyer session
@@ -477,31 +477,31 @@ tree as of this commit** — confirmed by the empty `git diff` below.
 ## This section supersedes the citation line numbers below and records what has changed since. Everything
 ## above this line is the original packet, preserved unmodified — not overwritten, not rewritten in place.
 
-**Baseline re-check:** written against `2e4dc449`. 34 commits have landed since (through `54c646c3` at
-verification time); 3 touch identity: `acce0112` (Phase I4, IRT-6 fix) and `7caf9cf2` (Phase I3,
-IRT-4 fix) both landed *after* this packet's own commit `c54cba22` — verified by both commit
-timestamp (`c54cba22` 14:01:09, `7caf9cf2` 14:27:14, same day) and `git merge-base --is-ancestor`
-(confirms `c54cba22` is the older commit). An earlier draft of this addendum stated the opposite —
+**Baseline re-check:** written against `918660d6`. 34 commits have landed since (through `2bab3730` at
+verification time); 3 touch identity: `7dda2704` (Phase I4, IRT-6 fix) and `1ed39961` (Phase I3,
+IRT-4 fix) both landed *after* this packet's own commit `6d014a37` — verified by both commit
+timestamp (`6d014a37` 14:01:09, `1ed39961` 14:27:14, same day) and `git merge-base --is-ancestor`
+(confirms `6d014a37` is the older commit). An earlier draft of this addendum stated the opposite —
 that IRT-4 was already fixed when the packet was written — which was wrong and is corrected here,
 not silently. Both closures are genuine drift that accumulated *after* the packet's baseline, exactly
-as W8's own recommendation anticipated. The third identity-adjacent commit, `43a635f1` (Phase N3 W4),
+as W8's own recommendation anticipated. The third identity-adjacent commit, `d9f35a58` (Phase N3 W4),
 is an unrelated GoTrue-allowlist edit to the same validator file this packet cites for a different
-reason. A 4th commit, `806690ae` (a concurrent theme session, not identity work), incidentally
+reason. A 4th commit, `9c02d2ac` (a concurrent theme session, not identity work), incidentally
 touched two of the six issuance-site files while fixing storefront routing — recorded below because
 it moved two citations, not because it changed identity behaviour.
 
 ### 1. W6 is superseded — both designed fixes are now CLOSED, verified at source
 
 - **IRT-4 (no `jti` consumption)** — CLOSED by migration `205_merchant_session_jti_consumption.sql`
-  (Phase I3, `7caf9cf2`). Confirmed: the table exists, `services/api-gateway/src/routes/auth.ts` now
+  (Phase I3, `1ed39961`). Confirmed: the table exists, `services/api-gateway/src/routes/auth.ts` now
   calls a consumption check after `validateIdentityIssuedMerchantSessionToken` succeeds (the packet's
   own recommended Fork 1(b) shape). `SKIP-IDN-MERCHANT-SESSION-JTI-CONSUMPTION` reads **CLOSED,
-  Phase I3** in `SKIPPED_HUMAN_DECISIONS.md:73`. Note for the record: `7caf9cf2` precedes this
-  packet's own commit (`c54cba22`) in history — IRT-4 was *already fixed* when W6 was written
+  Phase I3** in `SKIPPED_HUMAN_DECISIONS.md:73`. Note for the record: `1ed39961` precedes this
+  packet's own commit (`6d014a37`) in history — IRT-4 was *already fixed* when W6 was written
   designing a fix for it. That is a packet-authoring gap (W6 should have found this fixed and said
   so), not drift that accumulated afterward; recorded here because it means W6's IRT-4 section was
   never accurate, not that it became inaccurate.
-- **IRT-6 (weak legacy predicate)** — CLOSED by Phase I4 (`acce0112`, after this packet). Confirmed:
+- **IRT-6 (weak legacy predicate)** — CLOSED by Phase I4 (`7dda2704`, after this packet). Confirmed:
   `packages/auth-core/src/index.ts`'s `isCustomerSessionPayload` now calls `normalizeCustomerSessionId`
   (exported from `customer-session.ts`) instead of the old bare `typeof === 'string' && length > 0`
   check — exactly the fix W6 proposed. `SKIP-IDN-CUSTOMER-LEGACY-VERIFIER-PAYLOAD-HARDENING` reads
@@ -523,8 +523,8 @@ file at current `HEAD`, not inferred from a commit message.
 | `routes/storefront/customer-registration.ts:141` | Y | Y | unchanged |
 | `routes/storefront/customer-engagement-routes.ts:610` | Y | Y | unchanged |
 | `routes/storefront/customer-engagement-routes.ts:770` | Y | Y | unchanged |
-| `app/api/customer/login/route.ts:92` | **N** | — | `createSession(` now at **:108** (`806690ae` inserted a 16-line `accountRedirectUrl` routing helper above it) |
-| `app/api/customer/register/route.ts:91` | **N** | — | `createSession(` now at **:110** (`806690ae` inserted a 19-line equivalent helper) |
+| `app/api/customer/login/route.ts:92` | **N** | — | `createSession(` now at **:108** (`9c02d2ac` inserted a 16-line `accountRedirectUrl` routing helper above it) |
+| `app/api/customer/register/route.ts:91` | **N** | — | `createSession(` now at **:110** (`9c02d2ac` inserted a 19-line equivalent helper) |
 | `app/api/customer/set-password/route.ts:73` | Y | Y | unchanged (file untouched since baseline) |
 | `middleware/customer-session.ts:56` | Y | Y | unchanged (`verifyGatewayCustomerSession` signature) |
 | `middleware/customer-session.ts:58` | Y | Y | unchanged (`verifyCustomerSession` call) |
@@ -534,8 +534,8 @@ file at current `HEAD`, not inferred from a commit message.
 | `packages/auth-core/src/customer-session.ts:4` | Y | Y | unchanged |
 | `packages/auth-core/src/customer-session.ts:28` | Y | Y | unchanged |
 | `packages/auth-core/src/customer-session.ts:61` | Y | Y | unchanged |
-| `packages/auth-core/src/customer-session.ts:110-116` | Y | Y | unchanged in location; `acce0112` made the function `export` on the same line, no shift |
-| `packages/auth-core/src/index.ts:751` (`createCustomerSessionToken`) | **N** | — | now **:752** (`acce0112` added one `import` line near the top) |
+| `packages/auth-core/src/customer-session.ts:110-116` | Y | Y | unchanged in location; `7dda2704` made the function `export` on the same line, no shift |
+| `packages/auth-core/src/index.ts:751` (`createCustomerSessionToken`) | **N** | — | now **:752** (`7dda2704` added one `import` line near the top) |
 | `packages/auth-core/src/index.ts:772` (`verifyCustomerSessionToken`) | **N** | — | now **:773** |
 | `packages/auth-core/src/index.ts:841` (`createHostOnlyShopperIdentityProvider`) | **N** | — | now **:842** |
 | `packages/auth-core/src/index.ts:131` (`LETBUYY_CUSTOMER_SESSION_TTL_SECONDS`) | **N** | — | now **:132** |
@@ -543,7 +543,7 @@ file at current `HEAD`, not inferred from a commit message.
 | `packages/auth-core/src/index.ts:864-960` (federation functions) | **N** | Y (content) | now approx. **:865-961**, content unchanged |
 | `packages/auth-core/src/index.ts:1298-1310` (`isCustomerSessionPayload`) | **N** | **N — substantively** | now starts **:1299**; the code AT this citation is the Phase I4-fixed version, not the weaker version the packet describes and W6 designs a fix for |
 | `scripts/validators/identity-sole-issuer-validator.mjs:12` | Y | Y | unchanged |
-| `scripts/validators/identity-sole-issuer-validator.mjs:86-96` | Y | Y | unchanged content (the file was edited by `43a635f1` earlier in the same file, for an unrelated GoTrue-allowlist reason; this specific range was unaffected — verified directly, not assumed) |
+| `scripts/validators/identity-sole-issuer-validator.mjs:86-96` | Y | Y | unchanged content (the file was edited by `d9f35a58` earlier in the same file, for an unrelated GoTrue-allowlist reason; this specific range was unaffected — verified directly, not assumed) |
 | `packages/lcis-security/src/identity/IdentitySecretService.ts:52` | Y | Y | unchanged — the LCIS inaccuracy the packet recorded is still present, still unfixed, exactly as the packet left it |
 | `apps/identity-platform/src/lib/auth/identity-issued-session.ts:5` | Y | Y | unchanged |
 | `.github/workflows/production-deploy.yml:323` | Y | Y | unchanged |
@@ -600,7 +600,7 @@ No step in W3's five-step sequence has a premise that moved. The sequence is not
 
 ### 5. What this pass could NOT establish
 
-- **Whether any commit besides the 3 identified (`acce0112`, `7caf9cf2`, `806690ae`) touches a file
+- **Whether any commit besides the 3 identified (`7dda2704`, `1ed39961`, `9c02d2ac`) touches a file
   this packet reasons about but was not in the explicitly-checked path list** (`packages/auth-core`,
   `services/api-gateway/src/{middleware,lib,routes/storefront}`, `apps/identity-platform`,
   `apps/storefront-runtime/src/lib/session.ts`, the three customer route handlers, the two registry
@@ -618,7 +618,7 @@ No step in W3's five-step sequence has a premise that moved. The sequence is not
   (native `uuid` columns), closing the exact question this packet's W6 flagged as needing a production
   query. Recorded here because the packet's own W7 still lists it as an open item; this addendum does
   not edit W7, so the correction lives here instead.
-- **Whether the concurrent theme session's routing changes (`806690ae`) have any OTHER effect on the
+- **Whether the concurrent theme session's routing changes (`9c02d2ac`) have any OTHER effect on the
   customer-session mechanism beyond moving two citations.** Read both diffs in full; found only
   routing-helper insertions ahead of the unchanged `createSession()` calls. Did not read the full
   commit's other ~15 files (Liquid section templates, CSS, generator changes) — none are packet-relevant
@@ -630,11 +630,11 @@ This is out of scope for the addendum's own subject (it is not identity drift), 
 grep-auditing the citations above and the phase's own rule is to report rather than silently act, so it
 is recorded here rather than dropped.
 
-**The original document (committed at `c54cba22`, unchanged by this addendum) contains one literal NUL
+**The original document (committed at `6d014a37`, unchanged by this addendum) contains one literal NUL
 byte and its neighbouring raw control-character bytes**, at the point in the original W6 section that
 describes rejecting `[ -]` control characters — the actual bytes `\x00`–`\x1f`/`\x7f`
 appear to have been typed literally into the Markdown instead of their escaped/printable representation.
-Confirmed present in the git-committed original via `git show c54cba22:<path> | python3 -c
+Confirmed present in the git-committed original via `git show 6d014a37:<path> | python3 -c
 "...find(b'\x00')"` — not introduced by this addendum's edits, and not something this addendum edits or
 removes, per the explicit instruction to leave the original content untouched. Effect: `file`(1)
 classifies the document as `data` (binary) rather than text, and a plain `grep` (without `-a`) silently

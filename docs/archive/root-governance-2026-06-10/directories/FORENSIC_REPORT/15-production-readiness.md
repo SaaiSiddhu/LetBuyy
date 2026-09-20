@@ -1,6 +1,6 @@
 # Production Readiness Assessment
 
-**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `127a850e`)
+**Investigation date:** 2026-06-05 (second pass, post-remediation; HEAD `a8cd5fde`)
 **Nature:** A factual, evidence‑cited assessment of the platform's *current* readiness across the dimensions a production‑operations review examines, now carrying a **delta vs. the first pass** for each dimension. Documents what exists and what is absent; prescribes nothing.
 
 **Readiness scale:** **Operational** (implemented, wired, exercised) · **Partial** (gaps / unwired pieces / no exercise evidence) · **Contract‑only** (declared, no executing implementation) · **Absent**.

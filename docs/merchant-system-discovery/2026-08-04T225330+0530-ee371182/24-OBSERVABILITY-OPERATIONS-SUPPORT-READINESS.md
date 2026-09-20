@@ -2,9 +2,9 @@
 
 | Field | Value |
 |---|---|
-| Run ID | `2026-08-04T225330+0530-ee371182` |
+| Run ID | `2026-08-04T225330+0530-bf35062e` |
 | Branch | `stepup/main` |
-| Commit | `ee371182` |
+| Commit | `bf35062e` |
 | Run date | 2026-08-04 (+0530) |
 | Scope | Alerting and incident response · audit trails on merchant money and security actions · operator (platform-console) money-operations surfaces · the observability emit→store→query chain · DLQ / retry / stuck-job visibility · reconciliation-break visibility · webhook-failure visibility · support answerability · backup, rollback and recovery evidence |
 | Evidence basis | Agent M notes (`_agent-notes/M-quality-observability-operations.md`, 741 lines) plus first-hand re-verification of 21 cited source locations in this session |

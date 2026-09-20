@@ -1,7 +1,7 @@
 # DELETE CANDIDATES — Convergence Audit 2026-06-10 (Phase 5)
 
 **Phase:** 5 of 10 — DELETE CANDIDATE classification. **Mode:** DISCOVERY / CLASSIFICATION ONLY. Nothing is deleted or modified; read-only git; this report is the only file written. No new architecture, no codex prompts.
-**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `5cf9e64e` (verified this phase) · deploy branch `main` 30 commits behind (the only branch production CI triggers from) · working tree dirty **512 D / 410 M / 78 ??** (`git status --porcelain` re-counted this phase).
+**Repo:** `/Users/saai_sidd/Git/Letbuyy_Store` · branch `stepup/main` @ HEAD `c4fc3cd6` (verified this phase) · deploy branch `main` 30 commits behind (the only branch production CI triggers from) · working tree dirty **512 D / 410 M / 78 ??** (`git status --porcelain` re-counted this phase).
 **Job:** RE-CLASSIFY the prior `REPOSITORY_TRUTH_AUDIT_2026_06_10/DELETION_CANDIDATE_REGISTRY.md` (which used a 5-class CANONICAL/KEEP/ARCHIVE/DELETE/NEEDS-EVIDENCE taxonomy) into the user's **NEW 6-class taxonomy**, and EXTEND coverage to every artifact type. Evidence binds to `_PREMISES_SEED.md` (winner spine) and reuses the verified citations of the four Wave-A convergence reports (`REPOSITORY_TRUTH_REPORT.md`, `DUPLICATE_AUTHORITY_REPORT.md`, `STRATEGIC_WINNER_DECISIONS.md`, `PROMPT_DRIFT_REPORT.md`) + the prior registry. Spot-re-verifications run this phase are marked **(verified)**.
 
 ---
@@ -133,7 +133,7 @@
 | — `docs/runbooks/`: `regional-failover.md`, `survivability-suite.md`, `infra-recovery.md`, `chaos-drill.md`, `event-replay.md`, `live-certification-execute.md` | **DELETE_AFTER_MIGRATION** → archive | `survivability-suite.md`/`infra-recovery.md` are validator-required (`survivability-governance-validator.mjs:28-29`). Condition: [SURVIVABILITY-UNHOOK] | validator read |
 | `docs/design-system/` (incl. `empty-states/` 18-motif SVG library), `docs/seo/`, `docs/research/` (shopify intelligence), `docs/env-setup/`, `docs/LOCAL_DEV.md` | **KEEP_CANONICAL** (live reference) | Active design/SEO/research/dev reference material; `docs/LOCAL_DEV.md` matches `scripts/dev/` reality | memory (empty-states, canonical-domain); CODE §12 |
 | `docs/conflicts/`, `docs/future-roadmap/` | **SAFE_DELETE** (emptied dirs after the generated-tree delete) | Contain only generated READMEs enumerating dead `FORENSIC_REPORT/*` rows | ARCH §4.3 |
-| `docs/mobile-migration-blueprint/` (empty, 0 files — verified) | **SAFE_DELETE** | Empty husk; contents git-history-only since `47f29bc6` | PROMPT §3.6 (verified empty) |
+| `docs/mobile-migration-blueprint/` (empty, 0 files — verified) | **SAFE_DELETE** | Empty husk; contents git-history-only since `aed02212` | PROMPT §3.6 (verified empty) |
 | `docs/auth/2026-06-09-*` untracked report sets | **KEEP** (report-class evidence) → [COMMIT] | Current identity-axis evidence | PROMPT §6.6 |
 | `_GOVERNANCE_SPINE.md` (cited 26× by 5 of 7 canonical docs) | **INVESTIGATE** (not a deletion row) | GHOST — does not exist anywhere (verified absent); author it or strip the 26 citations | RT §7b (verified absent) |
 

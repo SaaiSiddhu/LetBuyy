@@ -1,7 +1,7 @@
 # AGENT E — Orders, Fulfillment, Shipping, Returns, COD
 
-Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-ee371182`
-Branch `stepup/main` @ `ee371182` (working tree — many files carry uncommitted user modifications; all findings below are against the **working-tree state**, which is what was assigned for audit).
+Run: `docs/merchant-system-discovery/2026-08-04T225330+0530-bf35062e`
+Branch `stepup/main` @ `bf35062e` (working tree — many files carry uncommitted user modifications; all findings below are against the **working-tree state**, which is what was assigned for audit).
 Method: static reading of gateway/app/DB source + SQL, plus **one local runtime probe** of the tenant-guard proxy module (no network, no production, no writes outside this file).
 
 ---

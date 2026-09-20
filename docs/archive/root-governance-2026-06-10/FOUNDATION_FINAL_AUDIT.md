@@ -34,7 +34,7 @@ For each audit below: regenerate the artifact, diff it against the PHASE A versi
 
 ### 6. Frozen-path audit
 - [x] No `FOUNDATION_REPO_LOCKS.md` path modified without a `FROZEN-OVERRIDE` trailer (git log check).
-- [x] `139/141/147` ledger/inventory/order objects unchanged; `tokens.ts` not forked; theme section model intact; auth primitives intact; cross-realm cookie isolation intact. **Result:** PASS. `git log 41b6ea49..HEAD -- <frozen paths>` returned no committed frozen-path edits from the Step-Up branch.
+- [x] `139/141/147` ledger/inventory/order objects unchanged; `tokens.ts` not forked; theme section model intact; auth primitives intact; cross-realm cookie isolation intact. **Result:** PASS. `git log c2547049..HEAD -- <frozen paths>` returned no committed frozen-path edits from the Step-Up branch.
 
 ### 7. Security / session audit
 - [x] Internal secret isolated (grep: reuse across cookie/OAuth/TOTP/money-header = 0); gateway perimeter gate present.

@@ -1,6 +1,6 @@
 # ARB FLIP PACKET (L16)
 
-**Date:** 2026-06-13 · **HEAD:** `cf4f6f6f` · For ARB review. **Human sign-off required — no automation may flip.**
+**Date:** 2026-06-13 · **HEAD:** `77b681f1` · For ARB review. **Human sign-off required — no automation may flip.**
 
 ## Decision requested
 Move `THEME_LIQUID_PLATFORM_WIDE_FLIP_DECISION.status` from `'deferred'` to an approved state (`theme-governance.ts:16-21`). Constitution **ART-17** forbids a platform-wide flip "without the parity/security/perf gate" — this packet is that gate's evidence dossier.

@@ -5,10 +5,10 @@ This document records what was changed, what was executed, and what was observed
 
 | Field | Value |
 |---|---|
-| Baseline SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` (human-approved Wave 0 baseline; `= ee371182`, tip of `stepup/main`) |
+| Baseline SHA | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (human-approved Wave 0 baseline; `= bf35062e`, tip of `stepup/main`) |
 | Branch worked on | `codex/w0-validator-execution` |
 | Worktree | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-validator-execution` (isolated, clean at baseline before work) |
-| Commits produced (local only, not pushed) | `369f7918` `fix(governance): make silently non-blocking validator findings block`<br>`02b6374d` `feat(governance): run and report every validator instead of failing fast` |
+| Commits produced (local only, not pushed) | `611ee20b` `fix(governance): make silently non-blocking validator findings block`<br>`45958978` `feat(governance): run and report every validator instead of failing fast` |
 | Date | 2026-08-09 |
 | Node | `v26.5.1` |
 | Original repository | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — **not modified**. Nothing was written to it outside `docs/launch/web-v1-wave-0-2026-08-09/` and `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/`. No Supabase, provider, deploy, push, reset, clean, stash, restore, or checkout operation was run anywhere. |

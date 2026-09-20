@@ -1,6 +1,6 @@
 # PHASE L8 — CART MIGRATION
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Render the full-page cart through Liquid; today the cart drawer island works but the cart page is bespoke React.
 2. **Repository Reality.** Full server cart exists at `services/api-gateway/src/routes/storefront/cart-routes.ts` (POST/GET/PATCH/buyer-identity/discount-codes/checkout-url/DELETE; `carts` table RLS ENABLE; server re-pricing). React cart + the `lb-cart-drawer` island **share `lb_cart`/`lb_cart_token`** → unified state; islands proxy `/cart` via the `next.config.ts:107-115` rewrite to the gateway (works). `composition-engine.tsx:279-287` stubs the `cart` drop (`item_count:0`). React `cart/page.tsx` (199) bypasses the engine.

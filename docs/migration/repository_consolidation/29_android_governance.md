@@ -1,6 +1,6 @@
 # 29 — Android Identity Governance (Phase S)
 
-Starting HEAD `72ec82f96c7d94d1fafa8c615e9b57c1d8e6dc72`, final HEAD `a7b24e7e` and after. Full stage-by-stage evidence, every command and its real output, is in `28_android_governance_journal.md` — this document is the reader-facing summary.
+Starting HEAD `b05feef80cd6db158615385929a4731263b975ee`, final HEAD `50e1d2d8` and after. Full stage-by-stage evidence, every command and its real output, is in `28_android_governance_journal.md` — this document is the reader-facing summary.
 
 ## The measurement that opened this phase
 
@@ -57,7 +57,7 @@ The six pre-existing failures — `foundation-antifabrication-gate.mjs`, `valida
 
 ## Full regression
 
-merchant_app 172/172 (canary), the other 4 suites at exact baseline (415/415 total). All 15 `packages/dart` members + customer_app + admin_app analyze clean. Workspace `pub get` resolves cleanly. `git diff 72ec82f9..HEAD -- 'apps/*/android/app/build.gradle' 'apps/*/android/app/build.gradle.kts'` is empty — this phase adds governance, it changes zero app identity. Rebuilt all three debug APKs after the gate (so nothing further deletes them) and re-confirmed via `aapt dump badging`: `com.letbuyy.store` / `com.letbuyy.letbuyy` / `com.letbuyy.admin`, unchanged. `pnpm-lock.yaml` byte-identical before and after the gate; node_modules restored (0 → 51).
+merchant_app 172/172 (canary), the other 4 suites at exact baseline (415/415 total). All 15 `packages/dart` members + customer_app + admin_app analyze clean. Workspace `pub get` resolves cleanly. `git diff b05feef8..HEAD -- 'apps/*/android/app/build.gradle' 'apps/*/android/app/build.gradle.kts'` is empty — this phase adds governance, it changes zero app identity. Rebuilt all three debug APKs after the gate (so nothing further deletes them) and re-confirmed via `aapt dump badging`: `com.letbuyy.store` / `com.letbuyy.letbuyy` / `com.letbuyy.admin`, unchanged. `pnpm-lock.yaml` byte-identical before and after the gate; node_modules restored (0 → 51).
 
 ## What this does NOT protect
 

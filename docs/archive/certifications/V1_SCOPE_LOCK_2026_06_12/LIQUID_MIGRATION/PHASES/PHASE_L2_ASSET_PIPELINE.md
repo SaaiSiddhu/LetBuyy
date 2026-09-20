@@ -1,6 +1,6 @@
 # PHASE L2 — LIQUID ASSET PIPELINE (CSS)
 
-**Program:** Full Liquid V1 · **HEAD:** `0b8a56e7` · plan-only.
+**Program:** Full Liquid V1 · **HEAD:** `140a73db` · plan-only.
 
 1. **Purpose.** Make Liquid pages styled — today the Liquid layout ships no CSS, so a Liquid store renders structurally correct but unstyled.
 2. **Repository Reality.** Liquid layout has no `<style>`/`:root`/stylesheet (`theme-bundle.ts:1819-1835`); `renderer.assets` schema supports `stylesheet` entries (`:209-214`) but fixtures are `{}`; `asset_url` returns `/assets/<file>` (`theme-renderer.ts:638`) with **no serving backend**; DOMPurify strips inline `style` (`:157`) → styling must be class-based. The `lb-*` CSS already exists, fully authored, in React `globals.css:554-710` (plain CSS + CSS vars, not `@apply`) → portable by extraction.

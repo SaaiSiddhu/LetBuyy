@@ -5,11 +5,11 @@
 | Field | Value |
 |---|---|
 | Date | 2026-08-09 |
-| Baseline SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` (`ee371182`) |
+| Baseline SHA | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (`bf35062e`) |
 | Branch changed | `codex/w0-ci-coverage` |
 | Worktree | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-ci-coverage` |
-| HEAD after this work | `8395a48d5277b97d38c3bae9425ad8a42276bbeb` |
-| Commits | `fedd9837`, `fed4e0ca`, `8395a48d` (local only — **not pushed**, no PR, no deploy) |
+| HEAD after this work | `43671d96dec0d3208f1d7e61261321976282f1e1` |
+| Commits | `3a6831da`, `b3025df3`, `43671d96` (local only — **not pushed**, no PR, no deploy) |
 | Original repo | `/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store` — **untouched** except this file and the raw-evidence files listed below |
 | Authority consulted | `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md` ART-02 (l.151), ART-03 (l.159), R-18 (l.419); root `AGENTS.md` DEPLOY-R1 (l.330), TEST-R8 (l.212) |
 
@@ -71,7 +71,7 @@ Source of truth: the parsed `on:` blocks. Full machine output in
 
 ### 2.1 `ci.yml` — the required-check lane
 
-| Event | BEFORE (`ee371182`) | AFTER (`8395a48d`) |
+| Event | BEFORE (`bf35062e`) | AFTER (`43671d96`) |
 |---|---|---|
 | `pull_request.branches` | `develop`, `main` | `develop`, `main`, **`stepup/main`**, **`codex/web-v1-integration`** |
 | `push.branches` | `develop`, `main` | `develop`, `main`, **`stepup/main`**, **`codex/web-v1-integration`** |
@@ -88,7 +88,7 @@ Nothing was removed. `develop` was deliberately retained — see §5.
 | other `codex/**` | PR only (path-scoped) | no (unchanged) | push `codex/**` (unchanged) | **none** |
 | `develop` (retired) | yes (kept) | yes (kept) | PR only (path-scoped) | none |
 
-The gap this closes: at `ee371182`, `.github/BRANCH_STRATEGY.md` line 26 named
+The gap this closes: at `bf35062e`, `.github/BRANCH_STRATEGY.md` line 26 named
 `ci / typecheck`, `ci / lint`, `ci / build`, `ci / unit-tests`, `ci / governance` as the required
 checks for `stepup/main`, while `ci.yml` lines 3–11 triggered only on `develop` and `main`. The
 Web V1 integration branch had **no** unscoped CI lane at all: only the *path-scoped*
@@ -266,7 +266,7 @@ Baseline re-checked as exit 0 before and after the whole sequence.
 
 Three conflicts existed between the document and the workflows:
 
-| # | Document claimed | Reality at `ee371182` | Resolution |
+| # | Document claimed | Reality at `bf35062e` | Resolution |
 |---|---|---|---|
 | 1 | `ci.yml` checks are required for `stepup/main` (l.26) | `ci.yml` never triggered there | **Made CI match the document.** Added `stepup/main` (+ the integration branch) to `ci.yml`. |
 | 2 | `develop` is retired; do not use it for required checks (l.9) | `ci.yml` still triggers on `develop` | **Kept the `ci.yml` triggers; corrected the document.** |
@@ -350,7 +350,7 @@ filters.
 
 Per the deliverable rule, no prior percentage or pass/fail claim is carried forward.
 
-**Remeasured in this clean worktree at `ee371182`:**
+**Remeasured in this clean worktree at `bf35062e`:**
 
 ```
 $ node scripts/validate-governance.mjs --lane=gate
@@ -362,7 +362,7 @@ GATE_EXIT=1
 ```
 
 **This differs from the Phase 1 finding and the difference matters.** Phase 1 recorded the gate
-dying at validator **#6** (`validate-design-system.mjs`). In a *clean* checkout of `ee371182` it
+dying at validator **#6** (`validate-design-system.mjs`). In a *clean* checkout of `bf35062e` it
 dies at validator **#2** (`tenant-isolation-validator.mjs`). The Phase 1 measurement was taken in
 the original working tree, which carries ~~777~~ **99** **[CORRECTED 2026-08-09 — see `30_CORRECTIONS_AND_STASH_HAZARD.md` §1.1: the 678 "binary content changes" in the 777 figure are mode-only `100644→100755` flips on byte-identical blobs, 678/678 verified; they are not content changes. The argument in this paragraph is unaffected — a regenerated tenant-table registry is one of the 99 textual changes either way.]** real uncommitted content changes — including, evidently,
 a regenerated tenant-table registry. **The committed baseline is worse than the working tree.** Both

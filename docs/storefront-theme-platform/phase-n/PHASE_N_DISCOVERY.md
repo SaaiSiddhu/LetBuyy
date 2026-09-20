@@ -3,7 +3,7 @@
 **Program:** LetBuyy Liquid Theme Platform + Shopify-Class Merchant Editor (M→AE)
 **Date:** 2026-07-10
 **Branch:** `stepup/main`
-**Baseline HEAD entering Phase N:** `29f87115` (Phase L)
+**Baseline HEAD entering Phase N:** `8c1ac94b` (Phase L)
 **Theme-engine baseline:** 643/643 tests passing (20 suites including 18 pre-existing)
 
 ---

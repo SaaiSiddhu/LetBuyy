@@ -5,10 +5,10 @@
 | Field | Value |
 |---|---|
 | Date | **2026-08-09** |
-| Baseline SHA | `ee3711829d857e986014c5811bb94d86ebc3d343` (human-approved Wave 0 baseline) |
+| Baseline SHA | `bf35062eda22f4d881efd61fb1d36c8fc83baed1` (human-approved Wave 0 baseline) |
 | Worktree | `/Users/saai_siddharth/Projects/Start_Up/Copy/letbuyy-w0-worktrees/w0-local-environment` |
 | Branch | `codex/w0-local-environment` (local commits only — **not pushed**) |
-| Commits added | `623718a1` (Node pin), `4f3ded6f` (gitignore `.tmp/`) |
+| Commits added | `d926569e` (Node pin), `2a48d56a` (gitignore `.tmp/`) |
 | Isolated project id | `letbuyy-w0-local-env` |
 | Raw evidence | `artifacts/local-operational-proof/web-v1-wave-0-2026-08-09/raw-evidence/W0-LOCAL-ENV/` (`01`–`06`) |
 
@@ -90,9 +90,9 @@ No `.env*` contents were read or reproduced anywhere. `services/api-gateway/.dev
 
 ---
 
-## 3. Node reproducibility gap — closed (commit `623718a1`)
+## 3. Node reproducibility gap — closed (commit `d926569e`)
 
-Doc 12 §2.6 and doc 13 §3 recorded local Node `v26.5.1` against CI pins of 20/22 with **no repo-level pin of any kind**. Confirmed at baseline (EXECUTED): `git show ee371182:.nvmrc` and `:.node-version` both fail; root `package.json` has zero `engines` occurrences.
+Doc 12 §2.6 and doc 13 §3 recorded local Node `v26.5.1` against CI pins of 20/22 with **no repo-level pin of any kind**. Confirmed at baseline (EXECUTED): `git show bf35062e:.nvmrc` and `:.node-version` both fail; root `package.json` has zero `engines` occurrences.
 
 **Pin chosen: Node 20**, justified by what CI actually uses for the **V1 web runtimes**:
 
@@ -181,10 +181,10 @@ Nine symbols are imported by `services/api-gateway/src/routes/contact-public.ts`
 
 `ContactRequestSubmissionSchema`, `addWorkingHours`, `describeResponseHours`, `getContactSubject`, `getContactTopic`, `resolveContactResponseHours`, `resolveContactSubjectLine`, `scoreContactLead`, `validateContactSubmission`
 
-- `packages/shared-types/src/contact.ts` **is tracked at `ee371182`** and **does export all nine**.
-- `packages/shared-types/src/index.ts` at `ee371182` **never re-exports it** — `grep -c "from './contact'"` → **0**.
+- `packages/shared-types/src/contact.ts` **is tracked at `bf35062e`** and **does export all nine**.
+- `packages/shared-types/src/index.ts` at `bf35062e` **never re-exports it** — `grep -c "from './contact'"` → **0**.
 
-**The defect is one missing barrel line.** The recent demo/contact commits (`c0250685`, `4ac324e7`, `ee371182`) added `contact.ts` and the gateway routes that consume it, but the `index.ts` export line was never committed.
+**The defect is one missing barrel line.** The recent demo/contact commits (`6383c8bd`, `3b6e52bf`, `bf35062e`) added `contact.ts` and the gateway routes that consume it, but the `index.ts` export line was never committed.
 
 ### 5.3 The fix exists only as an uncommitted working-tree change
 
@@ -225,9 +225,9 @@ Phase 1 (doc 10/11) measured the gate dying at **#6** `validate-design-system.mj
 
 **Why the two measurements differ (EXECUTED):** Phase 1 measured inside the dirty original tree, where `services/api-gateway/src/tenant/tenant-tables.registry.ts` is modified with **59 insertions, uncommitted**. That uncommitted regeneration is what lets the tenant validator pass there, allowing the gate to reach #6.
 
-**Consequence — the load-bearing point:** the dirty working tree is **not** noise on top of a good baseline. It contains at least two uncommitted changes the baseline actively depends on — the tenant registry regeneration (§6) and the `shared-types` barrel export (§5). The committed baseline is in a **worse** state than the working tree for both build and governance. Any Wave 1 plan that treats `ee371182` as a clean, buildable starting point is proceeding on a false premise.
+**Consequence — the load-bearing point:** the dirty working tree is **not** noise on top of a good baseline. It contains at least two uncommitted changes the baseline actively depends on — the tenant registry regeneration (§6) and the `shared-types` barrel export (§5). The committed baseline is in a **worse** state than the working tree for both build and governance. Any Wave 1 plan that treats `bf35062e` as a clean, buildable starting point is proceeding on a false premise.
 
-This agent's own commits are not implicated: `623718a1` touched `.nvmrc`, `.node-version`, `package.json`; `4f3ded6f` touched `.gitignore`. Neither goes near the tenant registry.
+This agent's own commits are not implicated: `d926569e` touched `.nvmrc`, `.node-version`, `package.json`; `2a48d56a` touched `.gitignore`. Neither goes near the tenant registry.
 
 ---
 
@@ -274,7 +274,7 @@ Recommendation for Wave 1: mirror `supabaseCliEnv` into the down script, drop `-
 2. **The baseline does not build (§5).** Requires a human/ARB decision on how the one-line `shared-types` fix reaches the integration branch. Not applied by this agent.
 3. **The baseline fails governance at validator #2 (§6).** The gate's `fail-fast` (`validate-governance.mjs:201-203`) means 106 of 108 validators are unmeasured at the baseline. Both §5 and §6 depend on uncommitted working-tree content — escalate as a **baseline integrity** question, not a local-environment one.
 4. **Production Supabase link on this machine** (doc 12 §1) remains unresolved. This agent structurally bypassed it (§1.3) but did **not** run `supabase unlink` — a mutating command requiring human approval.
-5. **`.tmp/` was untracked but not gitignored** — fixed in `4f3ded6f` (§10), recorded because doc 12 §4.2 described it as merely "not part of git history", which understated the exposure.
+5. **`.tmp/` was untracked but not gitignored** — fixed in `2a48d56a` (§10), recorded because doc 12 §4.2 described it as merely "not part of git history", which understated the exposure.
 6. **Mobile and App Bridge:** untouched, per the two standing human decisions. `apps/mobile/merchant-app` remains **HUMAN_DECISION_REQUIRED**; nothing here asserts any deferral. No App Bridge / app-marketplace / marketplace code was read, run, or seeded.
 
 ---
@@ -283,10 +283,10 @@ Recommendation for Wave 1: mirror `supabaseCliEnv` into the down script, drop `-
 
 | SHA | Scope |
 |---|---|
-| `623718a1` | `.nvmrc`, `.node-version`, root `engines.node` — Node pin to the CI web-runtime line (§3) |
-| `4f3ded6f` | `.gitignore` — ignore `.tmp/`, the isolated-stack scratch root (§9.5) |
+| `d926569e` | `.nvmrc`, `.node-version`, root `engines.node` — Node pin to the CI web-runtime line (§3) |
+| `2a48d56a` | `.gitignore` — ignore `.tmp/`, the isolated-stack scratch root (§9.5) |
 
-`.tmp/` was untracked **and unignored** before `4f3ded6f`: a stray `git add -A` would have committed a generated `config.toml`, a full copy of the 124-file migration chain, the redirected CLI home, and generated `.dev.vars` holding local Supabase JWTs — violating `SEC-R2` (`AGENTS.md:225`) and `CODE-R10` (`AGENTS.md:126`). Verified after the change: `git check-ignore -v .tmp/` matches `.gitignore:132`, and `git ls-files | grep '^\.tmp/'` returns 0, so no tracked file was retroactively ignored.
+`.tmp/` was untracked **and unignored** before `2a48d56a`: a stray `git add -A` would have committed a generated `config.toml`, a full copy of the 124-file migration chain, the redirected CLI home, and generated `.dev.vars` holding local Supabase JWTs — violating `SEC-R2` (`AGENTS.md:225`) and `CODE-R10` (`AGENTS.md:126`). Verified after the change: `git check-ignore -v .tmp/` matches `.gitignore:132`, and `git ls-files | grep '^\.tmp/'` returns 0, so no tracked file was retroactively ignored.
 
 One uncommitted change remains in the worktree and was left deliberately: `packages/theme-engine/src/theme-cli.ts` mode `100644 → 100755`, caused by `pnpm install` chmod-ing the package's declared `bin` target (`packages/theme-engine/package.json:16`). In a clean tree `pnpm install` produces **exactly one** such mode change — so this mechanism accounts for **1** of the 6,018 mode-only paths in the original dirty tree and does **not** explain the bulk of them.
 

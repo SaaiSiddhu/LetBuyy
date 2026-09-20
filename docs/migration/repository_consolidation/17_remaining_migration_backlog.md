@@ -1,6 +1,6 @@
 # 17 — Remaining Migration Backlog
 
-**Current governance gate baseline (2026-09-04, Phase S, HEAD `a7b24e7e` and after): 106 PASS / 6 FAIL, over 112 selected / 116 `.mjs` on disk.** The six failures, by name, unchanged since Phase R: `foundation-antifabrication-gate.mjs`, `validate-design-system.mjs`, `sequential-migration-validator.mjs`, `raw-error-message-validator.mjs`, `environment-validator.mjs`, `branch-lag-guard-validator.mjs`. Any earlier phase's report citing `105 PASS / 6 FAIL` is describing the *pre-Phase-S* state — do not treat that number as current. See `docs/migration/repository_consolidation/29_android_governance.md`/`28_android_governance_journal.md`.
+**Current governance gate baseline (2026-09-04, Phase S, HEAD `50e1d2d8` and after): 106 PASS / 6 FAIL, over 112 selected / 116 `.mjs` on disk.** The six failures, by name, unchanged since Phase R: `foundation-antifabrication-gate.mjs`, `validate-design-system.mjs`, `sequential-migration-validator.mjs`, `raw-error-message-validator.mjs`, `environment-validator.mjs`, `branch-lag-guard-validator.mjs`. Any earlier phase's report citing `105 PASS / 6 FAIL` is describing the *pre-Phase-S* state — do not treat that number as current. See `docs/migration/repository_consolidation/29_android_governance.md`/`28_android_governance_journal.md`.
 
 Everything below is genuinely open. Nothing in this document should be read as "done" — it is the opposite, a deliberately complete list of what Phase M did **not** finish, so the next phase doesn't have to rediscover it. Every item below only exists as source inside the two Stage 1 bundles (`~/LetBuyy-history-preservation-2026-08-29/system-{A,B}-*.bundle`) — `Ecommerce/LetBuyy` and `Agrimore` no longer exist on disk.
 
@@ -45,7 +45,7 @@ ART-24 names `apps/platform-operations-portal` as MIGRATE-then-DELETE into `apps
 
 ## 7 — Governance gate: 2 disclosed, unresolved findings (of the real gate's final 6 failures)
 
-> **Re-measured 2026-09-06 (F-GATE-1) at `develop` = `baa6eacb`. The bullets below are the record of
+> **Re-measured 2026-09-06 (F-GATE-1) at `develop` = `8cdd3fe4`. The bullets below are the record of
 > their moment and are kept; all three have moved.**
 >
 > - **`foundation-antifabrication-gate` now PASSES.** Its sole offender was

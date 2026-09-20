@@ -31,7 +31,7 @@ The operating procedure (claims, merges, promotions, the loop) is `.claude/skill
   (`LEGACY_INTEGRATED`): never advanced, never deleted. Its `ci.yml` triggers are retained as a
   fail-safe (ART-02 / R-18: removing a gate weakens it), exactly as `develop`'s were while it was retired.
 - `feature/claude-md-durable-architecture-memory` - the primary checkout's frozen work surface,
-  integrated into `develop` at `823aa5ee`. Commits landing on it afterwards are unintegrated until they
+  integrated into `develop` at `a751a2ff`. Commits landing on it afterwards are unintegrated until they
   travel through a phase branch.
 - `codex/web-v1-integration`, `codex/*` - gated, **never deploying**; historical Web V1 lanes.
   `architecture-governance.yml` still runs on every push to `codex/**`.
@@ -75,11 +75,11 @@ and the SHA soaked on `staging` is the SHA that reaches `main`.**
   without access and `git ls-remote` reports the repository as not found. Nothing in CI has been
   observed since 2026-08-15. See `.claude/skills/letbuyy/references/ci.md` §0.
 - **`origin/develop` (2026-06-09), `origin/main` and `origin/stepup/main` (2026-08-15) are all
-  ancestors of `823aa5ee`**; the owner's first push of `develop`, `staging`, `main` is a
+  ancestors of `a751a2ff`**; the owner's first push of `develop`, `staging`, `main` is a
   fast-forward on every ref. Push `develop`, then `staging`, then `main`.
 - **Nothing is deployed.** `config/vercel/projects.json` holds placeholder project IDs; whether the
   Cloudflare / Vercel / Supabase secrets exist in GitHub is UNVERIFIED.
-- **The governance lane is red** (six ambient failures at `823aa5ee`, attributed in `ci.md` §3), so a
+- **The governance lane is red** (six ambient failures at `a751a2ff`, attributed in `ci.md` §3), so a
   dispatched production deploy stops at its governance gate today.
 
 ## GitHub Branch Protection Settings — **UNVERIFIED from the repository**

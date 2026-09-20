@@ -1,6 +1,6 @@
 # Phase C — Tenant Isolation Audit
 
-**HEAD `587dc988`. Score: 92/100. 87 route files audited; 0 genuine ownership-bypass gaps.**
+**HEAD `ae383bb8`. Score: 92/100. 87 route files audited; 0 genuine ownership-bypass gaps.**
 
 ## Enforcement primitives
 - `verifySiteOwnership` (`lib/auth-user.ts:40`) — checks `sites.custom_user_id/user_id == caller`.

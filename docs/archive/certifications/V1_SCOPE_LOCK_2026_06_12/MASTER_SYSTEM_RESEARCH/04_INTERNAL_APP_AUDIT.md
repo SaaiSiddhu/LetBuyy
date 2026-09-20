@@ -1,6 +1,6 @@
 # 04 — INTERNAL APP AUDIT (apps/platform-console)
 
-**HEAD `cd5905be` · code-verified.** The staffed internal ops console (21 pages, `(auth)`/`(dashboard)` route groups). Auth = email allowlist + TOTP MFA.
+**HEAD `c7c82847` · code-verified.** The staffed internal ops console (21 pages, `(auth)`/`(dashboard)` route groups). Auth = email allowlist + TOTP MFA.
 
 | Capability | Status | Evidence |
 |---|---|---|

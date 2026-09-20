@@ -20,14 +20,14 @@ This document describes what was built during Phases B–I on `stepup/main`. Non
 
 | Phase | Commit | What It Delivered |
 |-------|--------|-------------------|
-| B | `073bcbfe` | Architecture certification — 56-item risk register, 7 ARB-gate blockers identified |
-| C | `70a40c2a` | Critical platform fixes — crash recovery, React fallback, branding leak removed, newsletter alias, postMessage bridge |
-| D | `def512cb` | Data completeness — linklists/navigation, settings parity, fonts wired, search drop, hero-banner fields, registration no-JS |
-| E | `0e3d763e` | Template coverage — blog, article, CMS page, 404, password, routes drop, customer login no-JS |
-| F | `fc89b0f1` | Performance and security hardening — parse cache, parallel section rendering, logout CSRF fix, chrome fallback seam |
-| G | `40741cb8` | Schema governance — version gate, migration engine, settings canonicalization, letbuyy-core DB row, experience validation |
-| H | `fb3f660a` | Developer platform — Theme SDK, linter, packager, exporter, CLI, .liquid example artifacts, docs |
-| I | `4eaf3e84` | QA certification — 48 new tests (A11Y, security, SSR contracts, hydration parity), adversarial hardening, confirmed product bug |
+| B | `93419c58` | Architecture certification — 56-item risk register, 7 ARB-gate blockers identified |
+| C | `be56a6fd` | Critical platform fixes — crash recovery, React fallback, branding leak removed, newsletter alias, postMessage bridge |
+| D | `4546f27b` | Data completeness — linklists/navigation, settings parity, fonts wired, search drop, hero-banner fields, registration no-JS |
+| E | `7b111a94` | Template coverage — blog, article, CMS page, 404, password, routes drop, customer login no-JS |
+| F | `51d9dd74` | Performance and security hardening — parse cache, parallel section rendering, logout CSRF fix, chrome fallback seam |
+| G | `7cdd42a1` | Schema governance — version gate, migration engine, settings canonicalization, letbuyy-core DB row, experience validation |
+| H | `06d3cc85` | Developer platform — Theme SDK, linter, packager, exporter, CLI, .liquid example artifacts, docs |
+| I | `dbcf173a` | QA certification — 48 new tests (A11Y, security, SSR contracts, hydration parity), adversarial hardening, confirmed product bug |
 
 ---
 
@@ -53,7 +53,7 @@ All seven blockers are reconciled against committed source below (see Section: A
 
 ## Phase C — Critical Platform Fixes
 
-**Commit:** `70a40c2a`
+**Commit:** `be56a6fd`
 
 ### For Merchants
 
@@ -77,7 +77,7 @@ If a Liquid section throws an error at render time, the rest of the page now ren
 
 ## Phase D — Data Completeness
 
-**Commit:** `def512cb`
+**Commit:** `4546f27b`
 
 ### For Merchants
 
@@ -105,7 +105,7 @@ Navigation menus now resolve correctly in Liquid templates. Themes using `{{ lin
 
 ## Phase E — Template Route Coverage
 
-**Commit:** `0e3d763e`
+**Commit:** `7b111a94`
 
 ### For Merchants
 
@@ -133,7 +133,7 @@ Template route coverage for Liquid-enabled stores moves from 67% (10 of 15 route
 
 ## Phase F — Performance and Security Hardening
 
-**Commit:** `fc89b0f1`
+**Commit:** `51d9dd74`
 
 ### For Merchants
 
@@ -165,7 +165,7 @@ Page render time for Liquid-enabled stores is improved. The server renders all p
 
 ## Phase G — Schema Governance
 
-**Commit:** `40741cb8`
+**Commit:** `7cdd42a1`
 
 ### For Merchants
 
@@ -191,7 +191,7 @@ Theme publishing is now more resilient. A theme bundle with an unknown or future
 
 ## Phase H — Developer Platform
 
-**Commit:** `fb3f660a`
+**Commit:** `06d3cc85`
 
 This phase ships the developer-facing surface: a public TypeScript SDK, a CLI, a theme linter, a SHA-256 packager, a deterministic artifact exporter, committed `.liquid` file examples, and developer documentation. These tools are for developers building or validating Liquid themes — they have no effect on merchant storefronts.
 
@@ -260,7 +260,7 @@ Committed canonical output of `exportThemeBundleToFiles` and `packageThemeBundle
 
 ## Phase I — QA Certification
 
-**Commit:** `4eaf3e84`
+**Commit:** `dbcf173a`
 
 Phase I authors 48 new tests, performs adversarial review of all Phase I assertions, applies three hardening corrections, and honestly catalogs which QA categories are CONNECTED from the repository and which require live infrastructure.
 
@@ -289,13 +289,13 @@ Phase I authors 48 new tests, performs adversarial review of all Phase I asserti
 | H | 198/198 | 52/52 |
 | I | **221/221** | **78/78** |
 
-### Real Product Bug Found and Fixed — I-F1 (CLOSED in commit 4eaf3e84)
+### Real Product Bug Found and Fixed — I-F1 (CLOSED in commit dbcf173a)
 
 **Finding:** DOMPurify 3.x DOM-clobbering protection strips `name="name"` from `<input type="text" name="name">` in the customer-register Liquid section. `ADD_ATTR: ['name']` does not override the clobbering guard, which runs first.
 
 **Impact (before fix):** When a customer submits the registration form without JavaScript (no-JS POST path), the `name` field was absent from the POST body. The gateway received no customer name and the account was created with a null/empty name field.
 
-**Fix (commit 4eaf3e84):** The template form field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. The field name `fullName` is not a property of `HTMLInputElement`, so DOMPurify's clobbering guard does not strip it. The register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`, accepting both the new field name and any legacy submissions.
+**Fix (commit dbcf173a):** The template form field was renamed from `name="name"` to `name="fullName"` in `packages/theme-engine/src/theme-bundle.ts:2433`. The field name `fullName` is not a property of `HTMLInputElement`, so DOMPurify's clobbering guard does not strip it. The register route (`apps/storefront-runtime/src/app/api/customer/register/route.ts:45`) reads `form.get('fullName') ?? form.get('name')`, accepting both the new field name and any legacy submissions.
 
 **Test evidence:** A11Y-5 (`packages/theme-engine/test/qi-a11y.test.ts:170–171`) now asserts `name="fullName"` is present after DOMPurify and `name="name"` is absent. 221/221 PASS.
 
@@ -431,13 +431,13 @@ The following table is drawn from `docs/storefront-liquid-discovery/phase-i/QA_C
 
 The following items carry into Phase J and the ARB decision package. They are not regressions from Phase I.
 
-### I-F1 — DOMPurify Clobbering on Customer Register Form (CLOSED — commit 4eaf3e84)
+### I-F1 — DOMPurify Clobbering on Customer Register Form (CLOSED — commit dbcf173a)
 
 **Where:** `packages/theme-engine/src/theme-bundle.ts:2433` (customer-register Liquid section).
 
 **Observable (historical):** No-JS customer registration submitted without a name field because DOMPurify's clobbering guard stripped `name="name"` from the input. Account was created with a null/empty name. JavaScript-enabled registration was unaffected.
 
-**Resolution:** Field renamed from `name="name"` to `name="fullName"` in `theme-bundle.ts:2433` (commit 4eaf3e84). Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). **This is not a GO gate.** No further action required.
+**Resolution:** Field renamed from `name="name"` to `name="fullName"` in `theme-bundle.ts:2433` (commit dbcf173a). Register route reads `form.get('fullName') ?? form.get('name')`. A11Y-5 asserts `name="fullName"` survives DOMPurify and `name="name"` is absent (221/221 PASS). **This is not a GO gate.** No further action required.
 
 ### H-F2 — Path Traversal Risk in Theme Artifact Exporter (CLOSED)
 

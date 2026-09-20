@@ -17,7 +17,7 @@
 | All typechecks | **Clean** (0 errors) | Per-package typecheck commands | PASS |
 | validate-governance.mjs | **EXIT=1** (pre-existing tenant drift; anti-fabrication PASS) | `node scripts/validate-governance.mjs` | PASS (known, unchanged) |
 
-Gate reached after hardening commit `36d6f342` (Lane A + hardening) on top of Lane B commit `e9462067`.
+Gate reached after hardening commit `44497fbd` (Lane A + hardening) on top of Lane B commit `8de31807`.
 
 ---
 
