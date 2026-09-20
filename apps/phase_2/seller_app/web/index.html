@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description"
+    content="LetBuyy - Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta name="keywords" content="ecommerce, online shopping, marketplace, buy online, sell online, letbuyy">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=overlays-content">
+  <meta name="author" content="LetBuyy">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="LetBuyy - Online Shopping Marketplace">
+  <meta name="description" content="A comprehensive e-commerce marketplace for all your shopping needs">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://letbuy-y.web.app/">
+  <meta property="og:title" content="LetBuyy - Online Shopping Marketplace">
+  <meta property="og:description"
+    content="Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta property="og:image" content="https://letbuy-y.web.app/icons/Icon-512.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://letbuy-y.web.app/">
+  <meta property="twitter:title" content="LetBuyy - Online Shopping Marketplace">
+  <meta property="twitter:description"
+    content="Your trusted online marketplace for shopping. Buy and sell products online with ease.">
+  <meta property="twitter:image" content="https://letbuy-y.web.app/icons/Icon-512.png">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="icons/Icon-192.png">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="theme-color" content="#0F5257">
+
+  <!-- iOS meta tags -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LetBuyy">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Google Sign-In -->
+  <meta name="google-signin-client_id"
+    content="240895353385-5s5hh8plfvivkj1usgk3lvj8v8qdkimk.apps.googleusercontent.com">
+
+  <title>LetBuyy - Online Shopping Marketplace</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- ✅ Google Maps API with async loading -->
+  <script async="" defer=""
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB-NXBRjrubWRDrp2HNgbgeG7fNzxSQlY&amp;libraries=places,geometry&amp;loading=async">
+    </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0F5257;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    flt-glass-pane {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+    }
+  </style>
+  <style id="splash-screen-style">
+    html {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #002c35;
+      background-size: 100% 100%;
+    }
+
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .contain {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .stretch {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cover {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+
+    .bottomLeft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bottomRight {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #002c35;
+      }
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
+
+</head>
+
+<body>
+  <picture id="splash">
+    <source
+      srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
+      media="(prefers-color-scheme: light)">
+    <source
+      srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x"
+      media="(prefers-color-scheme: dark)">
+    <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+  <!-- ✅ Firebase Functions Configuration -->
+  <script>
+    // Make Firebase Functions region available globally for Flutter
+    window.firebaseFunctionsRegion = 'us-central1';
+  </script>
+
+  <!-- 🔥 MOBILE KEYBOARD FIX: Override browser viewport API -->
+  <script>
+    (function () {
+      // Enable virtual keyboard overlay
+      if ("virtualKeyboard" in navigator) {
+        navigator.virtualKeyboard.overlaysContent = true;
+      }
+
+      // Capture initial dimensions
+      var LOCKED_HEIGHT = window.innerHeight;
+      var LOCKED_WIDTH = window.innerWidth;
+
+      console.log('🔥 Seller: Locking viewport to:', LOCKED_WIDTH, 'x', LOCKED_HEIGHT);
+
+      // Override visualViewport API
+      if (window.visualViewport) {
+        var originalVV = window.visualViewport;
+        var fakeVV = {
+          get width() { return LOCKED_WIDTH; },
+          get height() { return LOCKED_HEIGHT; },
+          get offsetLeft() { return 0; },
+          get offsetTop() { return 0; },
+          get pageLeft() { return originalVV.pageLeft; },
+          get pageTop() { return originalVV.pageTop; },
+          get scale() { return 1; },
+          addEventListener: function (type, listener, options) {
+            if (type === 'resize') {
+              console.log('🔥 Blocked visualViewport resize listener');
+              return;
+            }
+            originalVV.addEventListener(type, listener, options);
+          },
+          removeEventListener: function (type, listener, options) {
+            originalVV.removeEventListener(type, listener, options);
+          },
+          dispatchEvent: function (event) {
+            return originalVV.dispatchEvent(event);
+          }
+        };
+
+        try {
+          Object.defineProperty(window, 'visualViewport', {
+            value: fakeVV,
+            writable: false,
+            configurable: false
+          });
+          console.log('🔥 Successfully overrode visualViewport');
+        } catch (e) {
+          console.log('🔥 Could not override visualViewport:', e);
+        }
+      }
+
+      // Also override innerHeight getter
+      try {
+        Object.defineProperty(window, 'innerHeight', {
+          get: function () { return LOCKED_HEIGHT; },
+          configurable: true
+        });
+        console.log('🔥 Successfully overrode innerHeight');
+      } catch (e) {
+        console.log('🔥 Could not override innerHeight:', e);
+      }
+
+      // Handle orientation changes
+      window.addEventListener('orientationchange', function () {
+        setTimeout(function () {
+          if (window.orientation !== undefined) {
+            if (Math.abs(window.orientation) === 90) {
+              LOCKED_WIDTH = Math.max(screen.width, screen.height);
+              LOCKED_HEIGHT = Math.min(screen.width, screen.height);
+            } else {
+              LOCKED_WIDTH = Math.min(screen.width, screen.height);
+              LOCKED_HEIGHT = Math.max(screen.width, screen.height);
+            }
+            console.log('🔥 Orientation changed:', LOCKED_WIDTH, 'x', LOCKED_HEIGHT);
+          }
+        }, 100);
+      });
+    })();
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then((registration) => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch((error) => {
+            console.error('❌ Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- 🚀 Instant Loading Indicator (Premium Dark Theme) -->
+  <div id="loading-screen" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #080B12;
+    z-index: 9999;
+    transition: opacity 0.4s ease-out;
+    overflow: hidden;
+  ">
+    <!-- Animated Background Gradients -->
+    <div style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(15, 82, 87, 0.2) 0%, #080B12 70%);
+      animation: pulse-bg 8s ease-in-out infinite alternate;
+    "></div>
+
+    <!-- Floating Orb Top Right -->
+    <div style="
+      position: absolute;
+      top: -10%;
+      right: -10%;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(15, 82, 87, 0.3) 0%, transparent 70%);
+      filter: blur(40px);
+      animation: float 10s ease-in-out infinite alternate;
+    "></div>
+
+    <!-- Floating Orb Bottom Left -->
+    <div style="
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 45vw;
+      height: 45vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(15, 82, 87, 0.2) 0%, transparent 70%);
+      filter: blur(50px);
+      animation: float 12s ease-in-out infinite alternate-reverse;
+    "></div>
+
+    <!-- Content Container -->
+    <div style="
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    ">
+      <!-- Logo Container -->
+      <div style="
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #0F5257 0%, #083D41 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        animation: logo-float 4s ease-in-out infinite;
+      ">
+        <span style="
+          font-size: 42px;
+          font-weight: 800;
+          color: white;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        ">L</span>
+      </div>
+
+      <!-- App Name -->
+      <div style="
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        margin-top: 30px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        opacity: 0.9;
+      ">LetBuyy Seller</div>
+
+      <!-- Loading Spinner -->
+      <div class="loader">
+        <svg class="circular" viewBox="25 25 50 50">
+          <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"></circle>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* CSS Spinner inspired by Material Design */
+    .loader {
+      position: relative;
+      margin: 0 auto;
+      width: 40px;
+      height: 40px;
+      margin-top: 30px;
+    }
+
+    .circular {
+      animation: rotate 2s linear infinite;
+      height: 100%;
+      transform-origin: center center;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+    }
+
+    .path {
+      stroke-dasharray: 1, 200;
+      stroke-dashoffset: 0;
+      animation: dash 1.5s ease-in-out infinite;
+      stroke: #39A2A6;
+      stroke-linecap: round;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes dash {
+      0% {
+        stroke-dasharray: 1, 200;
+        stroke-dashoffset: 0;
+      }
+
+      50% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -35px;
+      }
+
+      100% {
+        stroke-dasharray: 89, 200;
+        stroke-dashoffset: -124px;
+      }
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0);
+      }
+
+      100% {
+        transform: translate(20px, 20px);
+      }
+    }
+
+    @keyframes pulse-bg {
+      0% {
+        opacity: 0.8;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes logo-float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+
+  <script>
+    // Hide loading screen when Flutter is ready
+    window.addEventListener('flutter-first-frame', function () {
+      var loader = document.getElementById('loading-screen');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(function () {
+          loader.style.display = 'none';
+        }, 300);
+      }
+    });
+  </script>
+
+  <!-- Flutter Bootstrap -->
+  <script src="flutter_bootstrap.js" async=""></script>
+</body>
+
+</html>

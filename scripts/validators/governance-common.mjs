@@ -103,6 +103,7 @@ export const reservedMobileRuntimeRoots = [
 // FROZEN. See CLAUDE.md's "Six-App Target Topology" section.
 export const phase2AppRoots = [
   "apps/phase_2/rider_app",
+  "apps/phase_2/seller_app",
   "apps/phase_2/store_ops_app",
 ];
 
