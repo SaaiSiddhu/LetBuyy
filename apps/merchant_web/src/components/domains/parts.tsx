@@ -4,7 +4,7 @@
 // the domain-model single source of truth; this file only renders them.
 
 import { useCallback } from 'react'
-import { Badge, Button, Check, Copy, useToast } from '@letbuyy/ui'
+import { Badge, Button, Check, Copy, ProgressBar, useToast } from '@letbuyy/ui'
 import {
     type DomainStatus,
     type SslState,
@@ -27,11 +27,12 @@ export function HealthMeter({ score, showLabel = true }: { score: number; showLa
     const band = healthScoreBand(score)
     return (
         <div className="domains-health">
-            <progress
-                className={`domains-health-track domains-health-track--${band.variant}`}
+            <ProgressBar
+                className="domains-health-bar"
                 value={score}
                 max={100}
-                aria-label={`Domain health score: ${score} out of 100`}
+                tone={band.variant}
+                ariaLabel={`Domain health score: ${score} out of 100`}
             />
             {showLabel && (
                 <div className="domains-health-meta">
@@ -64,17 +65,14 @@ export function DnsRecordRow({ type, host, value, state = 'unknown', message }: 
         }
     }, [notify])
 
-    const stateLabel = state === 'verified' ? 'Correct' : state === 'mismatch' ? 'Needs update' : state === 'pending' ? 'Not found yet' : '—'
-    const stateClass = state === 'verified' ? 'ok' : state === 'mismatch' ? 'bad' : 'pending'
+    const stateLabel = state === 'verified' ? 'Correct' : state === 'mismatch' ? 'Needs update' : state === 'pending' ? 'Not found yet' : 'Unknown'
+    const stateVariant = state === 'verified' ? 'success' : state === 'mismatch' ? 'critical' : 'warning'
 
     return (
         <div className="domains-record">
             <div className="domains-record-head">
                 <span className="domains-record-type">{type}</span>
-                <span className={`domains-record-state domains-record-state--${stateClass}`}>
-                    {state === 'verified' && <Check className="letbuyy-icon" aria-hidden="true" />}
-                    {stateLabel}
-                </span>
+                <Badge label={stateLabel} variant={stateVariant} />
             </div>
             <div className="domains-record-grid">
                 <div className="domains-record-field">

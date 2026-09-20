@@ -5,35 +5,38 @@ import {
     AlertTriangle,
     ArrowLeft,
     Badge,
+    Banner,
     Button,
     Check,
-    CheckCircle2,
     Clock,
     ConfirmDialog,
     Crown,
+    Disclosure,
     ExternalLink,
     Globe,
     Info,
     Lock,
+    Page,
+    PageHeader,
     RefreshCw,
     ShieldAlert,
     Skeleton,
     Star,
     Trash2,
+    type PageHeaderAction,
     useToast,
 } from '@letbuyy/ui'
-import { formatUsLongDate, formatUsShortDate } from '@letbuyy/ui/formatting'
+import { formatIndiaDate, formatIndiaDateTime } from '@letbuyy/ui/formatting'
 import type { CustomDomainHealth, DomainVerificationEvent } from '@letbuyy/api-client'
 import { domainsClient } from '@/lib/domains/client'
 import {
     lifecycleSteps,
     normalizeSsl,
-    scoreFromHealth,
     sslLabel,
 } from '@/lib/domains/domain-model'
 import { diagnoseDomain, domainConfidence, type IssueSeverity } from '@/lib/domains/troubleshooting'
 import { providerDnsUrl } from '@/lib/domains/providers'
-import { DnsRecordRow, HealthMeter, SslBadge, DomainStatusBadge, type RecordState } from './parts'
+import { DnsRecordRow, SslBadge, DomainStatusBadge, type RecordState } from './parts'
 
 interface DomainDetailViewProps {
     store: string
@@ -124,30 +127,31 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
 
     if (loading) {
         return (
-            <div className="settings-general-stack">
+            <Page>
                 <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
-                {[1, 2, 3].map((i) => (
-                    <div key={i} className="settings-home-card">
-                        <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
-                        <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
-                    </div>
-                ))}
-            </div>
+                <div className="settings-general-stack">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="settings-home-card">
+                            <div className="settings-home-section-label"><Skeleton variant="text" lines={1} /></div>
+                            <div className="settings-form-body"><Skeleton variant="text" lines={3} /></div>
+                        </div>
+                    ))}
+                </div>
+            </Page>
         )
     }
 
     if (!health) {
         return (
-            <div className="settings-general-stack">
+            <Page>
                 <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
                 <div className="settings-home-card"><div className="settings-form-body">
                     <div className="domains-note domains-note--warn"><AlertTriangle className="letbuyy-icon" aria-hidden="true" /><span>Could not load this domain. <Button unstyled type="button" className="settings-business-link" onClick={() => void load()}>Retry</Button>.</span></div>
                 </div></div>
-            </div>
+            </Page>
         )
     }
 
-    const score = scoreFromHealth(health)
     const ssl = normalizeSsl(health.ssl_active ? 'active' : health.provider_status === 'unavailable' ? 'unavailable' : health.misconfigured ? 'error' : 'pending')
     const confidence = domainConfidence(health)
     const issues = diagnoseDomain(health)
@@ -159,43 +163,70 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
     const livingProvider = (health.provider ?? provider) || null
     const providerLink = providerDnsUrl(livingProvider, domain)
 
-    return (
-        <div className="settings-general-stack">
-            {/* Header */}
-            <div className="domains-detail-head">
-                <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
-                <div className="domains-detail-title-row">
-                    <span className="domains-detail-icon">{isPrimary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}</span>
-                    <h2 className="domains-detail-title">{domain}</h2>
-                    {isPrimary && <Badge label="Primary" variant="success" />}
-                    <DomainStatusBadge status={health.status} />
-                </div>
-                <div className="domains-detail-actions">
-                    <Button variant="secondary" onClick={() => void refresh()} loading={refreshing}>
-                        <RefreshCw className="letbuyy-icon" aria-hidden="true" /> Refresh
-                    </Button>
-                    {!isPrimary && health.status === 'active' && (
-                        <Button onClick={() => void makePrimary()} loading={working}>
-                            <Star className="letbuyy-icon" aria-hidden="true" /> Make primary
-                        </Button>
-                    )}
-                    <Button variant="ghost" onClick={() => setConfirmDelete(true)} disabled={working} aria-label="Remove domain">
-                        <Trash2 className="letbuyy-icon" aria-hidden="true" />
-                    </Button>
-                </div>
-            </div>
+    // The header's action row, in the canonical PageHeader shape. `Refresh` and
+    // `Remove domain` are always offered; `Make primary` only applies to a
+    // non-primary domain that's actually live. renderHeaderAction below gives
+    // each its real Button variant (secondary / ghost-icon / primary) and
+    // wires up loading state — PageHeader's own default action renderer has
+    // no notion of a loading spinner, only disabled.
+    const headerActions: PageHeaderAction[] = [
+        { label: 'Refresh', onClick: () => void refresh(), icon: <RefreshCw className="letbuyy-icon" aria-hidden="true" /> },
+        { label: 'Remove domain', onClick: () => setConfirmDelete(true), icon: <Trash2 className="letbuyy-icon" aria-hidden="true" />, disabled: working },
+    ]
+    const primaryHeaderAction: PageHeaderAction | undefined = (!isPrimary && health.status === 'active')
+        ? { label: 'Make primary', onClick: () => void makePrimary(), icon: <Star className="letbuyy-icon" aria-hidden="true" /> }
+        : undefined
+    const renderHeaderAction = (action: PageHeaderAction, variant: 'primary' | 'secondary') => {
+        if (action.label === 'Remove domain') {
+            return (
+                <Button key={action.label} variant="ghost" onClick={action.onClick} disabled={action.disabled} aria-label={action.label}>
+                    {action.icon}
+                </Button>
+            )
+        }
+        if (action.label === 'Refresh') {
+            return (
+                <Button key={action.label} variant="secondary" onClick={action.onClick} loading={refreshing}>
+                    {action.icon}{action.label}
+                </Button>
+            )
+        }
+        return (
+            <Button key={action.label} variant={variant} onClick={action.onClick} loading={working}>
+                {action.icon}{action.label}
+            </Button>
+        )
+    }
 
-            {/* Confidence-first: will my store work? */}
-            <div className={`domains-confidence domains-confidence--${confidence.tone}`}>
-                <span className="domains-confidence-icon">
-                    {confidence.tone === 'success' ? <CheckCircle2 className="letbuyy-icon" aria-hidden="true" /> : confidence.tone === 'critical' ? <ShieldAlert className="letbuyy-icon" aria-hidden="true" /> : <Clock className="letbuyy-icon" aria-hidden="true" />}
-                </span>
-                <div className="domains-confidence-body">
-                    <span className="domains-confidence-headline">{confidence.headline}</span>
-                    <span className="domains-confidence-sub">Last checked {formatUsShortDate(health.checked_at, { emptyValue: 'just now' })}</span>
-                </div>
-                <div className="domains-confidence-health"><HealthMeter score={score} /></div>
-            </div>
+    return (
+        <Page>
+            <Button unstyled type="button" className="domains-back" onClick={onBack}><ArrowLeft className="letbuyy-icon" aria-hidden="true" /> Domains</Button>
+
+            <PageHeader
+                title={domain}
+                icon={isPrimary ? <Crown className="letbuyy-icon" aria-hidden="true" /> : <Globe className="letbuyy-icon" aria-hidden="true" />}
+                titleAdornment={
+                    <>
+                        {isPrimary && <Badge label="Primary" variant="success" />}
+                        <DomainStatusBadge status={health.status} />
+                    </>
+                }
+                primaryAction={primaryHeaderAction}
+                secondaryActions={headerActions}
+                renderAction={renderHeaderAction}
+            />
+
+            <div className="settings-general-stack">
+            {/* Confidence-first: will my store work? The canonical solid Banner —
+                this used to be a hand-rolled soft-tint card with its own CSS
+                (not the shared Banner component) with a health score bar
+                crammed into the same row as the text, which is exactly what
+                broke on narrower widths. The score is dropped here, not lost:
+                the Setup checklist right below already states the same
+                thing as four explicit, more legible steps. */}
+            <Banner variant={confidence.tone} title={confidence.headline}>
+                {health.checked_at ? `Last checked ${formatIndiaDateTime(health.checked_at)} IST` : 'Last checked just now'}
+            </Banner>
 
             {/* Setup checklist */}
             <div className="settings-home-card">
@@ -284,7 +315,7 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                         <SslBadge ssl={ssl} />
                     </div>
                     {health.renewal_date && (
-                        <div className="domains-note"><Info className="letbuyy-icon" aria-hidden="true" /><span>Certificate renewal: {formatUsLongDate(health.renewal_date, { emptyValue: 'Managed automatically' })}.</span></div>
+                        <div className="domains-note"><Info className="letbuyy-icon" aria-hidden="true" /><span>Certificate renewal: {formatIndiaDate(health.renewal_date, { emptyValue: 'Managed automatically' })}.</span></div>
                     )}
                 </div>
             </div>
@@ -301,28 +332,31 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                 </div>
             </div>
 
-            {/* Activity timeline */}
-            <div className="settings-home-card">
-                <div className="settings-home-section-label">Activity</div>
-                <div className="settings-form-body">
-                    {!historyConnected ? (
-                        <div className="domains-note"><Info className="letbuyy-icon" aria-hidden="true" /><span>Verification history will appear here once the domains upgrade is live (NOT CONNECTED yet).</span></div>
-                    ) : events.length === 0 ? (
-                        <div className="settings-general-hint">No activity recorded yet.</div>
-                    ) : (
-                        <ol className="domains-timeline">
-                            {events.map((event) => (
-                                <li key={event.id} className="domains-timeline-item">
-                                    <span className={`domains-timeline-dot domains-timeline-dot--${event.status === 'active' ? 'ok' : event.status === 'error' ? 'bad' : 'pending'}`} aria-hidden="true" />
-                                    <div className="domains-timeline-body">
-                                        <span className="domains-timeline-title">{timelineLabel(event)}</span>
-                                        <span className="domains-timeline-time">{formatUsShortDate(event.created_at, { emptyValue: '' })}</span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ol>
-                    )}
-                </div>
+            {/* Activity timeline — collapsed by default. A live domain accrues one
+                "Health checked" entry per probe, which reads as noise sitting
+                open on every page load; a single Disclosure keeps it one click
+                away instead of always taking vertical space. */}
+            <Disclosure title="Activity" defaultOpen={events.length > 0 && events.length <= 3}>
+                {!historyConnected ? (
+                    <div className="domains-note"><Info className="letbuyy-icon" aria-hidden="true" /><span>Verification history will appear here once the domains upgrade is live (NOT CONNECTED yet).</span></div>
+                ) : events.length === 0 ? (
+                    <div className="settings-general-hint">No activity recorded yet.</div>
+                ) : (
+                    <ol className="domains-timeline">
+                        {events.map((event) => (
+                            <li key={event.id} className="domains-timeline-item">
+                                <span className={`domains-timeline-dot domains-timeline-dot--${event.status === 'active' ? 'ok' : event.status === 'error' ? 'bad' : 'pending'}`} aria-hidden="true" />
+                                <div className="domains-timeline-body">
+                                    <span className="domains-timeline-title">{timelineLabel(event)}</span>
+                                    <span className="domains-timeline-time">
+                                        {event.created_at ? `${formatIndiaDateTime(event.created_at)} IST` : ''}
+                                    </span>
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+                )}
+            </Disclosure>
             </div>
 
             <ConfirmDialog
@@ -335,7 +369,7 @@ export function DomainDetailView({ store, domain, role, redirectTo, provider, on
                 onConfirm={() => void remove()}
                 onClose={() => { if (!working) setConfirmDelete(false) }}
             />
-        </div>
+        </Page>
     )
 }
 

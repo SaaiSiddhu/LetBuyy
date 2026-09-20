@@ -24,20 +24,26 @@
   --accent-cyan: rgb(6 182 212);
   --accent-blue: var(--lb-color-info);
 
-  /* — Backgrounds — Premium Ink Lavender — */
-  --bg: rgb(250 249 255);
+  /* — Backgrounds — */
+  /* The canonical page background (the neutral grey behind every dashboard
+     card, painted by .admin-page-scroll via --lb-color-bg). This alias used
+     to hardcode its own lavender-tinted rgb(250 249 255), which drifted from
+     the token the dashboard itself actually renders — a real, visible
+     off-brand tint on every surface that read --bg instead of --lb-color-bg
+     directly. One source now; retint the token, not this alias. */
+  --bg: var(--lb-color-bg);
   --bg-secondary: rgb(255 255 255);
-  --bg-tertiary: rgb(244 242 254);
+  --bg-tertiary: var(--lb-color-surface-subdued);
 
-  /* — Text — Ink Violet — */
-  --text-primary: rgb(10 8 22);
-  --text-secondary: rgb(55 46 88);
-  --text-tertiary: rgb(103 91 135);
-  --text-hint: rgb(158 147 190);
+  /* — Text — */
+  --text-primary: var(--lb-color-text);
+  --text-secondary: var(--lb-color-text-subdued);
+  --text-tertiary: var(--lb-color-text-muted);
+  --text-hint: color-mix(in srgb, var(--lb-color-text-muted) 65%, transparent);
 
-  /* — Borders — Violet-tinted, refined — */
-  --border: rgb(232 227 250);
-  --border-light: rgb(240 237 252);
+  /* — Borders — */
+  --border: var(--lb-color-border);
+  --border-light: color-mix(in srgb, var(--lb-color-border) 55%, var(--lb-color-bg));
 
   /* — Status — */
   --success: var(--lb-color-success);
@@ -136,11 +142,11 @@
 
   /* — Input — */
   --input-bg: rgb(255 255 255);
-  --input-border: rgb(224 216 248);
+  --input-border: var(--lb-color-border);
 
   /* — Tailwind theme tokens — */
-  --background: rgb(250 249 255);
-  --foreground: rgb(10 8 22);
+  --background: var(--lb-color-bg);
+  --foreground: var(--lb-color-text);
 
   /* — Legacy admin page aliases used by online-store surfaces — */
   /* One direction only: canonical --lb-* → legacy alias. The reverse mappings
@@ -152,59 +158,11 @@
   --accent-color: var(--lb-color-primary);
 }
 
-/* — Dark Mode — synced with LCIS/Graphify design system — */
-.dark {
-  --primary: var(--lb-color-primary);
-  --primary-light: color-mix(in srgb, var(--lb-color-primary) 72%, white);
-  --primary-dark: var(--lb-color-primary-active);
-  --primary-hover: var(--lb-color-primary-hover);
-  --primary-active: var(--lb-color-primary-active);
-  --primary-subtle: var(--lb-color-primary-subtle);
-
-  /* — Backgrounds — LCIS: #0a0912 / #15131f / #1b1827 — */
-  --bg: rgb(10 9 18);
-  --bg-secondary: rgb(21 19 31);
-  --bg-tertiary: rgb(27 24 39);
-
-  /* — Text — LCIS: #ECEAF5 / #9b94ae / #6e6883 — */
-  --text-primary: rgb(236 234 245);
-  --text-secondary: rgb(155 148 174);
-  --text-tertiary: rgb(110 104 131);
-  --text-hint: rgb(75 69 94);
-
-  /* — Borders — LCIS: solid dark #272234 / #1d1929 — */
-  --border: rgb(39 34 52);
-  --border-light: rgb(29 25 41);
-
-  /* — Header — light on dark theme — */
-  --header-bg: rgb(255 255 255);
-  --header-border: rgb(232 227 250);
-  --header-fg: rgb(10 8 22);
-  --header-muted: rgb(103 91 135);
-  --header-control-bg: rgba(55, 46, 88, 0.06);
-  --header-control-border: rgb(232 227 250);
-  --header-control-hover: rgba(55, 46, 88, 0.09);
-  --header-control-active: rgba(55, 46, 88, 0.13);
-  --header-logo-glow: color-mix(in srgb, var(--lb-color-primary) 22%, transparent);
-  --header-search-shadow: 0 1px 0 rgba(55, 46, 88, 0.05) inset, 0 2px 6px rgba(10, 8, 22, 0.05);
-
-  /* — Sidebar — legacy aliases derived from the canonical dark rail — */
-  --sidebar-bg: var(--lb-component-sidebar-bg);
-  --sidebar-border: var(--lb-component-sidebar-border);
-  --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
-  --sidebar-active-text: var(--lb-component-sidebar-active-text);
-  --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
-
-  --input-bg: rgb(10 9 18);
-  --input-border: rgb(39 34 52);
-
-  --background: rgb(10 9 18);
-  --foreground: rgb(236 234 245);
-
-  --bg-primary: var(--bg);
-  --border-primary: var(--border);
-  --accent-color: var(--lb-color-primary);
-}
+/* No .dark block: layout.tsx forces forcedTheme="light" on both ThemeScript
+   and LetbuyyThemeProvider, so .dark can never be applied to <html> — this
+   entire palette (including several lavender/violet literals) was dead code
+   that only made the "off-brand purple" family easier to reintroduce by
+   copy-paste. See the identical fix in apps/identity-platform. */
 
 @theme inline {
   --color-background: var(--background);
@@ -255,6 +213,22 @@ html [data-letbuyy-design-system="true"] {
   --sidebar-active-bg: var(--lb-component-sidebar-active-bg);
   --sidebar-active-text: var(--lb-component-sidebar-active-text);
   --sidebar-hover-bg: var(--lb-component-sidebar-hover-bg);
+
+  /* Same reasoning as --primary above: --bg referencing var(--lb-color-bg)
+     from bare :root froze it to whatever <html> resolves outside the surface
+     scope (the shared default, and under a dark OS preference, the DARK
+     background — on a page forced to light). Rebound here, in scope. */
+  --bg: var(--lb-color-bg);
+  --bg-tertiary: var(--lb-color-surface-subdued);
+  --text-primary: var(--lb-color-text);
+  --text-secondary: var(--lb-color-text-subdued);
+  --text-tertiary: var(--lb-color-text-muted);
+  --text-hint: color-mix(in srgb, var(--lb-color-text-muted) 65%, transparent);
+  --border: var(--lb-color-border);
+  --border-light: color-mix(in srgb, var(--lb-color-border) 55%, var(--lb-color-bg));
+  --input-border: var(--lb-color-border);
+  --background: var(--lb-color-bg);
+  --foreground: var(--lb-color-text);
 }
 
 /* ——————————————————————————————————————————————
@@ -269,28 +243,32 @@ html [data-letbuyy-design-system="true"] {
    specificity hack is gone (DOC 03 §35: one token source).
 
    What remains below is only the neutral page canvas: background, surface,
-   card, border and text ramps. Those are deliberately app-level (the merchant
-   console runs a slightly warmer canvas than the shared default) and they do
-   not participate in the brand hierarchy.
+   card, border and text ramps. These now match the SAME neutral grey/white
+   scale the canonical `[data-letbuyy-surface="admin"]` identity already
+   emits for these tokens (tokens.ts `surfaceVariables()` — --lb-color-bg
+   etc. are not part of admin's own brand override, so the two must agree).
+   The previous "warmer" lavender canvas was a separate, hand-picked scale
+   that drifted from that shared grey — visible on any surface where this
+   block's specificity wins the cascade over the canonical one.
    —————————————————————————————————————————————— */
 
-/* Light mode — ink lavender canvas */
+/* Light mode — neutral canvas */
 html [data-letbuyy-theme="light"],
 html [data-letbuyy-theme="auto"]:not(.dark *) {
   /* Accent-tinted elevation, derived so it follows the canonical accent. */
   --lb-shadow-accent-sm: 0 4px 14px color-mix(in srgb, var(--lb-color-primary) 34%, transparent);
 
-  --lb-color-bg: rgb(250 249 255);
-  --lb-content-bg: rgb(250 249 255);
-  --lb-color-background: rgb(250 249 255);
+  --lb-color-bg: rgb(246 247 249);
+  --lb-content-bg: rgb(246 247 249);
+  --lb-color-background: rgb(246 247 249);
   --lb-color-surface: rgb(255 255 255);
-  --lb-color-surface-subdued: rgb(244 242 254);
+  --lb-color-surface-subdued: rgb(249 250 251);
   --lb-color-card: rgb(255 255 255);
   --lb-card-bg: rgb(255 255 255);
-  --lb-color-border: rgb(232 227 250);
-  --lb-color-text: rgb(10 8 22);
-  --lb-color-text-subdued: rgb(55 46 88);
-  --lb-color-text-muted: rgb(103 91 135);
+  --lb-color-border: rgb(229 231 235);
+  --lb-color-text: rgb(17 24 39);
+  --lb-color-text-subdued: rgb(107 114 128);
+  --lb-color-text-muted: rgb(148 163 184);
   --lb-color-text-inverse: rgb(255 255 255);
 }
 
@@ -1727,177 +1705,272 @@ body {
 
 /* ======================================
    ALL STORES PAGE
+   Same page-top contract as the store dashboard (see :root above): a fixed
+   dark header, a full-height frame painted in --header-bg behind it, and a
+   light sheet whose top corners are cut with --admin-page-curve. There is no
+   docked rail here (this page lists every store, not one store's nav), so
+   BOTH top corners of the sheet take the curve instead of just the trailing
+   one.
    ====================================== */
 
-.all-stores-bg {
-  min-height: 100vh;
-  background: var(--bg);
+/* The shell fills the viewport exactly and never itself scrolls — same
+   contract as .admin-shell. Only .all-stores-sheet below scrolls, which is
+   what keeps the header and the sheet's curved top corners pinned in place
+   instead of sliding out of view as the page content moves. */
+.all-stores-shell {
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.all-stores-topbar {
+.all-stores-header-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--admin-header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
+  padding: 0 24px;
+  background: var(--header-bg);
 }
 
-.all-stores-topbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.all-stores-topbar-logo-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 10px;
-  background: var(--primary);
-  color: white;
+/* Sized to match .admin-header-logo / .admin-header-logo-frame exactly, so
+   the brand mark reads identically on the store picker and inside a store. */
+.all-stores-header-logo {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
+  width: 168px;
+  height: 48px;
+}
+
+.all-stores-header-logo-frame {
+  position: relative;
+  display: block;
+  width: 160px;
+  height: 40px;
+}
+
+.all-stores-header-logo-image {
+  object-fit: contain;
+  object-position: left center;
+}
+
+/* Mirrors .store-switcher-pill — the same pill chrome, minus the store name
+   (this page has no "current store" to name). */
+.all-stores-account-trigger {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  font-size: 15px;
-  font-weight: 700;
+  gap: 7px;
+  height: 36px;
+  padding: 2px 10px 2px 4px;
+  border-radius: var(--lb-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
-.all-stores-topbar-logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
+.all-stores-account-trigger:hover {
+  background: var(--header-control-bg);
+  border-color: var(--header-control-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--lb-color-primary) 10%, transparent);
+  transform: translateY(-1px);
 }
 
-.all-stores-topbar-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--primary);
+.all-stores-account-trigger[aria-expanded="true"] {
+  background: var(--header-control-active);
+  border-color: var(--header-control-border);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--lb-color-text-inverse) 14%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--lb-color-primary) 14%, transparent),
+    0 10px 24px color-mix(in srgb, var(--lb-color-primary) 18%, transparent);
+}
+
+/* Mirrors .store-switcher-pill-icon — same rounded-square gradient finish. */
+.all-stores-account-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--lb-font-size-small);
-  font-weight: 600;
-  cursor: default;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%), 0 0 0 1px color-mix(in srgb, white 16%, transparent);
+}
+
+.all-stores-account-trigger:hover .all-stores-account-avatar,
+.all-stores-account-trigger[aria-expanded="true"] .all-stores-account-avatar {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 24%),
+    0 0 0 1px color-mix(in srgb, white 18%, transparent),
+    0 0 18px color-mix(in srgb, var(--lb-color-primary) 38%, transparent);
+}
+
+.all-stores-account-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--header-muted);
+  transition: transform 0.2s;
+}
+
+.all-stores-account-trigger[aria-expanded="true"] .all-stores-account-chevron {
+  transform: rotate(180deg);
+}
+
+/* The frame is the dark backing that continues the header downward; the
+   sheet then covers all of it except the curved corner notches. min-height:0
+   is load-bearing — without it a flex child refuses to shrink below its
+   content size, and .all-stores-sheet's overflow would never engage. */
+.all-stores-frame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--header-bg);
+  padding-top: var(--admin-header-height);
+}
+
+/* The scrollport IS the sheet — same reasoning as .admin-page-scroll. The
+   curve has to live on the element that stays still, not on content that
+   moves, so this element (not the shell or the document) is what scrolls. */
+.all-stores-sheet {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  border-start-start-radius: var(--admin-page-curve);
+  border-start-end-radius: var(--admin-page-curve);
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+
+  /* A default scrollbar is a UA widget painted in the border box that most
+     browsers do not clip to border-radius, so it would square off the
+     trailing curve the moment this pane grows tall enough to scroll. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--lb-color-text) 22%, transparent) transparent;
+}
+
+.all-stores-sheet::-webkit-scrollbar {
+  width: var(--lb-space-1);
+  height: var(--lb-space-1);
+}
+
+.all-stores-sheet::-webkit-scrollbar-track,
+.all-stores-sheet::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.all-stores-sheet::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--lb-color-text) 22%, transparent);
+  border-radius: var(--lb-radius-full);
 }
 
 .all-stores-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 24px 60px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
 }
 
-.all-stores-header {
+.all-stores-header-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  width: 100%;
-  max-width: 640px;
-  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
 
 .all-stores-greeting {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.all-stores-create-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 10px;
+.all-stores-subtitle {
+  margin-top: 4px;
   font-size: var(--lb-font-size-small);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: inherit;
-}
-
-.all-stores-create-btn:hover {
-  background: var(--primary-dark);
+  color: var(--text-tertiary);
 }
 
 .all-stores-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
   width: 100%;
-  max-width: 640px;
-  margin-bottom: 16px;
-}
-
-.all-stores-tab {
-  padding: 10px 20px;
-  font-size: var(--lb-font-size-small);
-  font-weight: 600;
-  color: var(--text-tertiary);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: inherit;
-}
-
-.all-stores-tab:hover {
-  color: var(--text-primary);
-}
-
-.all-stores-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
 }
 
 .all-stores-list {
   width: 100%;
-  max-width: 640px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .all-stores-card {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 16px;
+  padding: 18px 20px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--lb-radius-lg);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.18s, border-color 0.18s;
   width: 100%;
   text-align: left;
   font-family: inherit;
 }
 
 .all-stores-card:hover {
-  border-color: var(--primary-light);
-  box-shadow: 0 2px 12px color-mix(in srgb, var(--lb-color-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--text-primary) 6%, transparent),
+    0 16px 32px -18px color-mix(in srgb, var(--primary) 32%, transparent);
+  transform: translateY(-1px);
 }
 
+.all-stores-card:hover .all-stores-card-chevron {
+  color: var(--primary);
+  transform: translateX(2px);
+}
+
+.all-stores-card:focus-visible {
+  outline: 2px solid var(--primary-light);
+  outline-offset: 2px;
+}
+
+/* Same rounded-square gradient finish as the header's account/store avatar
+   (.store-switcher-pill-icon, .all-stores-account-avatar) — primary-light to
+   primary, never primary-dark, which resolves to a near-black "pressed"
+   ink tone on this surface and reads as flat/dead in a large 48px tile. */
 .all-stores-card-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: var(--primary);
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 0.3px;
   flex-shrink: 0;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 20%),
+    0 0 0 1px color-mix(in srgb, white 12%, transparent),
+    0 6px 14px -4px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .all-stores-card-info {
@@ -1906,15 +1979,25 @@ body {
 }
 
 .all-stores-card-name {
-  font-size: 14px;
+  font-size: 15.5px;
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: -0.005em;
 }
 
 .all-stores-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
   font-size: var(--lb-font-size-caption);
   color: var(--text-tertiary);
-  margin-top: 2px;
+}
+
+.all-stores-card-domain {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .all-stores-card-meta .type-badge {
@@ -1927,23 +2010,63 @@ body {
   font-size: 11px;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .all-stores-card-meta .type-badge .letbuyy-icon {
   font-size: var(--lb-font-size-small);
 }
 
-/* Badge supplies its own tone, padding, radius and typography. Only the flex
-   behaviour in this card layout is still this stylesheet's business — the
-   red/green .active/.inactive pair was deleted with the impossible
-   `status === 'active'` test that selected it. */
-.all-stores-card-status {
+.all-stores-card-trailing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
+}
+
+.all-stores-card-chevron {
+  color: var(--text-hint);
+  font-size: 20px;
+  transition: color 0.18s, transform 0.18s;
+}
+
+/* A slightly more substantial treatment than the badge's default — a touch
+   more padding, a semibold label and a tone-matched inset ring — reads as a
+   status of record rather than an inline tag. Still fully token-driven: no
+   tone/colour is invented here, `currentColor` inherits whatever hue the
+   canonical Badge already resolved for this status. */
+.all-stores-status-badge {
+  padding-inline: var(--lb-space-3, 12px);
+  font-weight: var(--lb-font-weight-semibold, 600);
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 16%, transparent);
 }
 
 .all-stores-empty-state {
   width: 100%;
+}
+
+@media (max-width: 640px) {
+  .all-stores-header-bar {
+    padding: 0 16px;
+  }
+
+  .all-stores-header-logo-frame {
+    width: 120px;
+    height: 30px;
+  }
+
+  .all-stores-body {
+    padding: 28px 16px 48px;
+  }
+
+  .all-stores-header-row {
+    align-items: stretch;
+  }
+
+  .all-stores-card-domain {
+    display: none;
+  }
 }
 
 /* ======================================
@@ -2864,9 +2987,11 @@ body {
   --lb-density-button-height: 32px;
   /* Tighter gap in the header column */
   gap: var(--lb-space-2);
-  /* Bottom separator from content */
-  padding-bottom: var(--lb-space-4);
-  border-bottom: 1px solid var(--lb-color-border);
+  /* No divider: the header sits directly above the first card/section, whose
+     own border already reads as the section boundary — a rule here on top
+     of that was a doubled-up edge, not a second real boundary. One margin
+     now stands in for what used to be padding-bottom + border + margin
+     stacked together. */
   margin-bottom: var(--lb-space-4);
 }
 
@@ -3118,6 +3243,12 @@ body {
    inside .settings-content so the hero can span the full available width.
    ──────────────────────────────────────────────────────────────────────────── */
 .settings-dashboard {
+  /* The same white-card-on-grey-canvas relationship as every other dashboard
+     surface (.admin-page-scroll, the store picker, the auth card) — the
+     phase cards below are --lb-color-surface (white); without this the
+     panel and its cards were both white, so a card next to a
+     differently-tall neighbour read as a stray border rather than a card. */
+  background: var(--lb-color-bg);
   padding: var(--settings-content-pad-y) var(--settings-content-pad-x) var(--settings-content-pad-bottom);
   display: flex;
   flex-direction: column;
@@ -3214,20 +3345,15 @@ body {
   border: 1px solid color-mix(in srgb, var(--lb-color-warning) 22%, transparent);
 }
 
-/* Phases grid — 2-col on wider viewports */
+/* Single column at every width. The five phases carry different task
+   counts (2 to 4 rows each), so a 2-column pairing put a short card
+   directly beside a much taller one every time — dead white space in the
+   short card, never actually 2 even cells. One column stacks each phase at
+   its own natural height instead. */
 .settings-dashboard-phases {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--lb-space-4);
-}
-
-@media (min-width: 600px) {
-  .settings-dashboard-phases {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .settings-dashboard-phase--wide {
-    grid-column: span 2;
-  }
 }
 
 /* Phase card */
@@ -4775,29 +4901,12 @@ body {
 }
 
 /* ── Domain Center (V5) ─────────────────────────────────────────────────────── */
-/* Health meter (native <progress>, no inline styles) */
-.domains-health { display: flex; align-items: center; gap: var(--lb-space-2); min-width: 0; }
-.domains-health-track {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  min-width: 64px;
-  height: 6px;
-  border: none;
-  border-radius: var(--lb-radius-pill);
-  background: var(--lb-color-surface-subdued);
-  overflow: hidden;
-}
-.domains-health-track::-webkit-progress-bar { background: var(--lb-color-surface-subdued); border-radius: var(--lb-radius-pill); }
-.domains-health-track::-webkit-progress-value { border-radius: var(--lb-radius-pill); transition: width var(--lb-motion-fast); }
-.domains-health-track::-moz-progress-bar { border-radius: var(--lb-radius-pill); }
-.domains-health-track--success::-webkit-progress-value { background: var(--lb-color-success); }
-.domains-health-track--success::-moz-progress-bar { background: var(--lb-color-success); }
-.domains-health-track--warning::-webkit-progress-value { background: var(--lb-color-warning); }
-.domains-health-track--warning::-moz-progress-bar { background: var(--lb-color-warning); }
-.domains-health-track--critical::-webkit-progress-value { background: var(--lb-color-critical); }
-.domains-health-track--critical::-moz-progress-bar { background: var(--lb-color-critical); }
-.domains-health-meta { display: flex; align-items: center; gap: var(--lb-space-1); flex-shrink: 0; }
+/* Health meter — the canonical <ProgressBar tone="…"/> (packages/typescript/ui),
+   not a hand-styled native <progress>. Only layout/sizing lives here; the bar's
+   own fill colour, track and radius come from the component itself. */
+.domains-health { display: flex; align-items: center; gap: var(--lb-space-3); min-width: 0; flex: 1 1 180px; max-width: 260px; }
+.domains-health-bar { flex: 1; min-width: 64px; }
+.domains-health-meta { display: flex; align-items: baseline; gap: var(--lb-space-1); flex-shrink: 0; }
 .domains-health-score { font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); font-feature-settings: 'tnum'; }
 .domains-health-band { font-size: var(--lb-font-size-caption); }
 .domains-health-band--success { color: var(--lb-color-success); }
@@ -4889,26 +4998,37 @@ body {
 .domains-note--warn { background: color-mix(in srgb, var(--lb-color-warning) 12%, transparent); }
 .domains-note--warn .letbuyy-icon { color: var(--lb-color-warning); }
 
-/* DNS record card */
-.domains-record { display: flex; flex-direction: column; gap: var(--lb-space-2); padding: var(--lb-space-3) var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); }
+/* DNS record card — Vercel-style: a monospaced host/value pair per record,
+   a canonical solid Badge for its live check status (was plain coloured
+   text; the record card is exactly the surface a status pill belongs on),
+   type shown as a small bordered mono chip rather than plain muted text. */
+.domains-record { display: flex; flex-direction: column; gap: var(--lb-space-3); padding: var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); }
 .domains-record-head { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-2); }
-.domains-record-type { font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-semibold); letter-spacing: 0.05em; color: var(--lb-color-text-muted); }
-.domains-record-state { display: inline-flex; align-items: center; gap: var(--lb-space-1); font-size: var(--lb-font-size-caption); font-weight: var(--lb-font-weight-medium); }
-.domains-record-state .letbuyy-icon { width: 14px; height: 14px; }
-.domains-record-state--ok { color: var(--lb-color-success); }
-.domains-record-state--bad { color: var(--lb-color-critical); }
-.domains-record-state--pending { color: var(--lb-color-warning); }
+.domains-record-type {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; padding: 2px var(--lb-space-2);
+  font-family: var(--font-letbuyy-mono, ui-monospace, monospace);
+  font-size: 11px; font-weight: var(--lb-font-weight-semibold); letter-spacing: 0.04em;
+  color: var(--lb-color-text-subdued); background: var(--lb-color-surface-subdued);
+  border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-sm);
+}
 .domains-record-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--lb-space-3); }
 .domains-record-field { display: flex; flex-direction: column; gap: var(--lb-space-1); min-width: 0; }
 .domains-record-label { font-size: var(--lb-font-size-caption); color: var(--lb-color-text-muted); }
 .domains-record-valrow { display: flex; align-items: center; gap: var(--lb-space-1); }
 .domains-record-value {
   flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-family: var(--font-letbuyy-mono, ui-monospace, monospace);
   font-size: var(--lb-font-size-caption); color: var(--lb-color-text);
   background: var(--lb-color-surface-subdued); border-radius: var(--lb-radius-sm);
   padding: var(--lb-space-1) var(--lb-space-2); font-feature-settings: 'tnum';
 }
 .domains-record-msg { margin: 0; font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); line-height: 1.5; }
+
+@media (max-width: 480px) {
+  /* Two mono values side by side stop being legible below ~480px */
+  .domains-record-grid { grid-template-columns: 1fr; }
+}
 
 /* Verify / success states */
 .domains-spin { animation: domains-spin 0.9s linear infinite; }
@@ -4924,30 +5044,11 @@ body {
 .domains-success-title { margin: 0; font-size: var(--lb-font-size-heading); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); }
 .domains-success-sub { margin: 0; max-width: 380px; font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); line-height: 1.5; }
 
-/* Detail header + confidence */
-.domains-detail-head { display: flex; flex-direction: column; gap: var(--lb-space-2); }
-.domains-detail-title-row { display: flex; align-items: center; gap: var(--lb-space-2); flex-wrap: wrap; }
-.domains-detail-icon { display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--lb-radius-md); background: var(--lb-color-primary-soft); color: var(--lb-color-primary); }
-.domains-detail-icon .letbuyy-icon { width: 17px; height: 17px; }
-.domains-detail-title { margin: 0; font-size: var(--lb-font-size-heading); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); }
-.domains-detail-actions { display: flex; gap: var(--lb-space-2); flex-wrap: wrap; }
-.domains-confidence {
-  display: flex; align-items: center; gap: var(--lb-space-3);
-  padding: var(--lb-space-4); border-radius: var(--lb-radius-lg); border: 1px solid var(--lb-color-border);
-  background: var(--lb-color-surface); flex-wrap: wrap;
-}
-.domains-confidence--success { border-color: color-mix(in srgb, var(--lb-color-success) 40%, var(--lb-color-border)); background: var(--lb-color-success-soft); }
-.domains-confidence--warning { border-color: color-mix(in srgb, var(--lb-color-warning) 40%, var(--lb-color-border)); background: color-mix(in srgb, var(--lb-color-warning) 10%, transparent); }
-.domains-confidence--critical { border-color: color-mix(in srgb, var(--lb-color-critical) 40%, var(--lb-color-border)); background: var(--lb-color-critical-soft); }
-.domains-confidence-icon { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; min-width: 38px; border-radius: var(--lb-radius-full); background: var(--lb-color-surface); }
-.domains-confidence-icon .letbuyy-icon { width: 20px; height: 20px; }
-.domains-confidence--success .domains-confidence-icon { color: var(--lb-color-success); }
-.domains-confidence--warning .domains-confidence-icon { color: var(--lb-color-warning); }
-.domains-confidence--critical .domains-confidence-icon { color: var(--lb-color-critical); }
-.domains-confidence-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--lb-space-1); }
-.domains-confidence-headline { font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); line-height: 1.4; }
-.domains-confidence-sub { font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); }
-.domains-confidence-health { width: 160px; max-width: 100%; }
+/* The old confidence banner (a hand-rolled soft-tint card, .domains-confidence*)
+   is gone — DomainDetailView now renders the canonical solid Banner there
+   directly, same as every other alert in the app. Its own header
+   (title/icon/badges/actions) is the canonical PageHeader too; no
+   hand-rolled header classes live here any more. */
 
 /* Setup checklist */
 .domains-checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--lb-space-2); }
@@ -4960,14 +5061,19 @@ body {
 .domains-checklist-item--active .domains-checklist-dot { border-color: var(--lb-color-primary); }
 
 /* Troubleshooting issue cards */
-.domains-issue { display: flex; flex-direction: column; gap: var(--lb-space-1); padding: var(--lb-space-3) var(--lb-space-4); border: 1px solid var(--lb-color-border); border-left-width: 3px; border-radius: var(--lb-radius-md); background: var(--lb-color-surface); }
-.domains-issue--critical { border-left-color: var(--lb-color-critical); }
-.domains-issue--warning { border-left-color: var(--lb-color-warning); }
-.domains-issue--info { border-left-color: var(--lb-color-info); }
+/* Each issue's left rail AND a very light matching background tint, so the
+   card reads as "this one's severity" at a glance in a scanned list — a
+   3px rail alone on an otherwise plain white card was easy to miss next to
+   the now much bolder solid severity Badge in its header. */
+.domains-issue { display: flex; flex-direction: column; gap: var(--lb-space-2); padding: var(--lb-space-4); border: 1px solid var(--lb-color-border); border-left-width: 3px; border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); }
+.domains-issue + .domains-issue { margin-top: var(--lb-space-2); }
+.domains-issue--critical { border-left-color: var(--lb-color-critical); background: color-mix(in srgb, var(--lb-color-critical) 4%, var(--lb-color-surface)); }
+.domains-issue--warning { border-left-color: var(--lb-color-warning); background: color-mix(in srgb, var(--lb-color-warning) 5%, var(--lb-color-surface)); }
+.domains-issue--info { border-left-color: var(--lb-color-info); background: color-mix(in srgb, var(--lb-color-info) 4%, var(--lb-color-surface)); }
 .domains-issue-head { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-2); flex-wrap: wrap; }
 .domains-issue-title { font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); }
-.domains-issue-desc { margin: 0; font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); line-height: 1.5; }
-.domains-issue-fix { margin: 0; font-size: var(--lb-font-size-caption); color: var(--lb-color-text); line-height: 1.5; }
+.domains-issue-desc { margin: 0; font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); line-height: 1.55; }
+.domains-issue-fix { margin: 0; padding: var(--lb-space-2) var(--lb-space-3); border-radius: var(--lb-radius-md); background: color-mix(in srgb, var(--lb-color-text) 4%, transparent); font-size: var(--lb-font-size-caption); color: var(--lb-color-text); line-height: 1.55; }
 .domains-issue-eta { margin: 0; display: inline-flex; align-items: center; gap: var(--lb-space-1); font-size: var(--lb-font-size-caption); color: var(--lb-color-text-muted); }
 .domains-issue-eta .letbuyy-icon { width: 13px; height: 13px; }
 
@@ -4986,26 +5092,49 @@ body {
 .domains-timeline-dot--ok { background: var(--lb-color-success); }
 .domains-timeline-dot--bad { background: var(--lb-color-critical); }
 .domains-timeline-dot--pending { background: var(--lb-color-warning); }
-.domains-timeline-body { display: flex; align-items: baseline; justify-content: space-between; gap: var(--lb-space-2); flex: 1; min-width: 0; }
+/* flex-wrap: the timestamp is now a full IST date + time (e.g. "25 Aug 2026,
+   3:45 pm IST"), noticeably longer than the old date-only string — it needs
+   to be able to drop to its own line under the title on narrow widths
+   instead of forcing an ellipsis or overflow. */
+.domains-timeline-body { display: flex; align-items: baseline; justify-content: space-between; gap: var(--lb-space-1) var(--lb-space-2); flex: 1; min-width: 0; flex-wrap: wrap; }
 .domains-timeline-title { font-size: var(--lb-font-size-caption); color: var(--lb-color-text); }
-.domains-timeline-time { font-size: var(--lb-font-size-caption); color: var(--lb-color-text-muted); flex-shrink: 0; }
+.domains-timeline-time { font-size: var(--lb-font-size-caption); color: var(--lb-color-text-muted); flex-shrink: 0; font-feature-settings: 'tnum'; }
 
 /* Overview rows */
-.domains-row { display: flex; align-items: center; gap: var(--lb-space-3); padding: var(--lb-space-3) var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); width: 100%; text-align: left; }
+/* Two-line card: identity (icon/name/chevron) on top, status + health below.
+   Packing all of that into one row was the actual bug — badges, a fixed-width
+   meter and a chevron all fighting flex-shrink:0 for the same line, so it
+   read as congested well before anything approached mobile width. Each line
+   now gets its own flex context and can wrap independently. */
+.domains-row { display: flex; flex-direction: column; gap: var(--lb-space-3); padding: var(--lb-space-4); border: 1px solid var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface); width: 100%; text-align: left; }
 .domains-row + .domains-row { margin-top: var(--lb-space-2); }
 .domains-row--clickable { cursor: pointer; transition: border-color var(--lb-motion-fast), background var(--lb-motion-fast); }
 .domains-row--clickable:hover { border-color: var(--lb-color-border-strong); background: var(--lb-color-surface-subdued); }
 .domains-row--clickable:focus-visible { outline: 2px solid var(--lb-color-focus-ring); outline-offset: -2px; }
-.domains-row-icon { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; min-width: 36px; border-radius: var(--lb-radius-md); background: var(--lb-color-primary-soft); color: var(--lb-color-primary); }
-.domains-row-icon .letbuyy-icon { width: 18px; height: 18px; }
+
+.domains-row-top { display: flex; align-items: center; gap: var(--lb-space-3); min-width: 0; }
+.domains-row-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; min-width: 40px; border-radius: var(--lb-radius-md); background: var(--lb-color-primary-soft); color: var(--lb-color-primary); }
+.domains-row-icon .letbuyy-icon { width: 19px; height: 19px; }
 .domains-row-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--lb-space-1); }
 .domains-row-domain-line { display: flex; align-items: center; gap: var(--lb-space-2); flex-wrap: wrap; }
 .domains-row-domain { font-size: var(--lb-font-size-body); font-weight: var(--lb-font-weight-semibold); color: var(--lb-color-text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .domains-row-sub { font-size: var(--lb-font-size-caption); color: var(--lb-color-text-subdued); }
-.domains-row-status { display: flex; align-items: center; gap: var(--lb-space-2); flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
-.domains-row-health { width: 120px; flex-shrink: 0; }
-.domains-row-chevron { width: 16px; height: 16px; color: var(--lb-color-text-muted); flex-shrink: 0; }
+.domains-row-chevron { width: 18px; height: 18px; color: var(--lb-color-text-muted); flex-shrink: 0; transition: transform var(--lb-motion-fast); }
+.domains-row--clickable:hover .domains-row-chevron { transform: translateX(2px); color: var(--lb-color-text-subdued); }
+
+/* Status + health line — its own flex context, wraps on its own terms
+   instead of stealing space from the identity line above it. */
+.domains-row-bottom { display: flex; align-items: center; justify-content: space-between; gap: var(--lb-space-3); flex-wrap: wrap; padding-left: calc(40px + var(--lb-space-3)); }
+.domains-row-status { display: flex; align-items: center; gap: var(--lb-space-2); flex-wrap: wrap; }
+
 .domains-row-add { display: flex; padding-top: var(--lb-space-1); }
+
+@media (max-width: 480px) {
+  /* Below the icon column's own width, indenting the second line to align
+     under the domain name just eats into already-scarce space — drop it
+     flush left instead. */
+  .domains-row-bottom { padding-left: 0; }
+}
 
 /* Overview empty */
 .domains-empty { display: flex; align-items: center; gap: var(--lb-space-3); padding: var(--lb-space-4); border: 1px dashed var(--lb-color-border); border-radius: var(--lb-radius-lg); background: var(--lb-color-surface-subdued); flex-wrap: wrap; }

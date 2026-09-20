@@ -7,7 +7,6 @@ import {
     Banner,
     Bell,
     Button,
-    Card,
     EmptyState,
     Input,
     Mail,
@@ -416,23 +415,26 @@ export default function NotificationsSettingsPage() {
             store={store}
         >
             {/* ── Preferences section ───────────────────────────────────────── */}
-            <Card>
-                <Section
-                    title="Notification preferences"
-                    description="Toggle individual channel and category pairs. Changes save immediately."
-                    action={
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => void loadPreferences()}
-                            disabled={prefsLoading}
-                            aria-label="Refresh preferences"
-                        >
-                            <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />
-                            Refresh
-                        </Button>
-                    }
-                >
+            <Section
+                variant="grouped"
+                title="Notification preferences"
+                action={
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => void loadPreferences()}
+                        disabled={prefsLoading}
+                        aria-label="Refresh preferences"
+                    >
+                        <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden />
+                        Refresh
+                    </Button>
+                }
+            >
+                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        Toggle individual channel and category pairs. Changes save immediately.
+                    </p>
+
                     {prefsError && (
                         <Banner
                             variant="critical"
@@ -450,7 +452,7 @@ export default function NotificationsSettingsPage() {
                     {prefsLoading ? (
                         <Skeleton variant="text" lines={7} />
                     ) : (
-                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
+                        <div className="grid gap-[var(--lb-space-3)]">
                             {PREF_MATRIX.map((def) => {
                                 const key = prefKey(def.channel, def.category)
                                 const enabled = prefMap.get(key) ?? true
@@ -459,7 +461,7 @@ export default function NotificationsSettingsPage() {
                                 return (
                                     <div
                                         key={key}
-                                        className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)] sm:flex-row sm:items-center sm:justify-between"
+                                        className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] sm:flex-row sm:items-center sm:justify-between"
                                     >
                                         <label
                                             htmlFor={inputId}
@@ -469,17 +471,15 @@ export default function NotificationsSettingsPage() {
                                                 {def.icon}
                                             </span>
                                             <span className="min-w-0">
-                                                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                    {def.label}
+                                                <span className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                    <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                        {def.label}
+                                                    </span>
+                                                    <Badge label={channelLabel(def.channel)} variant="default" />
                                                 </span>
-                                                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                <span className="mt-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                                     {def.description}
                                                 </span>
-                                                <Badge
-                                                    label={channelLabel(def.channel)}
-                                                    variant="default"
-                                                    className="mt-[var(--lb-space-1)]"
-                                                />
                                             </span>
                                         </label>
                                         <div className="flex shrink-0 items-center gap-[var(--lb-space-3)] self-start sm:self-center">
@@ -499,48 +499,35 @@ export default function NotificationsSettingsPage() {
                             })}
                         </div>
                     )}
-                </Section>
-            </Card>
+            </Section>
 
             {/* ── Delivery logs section ─────────────────────────────────────── */}
-            <Card>
-                <Section
-                    title="Delivery logs"
-                    description="Evidence of every notification routed through the platform for this store."
-                >
+            <Section variant="grouped" title="Delivery logs">
+                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        Evidence of every notification routed through the platform for this store.
+                    </p>
+
                     {/* Filters */}
-                    <div className="mb-[var(--lb-space-4)] flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-end">
+                    <div className="flex flex-col gap-[var(--lb-space-3)] sm:flex-row sm:items-end">
                         <div className="flex-1">
-                            <label
-                                className="mb-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]"
-                                htmlFor="log-channel-filter"
-                            >
-                                Channel
-                            </label>
                             <Select
                                 id="log-channel-filter"
+                                label="Channel"
                                 value={channelFilter}
                                 onChange={(e) => setChannelFilter(e.target.value)}
                                 options={CHANNEL_OPTIONS}
-                                aria-label="Filter by channel"
                             />
                         </div>
                         <div className="flex-1">
-                            <label
-                                className="mb-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]"
-                                htmlFor="log-status-filter"
-                            >
-                                Status
-                            </label>
                             <Select
                                 id="log-status-filter"
+                                label="Status"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                                 options={STATUS_OPTIONS}
-                                aria-label="Filter by status"
                             />
                         </div>
-                        <div className="flex gap-[var(--lb-space-2)] self-end">
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)] sm:self-end">
                             <Button
                                 variant="primary"
                                 size="sm"
@@ -680,8 +667,7 @@ export default function NotificationsSettingsPage() {
                             )}
                         </>
                     )}
-                </Section>
-            </Card>
+            </Section>
         </SettingsPane>
     )
 }

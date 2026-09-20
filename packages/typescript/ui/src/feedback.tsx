@@ -28,36 +28,38 @@ import { cx } from './utils';
 
 export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical';
 
-const statusStyles: Record<StatusVariant, { surface: string; text: string; border: string; icon: React.ReactNode }> = {
+/**
+ * Sonner-style "rich colours" for the badge/pill too — the same solid,
+ * saturated fill + white text as Toast and Banner, not a soft pastel tint
+ * with a matching border. A status chip (Live, Primary, SSL not connected,
+ * Needs DNS setup, …) is read at a glance in a dense list; a solid fill
+ * reads as a deliberate status of record, where a low-contrast tint reads
+ * as decoration. `default` is the one non-semantic tone — a neutral/brand
+ * chip (role labels, counts) — so its fill is the LIVE merchant primary
+ * token, not a fixed colour; see badgeSolid.defaultBg in tokens.ts.
+ */
+const BADGE_ICON_CLASS = 'h-[11px] w-[11px] shrink-0';
+
+const statusStyles: Record<StatusVariant, { bg: string; icon: React.ReactNode }> = {
     default: {
-        surface: 'bg-[var(--lb-component-badge-accent-bg)]',
-        text: 'text-[color:var(--lb-component-badge-accent-text)]',
-        border: 'border-[var(--lb-component-badge-accent-border)]',
-        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-solid-default-bg)]',
+        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     info: {
-        surface: 'bg-[var(--lb-component-banner-info-bg)]',
-        text: 'text-[color:var(--lb-component-banner-info-text)]',
-        border: 'border-[var(--lb-component-banner-info-border)]',
-        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-solid-info-bg)]',
+        icon: <Info className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     success: {
-        surface: 'bg-[var(--lb-component-banner-success-bg)]',
-        text: 'text-[color:var(--lb-component-banner-success-text)]',
-        border: 'border-[var(--lb-component-banner-success-border)]',
-        icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-solid-success-bg)]',
+        icon: <CheckCircle2 className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     warning: {
-        surface: 'bg-[var(--lb-component-banner-warning-bg)]',
-        text: 'text-[color:var(--lb-component-banner-warning-text)]',
-        border: 'border-[var(--lb-component-banner-warning-border)]',
-        icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-solid-warning-bg)]',
+        icon: <AlertTriangle className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
     critical: {
-        surface: 'bg-[var(--lb-component-banner-danger-bg)]',
-        text: 'text-[color:var(--lb-component-banner-danger-text)]',
-        border: 'border-[var(--lb-component-banner-danger-border)]',
-        icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+        bg: 'bg-[var(--lb-component-badge-solid-danger-bg)]',
+        icon: <AlertCircle className={BADGE_ICON_CLASS} aria-hidden="true" />,
     },
 };
 
@@ -72,10 +74,8 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
     return (
         <span
             className={cx(
-                'inline-flex min-h-[var(--lb-density-pill-height)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-badge)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-badge)]',
-                style.surface,
-                style.text,
-                style.border,
+                'inline-flex items-center gap-[3px] rounded-[var(--lb-radius-full)] px-[var(--lb-space-2)] py-[1px] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-badge-solid-text)]',
+                style.bg,
                 className,
             )}
             {...props}
@@ -240,34 +240,79 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     action?: React.ReactNode;
 }
 
+/**
+ * Sonner/toast-style "rich colours" for the inline banner too — a solid,
+ * saturated fill with white text, not the soft pastel-tint-plus-border
+ * `statusStyles` gives Badge. A page-level alert (payment failed, inventory
+ * couldn't load) is the highest-attention surface on the page; it should
+ * never look like it's blending into a form hint.
+ */
+const bannerSolidStyles: Record<Exclude<StatusVariant, 'default'>, { bg: string; icon: React.ReactNode }> = {
+    info: {
+        bg: 'bg-[var(--lb-component-banner-solid-info-bg)]',
+        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    success: {
+        bg: 'bg-[var(--lb-component-banner-solid-success-bg)]',
+        icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    warning: {
+        bg: 'bg-[var(--lb-component-banner-solid-warning-bg)]',
+        icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    critical: {
+        bg: 'bg-[var(--lb-component-banner-solid-danger-bg)]',
+        icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+};
+
+/**
+ * Callers pass `action={<Button variant="secondary">Retry</Button>}` — that
+ * button's normal "secondary" styling assumes a neutral/white page
+ * background, which reads as flat/wrong on the solid fill above. Rather than
+ * asking every call site to special-case the button when it's inside a
+ * Banner, shadow the secondary-button tokens for this subtree only: any
+ * `Button variant="secondary"` rendered inside picks up a translucent-white
+ * "ghost on solid colour" treatment automatically.
+ */
+const bannerActionStyle = {
+    '--lb-component-button-secondary-bg': 'var(--lb-component-banner-solid-action-bg)',
+    '--lb-component-button-secondary-border': 'var(--lb-component-banner-solid-action-border)',
+    '--lb-component-button-secondary-text': 'var(--lb-component-banner-solid-action-text)',
+    '--lb-component-button-secondary-hover': 'var(--lb-component-banner-solid-action-hover)',
+} as React.CSSProperties;
+
 export function Banner({ title, children, variant = 'info', action, className = '', ...props }: BannerProps) {
-    const style = statusStyles[variant];
+    const style = bannerSolidStyles[variant];
 
     return (
         <div
             className={cx(
-                'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-density-card-padding)]',
-                style.surface,
-                style.border,
+                'flex items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] p-[var(--lb-space-3)] text-[color:var(--lb-component-banner-solid-text)] shadow-[var(--lb-shadow-sm)]',
+                style.bg,
                 className,
             )}
             role={variant === 'critical' ? 'alert' : 'status'}
             {...props}
         >
-            <div className={cx('mt-[var(--lb-space-1)] shrink-0 text-[length:var(--lb-density-action-icon-size)]', style.text)}>
+            <div className="mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]">
                 {style.icon}
             </div>
-            <div className="min-w-0 flex-1 space-y-[var(--lb-space-1)]">
+            <div className="min-w-0 flex-1 space-y-[2px]">
                 {title && (
-                    <h3 className={cx('m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]', style.text)}>
+                    <h3 className="m-0 text-[length:var(--lb-font-size-secondary)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
                         {title}
                     </h3>
                 )}
-                <div className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
                     {children}
                 </div>
             </div>
-            {action && <div className="shrink-0">{action}</div>}
+            {action && (
+                <div className="shrink-0" style={bannerActionStyle}>
+                    {action}
+                </div>
+            )}
         </div>
     );
 }
@@ -312,6 +357,33 @@ const toastPlacementStyles: Record<ToastPlacement, string> = {
     'bottom-center': 'bottom-[var(--lb-space-5)] left-1/2 -translate-x-1/2',
 };
 
+/**
+ * Sonner-style "rich colours": a solid, saturated fill per variant with
+ * white text/icon on top. Deliberately a SEPARATE map from `statusStyles`
+ * above — Badge and Banner use that one for a soft, low-saturation tint,
+ * and must keep looking that way. A toast is a transient, high-attention
+ * surface that has to read at a glance, not blend into the page like an
+ * inline banner does.
+ */
+const toastVariantStyles: Record<ToastVariant, { bg: string; icon: React.ReactNode }> = {
+    info: {
+        bg: 'bg-[var(--lb-component-toast-info-bg)]',
+        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    success: {
+        bg: 'bg-[var(--lb-component-toast-success-bg)]',
+        icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    warning: {
+        bg: 'bg-[var(--lb-component-toast-warning-bg)]',
+        icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+    critical: {
+        bg: 'bg-[var(--lb-component-toast-danger-bg)]',
+        icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+    },
+};
+
 export function ToastProvider({ children, duration = 5000, placement = 'top-right' }: ToastProviderProps) {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -339,7 +411,7 @@ export function ToastProvider({ children, duration = 5000, placement = 'top-righ
                 <div
                     key={activePlacement}
                     className={cx(
-                        'fixed z-[var(--lb-z-toast)] flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]',
+                        'fixed z-[var(--lb-z-toast)] flex w-[min(336px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-2)]',
                         toastPlacementStyles[activePlacement],
                     )}
                     aria-live="polite"
@@ -349,25 +421,25 @@ export function ToastProvider({ children, duration = 5000, placement = 'top-righ
                         .filter((toast) => (toast.placement ?? placement) === activePlacement)
                         .map((toast) => {
                             const variant = toast.variant ?? 'info';
-                            const style = statusStyles[variant];
+                            const style = toastVariantStyles[variant];
                             return (
                                 <div
                                     key={toast.id}
                                     className={cx(
-                                        'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface-raised)] p-[var(--lb-density-card-padding)] shadow-[var(--lb-shadow-lg)]',
-                                        style.border,
+                                        'flex items-start gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] p-[var(--lb-space-3)] text-[color:var(--lb-component-toast-text)] shadow-[var(--lb-shadow-md)]',
+                                        style.bg,
                                     )}
                                     role={variant === 'critical' ? 'alert' : 'status'}
                                 >
-                                    <div className={cx('mt-[var(--lb-space-1)] text-[length:var(--lb-density-action-icon-size)]', style.text)}>
+                                    <div className="mt-[1px] shrink-0 text-[length:var(--lb-density-action-icon-size)]">
                                         {style.icon}
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                        <p className="m-0 text-[length:var(--lb-font-size-secondary)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
                                             {toast.title}
                                         </p>
                                         {toast.description && (
-                                            <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                            <p className="m-0 mt-[2px] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] opacity-90">
                                                 {toast.description}
                                             </p>
                                         )}
@@ -375,7 +447,7 @@ export function ToastProvider({ children, duration = 5000, placement = 'top-righ
                                     <Button
                                         unstyled
                                         type="button"
-                                        className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                        className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] shrink-0 items-center justify-center rounded-[var(--lb-radius-sm)] text-[color:var(--lb-component-toast-text)] hover:bg-[var(--lb-component-toast-close-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                                         onClick={() => dismiss(toast.id)}
                                         aria-label="Dismiss notification"
                                     >
