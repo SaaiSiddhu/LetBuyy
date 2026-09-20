@@ -1,0 +1,52 @@
+# D1 + Durable Object: is there a SECOND data authority? (first-hand, 2026-08-16)
+# Evidence state: VERIFIED-SOURCE + VERIFIED-CONFIG
+
+## The constitutional question
+DOC 01 R-15 / ART-04 require ONE PostgreSQL source of truth. services/api-gateway/wrangler.toml
+declares, in env.production, a D1 database and a Durable Object namespace. If either held
+durable business state, that would be an accidental second data authority.
+
+## D1 (binding RUNTIME_DB, production database_id 76d197a5-d1cf-48a3-a363-4201ed1ca490)
+Command: rg -n 'RUNTIME_DB' services apps packages --type ts -g '!**/__tests__/**'
+services/api-gateway/src/routes/internal-console.ts:808:            runtime_db: Boolean(c.env.RUNTIME_DB),
+services/api-gateway/src/index.ts:206:    RUNTIME_DB?: D1Database;
+
+=> TWO references in the entire codebase: an optional type declaration, and a BOOLEAN
+   PRESENCE CHECK in an internal console health route. There is no query, no insert,
+   no schema, no migration. D1 stores NOTHING.
+
+## Durable Object (binding RUNTIME_COORDINATOR, class LetbuyyRuntimeDurableObject)
+Command: rg -n 'RUNTIME_COORDINATOR' services apps packages --type ts -g '!**/__tests__/**'
+services/api-gateway/src/index.ts:208:    RUNTIME_COORDINATOR?: DurableObjectNamespace;
+services/api-gateway/src/routes/internal-console.ts:810:            runtime_coordinator: Boolean(c.env.RUNTIME_COORDINATOR),
+
+Class source: services/api-gateway/src/durable/runtime-coordinator.ts (46 lines, read in full)
+  - storage keys written: 'initialized' (constant) and 'checkpoint' (arbitrary string from a POST body)
+  - routes served: GET .../health and POST .../checkpoint only
+  - business data held: NONE. No cart, order, payment, inventory, session, or tenant state.
+  - callers: NONE. The namespace binding appears only in a Boolean() presence check.
+
+## VERDICT
+D1 and Durable Objects are NOT a second data authority. R-15 / ART-04 are NOT violated on
+this axis. The one-PostgreSQL invariant holds with respect to D1 and DO.
+
+## BUT — three real secondary findings
+1. DECLARED-BUT-UNUSED PROVIDER RESOURCES. A real D1 database_id is committed and a DO
+   namespace is bound in production for infrastructure that no code path uses. This is
+   ANTI-R7-adjacent (the estate declaring something it does not use) and carries a small
+   ongoing provider cost.
+2. A VALIDATOR ENFORCES THE DEAD INFRASTRUCTURE. scripts/validators/durable-object-validator.mjs
+   lines 17-18 assert that wrangler.toml contains new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]
+   and that index.ts exports the class. The validator suite therefore actively REQUIRES this
+   unused capability to remain. This is a concrete, citable instance of the gate enforcing
+   something that is not a constitutional invariant (ART-02 / ANTI-R3 concern).
+reporter.assert(apiWrangler.includes("[[migrations]]"), "API Gateway wrangler must declare Durable Object migration");
+reporter.assert(apiWrangler.includes(`tag = "${topology.durableObjects.migrationTag}"`), "Durable Object migration tag must match topology");
+reporter.assert(apiWrangler.includes('new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]'), "Durable Object must use SQLite-backed class migration");
+reporter.assert(indexSource.includes("export { LetbuyyRuntimeDurableObject }"), "API Gateway main module must export Durable Object class");
+reporter.assert(durableSource.includes("blockConcurrencyWhile"), "Durable Object must initialize storage through blockConcurrencyWhile");
+reporter.assert(durableSource.includes("checkpoint"), "Durable Object must expose checkpoint state for rollback recovery");
+3. FUTURE BOTTLENECK RISK. A single Durable Object serialises all requests addressed to it.
+   The name RUNTIME_COORDINATOR invites future promotion to a real coordination role; if that
+   happened, it would become a hard single-threaded ceiling on whatever it coordinates.
+   Safe today ONLY because nothing calls it.

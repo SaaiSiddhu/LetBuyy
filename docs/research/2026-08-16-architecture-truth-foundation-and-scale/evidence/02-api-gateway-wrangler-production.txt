@@ -1,0 +1,131 @@
+# services/api-gateway/wrangler.toml — effective production bindings (first-hand, 2026-08-16)
+# NOTE: values below are CONFIGURATION (VERIFIED-CONFIG). They are NOT proof of deployment.
+
+[env.production]
+name = "letbuyy-api"
+workers_dev = false
+routes = [
+  { pattern = "api.letbuyy.com", custom_domain = true }
+]
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 0.1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 0.1
+invocation_logs = true
+
+[env.production.triggers]
+# Beta free-tier: was */1 (1,440 fires/day, the main queue/invocation drain). 15m = 96 fires/day.
+crons = ["*/15 * * * *"]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+APP_ENV = "production"
+NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "production"
+WORKER_ENV = "production"
+DEPLOYMENT_ENV = "production"
+TELEMETRY_ENV = "production"
+FEATURE_GRAPHQL = "false"
+FEATURE_EXTENSIONS = "false"
+FEATURE_LIQUID = "false"
+FEATURE_AI_CREDIT_PURCHASE = "false"
+# TEMPORARY (founder-approved 2026-08-01) — query-cost rate-limit backend.
+# Upstash Redis is the intended production backend, but no UPSTASH_REDIS_REST_URL /
+# UPSTASH_REDIS_REST_TOKEN is provisioned. Without Redis the query-cost limiter's KV
+# fallback is NOT auto-enabled in production — unlike the fixed-window limiters it has
+# no `isProduction ||` clause — so it failed closed and every /v1 data route returned
+# 503 RATE_LIMIT_UNAVAILABLE. This flag routes those checks to the CACHE KV namespace.
+# Rate limiting stays ENFORCED: this selects a backend, it does not weaken any limit.
+# LIMITATION: Cloudflare KV has a daily write quota and each limited request costs one
+# KV write, so sustained high volume can exhaust it. REPLACE WITH UPSTASH before scale.
+RATE_LIMIT_KV_FALLBACK = "on"
+STOREFRONT_CACHE = "on"
+STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
+STOREFRONT_SEARCH_PROJECTION = "on"
+ANALYTICS_PROJECTION_READS = "on"
+PRODUCT_VARIANT_DIFF = "on"
+CHECKOUT_POSTCOMMIT_DEFERRAL = "on"
+ORDER_ITEMS_RELATIONAL_READS = "on"
+PRODUCT_VARIANTS_RELATIONAL_READS = "on"
+AI_PROVIDER_MODE = "sandbox"
+AI_PROVIDER = "letbuyy_sandbox"
+AI_PROVIDER_MODEL = "letbuyy-sandbox-copywriter"
+AI_CREDIT_PURCHASE_MODE = "sandbox"
+AI_CREDIT_PURCHASE_PROVIDER = "letbuyy_sandbox"
+AI_CREDIT_PRICE_INR_PAISE = "100"
+AI_CREDIT_RAZORPAY_KEY_ID = "SKIP_NEEDS_HUMAN_AI_CREDIT_RAZORPAY_KEY_ID"
+LETBUYY_IDENTITY_ISSUER = "https://accounts.letbuyy.com"
+WHATSAPP_PROVIDER_MODE = "sandbox"
+WHATSAPP_PROVIDER = "letbuyy_sandbox"
+TWILIO_ACCOUNT_SID = "SKIP_NEEDS_HUMAN_TWILIO_ACCOUNT_SID"
+TWILIO_WHATSAPP_FROM = "SKIP_NEEDS_HUMAN_TWILIO_WHATSAPP_FROM"
+REQUEST_LOG_SAMPLE_RATE = "0.02"
+RUNTIME_NAME = "LetBuyy API"
+PRIMARY_REGION = "ap-south-1"
+EDGE_SCOPE = "global-edge"
+ASSET_PUBLIC_BASE_URL = "https://cdn.letbuyy.com"
+CHECKOUT_ORIGIN = "https://checkout.letbuyy.com"
+EVENT_QUEUE_NAME = "letbuyy-events-production"
+ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-production"
+SEARCH_QUEUE_NAME = "letbuyy-search-queue-production"
+NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-queue-production"
+RUNTIME_QUEUE_NAME = "letbuyy-production-queue"
+
+[[env.production.queues.producers]]
+binding = "EVENT_QUEUE"
+queue = "letbuyy-events-production"
+
+[[env.production.queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "letbuyy-analytics-queue-production"
+
+[[env.production.queues.producers]]
+binding = "SEARCH_QUEUE"
+queue = "letbuyy-search-queue-production"
+
+[[env.production.queues.producers]]
+binding = "NOTIFICATION_QUEUE"
+queue = "letbuyy-notifications-queue-production"
+
+[[env.production.queues.producers]]
+binding = "RUNTIME_QUEUE"
+queue = "letbuyy-production-queue"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "ee82af4721b349c89e757ed8155c2b5b"
+preview_id = "ee82af4721b349c89e757ed8155c2b5b"
+
+[[env.production.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "letbuyy-media-production"
+
+[[env.production.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "9e08563f410040d9a8bd67b7938f0bb5"
+
+[[env.production.d1_databases]]
+binding = "RUNTIME_DB"
+database_name = "letbuyy-production-d1"
+database_id = "76d197a5-d1cf-48a3-a363-4201ed1ca490"
+migrations_dir = "../../database/cloudflare/d1/migrations"
+
+[[env.production.durable_objects.bindings]]
+name = "RUNTIME_COORDINATOR"
+class_name = "LetbuyyRuntimeDurableObject"
+
+[[env.production.services]]
+binding = "WEBHOOK_SERVICE"
+service = "letbuyy-webhook"
+
+[[env.production.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-production-telemetry"
+
+[env.production.placement]
+mode = "smart"

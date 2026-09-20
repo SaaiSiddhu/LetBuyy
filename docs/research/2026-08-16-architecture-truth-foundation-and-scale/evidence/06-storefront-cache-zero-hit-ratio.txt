@@ -1,0 +1,43 @@
+# Storefront caching: three independent causes of ~0% hit ratio (first-hand, 2026-08-16)
+# Evidence state: VERIFIED-SOURCE
+
+## Cause 1 — a cookie read in the tenant layout forces DYNAMIC rendering of the whole subtree
+apps/storefront-runtime/src/app/store/[subdomain]/layout.tsx:76 calls resolveThemePreviewToken()
+apps/storefront-runtime/src/lib/theme-preview-server.ts:12 calls cookies() from 'next/headers'.
+In the Next.js App Router, calling cookies() opts the route into dynamic rendering. Because this
+happens in the LAYOUT, every page beneath store/[subdomain]/ is dynamic, and every
+'export const revalidate' in that subtree is inert. The Full Route Cache (ISR) is unreachable.
+export default async function StoreLayout({ children, params }: Props) {
+    const { subdomain } = await params;
+    const previewToken = await resolveThemePreviewToken(subdomain);
+    const previewStore = previewToken
+        ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
+        : null;
+    const store = previewStore || await StoreService.getStoreBySubdomainAnyStatus(subdomain);
+
+(The same layout also performs a StoreService DB lookup per request.)
+
+## Cause 2 — a random request id enters the Next Data Cache key
+apps/storefront-runtime/src/lib/api/client.ts:45
+    headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
+A fresh crypto.randomUUID() per server-side gateway fetch. In Next 16.1.6 the Data Cache key and
+the request-memoisation key both include request headers (only traceparent/tracestate are
+stripped), so every fetch key is unique: no Data Cache hits and no per-render dedupe.
+
+## Cause 3 — Cache Components / PPR are off
+apps/storefront-runtime/next.config.ts contains no 'experimental' block; Next 16 defaults
+cacheComponents:false, so Partial Prerendering is off.
+0
+
+## Cause 4 (worker tier) — no request coalescing
+services/api-gateway/src/lib/storefront-cache.ts:121-129 — cachedJson calls producer()
+unconditionally on a Cache API miss. Concurrent misses on one cold key each run the full origin
+producer. stale-while-revalidate=300 is emitted only as a Cache-Control header string and drives
+no background refresh in code.
+
+## CONSEQUENCE
+The effective storefront cache hit ratio on HTML and on gateway data fetches is approximately
+ZERO. 06_10M_WORKLOAD_DEFINITION.md models a 30% uncacheable base case; the measured value is
+~100%, which multiplies modelled origin load by ~3.3x at every band.
+Conversely these are three small, independent fixes with no infrastructure cost and no
+constitutional risk — the single largest capacity lever available (06 section 6: up to 8x).

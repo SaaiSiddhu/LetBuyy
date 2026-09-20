@@ -1,0 +1,37 @@
+# Migration numbering + rollback pairing audit (first-hand, 2026-08-16, HEAD 5af69e0c)
+
+## Command: ls migrations | extract 3-digit prefix | sort -n
+forward migration files:      126
+unique prefixes:             126
+duplicate prefixes:     NONE (uniq -d returned empty) -> root AGENTS.md MIG-R2 'duplicate prefix (129)' is STALE
+min prefix: 000   max prefix: 197
+
+## Absent prefixes 001-072
+database/supabase/migrations/000_baseline.sql is a pg_dump of PostgreSQL 17.6 (header lines 4-5).
+=> 001-072 were SQUASHED into the 000 baseline. The 126-files-vs-max-197 gap is a BASELINE SQUASH,
+   not missing migrations. Prefixes 073..197 are contiguous with no gaps and no duplicates.
+
+## Rollback pairing (database/supabase/rollback/*.rollback.sql)
+rollback files:       48
+forward migrations WITH a same-numbered rollback:    48
+forward migrations WITHOUT a same-numbered rollback:  78
+
+### Unpaired at or above 138 (the scope MIG-R3 / R-23 requires a gating validator for):
+  138_mobile_store_metafields.sql  [NOT named in governance -> NEW drift]
+  140_mobile_cod_reconciliation.sql  [NOT named in governance -> NEW drift]
+  157_product_metadata.sql  [NOT named in governance -> NEW drift]
+  170_v1_shipping_rates_gst.sql  [NOT named in governance -> NEW drift]
+  175_fix_session_rpc_search_path.sql  [NOT named in governance -> NEW drift]
+  179_outbox_partition_shadow_published_at.sql  [NOT named in governance -> NEW drift]
+  182_v1_sites_timezone.sql  [NOT named in governance -> NEW drift]
+  183_v1_pricing_recompete.sql  [NOT named in governance -> NEW drift]
+  184_v1_subscription_coupons.sql  [NOT named in governance -> NEW drift]
+  186_v1_scale_commerce_os_coming_soon.sql  [NOT named in governance -> NEW drift]
+  187_v1_sites_site_settings.sql  [NOT named in governance -> NEW drift]
+  194_demo_requests.sql  [NOT named in governance -> NEW drift]
+
+CONCLUSION: root AGENTS.md MIG-R3 names 138/140/157 as the known-unpaired set.
+At this SHA there are 12 unpaired migrations >= 138. NINE are new since the governance
+document was authored (170,175,179,182,183,184,186,187,194).
+=> R-23 / MIG-R3 is OPEN and has REGRESSED. The rollback-pairing validator either does
+   not exist or does not gate merge. Evidence state: VERIFIED-SOURCE.

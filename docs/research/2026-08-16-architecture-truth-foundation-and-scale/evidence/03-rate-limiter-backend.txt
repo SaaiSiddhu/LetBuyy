@@ -1,0 +1,60 @@
+# Rate limiter backend — first-hand source read (2026-08-16, HEAD 5af69e0c)
+# Evidence state: VERIFIED-SOURCE (code) + VERIFIED-CONFIG (production flag)
+
+## Production configuration
+services/api-gateway/wrangler.toml env.production.vars: RATE_LIMIT_KV_FALLBACK = "on"
+The committed comment above that flag states, verbatim in substance:
+  - Upstash Redis is the INTENDED production backend
+  - no UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN is provisioned
+  - without Redis the query-cost limiter FAILED CLOSED and every /v1 data route
+    returned 503 RATE_LIMIT_UNAVAILABLE
+  - the flag routes those checks to the CACHE KV namespace
+  - stated LIMITATION: 'Cloudflare KV has a daily write quota and each limited
+    request costs one KV write, so sustained high volume can exhaust it.'
+  - stated remediation: 'REPLACE WITH UPSTASH before scale.'
+=> The seed observation is CONFIRMED, and the team's own comment is accurate and honest.
+
+## Code path 1 — fixed-window limiter, KV backend
+services/api-gateway/src/middleware/rateLimit.ts:320-325
+    try {
+        const rawCount = await cache.get(windowKey);
+        const previousCount = rawCount ? Number.parseInt(rawCount, 10) : 0;
+        const count = Number.isFinite(previousCount) ? previousCount + 1 : 1;
+
+        await cache.put(windowKey, count.toString(), { expirationTtl: ttlSeconds });
+
+
+## Code path 2 — query-cost (leaky-bucket) limiter, KV backend
+services/api-gateway/src/middleware/rateLimit.ts:618-623
+        const rawEntry = await cache.get(storageKey);
+        const entry = rawEntry ? JSON.parse(rawEntry) as QueryCostLimitEntry : null;
+        const result = evaluateLeakyBucket({ entry, now, cost, pointsPerSecond, capacity });
+        const ttlSeconds = Math.max(60, Math.ceil((capacity / pointsPerSecond) * 2));
+
+        await cache.put(storageKey, JSON.stringify(result.entry), { expirationTtl: ttlSeconds });
+
+
+## Findings derived directly from the two code paths above
+1. COST PER REQUEST: each rate-limited request performs exactly one KV get()
+   and one KV put(). This is 1 KV read + 1 KV WRITE per limited request.
+2. NON-ATOMIC READ-MODIFY-WRITE: both paths read a counter, compute a new value in
+   the isolate, and write it back. There is no atomic increment and no compare-and-set.
+   Under concurrency, N simultaneous requests each read the same value and each write
+   value+1, so the counter advances by 1 instead of N.
+   => The limiter UNDER-ENFORCES precisely during a burst, which is when it matters.
+   This is a SECURITY finding, not only a capacity finding.
+3. EVENTUAL CONSISTENCY: Cloudflare KV is eventually consistent across PoPs, so the
+   counter is per-PoP-stale. The effective limit is therefore per-PoP, multiplied by
+   the number of PoPs serving the attacker/tenant. Global enforcement is not achieved.
+4. PER-KEY WRITE CEILING: Cloudflare documents a hot-key write limit (see
+   10_VENDOR_LIMITS_AND_COSTS.md for the fetched current value). A rate-limit key that
+   is scoped per site or per route will exceed a 1-write-per-second-per-key ceiling as
+   soon as that key sees more than that rate — i.e. on any busy tenant.
+5. DAILY WRITE QUOTA: sustained request rate is bounded by the account's KV daily write
+   allowance divided by 86400. See 07_CAPACITY_MODEL.md for the arithmetic.
+
+## Fail-open / fail-closed behaviour
+Query-cost path sets queryCostKvUnavailableUntil on error and returns
+queryCostUnavailableResult(...) — i.e. it degrades on KV failure rather than throwing.
+The pre-fix behaviour (per the committed comment) was FAIL CLOSED (503 on every /v1
+data route). Confirm the post-fix degraded-mode posture in 08_SECURITY_PRIVACY_COMPLIANCE.md.

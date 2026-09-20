@@ -1,0 +1,64 @@
+# Preflight command ledger
+Captured: 2026-08-16 (research packet — read-only)
+
+## pwd
+/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store
+
+## git rev-parse --show-toplevel
+/Users/saai_siddharth/Projects/Start_Up/Copy/Letbuyy_Store
+
+## git branch --show-current
+stepup/main
+
+## git rev-parse HEAD
+5af69e0c080503765dec361eae2128ba860cf529
+
+## git log -1
+5af69e0c080503765dec361eae2128ba860cf529 2026-08-15T13:51:44+05:30 docs(runbook): make branch alignment divergence-safe
+
+## git rev-list --left-right --count main...stepup/main
+0	0
+
+## git status --short (PRE-RESEARCH — user-owned dirty worktree)
+ M apps/merchant-control-plane/src/app/[store]/apps/page.tsx
+ M apps/merchant-control-plane/src/app/[store]/login/page.tsx
+ M apps/merchant-control-plane/src/app/[store]/settings/apps/AppsSettingsClient.tsx
+ M apps/merchant-control-plane/src/app/globals.css
+ M apps/merchant-control-plane/src/components/AdminShell.tsx
+ M apps/merchant-control-plane/src/components/HeaderBar.tsx
+ M apps/merchant-control-plane/src/components/merchantNavigation.ts
+ M apps/merchant-control-plane/src/components/settings/SettingsShell.tsx
+ M packages/typescript/ui/snapshots/public-api.json
+ M packages/typescript/ui/src/app-shell.tsx
+ M packages/typescript/ui/src/design-tokens.stories.tsx
+ M packages/typescript/ui/src/feedback.tsx
+ M packages/typescript/ui/src/icons.tsx
+ M packages/typescript/ui/src/index.ts
+ M packages/typescript/ui/src/navigation/app-navigation.tsx
+ M packages/typescript/ui/src/navigation/index.ts
+ M packages/typescript/ui/src/overlay-hooks.ts
+ M packages/typescript/ui/src/tokens.ts
+ M packages/typescript/ui/tests/vitest.setup.ts
+?? docs/research/2026-08-16-architecture-truth-foundation-and-scale/
+?? docs/research/LETBUYY_CLAUDE_CODE_ARCHITECTURE_RESEARCH_BRIEF.md
+
+## remote branch alignment
+5af69e0c080503765dec361eae2128ba860cf529
+5af69e0c080503765dec361eae2128ba860cf529
+5af69e0c080503765dec361eae2128ba860cf529
+5af69e0c080503765dec361eae2128ba860cf529
+
+## migration file count
+     126
+
+## rollback file count
+      48
+
+## max migration prefix
+197
+
+## github workflow count
+      16
+
+## validator file count
+     116

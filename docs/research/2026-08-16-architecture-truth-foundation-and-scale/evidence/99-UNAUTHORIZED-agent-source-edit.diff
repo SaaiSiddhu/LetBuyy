@@ -1,0 +1,13 @@
+diff --git a/services/api-gateway/src/routes/storefront/public-routes.ts b/services/api-gateway/src/routes/storefront/public-routes.ts
+index 362b678a..54d53370 100644
+--- a/services/api-gateway/src/routes/storefront/public-routes.ts
++++ b/services/api-gateway/src/routes/storefront/public-routes.ts
+@@ -299,7 +299,7 @@ export function registerStorefrontPublicRoutes(
+ 
+         const [storesCount, themesCount] = await Promise.all([
+             db.from('sites').select('*', { count: 'exact', head: true }).not('status', 'eq', 'suspended').is('deleted_at', null),
+-            db.from('online_store_themes').select('*', { count: 'exact', head: true }),
++            db.from('store_themes').select('*', { count: 'exact', head: true }),
+         ]);
+ 
+         return c.json(success({

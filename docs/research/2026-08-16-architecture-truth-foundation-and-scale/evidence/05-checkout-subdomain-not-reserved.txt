@@ -1,0 +1,49 @@
+# 'checkout' is not a reserved subdomain (first-hand, 2026-08-16) — VERIFIED-SOURCE
+
+Production config declares the hosted checkout origin:
+66:CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
+157:CHECKOUT_ORIGIN = "https://checkout-staging.letbuyy.com"
+286:CHECKOUT_ORIGIN = "https://checkout.letbuyy.com"
+
+packages/tenant-core/src/index.ts reserved lists:
+export const RESERVED_STOREFRONT_LABELS = [
+  'www',
+  'api',
+  'admin',
+  'accounts',
+  'apps',
+  'themes',
+  'developer',
+  'console',
+  'team',
+  'webhooks',
+  'assets',
+  'cdn',
+  'static',
+  'mail',
+  'dcv',
+  'connect',
+] as const;
+
+export const RESERVED_SUBDOMAINS = [
+  ...RESERVED_STOREFRONT_LABELS,
+  'ftp', 'localhost', 'letbuyy',
+  'seller', 'buyer', 'customer', 'support', 'help', 'contact',
+  'about', 'terms', 'privacy', 'policy', 'faq', 'blog', 'press',
+  'careers', 'investors', 'partners', 'affiliates', 'legal',
+  'store', 'stores', 'shop', 'app', 'dashboard', 'billing',
+  'auth', 'login', 'signup', 'register', 'onboarding',
+  'static', 'assets', 'cdn', 'media', 'images', 'files',
+  'status', 'docs', 'dev',
+  'null', 'undefined', 'test', 'demo', 'example', 'staging',
+] as const;
+
+grep -n "'checkout'" packages/tenant-core/src/index.ts  ->  (no output = absent)
+  (no match — 'checkout' is NOT reserved)
+
+NOTE: 'accounts' IS reserved (the identity issuer host, LETBUYY_IDENTITY_ISSUER=
+https://accounts.letbuyy.com). 'checkout' is not, despite CHECKOUT_ORIGIN naming it.
+=> A merchant can claim checkout.letbuyy.com as a storefront subdomain, taking the
+   hostname the Constitution designates for the ART-14 hosted checkout origin.
+   Severity S2 (adversarially corrected from S1). Fix: add 'checkout' to
+   RESERVED_STOREFRONT_LABELS. One line.
