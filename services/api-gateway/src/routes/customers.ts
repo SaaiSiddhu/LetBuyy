@@ -4,7 +4,7 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { emailProviderConfigured, escapeHtml } from '../lib/customer-email';
 import { customerCursorPage, orderCustomerSummaries } from '../lib/customer-pagination';
-import { cursorPaginated, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { resolveOwnedStoreScope } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
@@ -565,7 +565,7 @@ router.patch('/segments/:id', validate('json', UpdateCustomerSegmentSchema), asy
     const body = c.get('validatedBody') as UpdateCustomerSegmentInput;
     const db = getSupabaseAdmin(c);
 
-    const { data: existing, error: existingError } = await db
+    const { data: existing, error: existingError } = await getSupabaseAdminUnguarded(c)
         .from('customer_segments')
         .select('id,store_id,rules')
         .eq('id', id)
@@ -1421,7 +1421,7 @@ router.patch('/:email/addresses/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('customer_addresses')
         .select('store_id')
         .eq('id', addressId)
@@ -1455,6 +1455,7 @@ router.patch('/:email/addresses/:id', async (c) => {
         .from('customer_addresses')
         .update(updates)
         .eq('id', addressId)
+        .eq('store_id', ownedAddress.store_id)
         .select()
         .single();
 
@@ -1472,7 +1473,7 @@ router.delete('/:email/addresses/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('customer_addresses')
         .select('store_id')
         .eq('id', addressId)
@@ -1484,7 +1485,7 @@ router.delete('/:email/addresses/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('customer_addresses').delete().eq('id', addressId);
+    const { error } = await db.from('customer_addresses').delete().eq('id', addressId).eq('store_id', ownedAddress.store_id);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

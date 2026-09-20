@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
@@ -256,17 +256,19 @@ function recordValue(value: unknown): Record<string, unknown> {
 async function hydrateOrderItems(
     db: ReturnType<typeof getSupabaseAdmin>,
     orders: Array<Record<string, unknown>>,
+    siteIds: readonly string[],
 ): Promise<Array<Record<string, unknown>>> {
     const orderIds = orders
         .map((order) => textValue(order.id))
         .filter((id): id is string => Boolean(id));
 
-    if (orderIds.length === 0) return orders;
+    if (orderIds.length === 0 || siteIds.length === 0) return orders;
 
     const { data, error } = await db
         .from('order_items')
         .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
         .in('order_id', Array.from(new Set(orderIds)))
+        .in('site_id', Array.from(new Set(siteIds)))
         .is('deleted_at', null)
         .order('created_at', { ascending: true });
 
@@ -382,8 +384,12 @@ export function normalizeDraftOrderPaymentMethod(value: string | null | undefine
     return null;
 }
 
+// Callers must pass an UNGUARDED client: this resolves a draft order by its
+// own primary key before the tenant is known, so it cannot carry a site_id
+// predicate. Callers verify ownership independently (either directly after
+// this call, or earlier in the request when the site is already known).
 async function loadDraftOrder(
-    db: ReturnType<typeof getSupabaseAdmin>,
+    db: ReturnType<typeof getSupabaseAdminUnguarded>,
     draftId: string,
 ): Promise<{ draft: DraftOrderRow; lines: DraftOrderLineRow[] } | null> {
     const { data: draft, error } = await db
@@ -636,7 +642,7 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
         : null;
     const hydratedRows = orderItemsRelationalReadsEnabled(c.env)
-        ? await hydrateOrderItems(db, pageRows)
+        ? await hydrateOrderItems(db, pageRows, ownedStoreIds)
         : pageRows;
     const rows = (hydratedRows as unknown as OrderSourceRow[]).map(normalizeOrderRecord);
 
@@ -767,7 +773,7 @@ router.post('/drafts', validate('json', CreateDraftOrderSchema), async (c) => {
             throw new Error('Draft order line creation failed');
         }
 
-        const loaded = await loadDraftOrder(db, draftRow.id);
+        const loaded = await loadDraftOrder(getSupabaseAdminUnguarded(c), draftRow.id);
         if (!loaded) throw new Error('Draft order reload failed');
         const responseBody = success(normalizeDraftOrderRecord(loaded.draft, loaded.lines));
         type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];
@@ -791,7 +797,7 @@ router.post('/drafts/:id/convert', validate('json', ConvertDraftOrderSchema), as
     const draftId = c.req.param('id');
     const body = c.get('validatedBody') as ConvertDraftOrderInput;
     const db = getSupabaseAdmin(c);
-    const loaded = await loadDraftOrder(db, draftId);
+    const loaded = await loadDraftOrder(getSupabaseAdminUnguarded(c), draftId);
     if (!loaded) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Draft order not found' } }, 404);
     }
@@ -867,7 +873,7 @@ router.post('/drafts/:id/convert', validate('json', ConvertDraftOrderSchema), as
             requestId: tenant.requestId,
         });
 
-        const reloaded = await loadDraftOrder(db, draftId);
+        const reloaded = await loadDraftOrder(getSupabaseAdminUnguarded(c), draftId);
         const responseBody = success({
             draft_order: reloaded
                 ? normalizeDraftOrderRecord(reloaded.draft, reloaded.lines)
@@ -906,7 +912,7 @@ router.get('/:id/packing-slip', async (c) => {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
     }
 
-    const rows = await hydrateOrderItems(db, [order as unknown as Record<string, unknown>]);
+    const rows = await hydrateOrderItems(db, [order as unknown as Record<string, unknown>], [tenant.siteId]);
     const normalized = normalizeOrderRecord(rows[0] as unknown as OrderSourceRow);
     const normalizedRecord = normalized as unknown as Record<string, unknown>;
     const items = Array.isArray(normalizedRecord.line_items)
@@ -970,7 +976,7 @@ router.get('/:id', async (c) => {
     }
 
     const buildOrderQuery = (includeDeletedAtFilter: boolean) => {
-        let dbQuery = db
+        let dbQuery = getSupabaseAdminUnguarded(c)
             .from('orders')
             .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', orderId);
@@ -992,7 +998,7 @@ router.get('/:id', async (c) => {
     }
 
     const rows = orderItemsRelationalReadsEnabled(c.env)
-        ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
+        ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>], [order.store_id])
         : [order as unknown as Record<string, unknown>];
 
     return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)));
@@ -1030,6 +1036,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
                 .select('id, price, unit_price')
                 .eq('id', line.order_item_id)
                 .eq('order_id', orderId)
+                .eq('site_id', tenant.siteId)
                 .is('deleted_at', null)
                 .maybeSingle();
             if (existingError || !existing) {
@@ -1046,7 +1053,8 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', line.order_item_id)
-                .eq('order_id', orderId);
+                .eq('order_id', orderId)
+                .eq('site_id', tenant.siteId);
             if (error) throw new Error('Order line update failed');
         }
 
@@ -1055,7 +1063,8 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
                 .from('order_items')
                 .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
                 .in('id', Array.from(removals))
-                .eq('order_id', orderId);
+                .eq('order_id', orderId)
+                .eq('site_id', tenant.siteId);
             if (error) throw new Error('Order line removal failed');
         }
 
@@ -1077,6 +1086,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
                 .from('order_items')
                 .insert({
                     order_id: orderId,
+                    site_id: tenant.siteId,
                     product_id: item.product_id,
                     variant_id: item.variant_id || null,
                     name,
@@ -1095,6 +1105,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
             .from('order_items')
             .select('total')
             .eq('order_id', orderId)
+            .eq('site_id', tenant.siteId)
             .is('deleted_at', null);
         if (linesError) throw new Error('Order line total lookup failed');
 
@@ -1138,7 +1149,7 @@ router.patch('/:id/line-items', validate('json', UpdateOrderLineItemsSchema), as
         if (loadError || !order) throw new Error('Order reload failed');
 
         const rows = orderItemsRelationalReadsEnabled(c.env)
-            ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
+            ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>], [tenant.siteId])
             : [order as unknown as Record<string, unknown>];
         const responseBody = success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow));
         type IdempotencyResponseBody = Parameters<IdempotencyExecutionAdapter['complete']>[0]['responseBody'];

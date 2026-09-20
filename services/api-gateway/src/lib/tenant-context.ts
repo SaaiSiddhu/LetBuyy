@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership, type CustomUser, type WorkerAuthUser } from './auth-user';
-import { getSupabaseAdmin } from './supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
 import {
     TENANT_SITE_GUC,
@@ -242,8 +242,12 @@ export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: st
 }
 
 export async function resolveTenantContextForOrder(c: AppContext, orderId: string): Promise<TenantContext> {
-    const db = getSupabaseAdmin(c);
-    const { data: order } = await db
+    // Bootstrap lookup: the tenant isn't known yet, so this can't carry a
+    // scope-column predicate. Safe because it returns at most one row by a
+    // globally-unique id and resolveTenantContextForOwnedSite below
+    // independently re-verifies ownership before any further query runs.
+    const unguardedDb = getSupabaseAdminUnguarded(c);
+    const { data: order } = await unguardedDb
         .from('orders')
         .select('id, store_id')
         .eq('id', orderId)

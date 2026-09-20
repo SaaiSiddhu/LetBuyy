@@ -8,7 +8,7 @@ import {
 import type { Env } from '../index';
 import { HumanRequiredError } from '../lib/errors';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -122,7 +122,7 @@ router.get('/invoice/:orderId', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: orderData, error: orderError } = await db
+    const { data: orderData, error: orderError } = await getSupabaseAdminUnguarded(c)
         .from('orders')
         .select('id, store_id, site_id, gst_invoice_number, gst_invoice')
         .eq('id', orderId)

@@ -129,6 +129,14 @@ export class ProductExecutionAdapter {
 
     constructor(
         private db: SupabaseClient,
+        /**
+         * Raw, non-tenant-guarded client used ONLY for the bootstrap
+         * "resolve product by id" lookup, which runs before the owning
+         * store is known and therefore cannot carry a store_id/site_id
+         * predicate. The result is never trusted until assertStoreOwnership
+         * independently re-checks it.
+         */
+        private unguardedDb: SupabaseClient,
         private options: ProductExecutionAdapterOptions = {},
     ) { }
 
@@ -152,7 +160,7 @@ export class ProductExecutionAdapter {
         await this.replaceProductOptions(data.id, createPlan.productOptions);
         await this.replaceProductVariants(data.id, input.price, createPlan.productVariants, userId);
         await this.setInventoryAvailable(data.id, null, createPlan.initialStock, userId, 'product.create');
-        const variants = await this.refreshProductVariantJsonbCache(data.id);
+        const variants = await this.refreshProductVariantJsonbCache(data.id, input.store_id);
         await this.recordProductUsage(input.store_id, 1, `product.create:${data.id}`, userId, data.id);
         return { ...data, variants };
     }
@@ -181,6 +189,7 @@ export class ProductExecutionAdapter {
                 .from('products')
                 .update(updatePlan.safeUpdates)
                 .eq('id', productId)
+                .eq('store_id', ownedProduct.store_id)
                 .select()
                 .single();
 
@@ -197,7 +206,7 @@ export class ProductExecutionAdapter {
                 ? updatePlan.safeUpdates.price
                 : Number(data?.price ?? ownedProduct.price ?? 0);
             await this.replaceProductVariants(productId, basePrice, updates.variants as ProductVariantInput[], userId);
-            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId);
+            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId, ownedProduct.store_id);
         }
 
         if (updatePlan.hasInventoryUpdate && typeof updates.stock === 'number') {
@@ -209,6 +218,7 @@ export class ProductExecutionAdapter {
                 .from('products')
                 .select()
                 .eq('id', productId)
+                .eq('store_id', ownedProduct.store_id)
                 .single();
 
             if (error) throw new Error(`Product refresh failed: ${error.message}`);
@@ -235,7 +245,8 @@ export class ProductExecutionAdapter {
                 is_active: false,
                 deleted_at: new Date().toISOString(),
             })
-            .eq('id', productId);
+            .eq('id', productId)
+            .eq('store_id', ownedProduct.store_id);
 
         if (error) throw new Error(`Delete failed: ${error.message}`);
         await this.recordProductUsage(ownedProduct.store_id, -1, `product.delete:${productId}`, userId, productId);
@@ -256,7 +267,7 @@ export class ProductExecutionAdapter {
             await this.assertStoreOwnership(storeId, userId, sessionStoreId, 'Not authorized for this store');
         }
 
-        const { data: products, error: productError } = await this.db
+        const { data: products, error: productError } = await this.unguardedDb
             .from('products')
             .select('id, store_id')
             .in('id', productIds)
@@ -294,6 +305,7 @@ export class ProductExecutionAdapter {
             .from('products')
             .update(update)
             .in('id', ownedProducts.map((product) => product.id))
+            .in('store_id', uniqueStoreIds)
             .select('id');
 
         if (error) throw new Error(`Bulk action failed: ${error.message}`);
@@ -327,7 +339,7 @@ export class ProductExecutionAdapter {
     }
 
     private async getOwnedProduct(productId: string, userId: string, sessionStoreId?: string): Promise<OwnedProductRow> {
-        const { data: product, error } = await this.db
+        const { data: product, error } = await this.unguardedDb
             .from('products')
             .select('id, store_id, price')
             .eq('id', productId)
@@ -558,7 +570,7 @@ export class ProductExecutionAdapter {
         return data as ProductVariantRow[] || [];
     }
 
-    private async refreshProductVariantJsonbCache(productId: string): Promise<Record<string, unknown>[]> {
+    private async refreshProductVariantJsonbCache(productId: string, storeId: string): Promise<Record<string, unknown>[]> {
         const variants = await this.loadExistingProductVariants(productId);
         const cache = variants.map((variant) => ({
             id: variant.id,
@@ -581,7 +593,8 @@ export class ProductExecutionAdapter {
         const { error } = await this.db
             .from('products')
             .update({ variants: cache })
-            .eq('id', productId);
+            .eq('id', productId)
+            .eq('store_id', storeId);
 
         if (error) throw new Error(`Product variant cache refresh failed: ${error.message}`);
         return cache;

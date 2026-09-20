@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
     ListProductReviewsQuery,
@@ -89,7 +89,7 @@ function isEmbeddedRelationError(error: DatabaseErrorLike, relationName: string)
     );
 }
 
-async function loadReviewOwner(db: ReturnType<typeof getSupabaseAdmin>, reviewId: string) {
+async function loadReviewOwner(db: ReturnType<typeof getSupabaseAdminUnguarded>, reviewId: string) {
     const buildQuery = (includeDeletedAtFilter: boolean) => {
         let request = db
             .from('product_reviews')
@@ -194,7 +194,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
+    const { data: existing, error: existingError } = await loadReviewOwner(getSupabaseAdminUnguarded(c), reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -212,6 +212,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
             is_approved: body.status === 'approved',
         })
         .eq('id', reviewId)
+        .eq('store_id', ownedReview.store_id)
         .select('*')
         .single();
 
@@ -220,6 +221,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
             .from('product_reviews')
             .update({ is_approved: body.status === 'approved' })
             .eq('id', reviewId)
+            .eq('store_id', ownedReview.store_id)
             .select('*')
             .single());
     }
@@ -238,7 +240,7 @@ router.post('/:id/reply', validate('json', ProductReviewReplySchema), async (c) 
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
+    const { data: existing, error: existingError } = await loadReviewOwner(getSupabaseAdminUnguarded(c), reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -259,6 +261,7 @@ router.post('/:id/reply', validate('json', ProductReviewReplySchema), async (c) 
             updated_at: repliedAt,
         })
         .eq('id', reviewId)
+        .eq('store_id', ownedReview.store_id)
         .select('*')
         .single();
 
@@ -285,7 +288,7 @@ router.delete('/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing, error: existingError } = await loadReviewOwner(db, reviewId);
+    const { data: existing, error: existingError } = await loadReviewOwner(getSupabaseAdminUnguarded(c), reviewId);
 
     if (existingError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load review' } }, 500);
@@ -299,13 +302,15 @@ router.delete('/:id', async (c) => {
     let { error } = await db
         .from('product_reviews')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', reviewId);
+        .eq('id', reviewId)
+        .eq('store_id', ownedReview.store_id);
 
     if (isMissingDeletedAtError(error)) {
         ({ error } = await db
             .from('product_reviews')
             .delete()
-            .eq('id', reviewId));
+            .eq('id', reviewId)
+            .eq('store_id', ownedReview.store_id));
     }
 
     if (error) {

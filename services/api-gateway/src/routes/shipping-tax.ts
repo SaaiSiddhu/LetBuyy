@@ -11,7 +11,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
     CreateShippingRateSchema,
@@ -144,7 +144,7 @@ router.patch('/shipping/zones/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('shipping_zones')
         .select('id, store_id')
         .eq('id', id)
@@ -161,6 +161,7 @@ router.patch('/shipping/zones/:id', async (c) => {
         .from('shipping_zones')
         .update(plan.updates)
         .eq('id', id)
+        .eq('store_id', ownedZone.store_id)
         .select()
         .single();
 
@@ -180,7 +181,7 @@ router.delete('/shipping/zones/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('shipping_zones')
         .select('id, store_id')
         .eq('id', id)
@@ -191,7 +192,7 @@ router.delete('/shipping/zones/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('shipping_zones').delete().eq('id', id);
+    const { error } = await db.from('shipping_zones').delete().eq('id', id).eq('store_id', ownedZone.store_id);
     if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     return c.json(success({ deleted: true }));
 });
@@ -220,7 +221,7 @@ router.get('/shipping', async (c) => {
     const { data, error } = await db
         .from('shipping_rates')
         .select('*, shipping_zones!inner(store_id)')
-        .eq('shipping_zones.store_id', storeId)
+        .eq('site_id', storeId)
         .order('name');
 
     if (error) {
@@ -237,7 +238,7 @@ router.post('/shipping', validate('json', CreateShippingRateSchema), async (c) =
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: zone } = await db
+    const { data: zone } = await getSupabaseAdminUnguarded(c)
         .from('shipping_zones')
         .select('id, store_id')
         .eq('id', body.zone_id)
@@ -251,7 +252,7 @@ router.post('/shipping', validate('json', CreateShippingRateSchema), async (c) =
     const staffBlock = await assertStaffPermission(c, ownedZone.store_id, customUser.id, 'shipping:write');
     if (staffBlock) return staffBlock;
 
-    const plan = planShippingRateCreate(body);
+    const plan = planShippingRateCreate(body, ownedZone.store_id);
 
     const { data, error } = await db
         .from('shipping_rates')
@@ -275,9 +276,10 @@ router.patch('/shipping/:id', async (c) => {
     const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const unguardedDb = getSupabaseAdminUnguarded(c);
 
     // Verify ownership through store
-    const { data: existing } = await db
+    const { data: existing } = await unguardedDb
         .from('shipping_rates')
         .select('id, zone_id')
         .eq('id', id)
@@ -285,7 +287,7 @@ router.patch('/shipping/:id', async (c) => {
 
     const rate = existing as ShippingRateRow | null;
     const { data: zone } = rate?.zone_id
-        ? await db.from('shipping_zones').select('id, store_id').eq('id', rate.zone_id).single()
+        ? await unguardedDb.from('shipping_zones').select('id, store_id').eq('id', rate.zone_id).single()
         : { data: null };
 
     const ownedZone = zone as StoreScopedRow | null;
@@ -302,6 +304,7 @@ router.patch('/shipping/:id', async (c) => {
         .from('shipping_rates')
         .update(plan.updates)
         .eq('id', id)
+        .eq('site_id', ownedZone.store_id)
         .select()
         .single();
 
@@ -320,8 +323,9 @@ router.delete('/shipping/:id', async (c) => {
     const id = c.req.param('id');
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const unguardedDb = getSupabaseAdminUnguarded(c);
 
-    const { data: existing } = await db
+    const { data: existing } = await unguardedDb
         .from('shipping_rates')
         .select('id, zone_id')
         .eq('id', id)
@@ -329,7 +333,7 @@ router.delete('/shipping/:id', async (c) => {
 
     const rate = existing as ShippingRateRow | null;
     const { data: zone } = rate?.zone_id
-        ? await db.from('shipping_zones').select('id, store_id').eq('id', rate.zone_id).single()
+        ? await unguardedDb.from('shipping_zones').select('id, store_id').eq('id', rate.zone_id).single()
         : { data: null };
 
     const ownedZone = zone as StoreScopedRow | null;
@@ -340,7 +344,7 @@ router.delete('/shipping/:id', async (c) => {
     const staffBlock = await assertStaffPermission(c, ownedZone.store_id, customUser.id, 'shipping:write');
     if (staffBlock) return staffBlock;
 
-    const { error } = await db.from('shipping_rates').delete().eq('id', id);
+    const { error } = await db.from('shipping_rates').delete().eq('id', id).eq('site_id', ownedZone.store_id);
     if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     return c.json(success({ deleted: true }));
 });
@@ -418,7 +422,7 @@ router.patch('/taxes/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('tax_rates')
         .select('id, store_id')
         .eq('id', id)
@@ -435,6 +439,7 @@ router.patch('/taxes/:id', async (c) => {
         .from('tax_rates')
         .update(plan.updates)
         .eq('id', id)
+        .eq('store_id', ownedTaxRate.store_id)
         .select()
         .single();
 
@@ -454,7 +459,7 @@ router.delete('/taxes/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('tax_rates')
         .select('id, store_id')
         .eq('id', id)
@@ -465,7 +470,7 @@ router.delete('/taxes/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const { error } = await db.from('tax_rates').delete().eq('id', id);
+    const { error } = await db.from('tax_rates').delete().eq('id', id).eq('store_id', ownedTaxRate.store_id);
     if (error) return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     return c.json(success({ deleted: true }));
 });

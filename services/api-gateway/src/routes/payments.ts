@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
-import { dbErrorBody, getSupabaseAdmin } from '../lib/supabase';
+import { dbErrorBody, getSupabaseAdmin, getSupabaseAdminUnguarded } from '../lib/supabase';
 import { ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
@@ -322,6 +322,7 @@ router.post('/:paymentId/capture', validate('json', PaymentCaptureSchema), async
                 updated_by: customUser.id,
             })
             .eq('id', payment.id)
+            .eq('site_id', payment.site_id)
             .select('*')
             .single();
 
@@ -412,6 +413,7 @@ router.post('/:paymentId/void', validate('json', PaymentVoidSchema), async (c) =
             updated_by: customUser.id,
         })
         .eq('id', payment.id)
+        .eq('site_id', payment.site_id)
         .select('*')
         .single();
 
@@ -598,6 +600,7 @@ router.post('/:paymentId/refund', validate('json', PaymentRefundSchema), async (
                 updated_by: customUser.id,
             })
             .eq('id', payment.id)
+            .eq('site_id', payment.site_id)
             .select('*')
             .single();
 
@@ -1164,7 +1167,7 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
     }
 
     // CRITICAL FIX #1: Fetch order and verify ownership
-    const { data: order } = await db
+    const { data: order } = await getSupabaseAdminUnguarded(c)
         .from('orders')
         .select('id, store_id, total, payment_status, status, payment_id')
         .eq('id', body.order_id)
@@ -1220,6 +1223,7 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         providerPaymentId: body.razorpay_payment_id,
         providerOrderId: body.razorpay_order_id,
         orderId: order.id,
+        siteId: order.store_id,
     });
 
     const paymentService = new PaymentExecutionAdapter(db);

@@ -6,7 +6,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { dbFailureBody, failureBody, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { assertStaffPermission } from '../middleware/staff-permission';
@@ -145,7 +145,7 @@ async function listProductStockInventoryRows(
 }
 
 async function loadOwnedProductForInventory(
-    db: ReturnType<typeof getSupabaseAdmin>,
+    db: ReturnType<typeof getSupabaseAdminUnguarded>,
     productId: string,
 ) {
     const buildProductQuery = (includeDeletedAtFilter: boolean) => {
@@ -447,7 +447,7 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadPurchaseOrderSiteId(db, purchaseOrderId);
+    const siteId = await loadPurchaseOrderSiteId(getSupabaseAdminUnguarded(c), purchaseOrderId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Purchase order not found' } }, 404);
     }
@@ -563,7 +563,7 @@ router.post('/transfers/:id/ship', validate('json', ShipTransferSchema), async (
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId);
+    const siteId = await loadTransferSiteId(getSupabaseAdminUnguarded(c), transferId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -588,7 +588,7 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
     const customUser = await resolveCustomUser(db, auth.user);
 
     if (!customUser) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
-    const siteId = await loadTransferSiteId(db, transferId);
+    const siteId = await loadTransferSiteId(getSupabaseAdminUnguarded(c), transferId);
     if (!siteId || !(await verifySiteOwnership(db, siteId, customUser.id, auth.user.storeId))) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
@@ -845,7 +845,7 @@ router.post('/adjust', validate('json', AdjustInventorySchema), async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: product, error: productError } = await loadOwnedProductForInventory(db, body.product_id);
+    const { data: product, error: productError } = await loadOwnedProductForInventory(getSupabaseAdminUnguarded(c), body.product_id);
 
     const ownedProduct = product as ProductOwnerRow | null;
     if (

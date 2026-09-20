@@ -554,6 +554,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 providerPaymentId: body.razorpay_payment_id,
                 providerOrderId: body.razorpay_order_id,
                 orderId: body.orderId,
+                siteId: store.id,
             });
 
             const provider = createRazorpayPaymentProvider({

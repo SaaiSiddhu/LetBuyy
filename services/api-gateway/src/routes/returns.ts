@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { resolveTenantContextForOrder } from '../lib/tenant-context';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { validate } from '../middleware/validation';
@@ -102,12 +102,13 @@ function normalizeReturn(row: ReturnRow) {
 
 async function loadOwnedReturn(
     db: ReturnType<typeof getSupabaseAdmin>,
+    unguardedDb: ReturnType<typeof getSupabaseAdminUnguarded>,
     returnId: string,
     customUserId: string,
     sessionStoreId?: string,
 ) {
     const selectReturn = (includeDeletedAtFilter: boolean) => {
-        let request = db
+        let request = unguardedDb
             .from('returns')
             .select('*, orders(order_number, customer_name, total, currency), return_lines(*), refunds(id, amount, currency, status, provider_refund_id)')
             .eq('id', returnId);
@@ -176,7 +177,7 @@ router.get('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const row = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, auth.user.storeId);
     if (!row) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
@@ -207,7 +208,7 @@ router.post('/', validate('json', CreateReturnSchema), async (c) => {
     if (!customUser) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const row = await loadOwnedReturn(db, returnId, customUser.id, c.get('auth').user.storeId);
+    const row = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, c.get('auth').user.storeId);
     return c.json(success(row ? normalizeReturn(row) : { id: returnId, order_id: body.order_id }), 201);
 });
 
@@ -221,7 +222,7 @@ router.patch('/:id', validate('json', UpdateReturnStatusSchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const existing = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const existing = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, auth.user.storeId);
     if (!existing) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
@@ -252,7 +253,7 @@ router.patch('/:id', validate('json', UpdateReturnStatusSchema), async (c) => {
         return c.json({ success: false, error: { code: 'RETURN_UPDATE_FAILED', message: 'Unable to update return.' } }, 503);
     }
 
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const row = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, auth.user.storeId);
     return c.json(success(row ? normalizeReturn(row) : { id: returnId, status: body.status }));
 });
 
@@ -266,7 +267,7 @@ router.post('/:id/refund/complete', validate('json', CompleteReturnRefundSchema)
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const existing = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const existing = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, auth.user.storeId);
     if (!existing) {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Return not found' } }, 404);
     }
@@ -288,7 +289,7 @@ router.post('/:id/refund/complete', validate('json', CompleteReturnRefundSchema)
         return c.json({ success: false, error: { code: 'REFUND_COMPLETE_FAILED', message: 'Unable to complete refund.' } }, 503);
     }
 
-    const row = await loadOwnedReturn(db, returnId, customUser.id, auth.user.storeId);
+    const row = await loadOwnedReturn(db, getSupabaseAdminUnguarded(c), returnId, customUser.id, auth.user.storeId);
     return c.json(success(row ? normalizeReturn(row) : { id: returnId, status: 'refunded' }));
 });
 

@@ -1,7 +1,7 @@
 import type { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../../index';
-import { getSupabaseAdmin, success } from '../../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../../lib/supabase';
 import { PaymentExecutionAdapter } from '../../execution/payment-execution.adapter';
 import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 
@@ -90,7 +90,7 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
         return new PaymentExecutionAdapter(db).loadStorefrontPayableOrder(orderId, storeId);
     }
 
-    const { data: order } = await db
+    const { data: order } = await getSupabaseAdminUnguarded(c)
         .from('orders')
         .select('id, store_id, total, currency, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at')
         .eq('id', orderId)
@@ -231,7 +231,7 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
             eventType: body.eventType,
             requestId: deps.getRequestId(c),
             idempotencyKey: body.idempotencyKey || null,
-        });
+        }, getSupabaseAdminUnguarded(c));
 
         return c.json(success(result));
     });

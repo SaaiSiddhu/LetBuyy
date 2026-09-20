@@ -139,6 +139,7 @@ export class IdempotencyExecutionAdapter {
                 request_id: params.requestId || null,
             })
             .eq('id', record.id)
+            .eq('site_id', params.siteId)
             .select('id')
             .single();
 

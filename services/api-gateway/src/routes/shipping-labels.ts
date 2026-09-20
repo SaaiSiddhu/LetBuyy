@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import { bytesToBase64, createSimplePdfBytes } from '../lib/simple-pdf';
@@ -350,6 +350,7 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
             .from('shipping_labels')
             .update({ label_object_key: stored.key, label_url: stored.url, updated_by: tenant.userId })
             .eq('id', row.id)
+            .eq('site_id', tenant.siteId)
             .select('*')
             .single()
         : { data: row, error: null };
@@ -362,9 +363,8 @@ router.post('/', validate('json', BuyShippingLabelSchema), async (c) => {
 });
 
 router.get('/:id/pdf', async (c) => {
-    const db = getSupabaseAdmin(c);
     const labelId = c.req.param('id');
-    const { data, error } = await db
+    const { data, error } = await getSupabaseAdminUnguarded(c)
         .from('shipping_labels')
         .select('*')
         .eq('id', labelId)
@@ -397,7 +397,7 @@ router.get('/:id/pdf', async (c) => {
 router.post('/:id/void', async (c) => {
     const db = getSupabaseAdmin(c);
     const labelId = c.req.param('id');
-    const { data, error } = await db
+    const { data, error } = await getSupabaseAdminUnguarded(c)
         .from('shipping_labels')
         .select('*')
         .eq('id', labelId)
@@ -414,6 +414,7 @@ router.post('/:id/void', async (c) => {
         .from('shipping_labels')
         .update({ status: 'voided', updated_by: tenant.userId })
         .eq('id', labelId)
+        .eq('site_id', tenant.siteId)
         .select('*')
         .single();
 

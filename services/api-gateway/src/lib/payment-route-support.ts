@@ -3,7 +3,7 @@ import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from './order-confirmation-email';
 import { verifySiteOwnership } from './auth-user';
-import { getSupabaseAdmin } from './supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
 import {
     isProductionRuntime,
@@ -205,7 +205,7 @@ export async function loadOwnedPaymentSession(
     sessionStoreId?: string,
 ): Promise<PaymentSessionRow> {
     const db = getSupabaseAdmin(c);
-    const { data: payment } = await db
+    const { data: payment } = await getSupabaseAdminUnguarded(c)
         .from('payments')
         .select('*')
         .eq('id', paymentId)
@@ -232,11 +232,13 @@ export async function assertProviderPaymentNotReplayed(
         providerPaymentId: string;
         providerOrderId?: string | null;
         orderId: string;
+        siteId: string;
     },
 ): Promise<void> {
     const { data: existing, error } = await db
         .from('payment_transactions')
         .select('order_id, provider_order_id, provider_payment_id')
+        .eq('site_id', params.siteId)
         .eq('gateway', params.provider)
         .eq('provider_payment_id', params.providerPaymentId)
         .is('deleted_at', null)
@@ -360,7 +362,7 @@ export async function loadPayableOrder(
 ): Promise<PayableOrder> {
     const db = getSupabaseAdmin(c);
 
-    const { data: order } = await db
+    const { data: order } = await getSupabaseAdminUnguarded(c)
         .from('orders')
         .select('id, store_id, total, currency, payment_status, status')
         .eq('id', orderId)

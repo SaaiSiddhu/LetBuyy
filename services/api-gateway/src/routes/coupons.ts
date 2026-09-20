@@ -6,7 +6,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
     CreateCouponSchema,
@@ -144,7 +144,7 @@ router.get('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const { data, error } = await db
+    const { data, error } = await getSupabaseAdminUnguarded(c)
         .from('coupons')
         .select('*')
         .eq('id', couponId)
@@ -177,7 +177,7 @@ router.patch('/:id', async (c) => {
         }, 422);
     }
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('coupons')
         .select('id, store_id')
         .eq('id', couponId)
@@ -201,6 +201,7 @@ router.patch('/:id', async (c) => {
         .from('coupons')
         .update(updates)
         .eq('id', couponId)
+        .eq('store_id', ownedCoupon.store_id)
         .select()
         .single();
 
@@ -218,7 +219,7 @@ router.delete('/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('coupons')
         .select('id, store_id')
         .eq('id', couponId)
@@ -235,7 +236,8 @@ router.delete('/:id', async (c) => {
     const { error } = await db
         .from('coupons')
         .update({ is_active: false })
-        .eq('id', couponId);
+        .eq('id', couponId)
+        .eq('store_id', ownedCoupon.store_id);
 
     if (error) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
@@ -105,9 +105,9 @@ type DatabaseErrorLike = {
     hint?: string;
 } | null | undefined;
 
-function createProductExecutionAdapter(db: ReturnType<typeof getSupabaseAdmin>, env: Env): ProductExecutionAdapter {
-    return new ProductExecutionAdapter(db, {
-        variantDiffEnabled: isProductVariantDiffEnabled(env),
+function createProductExecutionAdapter(c: Parameters<typeof getSupabaseAdmin>[0]): ProductExecutionAdapter {
+    return new ProductExecutionAdapter(getSupabaseAdmin(c), getSupabaseAdminUnguarded(c), {
+        variantDiffEnabled: isProductVariantDiffEnabled(c.env),
     });
 }
 
@@ -687,7 +687,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
     }
 
     const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
+        let request = getSupabaseAdminUnguarded(c)
             .from('collections')
             .select('id, store_id')
             .eq('id', collectionId);
@@ -725,6 +725,7 @@ router.patch('/collections/:id', validate('json', UpdateCollectionSchema), async
             .from('collections')
             .update(payload)
             .eq('id', collectionId)
+            .eq('store_id', collection.store_id!)
             .select()
             .single();
     };
@@ -753,7 +754,7 @@ router.get('/collections/:id/products', async (c) => {
     }
 
     const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
+        let request = getSupabaseAdminUnguarded(c)
             .from('collections')
             .select('id, store_id')
             .eq('id', collectionId);
@@ -844,7 +845,7 @@ router.put('/collections/:id/products', async (c) => {
         .slice(0, 500);
 
     const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
+        let request = getSupabaseAdminUnguarded(c)
             .from('collections')
             .select('id, store_id')
             .eq('id', collectionId);
@@ -943,7 +944,7 @@ router.delete('/collections/:id', async (c) => {
     }
 
     const loadCollection = async (includeDeletedAtFilter: boolean) => {
-        let request = db
+        let request = getSupabaseAdminUnguarded(c)
             .from('collections')
             .select('id, store_id')
             .eq('id', collectionId);
@@ -975,7 +976,8 @@ router.delete('/collections/:id', async (c) => {
         return db
             .from('collections')
             .update(payload)
-            .eq('id', collectionId);
+            .eq('id', collectionId)
+            .eq('store_id', collection.store_id!);
     };
 
     let { error } = await softDeleteCollection(true);
@@ -986,7 +988,8 @@ router.delete('/collections/:id', async (c) => {
         ({ error } = await db
             .from('collections')
             .delete()
-            .eq('id', collectionId));
+            .eq('id', collectionId)
+            .eq('store_id', collection.store_id!));
     }
 
     if (error) {
@@ -1035,7 +1038,7 @@ router.post('/sample', validate('json', StoreScopedQuerySchema), async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: 'Unable to inspect product catalog.' } }, 500);
     }
 
-    const service = createProductExecutionAdapter(db, c.env);
+    const service = createProductExecutionAdapter(c);
     let data: Record<string, unknown>;
     try {
         data = await service.createProduct(sampleProductInput(body.store_id), customUser.id, auth.user.storeId) as Record<string, unknown>;
@@ -1071,8 +1074,9 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    const unguardedDb = getSupabaseAdminUnguarded(c);
     const buildProductQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
+        const query = unguardedDb
             .from('products')
             .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', productId);
@@ -1113,7 +1117,7 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
+    const service = createProductExecutionAdapter(c);
     const data = await service.createProduct(body, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.created',
@@ -1141,7 +1145,7 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
+    const service = createProductExecutionAdapter(c);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.updated',
@@ -1167,7 +1171,7 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
     const staffBlock = await assertStaffPermission(c, body.store_id, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
+    const service = createProductExecutionAdapter(c);
     const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
     const eventType = body.action === 'delete' ? 'product.deleted' : 'product.updated';
     const requestId = c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
@@ -1198,7 +1202,7 @@ router.delete('/:id', async (c) => {
     const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
+    const service = createProductExecutionAdapter(c);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.deleted',

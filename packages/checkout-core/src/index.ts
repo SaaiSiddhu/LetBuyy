@@ -1800,9 +1800,10 @@ export function planShippingZoneUpdate(patch: Record<string, unknown>): Shipping
   return { updates };
 }
 
-export function planShippingRateCreate(input: CreateShippingRateInput): ShippingRateCreatePlan {
+export function planShippingRateCreate(input: CreateShippingRateInput, siteId: string): ShippingRateCreatePlan {
   return {
     rateInsert: {
+      site_id: siteId,
       zone_id: input.zone_id,
       name: input.name,
       price: input.price || 0,

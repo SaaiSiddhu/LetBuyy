@@ -1,7 +1,7 @@
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { validate } from '../middleware/validation';
 import { ListMediaQuery } from '../schemas/media.schema';
@@ -366,7 +366,7 @@ router.patch('/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('media')
         .select('store_id')
         .eq('id', mediaId)
@@ -391,6 +391,7 @@ router.patch('/:id', async (c) => {
         .from('media')
         .update(updates)
         .eq('id', mediaId)
+        .eq('store_id', ownedMedia.store_id)
         .select()
         .single();
 
@@ -408,7 +409,7 @@ router.delete('/:id', async (c) => {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('media')
         .select('store_id, url')
         .eq('id', mediaId)
@@ -420,7 +421,7 @@ router.delete('/:id', async (c) => {
     }
 
     // Delete from database
-    const { error } = await db.from('media').delete().eq('id', mediaId);
+    const { error } = await db.from('media').delete().eq('id', mediaId).eq('store_id', ownedMedia.store_id);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);

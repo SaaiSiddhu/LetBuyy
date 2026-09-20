@@ -19,6 +19,24 @@ export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient 
 }
 
 /**
+ * Raw service-role client with NO tenant-guard proxy. Use ONLY for the
+ * bootstrap "resolve tenant by primary key" lookup that must run before the
+ * tenant is known (e.g. `.from('orders').select('id, site_id').eq('id', id)`).
+ * That lookup is inherently safe — it returns at most one row by a
+ * globally-unique id and its result is never trusted until
+ * verifySiteOwnership (or equivalent) independently re-checks it. Every
+ * subsequent query once the tenant is known must go back through the
+ * guarded getSupabaseAdmin(c) client with an explicit scope-column predicate.
+ */
+export function getSupabaseAdminUnguardedFromEnv(env: Env): SupabaseClient {
+    return createSupabaseServiceClient(env);
+}
+
+export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return getSupabaseAdminUnguardedFromEnv(c.env);
+}
+
+/**
  * Create a Supabase client scoped to the authenticated user (respects RLS)
  */
 export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): SupabaseClient {

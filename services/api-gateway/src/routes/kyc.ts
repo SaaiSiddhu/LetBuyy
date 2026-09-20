@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
 import {
@@ -147,7 +147,7 @@ async function loadDocuments(db: ReturnType<typeof getSupabaseAdmin>, siteId: st
     return (data || []) as unknown as KycDocumentRow[];
 }
 
-async function loadDocument(db: ReturnType<typeof getSupabaseAdmin>, id: string): Promise<KycDocumentRow | null> {
+async function loadDocument(db: ReturnType<typeof getSupabaseAdminUnguarded>, id: string): Promise<KycDocumentRow | null> {
     const { data, error } = await db
         .from('merchant_kyc_documents')
         .select('*')
@@ -260,6 +260,7 @@ async function saveDocument(
             .from('merchant_kyc_documents')
             .update(values)
             .eq('id', documentId)
+            .eq('site_id', tenant.siteId)
             .select('*')
             .single();
         if (error) throw new Error(`KYC document update failed: ${error.message}`);
@@ -297,7 +298,7 @@ router.post('/documents', validate('json', SubmitKycDocumentSchema), async (c) =
 
 router.post('/documents/:id/refresh', async (c) => {
     const db = getSupabaseAdmin(c);
-    const document = await loadDocument(db, c.req.param('id'));
+    const document = await loadDocument(getSupabaseAdminUnguarded(c), c.req.param('id'));
     if (!document) {
         return c.json({ error: { code: 'KYC_DOCUMENT_NOT_FOUND', message: 'KYC document not found' } }, 404);
     }
@@ -325,6 +326,7 @@ router.post('/documents/:id/refresh', async (c) => {
             updated_by: tenant.userId,
         })
         .eq('id', document.id)
+        .eq('site_id', tenant.siteId)
         .select('*')
         .single();
 

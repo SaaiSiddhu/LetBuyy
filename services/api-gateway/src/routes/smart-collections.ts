@@ -7,7 +7,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { assertStaffPermission } from '../middleware/staff-permission';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { filterProducts, type SmartCondition, type SmartMatchType, type EvalProduct } from '../lib/smart-collection-eval';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -157,7 +157,7 @@ router.patch('/:id', async (c) => {
     const customUser = await resolveCustomUser(db, auth.user);
 
     // Resolve ownership first via the collection record
-    const { data: existing } = await db
+    const { data: existing } = await getSupabaseAdminUnguarded(c)
         .from('smart_collections')
         .select('id, store_id')
         .eq('id', collectionId)
@@ -206,6 +206,7 @@ router.patch('/:id', async (c) => {
         .from('smart_collections')
         .update(patch)
         .eq('id', collectionId)
+        .eq('store_id', owned.store_id)
         .select(SC_COLUMNS)
         .single();
 
@@ -224,7 +225,7 @@ router.get('/:id/preview', async (c) => {
     const customUser = await resolveCustomUser(db, auth.user);
 
     // Fetch the smart collection
-    const { data: sc, error: scError } = await db
+    const { data: sc, error: scError } = await getSupabaseAdminUnguarded(c)
         .from('smart_collections')
         .select(SC_COLUMNS)
         .eq('id', collectionId)

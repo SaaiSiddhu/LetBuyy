@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import { validate } from '../middleware/validation';
@@ -531,8 +531,7 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
 
 router.get('/:id', async (c) => {
     const payoutId = c.req.param('id');
-    const db = getSupabaseAdmin(c);
-    const { data, error } = await db
+    const { data, error } = await getSupabaseAdminUnguarded(c)
         .from('payout_statements')
         .select('*')
         .eq('id', payoutId)
@@ -554,7 +553,7 @@ router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async 
     const payoutId = c.req.param('id');
     const body = c.get('validatedBody') as SettlePayoutStatementInput;
     const db = getSupabaseAdmin(c);
-    const { data, error } = await db
+    const { data, error } = await getSupabaseAdminUnguarded(c)
         .from('payout_statements')
         .select('*')
         .eq('id', payoutId)

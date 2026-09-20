@@ -3,7 +3,7 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { timingSafeEqualText } from '../lib/crypto';
-import { getSupabaseAdmin, success } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success } from '../lib/supabase';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -119,7 +119,7 @@ const EXPORT_BATCH_SIZE = 1000;
 const PRODUCT_IMPORT_MAX_ROWS = 500;
 
 function createProductExecutionAdapter(c: ExportContext): ProductExecutionAdapter {
-    return new ProductExecutionAdapter(getSupabaseAdmin(c), {
+    return new ProductExecutionAdapter(getSupabaseAdmin(c), getSupabaseAdminUnguarded(c), {
         variantDiffEnabled: isProductVariantDiffEnabled(c.env),
     });
 }

@@ -243,7 +243,8 @@ router.delete('/:id', async (c) => {
     await db
         .from('products')
         .update({ category_id: null })
-        .eq('category_id', categoryId);
+        .eq('category_id', categoryId)
+        .eq('store_id', ownedCategory.store_id);
 
     const { error } = await db
         .from('product_categories')

@@ -144,14 +144,37 @@ export class PaymentExecutionAdapter {
         return data;
     }
 
-    async recordPaymentEvent(params: {
-        orderId: string;
-        provider: CapturedPaymentProvider;
-        providerEventId: string;
-        eventType: string;
-        requestId?: string | null;
-        idempotencyKey?: string | null;
-    }) {
+    async recordPaymentEvent(
+        params: {
+            orderId: string;
+            provider: CapturedPaymentProvider;
+            providerEventId: string;
+            eventType: string;
+            requestId?: string | null;
+            idempotencyKey?: string | null;
+        },
+        // Bootstrap lookup for the order's tenant: this method is only ever
+        // reached from a caller that has already trust-checked the request
+        // (internal API secret), and the order id is the only identifier
+        // available up front, so the tenant column can't be known before this
+        // read runs. Pass the raw (non-tenant-guarded) client here — the
+        // fetched store_id is then used to scope the actual mutation below.
+        unguardedDb: SupabaseClient,
+    ) {
+        const { data: existing, error: lookupError } = await unguardedDb
+            .from('orders')
+            .select('id, store_id')
+            .eq('id', params.orderId)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (lookupError) {
+            throw new Error(`Failed to look up order for payment event: ${lookupError.message}`);
+        }
+        if (!existing) {
+            throw new NotFoundError('Order not found');
+        }
+
         const { data, error } = await this.db
             .from('orders')
             .update({
@@ -159,6 +182,7 @@ export class PaymentExecutionAdapter {
                 updated_at: new Date().toISOString(),
             })
             .eq('id', params.orderId)
+            .eq('store_id', (existing as { store_id: string }).store_id)
             .is('deleted_at', null)
             .select('id, store_id, payment_status, status, last_payment_event_id')
             .single();
