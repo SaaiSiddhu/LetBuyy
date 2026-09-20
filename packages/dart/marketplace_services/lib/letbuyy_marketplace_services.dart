@@ -55,7 +55,6 @@ export 'src/location_service.dart';
 
 // Payment
 export 'src/payment_service.dart';
-export 'src/custom_payment_service.dart';
 export 'src/payment/advanced_razorpay_service.dart';
 export 'src/payment/custom_checkout_service.dart';
 

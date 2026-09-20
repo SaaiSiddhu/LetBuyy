@@ -27,7 +27,6 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 // Generated directories the real gate lane deletes before it runs. A path ending in one of these is
 // a build artefact, not a repository fact.
-const GENERATED = /(?:^|\/)(?:node_modules|\.turbo|\.next|dist|build|coverage|\.cache|\.dart_tool|\.wrangler|\.vercel|\.symlinks)(?:\/|$)/;
 
 // Each known-red validator, with a rule that must account for EVERY offender it reports.
 const KNOWN_REDS = [
@@ -40,22 +39,7 @@ const KNOWN_REDS = [
             if (/^apps\/customer_app\//.test(path)) {
                 return 'firebase public client identifier (customer_app), not a secret';
             }
-            // A Razorpay key ID is a public client identifier too, and this one is TEST mode. It is
-            // NOT a credential exposure and carries no rotation obligation. It IS a latent
-            // production-mode hazard: the file is exported from the package barrel, and an app that
-            // picked it up would run checkout in Razorpay test mode, where payments appear to succeed
-            // and settle nothing. Tracked in references/security.md §9; the fix is D-10 client work.
-            if (path === 'packages/dart/marketplace_services/lib/src/custom_payment_service.dart') {
-                return 'razorpay TEST-mode key id in exported donor code — latent production-mode hazard, not an exposure';
-            }
             return null;
-        },
-    },
-    {
-        validator: 'stale-artifact-validator',
-        why: 'flags generated artefacts present in the working tree',
-        classify(path) {
-            return GENERATED.test(path) ? 'generated directory the real gate lane deletes first' : null;
         },
     },
 ];
@@ -64,6 +48,7 @@ const KNOWN_REDS = [
 // than forgotten, and so the backlog's stale bullet cannot come back.
 const RETIRED_REDS = {
     'foundation-antifabrication-gate': 'its sole offender was services/compatibility/firebase_bridge, deleted by FB-1; the gate now passes',
+    'stale-artifact-validator': 'it flags UNTRACKED, NON-IGNORED files; its offenders were the untracked trees parked and resolved during the 2026-09-20 consolidation (apps/seller, .agents, database/supabase/supabase, two research zips). node_modules and other generated dirs are gitignored, so `pnpm install` does NOT bring this red back',
 };
 
 function runValidator(name) {
@@ -128,11 +113,8 @@ test('the classifiers are specific, not catch-alls', () => {
     // A classifier that accepted anything would make the guard decorative. Each must reject a path
     // that is plainly not its concern.
     const environment = KNOWN_REDS.find((r) => r.validator === 'environment-validator');
-    const stale = KNOWN_REDS.find((r) => r.validator === 'stale-artifact-validator');
     assert.equal(environment.classify('services/api-gateway/src/routes/payments.ts'), null);
     assert.equal(environment.classify('packages/dart/marketplace_services/lib/src/other_service.dart'), null);
-    assert.equal(stale.classify('apps/customer_web/src/app/page.tsx'), null);
     // And each must still accept its own.
     assert.ok(environment.classify('apps/customer_app/lib/firebase_options.dart'));
-    assert.ok(stale.classify('packages/auth-core/dist'));
 });
