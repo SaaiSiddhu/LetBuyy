@@ -537,13 +537,17 @@ test('CONTROL: with 252 rolled back the late capture confirms a released order a
         assert.equal(state.released, true);
         assert.equal(reservationStatuses(orderId), 'released');
         // create_order_fulfillment's only status gate refuses cancelled/refunded, so 'confirmed' passes
-        // it. The call itself cannot be used as proof here: that RPC fails on EVERY order with a
-        // separate, pre-existing uuid/text defect (order_items.variant_id text into
-        // fulfillment_order_lines.variant_id uuid, 000_baseline:2353 line 152) — registered, not fixed here.
-        assert.throws(() => psql(fulfilSql(orderId, `fulfil:${orderId}`)), (error) => {
+        // it. What happens after the gate depends on LB-FUL-001 (F-FUL-1, branch
+        // letbuyy/ful1-fulfillment-variant-type): without that fix the call fails on a uuid/text defect,
+        // with it the late-captured order is actually fulfilled. Both show the defect this CONTROL exists
+        // for — the status gate did not refuse the released order — so both are accepted and only the
+        // status refusal fails the assertion. Measured 2026-09-23: the old assert.throws form failed here
+        // ("Missing expected exception") once the F-FUL-1 migration was added to this tree.
+        try {
+            psql(fulfilSql(orderId, `fulfil:${orderId}`));
+        } catch (error) {
             assert.doesNotMatch(error.message, /cannot be fulfilled/, 'pre-252: the status gate lets the late-captured order through');
-            return true;
-        });
+        }
 
         // And the double posting returns with it.
         confirm({ orderId, paymentId: 'pay_control', providerOrderId: 'order_RZP_control', via: 'verify' });
