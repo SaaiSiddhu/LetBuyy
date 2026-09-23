@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { createHmac, randomUUID } from "node:crypto";
 import test, { afterEach } from "node:test";
-import { require as tsxRequire } from "tsx/cjs/api";
+import * as webhookModule from "../../services/webhook-service/src/index.ts";
 
 // F-PAY8-1 (LB-PAY-008) — a Razorpay retry of an event whose first attempt failed must be processed.
 //
@@ -11,19 +11,32 @@ import { require as tsxRequire } from "tsx/cjs/api";
 // retry of a failed event was acknowledged and dropped, and a captured payment stayed unrecorded unless
 // the buyer's own verify callback landed.
 //
-// These tests drive the REAL route. payment-webhook-retirement.test.mjs asserts on source text because
-// mounting the app "resolved to a plain Object". That quirk has a measured cause: the package has no
-// "type": "module", so tsx loads src/index.ts as CommonJS and the Hono app sits at default.default when
-// it is imported rather than required. Node's own type stripping (this package's runner) cannot load
-// index.ts at all, because index.ts imports its siblings without a file extension; tsx's ESM tsImport
-// fails the same way under Node 26. tsx's CommonJS require resolves those imports. Supabase is a fake
-// PostgREST behind a stubbed global fetch, and the gateway is a fake service binding. The fake's
-// conditional PATCH is atomic because JavaScript is single-threaded. That Postgres gives the same
-// exclusivity is proven separately, against real Postgres, in
+// These tests drive the REAL route. services/webhook-service/test/payment-webhook-retirement.test.mjs
+// asserts on source text because mounting the app "resolved to a plain Object". That quirk has a
+// measured cause. The package has no "type": "module", so tsx loads src/index.ts as CommonJS and the
+// Hono app sits at default.default. Node's own type stripping, that package's runner, cannot load
+// index.ts at all, because index.ts imports its siblings without a file extension.
+//
+// That is also why this test lives in the contracts lane rather than beside the service. The package
+// runner passes --experimental-strip-types, which Node 20 does not have, and ci.yml runs Node 20. The
+// package's tests only run in the local gate's --full mode. This lane (tsx --test) runs in CI and in
+// every default gate, and it needs no dependency the service would have to declare.
+//
+// Supabase is a fake PostgREST behind a stubbed global fetch, and the gateway is a fake service binding.
+// The fake's conditional PATCH is atomic because JavaScript is single-threaded. That Postgres gives the
+// same exclusivity is proven separately, against real Postgres, in
 // tests/executable/payment-webhook-event-reclaim-postgres.test.mjs.
 
-const indexModule = tsxRequire("../src/index.ts", import.meta.url);
-const app = typeof indexModule.default?.request === "function" ? indexModule.default : indexModule.default?.default;
+type Row = Record<string, unknown>;
+type Json = Record<string, any>;
+type Delivery = { status: number; body: Json };
+type GatewayResponder = (attempt: number) => Response | Promise<Response>;
+type Condition = { column: string; op: string; value: string };
+
+const loaded = webhookModule as unknown as { default?: { request?: unknown; default?: unknown } };
+const app = (typeof loaded.default?.request === "function" ? loaded.default : loaded.default?.default) as {
+    request(path: string, init: RequestInit, env: Record<string, unknown>): Promise<Response>;
+};
 
 const WEBHOOK_SECRET = "test-razorpay-webhook-secret";
 const ORDER_ID = "8c1d2f7e-4b3a-4e6f-9a1b-2c3d4e5f6a7b";
@@ -36,27 +49,27 @@ afterEach(() => {
     globalThis.fetch = realFetch;
 });
 
-function jsonResponse(body, status = 200) {
+function jsonResponse(body: unknown, status = 200): Response {
     return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
 }
 
 // PostgREST filters as this service writes them: col=eq.v, col=lt.v, and or=(col.eq.v,...).
-function parseCondition(column, expression) {
+function parseCondition(column: string, expression: string): Condition {
     const dot = expression.indexOf(".");
     return { column, op: expression.slice(0, dot), value: expression.slice(dot + 1) };
 }
 
-function conditionHolds(row, { column, op, value }) {
+function conditionHolds(row: Row, { column, op, value }: Condition): boolean {
     const actual = row[column];
     if (op === "eq") return actual !== null && actual !== undefined && String(actual) === value;
-    if (op === "lt") return actual !== null && actual !== undefined && Date.parse(actual) < Date.parse(value);
+    if (op === "lt") return actual !== null && actual !== undefined && Date.parse(String(actual)) < Date.parse(value);
     if (op === "is" && value === "null") return actual === null || actual === undefined;
     throw new Error(`fake PostgREST: unsupported operator ${op} on ${column}`);
 }
 
-function rowFilter(searchParams) {
-    const conditions = [];
-    let alternatives = null;
+function rowFilter(searchParams: URLSearchParams): (row: Row) => boolean {
+    const conditions: Condition[] = [];
+    let alternatives: Condition[] | null = null;
     for (const [key, expression] of searchParams) {
         if (["select", "limit", "on_conflict", "order"].includes(key)) continue;
         if (key === "or") {
@@ -72,15 +85,35 @@ function rowFilter(searchParams) {
         && (!alternatives || alternatives.some((condition) => conditionHolds(row, condition)));
 }
 
-function createHarness({ orders = [], subscriptions = [], webhookEvents = [], confirm, domainEvent } = {}) {
-    const tables = {
+function createHarness({
+    orders = [],
+    subscriptions = [],
+    webhookEvents = [],
+    confirm,
+    domainEvent,
+    eventReadsToAlign = 0,
+}: {
+    orders?: Row[];
+    subscriptions?: Row[];
+    webhookEvents?: Row[];
+    confirm?: GatewayResponder;
+    domainEvent?: GatewayResponder;
+    // Hold every read of payment_webhook_events until this many have arrived, so concurrent deliveries
+    // all see the same row state before any of them writes. A timer stops a missing read from hanging.
+    eventReadsToAlign?: number;
+} = {}) {
+    let eventReads = 0;
+    let alignReads: () => void = () => {};
+    const readsAligned = new Promise<void>((resolve) => { alignReads = resolve; });
+    if (eventReadsToAlign > 0) setTimeout(() => alignReads(), 1000).unref();
+    const tables: Record<string, Row[]> = {
         payment_webhook_events: webhookEvents.map((row) => ({ error_message: null, processed_at: null, ...row })),
         orders: orders.map((row) => ({ ...row })),
         subscriptions: subscriptions.map((row) => ({ ...row })),
     };
-    const calls = { confirm: [], failure: [], activate: [], domainEvents: [], orderLookups: 0 };
+    const calls = { confirm: [] as Json[], failure: [] as Json[], activate: [] as Json[], domainEvents: [] as Json[], orderLookups: 0 };
 
-    async function supabaseFetch(input, init = {}) {
+    async function supabaseFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
         const url = new URL(String(input));
         const table = url.pathname.replace(/^\/rest\/v1\//, "");
         const rows = tables[table];
@@ -92,11 +125,17 @@ function createHarness({ orders = [], subscriptions = [], webhookEvents = [], co
         if (method === "GET") {
             if (table === "orders") calls.orderLookups += 1;
             const limit = Number(url.searchParams.get("limit") || rows.length);
-            return jsonResponse(rows.filter(rowFilter(url.searchParams)).slice(0, limit));
+            const result = rows.filter(rowFilter(url.searchParams)).slice(0, limit).map((row) => ({ ...row }));
+            if (table === "payment_webhook_events" && eventReadsToAlign > 0) {
+                eventReads += 1;
+                if (eventReads >= eventReadsToAlign) alignReads();
+                await readsAligned;
+            }
+            return jsonResponse(result);
         }
         if (method === "POST" && table === "payment_webhook_events") {
             assert.match(prefer, /resolution=ignore-duplicates/);
-            const body = JSON.parse(init.body);
+            const body = JSON.parse(String(init.body)) as Row;
             const exists = rows.some((row) => row.provider === body.provider && row.provider_event_id === body.provider_event_id);
             if (exists) return jsonResponse([], 201);
             const row = { id: randomUUID(), error_message: null, processed_at: null, created_at: now, updated_at: now, ...body };
@@ -104,7 +143,7 @@ function createHarness({ orders = [], subscriptions = [], webhookEvents = [], co
             return jsonResponse([row], 201);
         }
         if (method === "PATCH") {
-            const body = JSON.parse(init.body);
+            const body = JSON.parse(String(init.body)) as Row;
             const matched = rows.filter(rowFilter(url.searchParams));
             // The table's BEFORE UPDATE trigger (update_updated_at) stamps updated_at on every update.
             for (const row of matched) Object.assign(row, body, { updated_at: now });
@@ -114,9 +153,9 @@ function createHarness({ orders = [], subscriptions = [], webhookEvents = [], co
     }
 
     const gateway = {
-        async fetch(input, init = {}) {
+        async fetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
             const path = new URL(String(input)).pathname;
-            const body = JSON.parse(String(init.body || "{}"));
+            const body = JSON.parse(String(init.body || "{}")) as Json;
             if (path === "/v1/storefront/internal/payments/confirm") {
                 calls.confirm.push(body);
                 return confirm ? confirm(calls.confirm.length) : jsonResponse({ success: true, data: { order: { id: body.orderId } } });
@@ -149,8 +188,8 @@ function createHarness({ orders = [], subscriptions = [], webhookEvents = [], co
         ENVIRONMENT: "test",
     };
 
-    async function deliver(event) {
-        globalThis.fetch = supabaseFetch;
+    async function deliver(event: Json): Promise<Delivery> {
+        globalThis.fetch = supabaseFetch as typeof fetch;
         const rawBody = JSON.stringify(event);
         const signature = createHmac("sha256", WEBHOOK_SECRET).update(rawBody).digest("hex");
         const response = await app.request("/razorpay", {
@@ -158,16 +197,20 @@ function createHarness({ orders = [], subscriptions = [], webhookEvents = [], co
             body: rawBody,
             headers: { "content-type": "application/json", "x-razorpay-signature": signature },
         }, env);
-        return { status: response.status, body: await response.json() };
+        return { status: response.status, body: await response.json() as Json };
     }
 
-    const eventRow = (providerEventId) => tables.payment_webhook_events.find((row) => row.provider_event_id === providerEventId);
+    const eventRow = (providerEventId: string): Row => {
+        const row = tables.payment_webhook_events.find((candidate) => candidate.provider_event_id === providerEventId);
+        assert.ok(row, `no payment_webhook_events row for ${providerEventId}`);
+        return row;
+    };
     return { calls, tables, deliver, eventRow };
 }
 
 // Razorpay's body carries no top-level id, so the event id is derived from the payment and is identical on
 // every retry — the property the whole dedupe rests on.
-function capturedEvent({ paymentId, providerOrderId, notes }) {
+function capturedEvent({ paymentId, providerOrderId, notes }: { paymentId: string; providerOrderId: string; notes: Json }): Json {
     return {
         entity: "event",
         account_id: "acc_test",
@@ -184,7 +227,7 @@ function capturedEvent({ paymentId, providerOrderId, notes }) {
 
 const orderPayment = () => capturedEvent({ paymentId: "pay_LBPAY008", providerOrderId: "order_LBPAY008", notes: { order_id: ORDER_ID } });
 const ORDER_EVENT_ID = "payment.captured:pay_LBPAY008";
-const orderRow = () => ({
+const orderRow = (): Row => ({
     id: ORDER_ID,
     store_id: STORE_ID,
     total: 750,
@@ -194,10 +237,10 @@ const orderRow = () => ({
     inventory_reserved_at: null,
     inventory_released_at: null,
 });
-const failFirst = (failures) => (attempt) => attempt <= failures
+const failFirst = (failures: number): GatewayResponder => (attempt) => attempt <= failures
     ? jsonResponse({ success: false, error: { code: "UPSTREAM", message: "transient" } }, 503)
     : jsonResponse({ success: true, data: { order: { id: ORDER_ID } } });
-const eventRowSeed = (processingStatus, updatedAt) => ({
+const eventRowSeed = (processingStatus: string, updatedAt: string): Row => ({
     id: randomUUID(),
     provider: "razorpay",
     provider_event_id: ORDER_EVENT_ID,
@@ -208,7 +251,7 @@ const eventRowSeed = (processingStatus, updatedAt) => ({
     updated_at: updatedAt,
 });
 
-const subscriptionPayment = (paymentId) => capturedEvent({
+const subscriptionPayment = (paymentId: string) => capturedEvent({
     paymentId,
     providerOrderId: `order_${paymentId}`,
     notes: { store_id: STORE_ID, plan_slug: "growth", billing_period: "monthly", user_id: USER_ID },
@@ -267,15 +310,17 @@ test("a duplicate of an ignored event is acknowledged and not reprocessed", asyn
 });
 
 test("two concurrent retries of one failed event: exactly one reclaims it and reaches the gateway", async () => {
-    // The winner is held at the gateway until the other delivery has answered, so the two genuinely
-    // overlap: without the hold, the second one's signature check can finish after the first has
-    // completed, and it then sees a processed row, which is a plain duplicate. If both reclaimed, both
-    // would be held; the timer releases them so the assertions fail rather than the test hanging.
-    let release;
-    const hold = new Promise((resolve) => { release = resolve; });
+    // The race that matters is the one where BOTH deliveries read the row as 'failed' before either
+    // writes. The harness aligns their reads, so both reach the reclaim holding the same stale view,
+    // and only the conditional update can split them. The winner is then held at the gateway until the
+    // other delivery has answered. If both reclaimed, both would be held; the timer releases them so the
+    // assertions fail rather than the test hanging.
+    let release: () => void = () => {};
+    const hold = new Promise<void>((resolve) => { release = resolve; });
     const harness = createHarness({
         orders: [orderRow()],
         webhookEvents: [eventRowSeed("failed", new Date().toISOString())],
+        eventReadsToAlign: 2,
         confirm: async () => {
             await hold;
             return jsonResponse({ success: true, data: { order: { id: ORDER_ID } } });
