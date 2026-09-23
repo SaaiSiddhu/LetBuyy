@@ -380,6 +380,32 @@ export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "s
   );
 }
 
+// F-STALEMETHOD-1. stale-artifact-validator's offenders, by source, computed in one place so the
+// validator and tests/governance/ambient-red-attribution.test.mjs read the same set. The validator
+// prints at most 20 offenders, so a test that parses its output is blind to the rest: a planted
+// `.broken` file, queued behind 135 generated directories, was counted and never printed.
+const localScanArtifactPattern =
+  /^(deep-tree|domain-map|env-map|garbage-map|heavy-files|import-map|package-map|root-governance|runtime-map|topology|tsconfig-map)\.txt$|^(debug|tmp|temp|scratch|analysis)[-.].*\.(txt|log|json|md|mjs|js|ts)$/;
+const staleBackupArtifactPattern = /\.broken$/;
+
+export function collectStaleArtifactOffenders() {
+  const untracked = getUntrackedFiles();
+  const workspace = listWorkspaceFiles();
+  const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
+  return {
+    untrackedScanned: untracked.length,
+    workspaceScanned: workspace.length,
+    untrackedFiles: untracked.filter((file) => generatedArtifactPattern.test(file) || localScanArtifactPattern.test(file)),
+    artifactDirectories: listLocalArtifactDirectories(),
+    workspaceFiles: workspace.filter(
+      (file) =>
+        debugArtifactPattern.test(file) ||
+        staleBackupArtifactPattern.test(file) ||
+        forbiddenRuntimePrefixes.some((prefix) => startsWithPrefix(file, prefix)),
+    ),
+  };
+}
+
 export function exists(relPath) {
   return fs.existsSync(path.join(root, relPath));
 }

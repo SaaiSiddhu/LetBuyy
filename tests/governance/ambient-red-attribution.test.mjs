@@ -25,8 +25,10 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
-// Generated directories the real gate lane deletes before it runs. A path ending in one of these is
-// a build artefact, not a repository fact.
+// governance-common.mjs resolves the repository from the working directory, so pin it before importing.
+process.chdir(repoRoot);
+const { collectStaleArtifactOffenders } = await import('../../scripts/validators/governance-common.mjs');
+const { createTrackedPathPredicate, planGeneratedArtifactCleanup } = await import('../../scripts/governance/validator-orchestrator.mjs');
 
 // Each known-red validator, with a rule that must account for EVERY offender it reports.
 const KNOWN_REDS = [
@@ -45,10 +47,11 @@ const KNOWN_REDS = [
 ];
 
 // Validators this register USED to carry and that now pass. Kept so the removal is deliberate rather
-// than forgotten, and so the backlog's stale bullet cannot come back.
+// than forgotten, and so the backlog's stale bullet cannot come back. stale-artifact-validator sat here
+// from 1e6cc4c3 until F-STALEMETHOD-1, on the premise that it flags only untracked, non-ignored files.
+// It never did, and the entry failed in every installed worktree; it is classified by method below.
 const RETIRED_REDS = {
     'foundation-antifabrication-gate': 'its sole offender was services/compatibility/firebase_bridge, deleted by FB-1; the gate now passes',
-    'stale-artifact-validator': 'it flags UNTRACKED, NON-IGNORED files; its offenders were the untracked trees parked and resolved during the 2026-09-20 consolidation (apps/seller, .agents, database/supabase/supabase, two research zips). node_modules and other generated dirs are gitignored, so `pnpm install` does NOT bring this red back',
 };
 
 function runValidator(name) {
@@ -108,6 +111,76 @@ for (const [name, reason] of Object.entries(RETIRED_REDS)) {
         assert.ok(passed, `${name} is recorded as retired (${reason}) but is failing again:\n${output}`);
     });
 }
+
+// F-STALEMETHOD-1 — stale-artifact-validator is red BY METHOD, so it is classified, not retired.
+//
+// Run alone, it flags every generated directory on disk (node_modules, .turbo, dist, …).
+// listLocalArtifactDirectories() walks the filesystem and never consults .gitignore, and that is
+// deliberate: scripts/validate-governance.mjs runs the generated-artifact cleanup immediately before
+// this one validator, and the check is that cleanup's post-condition. So the red appears in every
+// installed worktree and vanishes in an uninstalled one; neither "still fails" nor "stays green" holds.
+//
+// What must hold instead is that every offender is something the real lane deletes before the validator
+// runs. The oracle is the orchestrator's own cleanup planner, not a pattern copied into this file. An
+// untracked file, a workspace file, or a directory the planner refuses (tracked content, a symlink, too
+// shallow) survives that cleanup and is a real finding. The offender set comes from the function the
+// validator itself calls. Its printed list stops at 20, and a root-level offender does not look like a
+// repository path, so parsing that output would miss both kinds.
+function classifyStaleArtifactOffenders(found, cleanupTargets) {
+    return {
+        method: found.artifactDirectories.filter((dir) => cleanupTargets.has(dir)),
+        genuine: [
+            ...found.untrackedFiles,
+            ...found.artifactDirectories.filter((dir) => !cleanupTargets.has(dir)),
+            ...found.workspaceFiles,
+        ],
+    };
+}
+
+const staleFound = collectStaleArtifactOffenders();
+const cleanupPlan = planGeneratedArtifactCleanup({
+    repoRoot,
+    startDirs: ['apps', 'packages', 'services'],
+    isTracked: createTrackedPathPredicate(repoRoot),
+});
+const staleClassified = classifyStaleArtifactOffenders(
+    staleFound,
+    new Set(cleanupPlan.targets.map((target) => target.relPath)),
+);
+
+test('stale-artifact-validator: every offender is a generated directory the real lane deletes before it runs', () => {
+    assert.deepEqual(
+        staleClassified.genuine,
+        [],
+        'these would survive the gate lane\'s generated-artifact cleanup, so they are real findings, not the method: '
+        + 'attribute each one or remove it. Do not widen the classification to make the red familiar again.',
+    );
+});
+
+test("stale-artifact-validator's own verdict is exactly the offender set classified here", () => {
+    // Ties the classification to the real validator run: the set above must be the set it judges.
+    const { passed, output } = runValidator('stale-artifact-validator');
+    const offenders = [...new Set([...staleFound.untrackedFiles, ...staleFound.artifactDirectories, ...staleFound.workspaceFiles])];
+    assert.equal(passed, offenders.length === 0, `validator passed=${passed} but ${offenders.length} offenders were collected`);
+    if (passed) return;
+    const total = output.match(/\(showing \d+ of (\d+);/);
+    if (total) {
+        assert.equal(Number(total[1]), offenders.length, 'the validator reports a different total than the set classified here');
+    } else {
+        for (const offender of offenders) assert.ok(output.includes(offender), `the validator did not report ${offender}`);
+    }
+});
+
+test('the by-method classification is specific, not a catch-all', () => {
+    const { method, genuine } = classifyStaleArtifactOffenders({
+        untrackedFiles: ['topology.txt'],
+        artifactDirectories: ['packages/auth-core/dist', 'apps/admin_web/build'],
+        workspaceFiles: ['apps/customer_web/src/app/page.tsx.broken'],
+    }, new Set(['packages/auth-core/dist']));
+    assert.deepEqual(method, ['packages/auth-core/dist']);
+    // A root-level scan file, a directory the cleanup would not delete, and a source backup are all genuine.
+    assert.deepEqual(genuine, ['topology.txt', 'apps/admin_web/build', 'apps/customer_web/src/app/page.tsx.broken']);
+});
 
 test('the classifiers are specific, not catch-alls', () => {
     // A classifier that accepted anything would make the guard decorative. Each must reject a path

@@ -101,7 +101,7 @@ sweep() { # every gate-lane validator, individually (safe: no artefact cleanup).
   echo "$failed" | tr ' ' '\n' | sed '/^$/d' | sort > "$OUT/failing-validators.txt"
   ROWS+=("$(printf '%-40s | %4s | %5ss | %s' "validators:sweep ($pass/$total pass)" "$rc" "$secs" "$(echo $failed | cut -c1-110)")")
   printf '  %-40s exit=%s (%ss) failed:%s\n' "validators:sweep" "$rc" "$secs" "$failed"
-  echo "$failed" | tr ' ' '\n' | grep -q '^stale-artifact$' && echo "  note: stale-artifact-validator fails by method when run individually (no orchestrator cleanup). F-STALECOUNT-1 discharged this against the FULL list (54/54 node_modules, 100% generated) and made the validator print its total, so re-confirm by reading the (showing N of M) suffix — never by counting the entries it shows."
+  echo "$failed" | tr ' ' '\n' | grep -q '^stale-artifact$' && echo "  note: stale-artifact-validator fails by method when run individually (no orchestrator cleanup). tests:governance classifies EVERY offender against the orchestrator's own cleanup plan (tests/governance/ambient-red-attribution.test.mjs, F-STALEMETHOD-1): if that lane is green the red is the method alone; if it is red, it names each genuine offender."
   return 0
 }
 # ---- core
