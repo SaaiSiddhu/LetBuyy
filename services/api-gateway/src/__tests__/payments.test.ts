@@ -151,9 +151,27 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     assert.match(webhookSource, /async function verifyRazorpayWebhookSignature\(/);
     assert.match(webhookSource, /if \(!signature \|\| !secret\) return false;/);
     assert.match(webhookSource, /return timingSafeEqual\(expected, signature\)/);
-    assert.match(webhookSource, /writeWebhookEvent\(c\.env,\s*\{/);
+    // F-PAY8-1 (LB-PAY-008). These pinned `writeWebhookEvent` and `if (recorded.duplicate)`, and the
+    // behaviour they pinned was the defect. Every conflict on the event id was acknowledged as a
+    // duplicate, including an event whose first attempt had FAILED, so Razorpay's retries of it were
+    // dropped. The route now CLAIMS the event: only a terminal row is a duplicate, and a failed or
+    // abandoned row is reclaimed by a conditional update that exactly one delivery can win. The
+    // behaviour is driven through the real route in tests/contracts/razorpay-webhook-retry-reclaim.test.ts.
+    // These pins keep its two load-bearing properties from being edited away.
+    assert.match(webhookSource, /claimWebhookEvent\(c\.env,\s*\{/);
     assert.match(webhookSource, /onConflict:\s*"provider,provider_event_id"/);
-    assert.match(webhookSource, /if \(recorded\.duplicate\)/);
+    assert.match(
+        webhookSource,
+        /const TERMINAL_WEBHOOK_EVENT_STATUSES = new Set\(\["processed", "ignored"\]\);/,
+        'only a terminal row may be acknowledged as a duplicate, never a failed one',
+    );
+    assert.match(
+        webhookSource,
+        /processing_status: `eq\.\$\{existing\.processing_status\}`/,
+        'the reclaim must be conditional on the status it read, or every concurrent retry wins it',
+    );
+    assert.match(webhookSource, /if \(claim === "duplicate"\) \{\s*return c\.json\(\{ received: true, duplicate: true, event: eventType \}\);/);
+    assert.match(webhookSource, /if \(claim === "in_progress"\) \{\s*return c\.json\(\{[^}]*\}, 409\);/);
     assert.match(webhookSource, /case "payment\.captured"/);
     assert.match(webhookSource, /await markOrderPaid\(c\.env,\s*order,/);
     assert.match(webhookSource, /await markWebhookEvent\(c\.env,\s*"razorpay",\s*providerEventId,\s*"processed"\)/);

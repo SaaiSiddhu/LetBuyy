@@ -54,7 +54,21 @@ const app = new Hono<{ Bindings: Env }>();
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
-async function writeWebhookEvent(
+// LB-PAY-008 (F-PAY8-1): a conflict on (provider, provider_event_id) means the provider has sent this
+// event before, not that it was handled. Acknowledging every conflict as a duplicate meant an event
+// whose first attempt failed (row 'failed', 500 returned, so Razorpay retries) was never processed
+// again. Only a terminal row is a duplicate. A 'failed' row, or a 'received' row nobody has touched
+// for WEBHOOK_EVENT_RECLAIM_AFTER_MS (its attempt died, or could not record its own failure), is
+// reclaimed by a conditional PATCH. Postgres re-checks the predicate under the row lock, so exactly
+// one concurrent delivery gets the row back (tests/executable/payment-webhook-event-reclaim-postgres).
+// Any other row is still being processed; that delivery is refused so the provider retries it later,
+// instead of counting an event with an unknown outcome as delivered.
+const WEBHOOK_EVENT_RECLAIM_AFTER_MS = 5 * 60 * 1000;
+const TERMINAL_WEBHOOK_EVENT_STATUSES = new Set(["processed", "ignored"]);
+
+type WebhookEventClaim = "new" | "reclaimed" | "duplicate" | "in_progress";
+
+async function claimWebhookEvent(
     env: Env,
     event: {
         provider: PaymentProvider;
@@ -63,7 +77,7 @@ async function writeWebhookEvent(
         signature_valid: boolean;
         raw_payload: unknown;
     }
-): Promise<{ duplicate: boolean }> {
+): Promise<WebhookEventClaim> {
     const rows = await upsertSupabaseRows(env, "payment_webhook_events", {
             provider: event.provider,
             provider_event_id: event.provider_event_id,
@@ -74,7 +88,36 @@ async function writeWebhookEvent(
         },
         { onConflict: "provider,provider_event_id" }
     );
-    return { duplicate: Array.isArray(rows) && rows.length === 0 };
+    if (!Array.isArray(rows) || rows.length > 0) return "new";
+
+    const eventKey = {
+        provider: `eq.${event.provider}`,
+        provider_event_id: `eq.${event.provider_event_id}`,
+    };
+    const [existing] = await selectSupabaseRows<{ processing_status: string; updated_at: string }>(
+        env,
+        "payment_webhook_events",
+        { ...eventKey, select: "processing_status,updated_at", limit: "1" },
+    );
+    if (!existing) return "in_progress";
+    if (TERMINAL_WEBHOOK_EVENT_STATUSES.has(existing.processing_status)) return "duplicate";
+
+    const failed = existing.processing_status === "failed";
+    const staleBefore = new Date(Date.now() - WEBHOOK_EVENT_RECLAIM_AFTER_MS).toISOString();
+    if (!failed && !(Date.parse(existing.updated_at) < Date.parse(staleBefore))) return "in_progress";
+
+    const reclaimed = await patchSupabaseRows(env, "payment_webhook_events", {
+        ...eventKey,
+        processing_status: `eq.${existing.processing_status}`,
+        ...(failed ? {} : { updated_at: `lt.${staleBefore}` }),
+    }, {
+        processing_status: "received",
+        processed_at: null,
+        // Set here as well as by the table's update trigger: the next claimant's predicate must stop
+        // matching the moment this update commits.
+        updated_at: new Date().toISOString(),
+    });
+    return reclaimed.length > 0 ? "reclaimed" : "in_progress";
 }
 
 async function markWebhookEvent(
@@ -498,7 +541,19 @@ async function activateStoreSubscription(
     }
 ): Promise<void> {
     const billingPeriod = params.billingPeriod === "yearly" ? "yearly" : "monthly";
-    const activation = asObject(await activateGatewayStoreSubscription(env, {
+    // Activation is not idempotent: each call cancels the active subscription, inserts a new one and
+    // records another invoice. A payment that already carries a subscription has been applied, by the
+    // merchant's verify route or by an earlier attempt of this event, so it is not activated again.
+    // That makes a reclaimed retry (LB-PAY-008) safe to replay, and stops the webhook's half of
+    // LB-BIL-001: the verify route activating first and this branch activating the same payment again.
+    const [applied] = params.provider === "razorpay" && params.providerPaymentId
+        ? await selectRows<{ id: string; plan?: string | null }>(env, "subscriptions", {
+            razorpay_payment_id: `eq.${params.providerPaymentId}`,
+            select: "id,plan",
+            limit: "1",
+        })
+        : [];
+    const activation = applied ? {} : asObject(await activateGatewayStoreSubscription(env, {
         storeId: params.storeId,
         planSlug: params.planSlug,
         billingPeriod,
@@ -509,8 +564,8 @@ async function activateStoreSubscription(
         userId: params.userId || null,
         amountPaid: params.amountPaid ?? null,
     }));
-    const responseData = asObject(activation.data);
-    const subscription = asObject(responseData.subscription);
+    const responseData = asObject(asObject(activation).data);
+    const subscription = asObject(applied ?? responseData.subscription);
     const subscriptionId = textValue(subscription.id);
     const planSlug = textValue(subscription.plan) || params.planSlug;
 
@@ -724,7 +779,7 @@ app.post("/razorpay", async (c) => {
     const eventType = event.event;
     const providerEventId = verification.event?.id || razorpayProviderEventId(event, signature || "verified");
 
-    const recorded = await writeWebhookEvent(c.env, {
+    const claim = await claimWebhookEvent(c.env, {
         provider: "razorpay",
         provider_event_id: providerEventId,
         event_type: eventType,
@@ -732,11 +787,14 @@ app.post("/razorpay", async (c) => {
         raw_payload: event,
     });
 
-    if (recorded.duplicate) {
+    if (claim === "duplicate") {
         return c.json({ received: true, duplicate: true, event: eventType });
     }
+    if (claim === "in_progress") {
+        return c.json({ error: "Event is still being processed", event: eventType }, 409);
+    }
 
-    console.info(`[Razorpay] Verified event: ${eventType}`);
+    console.info(`[Razorpay] Verified event: ${eventType}`, { providerEventId, retry: claim === "reclaimed" });
 
     try {
         switch (eventType) {
