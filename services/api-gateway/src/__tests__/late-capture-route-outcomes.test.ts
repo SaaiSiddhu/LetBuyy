@@ -12,6 +12,7 @@
 
 import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Hono } from 'hono';
 import type { Env } from '../index';
@@ -267,6 +268,31 @@ test('webhook confirm: a confirmed capture announces order.paid with the same pe
 
     assert.equal(response.status, 200);
     assert.deepEqual(paidEvents, [{ orderId: ORDER, idempotencyKey: 'razorpay:pay_route' }]);
+});
+
+// ─── every capture-reporting route, including the merchant one ───────────────
+
+test('every route that confirms a capture reads the outcome and refuses to announce an unfulfillable one', () => {
+    // The merchant verify in payments.ts has no behavioural harness here (it resolves a merchant session
+    // first), so the ordering is pinned in source for all three routes: confirm → read the outcome →
+    // the unfulfillable early exit → only then the order.paid announcement.
+    const routes = [
+        { file: '../routes/storefront/checkout-payment-routes.ts', announce: 'await emitStorefrontOrderPaidEvent(db' },
+        { file: '../routes/storefront/internal-payment-routes.ts', announce: 'await deps.emitStorefrontOrderPaidEvent(db' },
+        { file: '../routes/payments.ts', announce: 'await emitOrderPaidEvent(c.env, db' },
+    ];
+    for (const route of routes) {
+        const source = readFileSync(new URL(route.file, import.meta.url), 'utf8');
+        const confirm = source.indexOf('.confirmPayment(');
+        const read = source.indexOf('readCaptureResult(', confirm);
+        const exit = source.indexOf('if (!capture.fulfillable)', read);
+        const announce = source.indexOf(route.announce, confirm);
+        assert.ok(confirm !== -1, `${route.file}: confirms a capture`);
+        assert.ok(read > confirm, `${route.file}: reads the capture outcome after confirming`);
+        assert.ok(exit > read, `${route.file}: exits early for an unfulfillable capture`);
+        assert.ok(announce > exit, `${route.file}: announces order.paid only after that exit`);
+        assert.equal(source.split('.confirmPayment(').length - 1, 1, `${route.file}: one confirm site, so the ordering covers it`);
+    }
 });
 
 // ─── starting a payment ──────────────────────────────────────────────────────
