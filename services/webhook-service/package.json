@@ -2,12 +2,13 @@
   "name": "@letbuyy/webhook-service",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev --port 9012 --inspector-port 9112",
     "build": "tsc --noEmit",
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types test/*.test.mjs"
+    "test": "tsx --test test/*.test.mjs"
   },
   "dependencies": {
     "@letbuyy/auth-core": "workspace:*",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260524.1",
+    "tsx": "4.20.6",
     "typescript": "^5.0.0",
     "wrangler": "^4.100.0"
   }

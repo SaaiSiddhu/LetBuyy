@@ -1321,6 +1321,9 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
+      tsx:
+        specifier: 4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -1670,6 +1673,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260524.1
         version: 4.20260525.1
+      tsx:
+        specifier: 4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
@@ -1692,6 +1698,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260524.1
         version: 4.20260525.1
+      tsx:
+        specifier: 4.20.6
+        version: 4.20.6
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
