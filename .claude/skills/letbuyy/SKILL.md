@@ -192,13 +192,19 @@ A contract never says "fix the issues above". It stands alone for a fresh reader
 | `staging` | **pre-production, cloud** | `git fetch . develop:staging` (ff-only); push = the owner's act after the owner's word |
 | `main` | **production** | `git fetch . staging:main` (ff-only); owner's word; never a merge commit, never a direct commit |
 
-`stepup/main` is a **preserved alias** of the former integration branch (`LEGACY_INTEGRATED`), never
-advanced. Fast-forward-only promotion means **the SHA you tested is the SHA that ships**. Hotfixes take
-the same path, faster. `CURRENT` (2026-09-04): all three branches sit at `a751a2ff`; nothing is
-deployed anywhere; the Vercel project IDs in `config/vercel/projects.json` are placeholders;
-`production-deploy.yml` and `deploy-staging.yml` are `workflow_dispatch`-only (D-DEPLOY) until a
-DEPLOY-1 phase retargets them with verified cloud targets. Details: `references/merge.md`,
-`references/promote.md`, `references/ci.md`.
+`stepup/main` was a **preserved alias** of the former integration branch (`LEGACY_INTEGRATED`), never
+advanced. RE-MEASURED 2026-09-23, it no longer exists as a ref, locally or on origin; its ledger row
+remains. Fast-forward-only promotion means **the SHA you tested is the SHA that ships**. Hotfixes take
+the same path, faster. `CURRENT` (RE-MEASURED 2026-09-23, F-SKILLFACTS-3): `develop` = `staging` =
+`main` = `1e6cc4c3`, locally **and on origin**. So `develop` has been pushed, and D-12 is asked again
+(`references/decisions.md` §6, *D-12 / D-ID re-record*). **The `develop` worktree this table names cannot
+exist today.** The primary checkout holds `develop`, and git refuses both a second worktree on it and
+`git fetch . <sha>:develop` from any other worktree. No merge into `develop` runs until the owner answers
+D-MERGE-LOCATION (§6 there). Re-checked and unchanged: the Vercel project IDs in
+`config/vercel/projects.json` are placeholder strings, and `production-deploy.yml` and
+`deploy-staging.yml` are `workflow_dispatch`-only (D-DEPLOY) until a DEPLOY-1 phase retargets them with
+verified cloud targets. Nothing deployed is verifiable from this repository. Details:
+`references/merge.md`, `references/promote.md`, `references/ci.md`.
 
 ---
 
@@ -214,29 +220,34 @@ deploys, never touches the primary checkout, never runs the real gate lane, neve
 ---
 
 ## 5. Repository facts every mode needs (baseline measured 2026-09-04 at `develop` = `a751a2ff`; the Governance
-and Database lines RE-MEASURED 2026-09-12 at `develop` = `6edbbf0e` by F-SKILLFACTS-1; the Root, Worktrees, Remote
-(stored refs only) and Packages lines RE-MEASURED 2026-09-12 at `develop` = `0b0fa4d6` by F-SKILLFACTS-2, which also
-VERIFIED-UNCHANGED the five app ports and the four FROZEN roots. STILL NOT RE-VERIFIED and still as of 2026-09-04:
-the remote's network reachability, and the Flutter / Play Store figures. Re-measure before citing either.)
+and Database lines RE-MEASURED 2026-09-12 at `develop` = `6edbbf0e` by F-SKILLFACTS-1; the Packages line RE-MEASURED
+2026-09-12 at `develop` = `0b0fa4d6` by F-SKILLFACTS-2, which also VERIFIED-UNCHANGED the five app ports and the four
+FROZEN roots; the Root, Worktrees, Remote and History lines RE-MEASURED 2026-09-23 at `develop` = `1e6cc4c3` by
+F-SKILLFACTS-3, including the remote's network reachability. STILL NOT RE-VERIFIED and still as of 2026-09-04: the
+Flutter / Play Store figures. Re-measure before citing them.)
 
 ```
-Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on feature/claude-md-durable-architecture-memory (LEGACY_INTEGRATED)
-           at a751a2ff. RE-MEASURED 2026-09-12 (F-SKILLFACTS-2): 38 modified + 385 untracked files owned by other
-           sessions — the untracked count was 58 on 2026-09-04 and has grown by an order of magnitude; migrations
-           208–210 are STILL untracked there. Read-only for this skill.
-Worktrees  RE-MEASURED 2026-09-12 (F-SKILLFACTS-2). With NO phase worktree live, `git worktree list` registers
-           exactly 8: the primary · LetBuyy-develop [develop] · 5 legacy .claude/worktrees/* on claude/* branches ·
-           1 outside the repo (Copy/Letbuyy_Store). Each live phase worktree LetBuyy-<phase> adds one, so a count of
-           9 during a phase is expected — compare against 8 as the floor, never as the total. CAUTION for the collision check: a SIXTH non-agent directory,
-           .claude/worktrees/intelligent-euclid-61b310, exists under the primary but is NOT a registered worktree — its
-           registered twin of the same name is the one under Copy/Letbuyy_Store, so "6 legacy worktrees" (the pre-2026-09-12
-           wording) counts a directory git does not know about. Also under .claude/worktrees: 11 orphan agent-* dirs
-           totalling 4.4 GB; the 9.1 GB previously attributed to them is the WHOLE worktrees tree. Never remove without the owner.
-Remote     https://github.com/SaaiSiddhu/Letbuyy_Store.git — UNREADABLE from this machine (gh account Edynox-hq → 404;
-           git → not found). NOT RE-TESTED since 2026-09-04: verifying it needs a network call, and `gh` is in fact logged
-           in to TWO accounts — Edynox-hq (active) and SRIESWARAN01 — so the 404 may not be the whole story. Stored refs
-           RE-MEASURED 2026-09-12 and unchanged: origin/{main,stepup/main}=f52abca7 · origin/develop=c2547049 (June), both
-           ancestors of develop. Push = owner only.
+Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on develop at 1e6cc4c3, CLEAN (0 modified, 0 untracked).
+           RE-MEASURED 2026-09-23 (F-SKILLFACTS-3). The 2026-09-12 picture, the frozen feature/claude-md-durable-architecture-memory
+           with 38 modified + 385 untracked files of other sessions and migrations 208–210 untracked, ended with the 2026-09-20
+           consolidation. Still read-only for this skill (§0 rule 3): the rule's reason is gone, but the rule is not; changing
+           it is the owner's call (D-MERGE-LOCATION, references/decisions.md §6).
+Worktrees  RE-MEASURED 2026-09-23 (F-SKILLFACTS-3). `git worktree list` registers the primary [develop] and one
+           LetBuyy-<phase> per live phase, and nothing else. With no phase live the count is 1; compare against that floor,
+           never as a total. There is NO LetBuyy-develop: git refuses a second worktree on develop while the primary holds it.
+           Also gone: the .claude/worktrees directory (with its 11 agent-* dirs) and every claude/* branch; the worktree once
+           registered outside the repo under Copy/Letbuyy_Store is no longer registered.
+Remote     https://github.com/SaaiSiddhu/letbuyy.git — REACHABLE by git (`git ls-remote origin`, 2026-09-23): develop = staging
+           = main = 1e6cc4c3, plus tags (archive/*, convergence-*, phase4-enterprise-finalization-v1..v3, pre-*). Stored refs
+           origin/{develop,staging,main} = 1e6cc4c3; no origin/stepup/main. develop IS pushed, so D-12 is asked again
+           (decisions.md §6). CI readability through `gh` is NOT re-measured (references/ci.md still names the old
+           Letbuyy_Store repository). Push = owner only.
+History    RE-MEASURED 2026-09-23. Rewritten 2026-09-20: every commit on every ref is authored and committed by one identity,
+           SaaiSiddhu <saaisiddu@gmail.com>, and no commit carries a Co-Authored-By trailer (cb7ad27c's message records
+           removing 833). Every SHA changed. cb7ad27c remapped 4,385 citations in 489 tracked Markdown files, so those
+           resolve. A SHA quoted anywhere else (code comments, memory notes, transcripts) predates the rewrite and may not:
+           translate it through .git/filter-repo/commit-map (old → new). The identity and trailer policy is still OPEN
+           (D-ID; decisions.md §6); follow §0 rule 2.
 Apps       customer_web :9000 · merchant_web :9001 · identity-platform :9002 · marketing-site :9006 · admin_web :9007 (Next, next dev --webpack)
            Flutter: customer_app com.letbuyy.letbuyy SHIPPED (vc 4013, 1.0.10) · merchant_app com.letbuyy.store · admin_app RETIRED to RESERVED (FB-1, 2026-09-05; com.letbuyy.admin is a retired applicationId)
            · phase_2/{rider_app,store_ops_app} · FROZEN: app-marketplace, developer-portal, theme-marketplace, platform-operations-portal

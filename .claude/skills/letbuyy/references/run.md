@@ -13,7 +13,8 @@ the repository                           branches, ledger rows, commits — the 
 ```
 
 Every tick **starts** with `scripts/state.sh show <programme>`, `git -C <worktree> status --porcelain | wc -l`,
-`git -C <worktree> log -1`, and `git -C LetBuyy-develop rev-parse develop`. If the conversation and
+`git -C <worktree> log -1`, and `git rev-parse develop` (the ref is shared by every worktree;
+`LetBuyy-develop` no longer exists — F-SKILLFACTS-3, 2026-09-23). If the conversation and
 the disk disagree, the disk wins. Context compaction is expected; it must never change what happens next.
 
 ## 2. `state.json` shape
@@ -55,7 +56,7 @@ the disk disagree, the disk wins. Context compaction is expected; it must never 
 | SELF_GATED | one lane per tick (`security` → `uiux` → `feedback` → `mobile`/`db`), each writing its report to `logs/` → `LANES_PASSED` (any `BLOCKING` → fix in ≤ 2 ticks or `BLOCKED`) |
 | LANES_PASSED | VERIFY per `cto.md` §2 with fresh evidence (revert-and-watch, may_write diff, probes, full validator sweep) → `VERIFIED` or back to `BUILT` with findings |
 | VERIFIED | `merge-develop.sh` → commit → checks → ledger bookkeeping → worktree removal → `MERGED_DEVELOP` (push `develop` only if `config.push_develop`) |
-| MERGED_DEVELOP | boot the local stack from `LetBuyy-develop` (`pnpm run dev:store` or the runtime's `dev` script), exercise the phase's journeys in the browser preview (+ `tests/e2e` where applicable), stop the stack → `E2E_DEVELOP` |
+| MERGED_DEVELOP | boot the local stack from the `develop` checkout (`LetBuyy-develop` until 2026-09-20; where it lives now is part of the open D-MERGE-LOCATION) (`pnpm run dev:store` or the runtime's `dev` script), exercise the phase's journeys in the browser preview (+ `tests/e2e` where applicable), stop the stack → `E2E_DEVELOP` |
 
 ## 4. Hard stop conditions (write the reason to `STATUS.md`, set `stop`, end the loop)
 
@@ -79,7 +80,9 @@ console act, or a fix outside its `may_write`. Record the reason, move on if som
 ## 5. What the loop may and may never do
 
 **May:** create/remove phase worktrees (porcelain commands only) · commit on phase branches · merge into
-`develop` inside `LetBuyy-develop` · push `develop` when `config.push_develop` is true (the harness may
+`develop` inside a `develop` worktree. None can exist while the primary checkout holds `develop`, so the
+loop merges nothing until the owner answers D-MERGE-LOCATION (`decisions.md` §6) · push `develop` when
+`config.push_develop` is true (the harness may
 still deny it; record the denial) · run `gate.sh` in its non-destructive modes, suites, validators
 individually, `flutter analyze/test/build apk --debug` · boot and stop the local stack · open the
 browser preview · read CI runs with `gh run …` when an account with access is logged in · write under

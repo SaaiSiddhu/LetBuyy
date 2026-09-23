@@ -6,16 +6,20 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
 
 ## Worktrees and checkouts
 
-- **The primary checkout is not a workspace.** `Projects/Start_Up/LetBuyy` sits on the frozen
-  `feature/claude-md-durable-architecture-memory` with 39 modified + 58 untracked files that belong to
-  other sessions (identity-platform theming, merchant_web settings, `@letbuyy/ui`, gateway routes,
-  **migrations 208–210 + rollbacks**, research docs, two ZIPs). Never build, merge, commit, run
-  generators or the real gate there. Up to seven sessions have shared it in one day.
-- **`LetBuyy-develop` owns `[develop]`** from GOV-3 on. Never leave it dirty; an uncommitted ledger
-  edit in a shared worktree gets absorbed into someone else's commit.
-- `.claude/worktrees/*` (6 registered on `claude/*` branches, one registered **outside** the
-  repository at `Copy/Letbuyy_Store/…`, plus 11 unregistered `agent-*` dirs; 9.1 GB) are owner-owned
-  legacy. They pollute repo-wide `grep`/`find` — exclude `.claude/worktrees`. Never prune or remove.
+- **The primary checkout is not a workspace.** RE-MEASURED 2026-09-23 (F-SKILLFACTS-3):
+  `Projects/Start_Up/LetBuyy` is on `develop` at `1e6cc4c3`, clean. The picture this rule was written
+  for ended with the 2026-09-20 consolidation: the frozen `feature/claude-md-durable-architecture-memory`
+  with 39 modified + 58 untracked files of other sessions, migrations 208–210 among them, and up to
+  seven sessions sharing it in one day. The rule stands until the owner changes it: never build, merge,
+  commit, run generators or the real gate there. It is now also the only checkout that can hold
+  `develop`. Whether merges may run there is the open owner question D-MERGE-LOCATION (`decisions.md` §6).
+- **The primary checkout owns `[develop]`** since 2026-09-20. `LetBuyy-develop`, which held it from
+  GOV-3 until then, no longer exists, and git refuses a second worktree on `develop` while the primary
+  holds it. The standing lesson survives the move: never leave a shared checkout dirty, because an
+  uncommitted ledger edit gets absorbed into someone else's commit.
+- `.claude/worktrees/*` — RE-MEASURED 2026-09-23: the directory no longer exists and no `claude/*` ref
+  remains; nothing is registered outside the repository. For anything like it that reappears, the old
+  rule still holds: owner-owned, excluded from repo-wide `grep`/`find`, never pruned or removed.
 - `git worktree add` fails if the branch is checked out elsewhere — never send its output to
   `/dev/null`; use `git -C <dir>` for every command, never `cd` (a persisted `cd` sent a whole batch
   of commands to the wrong directory in this very phase).
