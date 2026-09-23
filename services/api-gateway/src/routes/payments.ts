@@ -6,7 +6,8 @@ import { verifyRazorpayPayment } from '../lib/provider-payment-verification';
 import { dbErrorBody, getSupabaseAdmin } from '../lib/supabase';
 import { ForbiddenError, ConflictError, HumanRequiredError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
-import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
+import { PaymentExecutionAdapter, readCaptureResult } from '../execution/payment-execution.adapter';
+import { FIXED_PUBLIC_ERROR_MESSAGES } from '../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { stepUpErrorBody, verifySensitiveActionStepUp } from '../lib/security-controls';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
@@ -1225,12 +1226,27 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
         idempotencyKey: body.idempotency_key,
     });
+
+    // F-PAY4-1: an order that could no longer be fulfilled when this capture landed was recorded once,
+    // cancelled and left with a refund owed by migration 252. It is never announced as paid.
+    const capture = readCaptureResult(updated);
+    if (!capture.fulfillable) {
+        return c.json({
+            error: {
+                code: 'PAYMENT_CAPTURED_ORDER_UNFULFILLABLE',
+                message: FIXED_PUBLIC_ERROR_MESSAGES.PAYMENT_CAPTURED_ORDER_UNFULFILLABLE,
+            },
+        }, 409);
+    }
+
+    // Keyed on the provider payment, so this path and the webhook announcing the same payment produce
+    // one order.paid event, not two.
     await emitOrderPaidEvent(c.env, db, {
         order: updated,
         fallbackOrder: order,
         actorId: customUser.id,
         requestId: getRequestId(c),
-        idempotencyKey: body.idempotency_key,
+        idempotencyKey: `razorpay:${body.razorpay_payment_id}`,
     });
 
     return c.json({ data: { verified: true, order: updated } });

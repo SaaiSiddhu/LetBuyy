@@ -8,7 +8,8 @@ import {
     StorefrontRazorpayVerifySchema,
 } from '../../schemas/order.schema';
 import { OrderExecutionAdapter } from '../../execution/order-execution.adapter';
-import { PaymentExecutionAdapter } from '../../execution/payment-execution.adapter';
+import { PaymentExecutionAdapter, readCaptureResult } from '../../execution/payment-execution.adapter';
+import { FIXED_PUBLIC_ERROR_MESSAGES } from '../../lib/public-errors';
 import { IdempotencyExecutionAdapter } from '../../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../../lib/tenant-context';
@@ -581,7 +582,10 @@ export function registerStorefrontCheckoutPaymentRoutes(
 
             const db = getSupabaseAdmin(c);
             const paymentService = new PaymentExecutionAdapter(db);
-            const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+            // F-PAY4-1: a capture is reported here after the buyer has paid, so the order is loaded
+            // without the payable-order refusals — a released, cancelled or already-paid order must still
+            // reach confirm_order_payment_with_ledger, which records the money and decides its outcome.
+            const order = await paymentService.loadStorefrontOrderForCapture(body.orderId, store.id);
             const amount = orderAmountMinorUnits(order);
             if (!amount) {
                 return c.json(
@@ -605,7 +609,11 @@ export function registerStorefrontCheckoutPaymentRoutes(
             // SECURITY: fail closed — the order MUST have been bound to a server-created
             // Razorpay order (via .../razorpay/order → attachPaymentReference) first. A null
             // payment_id means the signature is being replayed from a different order.
-            if (!order.payment_id || order.payment_id !== body.razorpay_order_id) {
+            // F-PAY4-1: once THIS payment has confirmed the order, payment_id holds the payment id
+            // (confirm_order_payment writes it there), so the webhook-first ordering — the webhook
+            // confirms, then the buyer's callback arrives — is still bound. The RPC applies the same
+            // predicate and returns 'duplicate' for it instead of an error after the buyer has paid.
+            if (!order.payment_id || (order.payment_id !== body.razorpay_order_id && order.payment_id !== body.razorpay_payment_id)) {
                 await idempotency.fail(claim.id);
                 return c.json(
                     { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'Razorpay order does not match this checkout order' } },
@@ -661,6 +669,32 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     requestId: getRequestId(c),
                     idempotencyKey: body.idempotencyKey,
                 });
+
+                // F-PAY4-1: the provider has the buyer's money but the order could no longer be fulfilled
+                // (its reservation expired, or it was cancelled). Migration 252 recorded the capture once,
+                // cancelled the order and queued the refund owed; nothing here may announce it as paid.
+                // The answer is stored against the idempotency key so a retried callback gets the same one.
+                const capture = readCaptureResult(confirmedOrder);
+                if (!capture.fulfillable) {
+                    const unfulfillableBody = {
+                        success: false,
+                        error: {
+                            code: 'PAYMENT_CAPTURED_ORDER_UNFULFILLABLE',
+                            message: FIXED_PUBLIC_ERROR_MESSAGES.PAYMENT_CAPTURED_ORDER_UNFULFILLABLE,
+                        },
+                    };
+                    await idempotency.complete({
+                        id: claim.id,
+                        responseBody: unfulfillableBody,
+                        statusCode: 409,
+                        resourceType: 'order',
+                        resourceId: body.orderId,
+                    });
+                    return c.json(unfulfillableBody, 409);
+                }
+
+                // Keyed on the provider payment, not the request, so the verify callback and the webhook
+                // announcing the same payment produce one order.paid event, not two.
                 await emitStorefrontOrderPaidEvent(db, {
                     storeId: store.id,
                     orderId: body.orderId,
@@ -668,7 +702,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
                     fallbackOrder: order,
                     env: c.env,
                     requestId: getRequestId(c),
-                    idempotencyKey: body.idempotencyKey,
+                    idempotencyKey: `razorpay:${body.razorpay_payment_id}`,
                 });
 
                 const responseBody = success({ verified: true, order: confirmedOrder });

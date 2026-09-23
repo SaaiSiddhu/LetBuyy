@@ -4,7 +4,8 @@ import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from './order-confirmation-email';
 import { verifySiteOwnership } from './auth-user';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
-import { ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
+import { AppError, ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
+import { FIXED_PUBLIC_ERROR_MESSAGES } from './public-errors';
 import {
     isProductionRuntime,
     livePaymentCredentialsAreRequired,
@@ -378,7 +379,7 @@ export async function loadPayableOrder(
 
     const { data: order } = await db
         .from('orders')
-        .select('id, store_id, total, currency, payment_status, status')
+        .select('id, store_id, total, currency, payment_status, status, inventory_released_at')
         .eq('id', orderId)
         .is('deleted_at', null)
         .single();
@@ -387,7 +388,7 @@ export async function loadPayableOrder(
         throw new NotFoundError('Order not found');
     }
 
-    const payableOrder = order as PayableOrder;
+    const payableOrder = order as PayableOrder & { inventory_released_at?: string | null };
 
     if (!(await verifySiteOwnership(db, payableOrder.store_id, userId, sessionStoreId))) {
         throw new ForbiddenError('Not authorized to pay this order');
@@ -399,6 +400,11 @@ export async function loadPayableOrder(
 
     if (payableOrder.status === 'cancelled' || payableOrder.status === 'refunded') {
         throw new ConflictError('Order is not payable');
+    }
+
+    // F-PAY4-1: no new payment against stock the unpaid sweep (migration 211) has already released.
+    if (payableOrder.inventory_released_at) {
+        throw new AppError(FIXED_PUBLIC_ERROR_MESSAGES.ORDER_RESERVATION_EXPIRED, 409, 'ORDER_RESERVATION_EXPIRED');
     }
 
     const total = Number(payableOrder.total);
