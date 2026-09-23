@@ -1,20 +1,21 @@
 # `merge` mode — integrate a VERIFIED phase into `develop`
 
 `develop` is the only merge target for phase branches. `staging` and `main` never receive merge
-commits (`promote.md`). As written (D-BRANCH, 2026-09-04), every merge happens **inside the worktree
-that holds `develop`**, never by moving a ref from outside, never in the primary checkout.
+commits (`promote.md`). Every merge happens **inside the checkout that holds `develop`**, never by
+moving a ref from outside. Since 2026-09-20 that is the primary checkout. D-BRANCH (2026-09-04) said
+"never in the primary checkout"; the owner replaced that on 2026-09-23 (D-MERGE-LOCATION, below).
 
-> **OPEN — D-MERGE-LOCATION (`decisions.md` §6); measured 2026-09-23 (F-SKILLFACTS-3).** The rule was
+> **DECIDED 2026-09-23 — D-MERGE-LOCATION (b), `decisions.md` §2d: merges run in the primary checkout.** The rule was
 > written when the primary checkout (`Projects/Start_Up/LetBuyy`) sat on the frozen `feature/…` branch
 > with other sessions' uncommitted work, and `Projects/Start_Up/LetBuyy-develop` held `develop`. Since
 > the 2026-09-20 consolidation the primary **is** on `develop`, clean, and `LetBuyy-develop` does not
 > exist. Git now makes the rule impossible to follow. `git worktree add <dir> develop` fails with
 > *already used by worktree*, and `git fetch . <sha>:develop` from any other worktree fails with
-> *refusing to fetch into branch … checked out*. Both were reproduced in a scratch repository. **No merge
-> into `develop` runs until the owner chooses where merges happen.** Do not work around it with
+> *refusing to fetch into branch … checked out*. Both were reproduced in a scratch repository. The owner chose
+> option (b) the same day, and nine phase branches were merged there. Do not work around it with
 > `--update-head-ok`, `update-ref` or `branch -f`, all of which move the ref under a checkout that does
-> not follow it. The procedure below is kept verbatim for when a `develop` worktree exists again, or
-> until the owner replaces it.
+> not follow it. In the procedure below, `D` is the primary checkout; `scripts/merge-develop.sh <branch> --commit`
+> defaults to it.
 
 ## 1. Preconditions (all verified by command, none by memory)
 

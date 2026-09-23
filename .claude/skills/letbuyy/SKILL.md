@@ -42,7 +42,8 @@ skill needs a fix. Repository truth overrides memory, audits, certifications and
    `worktree prune` blindly, `rm -rf` a worktree, `branch -f`, or `git update-ref refs/heads/*`.
    `reset --soft` is the one exception (discards nothing; un-mixes a swept commit). Several sessions
    share the **primary checkout** `Projects/Start_Up/LetBuyy` — it is read-only for this skill: never
-   build, merge, commit, run generators or the real gate there. **Attribute every unexpected diff
+   build, merge, commit, run generators or the real gate there — except merges into `develop` and their
+   ledger bookkeeping, which run there by OWNER_DECISION D-MERGE-LOCATION (2026-09-23). **Attribute every unexpected diff
    before touching it**; a dirty worktree is user-owned (`AGENTS.md` AGENT-R16).
 4. **Never deploy. Never push `staging` or `main` without the owner's word in the same message.**
    Pushing `develop` only when `references/run.md` config says so. A prior yes does not carry.
@@ -134,7 +135,7 @@ PLANNED → CLAIMED → BUILT → SELF_GATED → LANES_PASSED → VERIFIED → M
 - **SELF_GATED** — `scripts/gate.sh` ran on the branch **after** the last commit; table captured.
 - **LANES_PASSED** — every attached lane produced findings and none is `BLOCKING`.
 - **VERIFIED** — `cto` VERIFY with fresh evidence only (§2.1). Verdict `GO`/`CONDITIONAL_GO`.
-- **MERGED_DEVELOP** — merged inside the `develop` worktree per `merge.md`; result tree checked;
+- **MERGED_DEVELOP** — merged inside the checkout that holds `develop` (the primary, D-MERGE-LOCATION) per `merge.md`; result tree checked;
   `EXECUTION_LEDGER.md` row appended; worktree removed; disposition row updated with the merge SHA.
 - **E2E_DEVELOP** — local stack booted from `develop`; the phase's journeys exercised end to end.
 - **PROMOTED_STAGING / PROMOTED_MAIN** — fast-forward only, owner's word, per `promote.md`.
@@ -188,7 +189,7 @@ A contract never says "fix the issues above". It stands alone for a fresh reader
 | Branch | Role | How it moves |
 |---|---|---|
 | `letbuyy/<phase>` | one bounded phase | commits by the Worker; claim row first |
-| `develop` | **integration + local end-to-end** | `--no-ff` merges of phase branches, inside the `develop` worktree; ledger bookkeeping commits only |
+| `develop` | **integration + local end-to-end** | `--no-ff` merges of phase branches, inside the checkout that holds `develop` (the primary checkout, D-MERGE-LOCATION); ledger bookkeeping commits only |
 | `staging` | **pre-production, cloud** | `git fetch . develop:staging` (ff-only); push = the owner's act after the owner's word |
 | `main` | **production** | `git fetch . staging:main` (ff-only); owner's word; never a merge commit, never a direct commit |
 
@@ -197,10 +198,10 @@ advanced. RE-MEASURED 2026-09-23, it no longer exists as a ref, locally or on or
 remains. Fast-forward-only promotion means **the SHA you tested is the SHA that ships**. Hotfixes take
 the same path, faster. `CURRENT` (RE-MEASURED 2026-09-23, F-SKILLFACTS-3): `develop` = `staging` =
 `main` = `1e6cc4c3`, locally **and on origin**. So `develop` has been pushed, and D-12 is asked again
-(`references/decisions.md` §6, *D-12 / D-ID re-record*). **The `develop` worktree this table names cannot
+(`references/decisions.md` §6, *D-12 / D-ID re-record*). **A separate `develop` worktree cannot
 exist today.** The primary checkout holds `develop`, and git refuses both a second worktree on it and
-`git fetch . <sha>:develop` from any other worktree. No merge into `develop` runs until the owner answers
-D-MERGE-LOCATION (§6 there). Re-checked and unchanged: the Vercel project IDs in
+`git fetch . <sha>:develop` from any other worktree. The owner answered D-MERGE-LOCATION the same
+day: merges run in the primary checkout (§2d there), and nine phase branches were merged there. Re-checked and unchanged: the Vercel project IDs in
 `config/vercel/projects.json` are placeholder strings, and `production-deploy.yml` and
 `deploy-staging.yml` are `workflow_dispatch`-only (D-DEPLOY) until a DEPLOY-1 phase retargets them with
 verified cloud targets. Nothing deployed is verifiable from this repository. Details:
@@ -230,8 +231,8 @@ Flutter / Play Store figures. Re-measure before citing them.)
 Root       /Users/saai_siddharth/Projects/Start_Up/LetBuyy   PRIMARY — on develop at 1e6cc4c3, CLEAN (0 modified, 0 untracked).
            RE-MEASURED 2026-09-23 (F-SKILLFACTS-3). The 2026-09-12 picture, the frozen feature/claude-md-durable-architecture-memory
            with 38 modified + 385 untracked files of other sessions and migrations 208–210 untracked, ended with the 2026-09-20
-           consolidation. Still read-only for this skill (§0 rule 3): the rule's reason is gone, but the rule is not; changing
-           it is the owner's call (D-MERGE-LOCATION, references/decisions.md §6).
+           consolidation. Read-only for this skill (§0 rule 3), except for merges into develop and their bookkeeping, which
+           run here by the owner's D-MERGE-LOCATION answer (2026-09-23, references/decisions.md §2d).
 Worktrees  RE-MEASURED 2026-09-23 (F-SKILLFACTS-3). `git worktree list` registers the primary [develop] and one
            LetBuyy-<phase> per live phase, and nothing else. With no phase live the count is 1; compare against that floor,
            never as a total. There is NO LetBuyy-develop: git refuses a second worktree on develop while the primary holds it.

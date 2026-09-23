@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# merge-develop.sh — merge a VERIFIED phase branch into develop INSIDE the develop worktree, with every guard from
+# merge-develop.sh — merge a VERIFIED phase branch into develop INSIDE the checkout that holds develop (the primary,
+# OWNER_DECISION D-MERGE-LOCATION 2026-09-23), with every guard from
 # references/merge.md. Stops before the commit (inspection window) unless --commit is given; resumes an open window.
 # Never touches any other worktree. Never pushes.
 # Usage: bash .claude/skills/letbuyy/scripts/merge-develop.sh <branch> [--commit] [--develop-worktree <path>]
 set -uo pipefail
 BRANCH="${1:-}"; [ -n "$BRANCH" ] || { sed -n '2,5p' "$0"; exit 2; }; shift
-COMMIT=0; D="${LETBUYY_DEVELOP_WORKTREE:-/Users/saai_siddharth/Projects/Start_Up/LetBuyy-develop}"
+COMMIT=0; D="${LETBUYY_DEVELOP_WORKTREE:-/Users/saai_siddharth/Projects/Start_Up/LetBuyy}"
 while [ $# -gt 0 ]; do case "$1" in --commit) COMMIT=1;; --develop-worktree) D="$2"; shift;; *) echo "unknown flag $1" >&2; exit 2;; esac; shift; done
 TMP="$HOME/.letbuyy/tmp"; mkdir -p "$TMP"
 fail() { echo "ABORT: $*" >&2; exit 1; }
 RESURRECT='^(apps/storefront-runtime/|apps/merchant-control-plane/|apps/platform-console/|apps/mobile/merchant-app/|apps/mobile/operator-team-app/|Ecommerce/|apps/admin/|apps/auth/|apps/checkout/|apps/internal/|apps/merchant/|apps/storefront/|apps/analytics/|apps/customer_web/consumer-storefront/)|(^|/)legacy_archive_v2/|\.jks$|\.keystore$|(^|/)key\.properties$|(^|/)\.dev\.vars$|(^|/)\.env\.local$'
-[ -d "$D/.git" ] || [ -f "$D/.git" ] || fail "develop worktree not found at $D. If the primary checkout holds develop, git refuses a second worktree on it, so 'git worktree add' cannot fix this. Where merges run is the open owner question D-MERGE-LOCATION (references/decisions.md §6); do not work around it"
+[ -d "$D/.git" ] || [ -f "$D/.git" ] || fail "the checkout that holds develop was not found at $D. Merges run in the primary checkout (OWNER_DECISION D-MERGE-LOCATION, references/decisions.md §2d); pass --develop-worktree <path> if it moved"
 [ "$(git -C "$D" rev-parse --abbrev-ref HEAD)" = "develop" ] || fail "$D does not hold develop"
 [ "$(git -C "$D" worktree list | grep -c '\[develop\]')" = "1" ] || fail "develop is checked out in more than one worktree"
 git -C "$D" show-ref --verify --quiet "refs/heads/$BRANCH" || fail "branch $BRANCH does not exist"

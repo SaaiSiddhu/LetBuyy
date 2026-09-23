@@ -12,7 +12,8 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
   with 39 modified + 58 untracked files of other sessions, migrations 208–210 among them, and up to
   seven sessions sharing it in one day. The rule stands until the owner changes it: never build, merge,
   commit, run generators or the real gate there. It is now also the only checkout that can hold
-  `develop`. Whether merges may run there is the open owner question D-MERGE-LOCATION (`decisions.md` §6).
+  `develop`. Merges into `develop` and their bookkeeping run there by the owner's D-MERGE-LOCATION
+  answer (2026-09-23, `decisions.md` §2d); nothing else does.
 - **The primary checkout owns `[develop]`** since 2026-09-20. `LetBuyy-develop`, which held it from
   GOV-3 until then, no longer exists, and git refuses a second worktree on `develop` while the primary
   holds it. The standing lesson survives the move: never leave a shared checkout dirty, because an
