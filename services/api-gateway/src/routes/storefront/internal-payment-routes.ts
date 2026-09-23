@@ -2,7 +2,7 @@ import type { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../../index';
 import { getSupabaseAdmin, success } from '../../lib/supabase';
-import { PaymentExecutionAdapter } from '../../execution/payment-execution.adapter';
+import { PaymentExecutionAdapter, readCaptureResult } from '../../execution/payment-execution.adapter';
 import { isInternalApiSecretRequest } from '../../lib/internal-secret';
 
 type AppContext = Context<{ Bindings: Env }>;
@@ -110,7 +110,7 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
 
     const { data: order } = await db
         .from('orders')
-        .select('id, store_id, total, currency, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at')
+        .select('id, store_id, total, currency, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at, inventory_released_at')
         .eq('id', orderId)
         .is('deleted_at', null)
         .single();
@@ -118,6 +118,9 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
     if (!order) throw new Error('Order not found');
     if (order.payment_status === 'paid') throw new Error('Order is already paid');
     if (order.status === 'cancelled' || order.status === 'refunded') throw new Error('Order is not payable');
+    // F-PAY4-1: the same refusal loadStorefrontPayableOrder applies — no new payment against stock the
+    // unpaid sweep has already released.
+    if (order.inventory_released_at) throw new Error('Order reservation has expired');
 
     const total = Number(order.total);
     if (!Number.isFinite(total) || total <= 0) throw new Error('Order has no payable total');
@@ -192,12 +195,29 @@ export function registerStorefrontInternalPaymentRoutes(router: StorefrontRouter
             requestId: deps.getRequestId(c),
             idempotencyKey: body.idempotencyKey || null,
         });
+
+        // F-PAY4-1: a capture the order can no longer honour (reservation released by the unpaid sweep,
+        // or order cancelled) was recorded once by migration 252, with the order cancelled and the refund
+        // owed. Acknowledge it — webhook-service then marks the event processed rather than failed — but
+        // never announce it as paid.
+        const capture = readCaptureResult(order);
+        if (!capture.fulfillable) {
+            return c.json(success({
+                order,
+                capture_outcome: capture.outcome,
+                fulfillable: false,
+                unfulfillable_reason: capture.reason,
+            }));
+        }
+
+        // Keyed on the provider payment, so this webhook and the buyer's verify callback announcing the
+        // same payment produce one order.paid event, not two.
         await deps.emitStorefrontOrderPaidEvent(db, {
             orderId: body.orderId,
             order: order as StorefrontPaidOrderSnapshot,
             env: c.env,
             requestId: deps.getRequestId(c),
-            idempotencyKey: body.idempotencyKey || body.providerEventId || body.paymentId,
+            idempotencyKey: `${body.provider}:${body.paymentId}`,
         });
 
         return c.json(success({ order }));

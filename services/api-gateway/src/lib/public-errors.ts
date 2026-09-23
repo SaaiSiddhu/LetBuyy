@@ -22,6 +22,11 @@ export const FIXED_PUBLIC_ERROR_MESSAGES: Record<string, string> = {
     EXPORT_UNAVAILABLE: 'Export is temporarily unavailable',
     INTERNAL_ERROR: 'An internal error occurred',
     IMPORT_UNAVAILABLE: 'Import is temporarily unavailable',
+    // F-PAY4-1 (migration 252). Shown to the buyer, so both are plain statements of what happened and
+    // what happens next. The second is a promise the business must keep: the refund is recorded as owed
+    // (compensation_actions) but is executed by whoever operates the capturing payment account.
+    ORDER_RESERVATION_EXPIRED: 'This order has expired. Please place your order again.',
+    PAYMENT_CAPTURED_ORDER_UNFULFILLABLE: 'We received your payment, but this order could no longer be placed. Your payment will be refunded to your original payment method.',
     PAYMENT_ERROR: 'Payment request failed',
     PAYMENT_PROVIDER_ERROR: 'Payment provider request failed',
     RATE_LIMIT_UNAVAILABLE: 'Rate limiting is temporarily unavailable',
