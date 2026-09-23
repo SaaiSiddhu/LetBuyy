@@ -10,7 +10,7 @@ while [ $# -gt 0 ]; do case "$1" in --commit) COMMIT=1;; --develop-worktree) D="
 TMP="$HOME/.letbuyy/tmp"; mkdir -p "$TMP"
 fail() { echo "ABORT: $*" >&2; exit 1; }
 RESURRECT='^(apps/storefront-runtime/|apps/merchant-control-plane/|apps/platform-console/|apps/mobile/merchant-app/|apps/mobile/operator-team-app/|Ecommerce/|apps/admin/|apps/auth/|apps/checkout/|apps/internal/|apps/merchant/|apps/storefront/|apps/analytics/|apps/customer_web/consumer-storefront/)|(^|/)legacy_archive_v2/|\.jks$|\.keystore$|(^|/)key\.properties$|(^|/)\.dev\.vars$|(^|/)\.env\.local$'
-[ -d "$D/.git" ] || [ -f "$D/.git" ] || fail "develop worktree not found at $D (git worktree add $D develop)"
+[ -d "$D/.git" ] || [ -f "$D/.git" ] || fail "develop worktree not found at $D. If the primary checkout holds develop, git refuses a second worktree on it, so 'git worktree add' cannot fix this. Where merges run is the open owner question D-MERGE-LOCATION (references/decisions.md §6); do not work around it"
 [ "$(git -C "$D" rev-parse --abbrev-ref HEAD)" = "develop" ] || fail "$D does not hold develop"
 [ "$(git -C "$D" worktree list | grep -c '\[develop\]')" = "1" ] || fail "develop is checked out in more than one worktree"
 git -C "$D" show-ref --verify --quiet "refs/heads/$BRANCH" || fail "branch $BRANCH does not exist"
