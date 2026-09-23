@@ -23,14 +23,15 @@ import {
 } from '@/components/_local-ui/console-workspace';
 import { fetchConsoleApi, formatDateTime } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
+import {
+    MAX_DECISION_REASON,
+    MIN_DECISION_REASON,
+    buildListingDecisionBody,
+    newListingDecisionKey,
+    type ListingDecision,
+} from '@/lib/listing-decision';
 
 const REVIEW_QUEUE_STATUS = 'pending_review';
-
-/// The gateway enforces this too (validateSensitiveReason). It is repeated here so a reviewer is told
-/// before the round trip, not after — and the server action still refuses, so the client-side check
-/// is a courtesy rather than the control.
-const MIN_REASON = 8;
-const MAX_REASON = 1000;
 
 interface ListingRow {
     id: string;
@@ -51,24 +52,25 @@ interface ListResponse {
 // Server actions — mirror the incidents page pattern exactly
 // ---------------------------------------------------------------------------
 
-async function decide(formData: FormData, decision: 'approve' | 'reject' | 'take-down') {
+async function decide(formData: FormData, decision: ListingDecision) {
     const listingId = String(formData.get('listing_id') || '').trim();
-    const reason = String(formData.get('reason') || '').trim();
 
     if (!listingId) {
         throw new Error('A listing id is required.');
     }
 
-    // Rejections and take-downs require a reason. A negative moderation decision with nothing
-    // recorded is one nobody can audit or explain to the merchant afterwards. The gateway refuses it
-    // too; this is refused here so the reviewer is not told after the fact.
-    if (decision !== 'approve' && (reason.length < MIN_REASON || reason.length > MAX_REASON)) {
-        throw new Error(`A ${decision} requires a reason of ${MIN_REASON} to ${MAX_REASON} characters.`);
-    }
+    // F-ADM4-1: the gateway requires an idempotency key on every decision. It is rendered into each form,
+    // so a double submit replays rather than deciding twice; a form rendered before this change carries
+    // none, and gets a fresh one here rather than failing.
+    const body = buildListingDecisionBody({
+        decision,
+        reason: String(formData.get('reason') || ''),
+        idempotencyKey: String(formData.get('idempotency_key') || '') || newListingDecisionKey(decision, listingId),
+    });
 
     const result = await fetchConsoleApi<{ data?: unknown; error?: { message?: string } }>(
         `/operations/marketplace-listings/${listingId}/${decision}`,
-        { method: 'POST', body: reason ? { reason } : {} },
+        { method: 'POST', body },
     );
 
     if (result.error) {
@@ -147,6 +149,7 @@ export default async function MarketplaceListingsPage() {
 
                                         <form action={approveListing}>
                                             <Input type="hidden" name="listing_id" value={listing.id} />
+                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('approve', listing.id)} />
                                             <Button type="submit">Approve</Button>
                                         </form>
 
@@ -155,12 +158,13 @@ export default async function MarketplaceListingsPage() {
                                             explanation for. */}
                                         <form action={rejectListing}>
                                             <Input type="hidden" name="listing_id" value={listing.id} />
+                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('reject', listing.id)} />
                                             <label htmlFor={`reject-reason-${listing.id}`}>Reason</label>
                                             <Textarea
                                                 id={`reject-reason-${listing.id}`}
                                                 name="reason"
-                                                minLength={MIN_REASON}
-                                                maxLength={MAX_REASON}
+                                                minLength={MIN_DECISION_REASON}
+                                                maxLength={MAX_DECISION_REASON}
                                                 required
                                             />
                                             <Button type="submit" variant="secondary">Reject</Button>
@@ -168,12 +172,13 @@ export default async function MarketplaceListingsPage() {
 
                                         <form action={takeDownListing}>
                                             <Input type="hidden" name="listing_id" value={listing.id} />
+                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('take-down', listing.id)} />
                                             <label htmlFor={`takedown-reason-${listing.id}`}>Reason</label>
                                             <Textarea
                                                 id={`takedown-reason-${listing.id}`}
                                                 name="reason"
-                                                minLength={MIN_REASON}
-                                                maxLength={MAX_REASON}
+                                                minLength={MIN_DECISION_REASON}
+                                                maxLength={MAX_DECISION_REASON}
                                                 required
                                             />
                                             <Button type="submit" variant="secondary">Take down</Button>

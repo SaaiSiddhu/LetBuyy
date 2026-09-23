@@ -10,6 +10,9 @@ const protectedPrefixes = [
     '/revenue',
     '/subscriptions',
     '/marketplace-governance',
+    // F-ADM4-1: the listing moderation queue (CAP-ADM-2) was added without joining this list. The page and
+    // its server actions call requireConsoleSession themselves; this restores the second layer.
+    '/marketplace-listings',
     '/trust-safety',
     '/employees',
     '/analytics',
@@ -107,6 +110,7 @@ export const config = {
         '/revenue/:path*',
         '/subscriptions/:path*',
         '/marketplace-governance/:path*',
+        '/marketplace-listings/:path*',
         '/trust-safety/:path*',
         '/employees/:path*',
         '/analytics/:path*',
