@@ -83,7 +83,7 @@ export async function sendOTPEmail(email: string, otp: string): Promise<{ succes
     html: `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, rgb(139 92 246), rgb(167 139 250)); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
+          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #2C2642, #443870); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
         </div>
         <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">Verify your email</h2>
         <p style="font-size: 15px; color: rgb(85 85 85); line-height: 1.5; margin: 0 0 24px; text-align: center;">
@@ -210,11 +210,11 @@ export async function sendStoreCreatedEmail(
           </div>
           <div>
             <span style="font-size: 13px; color: rgb(107 114 128);">URL</span><br/>
-            <a href="${storeUrl}" style="font-size: 15px; color: rgb(139 92 246); text-decoration: none;">${storeUrl}</a>
+            <a href="${storeUrl}" style="font-size: 15px; color: #2C2642; text-decoration: none;">${storeUrl}</a>
           </div>
         </div>
 
-        <a href="${adminUrl}" style="display: block; background: rgb(139 92 246); color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
+        <a href="${adminUrl}" style="display: block; background: #2C2642; color: rgb(255 255 255); text-align: center; padding: 14px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 15px;">
           Open Dashboard →
         </a>
 
@@ -229,7 +229,7 @@ export async function sendStoreCreatedEmail(
         </div>
 
         <p style="font-size: 12px; color: rgb(156 163 175); margin: 32px 0 0; text-align: center;">
-          © LetBuyy · <a href="https://letbuyy.com/support" style="color: rgb(139 92 246);">Support</a>
+          © LetBuyy · <a href="https://letbuyy.com/support" style="color: #2C2642;">Support</a>
         </p>
       </div>
     `,
@@ -288,7 +288,7 @@ export async function sendStoreCreationFailedEmail(
         </a>
 
         <p style="font-size: 13px; color: rgb(153 153 153); margin: 24px 0 0; text-align: center;">
-          Need help? <a href="https://letbuyy.com/support" style="color: rgb(139 92 246);">Contact Support</a>
+          Need help? <a href="https://letbuyy.com/support" style="color: #2C2642;">Contact Support</a>
         </p>
       </div>
     `,
@@ -314,7 +314,7 @@ export async function sendNewDeviceLoginEmail(
     html: `
       <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, rgb(139 92 246), rgb(167 139 250)); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
+          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #2C2642, #443870); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
         </div>
 
         <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">New Sign-In Detected</h2>
@@ -363,7 +363,7 @@ export async function sendPasswordChangedEmail(
     html: `
       <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">
-          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, rgb(139 92 246), rgb(167 139 250)); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
+          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #2C2642, #443870); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
         </div>
 
         <h2 style="font-size: 20px; font-weight: 600; color: rgb(17 17 17); margin: 0 0 8px; text-align: center;">Password Changed</h2>

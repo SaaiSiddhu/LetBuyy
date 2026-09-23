@@ -10,7 +10,6 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -130,7 +129,6 @@ function LookupContent() {
     const [viewState, setViewState] = useState<ViewState>('email')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
     const turnstileTokenRef = useRef<string | null>(null)
@@ -423,13 +421,10 @@ function LookupContent() {
 
     return (
         <main className="auth-container">
-            {/* Top bar: Language + Theme */}
+            {/* Top bar: Language */}
             <div className="auth-top-bar">
                 <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </Button>
-                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </Button>
             </div>
 

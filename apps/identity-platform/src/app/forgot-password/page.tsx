@@ -6,7 +6,6 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { Banner, Button, Input } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -53,7 +52,6 @@ export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
@@ -112,9 +110,6 @@ export default function ForgotPasswordPage() {
             <div className="auth-top-bar">
                 <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </Button>
-                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </Button>
             </div>
 

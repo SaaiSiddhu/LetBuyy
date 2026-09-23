@@ -6,7 +6,6 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -80,7 +79,6 @@ function ResetPasswordContent() {
     const [showConfirm, setShowConfirm] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>('en')
 
     const t = translations[lang]
@@ -146,9 +144,6 @@ function ResetPasswordContent() {
             <main className="auth-container">
                 <div className="auth-top-bar">
                     <Button unstyled onClick={cycleLang} className="auth-lang-btn">{lang.toUpperCase()}</Button>
-                    <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                        <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
-                    </Button>
                 </div>
                 <div className="auth-card">
                     <div className="auth-logo">
@@ -178,9 +173,6 @@ function ResetPasswordContent() {
             <div className="auth-top-bar">
                 <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </Button>
-                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </Button>
             </div>
 
