@@ -5,7 +5,6 @@ import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { getAdminDashboardUrl, getStorefrontHost } from '@/lib/config/urls'
 import { Button } from '@letbuyy/ui'
-import { useAuthTheme } from '@/lib/useAuthTheme'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -53,7 +52,6 @@ export default function SelectPage() {
     const [loading, setLoading] = useState<string | null>(null)
     const [initialLoading, setInitialLoading] = useState(true)
     const [sessionExpired, setSessionExpired] = useState(false)
-    const { isDark, toggleTheme } = useAuthTheme()
     const [lang, setLang] = useState<Lang>(() => (typeof window !== 'undefined' ? (localStorage.getItem('letbuyy_lang') as Lang) || 'en' : 'en'))
 
     const t = translations[lang]
@@ -148,9 +146,6 @@ export default function SelectPage() {
             <div className="auth-top-bar">
                 <Button unstyled onClick={cycleLang} className="auth-lang-btn">
                     {lang.toUpperCase()}
-                </Button>
-                <Button unstyled onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </Button>
             </div>
 

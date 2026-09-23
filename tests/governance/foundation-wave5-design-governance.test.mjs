@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -58,4 +58,48 @@ test('Wave 5 scope exiles marketing and forbids local workspace implementations'
         assert.match(text, /InternalWorkspace/);
         assert.doesNotMatch(text, /<(?:main|article|section)\s+className=/);
     }
+});
+
+test('identity-platform stays light-only: the validator refuses an unforced layout or a wired theme control (D-AUTH-LIGHT)', () => {
+    // A copy of the validator runs against a scratch root, so the real tree is never edited. Only the
+    // light-only lines are read: the scratch root lacks every other surface, which the validator also reports.
+    const scratch = mkdtempSync(join(tmpdir(), 'letbuyy-light-only-'));
+    const validator = join(scratch, 'scripts', 'validators', 'validate-design-system.mjs');
+    const layoutPath = join(scratch, 'apps', 'identity-platform', 'src', 'app', 'layout.tsx');
+    const pagePath = join(scratch, 'apps', 'identity-platform', 'src', 'app', 'login', 'page.tsx');
+    mkdirSync(dirname(validator), { recursive: true });
+    mkdirSync(dirname(pagePath), { recursive: true });
+    copyFileSync(join(ROOT, 'scripts', 'validators', 'validate-design-system.mjs'), validator);
+    const committedLayout = readFileSync(join(ROOT, 'apps', 'identity-platform', 'src', 'app', 'layout.tsx'), 'utf8');
+    const quietPage = 'export default function Login() { return null }\n';
+    const lightOnlyFailures = (layout, page) => {
+        writeFileSync(layoutPath, layout);
+        writeFileSync(pagePath, page);
+        const result = spawnSync(process.execPath, [validator], { cwd: scratch, encoding: 'utf8' });
+        return result.stderr.split('\n').filter((line) => line.includes('D-AUTH-LIGHT'));
+    };
+    const unforce = (layout, element) => {
+        const planted = layout.replace(new RegExp(`(<${element}\\b[^>]*?)\\s+forcedTheme=["']light["']`), '$1');
+        assert.notEqual(planted, layout, `the committed layout no longer passes forcedTheme="light" to <${element}>`);
+        return planted;
+    };
+
+    assert.deepEqual(lightOnlyFailures(committedLayout, quietPage), []);
+
+    for (const element of ['ThemeScript', 'LetbuyyThemeProvider']) {
+        const failures = lightOnlyFailures(unforce(committedLayout, element), quietPage);
+        assert.equal(failures.length, 1, failures.join('\n'));
+        assert.match(failures[0], new RegExp(`<${element}> must pass forcedTheme="light"`));
+    }
+
+    const proseOnly = unforce(committedLayout, 'LetbuyyThemeProvider')
+        .replace('<body', '{/* <LetbuyyThemeProvider forcedTheme="light"> */}\n      <body');
+    assert.equal(lightOnlyFailures(proseOnly, quietPage).length, 1, 'a comment naming the prop must not satisfy the check');
+
+    const wiredToggle = "import { useTheme } from '@letbuyy/ui'\nexport default function Login() { const { setTheme } = useTheme(); return <button onClick={() => setTheme('dark')} /> }\n";
+    const toggleFailures = lightOnlyFailures(committedLayout, wiredToggle);
+    assert.equal(toggleFailures.length, 1, toggleFailures.join('\n'));
+    assert.match(toggleFailures[0], /login\/page\.tsx: wires a theme control/);
+
+    assert.deepEqual(lightOnlyFailures(committedLayout, '// setTheme( and useAuthTheme were removed\n' + quietPage), []);
 });

@@ -161,6 +161,14 @@ Given in chat on 2026-09-23 in answer to D-MERGE-LOCATION, which F-SKILLFACTS-3 
 |---|---|---|
 | **D-MERGE-LOCATION** | **Merges into `develop` run in the primary checkout** (option b), which has held `develop` since 2026-09-20. The owner: *"stop upto this merge all the entireeeee checkouts, worktrees, and everything to main folder, and merger everything to develop branch entireeeely ,.. everything"* | **OWNER_DECISION**, executed the same day: the nine phase branches of 2026-09-23 were merged there, `d705397e` … `c688d349`, through `scripts/merge-develop.sh` with its guards. §0 rule 3 still keeps every other kind of work out of the primary checkout. It does not decide D-12 (push) or D-ID (identity and trailers); nothing was pushed. |
 
+## 2e. Owner decision of 2026-09-23 — identity theme — OWNER_DECISION
+
+Given in chat on 2026-09-23, unprompted, while the local stack was being run. The owner's words are quoted verbatim.
+
+| ID | Decision | Status and consequence |
+|---|---|---|
+| **D-AUTH-LIGHT** | **The identity surface (`apps/identity-platform`) is light-only, on the merchant admin ink brand, with no theme toggle.** This is the restyle held in `archive/design-tokens-ui-v2` since 2026-09-20. The owner: *"on one of our work we have edited te entireee letbuyy identiy app that remove the theme toggle and change the app color,.. and most of the UI/UX works t=have been done,... that must bee in this machine only,.. please find it out and merge that also properly bro,...."*; of the tag: *"most propbaly that the one i think so"* | **OWNER_DECISION**, executed by F-IDUI-1 (`letbuyy/idui1-identity-light-restyle`). It reverses D4 (`docs/governance/skipped-human-decisions.md`) for identity only, and makes identity the one canonical app outside UX-R13. `validate-design-system.mjs` now asserts forced light on both `ThemeScript` and `LetbuyyThemeProvider`, and no theme control anywhere in identity sources. It does not decide dark mode for any other app. It does not land the tag's other concerns (shipping/taxes unguarded clients plus the `@letbuyy/api-client` signature change; entitlement enrichment), which stay deferred. |
+
 ## 3. Constitutional rules that bind every phase — CONSTITUTIONAL_DECISION
 
 - **Money.** One append-only double-entry ledger; balance derived, never a mutable column; money

@@ -79,11 +79,6 @@ const localWorkspaceFiles = [
 ].filter(existsSync);
 const darkModeReachabilityTargets = [
     {
-        surface: 'identity-platform',
-        files: ['apps/identity-platform/src/lib/useAuthTheme.ts'],
-        patterns: [/setTheme\(/, /useAuthTheme/],
-    },
-    {
         surface: 'customer-web',
         files: ['apps/customer_web/src/app/storefront-landing.tsx'],
         patterns: [/<ThemeToggleButton\b/],
@@ -119,6 +114,23 @@ const darkModeReachabilityTargets = [
         patterns: [/<ThemeToggleButton\b/],
     },
 ];
+// Light-only surfaces (OWNER_DECISION D-AUTH-LIGHT, 2026-09-23): identity-platform forces the light theme
+// and offers no theme control, so it is the one canonical app outside UX-R13's dark-mode reachability.
+// The root layout must force light on BOTH the pre-paint ThemeScript and the provider (either alone
+// leaves a dark first paint or a dark tree under a dark OS preference), and no source may wire a theme
+// control, which under a forced theme would be a button that does nothing. Comments are stripped first,
+// so prose naming the props cannot satisfy the check.
+const forcedLightSurfaces = [
+    {
+        surface: 'identity-platform',
+        layout: 'apps/identity-platform/src/app/layout.tsx',
+        sourceRoot: 'apps/identity-platform/src',
+    },
+];
+const stripComments = (text) => text
+    .replace(/\{\s*\/\*[\s\S]*?\*\/\s*\}/g, '')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\/\/.*$/gm, '');
 
 // ── Regexes ───────────────────────────────────────────────────────────────────
 const HEX = /(^|[^\w-])#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})(?![\w-])/;
@@ -187,6 +199,24 @@ for (const target of darkModeReachabilityTargets) {
     const missing = target.patterns.filter((pattern) => !pattern.test(texts));
     if (missing.length > 0) {
         hard.push(`${target.surface}: dark mode must be reachable through the canonical provider toggle`);
+    }
+}
+for (const target of forcedLightSurfaces) {
+    const layoutPath = join(ROOT, target.layout);
+    if (!existsSync(layoutPath)) {
+        hard.push(`${target.surface}: light-only layout ${target.layout} is missing`);
+        continue;
+    }
+    const layout = stripComments(readFileSync(layoutPath, 'utf8'));
+    for (const element of ['ThemeScript', 'LetbuyyThemeProvider']) {
+        if (!new RegExp(`<${element}\\b[^>]*\\bforcedTheme=["']light["']`).test(layout)) {
+            hard.push(`${target.layout}: <${element}> must pass forcedTheme="light" — ${target.surface} is light-only (OWNER_DECISION D-AUTH-LIGHT)`);
+        }
+    }
+    for (const file of walk(join(ROOT, target.sourceRoot), ['.tsx', '.ts'])) {
+        if (/<ThemeToggleButton\b|\bsetTheme\(|\btoggleTheme\b|\buseAuthTheme\b/.test(stripComments(readFileSync(file, 'utf8')))) {
+            hard.push(`${rel(file)}: wires a theme control, but ${target.surface} is light-only (OWNER_DECISION D-AUTH-LIGHT)`);
+        }
     }
 }
 

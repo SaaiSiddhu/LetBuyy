@@ -7,9 +7,12 @@
   --font-display-premium: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
-  /* LetBuyy Theme Colors */
+  /* LetBuyy Theme Colors — mirrors the admin surface identity exactly
+     (apps/merchant_web/src/app/globals.css), since this app now
+     forces surface="admin". Previously a hardcoded violet unrelated to the
+     brand ink primary; that read as a second, off-brand accent. */
   --primary: var(--lb-color-primary);
-  --primary-light: rgb(167 139 250);
+  --primary-light: color-mix(in srgb, var(--lb-component-sidebar-bg) 72%, white);
   --primary-dark: var(--lb-color-primary-active);
   /* THEME FIX (Wave 4 / TH-1): --purple is consumed at globals.css:215,530 (.auth-info
      text + onboarding icon hover) but was never defined → broken color in BOTH themes.
@@ -21,26 +24,59 @@
   --warning: var(--lb-color-warning);
   --error: var(--lb-color-critical);
 
-  /* Light Theme — Premium Ink Lavender */
-  --bg: rgb(250 249 255);
-  --bg-secondary: rgb(244 242 254);
-  --text-primary: rgb(10 8 22);
-  --text-secondary: rgb(55 46 88);
-  --text-tertiary: rgb(103 91 135);
-  --text-hint: rgb(158 147 190);
-  --border: rgb(224 216 248);
+  /* Neutral palette — the SAME canonical tokens the merchant dashboard
+     renders (apps/merchant_web/src/app/globals.css), not a
+     separate hand-picked scale. Every one of these used to be its own
+     hardcoded lavender/violet literal ("Premium Ink Lavender"), which is
+     exactly the off-brand tint this app must not carry now that it forces
+     surface="admin". No .dark block: forcedTheme="light" (see layout.tsx)
+     makes .dark permanently unreachable, so keeping a second lavender-tinted
+     palette around for it was dead weight, not a real fallback. */
+  --bg: var(--lb-color-bg);
+  --bg-secondary: var(--lb-color-surface);
+  --text-primary: var(--lb-color-text);
+  --text-secondary: var(--lb-color-text-subdued);
+  --text-tertiary: var(--lb-color-text-muted);
+  --text-hint: color-mix(in srgb, var(--lb-color-text-muted) 65%, transparent);
+  --border: var(--lb-color-border);
   --input-bg: rgb(255 255 255);
 }
 
-.dark {
-  --bg: rgb(10 9 18);
-  --bg-secondary: rgb(21 19 31);
-  --text-primary: rgb(255 255 255);
-  --text-secondary: rgb(148 163 184);
-  --text-tertiary: rgb(100 116 139);
-  --text-hint: rgb(71 85 105);
-  --border: rgba(139, 92, 246, 0.18);
-  --input-bg: rgb(13 11 22);
+/* ——————————————————————————————————————————————
+   LEGACY ALIAS BINDING — must live in the design-system scope
+
+   Every alias above that reads var(--lb-color-*) is declared in bare :root,
+   which is <html> — an ANCESTOR of the DesignSystemRoot div that actually
+   carries [data-letbuyy-surface="admin"][data-letbuyy-theme="light"]. A
+   custom property resolves to whatever it computed to AT THE ELEMENT WHERE
+   IT WAS DECLARED, and CSS variables only cascade downward, so <html> can
+   never see an override written on its own descendant — it falls back to
+   the shared default surface, and under a dark OS preference, that default
+   surface's DARK values (a real, reproduced bug: --primary rendered violet
+   and --bg rendered near-black on this "forced light" app until this block
+   was added). Mirrors apps/merchant_web/src/app/globals.css's
+   identical html [data-letbuyy-design-system="true"] block — same fix, same
+   reason, do not remove without removing the ancestor-scope :root aliases
+   above too. Specificity (0,1,1) beats bare :root's (0,1,0) but stays below
+   the canonical surface identity (0,2,0), so every colour still ultimately
+   comes from tokens.ts. */
+html [data-letbuyy-design-system="true"] {
+  --primary: var(--lb-color-primary);
+  --primary-light: color-mix(in srgb, var(--lb-component-sidebar-bg) 72%, white);
+  --primary-dark: var(--lb-color-primary-active);
+  --purple: var(--primary);
+  --accent-blue: var(--lb-color-info);
+  --success: var(--lb-color-success);
+  --warning: var(--lb-color-warning);
+  --error: var(--lb-color-critical);
+
+  --bg: var(--lb-color-bg);
+  --bg-secondary: var(--lb-color-surface);
+  --text-primary: var(--lb-color-text);
+  --text-secondary: var(--lb-color-text-subdued);
+  --text-tertiary: var(--lb-color-text-muted);
+  --text-hint: color-mix(in srgb, var(--lb-color-text-muted) 65%, transparent);
+  --border: var(--lb-color-border);
 }
 
 * {
@@ -87,8 +123,7 @@ body {
   z-index: 10;
 }
 
-.auth-lang-btn,
-.auth-theme-btn {
+.auth-lang-btn {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   color: var(--text-secondary);
@@ -101,7 +136,6 @@ body {
 }
 
 .auth-lang-btn:hover,
-.auth-theme-btn:hover,
 .auth-user-btn:hover {
   background: var(--border);
 }
@@ -545,9 +579,9 @@ textarea:focus-visible {
 }
 
 .auth-info {
-  background: rgba(99, 102, 241, 0.08);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
   color: var(--purple);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
   border-radius: 10px;
   padding: 12px 14px;
   font-size: 13px;
@@ -811,16 +845,20 @@ textarea:focus-visible {
   cursor: not-allowed;
 }
 
+/* Same rounded gradient finish as the merchant header's avatar
+   (.store-switcher-pill-icon, .all-stores-account-avatar) — primary-light to
+   primary, with a glossy inset highlight, not a flat fill. */
 .auth-account-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%), 0 0 0 1px color-mix(in srgb, white 16%, transparent);
 }
 
 .auth-account-avatar img {
@@ -991,7 +1029,7 @@ textarea:focus-visible {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   margin: 0 auto 16px;
 }
 
@@ -1000,7 +1038,7 @@ textarea:focus-visible {
 }
 
 .dark .auth-otp-icon {
-  background: rgba(167, 139, 250, 0.15);
+  background: color-mix(in srgb, var(--primary-light) 15%, transparent);
 }
 
 /* OTP inputs */
@@ -1029,7 +1067,7 @@ textarea:focus-visible {
 
 .auth-otp-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .auth-otp-input:not(:placeholder-shown) {
@@ -1059,7 +1097,7 @@ textarea:focus-visible {
 }
 
 .auth-btn-text:hover {
-  background: rgba(139, 92, 246, 0.08);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .auth-btn-text:disabled {
@@ -1128,25 +1166,20 @@ textarea:focus-visible {
     background: var(--bg-secondary);
   }
 
-  .dark body {
-    background: rgb(10 9 18);
-  }
-
   .auth-container {
     min-height: 100vh;
   }
 
+  /* White elevated card on the grey page canvas — the same relationship as
+     a dashboard card on .admin-page-scroll (--lb-color-surface on
+     --lb-color-bg), not the same tone as .auth-container behind it. */
   .auth-card {
-    max-width: 400px;
-    padding: 36px 40px;
-    background: var(--bg);
+    max-width: 448px;
+    padding: 40px 44px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  }
-
-  .dark .auth-card {
-    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border);
   }
 
   .auth-logo img {
@@ -1213,10 +1246,10 @@ textarea:focus-visible {
   gap: 6px;
   width: fit-content;
   padding: 6px 10px;
-  border: 1px solid rgba(139, 92, 246, 0.28);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
   border-radius: 999px;
   color: var(--primary);
-  background: rgba(139, 92, 246, 0.08);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
   font-size: 12px;
   font-weight: 700;
 }
@@ -1307,14 +1340,14 @@ textarea:focus-visible {
   grid-column: 1 / -1;
   min-height: 176px;
   background:
-    linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.08)),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, transparent), rgba(6, 182, 212, 0.08)),
     var(--bg);
-  border-color: rgba(139, 92, 246, 0.35);
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .dark .onboard-bento-card.primary {
   background:
-    linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(6, 182, 212, 0.1)),
+    linear-gradient(135deg, color-mix(in srgb, var(--primary) 18%, transparent), rgba(6, 182, 212, 0.1)),
     var(--bg-secondary);
 }
 
@@ -1345,7 +1378,7 @@ textarea:focus-visible {
 
 .onboard-bento-card.selected {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.14);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent);
 }
 
 .onboard-bento-card .onboard-type-icon {
@@ -1357,7 +1390,7 @@ textarea:focus-visible {
   margin: 0;
   border-radius: 12px;
   color: var(--primary);
-  background: rgba(139, 92, 246, 0.1);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 .onboard-bento-card.compact .onboard-type-icon {
@@ -1482,11 +1515,11 @@ textarea:focus-visible {
 
 .onboard-type-card.selected {
   border-color: var(--primary);
-  background: rgba(139, 92, 246, 0.06);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 .dark .onboard-type-card.selected {
-  background: rgba(139, 92, 246, 0.12);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 .onboard-type-icon {
@@ -1689,7 +1722,6 @@ textarea:focus-visible {
 }
 
 .auth-lang-btn,
-.auth-theme-btn,
 .auth-user-btn {
   display: inline-flex;
   align-items: center;
@@ -1698,18 +1730,12 @@ textarea:focus-visible {
   height: 40px;
   padding: 0;
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--bg-secondary);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
-.dark .auth-lang-btn,
-.dark .auth-theme-btn,
-.dark .auth-user-btn {
-  background: var(--bg-secondary);
-}
-
 .auth-card {
-  max-width: 392px;
+  max-width: 448px;
   gap: 0;
 }
 
@@ -1763,7 +1789,7 @@ textarea:focus-visible {
 .auth-password-wrapper input:focus,
 .auth-card input:not(.auth-otp-input):focus {
   border-color: var(--primary) !important;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent) !important;
 }
 
 .auth-card input:-webkit-autofill,
@@ -1937,7 +1963,7 @@ textarea:focus-visible {
 @media (min-width: 640px) {
   .auth-container {
     padding: 42px 24px;
-    background: var(--bg-secondary);
+    background: var(--bg);
   }
 
   .auth-card {
@@ -1995,8 +2021,8 @@ textarea:focus-visible {
   flex-direction: column;
   gap: 8px;
   padding: 12px 14px;
-  background: rgba(139, 92, 246, 0.06);
-  border: 1px solid rgba(139, 92, 246, 0.15);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
   border-radius: 12px;
   margin-bottom: 4px;
 }
@@ -2141,9 +2167,9 @@ textarea:focus-visible {
 }
 
 .select-store-item:hover {
-  border-color: rgba(139, 92, 246, 0.45);
-  background: rgba(139, 92, 246, 0.06);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .select-store-item.loading {
@@ -2155,7 +2181,7 @@ textarea:focus-visible {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: rgba(139, 92, 246, 0.14);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--primary);
   display: flex;
   align-items: center;
@@ -2297,9 +2323,9 @@ textarea:focus-visible {
 }
 
 .select-create-btn:hover {
-  border-color: rgba(139, 92, 246, 0.45);
+  border-color: color-mix(in srgb, var(--primary) 45%, transparent);
   color: var(--primary);
-  background: rgba(139, 92, 246, 0.06);
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
 }
 
 @media (max-width: 430px) {

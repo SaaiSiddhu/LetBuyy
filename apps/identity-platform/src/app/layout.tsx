@@ -95,15 +95,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
-        <ThemeScript />
+        <ThemeScript forcedTheme="light" />
         <style suppressHydrationWarning dangerouslySetInnerHTML={{
-          __html: `
-          html { background: var(--lb-color-bg, white); }
-          html.dark { background: var(--lb-color-bg, rgb(10 9 18)); }
-        `}} />
+          __html: `html { background: var(--lb-color-bg, white); }`
+        }} />
       </head>
       <body className="antialiased">
-        <LetbuyyThemeProvider surface="identity">
+        {/* surface="admin" + forcedTheme="light": the accounts/auth flow is the
+            merchant identity surface, so it must carry the exact same ink
+            primary/secondary brand as apps/merchant_web rather than
+            the shared default violet "identity" surface used to fall back to. */}
+        <LetbuyyThemeProvider surface="admin" forcedTheme="light">
           {children}
         </LetbuyyThemeProvider>
       </body>
