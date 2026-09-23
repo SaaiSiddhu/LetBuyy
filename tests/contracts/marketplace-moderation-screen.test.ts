@@ -9,11 +9,16 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { buildListingDecisionBody } from '../../apps/admin_web/src/lib/listing-decision';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const pagePath = join(root, 'apps/admin_web/src/app/(dashboard)/marketplace-listings/page.tsx');
 const page = readFileSync(pagePath, 'utf8');
-const code = page.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+const stripComments = (source: string) => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+const code = stripComments(page);
+// F-ADM4-1: the decision body — reason check included — is built in one place shared with the contract
+// test that parses it against the gateway schema (tests/contracts/admin-listing-decision-body.test.ts).
+const decisionCode = stripComments(readFileSync(join(root, 'apps/admin_web/src/lib/listing-decision.ts'), 'utf8'));
 
 test('the moderation screen exists and lists the review queue', () => {
     // Without it nothing can reach 'approved', so marketplace_feed returns zero rows forever and
@@ -36,8 +41,22 @@ test('reject and take down REQUIRE a reason', () => {
     // The gateway refuses a reasonless negative decision (validateSensitiveReason). If the screen
     // stopped requiring one, every rejection would round-trip and fail — and, worse, a reviewer could
     // believe a decision landed when it did not.
-    assert.match(code, /decision !== 'approve'/);
-    assert.match(code, /reason\.length < MIN_REASON \|\| reason\.length > MAX_REASON/);
+    //
+    // F-ADM4-1 moved the check out of the page into lib/listing-decision.ts. Re-anchored stronger, not
+    // looser: the page must route every decision through that builder, the builder must carry the check,
+    // the builder must actually refuse (behaviour, not just text), and the textareas must stay required.
+    assert.match(code, /const body = buildListingDecisionBody\(\{/);
+    assert.match(decisionCode, /input\.decision !== 'approve'/);
+    assert.match(decisionCode, /reason\.length < MIN_DECISION_REASON \|\| reason\.length > MAX_DECISION_REASON/);
+    for (const decision of ['reject', 'take-down'] as const) {
+        for (const reason of ['', '   ', 'short']) {
+            assert.throws(
+                () => buildListingDecisionBody({ decision, reason, idempotencyKey: 'admin-web:listing:test-key' }),
+                /requires a reason/,
+                `${decision} with reason ${JSON.stringify(reason)} must be refused before the round trip`,
+            );
+        }
+    }
     assert.match(code, /required/);
 });
 
