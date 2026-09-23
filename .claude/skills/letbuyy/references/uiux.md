@@ -74,7 +74,9 @@ marketing 1 · merchant_web 0 · identity 0. `DesignSystemRoot` merchant_web 1, 
 committed tree** (the validator passes in a clean worktree). The dirty primary checkout reports one —
 `identity-platform: dark-mode reachability target file is missing` — manufactured by another
 session's uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; it is that
-session's to resolve before it commits (`uiux/EVIDENCE_LEDGER.md`, `hazards.md`).
+session's to resolve before it commits (`uiux/EVIDENCE_LEDGER.md`, `hazards.md`). **Resolved 2026-09-23:**
+the owner made identity light-only (D-AUTH-LIGHT), so the deletion landed through F-IDUI-1 and the
+invariant now asserts forced light instead.
 
 ## 3. Workflow for any UI change
 

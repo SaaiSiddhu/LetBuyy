@@ -210,7 +210,8 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   individually; offender list 100% generated dirs) · `platform-domain-literal-validator` — GOV-3's
   own regression (a rule sentence quoting the retired domain literal), fixed in the same phase.
   **Green on the clean tree but red in the dirty primary:** `validate-design-system` (the primary's
-  uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`), `raw-error-message-validator`,
+  uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; resolved 2026-09-23, when the deletion
+  landed through F-IDUI-1 under D-AUTH-LIGHT), `raw-error-message-validator`,
   and the "untracked migration" variant of `sequential-migration`. `branch-lag-guard-validator` is
   green after the D-BRANCH retarget.
 - **`pnpm run test:contracts`** — **CLOSED 2026-09-12.** Measured locally at `develop` = `6edbbf0e`:

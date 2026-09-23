@@ -14,7 +14,7 @@ storefront and a hosted checkout. The design register is Polaris-grade operator 
 (Shopify), Stripe-grade money legibility, Linear-grade speed and keyboard restraint, Vercel-grade
 whitespace and dark-mode discipline (DOC 06 §7). Not a marketing template, not a consumer toy.
 
-- Light **and** dark are both complete and both reachable (UX-R12, UX-R13).
+- Light **and** dark are both complete and both reachable (UX-R12, UX-R13). One exception: `identity-platform` is light-only by OWNER_DECISION D-AUTH-LIGHT (2026-09-23).
 - Structure comes from tokens: borders, spacing, type hierarchy — not decoration.
 - The brand purple (`letbuyyPrimitiveTokens` brand ramp) is used for meaning: primary action,
   active state, focus, key emphasis. Per-tenant brand injection (`createLetbuyyBrandVariables`) and
@@ -112,8 +112,9 @@ where safe, reconciled on response, rolled back with a `Banner` on error.
 - **Operator-first IA with a first-class Finance node** (UX-R19): Orders / Finance / Customers are
   top-level primary; Settings at the bottom; keyboard shortcuts and `CommandPalette` are real.
 - **Dark mode must be user-reachable in every canonical app** (UX-R13): a labelled, keyboard-operable
-  `ThemeToggleButton` persisting to `letbuyy-theme`. Measured: merchant_web and identity have none.
-  The ratchet's HARD invariant names the missing identity-platform reachability target today.
+  `ThemeToggleButton` persisting to `letbuyy-theme`. Measured: merchant_web has none. **Exception:**
+  `identity-platform` is light-only by OWNER_DECISION D-AUTH-LIGHT (2026-09-23). The ratchet holds it
+  there with a HARD forced-light invariant: both theme entry points forced light, and no theme control.
 - `theme="auto"` is banned (HARD invariant); the vocabulary is `light|dark|system`.
 
 ---
@@ -154,6 +155,7 @@ carousels, ambient loops, preloaders. Budgets: `PERFORMANCE_AND_MOTION_BUDGETS.m
 | Arbitrary radius / shadow | ratchet `tsxArbitraryRadius` / `tsxArbitraryShadow` | 386 / 9 |
 | Local workspace implementations | HARD `localWorkspaceImplementations` = 0 | 0 |
 | Dark-mode reachability targets missing | HARD | 0 on the committed tree; 1 in the dirty primary (another session deleted `identity-platform/src/lib/useAuthTheme.ts`, uncommitted) |
+| Theme control or unforced layout on a light-only surface (`identity-platform`, D-AUTH-LIGHT) | HARD `forcedLightSurfaces` | added 2026-09-23 by F-IDUI-1, which removed identity from the reachability list; 0 at its merge |
 | Second token source / second shell | `token-source-single-validator`, `shell-single-validator` | pass |
 | Money surface without the badge | `provider-mode-badge-validator` | pass |
 | Token parity (tokens.ts ↔ tokens.json ↔ Dart) | `generate-design-tokens.mjs --check`, `generate-mobile-tokens.mjs --check` | pass |

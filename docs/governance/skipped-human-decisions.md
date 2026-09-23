@@ -28,6 +28,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Why it mattered.** Surfaced live: the onboarding `<Banner variant="info">` rendered light-theme tokens on a dark page (light-on-light washout) because the page toggle flipped `<html>.dark` without updating `LetbuyyThemeProvider`, leaving `DesignSystemRoot` on the stale theme.
 **Also.** `colorScheme` is now set centrally by the provider (`applyDomSignals` + `ThemeScript`), replacing the per-page `document.documentElement.style.colorScheme` writes the pages used to do — native scrollbars/inputs match the theme for every app.
 **Verified.** `@letbuyy/ui` + `identity-platform` `tsc --noEmit` clean; `validate:design-system` passes.
+**Superseded for identity-platform (2026-09-23).** The owner decided that the auth surface is light-only, with no toggle: OWNER_DECISION D-AUTH-LIGHT, recorded in `.claude/skills/letbuyy/references/decisions.md` §2e. `useAuthTheme.ts` is deleted and the layout forces light (F-IDUI-1). D4's mechanism — theme changes flow only through the canonical provider — still binds every other app.
 
 ## D5 — `_local-ui` workspace twins not deleted
 **Decision.** `admin-web/.../_local-ui/console-workspace.tsx` and `platform-operations-portal/.../_local-ui/ops-workspace.tsx` (the 63-line-diff twins) were **not** deleted. The canonical `StatusBadge` + `statusToBadgeVariant` were promoted to `@letbuyy/ui` as the replacement for the 5× status-pill fork, and `AppNavigation` now covers the sidebar duplication.
