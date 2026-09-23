@@ -103,7 +103,7 @@ export default function RootLayout({
       <body className="antialiased">
         {/* surface="admin" + forcedTheme="light": the accounts/auth flow is the
             merchant identity surface, so it must carry the exact same ink
-            primary/secondary brand as apps/merchant-control-plane rather than
+            primary/secondary brand as apps/merchant_web rather than
             the shared default violet "identity" surface used to fall back to. */}
         <LetbuyyThemeProvider surface="admin" forcedTheme="light">
           {children}
