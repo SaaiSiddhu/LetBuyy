@@ -45,6 +45,10 @@ const SUPABASE_DEMO_SERVICE_ROLE_KEY = [
   "eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0",
   "EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU",
 ].join(".");
+// The storefront serves the hosted checkout on checkout.<store root>; locally that root is `localhost`.
+// Without this the gateway falls back to wrangler.toml's staging checkout host, and "Proceed to Checkout"
+// leaves the machine.
+const LOCAL_CHECKOUT_ORIGIN = `http://checkout.localhost:${APP_PORTS.customer_web}`;
 
 // ---- value overlays -------------------------------------------------------
 
@@ -53,14 +57,14 @@ const NEXT_OVERRIDES = {
   NEXT_PUBLIC_API_BASE_URL: API_BASE_URL,
   NEXT_PUBLIC_ACCOUNTS_URL: appOrigin("identity-platform"),
   NEXT_PUBLIC_MARKETING_URL: appOrigin("marketing-site"),
-  NEXT_PUBLIC_ADMIN_URL: appOrigin("merchant-web"),
-  NEXT_PUBLIC_STOREFRONT_URL: appOrigin("customer-web"),
+  NEXT_PUBLIC_ADMIN_URL: appOrigin("merchant_web"),
+  NEXT_PUBLIC_STOREFRONT_URL: appOrigin("customer_web"),
   NEXT_PUBLIC_THEME_MARKETPLACE_URL: appOrigin("theme-marketplace"),
   NEXT_PUBLIC_APP_MARKETPLACE_URL: appOrigin("app-marketplace"),
   NEXT_PUBLIC_DEVELOPER_PORTAL_URL: appOrigin("developer-portal"),
   NEXT_PUBLIC_STORE_ROOT_DOMAIN: "localhost",
   NEXT_PUBLIC_SUPPORT_EMAIL: "support@letbuyy.local",
-  NEXT_PUBLIC_APP_URL: appOrigin("customer-web"),
+  NEXT_PUBLIC_APP_URL: appOrigin("customer_web"),
   NEXT_PUBLIC_ENV: "development",
   NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321",
   NEXT_PUBLIC_SUPABASE_ANON_KEY: SUPABASE_DEMO_ANON_KEY,
@@ -70,6 +74,7 @@ const NEXT_OVERRIDES = {
   NEXT_PUBLIC_FOUNDING_PUBLIC_LIVE: "true",
   NEXT_PUBLIC_RAZORPAY_KEY_ID: joinLocalValue("rzp_test", "_localdev"),
 
+  CHECKOUT_ORIGIN: LOCAL_CHECKOUT_ORIGIN,
   LETBUYY_API_URL: API_BASE_URL,
   LETBUYY_API_BASE_URL: API_BASE_URL,
   API_URL: API_BASE_URL,
@@ -82,8 +87,8 @@ const NEXT_OVERRIDES = {
   CSRF_SECRET: DEV_SECRET,
   // COOKIE_DOMAIN intentionally blank: localhost cookies must stay host-only.
   COOKIE_DOMAIN: "",
-  ADMIN_ORIGIN: appOrigin("merchant-web"),
-  STOREFRONT_FRAME_ANCESTORS: `${appOrigin("merchant-web")} ${appOrigin("admin-web")}`,
+  ADMIN_ORIGIN: appOrigin("merchant_web"),
+  STOREFRONT_FRAME_ANCESTORS: `${appOrigin("merchant_web")} ${appOrigin("admin_web")}`,
   PLATFORM_CONSOLE_ALLOWED_EMAILS: "admin@letbuyy.local",
   PLATFORM_CONSOLE_SESSION_SECRET: DEV_SECRET,
   PLATFORM_CONSOLE_TOTP_SECRET: "JBSWY3DPEHPK3PXP",
@@ -120,6 +125,10 @@ const WORKER_OVERRIDES = {
   STORE_ACCESS_SIGNING_KEY: DEV_SECRET,
   LETBUYY_INTERNAL_API_SECRET: DEV_SECRET,
   PLATFORM_CONSOLE_API_TOKEN: DEV_SECRET,
+  // The apps call the gateway at `localhost`, which Node resolves to ::1 before 127.0.0.1. An IPv4-only
+  // list makes the internal perimeter refuse the storefront's own access lookups, and every store is a 503.
+  INTERNAL_GATEWAY_IP_ALLOWLIST: "127.0.0.1/32,::1",
+  CHECKOUT_ORIGIN: LOCAL_CHECKOUT_ORIGIN,
   NEXT_PUBLIC_STORE_ROOT_DOMAIN: "localhost",
   STOREFRONT_ROOT_DOMAIN: "localhost",
   PLATFORM_ROOT_DOMAIN: "localhost",

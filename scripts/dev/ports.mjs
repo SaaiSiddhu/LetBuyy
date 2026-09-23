@@ -9,16 +9,21 @@
 // supported deployment targets (see config/env/README.md). Nothing here is
 // tracked into runtime behaviour beyond untracked .env.local / .dev.vars files.
 
-/** Next.js apps (dirname under apps/ -> http port). `next dev -p <port>`. */
+/**
+ * Next.js apps (dirname under apps/ -> http port). `next dev -p <port>`.
+ * Keys are folder names exactly: the generator writes apps/<key>/.env.local and apply-dev-scripts patches
+ * apps/<key>/package.json, so a key that names no folder configures nothing
+ * (tests/governance/local-dev-env-generator.test.mjs).
+ */
 export const APP_PORTS = {
-  "customer-web": 9000,
-  "merchant-web": 9001,
+  customer_web: 9000,
+  merchant_web: 9001,
   "identity-platform": 9002,
   "app-marketplace": 9003,
   "developer-portal": 9004,
   "theme-marketplace": 9005,
   "marketing-site": 9006,
-  "admin-web": 9007,
+  admin_web: 9007,
   "platform-operations-portal": 9008,
 };
 
