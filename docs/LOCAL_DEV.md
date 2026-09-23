@@ -8,27 +8,26 @@ One command boots the apps on fixed `9000+` ports:
 
 ```bash
 pnpm install     # once, or after dependency changes
-pnpm dev         # 9 Next apps + Storybook (fast, low-CPU default)
-pnpm dev:all     # everything, including the 4 Cloudflare Workers
+pnpm dev         # 9 Next apps + Storybook + the API gateway (the default)
+pnpm dev:all     # everything, including all 4 Cloudflare Workers
 ```
 
-> `pnpm dev` deliberately leaves the workers out — each Worker runs a full
-> `tsc --noEmit` typecheck on boot (wrangler's `[build]` step), which otherwise
-> fights the Next cold-compiles for CPU. Start the backend only when you need it
-> with `pnpm dev:all` (or `pnpm dev:services` in a second terminal).
+> `pnpm dev` starts the API gateway, which every page that reads data needs, and
+> leaves the other three Workers (mobile-bff, webhook-service, queue-workers) out.
+> Start those with `pnpm dev:all`, or `pnpm dev:services` in a second terminal.
 
 ## Port map
 
 | Port | Runtime | Notes |
 | ---- | ------- | ----- |
-| 9000 | storefront-runtime | shopper storefront |
-| 9001 | merchant-control-plane | merchant admin |
+| 9000 | customer_web | shopper storefront; the hosted checkout is `checkout.localhost:9000` |
+| 9001 | merchant_web | merchant admin |
 | 9002 | identity-platform | accounts / auth |
 | 9003 | app-marketplace | |
 | 9004 | developer-portal | |
 | 9005 | theme-marketplace | |
 | 9006 | marketing-site | |
-| 9007 | platform-console | internal console |
+| 9007 | admin_web | internal console |
 | 9008 | platform-operations-portal | internal ops |
 | 9009 | @letbuyy/ui — Storybook | design system |
 | 9010 | api-gateway (Worker) | backend every app points at |
@@ -44,13 +43,13 @@ there and everything else follows.
 
 | Command | What it runs |
 | ------- | ------------ |
-| `pnpm dev` | 9 Next apps + Storybook (fast, low-CPU default) |
+| `pnpm dev` | 9 Next apps + Storybook + the API gateway |
 | `pnpm dev:all` | Everything, including the 4 Cloudflare Workers |
 | `pnpm dev:apps` | Just the 9 Next apps |
 | `pnpm dev:services` | Just the Cloudflare Workers |
 | `pnpm dev:storybook` | Just Storybook (9009) |
 | `pnpm dev:setup` | Regenerate local env files (`--force`) |
-| `pnpm --filter @letbuyy/storefront-runtime dev` | A single app (fastest) |
+| `pnpm --filter @letbuyy/customer-web dev` | A single app (fastest) |
 
 `pnpm dev` first runs `scripts/dev/setup-local-env.mjs` (creates env files if
 missing — it never overwrites your edits) then `turbo run dev --concurrency=25`.
@@ -71,7 +70,7 @@ The first `pnpm dev` is the slow one, and it's a **one-time cold start**:
 ### Go faster / use less CPU
 
 - **Run only what you're working on** — the single biggest win:
-  `pnpm --filter @letbuyy/storefront-runtime dev` (one app), or `pnpm dev:apps` /
+  `pnpm --filter @letbuyy/customer-web dev` (one app), or `pnpm dev:apps` /
   `pnpm dev:storybook`.
 - `pnpm dev` (apps + Storybook) is already much lighter than `pnpm dev:all`.
 - Turbopack compiles **on demand** — open one app tab at a time; routes you

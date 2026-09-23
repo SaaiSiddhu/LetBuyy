@@ -28,7 +28,13 @@ function patch(relPkg, mutate) {
   const trailingNewline = raw.endsWith("\n");
   const pkg = JSON.parse(raw);
   pkg.scripts = pkg.scripts || {};
+  const before = JSON.stringify(pkg.scripts);
   mutate(pkg);
+  // Re-serialising a manifest whose scripts did not change only reformats it, so leave it untouched.
+  if (JSON.stringify(pkg.scripts) === before) {
+    console.log(`  unchanged ${relPkg}`);
+    return;
+  }
   writeFileSync(abs, JSON.stringify(pkg, null, indent) + (trailingNewline ? "\n" : ""));
   console.log(`  patched ${relPkg}`);
 }
@@ -80,11 +86,12 @@ patch(`package.json`, (pkg) => {
     "dev:storybook": `turbo run dev --filter=@letbuyy/ui`,
     "dev:setup": `${setup} --force`,
   };
-  // Remove any prior dev* keys, then place the fresh block first.
-  const rest = Object.fromEntries(
-    Object.entries(pkg.scripts).filter(([k]) => !k.startsWith("dev")),
-  );
-  pkg.scripts = { ...devScripts, ...rest };
+  // Add a missing dev* script; never rewrite or delete one that is there. The committed root scripts are
+  // the source of truth (`dev` also boots @letbuyy/api-gateway, and `dev:store` exists), and re-running
+  // this file after a port change must not silently revert them. Root scripts carry no ports.
+  for (const [key, value] of Object.entries(devScripts)) {
+    if (!(key in pkg.scripts)) pkg.scripts[key] = value;
+  }
 });
 
-console.log("\nDone. Run `pnpm dev` to boot everything, or `pnpm dev:web` for just the UIs.");
+console.log("\nDone. Run `pnpm dev` to boot everything, or `pnpm dev:apps` for just the UIs.");
