@@ -4,7 +4,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { createIdentityIssuedBuyerSessionToken } from '@/lib/auth/identity-issued-session'
-import { setBuyerSessionCookie } from '@/lib/auth/buyer-session'
+import { buyerSessionEpoch, setBuyerSessionCookie } from '@/lib/auth/buyer-session'
 
 /**
  * POST /api/buyer/login — authenticate a marketplace buyer (D-8).
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({ email, password }),
         })
         const payload = await verified.json().catch(() => null) as {
-            data?: { buyer?: { id: string; email: string; status: string } | null } | null
+            data?: { buyer?: { id: string; email: string; status: string; session_epoch?: number } | null } | null
         } | null
 
         // One outcome for every failure mode, including a disabled account: the gateway answers 403
@@ -55,7 +55,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 })
         }
 
-        const token = await createIdentityIssuedBuyerSessionToken({ buyerAccountId: buyer.id })
+        const token = await createIdentityIssuedBuyerSessionToken({
+            buyerAccountId: buyer.id,
+            sessionEpoch: buyerSessionEpoch(buyer.session_epoch),
+        })
         if (token) await setBuyerSessionCookie(token)
 
         return NextResponse.json({ buyer: { id: buyer.id, email: buyer.email, status: buyer.status } })

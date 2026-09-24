@@ -13,6 +13,19 @@ import { LETBUYY_BUYER_SESSION_COOKIE } from '@letbuyy/auth-core'
 
 export const BUYER_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
 
+/// The session epoch to put in a new token, from the buyer record the gateway returned (APPID-P4a).
+/// A gateway from before migration 257 returns none, and 1 is then safe: the gateway refuses a token
+/// from any epoch but the account's current one, so a wrong value can end a session early but can
+/// never keep one alive.
+export function buyerSessionEpoch(value: unknown): number {
+    return typeof value === 'number' && Number.isInteger(value) && value >= 1 ? value : 1
+}
+
+export async function getBuyerSessionCookie(): Promise<string | null> {
+    const store = await cookies()
+    return store.get(LETBUYY_BUYER_SESSION_COOKIE)?.value || null
+}
+
 export async function setBuyerSessionCookie(token: string): Promise<void> {
     const store = await cookies()
     store.set(LETBUYY_BUYER_SESSION_COOKIE, token, {

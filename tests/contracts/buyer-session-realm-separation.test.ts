@@ -6,8 +6,8 @@
 // domain, and nothing would fail a build if buyer login started reporting "no such account".
 
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
@@ -113,4 +113,67 @@ test('the buyer token is minted by identity-platform, never by the gateway', () 
     }
     assert.match(buyerLogin, /createIdentityIssuedBuyerSessionToken/);
     assert.match(buyerRegister, /createIdentityIssuedBuyerSessionToken/);
+});
+
+// ---------------------------------------------------------------------------------------------------
+// APPID-P4a — every buyer route, not only the first two
+// ---------------------------------------------------------------------------------------------------
+
+/// Every route.ts under identity-platform's buyer API, found on disk so a route added later is covered
+/// without anyone remembering to list it here.
+function buyerRoutes(): [string, string][] {
+    const dir = join(root, 'apps/platform/identity/src/app/api/buyer');
+    const walk = (at: string): string[] => readdirSync(at).flatMap((name) => {
+        const path = join(at, name);
+        if (statSync(path).isDirectory()) return walk(path);
+        return name === 'route.ts' ? [path] : [];
+    });
+    return walk(dir).map((path) => [relative(dir, path), readFileSync(path, 'utf8')]);
+}
+
+test('every buyer route validates CSRF, stays off the platform cookie helpers and carries no store', () => {
+    const routes = buyerRoutes();
+    assert.ok(routes.length >= 8, `found ${routes.length} buyer routes`);
+    for (const [name, source] of routes) {
+        assert.match(source, /validateCsrf\(request\)/, `${name} must validate CSRF`);
+        assert.ok(!/from '@\/lib\/auth\/cookies'/.test(code(source)), `${name} must not use the platform cookie helpers`);
+        assert.ok(!/store_id|site_id/.test(code(source)), `${name} must not carry a store — a buyer is not a tenant`);
+    }
+});
+
+test('every buyer route that mints a token puts the account session epoch in it', () => {
+    // Without the epoch the gateway counts a token as epoch 1, so after the account's first reset a
+    // fresh sign-in would be refused at once. Worse, a helper that minted a CONSTANT epoch would keep
+    // working until then and look correct in every test that never resets.
+    const minting = buyerRoutes().filter(([, source]) => code(source).includes('createIdentityIssuedBuyerSessionToken('));
+    assert.ok(minting.length >= 3, `expected login, register and recover/confirm to mint, found ${minting.map(([n]) => n).join(', ')}`);
+    for (const [name, source] of minting) {
+        assert.match(source, /sessionEpoch: buyerSessionEpoch\(buyer\.session_epoch\)/, `${name} must mint with the epoch the gateway returned`);
+    }
+});
+
+test('the code routes have their own rate-limit buckets, and recovery is Turnstile gated', () => {
+    const routes = new Map(buyerRoutes());
+    for (const [route, bucket] of [
+        ['verify-email/send/route.ts', 'buyer-verify-send'],
+        ['verify-email/confirm/route.ts', 'buyer-verify-confirm'],
+        ['recover/send/route.ts', 'buyer-recover-send'],
+        ['recover/confirm/route.ts', 'buyer-recover-confirm'],
+    ] as const) {
+        const source = routes.get(route);
+        assert.ok(source, `${route} exists`);
+        assert.ok(source.includes(`checkRateLimit('${bucket}'`), `${route} must use the ${bucket} bucket`);
+    }
+    assert.match(routes.get('recover/send/route.ts') ?? '', /verifyTurnstileToken\(/, 'the public recovery form must gate on Turnstile');
+});
+
+test('recovery answers every address the same way', () => {
+    // The only success recover/send may return is the bare one, and no branch may name the account's
+    // existence, state or limit.
+    const source = code(new Map(buyerRoutes()).get('recover/send/route.ts') ?? '');
+    const successes = source.match(/NextResponse\.json\(\{ success: true[^}]*\}/g) ?? [];
+    assert.deepEqual(successes, ['NextResponse.json({ success: true }'], 'one success, with nothing in it');
+    for (const leak of ['No account', 'no such', 'not found', 'disabled', 'rate_limited', 'already']) {
+        assert.ok(!new RegExp(leak, 'i').test(source), `recover/send must not mention "${leak}"`);
+    }
 });

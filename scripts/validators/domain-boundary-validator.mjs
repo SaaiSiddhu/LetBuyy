@@ -231,7 +231,12 @@ for (const file of appApiRoutes) {
 // route.ts (T5, commit 68ed4b29): a thin gateway-proxy read route, already correctly classified
 // by the existing `apps/commerce/web/src/app/api/` catch-all above — this bump is the
 // deliberate maintenance action the classification check above expects, not a workaround.
-reporter.assert(appApiRoutes.length === 191, `App-local API route inventory changed without updating P4-4 classification: expected 191, found ${appApiRoutes.length}`);
+// APPID-P4a (2026-09-24) — 197: + apps/platform/identity/src/app/api/buyer/{logout,
+// sign-out-everywhere,verify-email/send,verify-email/confirm,recover/send,recover/confirm}, class
+// app-local-buyer-auth like BUYER-4's two. They hold the one thing the gateway cannot, the
+// identity-platform host-only buyer cookie and the token minted from it; every database decision
+// stays in the gateway. Added to config/eslint/boundary-baseline.json in the same commit.
+reporter.assert(appApiRoutes.length === 197, `App-local API route inventory changed without updating P4-4 classification: expected 197, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {
