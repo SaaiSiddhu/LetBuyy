@@ -1,0 +1,135 @@
+// SUSTAINED-D3 — a marketplace buyer's orders, spanning every store they hold a verified link to.
+//
+// THE AUTHORIZATION CHAIN — the same shape buyer-return-routes.ts already established:
+//
+//   verified buyer session -> buyer_account_id
+//     -> buyer_order_links   (the platform-owned link; migration 255)
+//     -> orders (id, site_id)
+//
+// buyer_order_links is the ONLY source of ownership here — never a customer_email match, which
+// proves nothing until it has been verified and the order explicitly claimed (see
+// buyer-account-routes.ts's claim/link routes, migration 255's link_buyer_store_customer and
+// claim_buyer_orders). Its RLS is `FOR ALL TO service_role USING (true)` with every other role
+// revoked outright, so this route reads it only through the admin client, keyed by the session's
+// own buyer_account_id — never a request parameter.
+
+import type { Hono } from 'hono';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import type { Env } from '../../index';
+import { dbFailureBody, decodeListCursor, encodeListCursor, success } from '../../lib/supabase';
+import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import type { AppContext } from './customer-engagement-routes';
+
+export interface BuyerOrderSummaryRow {
+    /// = buyer_order_links.order_id. Named `id` (not `order_id`) so it satisfies
+    /// encodeListCursor's row shape, the same convention routes/orders.ts's own list endpoint uses.
+    id: string;
+    linked_at: string;
+    site_id: string;
+    store_name: string | null;
+    order_number: string | null;
+    status: string | null;
+    total: number | null;
+    currency: string | null;
+    created_at: string | null;
+}
+
+export interface BuyerOrderRoutesDeps {
+    listBuyerOrders: (
+        c: AppContext,
+        buyerAccountId: string,
+        input: { limit: number; before?: string | number | boolean | null },
+    ) => Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }>;
+}
+
+const DEFAULT_LIMIT = 20;
+const MAX_LIMIT = 50;
+
+/// The actual query, shared by production wiring (buyer-realm-wiring.ts, given the request's real
+/// admin client) and tests (given a client pointed at a fake PostgREST) -- so the tenant-guard
+/// shape and the ownership walk are exercised the same way in both, not re-approximated in a test
+/// double. buyer_order_links is the ONLY ownership source; orders/sites are read only for ids that
+/// link already named, each with its own explicit scope predicate (orders: site_id; sites: id, in
+/// the tenant guard's own allowlist for that table) -- never trusted on `id` alone.
+export async function listBuyerOrdersFromDatabase(
+    db: SupabaseClient,
+    buyerAccountId: string,
+    { limit, before }: { limit: number; before?: string | number | boolean | null },
+): Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }> {
+    let linksQuery = db
+        .from('buyer_order_links')
+        .select('order_id, site_id, linked_at')
+        .eq('buyer_account_id', buyerAccountId)
+        .order('linked_at', { ascending: false })
+        .order('order_id', { ascending: false });
+    if (before !== null && before !== undefined) {
+        linksQuery = linksQuery.lt('linked_at', before as string);
+    }
+
+    const { data: links, error: linksError } = await linksQuery.limit(limit + 1);
+    if (linksError) return { data: null, error: linksError, hasMore: false };
+
+    const hasMore = (links ?? []).length > limit;
+    const pageLinks = (links ?? []).slice(0, limit) as { order_id: string; site_id: string; linked_at: string }[];
+    if (pageLinks.length === 0) return { data: [], error: null, hasMore: false };
+
+    const orderIds = pageLinks.map((link) => link.order_id);
+    const siteIds = Array.from(new Set(pageLinks.map((link) => link.site_id)));
+
+    const [ordersResult, sitesResult] = await Promise.all([
+        db.from('orders').select('id, site_id, order_number, status, total, currency, created_at').in('id', orderIds).in('site_id', siteIds),
+        db.from('sites').select('id, store_name').in('id', siteIds),
+    ]);
+    if (ordersResult.error) return { data: null, error: ordersResult.error, hasMore: false };
+    if (sitesResult.error) return { data: null, error: sitesResult.error, hasMore: false };
+
+    const orderById = new Map((ordersResult.data ?? []).map((row) => [row.id as string, row]));
+    const siteById = new Map((sitesResult.data ?? []).map((row) => [row.id as string, row]));
+
+    const rows: BuyerOrderSummaryRow[] = pageLinks.map((link) => {
+        const order = orderById.get(link.order_id) as Record<string, unknown> | undefined;
+        const site = siteById.get(link.site_id) as Record<string, unknown> | undefined;
+        return {
+            id: link.order_id,
+            linked_at: link.linked_at,
+            site_id: link.site_id,
+            store_name: (site?.store_name as string | undefined) ?? null,
+            order_number: (order?.order_number as string | undefined) ?? null,
+            status: (order?.status as string | undefined) ?? null,
+            total: (order?.total as number | undefined) ?? null,
+            currency: (order?.currency as string | undefined) ?? null,
+            created_at: (order?.created_at as string | undefined) ?? null,
+        };
+    });
+
+    return { data: rows, error: null, hasMore };
+}
+
+export function registerBuyerOrderRoutes(
+    router: Hono<{ Bindings: Env }>,
+    deps: BuyerOrderRoutesDeps,
+): void {
+    const { listBuyerOrders } = deps;
+
+    router.get('/buyer/orders', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+
+        const requested = Number.parseInt(c.req.query('limit') || '', 10);
+        const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, MAX_LIMIT) : DEFAULT_LIMIT;
+        const cursor = decodeListCursor(c.req.query('cursor') || undefined);
+
+        const { data, error, hasMore } = await listBuyerOrders(c, session.buyerAccountId, {
+            limit,
+            before: cursor?.value ?? null,
+        });
+        if (error) return c.json(dbFailureBody(), 500);
+
+        const orders = data ?? [];
+        const nextCursor = hasMore && orders.length > 0
+            ? encodeListCursor(orders[orders.length - 1] as unknown as Record<string, unknown>, 'linked_at')
+            : null;
+
+        return c.json(success({ orders, next_cursor: nextCursor, has_more: hasMore }));
+    });
+}

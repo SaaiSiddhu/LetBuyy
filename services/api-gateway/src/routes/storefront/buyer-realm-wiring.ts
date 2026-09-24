@@ -33,6 +33,7 @@ import {
     type AuthorizationCodeRedemption,
 } from './buyer-authorization-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
+import { registerBuyerOrderRoutes, listBuyerOrdersFromDatabase } from './buyer-order-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
@@ -264,6 +265,14 @@ export function registerBuyerRealmRoutes(
                 .order('created_at', { ascending: false })
                 .limit(limit);
         },
+    });
+
+    // SUSTAINED-D3: the marketplace realm's cross-store order list. The actual query
+    // (listBuyerOrdersFromDatabase, buyer-order-routes.ts) is shared with its own tests, so the
+    // tenant-guard shape and the buyer_order_links-only ownership walk are exercised the same way
+    // in both, never re-approximated by a test double.
+    registerBuyerOrderRoutes(router, {
+        listBuyerOrders: (c, buyerAccountId, input) => listBuyerOrdersFromDatabase(getSupabaseAdmin(c), buyerAccountId, input),
     });
 
     // CAP-FB-APPUPDATE (D-9): the mobile release gate. Public and unauthenticated — it must answer
