@@ -596,6 +596,13 @@ function mapSupabaseToStore(
     // over the theme defaults so the brand color / font / radius set in the Appearance page reach the
     // storefront :root tokens (layout.tsx). Merchant appearance wins over the theme bundle.
     const appearanceSettings = asRecord(data.site_settings);
+    // SUSTAINED-G2 — the merchant's Appearance-page custom CSS, raw/unscoped. Passed through
+    // templateConfig.customCss to LiquidRenderer.render(), which is the single Phase-AA
+    // enforcement point (buildLiquidThemeHeadAssets -> validateAndScopeCustomCss) that
+    // validates, scopes and sanitizes it — never touch or pre-scope it here.
+    const customCss = typeof appearanceSettings.custom_css === 'string' && appearanceSettings.custom_css
+        ? appearanceSettings.custom_css
+        : undefined;
     const appearanceOverrides: Record<string, unknown> = {};
     if (typeof appearanceSettings.primary_color === 'string' && appearanceSettings.primary_color) {
         appearanceOverrides.primaryColor = appearanceSettings.primary_color;
@@ -757,6 +764,7 @@ function mapSupabaseToStore(
             liquidRenderingCanary,
             rendererEngine,
             releaseManifest,
+            customCss,
         },
     };
 }
