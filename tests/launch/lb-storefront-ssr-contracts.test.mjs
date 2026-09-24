@@ -93,11 +93,19 @@ test('E8 Liquid login form carries hidden storeId field (shop.id) for no-JS tena
 test('F5 fallback_reason is conditioned on both liquidHtml===null AND plan.rendererEngine===liquid', () => {
   const src = read('apps/commerce/web/src/lib/theme-engine/composition-engine.tsx');
 
-  // The ternary must gate on BOTH conditions so React plans (which also yield liquidHtml===null)
+  // "liquidHtml" is the Liquid render result: renderLiquidPlan's return value, null when nothing
+  // was rendered. c5a9fe98 (2026-08-25) renamed the variable to liquidResult when the result became
+  // { html, headStyleText }. Take the name from the call, so the condition is checked against the
+  // result the telemetry actually reports (the one that also picks `engine`), whatever it is called.
+  const calls = [...src.matchAll(/const (\w+) = await renderLiquidPlan\(/g)];
+  assert.equal(calls.length, 1, 'StorefrontCompositionEngine must render the plan exactly once');
+  const result = calls[0][1];
+  assert.match(src, new RegExp(`const engine = ${result} \\? 'liquid' : 'react';`));
+  // The ternary must gate on BOTH conditions so React plans (which also yield a null result)
   // do not emit a misleading 'renderer_returned_null' in monitoring.
   assert.match(
     src,
-    /fallback_reason:\s*\(liquidHtml === null && plan\.rendererEngine === 'liquid'\)/,
+    new RegExp(`fallback_reason:\\s*\\(${result} === null && plan\\.rendererEngine === 'liquid'\\)`),
   );
   // When the condition is false, fallback_reason must be explicitly null so the monitoring
   // field is always present (not missing) — which lets consumers filter on field value.
