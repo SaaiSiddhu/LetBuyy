@@ -1,12 +1,12 @@
 # Platform Operations Portal
 
-`apps/platform-operations-portal` is the canonical employee operations runtime for LetBuyy.
+`apps/frozen/operations-portal` is the canonical employee operations runtime for LetBuyy.
 
 ## Ownership
 
 - Owns support, moderation, store operations, user assistance, marketing operations, and invite workflows for platform employees.
 - Must enforce least-privilege RBAC, MFA, audit logging, reason capture, and production access controls before live use.
-- Must not absorb super-admin governance surfaces that belong in `apps/admin_web`.
+- Must not absorb super-admin governance surfaces that belong in `apps/internal/console`.
 
 ## Runtime Boundary
 

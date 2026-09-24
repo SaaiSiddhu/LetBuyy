@@ -1,11 +1,11 @@
 # apps / mobile / shopper app AGENTS.md
 
-Purpose: Local operating rules for `apps/mobile/shopper-app`. This file is hand-authored, subordinate to the root `AGENTS.md`, and exists only to state boundary-specific ownership.
+Purpose: Local operating rules for `apps/reserved/legacy-shopper-mobile`. This file is hand-authored, subordinate to the root `AGENTS.md`, and exists only to state boundary-specific ownership.
 
 ## Ownership Rules
 
 - Follow the root `AGENTS.md`, `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md`, and `GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CANONICAL_SYSTEMS.md` before making architecture, money, identity, tenancy, or governance changes.
-- Keep this runtime inside its declared source boundary: `apps/mobile/shopper-app`.
+- Keep this runtime inside its declared source boundary: `apps/reserved/legacy-shopper-mobile`.
 - Prefer completing the canonical owner over adding a parallel implementation.
 
 ## Forbidden Imports

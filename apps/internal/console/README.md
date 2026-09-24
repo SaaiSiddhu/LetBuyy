@@ -1,12 +1,12 @@
 # Platform Console
 
-`apps/admin_web` is the canonical super-admin control plane for LetBuyy platform governance.
+`apps/internal/console` is the canonical super-admin control plane for LetBuyy platform governance.
 
 ## Ownership
 
 - Owns privileged platform administration, users, stores, subscriptions, employees, audit logs, analytics, MFA, and platform settings.
 - Must enforce operator allowlists, MFA, RBAC, reason capture, and audit logging before production use.
-- Must not absorb employee support workflows that belong in `apps/platform-operations-portal`.
+- Must not absorb employee support workflows that belong in `apps/frozen/operations-portal`.
 
 ## Runtime Boundary
 

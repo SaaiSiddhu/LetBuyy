@@ -1,6 +1,6 @@
-# apps/phase_2/seller_app AGENTS.md
+# reference/apps/marketplace-seller AGENTS.md
 
-Purpose: Local operating rules for `apps/phase_2/seller_app`. Hand-authored, subordinate to the root `AGENTS.md`.
+Purpose: Local operating rules for `reference/apps/marketplace-seller`. Hand-authored, subordinate to the root `AGENTS.md`.
 
 ## Ownership Rules
 
@@ -8,7 +8,7 @@ Purpose: Local operating rules for `apps/phase_2/seller_app`. Hand-authored, sub
 - `apps/phase_2/*` is not ACTIVE, not RESERVED, not FROZEN — a structural tier for product capabilities outside the six-app core (Constitution amendment, 2026-09-02). Not subject to the RESERVED-must-stay-empty rule.
 - **Not production-ready.** Newest source file predates import by ~8 months (last touched 2026-01-14); unassigned owner; no backend target selected. Never represent as shippable.
 - Authorizes no new backend service — any backend work routes through the D-0-selected canonical backend.
-- `apps/merchant_app` (`letbuyy_store`, `com.letbuyy.store`) remains the governed seller-facing app of the six-app core. This root is a separate, not-yet-scoped capability and does not supersede it.
+- `apps/merchant/mobile` (`letbuyy_store`, `com.letbuyy.store`) remains the governed seller-facing app of the six-app core. This root is a separate, not-yet-scoped capability and does not supersede it.
 
 ## Android identity
 
@@ -22,7 +22,7 @@ Purpose: Local operating rules for `apps/phase_2/seller_app`. Hand-authored, sub
 
 ## Migration Notes
 
-- Imported 2026-09-20 from an untracked `apps/seller` tree that had been sitting outside version control. 171 Dart files, 167 of which exist nowhere else in this repository; 0 are byte-identical to `apps/merchant_app`.
+- Imported 2026-09-20 from an untracked `apps/seller` tree that had been sitting outside version control. 171 Dart files, 167 of which exist nowhere else in this repository; 0 are byte-identical to `apps/merchant/mobile`.
 - The pre-import tree carried **three competing app-level build scripts**. Removed on import:
   - `android/app/build.gradle.kts` — declared `com.letbuyy.letbuyy`, **customer_app's shipped Play Store identity**, in Groovy syntax under a `.kts` filename. This is the exact defect class `android-identity-validator` and `config/governance/android-identity-registry.json` exist to prevent.
   - `android/app/build.gradle.kts.backup` — declared `com.agrimate.agrimate` (not an Agrimore identity either; Agrimore uses `com.agrimore.*`).

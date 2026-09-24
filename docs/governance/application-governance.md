@@ -18,7 +18,7 @@ Applications are runtime composition layers. They own routes, rendering, runtime
 
 ## Current Purification
 
-- `apps/customer_web/src/types/store.ts` is a compatibility facade over `@letbuyy/tenant-core`, `@letbuyy/commerce-core`, `@letbuyy/checkout-core`, `@letbuyy/auth-core`, `@letbuyy/cms-core`, and `@letbuyy/theme-engine`.
+- `apps/commerce/web/src/types/store.ts` is a compatibility facade over `@letbuyy/tenant-core`, `@letbuyy/commerce-core`, `@letbuyy/checkout-core`, `@letbuyy/auth-core`, `@letbuyy/cms-core`, and `@letbuyy/theme-engine`.
 - Future app-local contract additions must first check whether the contract belongs in a domain package.
 
 ## Enforcement

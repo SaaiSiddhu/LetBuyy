@@ -1,6 +1,6 @@
-# apps/phase_2/store_ops_app AGENTS.md
+# reference/apps/store-operations AGENTS.md
 
-Purpose: Local operating rules for `apps/phase_2/store_ops_app`. Hand-authored, subordinate to the root `AGENTS.md`.
+Purpose: Local operating rules for `reference/apps/store-operations`. Hand-authored, subordinate to the root `AGENTS.md`.
 
 ## Ownership Rules
 

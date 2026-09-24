@@ -8,21 +8,21 @@ LetBuyy uses one canonical runtime map. Transitional aliases, placeholder app ro
 
 Active app runtimes are:
 
-- `apps/customer_web`
-- `apps/merchant_web`
-- `apps/identity-platform`
-- `apps/app-marketplace`
-- `apps/developer-portal`
-- `apps/theme-marketplace`
-- `apps/marketing-site`
-- `apps/admin_web`
-- `apps/platform-operations-portal`
-- `apps/merchant_app`
+- `apps/commerce/web`
+- `apps/merchant/web`
+- `apps/platform/identity`
+- `apps/frozen/app-store`
+- `apps/frozen/developer-portal`
+- `apps/frozen/theme-store`
+- `apps/marketing/web`
+- `apps/internal/console`
+- `apps/frozen/operations-portal`
+- `apps/merchant/mobile`
 
 Reserved mobile roots are not active app runtimes and must remain manifest-and-AGENTS-only until human-approved activation governance adds real gateway-wired source, tests, and deployment config:
 
-- `apps/mobile/shopper-app`
-- `apps/mobile/operator-app`
+- `apps/reserved/legacy-shopper-mobile`
+- `apps/reserved/legacy-operator-mobile`
 
 Active service runtime authority is documented in `docs/governance/runtime-boundaries.md` and enforced by `scripts/validators/runtime-validator.mjs`.
 
@@ -38,7 +38,7 @@ The following paths are retired and must not be recreated:
 - `apps/storefront`
 - `apps/analytics`
 - `apps/mobile/operator-team-app`
-- `apps/customer_web/consumer-storefront`
+- `apps/commerce/web/consumer-storefront`
 
 References to these paths are valid only inside archived historical documents under `docs/archive/` or in validator forbidden-path lists.
 
@@ -52,13 +52,13 @@ References to these paths are valid only inside archived historical documents un
 
 ## Storefront Runtime Policy
 
-`apps/customer_web` is the sole storefront runtime root. Coming-soon rendering lives under `apps/customer_web/src/components/coming-soon`. Theme previews, tenant pages, checkout, cart, customer accounts, and policy routes live under the canonical storefront app tree.
+`apps/commerce/web` is the sole storefront runtime root. Coming-soon rendering lives under `apps/commerce/web/src/components/coming-soon`. Theme previews, tenant pages, checkout, cart, customer accounts, and policy routes live under the canonical storefront app tree.
 
 Nested `consumer-storefront` trees are forbidden because they create duplicate source authority and confuse import graph ownership.
 
 ## Platform Operations Policy
 
-`apps/admin_web` owns privileged super-admin governance. `apps/platform-operations-portal` owns employee support and operations workflows. `apps/mobile/operator-app` is the only reserved native operator companion root and is not active until activation governance lands.
+`apps/internal/console` owns privileged super-admin governance. `apps/frozen/operations-portal` owns employee support and operations workflows. `apps/reserved/legacy-operator-mobile` is the only reserved native operator companion root and is not active until activation governance lands.
 
 Employee mobile scaffolds must not be added unless a new canonical runtime is approved and validators are updated before source is committed.
 

@@ -1,6 +1,6 @@
 # Developer Platform Map (frozen)
 
-`apps/developer-portal` is **frozen / pending consolidation** — not a production deploy target.
+`apps/frozen/developer-portal` is **frozen / pending consolidation** — not a production deploy target.
 
 ## Status
 - Excluded from the deploy matrix; not an active surface.

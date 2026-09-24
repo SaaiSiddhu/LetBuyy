@@ -18,6 +18,6 @@ This package is Firebase-coupled (`firebase_core`, `firebase_auth`, `cloud_fires
 
 - **Not** the canonical service layer for LetBuyy. The canonical commerce backend question (D-0) was **answered on 2026-09-04: System C** — see `LETBUYY_CONSTITUTION.md` and `docs/migration/repository_consolidation/11_backend_consolidation.md`.
 - **Not** to be extended, imported by any other package/app, or treated as a template for new backend integration.
-- **Disposition: SCHEDULED FOR DELETION.** D-0 selected System C (Supabase/Postgres) on 2026-09-04, and the owner decided on 2026-09-05 to retire Firebase completely. This package's only remaining consumer is `apps/customer_app`; phases FB-2 (data), FB-3 (auth) and FB-4 (storage/core) move that app onto the canonical gateway, after which this package has no consumer and goes. `services/compatibility/firebase_bridge`, which bounded it in Phase M, was already deleted in FB-1.
+- **Disposition: SCHEDULED FOR DELETION.** D-0 selected System C (Supabase/Postgres) on 2026-09-04, and the owner decided on 2026-09-05 to retire Firebase completely. This package's only remaining consumer is `apps/marketplace/mobile`; phases FB-2 (data), FB-3 (auth) and FB-4 (storage/core) move that app onto the canonical gateway, after which this package has no consumer and goes. `services/compatibility/firebase_bridge`, which bounded it in Phase M, was already deleted in FB-1.
 
 See `docs/migration/repository_consolidation/18_dart_package_recovery_journal.md`, Stage 3.7.

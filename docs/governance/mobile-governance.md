@@ -4,9 +4,9 @@ LetBuyy mobile surfaces are Flutter runtimes backed by shared Dart packages. Mob
 
 ## Mobile Runtime Status
 
-- `apps/merchant_app`: active merchant runtime for dashboard, builder, products, themes, preview, and store management.
-- `apps/mobile/shopper-app`: reserved/not-implemented shopper/customer root; manifest-and-AGENTS only.
-- `apps/mobile/operator-app`: reserved/not-implemented platform-operator companion root; manifest-and-AGENTS only.
+- `apps/merchant/mobile`: active merchant runtime for dashboard, builder, products, themes, preview, and store management.
+- `apps/reserved/legacy-shopper-mobile`: reserved/not-implemented shopper/customer root; manifest-and-AGENTS only.
+- `apps/reserved/legacy-operator-mobile`: reserved/not-implemented platform-operator companion root; manifest-and-AGENTS only.
 
 Reserved mobile roots are not deployable runtimes, do not participate in deployment or production topology, and must not contain starter demos, package manifests, platform build folders, tests, or app source until a human-approved mobile build scope adds real gateway-wired source, tests, deployment config, and governance approval.
 
@@ -36,7 +36,7 @@ Reserved mobile roots are not deployable runtimes, do not participate in deploym
 
 ## Merchant App Model Authority
 
-`apps/merchant_app/lib/models/*.dart` is a compatibility layer only. Merchant order, store, auth request, theme catalog, and theme editor models are owned by `packages/dart/models/lib/merchant_contracts.dart` and implementation files under `packages/dart/models/lib/src/merchant_app`.
+`apps/merchant/mobile/lib/models/*.dart` is a compatibility layer only. Merchant order, store, auth request, theme catalog, and theme editor models are owned by `packages/dart/models/lib/merchant_contracts.dart` and implementation files under `packages/dart/models/lib/src/merchant_app`.
 
 New mobile DTOs that cross more than one screen, service, or runtime must be added to a shared Dart package first. Runtime-specific widget state may stay inside the app, but it must not become an API or domain contract.
 

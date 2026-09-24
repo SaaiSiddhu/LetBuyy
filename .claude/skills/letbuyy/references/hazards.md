@@ -178,7 +178,7 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   **Whenever a lane reports `N successful / M total` with `M > N`, the gap is work that never ran —
   read it as coverage lost, never as a summary statistic.**
 - **lint** — `@letbuyy/customer-web#lint`: 921 problems / 38 errors, first in
-  `apps/customer_web/scripts/liquid-parity-harness.mjs` — identical to the Phase M baseline
+  `apps/commerce/web/scripts/liquid-parity-harness.mjs` — identical to the Phase M baseline
   (`12_final_verification.md`). `identity-platform` 26, `admin-web` 114, `marketing-site` 326 warnings,
   0 errors → pass. The **dirty primary** additionally reports errors in `merchant_web`
   (`SettingsPane.tsx`) and `identity-platform` (`resend.ts`) — other sessions' uncommitted files.
@@ -211,7 +211,7 @@ Attribute, never inherit. Re-measure with `gate.sh` on the branch you are on.
   individually; offender list 100% generated dirs) · `platform-domain-literal-validator` — GOV-3's
   own regression (a rule sentence quoting the retired domain literal), fixed in the same phase.
   **Green on the clean tree but red in the dirty primary:** `validate-design-system` (the primary's
-  uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; resolved 2026-09-23, when the deletion
+  uncommitted deletion of `apps/platform/identity/src/lib/useAuthTheme.ts`; resolved 2026-09-23, when the deletion
   landed through F-IDUI-1 under D-AUTH-LIGHT), `raw-error-message-validator`,
   and the "untracked migration" variant of `sequential-migration`. `branch-lag-guard-validator` is
   green after the D-BRANCH retarget.

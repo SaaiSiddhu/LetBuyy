@@ -1,4 +1,4 @@
-# apps/phase_2/store_ops_app
+# reference/apps/store-operations
 
 Quick-commerce dark-store operations mobile app. Donor: System B (Agrimore),
 no equivalent capability anywhere in System A or System C.

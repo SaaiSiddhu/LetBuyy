@@ -4,16 +4,16 @@
 
 | App | Actor(s) | Production status | Owner (human) | Backend dependency |
 |---|---|---|---|---|
-| `apps/customer_app` | customer, buyer | **Shipped Play Store** (`com.letbuyy.letbuyy`) | Unassigned — flagged for the founder to name | `D0_DEPENDENT`; shared Dart packages not yet consolidated |
-| `apps/customer_web` | customer, buyer | Constitution-designated canonical; build/lint/test status in `12_final_verification.md` | Unassigned | `services/api-gateway` (live) |
-| `apps/merchant_app` | merchant, store-staff | Constitution-designated canonical; fully green (172/172 tests) | Unassigned | `services/api-gateway`, `services/mobile-bff` (live) |
-| `apps/merchant_web` | merchant, store-staff | Most recently committed app in the entire pre-Phase-M inventory | Unassigned | `services/api-gateway` (live) |
-| `apps/admin_app` | platform-operator, admin | **RESERVED — no source** (Constitution Amendment 2, phase FB-1, 2026-09-05) | Unassigned | Firestore implementation deleted with Firebase; `apps/admin_web` owns the admin surface (D-4) |
-| `apps/admin_web` | platform-operator, admin | Constitution-designated canonical; fully green | Unassigned | `services/api-gateway` (live) |
-| `apps/phase_2/rider_app` | quick-commerce rider | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
-| `apps/phase_2/store_ops_app` | quick-commerce store ops | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
-| `apps/identity-platform` | all 3 realms (issuer) | ACTIVE, sole token issuer | Unassigned | Self-contained issuer; verify-only elsewhere |
-| `apps/marketing-site` | public | ACTIVE, fully green | Unassigned | `services/api-gateway` (billing/pricing reads) |
+| `apps/marketplace/mobile` | customer, buyer | **Shipped Play Store** (`com.letbuyy.letbuyy`) | Unassigned — flagged for the founder to name | `D0_DEPENDENT`; shared Dart packages not yet consolidated |
+| `apps/commerce/web` | customer, buyer | Constitution-designated canonical; build/lint/test status in `12_final_verification.md` | Unassigned | `services/api-gateway` (live) |
+| `apps/merchant/mobile` | merchant, store-staff | Constitution-designated canonical; fully green (172/172 tests) | Unassigned | `services/api-gateway`, `services/mobile-bff` (live) |
+| `apps/merchant/web` | merchant, store-staff | Most recently committed app in the entire pre-Phase-M inventory | Unassigned | `services/api-gateway` (live) |
+| `apps/reserved/operator-mobile` | platform-operator, admin | **RESERVED — no source** (Constitution Amendment 2, phase FB-1, 2026-09-05) | Unassigned | Firestore implementation deleted with Firebase; `apps/internal/console` owns the admin surface (D-4) |
+| `apps/internal/console` | platform-operator, admin | Constitution-designated canonical; fully green | Unassigned | `services/api-gateway` (live) |
+| `apps/deferred/delivery/mobile` | quick-commerce rider | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
+| `reference/apps/store-operations` | quick-commerce store ops | Not production-ready | Unassigned | `D0_DEPENDENT`; `services/compatibility/agrimore_bridge`, inert |
+| `apps/platform/identity` | all 3 realms (issuer) | ACTIVE, sole token issuer | Unassigned | Self-contained issuer; verify-only elsewhere |
+| `apps/marketing/web` | public | ACTIVE, fully green | Unassigned | `services/api-gateway` (billing/pricing reads) |
 
 **Every "Owner (human): Unassigned" row is a genuine, disclosed gap** — this phase established or renamed these apps but did not assign a human owner to any of them; that is an organizational decision outside this phase's scope.
 
@@ -21,10 +21,10 @@
 
 | Rejected candidate | System | Donor for | Status |
 |---|---|---|---|
-| `apps/customer_app` (Agrimore) | B | `customer_app` | Not integrated; bundled, recoverable |
+| `apps/marketplace/mobile` (Agrimore) | B | `customer_app` | Not integrated; bundled, recoverable |
 | `apps/seller` | A | `merchant_app` | Not integrated; bundled, recoverable |
 | `apps/seller_app` (Agrimore) | B | `merchant_app` | Not integrated; bundled, recoverable |
-| `apps/admin_app` (Agrimore) | B | `admin_app` | Not integrated; bundled, recoverable. Note the destination root is RESERVED since 2026-09-05 — nothing may be integrated into it without ARB reactivation |
+| `apps/reserved/operator-mobile` (Agrimore) | B | `admin_app` | Not integrated; bundled, recoverable. Note the destination root is RESERVED since 2026-09-05 — nothing may be integrated into it without ARB reactivation |
 | `apps/store-builder-web` | A | `merchant_web` (narrow scope) | Not integrated; bundled, recoverable |
 | `apps/admin-web` | A | `admin_web` | Not integrated; bundled, recoverable |
 | `apps/store/storefront`, `Agrimore/apps/marketplace_web` | A, B | `customer_web` | Not integrated; bundled, recoverable |

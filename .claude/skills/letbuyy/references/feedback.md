@@ -25,7 +25,7 @@ WEB      packages/typescript/ui/src/feedback.tsx   Badge · StatusBadge · Statu
          services/api-gateway/src/middleware/security.ts:90  errorResponseSanitizer — nothing else reaches a client
 FLUTTER  packages/dart/ui_kit/lib/src/widgets/     empty_state · error_view · loading_indicator · loading_overlay · shimmer_loading · confirmation_dialog · badge_widget
                                                     (empty_state_widget.dart and error_widget.dart are DUPLICATES — canonicalization debt, UX-4; never add a third)
-         apps/merchant_app                          in scope; customer_app / phase_2 are HOLD (D-UIUX); admin_app is RESERVED (FB-1)
+         apps/merchant/mobile                          in scope; customer_app / phase_2 are HOLD (D-UIUX); admin_app is RESERVED (FB-1)
 ```
 
 Success → `useToast()` (web) / the kit's snackbar pattern (Flutter). Submit failure →
@@ -81,7 +81,7 @@ the ratio; `validateLetbuyyBrandContrast` (`tokens.ts`) validates injected brand
 validators,visual}` + ESLint rule tests + codemod dry-run + public-API / token / alias snapshots) ·
 `node scripts/validators/raw-error-message-validator.mjs` · `provider-mode-badge-validator.mjs` ·
 `inr-currency-format-validator.mjs` · `date-format-validator.mjs` · `validate-design-system.mjs` ·
-`( cd apps/merchant_app && flutter test )` (172 canary) · the gateway `security*.test.ts` for
+`( cd apps/merchant/mobile && flutter test )` (172 canary) · the gateway `security*.test.ts` for
 sanitized errors.
 
 ## 7. Do not let the census restart

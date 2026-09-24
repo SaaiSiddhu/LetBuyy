@@ -1,6 +1,6 @@
-# apps/phase_2/rider_app AGENTS.md
+# apps/deferred/delivery/mobile AGENTS.md
 
-Purpose: Local operating rules for `apps/phase_2/rider_app`. Hand-authored, subordinate to the root `AGENTS.md`.
+Purpose: Local operating rules for `apps/deferred/delivery/mobile`. Hand-authored, subordinate to the root `AGENTS.md`.
 
 ## Ownership Rules
 

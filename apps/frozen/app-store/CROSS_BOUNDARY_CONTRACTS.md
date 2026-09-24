@@ -1,6 +1,6 @@
 # Apps Marketplace Cross-Boundary Contracts
 
-All contracts are proposed by the app-marketplace task and require implementation outside `apps/app-marketplace/**`. Marketplace flags default off.
+All contracts are proposed by the app-marketplace task and require implementation outside `apps/frozen/app-store/**`. Marketplace flags default off.
 
 ### CONTRACT C-005 — Earned Built for LetBuyy Badge Field
 - Needed by issue(s): #5, #49

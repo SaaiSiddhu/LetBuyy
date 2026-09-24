@@ -1,4 +1,4 @@
-# apps/customer_app
+# apps/marketplace/mobile
 
 Buyer-facing mobile app. Play Store production identity: `com.letbuyy.letbuyy`.
 

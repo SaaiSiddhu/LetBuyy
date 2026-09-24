@@ -24,7 +24,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Recommendation.** After the D1 burn-down, promote these to `error` (a one-line change per rule).
 
 ## D4 — Identity auth-page toggles → `useTheme()` ✅ RESOLVED (2026-06-09)
-**Status.** Closed. All 9 identity auth pages (login, signup, check-email, lookup, forgot-password, reset-password, set-password, select, onboarding) now route their theme toggle through the canonical provider via a shared `useAuthTheme()` hook (`apps/identity-platform/src/lib/useAuthTheme.ts`, backed by `@letbuyy/ui` `useTheme()`). The local `isDark` state, mount-effect `.dark` application, and per-page `toggleTheme` functions were removed. The provider's `resolvedTheme` now updates live on toggle, so `@letbuyy/ui` components (e.g. `Banner`) flip with the page.
+**Status.** Closed. All 9 identity auth pages (login, signup, check-email, lookup, forgot-password, reset-password, set-password, select, onboarding) now route their theme toggle through the canonical provider via a shared `useAuthTheme()` hook (`apps/platform/identity/src/lib/useAuthTheme.ts`, backed by `@letbuyy/ui` `useTheme()`). The local `isDark` state, mount-effect `.dark` application, and per-page `toggleTheme` functions were removed. The provider's `resolvedTheme` now updates live on toggle, so `@letbuyy/ui` components (e.g. `Banner`) flip with the page.
 **Why it mattered.** Surfaced live: the onboarding `<Banner variant="info">` rendered light-theme tokens on a dark page (light-on-light washout) because the page toggle flipped `<html>.dark` without updating `LetbuyyThemeProvider`, leaving `DesignSystemRoot` on the stale theme.
 **Also.** `colorScheme` is now set centrally by the provider (`applyDomSignals` + `ThemeScript`), replacing the per-page `document.documentElement.style.colorScheme` writes the pages used to do — native scrollbars/inputs match the theme for every app.
 **Verified.** `@letbuyy/ui` + `identity-platform` `tsc --noEmit` clean; `validate:design-system` passes.
@@ -43,7 +43,7 @@ The recovery's hard constraint throughout: **the monorepo must stay green** (com
 **Recommendation.** Migrate `merchant-web` next onto `AppNavigation`; define a separate shared `MarketingHeader` for marketing/app-marketplace/storefront.
 
 ## D6A — Merchant shell migrated to `AppNavigation` ✅ RESOLVED (2026-06-10)
-**Status.** Closed for merchant. `apps/merchant_web/src/components/AdminShell.tsx` now composes `@letbuyy/ui` `AppNavigation`, the local `Sidebar.tsx` fork is deleted, and the `shell-single` validator fails if the fork returns or the merchant shell drops `AppNavigation`.
+**Status.** Closed for merchant. `apps/merchant/web/src/components/AdminShell.tsx` now composes `@letbuyy/ui` `AppNavigation`, the local `Sidebar.tsx` fork is deleted, and the `shell-single` validator fails if the fork returns or the merchant shell drops `AppNavigation`.
 **Also.** Merchant IA now exposes a first-class Money node routing to `settings/billing`.
 **Verified.** `node scripts/validators/shell-single-validator.mjs` passes.
 

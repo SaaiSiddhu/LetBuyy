@@ -1,4 +1,4 @@
-# apps/phase_2/rider_app
+# apps/deferred/delivery/mobile
 
 Quick-commerce delivery-rider mobile app. Donor: System B (Agrimore), no
 equivalent capability anywhere in System A or System C.
