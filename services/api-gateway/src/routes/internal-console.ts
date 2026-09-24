@@ -352,7 +352,8 @@ router.get('/summary', async (c) => {
         db.from('sites').select('id', { count: 'exact', head: true }).eq('status', 'published'),
         db.from('subscriptions').select('id', { count: 'exact', head: true }),
         db.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active'),
-        db.from('employees').select('id', { count: 'exact', head: true }),
+        // The platform's own staff, not every store's (APPID-P5b).
+        db.from('employees').select('id', { count: 'exact', head: true }).filter('store_id', 'is', null).is('deleted_at', null),
         db.from('audit_logs').select('id', { count: 'exact', head: true }),
         db.from('subscriptions').select('amount_paid').eq('status', 'active'),
     ]);
@@ -1201,9 +1202,13 @@ router.get('/employees', async (c) => {
     const { from, to } = rangeFor(query);
     const db = getSupabaseAdmin(c);
 
+    // Platform employees only: merchant store staff live in the same table and are not the platform's to list or
+    // grant scopes to here (APPID-P5b).
     let request = db
         .from('employees')
         .select('id, user_id, email, full_name, phone, role, role_id, permissions, status, is_active, last_login_at, created_by, created_at, updated_at', { count: 'exact' })
+        .filter('store_id', 'is', null)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -1240,11 +1245,16 @@ router.patch('/employees/:id/permissions', async (c) => {
             permissions: { scopes: parsed.data.scopes },
         })
         .eq('id', employeeId)
+        .filter('store_id', 'is', null)
+        .is('deleted_at', null)
         .select('id, user_id, email, full_name, role, permissions, status, is_active, updated_at')
-        .single();
+        .maybeSingle();
 
-    if (error || !data) {
-        return c.json(dbError(error?.message || 'Employee permission update failed'), 500);
+    if (error) {
+        return c.json(dbError(error.message || 'Employee permission update failed'), 500);
+    }
+    if (!data) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Employee not found' } }, 404);
     }
 
     await db.from('audit_logs').insert({

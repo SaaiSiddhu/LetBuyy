@@ -17,6 +17,7 @@ import {
 import { getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import {
     checkSegregationOfDuty,
+    platformEmployeeRows,
     requirePermission,
     requireRoleCategory,
     requireSuperAdmin,
@@ -84,15 +85,15 @@ function actorEmail(c: AppContext): string | null {
     return c.get('auth').user.email || null;
 }
 
+// Platform employees only: a store's staff row is never the acting employee here (APPID-P5b).
 async function actorEmployeeId(db: Db, userId: string): Promise<string | null> {
-    const { data } = await db
-        .from('employees')
-        .select('id')
+    const { data, error } = await platformEmployeeRows(db, 'id')
         .eq('user_id', userId)
         .eq('status', 'active')
         .maybeSingle();
+    if (error) throw new Error('Platform employee lookup failed');
 
-    return stringValue(data?.id);
+    return stringValue((data as unknown as { id?: unknown } | null)?.id);
 }
 
 async function readJson(c: AppContext): Promise<unknown> {
