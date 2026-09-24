@@ -2,7 +2,8 @@
 
 What APPID-P4d built and proved, on branch `letbuyy/appid-p4d-marketplace-mobile` (`dbdd192b`
 migration 259, `2d6ae00b` identity-platform and gateway, `db25638e` the Dart protocol, `d4bd403c` the
-app, `60df60df` one more protocol test). Gate results are in the phase's `EXECUTION_LEDGER.md` row.
+app, `60df60df` one more protocol test, `2b651a0d` the rollback's DROP and the token route's
+contracts). Gate results are in the phase's `EXECUTION_LEDGER.md` row.
 Deployment is E-18 in `EXTERNAL_ACTIONS.md`. Nothing here is deployed, and no mobile build was
 published. The feature is compiled out of the app unless it is built with
 `--dart-define=LETBUYY_BUYER_SIGN_IN=true`.
@@ -72,7 +73,12 @@ So this phase completes the canonical flow for a native client instead of adding
 3. **Signing out on one device is local.** The session is deleted from the device; there is no
    per-token revocation, so a copied token stays valid until it expires (30 days) or the buyer signs out
    everywhere. Recorded, not changed: it is the same model as identity-platform's own session.
-4. **A debug build initializes the native Firebase SDK by itself** (its init provider), with analytics
+4. **The first gate caught two things of this phase's own (fixed in `2b651a0d`).** 259's rollback
+   restored 258's function with CREATE OR REPLACE and no DROP, which the rollback rule refuses
+   because a live function with another parameter list would survive as an overload; it now drops
+   first. And two source contracts from APPID-P4a/P4b pinned the token route's old variable names;
+   they now pin the same guarantees against `grantForRedemption`, and three plants fail them.
+5. **A debug build initializes the native Firebase SDK by itself** (its init provider), with analytics
    collection on in the manifest. The emulator runs below may therefore have sent debug heartbeat or
    analytics events to `letbuy-y`, as every debug run of this app does.
 
@@ -81,6 +87,8 @@ So this phase completes the canonical flow for a native client instead of adding
 | Claim | Check | Result |
 |---|---|---|
 | 259 on real Postgres: app codes, 258's rules kept, the site constraint, link outcomes, conflict and disabled buyer, grants, rollback restores 258's function byte for byte | `tests/executable/marketplace-app-client-postgres.test.mjs`; plants: app callback unchecked, unverified buyer linked, uid re-pointed | 7 of 7; each plant fails it |
+| The rollback cannot leave an overload behind | `tests/governance/rollback-signature-precondition.test.mjs`; plant: remove the DROP | 5 of 5; the plant fails it |
+| The token route mints only from the redemption | `tests/contracts/buyer-session-realm-separation.test.ts`; plants: platform session for any non-storefront grant, a fixed epoch, the site from the request | 13 of 13; each plant fails it |
 | The gateway serves the app client, the account read and the link as designed | `buyer-authorization-routes`, `buyer-app-routes`, `firebase-id-token` tests; plants: any app callback, no client/site check on redeem, unverified address, any provider, buyer from the body | 24 of 24; each plant fails them |
 | identity-platform accepts the app only with its callback and mints by the recorded client | `apps/platform/identity/src/__tests__/buyer-authorization.test.ts`; plants: any callback, app session for any site | 8 of 8; each plant fails it |
 | The protocol | `packages/dart/api_client/test/buyer_sign_in_test.dart`; plants: state ignored, host accepted, expiry ignored, redirects followed, http anywhere | 16 of 16; each plant fails it |
