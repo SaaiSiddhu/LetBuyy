@@ -5,7 +5,7 @@ Purpose: Local operating rules for `reference/apps/marketplace-seller`. Hand-aut
 ## Ownership Rules
 
 - Follow the root `AGENTS.md` and the Constitution before making architecture, money, identity, tenancy, or governance changes.
-- `apps/phase_2/*` is not ACTIVE, not RESERVED, not FROZEN — a structural tier for product capabilities outside the six-app core (Constitution amendment, 2026-09-02). Not subject to the RESERVED-must-stay-empty rule.
+- **REFERENCE class** (Constitution §16, Amendment 3, 2026-09-24): preserved donor source, not an application. Never built, deployed, installed as a pnpm or pub workspace member, or imported by anything outside `reference/` (`reference-isolation-validator`); still secret-scanned with no path exemption. Until 2026-09-24 this tree sat at `apps/phase_2/*`, the Amendment 1 tier, which no longer exists. Capabilities leave only by re-implementation in the recipient named in `README.md`, under its Transfer gates.
 - **Not production-ready.** Newest source file predates import by ~8 months (last touched 2026-01-14); unassigned owner; no backend target selected. Never represent as shippable.
 - Authorizes no new backend service — any backend work routes through the D-0-selected canonical backend.
 - `apps/merchant/mobile` (`letbuyy_store`, `com.letbuyy.store`) remains the governed seller-facing app of the six-app core. This root is a separate, not-yet-scoped capability and does not supersede it.
@@ -13,7 +13,7 @@ Purpose: Local operating rules for `reference/apps/marketplace-seller`. Hand-aut
 ## Android identity
 
 - Declared identity is **`com.letbuyy.seller`** (namespace and applicationId), in `android/app/build.gradle` (Groovy).
-- This app is **not** in `config/governance/android-identity-registry.json`, matching the other `apps/phase_2/*` roots. It has never shipped. If it is ever prepared for release it must be registered there first.
+- This app is **not** in `config/governance/android-identity-registry.json`, like the other donor and deferred roots. It has never shipped. If it is ever prepared for release it must be registered there first.
 - Never reintroduce `com.letbuyy.letbuyy` (customer_app's shipped Play Store identity) or `com.letbuyy.admin` (retired). Both were present in the pre-import tree and were removed — see Migration Notes.
 
 ## Forbidden Imports

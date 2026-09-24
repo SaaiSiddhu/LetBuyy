@@ -7,7 +7,7 @@
     "lcis:api": "tsx services/lcis-api/src/server.ts",
     "lcis:pr-check": "tsx packages/lcis-pr-check/src/cli.ts",
     "dev": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25 --filter=@letbuyy/customer-web --filter=@letbuyy/merchant-web --filter=@letbuyy/identity-platform --filter=@letbuyy/admin-web --filter=@letbuyy/marketing-site --filter=@letbuyy/ui --filter=@letbuyy/api-gateway",
-    "dev:all": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25",
+    "dev:all": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25 --filter=@letbuyy/customer-web --filter=@letbuyy/merchant-web --filter=@letbuyy/identity-platform --filter=@letbuyy/admin-web --filter=@letbuyy/marketing-site --filter=@letbuyy/ui --filter=@letbuyy/api-gateway --filter=@letbuyy/mobile-bff --filter=@letbuyy/webhook-service --filter=@letbuyy/queue-workers",
     "dev:apps": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25 --filter=@letbuyy/customer-web --filter=@letbuyy/merchant-web --filter=@letbuyy/identity-platform --filter=@letbuyy/admin-web --filter=@letbuyy/marketing-site",
     "dev:frozen": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25 --filter=@letbuyy/app-marketplace --filter=@letbuyy/theme-marketplace --filter=@letbuyy/developer-portal --filter=@letbuyy/platform-operations-portal",
     "dev:services": "node scripts/dev/setup-local-env.mjs && turbo run dev --concurrency=25 --filter=./services/*",

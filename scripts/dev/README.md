@@ -18,15 +18,15 @@ staging and production remain the only supported runtime targets
 
 | Runtime                         | URL                     |
 | ------------------------------- | ----------------------- |
-| storefront-runtime              | http://localhost:9000   |
-| merchant-control-plane (admin)  | http://localhost:9001   |
-| identity-platform (accounts)    | http://localhost:9002   |
-| app-marketplace                 | http://localhost:9003   |
-| developer-portal                | http://localhost:9004   |
-| theme-marketplace               | http://localhost:9005   |
-| marketing-site                  | http://localhost:9006   |
-| platform-console                | http://localhost:9007   |
-| platform-operations-portal      | http://localhost:9008   |
+| apps/commerce/web (storefront)  | http://localhost:9000   |
+| apps/merchant/web (admin)       | http://localhost:9001   |
+| apps/platform/identity          | http://localhost:9002   |
+| apps/frozen/app-store           | http://localhost:9003   |
+| apps/frozen/developer-portal    | http://localhost:9004   |
+| apps/frozen/theme-store         | http://localhost:9005   |
+| apps/marketing/web              | http://localhost:9006   |
+| apps/internal/console           | http://localhost:9007   |
+| apps/frozen/operations-portal   | http://localhost:9008   |
 | @letbuyy/ui (Storybook)         | http://localhost:9009   |
 | api-gateway (worker)            | http://localhost:9010   |
 | mobile-bff (worker)             | http://localhost:9011   |
@@ -40,10 +40,11 @@ Workers also bind distinct inspector ports (9110–9113) to avoid the wrangler
 
 ```bash
 pnpm install      # once (or after dependency changes)
-pnpm dev          # 9 Next apps + Storybook (fast, low-CPU default)
-pnpm dev:all      # everything, including the 4 Cloudflare Workers
-pnpm dev:apps     # just the 9 Next apps
-pnpm dev:services # just the Cloudflare Workers
+pnpm dev          # the 5 maintained Next apps + Storybook + the API gateway (the default)
+pnpm dev:all      # the same plus all 4 Cloudflare Workers; never a frozen app
+pnpm dev:apps     # just the 5 maintained Next apps
+pnpm dev:frozen   # the 4 frozen Next apps, only when you need one
+pnpm dev:services # the Workers under services/ (also the LCIS tooling API)
 pnpm dev:setup    # regenerate local env files (--force)
 ```
 

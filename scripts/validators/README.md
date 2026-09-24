@@ -2,7 +2,7 @@
 
 `scripts/validators/` is the canonical home for executable governance checks. Validators must be deterministic, non-interactive, CI-safe, and must not read generated artifact directories as source authority.
 
-Shared helpers belong in `governance-common.mjs`. New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
+Shared helpers belong in `governance-common.mjs`. The one exception is `secret-scan-core.mjs`, the secret-scan library shared by `environment-validator.mjs` and `tests/governance/secret-scan-exceptions.test.mjs`, kept separate so that test can run the real validator in a throwaway repository with only three modules. It has no path exemptions: a reviewed exception binds one value in one file through `config/governance/secret-scan-exceptions.json` (APPID-P2). New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
 
 `operational-lifecycle-validator.mjs` hard-fails enterprise SDLC drift: staging lifecycle contracts, staging/production isolation, rollout controls, feature flag evaluation, sandbox providers, shadow traffic contracts, provider-failure drills, and stale live certification evidence.
 
@@ -20,5 +20,6 @@ Enterprise dependency and execution hardening is enforced by:
 - `queue-lifecycle-validator.mjs` for queue retry, dead-letter, poison-message, and recovery time governance.
 - `rollback-integrity-validator.mjs`, `deployment-lineage-validator.mjs`, and `topology-drift-validator.mjs` for rollback-safe deployment lineage.
 - `cloudflare-binding-validator.mjs` for explicit Wrangler environment binding ownership.
+- `reference-isolation-validator.mjs` for the REFERENCE class (Amendment 3): nothing outside `reference/` imports, installs, builds or deploys a donor, no executable file depends on a donor system's machine path, and each donor keeps its provenance and transfer-gate record (`reference/README.md`).
 
 `web-v1-scope-perimeter-validator.mjs` enforces `config/governance/web-v1-scope-registry.json` as a ratchet: an excluded, forbidden or unratified capability may not gain a NEW activation signal. Its `knownActivationsBaseline` is an explicit list of activations that already existed at the recorded baseline SHA — it is not a clean-state assertion. Behaviour and limitations are documented in `docs/governance/web-v1-scope-perimeter-governance.md`.

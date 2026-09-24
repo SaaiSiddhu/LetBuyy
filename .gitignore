@@ -50,6 +50,12 @@ app.*.map.json
 **/ios/.symlinks/
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/App.framework
+# Written per machine by `flutter pub get` (absolute FLUTTER_ROOT and FLUTTER_APPLICATION_PATH). The
+# Marketplace and merchant apps ignore them in their own ios/.gitignore; the deferred delivery app and
+# the store-operations donor arrived without one, so four copies were tracked carrying the donor
+# machine's paths (APPID-P2, 2026-09-24).
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
 
 # Firebase
 .firebase/

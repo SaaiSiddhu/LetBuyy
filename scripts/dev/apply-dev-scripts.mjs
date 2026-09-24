@@ -71,13 +71,14 @@ for (const [svc, { http, inspector }] of Object.entries(SERVICE_PORTS)) {
 }
 
 // Root orchestrator
-const CONCURRENCY = 25; // >= total persistent dev tasks (9 apps + storybook + 4 workers)
+const CONCURRENCY = 25; // >= the largest persistent set: dev:all (5 maintained apps + storybook + 4 workers)
 patch(`package.json`, (pkg) => {
   const setup = "node scripts/dev/setup-local-env.mjs";
   const run = `turbo run dev --concurrency=${CONCURRENCY}`;
   // `dev` = apps + Storybook only (fast, low-CPU): no Cloudflare Workers, so the
   // 4 `tsc --noEmit` custom builds don't fight the Next cold-compiles for CPU.
-  // `dev:all` boots everything including the workers.
+  // `dev:all` adds all four workers. It never boots a frozen app: an unfiltered `turbo run dev` did, which
+  // is why frozen apps have their own `dev:frozen` (APPID-P2, 2026-09-24).
   // D-APP-LAYOUT: the default boots the MAINTAINED apps by package name, never a path glob -- apps/ now
   // nests containers, and a glob would start the frozen applications (and anything added later) by accident.
   const maintained = DEFAULT_DEV_APPS
@@ -89,9 +90,14 @@ patch(`package.json`, (pkg) => {
     .map((app) => JSON.parse(readFileSync(path.join(repoRoot, "apps", app, "package.json"), "utf8")).name)
     .map((name) => `--filter=${name}`)
     .join(" ");
+  // The four canonical Workers by package name: ./services/* would also start services/lcis-api (TOOLING).
+  const workers = Object.keys(SERVICE_PORTS)
+    .map((svc) => JSON.parse(readFileSync(path.join(repoRoot, "services", svc, "package.json"), "utf8")).name)
+    .map((name) => `--filter=${name}`)
+    .join(" ");
   const devScripts = {
     dev: `${setup} && ${run} ${maintained} --filter=@letbuyy/ui`,
-    "dev:all": `${setup} && ${run}`,
+    "dev:all": `${setup} && ${run} ${maintained} --filter=@letbuyy/ui ${workers}`,
     "dev:apps": `${setup} && ${run} ${maintained}`,
     "dev:frozen": `${setup} && ${run} ${frozen}`,
     "dev:services": `${setup} && ${run} --filter=./services/*`,
@@ -106,4 +112,4 @@ patch(`package.json`, (pkg) => {
   }
 });
 
-console.log("\nDone. Run `pnpm dev` to boot everything, or `pnpm dev:apps` for just the UIs.");
+console.log("\nDone. Run `pnpm dev` for the maintained apps, `pnpm dev:all` to add every worker, or `pnpm dev:frozen` for the frozen apps.");

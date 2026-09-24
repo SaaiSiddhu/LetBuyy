@@ -79,6 +79,7 @@ const validators = [
   "beta-readiness-validator.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
+  "reference-isolation-validator.mjs",
   "runtime-manifest-validator.mjs",
   "runtime-topology-validator.mjs",
   "topology-drift-validator.mjs",
@@ -192,6 +193,7 @@ const reportValidators = [
 const libraryModules = [
   "governance-common.mjs",
   "phase-b-common.mjs",
+  "secret-scan-core.mjs",
 ];
 
 // Invoked by git hooks (scripts/git-hooks/*), not by a governance lane.

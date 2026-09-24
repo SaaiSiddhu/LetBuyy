@@ -99,7 +99,8 @@ export const deferredAppRoots = [
 
 // reference/apps/* (Amendment 3, new REFERENCE class): preserved donor source. Never deployed,
 // never a runtime, workspace, build or deploy member, never imported by an active application --
-// yet still inside secret scanning (environment-validator scans every tracked file outside docs/).
+// yet still inside secret scanning (environment-validator scans every tracked file; since APPID-P2 no
+// path prefix is exempt, and reference-isolation-validator.mjs enforces the rest of this sentence).
 export const referenceRoot = "reference";
 export const referenceAppRoots = [
   "reference/apps/marketplace-seller",
