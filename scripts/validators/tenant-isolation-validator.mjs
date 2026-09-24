@@ -86,6 +86,11 @@ const platformOwnedRevokedFromTenants = new Set([
   // Verified by execution against a real database: as app_tenant with the tenant GUC set, and as
   // anon, both SELECT and write return 'permission denied for table seller_follows'.
   'seller_follows',
+  // 255 REVOKEs buyer_order_links from app_tenant, authenticated and anon, and grants only
+  // service_role: order ownership is a stable cross-store buyer id, the same privacy class as the store
+  // link. Verified by execution (tests/executable/buyer-verified-ownership-postgres.test.mjs): as
+  // app_tenant with the tenant GUC set, as authenticated and as anon, SELECT is permission denied.
+  'buyer_order_links',
 ]);
 
 // The list above is a claim about the schema, so it is CHECKED rather than trusted: an entry whose

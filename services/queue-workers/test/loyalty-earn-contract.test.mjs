@@ -34,9 +34,12 @@ test('the ledger entry is the marker — the sweeper keeps no cursor', () => {
     assert.doesNotMatch(sweeper, /cursor|checkpoint|last_processed/i, 'no cursor state');
 });
 
-test('the buyer is resolved from the ESTABLISHED link, never from request input', () => {
-    assert.match(sweeper, /buyer_store_customers!inner\(buyer_account_id\)/);
-    assert.match(sweeper, /\.eq\('store_id', order\.site_id\)/, 'the link must be scoped to the order\'s own site');
+test('the buyer is the order\'s EXPLICIT owner, never an email match (APPID-P3, migration 255)', () => {
+    // buyer_order_links is written only by the buyer\'s own authenticated checkout, a verified claim or
+    // an operator resolution. The email chain this replaced credited whoever registered an address.
+    assert.match(sweeper, /\.from\('buyer_order_links'\)/);
+    assert.match(sweeper, /\.eq\('order_id', order\.id\)/, 'ownership is looked up by the order itself');
+    assert.doesNotMatch(sweeper, /buyer_store_customers|store_customers|customer_email|ilike/, 'no email or store-customer matching may decide who is credited');
 });
 
 test('only PAID orders on ACTIVE programmes are scanned', () => {

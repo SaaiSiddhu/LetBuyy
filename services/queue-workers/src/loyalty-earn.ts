@@ -14,10 +14,12 @@
 // keyed on 'loyalty.earn:<order id>' and the ledger's UNIQUE (site_id, idempotency_key) is the
 // backstop behind that.
 //
-// The buyer is resolved from the ESTABLISHED link, never from request input: the order's customer
-// email identifies a store_customers row, and buyer_store_customers links it to the platform buyer
-// account a verified buyer session created earlier. An order with no linked buyer earns nothing,
-// which is correct — there is no account to credit.
+// The buyer is the order's EXPLICIT owner (buyer_order_links, migration 255): the buyer whose own
+// authenticated checkout placed it, or a buyer who verified the order's contact address and claimed
+// it. Never an email match. Until 255 this read store_customers.email -> buyer_store_customers, and
+// that link was created without anyone proving the address, so registering someone else's email was
+// enough to collect their points. An order nobody owns earns nothing, which is correct: there is no
+// account to credit, and the sweep will award it on the run after its owner claims it.
 
 import {
     createSupabaseServiceClient,
@@ -74,7 +76,7 @@ export async function runLoyaltyEarnSweeper(
 
     const { data: orders, error: orderError } = await db
         .from('orders')
-        .select('id, site_id, customer_email')
+        .select('id, site_id')
         .in('site_id', siteIds)
         .eq('payment_status', 'paid')
         .is('deleted_at', null)
@@ -83,7 +85,7 @@ export async function runLoyaltyEarnSweeper(
     if (orderError) throw orderError;
 
     for (const row of orders || []) {
-        const order = row as { id: string; site_id: string; customer_email: string | null };
+        const order = row as { id: string; site_id: string };
 
         // The marker: an order that already has an 'earned' entry is done. Checked per order rather
         // than filtered in the query above because PostgREST cannot express "no matching row in
@@ -105,26 +107,17 @@ export async function runLoyaltyEarnSweeper(
             continue;
         }
 
-        if (!order.customer_email) {
-            skipped += 1;
-            results.push({ order_id: order.id, site_id: order.site_id, status: 'skipped', points: 0, reason: 'no_customer_email' });
-            continue;
-        }
-
         const { data: link, error: linkError } = await db
-            .from('store_customers')
-            .select('id, buyer_store_customers!inner(buyer_account_id)')
-            .eq('store_id', order.site_id)
-            .ilike('email', order.customer_email)
+            .from('buyer_order_links')
+            .select('buyer_account_id')
+            .eq('order_id', order.id)
             .maybeSingle();
         if (linkError) {
             failed += 1;
             results.push({ order_id: order.id, site_id: order.site_id, status: 'failed', points: 0, reason: 'link_lookup_failed' });
             continue;
         }
-        const embedded = (link as { buyer_store_customers?: unknown } | null)?.buyer_store_customers;
-        const linkRow = (Array.isArray(embedded) ? embedded[0] : embedded) as { buyer_account_id?: string } | undefined;
-        const buyerAccountId = linkRow?.buyer_account_id;
+        const buyerAccountId = (link as { buyer_account_id?: string } | null)?.buyer_account_id;
         if (!buyerAccountId) {
             // No platform buyer behind this order. Correct to skip: there is no account to credit.
             skipped += 1;
