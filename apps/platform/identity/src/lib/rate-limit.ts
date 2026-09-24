@@ -34,6 +34,9 @@ export const AUTH_RATE_LIMITS = {
     'buyer-verify-confirm': { limit: 10, window: '15 m', prefix: 'rl:buyer-verify-confirm' },
     'buyer-recover-send': { limit: 3, window: '15 m', prefix: 'rl:buyer-recover-send' },
     'buyer-recover-confirm': { limit: 5, window: '15 m', prefix: 'rl:buyer-recover-confirm' },
+    // APPID-P4b: continuing to a store. The token exchange that follows is server to server and is
+    // deliberately not limited by address (every storefront shares a few).
+    'buyer-oauth-authorize': { limit: 10, window: '15 m', prefix: 'rl:buyer-oauth-authorize' },
 
     // Send magic link: 3 per 15 minutes
     'send-magic': { limit: 3, window: '15 m', prefix: 'rl:magic' },

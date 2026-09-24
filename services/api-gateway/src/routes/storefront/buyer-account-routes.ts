@@ -111,7 +111,7 @@ export interface BuyerAccountRow {
 export const BUYER_ACCOUNT_COLUMNS = 'id, email, password_hash, email_verified, status, session_epoch';
 
 /// What a caller is allowed to see. password_hash is deliberately absent: it never leaves this file.
-function publicBuyerAccount(row: BuyerAccountRow): Record<string, unknown> {
+export function publicBuyerAccount(row: BuyerAccountRow): Record<string, unknown> {
     return {
         id: row.id,
         email: row.email,
@@ -430,6 +430,14 @@ export function registerBuyerAccountRoutes(
         return c.json(success({
             buyer: publicBuyerAccount({ ...account, email_verified: true, session_epoch: result.session_epoch }),
         }));
+    });
+
+    // Who the session is, for identity-platform's own pages: the authorize page names the account it
+    // will continue as. The public view only.
+    router.get('/buyer/me', identityInternal, requireBuyerSession, async (c) => {
+        const resolved = await sessionBuyer(c);
+        if ('response' in resolved) return resolved.response;
+        return c.json(success({ buyer: publicBuyerAccount(resolved.buyer) }));
     });
 
     // "Sign out everywhere". Application logout is identity-platform clearing one cookie and never

@@ -35,6 +35,13 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'host -> site bootstrap: the tenant is not known until the host resolves, so no scope predicate can exist yet',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
     },
+    // APPID-P4b: the same bootstrap for a buyer sign-in callback's host. Its answer only decides
+    // whether a code may be sent there; the code stays bound to the buyer's session and click, the
+    // exact callback and a PKCE verifier. Kept in a one-function file so this entry admits nothing else.
+    'lib/storefront-callback-site.ts': {
+        why: 'callback host -> site bootstrap for buyer sign-in: the store is not known until the callback host resolves',
+        boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
+    },
 };
 
 // Where it is DEFINED, and the test that guards it. Neither is a caller.

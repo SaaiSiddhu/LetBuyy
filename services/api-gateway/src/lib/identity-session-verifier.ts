@@ -1,5 +1,5 @@
 import { createLocalJWKSet, jwtVerify, type JSONWebKeySet } from 'jose';
-import { LETBUYY_BUYER_SESSION_EPOCH_CLAIM } from '@letbuyy/auth-core';
+import { LETBUYY_BUYER_SESSION_EPOCH_CLAIM, LETBUYY_STOREFRONT_SESSION_AUDIENCE } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 
 const MERCHANT_SESSION_AUDIENCE = 'letbuyy:merchant-session';
@@ -33,6 +33,17 @@ const BUYER_REALM: SessionRealmContract = {
     audience: BUYER_SESSION_AUDIENCE,
     label: 'buyer session',
 };
+
+// APPID-P4b: the same buyer, signed in at ONE storefront. Its own audience and token use, so a
+// storefront session is never accepted where a platform buyer session is required, nor the reverse.
+const STOREFRONT_REALM: SessionRealmContract = {
+    realm: 'buyer',
+    tokenUse: 'storefront_session',
+    audience: LETBUYY_STOREFRONT_SESSION_AUDIENCE,
+    label: 'storefront session',
+};
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function decodeBase64UrlJson(value: string): Record<string, unknown> | null {
     try {
@@ -222,4 +233,33 @@ export async function resolveIdentityIssuedBuyerSession(
         return { ok: false, reason: 'buyer session epoch is invalid' };
     }
     return { ok: true, buyerAccountId: subject, sessionEpoch: epoch };
+}
+
+/// Verifies a buyer's storefront session (APPID-P4b) and returns who it authenticates, at which site,
+/// in which session epoch. The site is a signed claim; the caller must still check it is the site the
+/// request is for, which requireStorefrontBuyerSession does. Epoch rules are the buyer session's.
+export async function resolveIdentityIssuedStorefrontSession(
+    env: Env,
+    token: string,
+): Promise<{ ok: true; buyerAccountId: string; siteId: string; sessionEpoch: number } | { ok: false; reason: string }> {
+    if (token.length > 4096 || token.split('.').length !== 3) {
+        return { ok: false, reason: 'storefront session token is malformed' };
+    }
+
+    const claimed = decodeBase64UrlJson(token.split('.')[1]);
+    const subject = typeof claimed?.sub === 'string' ? claimed.sub : null;
+    if (!subject) return { ok: false, reason: 'storefront session subject is missing' };
+
+    const verified = await validateIdentityIssuedSessionToken(env, token, subject, STOREFRONT_REALM);
+    if (!verified.ok) return { ok: false, reason: verified.reason || 'storefront session verification failed' };
+
+    const siteId = verified.claims?.site_id;
+    if (typeof siteId !== 'string' || !UUID_PATTERN.test(siteId)) {
+        return { ok: false, reason: 'storefront session site is missing' };
+    }
+    const epoch = verified.claims?.[LETBUYY_BUYER_SESSION_EPOCH_CLAIM];
+    if (typeof epoch !== 'number' || !Number.isInteger(epoch) || epoch < 1) {
+        return { ok: false, reason: 'storefront session epoch is invalid' };
+    }
+    return { ok: true, buyerAccountId: subject, siteId: siteId.toLowerCase(), sessionEpoch: epoch };
 }

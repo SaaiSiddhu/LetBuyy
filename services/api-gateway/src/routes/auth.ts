@@ -51,6 +51,7 @@ const AUTH_RATE_LIMITS = {
     'buyer-verify-confirm': { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:buyer-verify-confirm' },
     'buyer-recover-send': { limit: 3, windowMs: 15 * 60_000, prefix: 'rl:buyer-recover-send' },
     'buyer-recover-confirm': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:buyer-recover-confirm' },
+    'buyer-oauth-authorize': { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:buyer-oauth-authorize' },
 } as const;
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60;
 

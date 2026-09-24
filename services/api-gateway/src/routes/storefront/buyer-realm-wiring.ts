@@ -15,6 +15,7 @@ import type { Env } from '../../index';
 import { sendBuyerEmailCode } from '../../lib/buyer-email-code';
 import { verifyInternalAppRequest } from '../../lib/internal-auth';
 import { getSupabaseAdmin } from '../../lib/supabase';
+import { resolveStorefrontCallbackSite } from '../../lib/storefront-callback-site';
 import {
     registerBuyerAccountRoutes,
     BUYER_ACCOUNT_COLUMNS,
@@ -24,6 +25,11 @@ import {
     type SessionRevocation,
     type StoreLinkOutcome,
 } from './buyer-account-routes';
+import {
+    registerBuyerAuthorizationRoutes,
+    type AuthorizationCodeIssue,
+    type AuthorizationCodeRedemption,
+} from './buyer-authorization-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
@@ -47,6 +53,12 @@ export interface BuyerRealmRoutesDeps {
 async function requireIdentityInternal(c: AppContext): Promise<Response | null> {
     if (await verifyInternalAppRequest(c, 'accounts')) return null;
     return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid internal identity signature' } }, 401);
+}
+
+/// commerce/web's server signs its internal calls as the 'storefront' app.
+async function requireStorefrontInternal(c: AppContext): Promise<Response | null> {
+    if (await verifyInternalAppRequest(c, 'storefront')) return null;
+    return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid internal storefront signature' } }, 401);
 }
 
 export function registerBuyerRealmRoutes(
@@ -113,6 +125,38 @@ export function registerBuyerRealmRoutes(
             return { data: (data ?? null) as SessionRevocation | null, error };
         },
         sendEmailCode: sendBuyerEmailCode,
+    });
+
+    // APPID-P4b (migration 258): storefront sign-in through identity-platform with a first-party code.
+    registerBuyerAuthorizationRoutes(router, {
+        requireIdentityInternal,
+        requireStorefrontInternal,
+        // The storefront's own host resolver: a published site, at its primary host.
+        resolveRedirectSite: resolveStorefrontCallbackSite,
+        issueCode: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('issue_buyer_authorization_code', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_client_id: input.clientId,
+                p_redirect_uri: input.redirectUri,
+                p_site_id: input.siteId,
+                p_code_challenge: input.codeChallenge,
+            });
+            return { data: (data ?? null) as AuthorizationCodeIssue | null, error };
+        },
+        redeemCode: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('redeem_buyer_authorization_code', {
+                p_code: input.code,
+                p_code_verifier: input.codeVerifier,
+                p_client_id: input.clientId,
+                p_redirect_uri: input.redirectUri,
+            });
+            return { data: (data ?? null) as AuthorizationCodeRedemption | null, error };
+        },
+        loadBuyerById: async (c, id) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .eq('id', id)
+            .maybeSingle(),
     });
 
     // CAP-FB-NOTIF (D-9): the buyer's own inbox. Every read and write is scoped by the buyer id the
