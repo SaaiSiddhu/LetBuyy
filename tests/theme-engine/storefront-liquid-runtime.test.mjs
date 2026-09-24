@@ -9,9 +9,42 @@ const STOREFRONT_TYPES_SOURCE = 'apps/commerce/web/src/lib/theme-engine/types.ts
 const STOREFRONT_GLOBALS_SOURCE = 'apps/commerce/web/src/app/globals.css';
 const CUSTOMER_DROP_SOURCE = 'apps/commerce/web/src/lib/customer-drop.ts';
 const LAYOUT_SOURCE = 'apps/commerce/web/src/app/store/[subdomain]/layout.tsx';
+const LIQUID_PAGE_ASSEMBLY_SOURCE = 'apps/commerce/web/src/lib/theme-engine/liquid-page-assembly.ts';
+const STOREFRONT_LIQUID_THEME_CSS_SOURCE = 'apps/commerce/web/src/app/store/[subdomain]/liquid-theme.css';
+const THEME_RENDERER_SOURCE = 'packages/theme-engine/src/theme-renderer.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');
+}
+
+// The selectors of every style rule in a stylesheet, with comments removed and at-rule preludes
+// (@media, @layer, ...) skipped, so a comment that mentions a class is not a rule for it.
+function cssRuleSelectors(css) {
+  const selectors = [];
+  for (const [, prelude] of css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{};]+)\{/g)) {
+    const trimmed = prelude.trim();
+    if (!trimmed || trimmed.startsWith('@')) continue;
+    selectors.push(...trimmed.split(',').map((selector) => selector.trim()));
+  }
+  return selectors;
+}
+
+// True when some rule names the class as a whole token: `.lb-header` is not satisfied by
+// `.lb-header__brand`, nor `.lb-theme` by `.lb-theme--urban-kicks`.
+function hasRuleForClass(selectors, className) {
+  const pattern = new RegExp(`\\.${className.replace(/^\./, '')}(?![\\w-])`);
+  return selectors.some((selector) => pattern.test(selector));
+}
+
+// LIQUID_THEME_BASE_CSS, the portable stylesheet theme-renderer.ts ships with every Liquid theme
+// (buildLiquidThemeHeadAssets → headStyleText), is an array of single-quoted CSS strings joined with ''.
+function liquidThemeBaseCss() {
+  const source = read(THEME_RENDERER_SOURCE);
+  const start = source.indexOf('export const LIQUID_THEME_BASE_CSS = [');
+  const end = source.indexOf("].join('');", start);
+  assert.ok(start > -1 && end > start, 'theme-renderer.ts must export LIQUID_THEME_BASE_CSS as a joined array of strings');
+  const body = source.slice(start, end).replace(/^\s*\/\/.*$/gm, '');
+  return [...body.matchAll(/'([^'\\]*(?:\\.[^'\\]*)*)'/g)].map(([, text]) => text).join('');
 }
 
 test('storefront render plans can carry validated portable Liquid bundles', () => {
@@ -44,11 +77,22 @@ test('storefront resolver and composition engine render full Liquid documents wi
   assert.match(resolverSource, /footer: coerceLiquidTemplateSections\(bundle, 'footer'\)/);
   assert.match(source, /createThemeRenderer\('liquid'\)/);
   assert.match(source, /plan\.rendererEngine !== 'liquid'/);
-  // After the render-result refactor, composition-engine destructures header/contentForLayout/footer
-  // from result.liquid (not layoutHtml directly). Verify the destructuring + concatenation contract.
-  assert.match(source, /const \{ header, contentForLayout, footer \} = result\.liquid/);
-  assert.match(source, /`\$\{header \|\| ''\}\$\{contentForLayout\}\$\{footer \|\| ''\}`/);
+  // After the render-result refactor, the page is header + contentForLayout + footer from result.liquid
+  // (not layoutHtml directly). c5a9fe98 (2026-08-25) moved that destructuring + concatenation out of
+  // composition-engine.tsx into liquid-page-assembly.ts, a module free of 'server-only' imports so it
+  // can be unit-tested, and made it carry the theme's headStyleText too. composition-engine hands every
+  // rendered result to it; verify the delegation and the destructuring + concatenation contract there.
+  const assemblySource = read(LIQUID_PAGE_ASSEMBLY_SOURCE);
+  assert.match(source, /import \{ assembleLiquidPageFromRenderResult \} from '\.\/liquid-page-assembly';/);
+  assert.match(
+    source,
+    /if \(result\.status !== 'rendered' \|\| !result\.liquid\) return null;\s*return assembleLiquidPageFromRenderResult\(result\.liquid\);/,
+  );
+  assert.match(assemblySource, /export function assembleLiquidPageFromRenderResult\(\s*liquid: LiquidRenderedTheme,?\s*\)/);
+  assert.match(assemblySource, /const \{ header, contentForLayout, footer(?:, \w+)* \} = liquid;/);
+  assert.match(assemblySource, /html: `\$\{header \|\| ''\}\$\{contentForLayout\}\$\{footer \|\| ''\}`/);
   assert.doesNotMatch(source, /return result\.liquid\.contentForLayout/);
+  assert.doesNotMatch(assemblySource, /html: (?:liquid\.)?contentForLayout\b/);
   assert.match(source, /data-theme-renderer="liquid"/);
   assert.match(source, /dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
 });
@@ -57,7 +101,6 @@ test('Liquid storefront plans bind catalog data and cart drops without fabricati
   const dataBindingSource = read(DATA_BINDING_SOURCE);
   const compositionSource = read(COMPOSITION_ENGINE_SOURCE);
   const typesSource = read(STOREFRONT_TYPES_SOURCE);
-  const cssSource = read(STOREFRONT_GLOBALS_SOURCE);
 
   assert.match(dataBindingSource, /'liquid\.section\.product-grid'/);
   assert.match(dataBindingSource, /'liquid\.section\.featured-products'/);
@@ -67,9 +110,27 @@ test('Liquid storefront plans bind catalog data and cart drops without fabricati
   assert.match(compositionSource, /function collectLiquidCart/);
   assert.match(compositionSource, /source: 'browser_hydrated'/);
   assert.match(compositionSource, /sync_url: `\/api\/storefront\/\$\{plan\.route\.subdomain\}\/cart`/);
-  assert.match(cssSource, /\.lb-theme/);
-  assert.match(cssSource, /\.lb-header/);
-  assert.match(cssSource, /\.lb-product-grid__items/);
+
+  // The storefront styles what it renders. These assertions used to read globals.css, whose
+  // `@layer components { .lb-theme, .lb-header, ... }` block 89b62ea2 (2026-08-25) deleted as a stale
+  // duplicate that overrode the real layout ("liquid-theme.css is the sole owner of Liquid layout").
+  // They now read the owner, which the store layout imports, and count only real rules.
+  assert.match(read(LAYOUT_SOURCE), /^import '\.\/liquid-theme\.css';$/m);
+  const storefrontSelectors = cssRuleSelectors(read(STOREFRONT_LIQUID_THEME_CSS_SOURCE));
+  // The theme root. composition-engine renders the Liquid page into an element carrying
+  // data-theme-renderer="liquid", and liquid-theme.css styles that element itself.
+  assert.match(compositionSource, /<div\s+data-theme-renderer="liquid"[^>]*dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
+  assert.ok(
+    storefrontSelectors.includes('[data-theme-renderer="liquid"]'),
+    'liquid-theme.css must style the Liquid render root itself',
+  );
+  assert.ok(hasRuleForClass(storefrontSelectors, 'lb-header'), 'liquid-theme.css must style .lb-header');
+  assert.ok(hasRuleForClass(storefrontSelectors, 'lb-product-grid__items'), 'liquid-theme.css must style .lb-product-grid__items');
+  // The portable stylesheet every Liquid theme carries still styles .lb-theme, the class the theme
+  // layouts put on <body>. On this runtime that rule matches nothing: composition-engine renders the
+  // header, template and footer sections, never the layout's <body>, which is why the root rule
+  // above exists (evidence: docs/evidence/liquid-contracts/F_LIQCONTRACT_1.md, finding 1).
+  assert.ok(hasRuleForClass(cssRuleSelectors(liquidThemeBaseCss()), 'lb-theme'), 'LIQUID_THEME_BASE_CSS must style .lb-theme');
 });
 
 test('storefront composition engine maps installed app blocks into Liquid app slots', () => {
