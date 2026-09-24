@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# Narrow docker(1) shim for the ephemeral-Postgres test harness, used ONLY when explicitly
+# prepended to PATH (never installed globally). Translates the small, fixed subset of `docker`
+# invocations this repo's test harness makes (inspect/run/start/stop/exec of a Postgres
+# container) onto the natively-installed PostgreSQL 16 cluster already running in this container,
+# when no Docker daemon is reachable. See docs/evidence/appid-2026-09-24/SUSTAINED_PROGRAMME_RECORD.md
+# (SUSTAINED-B) for why this exists: Docker's daemon is not running in this cloud sandbox, but a
+# real `postgresql-16` package and cluster are already installed, so real SQL/RLS/role behavior is
+# reachable without inventing a fake database.
+#
+# If a real Docker daemon IS reachable, this shim gets out of the way: it re-execs the real
+# docker(1) found later on PATH instead.
+set -euo pipefail
+
+REAL_DOCKER=""
+for candidate in /usr/bin/docker /usr/local/bin/docker /bin/docker; do
+  if [ -x "$candidate" ]; then REAL_DOCKER="$candidate"; break; fi
+done
+if [ -n "$REAL_DOCKER" ] && "$REAL_DOCKER" info >/dev/null 2>&1; then
+  exec "$REAL_DOCKER" "$@"
+fi
+
+MARKER_DIR="${LETBUYY_DOCKER_SHIM_STATE:-/tmp/letbuyy-docker-shim}"
+mkdir -p "$MARKER_DIR"
+
+ensure_cluster_running() {
+  if ! pg_isready -q 2>/dev/null; then
+    service postgresql start >/dev/null 2>&1 || true
+  fi
+}
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  inspect)
+    if [ "${1:-}" = "-f" ]; then
+      container="$3"
+      if [ -f "$MARKER_DIR/$container.running" ]; then echo true; else echo false; fi
+      exit 0
+    else
+      container="${1:-}"
+      [ -f "$MARKER_DIR/$container.exists" ] && exit 0 || exit 1
+    fi
+    ;;
+  run)
+    container=""
+    database="letbuyy_executable"
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --name) container="$2"; shift 2 ;;
+        -e)
+          case "$2" in POSTGRES_DB=*) database="${2#POSTGRES_DB=}" ;; esac
+          shift 2 ;;
+        -d) shift ;;
+        *) shift ;;
+      esac
+    done
+    ensure_cluster_running
+    su postgres -c "createdb '$database'" >/dev/null 2>&1 || true
+    touch "$MARKER_DIR/$container.exists" "$MARKER_DIR/$container.running"
+    echo "$container"
+    ;;
+  start)
+    container="${1:-}"
+    ensure_cluster_running
+    touch "$MARKER_DIR/$container.exists" "$MARKER_DIR/$container.running"
+    ;;
+  stop)
+    container="${1:-}"
+    rm -f "$MARKER_DIR/$container.running"
+    ;;
+  exec)
+    interactive=0
+    if [ "${1:-}" = "-i" ]; then interactive=1; shift; fi
+    container="${1:-}"; shift
+    realcmd="${1:-}"; shift
+    ensure_cluster_running
+    case "$realcmd" in
+      pg_isready)
+        exec su postgres -c "pg_isready $(printf '%q ' "$@")"
+        ;;
+      psql)
+        # createdb-on-demand: many suites reuse the CONTAINER but name their own DATABASE via
+        # -d <name>; ensure it exists before connecting (idempotent, cheap).
+        db=""
+        args=("$@")
+        for ((i=0; i<${#args[@]}; i++)); do
+          if [ "${args[$i]}" = "-d" ]; then db="${args[$((i+1))]}"; break; fi
+        done
+        [ -n "$db" ] && su postgres -c "createdb '$db'" >/dev/null 2>&1 || true
+        exec su postgres -c "psql $(printf '%q ' "$@")"
+        ;;
+      *)
+        echo "docker-shim: unsupported exec command '$realcmd' (only psql/pg_isready are modeled)" >&2
+        exit 1
+        ;;
+    esac
+    ;;
+  *)
+    echo "docker-shim: unsupported command '$cmd' (only inspect/run/start/stop/exec are modeled)" >&2
+    exit 1
+    ;;
+esac
