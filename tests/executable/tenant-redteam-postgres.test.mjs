@@ -42,6 +42,60 @@ function psql(sql, options = {}) {
   ).trim();
 }
 
+function psqlInDatabase(database, sql, options = {}) {
+  return execFileSync(
+    'docker',
+    ['exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', database, '-v', 'ON_ERROR_STOP=1', '-qAt'],
+    { input: `SET client_min_messages TO warning;\n${sql}`, encoding: 'utf8', ...options },
+  ).trim();
+}
+
+// Cross-suite role/database contamination (letbuyy-executable-suites-contaminate-each-other,
+// EXECUTION_LEDGER.md's F-HANDOFF-1 row): app_tenant/service_role/authenticated/anon are CLUSTER-
+// WIDE roles, but every *-postgres.test.mjs suite gets its own DATABASE (this file's
+// LETBUYY_EXECUTABLE_PG_DATABASE default, or one of ~10 others), each left standing (only its
+// public/auth SCHEMA is reset, never the database itself). Postgres's DROP ROLE refuses if the
+// role still has a grant or owns an object in ANY database on the cluster (tracked via
+// pg_shdepend, which is genuinely cluster-wide for this) -- so once a sibling suite's database
+// has granted anything to app_tenant, this file's own DROP ROLE fails with "cannot be dropped
+// because some objects depend on it", even though nothing in the database THIS file is connected
+// to still depends on it. Reproduced directly: creating a throwaway `letbuyy_*` database, granting
+// one SELECT to app_tenant in it, and running only this file's DROP ROLE against a different,
+// already-clean database reproduces the exact error; REASSIGN OWNED BY/DROP OWNED BY in the
+// contaminating database (Postgres's own prescribed pre-DROP-ROLE cleanup) resolves it.
+//
+// Fix: before dropping the shared roles, clear their ownership/grants in every OTHER `letbuyy_*`
+// database on this cluster (the repo's own throwaway test databases; the `letbuyy_` prefix is
+// never applied to an externally-supplied database, so this never touches one). This is strictly
+// narrower than a schema/table CASCADE: REASSIGN OWNED BY/DROP OWNED BY touch only what the named
+// roles themselves own or were granted, in databases this repository's own harness created.
+function clearRoleDependenciesInSiblingDatabases(roles) {
+  const others = psqlInDatabase('postgres', "SELECT datname FROM pg_database WHERE datname LIKE 'letbuyy\\_%' ESCAPE '\\';")
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((name) => name && name !== databaseName);
+  const roleList = roles.join(', ');
+  for (const database of others) {
+    try {
+      psqlInDatabase(database, `
+        DO $$
+        BEGIN
+          IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname IN (${roles.map(sqlString).join(', ')})) THEN
+            EXECUTE 'REASSIGN OWNED BY ${roleList} TO postgres';
+            EXECUTE 'DROP OWNED BY ${roleList}';
+          END IF;
+        END
+        $$;
+      `);
+    } catch (err) {
+      // A sibling database mid-teardown by a concurrent invocation, or one whose roles never
+      // received anything from these four, is not this file's problem to fix -- but say so rather
+      // than silently swallowing a real failure the next step will surface anyway.
+      console.warn(`tenant-redteam-postgres: could not pre-clean role dependencies in ${database}: ${(err instanceof Error ? err.message : String(err)).split('\n')[0]}`);
+    }
+  }
+}
+
 function sqlString(value) {
   return `'${String(value).replaceAll("'", "''")}'`;
 }
@@ -70,6 +124,8 @@ function assertRawRestParity(table, ownerWhere) {
 }
 
 function resetDatabase() {
+  clearRoleDependenciesInSiblingDatabases(['app_tenant', 'service_role', 'authenticated', 'anon']);
+
   psql(`
     DROP SCHEMA IF EXISTS public CASCADE;
     DROP SCHEMA IF EXISTS auth CASCADE;
