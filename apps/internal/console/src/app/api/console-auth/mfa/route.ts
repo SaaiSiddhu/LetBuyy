@@ -27,8 +27,13 @@ export async function POST(request: NextRequest) {
         code: formData.get('code'),
     });
 
-    if (!parsed.success || !verifyConsoleTotp(parsed.data.code, session.email)) {
+    if (!parsed.success) {
         return redirectWithError(request, 'invalid_code');
+    }
+
+    const verification = verifyConsoleTotp(parsed.data.code, session.email);
+    if (!verification.ok) {
+        return redirectWithError(request, verification.reason === 'locked' ? 'too_many_attempts' : 'invalid_code');
     }
 
     const sessionSet = await setConsoleSessionCookie({
