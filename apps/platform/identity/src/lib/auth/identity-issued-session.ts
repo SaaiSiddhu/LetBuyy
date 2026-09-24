@@ -1,4 +1,5 @@
 import { SignJWT, importJWK, type JWK } from 'jose'
+import { LETBUYY_BUYER_SESSION_EPOCH_CLAIM } from '@letbuyy/auth-core'
 import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
 
 const MERCHANT_SESSION_AUDIENCE = 'letbuyy:merchant-session'
@@ -87,10 +88,18 @@ export async function createIdentityIssuedMerchantSessionToken(input: {
 /// property to preserve rather than an omission: a buyer identity is platform-level and spans
 /// sellers. Putting a site in it would quietly turn it into a tenant credential, and site_id is the
 /// tenant boundary — a buyer is not a tenant.
+///
+/// `sep` is the account's session epoch when the token is issued (APPID-P4a, migration 257). The
+/// gateway refuses a token once the account has moved to a later epoch, which is how a password
+/// reset and "sign out everywhere" end sessions that are still signed and unexpired.
 export async function createIdentityIssuedBuyerSessionToken(input: {
     buyerAccountId: string
+    sessionEpoch: number
     deviceId?: string | null
 }): Promise<string | null> {
+    if (!Number.isInteger(input.sessionEpoch) || input.sessionEpoch < 1) {
+        throw new Error('A buyer session token needs the account session epoch')
+    }
     const privateJwk = parsePrivateJwk()
     if (!privateJwk) {
         if (isProductionIdentityRuntime(process.env)) {
@@ -107,6 +116,7 @@ export async function createIdentityIssuedBuyerSessionToken(input: {
         realm: 'buyer',
         token_use: 'buyer_session',
         device_id: input.deviceId || null,
+        [LETBUYY_BUYER_SESSION_EPOCH_CLAIM]: input.sessionEpoch,
     })
         .setProtectedHeader({
             alg,

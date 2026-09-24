@@ -13,6 +13,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import { registerPersonalizationRoutes, isUnknownProductError } from '../routes/storefront/personalization-routes';
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -47,6 +48,7 @@ function harness(o: { recordError?: unknown; trendingError?: unknown } = {}) {
         listTrendingSearches: async () => ({ data: [{ id: 't1', term: 'shoes', position: 0 }], error: o.trendingError ? null : null, ...(o.trendingError ? { error: o.trendingError } : {}) } as any),
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, calls };
 }

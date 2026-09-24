@@ -32,6 +32,14 @@ them are byte-identical across the move), Firebase project settings, Supabase.
 |---|---|---|---|
 | E-11 | In the live Supabase project, run this read-only query in the SQL editor: `select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef and (has_function_privilege('anon', p.oid, 'EXECUTE') or has_function_privilege('authenticated', p.oid, 'EXECUTE'));` If it returns rows, the public API can call those functions with the anon key until migration 256 is applied. Then check whether the Data API exposes `public` (Project Settings, API), and review `gift_card_accounts`, the ledger tables and `audit_logs` for rows no merchant or backend action explains, plus the API logs for `/rest/v1/rpc/` calls. | On a database built from the migrations under Supabase's older default privileges, 158 of 163 SECURITY DEFINER functions were executable by `anon` and `authenticated`, and as `anon` the database accepted `issue_gift_card` and created a live gift card (APPID-SEC1). Newer Supabase images use different defaults, so the live state is UNKNOWN from the repository. No secret is involved, so nothing needs rotating; the question is exposure and whether it was used. | PENDING (urgent) |
 
+## Buyer identity (APPID-P4a)
+
+| # | Action | Why | Status |
+|---|---|---|---|
+| E-12 | Deploy in this order: apply migration 257, then the gateway, then identity-platform. To roll back, reverse it: identity-platform and the gateway first, then 257's rollback. | The gateway now reads `buyer_accounts.session_epoch` on every buyer request and refuses the request with a 503 when it cannot, so a gateway deployed before 257 locks every buyer out (it fails closed, by design). identity-platform's tokens are safe in either order. | PENDING |
+| E-13 | Confirm the gateway Worker has `RESEND_API_KEY` and `RESEND_FROM_EMAIL` set in each environment. | The gateway, not identity-platform, now emails buyer verification and password reset codes, so that no code ever crosses the internal API. Without the key, starting verification answers 503, and recovery sends nothing while still answering every address the same way. | PENDING |
+| E-14 | Know what the gateway deploy turns on, and watch the auth and rate-limit logs after it: buyer registration and sign-in through identity-platform, and merchant account switching (`/api/auth/switch`). | In production all three have answered 429, because the gateway's rate limiter did not know their bucket names, and buyer calls would then have met a 401, because the buyer routes accepted the storefront's internal signature and not identity-platform's. Development skips the remote rate limit, which is why neither showed. APPID-P4a fixed both. | PENDING |
+
 ## Other checkouts and machines
 
 | # | Action | Why | Status |

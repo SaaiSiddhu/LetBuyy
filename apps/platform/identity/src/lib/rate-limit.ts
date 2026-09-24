@@ -28,6 +28,12 @@ export const AUTH_RATE_LIMITS = {
     // registrations could lock merchants out of their own dashboard.
     'buyer-register': { limit: 3, window: '1 h', prefix: 'rl:buyer-register' },
     'buyer-login': { limit: 5, window: '15 m', prefix: 'rl:buyer-login' },
+    // APPID-P4a buyer email verification and password recovery, separate for the same reason. The
+    // database also caps each code at 5 wrong attempts and each buyer at 5 codes per hour per purpose.
+    'buyer-verify-send': { limit: 3, window: '15 m', prefix: 'rl:buyer-verify-send' },
+    'buyer-verify-confirm': { limit: 10, window: '15 m', prefix: 'rl:buyer-verify-confirm' },
+    'buyer-recover-send': { limit: 3, window: '15 m', prefix: 'rl:buyer-recover-send' },
+    'buyer-recover-confirm': { limit: 5, window: '15 m', prefix: 'rl:buyer-recover-confirm' },
 
     // Send magic link: 3 per 15 minutes
     'send-magic': { limit: 3, window: '15 m', prefix: 'rl:magic' },

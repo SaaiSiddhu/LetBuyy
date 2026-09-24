@@ -13,6 +13,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import { registerSellerFollowRoutes, isNotFollowableError } from '../routes/storefront/seller-follow-routes';
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -70,6 +71,7 @@ function harness(o: Overrides = {}) {
         },
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, calls };
 }

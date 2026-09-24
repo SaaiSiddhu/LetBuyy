@@ -14,6 +14,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import {
     registerBuyerAccountRoutes,
     type BuyerAccountRow,
@@ -57,7 +58,7 @@ function harness(
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerAccountRoutes(router, {
         normalizeEmail: (e) => e.trim().toLowerCase(),
-        requireStorefrontInternal: async () => null,
+        requireIdentityInternal: async () => null,
         loadBuyerByEmail: async () => ({ data: existing, error: null }),
         insertBuyer: async () => ({ data: existing, error: null }),
         loadBuyerById: async (_c, id) => ({ data: id === existing.id ? existing : null, error: null }),
@@ -69,14 +70,19 @@ function harness(
             claimed.push(input);
             return { data: outcomes.claim ?? { outcome: 'claimed', linked: 2, already_linked: 1, conflicts: 0 }, error: null };
         },
+        startEmailChallenge: async () => ({ data: { outcome: 'rate_limited' }, error: null }),
+        consumeEmailChallenge: async () => ({ data: { outcome: 'invalid' }, error: null }),
+        revokeSessions: async () => ({ data: { outcome: 'buyer_unavailable' }, error: null }),
+        sendEmailCode: async () => ({ sent: false }),
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, linked, claimed };
 }
 
 const account = (over: Partial<BuyerAccountRow> = {}): BuyerAccountRow => ({
-    id: BUYER_ID, email: 'shopper@example.com', password_hash: null, email_verified: true, status: 'active', ...over,
+    id: BUYER_ID, email: 'shopper@example.com', password_hash: null, email_verified: true, status: 'active', session_epoch: 1, ...over,
 });
 
 async function link(h: ReturnType<typeof harness>, jwks: string, token: string | null, body: unknown, path = '/storefront/buyer/link-store-customer') {

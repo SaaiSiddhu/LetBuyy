@@ -12,6 +12,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary } from '../routes/storefront/buyer-loyalty-routes';
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -41,6 +42,7 @@ function harness(o: { summary?: LoyaltySummary | null; error?: unknown } = {}) {
         listEntries: async (_c, buyer, site, limit) => { calls.entries.push({ buyer, site, limit }); return { data: [], error: o.error ?? null }; },
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, calls };
 }
