@@ -1138,10 +1138,12 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
+    const service = createProductExecutionAdapter(db, c.env);
+    // The staff check needs the product's own store; a session usually carries none (APPID-P5b).
+    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
+    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.updated',
@@ -1195,10 +1197,11 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const staffBlock = await assertStaffPermission(c, auth.user.storeId, customUser.id, 'products:write');
+    const service = createProductExecutionAdapter(db, c.env);
+    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
+    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const service = createProductExecutionAdapter(db, c.env);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.deleted',

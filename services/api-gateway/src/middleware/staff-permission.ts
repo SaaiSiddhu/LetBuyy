@@ -7,22 +7,23 @@
 // never enforced at runtime — a viewer-role staff member could call any write
 // route. This guard closes that gap.
 //
-// SAFE ROLLOUT (this cannot be flow-verified without a live auth stack):
-//   - Mode is env-gated (`MERCHANT_STAFF_RBAC_MODE`): off | dryrun | enforce.
-//   - DEFAULT = 'dryrun' — it evaluates and LOGS the decision but NEVER blocks,
-//     so it changes zero behavior until the logs confirm correctness, then an
-//     operator flips it to 'enforce'.
-//   - Owner bypass is AUTHORITATIVE (verifySiteOwnership against `sites`), so
-//     store owners — the overwhelming majority of callers — are never blocked.
-//   - FAIL-OPEN on any missing context or lookup error: this is a
-//     defense-in-depth layer ON TOP of the existing ownership/membership
-//     checks, so a transient RBAC lookup failure must never break merchant ops.
+// FAIL CLOSED (APPID-P5b, 2026-09-24). Until then this guard was a dry run everywhere (the
+// mode was set nowhere, so every environment took the 'dryrun' default), allowed on any lookup
+// error or missing context, and read grants from `employees.site_id`, a column that does not
+// exist (the store is `employees.store_id`), so it had never evaluated a real grant. Now:
+//   - Production always enforces. A dry run (evaluate and log, never block) can be asked for with
+//     MERCHANT_STAFF_RBAC_MODE=dryrun outside production only; there is no 'off'.
+//   - The store owner (sites.custom_user_id / sites.user_id) passes; anyone else needs an ACTIVE
+//     `employees` row for THIS store whose `permissions.granted` holds the key.
+//   - A request with no store or no user, a session bound to another store, or a lookup that
+//     fails, is refused: 403 when the answer is no, 503 when there is no answer.
+//   - Every route that calls this has already checked ownership of the store it names, so an
+//     owner is never blocked by it; it is the gate that holds when a non-owner path is added.
 // ============================================================
 
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
 
 type AppContext = Context<{ Bindings: Env }>;
@@ -40,15 +41,14 @@ export type StaffPermissionKey =
     | 'settings:write'
     | 'content:write';
 
-export type StaffRbacMode = 'off' | 'dryrun' | 'enforce';
+export type StaffRbacMode = 'dryrun' | 'enforce';
 
 export function staffRbacMode(env: Env): StaffRbacMode {
     const raw = String((env as unknown as { MERCHANT_STAFF_RBAC_MODE?: string }).MERCHANT_STAFF_RBAC_MODE || '')
         .toLowerCase()
         .trim();
-    if (raw === 'enforce' || raw === 'dryrun' || raw === 'off') return raw;
-    // Safe default: evaluate + log, never block, until live-verified.
-    return 'dryrun';
+    const production = String(env.ENVIRONMENT || '').toLowerCase().trim() === 'production';
+    return raw === 'dryrun' && !production ? 'dryrun' : 'enforce';
 }
 
 /**
@@ -81,18 +81,35 @@ interface StaffEmployeeRow {
     role: string | null;
 }
 
+/// The store owner, by the store's own owner columns. Unlike verifySiteOwnership, a failed read
+/// is an error here, not a "no": this answer decides whether a grant is needed at all.
+async function ownsStore(db: ReturnType<typeof getSupabaseAdmin>, siteId: string, userId: string): Promise<boolean> {
+    const { data, error } = await db
+        .from('sites')
+        .select('id')
+        .eq('id', siteId)
+        .or(`custom_user_id.eq.${userId},user_id.eq.${userId}`)
+        .is('deleted_at', null)
+        .maybeSingle();
+    if (error) throw new Error('Store ownership lookup failed');
+    return Boolean(data);
+}
+
+/// The caller's staff record AT THIS STORE: `employees.store_id` is the store (sites.id).
 async function resolveGrants(
     db: ReturnType<typeof getSupabaseAdmin>,
     siteId: string,
     userId: string,
 ): Promise<{ found: boolean; granted: string[] }> {
-    const { data } = await db
+    const { data, error } = await db
         .from('employees')
         .select('permissions, status, role')
-        .eq('site_id', siteId)
+        .eq('store_id', siteId)
         .eq('user_id', userId)
         .eq('status', 'active')
+        .is('deleted_at', null)
         .maybeSingle();
+    if (error) throw new Error('Staff grant lookup failed');
 
     const row = (data as StaffEmployeeRow | null) || null;
     if (!row) return { found: false, granted: [] };
@@ -121,24 +138,34 @@ function logDecision(
     }));
 }
 
+export type StaffDecision = { block: false } | { block: true; status: 403 | 503 };
+
 /**
- * Shared evaluation for both the middleware and the in-handler assertion.
- * FAIL-SAFE: returns `{ block: false }` whenever it cannot confidently deny
- * (mode off, missing context, lookup error, or any non-enforce mode).
+ * Shared evaluation for both the middleware and the in-handler assertion. Fails closed: in
+ * 'enforce' a request is allowed only when the caller owns the store, or holds the key at it.
  */
 export async function evaluateStaffRequest(
     c: AppContext,
     siteId: string | null | undefined,
     userId: string | null | undefined,
     key: StaffPermissionKey,
-): Promise<{ block: boolean }> {
+): Promise<StaffDecision> {
     const mode = staffRbacMode(c.env);
-    if (mode === 'off') return { block: false };
-    if (!siteId || !userId) return { block: false };
+    const refuse = (status: 403 | 503): StaffDecision => (mode === 'enforce' ? { block: true, status } : { block: false });
+
+    const sessionStoreId = (() => { try { return c.get('auth')?.user?.storeId; } catch { return undefined; } })();
+    if (!siteId || !userId) {
+        logDecision(mode, key, { allowed: false, reason: 'missing-context' }, siteId, userId, false);
+        return refuse(403);
+    }
+    if (sessionStoreId && sessionStoreId !== siteId) {
+        logDecision(mode, key, { allowed: false, reason: 'session-bound-to-another-store' }, siteId, userId, false);
+        return refuse(403);
+    }
 
     try {
         const db = getSupabaseAdmin(c);
-        const isOwner = await verifySiteOwnership(db, siteId, userId);
+        const isOwner = await ownsStore(db, siteId, userId);
 
         let granted: string[] = [];
         let found = false;
@@ -150,20 +177,31 @@ export async function evaluateStaffRequest(
 
         const decision = evaluateStaffPermission({ isOwner, granted, requiredKey: key });
         logDecision(mode, key, decision, siteId, userId, found);
-        return { block: !decision.allowed && mode === 'enforce' };
+        return decision.allowed ? { block: false } : refuse(403);
     } catch (err) {
-        // Defense-in-depth layer — never break merchant ops on a lookup error.
         console.error(JSON.stringify({
             level: 'error',
             event: 'staff_rbac_error',
+            mode,
             required: key,
             message: err instanceof Error ? err.message : String(err),
         }));
-        return { block: false };
+        // A permission that could not be checked is not granted.
+        return refuse(503);
     }
 }
 
-function forbidden(c: AppContext, key: string): Response {
+function forbidden(c: AppContext, key: string, status: 403 | 503): Response {
+    if (status === 503) {
+        return c.json({
+            success: false,
+            error: {
+                code: 'STAFF_PERMISSION_UNAVAILABLE',
+                message: 'Your permissions could not be checked. Try again shortly.',
+                status: 503,
+            },
+        }, 503);
+    }
     return c.json({
         success: false,
         error: {
@@ -189,7 +227,7 @@ export async function assertStaffPermission(
     key: StaffPermissionKey,
 ): Promise<Response | null> {
     const r = await evaluateStaffRequest(c, siteId, userId, key);
-    return r.block ? forbidden(c, key) : null;
+    return r.block ? forbidden(c, key, r.status) : null;
 }
 
 /**
@@ -204,6 +242,6 @@ export const requireStaffPermission = (key: StaffPermissionKey) =>
         const siteId = tenant?.siteId ?? auth?.user?.storeId;
         const userId = tenant?.userId ?? auth?.user?.id;
         const r = await evaluateStaffRequest(c, siteId, userId, key);
-        if (r.block) return forbidden(c, key);
+        if (r.block) return forbidden(c, key, r.status);
         await next();
     });

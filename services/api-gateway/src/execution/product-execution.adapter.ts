@@ -326,6 +326,15 @@ export class ProductExecutionAdapter {
         if (!ownsStore) throw new ForbiddenError(message);
     }
 
+    /**
+     * The store a product belongs to, once the caller is confirmed to own it (NotFound or Forbidden
+     * otherwise). Routes that know only the product use it to give the staff permission check the
+     * real store (APPID-P5b): a session usually carries no store of its own.
+     */
+    async ownedProductStoreId(productId: string, userId: string, sessionStoreId?: string): Promise<string> {
+        return (await this.getOwnedProduct(productId, userId, sessionStoreId)).store_id;
+    }
+
     private async getOwnedProduct(productId: string, userId: string, sessionStoreId?: string): Promise<OwnedProductRow> {
         const { data: product, error } = await this.db
             .from('products')
