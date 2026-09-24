@@ -327,12 +327,33 @@ export class ProductExecutionAdapter {
     }
 
     /**
-     * The store a product belongs to, once the caller is confirmed to own it (NotFound or Forbidden
-     * otherwise). Routes that know only the product use it to give the staff permission check the
-     * real store (APPID-P5b): a session usually carries no store of its own.
+     * The store a product belongs to, found among the caller's OWN stores (NotFound or Forbidden
+     * otherwise). Routes that know only the product use it to give the staff permission check the real
+     * store (APPID-P5b): a session usually carries none. It asks the ownership question in the query
+     * itself, with the store predicates the tenant query guard requires; a product id alone names no store.
      */
     async ownedProductStoreId(productId: string, userId: string, sessionStoreId?: string): Promise<string> {
-        return (await this.getOwnedProduct(productId, userId, sessionStoreId)).store_id;
+        let ownedStores = this.db
+            .from('sites')
+            .select('id')
+            .or(`custom_user_id.eq.${userId},user_id.eq.${userId}`)
+            .is('deleted_at', null);
+        if (sessionStoreId) ownedStores = ownedStores.eq('id', sessionStoreId);
+        const { data: stores, error: storesError } = await ownedStores;
+        if (storesError) throw new Error(`Store lookup failed: ${storesError.message}`);
+        const storeIds = ((stores ?? []) as { id: string }[]).map((store) => store.id);
+        if (storeIds.length === 0) throw new ForbiddenError('Not authorized for this product');
+
+        const { data: product, error } = await this.db
+            .from('products')
+            .select('id, store_id')
+            .eq('id', productId)
+            .in('store_id', storeIds)
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (error) throw new Error(`Product lookup failed: ${error.message}`);
+        if (!product) throw new NotFoundError('Product not found');
+        return (product as { store_id: string }).store_id;
     }
 
     private async getOwnedProduct(productId: string, userId: string, sessionStoreId?: string): Promise<OwnedProductRow> {

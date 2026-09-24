@@ -21,6 +21,7 @@ import { assertStaffPermission, type StaffPermissionKey } from '../middleware/st
 import { loadEffectivePermissionScopes } from '../middleware/rbac';
 import { getSupabaseAdminFromEnv } from '../lib/supabase';
 import operationsMarketplaceListingsRouter from '../routes/operations/marketplace-listings';
+import productsRouter from '../routes/products';
 
 const POSTGREST = 'https://staff-paths.fake-postgrest.test';
 const INTERNAL_SECRET = 'internal-secret-for-staff-path-tests';
@@ -239,4 +240,49 @@ test("through the real auth and permission layers, a store admin is refused an o
     assert.equal(res.status, 403);
     assert.equal(((await res.json()) as { error: { code: string } }).error.code, 'PERMISSION_SCOPE_DENIED');
     assert.ok(!fake.requests.some((r) => r.table === 'channel_listings'), 'nothing is read for a refused caller');
+});
+
+// ---------------------------------------------------------------------------------------------------
+// 3. A route that knows only the product
+// ---------------------------------------------------------------------------------------------------
+
+const PRODUCT = '33333333-0000-4000-8000-0000000000c1';
+
+function productGateway(userId: string) {
+    const api = new Hono<{ Bindings: Env }>();
+    api.use('*', async (c, next) => {
+        (c as unknown as { env: Env }).env = env();
+        // A merchant session as merchant web sends it: a user, and no store of its own.
+        c.set('auth', { user: { id: userId, email: `${userId}@shop.test`, roles: [], roleCategories: [], authSource: 'internal-sso' } } as never);
+        await next();
+    });
+    api.route('/products', productsRouter);
+    return api;
+}
+
+test('an owner deletes a product from a session that names no store: the staff check gets the product\'s own store', async (t) => {
+    const fake = installFakePostgrest({
+        ...tables(),
+        users_custom: [{ id: OWNER, email: `${OWNER}@shop.test`, full_name: 'Owner' }, { id: STAFF, email: `${STAFF}@shop.test`, full_name: 'Staff' }],
+        products: [{ id: PRODUCT, store_id: SITE, price: 100, deleted_at: null }],
+    });
+    t.after(fake.restore);
+
+    for (const [method, init] of [
+        ['DELETE', { method: 'DELETE' }],
+        ['PATCH', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Renamed' }) }],
+    ] as const) {
+        const before = fake.requests.length;
+        const res = await productGateway(OWNER).request(`/products/${PRODUCT}`, init);
+        const body = await res.text();
+        assert.ok(!body.includes('STAFF_PERMISSION'), `${method}: the owner is not refused by the staff check: ${res.status} ${body.slice(0, 160)}`);
+        const lookups = fake.requests.slice(before).filter((r) => r.method === 'GET' && r.table === 'products').map((r) => r.query);
+        assert.ok(lookups.some((q) => q.includes(`id=eq.${PRODUCT}`) && /store_id=in\./.test(q)),
+            `${method}: the staff check was given the product's own store, found among the caller's stores`);
+    }
+    // What the adapter does next is not this phase's: its own lookup and write by product id alone are
+    // refused by the tenant query guard on develop too (APPID-P5b evidence, fixed in its own phase).
+
+    const staff = await productGateway(STAFF).request(`/products/${PRODUCT}`, { method: 'DELETE' });
+    assert.notEqual(staff.status, 200, 'a store staff member is not an owner of this product');
 });
