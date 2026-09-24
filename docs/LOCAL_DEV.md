@@ -8,27 +8,31 @@ One command boots the apps on fixed `9000+` ports:
 
 ```bash
 pnpm install     # once, or after dependency changes
-pnpm dev         # 9 Next apps + Storybook + the API gateway (the default)
-pnpm dev:all     # everything, including all 4 Cloudflare Workers
+pnpm dev         # the 5 maintained Next apps + Storybook + the API gateway (the default)
+pnpm dev:all     # the same plus all 4 Cloudflare Workers
 ```
 
 > `pnpm dev` starts the API gateway, which every page that reads data needs, and
 > leaves the other three Workers (mobile-bff, webhook-service, queue-workers) out.
 > Start those with `pnpm dev:all`, or `pnpm dev:services` in a second terminal.
+>
+> No default command starts a frozen app (app store, theme store, developer portal, operations
+> portal) or the deferred delivery app. Start the frozen web apps with `pnpm dev:frozen`
+> (D-APP-LAYOUT, 2026-09-24).
 
 ## Port map
 
 | Port | Runtime | Notes |
 | ---- | ------- | ----- |
-| 9000 | customer_web | shopper storefront; the hosted checkout is `checkout.localhost:9000` |
-| 9001 | merchant_web | merchant admin |
-| 9002 | identity-platform | accounts / auth |
-| 9003 | app-marketplace | |
-| 9004 | developer-portal | |
-| 9005 | theme-marketplace | |
-| 9006 | marketing-site | |
-| 9007 | admin_web | internal console |
-| 9008 | platform-operations-portal | internal ops |
+| 9000 | `apps/commerce/web` | shopper storefront; the hosted checkout is `checkout.localhost:9000` |
+| 9001 | `apps/merchant/web` | merchant admin |
+| 9002 | `apps/platform/identity` | accounts / auth |
+| 9003 | `apps/frozen/app-store` | frozen; `pnpm dev:frozen` only |
+| 9004 | `apps/frozen/developer-portal` | frozen; `pnpm dev:frozen` only |
+| 9005 | `apps/frozen/theme-store` | frozen; `pnpm dev:frozen` only |
+| 9006 | `apps/marketing/web` | |
+| 9007 | `apps/internal/console` | internal console |
+| 9008 | `apps/frozen/operations-portal` | frozen; `pnpm dev:frozen` only |
 | 9009 | @letbuyy/ui — Storybook | design system |
 | 9010 | api-gateway (Worker) | backend every app points at |
 | 9011 | mobile-bff (Worker) | |
@@ -43,16 +47,18 @@ there and everything else follows.
 
 | Command | What it runs |
 | ------- | ------------ |
-| `pnpm dev` | 9 Next apps + Storybook + the API gateway |
-| `pnpm dev:all` | Everything, including the 4 Cloudflare Workers |
-| `pnpm dev:apps` | Just the 9 Next apps |
+| `pnpm dev` | The 5 maintained Next apps + Storybook + the API gateway |
+| `pnpm dev:all` | The same plus the 4 Cloudflare Workers; never a frozen app |
+| `pnpm dev:apps` | Just the 5 maintained Next apps |
+| `pnpm dev:frozen` | The 4 frozen Next apps |
 | `pnpm dev:services` | Just the Cloudflare Workers |
 | `pnpm dev:storybook` | Just Storybook (9009) |
 | `pnpm dev:setup` | Regenerate local env files (`--force`) |
 | `pnpm --filter @letbuyy/customer-web dev` | A single app (fastest) |
 
 `pnpm dev` first runs `scripts/dev/setup-local-env.mjs` (creates env files if
-missing — it never overwrites your edits) then `turbo run dev --concurrency=25`.
+missing — it never overwrites your edits) then `turbo run dev --concurrency=25` with one `--filter` per
+package it starts. Every root script names its packages; none globs `apps/`.
 
 ## Performance — why the first run is slow
 
