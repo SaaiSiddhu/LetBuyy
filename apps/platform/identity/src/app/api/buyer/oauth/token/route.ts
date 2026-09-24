@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { LETBUYY_STOREFRONT_SESSION_TTL_SECONDS } from '@letbuyy/auth-core'
+import { LETBUYY_BUYER_SESSION_TTL_SECONDS, LETBUYY_STOREFRONT_SESSION_TTL_SECONDS } from '@letbuyy/auth-core'
 import { identityApiRequest } from '@/lib/api/client'
-import { createIdentityIssuedStorefrontSessionToken } from '@/lib/auth/identity-issued-session'
+import { grantForRedemption } from '@/lib/auth/buyer-authorization'
+import {
+    createIdentityIssuedBuyerSessionToken,
+    createIdentityIssuedStorefrontSessionToken,
+} from '@/lib/auth/identity-issued-session'
 
 /**
  * POST /api/buyer/oauth/token — a storefront's server exchanges a code and its PKCE verifier for the
- * buyer's session at that store (APPID-P4b, RFC 6749 §4.1.3 with RFC 7636).
+ * buyer's session at that store (APPID-P4b, RFC 6749 §4.1.3 with RFC 7636), and the marketplace app
+ * exchanges its code for a platform buyer session (APPID-P4d). Which one is minted follows the client
+ * the database recorded for the code, never the request.
+ *
+ * The app is a public client with no secret (RFC 8252 §8.5): the verifier it generated for this one
+ * attempt is its only proof, which is why a code without S256 PKCE is never issued.
  *
  * No cookie is read or written here, so there is nothing for CSRF to protect: the code and the
  * verifier are the whole credential, the code lives 60 seconds, and the database burns it on any
@@ -42,22 +51,31 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({ code, code_verifier: codeVerifier, client_id: clientId, redirect_uri: redirectUri }),
         })
         const payload = await redeemed.json().catch(() => null) as {
-            data?: { buyer?: { id?: string } | null; site_id?: string; session_epoch?: number } | null
+            data?: { buyer?: { id?: unknown } | null; client_id?: unknown; site_id?: unknown; session_epoch?: unknown } | null
         } | null
 
         if (redeemed.status === 400) return oauthError('invalid_grant', 400)
-        const buyerId = payload?.data?.buyer?.id
-        const siteId = payload?.data?.site_id
-        const sessionEpoch = payload?.data?.session_epoch
-        if (!redeemed.ok || !buyerId || !siteId || typeof sessionEpoch !== 'number') {
-            return oauthError('temporarily_unavailable', 503)
+        const grant = redeemed.ok ? grantForRedemption(payload?.data) : null
+        if (!grant) return oauthError('temporarily_unavailable', 503)
+
+        if (grant.kind === 'app') {
+            const accessToken = await createIdentityIssuedBuyerSessionToken({ buyerAccountId: grant.buyerAccountId, sessionEpoch: grant.sessionEpoch })
+            if (!accessToken) return oauthError('temporarily_unavailable', 503)
+            return NextResponse.json(
+                { access_token: accessToken, token_type: 'Bearer', expires_in: LETBUYY_BUYER_SESSION_TTL_SECONDS },
+                { headers: NO_STORE },
+            )
         }
 
-        const accessToken = await createIdentityIssuedStorefrontSessionToken({ buyerAccountId: buyerId, siteId, sessionEpoch })
+        const accessToken = await createIdentityIssuedStorefrontSessionToken({
+            buyerAccountId: grant.buyerAccountId,
+            siteId: grant.siteId,
+            sessionEpoch: grant.sessionEpoch,
+        })
         if (!accessToken) return oauthError('temporarily_unavailable', 503)
 
         return NextResponse.json(
-            { access_token: accessToken, token_type: 'Bearer', expires_in: LETBUYY_STOREFRONT_SESSION_TTL_SECONDS, site_id: siteId },
+            { access_token: accessToken, token_type: 'Bearer', expires_in: LETBUYY_STOREFRONT_SESSION_TTL_SECONDS, site_id: grant.siteId },
             { headers: NO_STORE },
         )
     } catch {

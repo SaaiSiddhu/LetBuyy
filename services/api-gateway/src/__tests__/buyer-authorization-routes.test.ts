@@ -8,6 +8,8 @@
 //   3. Where a storefront session works: at its own store only, through the storefront's own server,
 //      in the account's current epoch; and it is not a platform buyer session, nor the reverse.
 //   4. Which internal caller may do what: identity-platform issues and redeems, the storefront reads.
+//   5. The marketplace app (APPID-P4d, migration 259): its one exact callback, a code with no site,
+//      and a redemption identity-platform can tell apart from a storefront's.
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -33,6 +35,8 @@ const OTHER_BUYER = 'bbbbbbbb-2222-4222-8222-bbbbbbbbbbbb';
 const SITE = 'cccccccc-3333-4333-8333-cccccccccccc';
 const OTHER_SITE = 'dddddddd-4444-4444-8444-dddddddddddd';
 const CALLBACK = 'https://store-one.letbuyy.com/api/buyer-auth/callback';
+const APP_CLIENT = 'letbuyy-marketplace-app';
+const APP_CALLBACK = 'com.letbuyy.letbuyy:/oauth/callback';
 const CHALLENGE = 'E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM';
 const CODE = 'A'.repeat(43);
 
@@ -76,7 +80,7 @@ interface HarnessOptions {
 function harness(options: HarnessOptions = {}) {
     const calls = {
         resolved: [] as string[],
-        issued: [] as { buyerAccountId: string; clientId: string; redirectUri: string; siteId: string; codeChallenge: string }[],
+        issued: [] as { buyerAccountId: string; clientId: string; redirectUri: string; siteId: string | null; codeChallenge: string }[],
         redeemed: [] as { code: string; codeVerifier: string; clientId: string; redirectUri: string }[],
     };
     const gate = (header: string, message: string) => async (c: Parameters<Parameters<typeof registerBuyerAuthorizationRoutes>[1]['requireIdentityInternal']>[0]) =>
@@ -176,7 +180,7 @@ test('check names the store for a good callback, and refuses a bad one before an
     const h = harness();
     const good = await call(h, jwks, 'POST', '/buyer/authorization-codes/check', { identity: true, body: { client_id: 'letbuyy-storefront', redirect_uri: CALLBACK } });
     assert.equal(good.status, 200);
-    assert.deepEqual((await good.json() as { data: unknown }).data, { site: { id: SITE, name: 'Store One' } });
+    assert.deepEqual((await good.json() as { data: unknown }).data, { client: 'storefront', site: { id: SITE, name: 'Store One' } });
     assert.deepEqual(h.calls.resolved, ['store-one.letbuyy.com']);
 
     const shape = await call(h, jwks, 'POST', '/buyer/authorization-codes/check', { identity: true, body: { client_id: 'letbuyy-storefront', redirect_uri: 'https://evil.example/cb' } });
@@ -240,6 +244,7 @@ test('redemption returns the buyer, site and epoch, and never a password hash', 
     assert.ok(!text.includes('$2'), 'no bcrypt hash in the response');
     assert.deepEqual(JSON.parse(text).data, {
         buyer: { id: BUYER_ID, email: 'shopper@example.com', email_verified: true, status: 'active', session_epoch: 1 },
+        client_id: 'letbuyy-storefront',
         site_id: SITE,
         session_epoch: 1,
     });
@@ -259,6 +264,89 @@ test('an invalid grant, a disabled buyer, a malformed body or a non-identity cal
     const storefront = harness();
     assert.equal((await call(storefront, jwks, 'POST', '/buyer/authorization-codes/redeem', { storefront: true, body })).status, 401, 'the storefront cannot redeem directly');
     assert.equal(storefront.calls.redeemed.length, 0);
+});
+
+// ---------------------------------------------------------------------------------------------------
+// The marketplace app (APPID-P4d)
+// ---------------------------------------------------------------------------------------------------
+
+test('the app has exactly one callback, compared exactly, and no host is ever looked up for it', async () => {
+    const { jwks } = await keys();
+    const h = harness();
+    const good = await call(h, jwks, 'POST', '/buyer/authorization-codes/check', { identity: true, body: { client_id: APP_CLIENT, redirect_uri: APP_CALLBACK } });
+    assert.equal(good.status, 200);
+    assert.deepEqual((await good.json() as { data: unknown }).data, { client: 'app', site: null });
+
+    for (const bad of [
+        'com.letbuyy.letbuyy://oauth/callback',
+        'com.letbuyy.letbuyy:/oauth/callback/',
+        'com.letbuyy.letbuyy:/oauth/callback?next=x',
+        'com.letbuyy.letbuyy:/oauth/callback#x',
+        'COM.LETBUYY.LETBUYY:/oauth/callback',
+        'com.letbuyy.letbuyy:/oauth/Callback',
+        'com.letbuyy.evil:/oauth/callback',
+        'letbuyy://open/oauth/callback',
+        CALLBACK,
+        '',
+    ]) {
+        const res = await call(h, jwks, 'POST', '/buyer/authorization-codes/check', { identity: true, body: { client_id: APP_CLIENT, redirect_uri: bad } });
+        assert.equal(res.status, 400, bad);
+        assert.equal((await res.json() as { error: { code: string } }).error.code, 'INVALID_REDIRECT', bad);
+    }
+    const storefrontWithAppCallback = await call(h, jwks, 'POST', '/buyer/authorization-codes/check', { identity: true, body: { client_id: 'letbuyy-storefront', redirect_uri: APP_CALLBACK } });
+    assert.equal((await storefrontWithAppCallback.json() as { error: { code: string } }).error.code, 'INVALID_REDIRECT', 'the storefront cannot borrow the app callback');
+    assert.deepEqual(h.calls.resolved, [], 'no host lookup for any of these');
+});
+
+test("an app code is the SESSION's buyer, names no site whatever the body says, and goes only to the app callback", async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness();
+    const res = await call(h, jwks, 'POST', '/buyer/authorization-codes', {
+        identity: true,
+        buyerToken: await mint(privateKey, 'buyer'),
+        body: codeRequest({ client_id: APP_CLIENT, redirect_uri: APP_CALLBACK, buyer_account_id: OTHER_BUYER, site_id: OTHER_SITE }),
+    });
+    assert.equal(res.status, 200);
+    assert.deepEqual((await res.json() as { data: unknown }).data, { code: CODE, expires_at: '2026-09-24T10:01:00Z', site: null });
+    assert.deepEqual(h.calls.issued, [{ buyerAccountId: BUYER_ID, clientId: APP_CLIENT, redirectUri: APP_CALLBACK, siteId: null, codeChallenge: CHALLENGE }]);
+    assert.deepEqual(h.calls.resolved, []);
+
+    const storefrontToken = await call(h, jwks, 'POST', '/buyer/authorization-codes', {
+        identity: true,
+        buyerToken: await mint(privateKey, 'storefront'),
+        body: codeRequest({ client_id: APP_CLIENT, redirect_uri: APP_CALLBACK }),
+    });
+    assert.equal(storefrontToken.status, 401, 'a storefront session cannot get an app code');
+    const noPkce = await call(h, jwks, 'POST', '/buyer/authorization-codes', {
+        identity: true,
+        buyerToken: await mint(privateKey, 'buyer'),
+        body: codeRequest({ client_id: APP_CLIENT, redirect_uri: APP_CALLBACK, code_challenge_method: 'plain' }),
+    });
+    assert.equal(noPkce.status, 400, 'a public client without S256 PKCE gets nothing');
+    assert.equal(h.calls.issued.length, 1);
+});
+
+test('an app redemption says it is the app and names no site; a redemption whose client and site disagree is refused', async () => {
+    const { jwks } = await keys();
+    const body = { code: CODE, code_verifier: 'v'.repeat(43), client_id: APP_CLIENT, redirect_uri: APP_CALLBACK };
+    const app = harness({ redeem: { outcome: 'redeemed', buyer_account_id: BUYER_ID, site_id: null, client_id: APP_CLIENT, session_epoch: 3 } });
+    const res = await call(app, jwks, 'POST', '/buyer/authorization-codes/redeem', { identity: true, body });
+    assert.equal(res.status, 200);
+    const data = (await res.json() as { data: { client_id: string; site_id: string | null; session_epoch: number } }).data;
+    assert.equal(data.client_id, APP_CLIENT);
+    assert.equal(data.site_id, null);
+    assert.equal(data.session_epoch, 3);
+
+    for (const redeem of [
+        { outcome: 'redeemed', buyer_account_id: BUYER_ID, site_id: SITE, client_id: APP_CLIENT, session_epoch: 1 },
+        { outcome: 'redeemed', buyer_account_id: BUYER_ID, site_id: null, client_id: 'letbuyy-storefront', session_epoch: 1 },
+        { outcome: 'redeemed', buyer_account_id: BUYER_ID, site_id: null, client_id: 'letbuyy-admin', session_epoch: 1 },
+    ] as AuthorizationCodeRedemption[]) {
+        const h = harness({ redeem });
+        const refused = await call(h, jwks, 'POST', '/buyer/authorization-codes/redeem', { identity: true, body });
+        assert.equal(refused.status, 400, JSON.stringify(redeem));
+        assert.equal((await refused.json() as { error: { code: string } }).error.code, 'INVALID_GRANT');
+    }
 });
 
 // ---------------------------------------------------------------------------------------------------

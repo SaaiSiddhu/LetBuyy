@@ -154,6 +154,8 @@ export const LETBUYY_BUYER_SESSION_HEADER = 'X-LetBuyy-Buyer-Session';
  * current one. One constant for both ends, for the same reason as the header above.
  */
 export const LETBUYY_BUYER_SESSION_EPOCH_CLAIM = 'sep';
+/** How long a platform buyer session lives: identity-platform's own cookie and the marketplace app's token alike. */
+export const LETBUYY_BUYER_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 /**
  * A buyer's session AT ONE STOREFRONT (APPID-P4b). identity-platform mints it when a storefront
@@ -169,6 +171,15 @@ export const LETBUYY_STOREFRONT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 /** The storefront's first-party client id and its one callback path, exact, on the store's own host. */
 export const LETBUYY_STOREFRONT_CLIENT_ID = 'letbuyy-storefront';
 export const LETBUYY_STOREFRONT_BUYER_CALLBACK_PATH = '/api/buyer-auth/callback';
+/**
+ * The marketplace app's first-party client (APPID-P4d, migration 259). A public client: it holds no
+ * secret, so PKCE is what binds a code to the app that asked for it. It is platform-wide, so its code
+ * names no site and it receives a platform buyer session. Its one callback uses the private-use scheme
+ * that is the published applicationId reversed-domain name (RFC 8252 §7.1), with a single slash
+ * because it names no host.
+ */
+export const LETBUYY_MARKETPLACE_APP_CLIENT_ID = 'letbuyy-marketplace-app';
+export const LETBUYY_MARKETPLACE_APP_REDIRECT_URI = 'com.letbuyy.letbuyy:/oauth/callback';
 export const LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session';
 export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;

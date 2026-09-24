@@ -13,6 +13,7 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
 import { sendBuyerEmailCode } from '../../lib/buyer-email-code';
+import { firebaseSigningKeys, verifyFirebaseIdToken } from '../../lib/firebase-id-token';
 import { verifyInternalAppRequest } from '../../lib/internal-auth';
 import { getSupabaseAdmin } from '../../lib/supabase';
 import { resolveStorefrontCallbackSite } from '../../lib/storefront-callback-site';
@@ -25,6 +26,7 @@ import {
     type SessionRevocation,
     type StoreLinkOutcome,
 } from './buyer-account-routes';
+import { registerBuyerAppRoutes, type FirebaseLinkOutcome } from './buyer-app-routes';
 import {
     registerBuyerAuthorizationRoutes,
     type AuthorizationCodeIssue,
@@ -157,6 +159,25 @@ export function registerBuyerRealmRoutes(
             .select(BUYER_ACCOUNT_COLUMNS)
             .eq('id', id)
             .maybeSingle(),
+    });
+
+    // APPID-P4d (migration 259): the marketplace app's account read and its Firebase migration link.
+    registerBuyerAppRoutes(router, {
+        loadBuyerById: async (c, id) => getSupabaseAdmin(c)
+            .from('buyer_accounts')
+            .select(BUYER_ACCOUNT_COLUMNS)
+            .eq('id', id)
+            .maybeSingle(),
+        verifyFirebaseToken: async (_c, token) => verifyFirebaseIdToken(token, firebaseSigningKeys()),
+        linkFirebaseUid: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('link_buyer_firebase_uid', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_firebase_uid: input.firebaseUid,
+                p_firebase_project: input.firebaseProject,
+                p_firebase_email: input.firebaseEmail,
+            });
+            return { data: (data ?? null) as FirebaseLinkOutcome | null, error };
+        },
     });
 
     // CAP-FB-NOTIF (D-9): the buyer's own inbox. Every read and write is scoped by the buyer id the
