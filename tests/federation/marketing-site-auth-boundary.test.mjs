@@ -89,7 +89,8 @@ test('marketing site exposes crawlable platform app navigation and sitemaps', ()
 });
 
 test('marketplace robots and sitemaps derive canonical URLs from the request host', () => {
-  for (const app of ['app-marketplace', 'theme-marketplace']) {
+  // APPID-P1 (D-APP-LAYOUT) moved both frozen marketplaces under apps/frozen/.
+  for (const app of ['frozen/app-store', 'frozen/theme-store']) {
     const root = join('apps', app, 'src');
     const requestOrigin = read(join(root, 'lib/platform-request-origin.ts'));
     const robots = read(join(root, 'app/robots.ts'));
