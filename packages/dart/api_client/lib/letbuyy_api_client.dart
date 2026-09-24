@@ -2,6 +2,7 @@
 library;
 
 export 'src/api_client.dart';
+export 'src/buyer_sign_in.dart';
 export 'src/graphql.dart';
 export 'src/marketplace.dart';
 export 'src/types.dart';

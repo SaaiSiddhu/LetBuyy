@@ -8,6 +8,8 @@ environment:
   sdk: '^3.10.0'
 
 dependencies:
+  # APPID-P4d: SHA-256 for the PKCE S256 challenge (RFC 7636). Pure Dart, from the Dart team.
+  crypto: ^3.0.5
   dio: ^5.7.0
 
 dev_dependencies:
