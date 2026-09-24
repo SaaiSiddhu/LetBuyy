@@ -1,6 +1,5 @@
 import 'server-only';
 
-import { createHmac } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { fetchConsoleApi, type ConsoleDataResponse } from './console-api';
@@ -12,6 +11,21 @@ import {
     type ConsoleSession,
 } from './console-session';
 
+// The allowlist and TOTP/MFA logic (including the SUSTAINED-E rate-limit/replay/timing-safety
+// hardening) lives in console-mfa.ts, which has no `server-only`/Next.js import so it can be
+// exercised by a plain `node --test` run. Re-exported here so every existing caller of this
+// module is unaffected.
+export {
+    normalizeConsoleEmail,
+    getAllowedConsoleEmails,
+    isConsoleEmailAllowed,
+    getConsoleTotpSecretForPrincipal,
+    verifyConsoleTotp,
+    resetConsoleMfaGuardStateForTests,
+    type MfaVerificationResult,
+} from './console-mfa';
+import { normalizeConsoleEmail } from './console-mfa';
+
 type ConsoleAuditAction =
     | 'platform_console_login_magic_sent'
     | 'platform_console_login_magic_verified'
@@ -19,65 +33,11 @@ type ConsoleAuditAction =
     | 'platform_console_mfa_verified'
     | 'platform_console_logout';
 
-const textEncoder = new TextEncoder();
-
 function configured(value: string | undefined): value is string {
     if (!value) return false;
     if (value.includes('replace-with')) return false;
     if (value.startsWith('dev-only-placeholder')) return false;
     return true;
-}
-
-export function normalizeConsoleEmail(email: string) {
-    return email.trim().toLowerCase();
-}
-
-export function getAllowedConsoleEmails() {
-    return (process.env.PLATFORM_CONSOLE_ALLOWED_EMAILS || '')
-        .split(',')
-        .map((email) => normalizeConsoleEmail(email))
-        .filter(Boolean);
-}
-
-export function isConsoleEmailAllowed(email: string) {
-    const allowedEmails = getAllowedConsoleEmails();
-    if (allowedEmails.length === 0) return false;
-    return allowedEmails.includes(normalizeConsoleEmail(email));
-}
-
-function parsePerPrincipalTotpSecrets(): Record<string, string> {
-    const raw = process.env.PLATFORM_CONSOLE_TOTP_SECRETS || '';
-    if (!raw.trim()) return {};
-
-    try {
-        const parsed = JSON.parse(raw) as Record<string, unknown>;
-        return Object.fromEntries(
-            Object.entries(parsed)
-                .map(([email, secret]) => [normalizeConsoleEmail(email), typeof secret === 'string' ? secret.trim() : ''])
-                .filter(([, secret]) => configured(secret)),
-        );
-    } catch {
-        return Object.fromEntries(
-            raw.split(',')
-                .map((entry) => entry.split(':'))
-                .filter((parts) => parts.length >= 2)
-                .map(([email, ...secretParts]) => [normalizeConsoleEmail(email || ''), secretParts.join(':').trim()])
-                .filter(([email, secret]) => Boolean(email && configured(secret))),
-        );
-    }
-}
-
-export function getConsoleTotpSecretForPrincipal(email: string): string | null {
-    const secrets = parsePerPrincipalTotpSecrets();
-    const perPrincipal = secrets[normalizeConsoleEmail(email)];
-    if (perPrincipal) return perPrincipal;
-
-    if (!isProductionConsoleRuntime()) {
-        const devFallback = process.env.PLATFORM_CONSOLE_TOTP_SECRET;
-        return configured(devFallback) ? devFallback : null;
-    }
-
-    return null;
 }
 
 export async function getConsoleSessionFromCookies() {
@@ -128,81 +88,6 @@ export async function requireConsoleSession(options: { mfa?: boolean } = {}) {
     }
 
     return session;
-}
-
-function decodeBase32(secret: string) {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-    const normalized = secret.replace(/=+$/g, '').replace(/\s+/g, '').toUpperCase();
-    if (!normalized || /[^A-Z2-7]/.test(normalized)) {
-        return textEncoder.encode(secret);
-    }
-
-    const bytes: number[] = [];
-    let bits = 0;
-    let value = 0;
-
-    for (const char of normalized) {
-        value = (value << 5) | alphabet.indexOf(char);
-        bits += 5;
-
-        if (bits >= 8) {
-            bytes.push((value >>> (bits - 8)) & 255);
-            bits -= 8;
-        }
-    }
-
-    return Uint8Array.from(bytes);
-}
-
-function hotp(secret: Uint8Array, counter: number) {
-    const buffer = Buffer.alloc(8);
-    buffer.writeBigInt64BE(BigInt(counter));
-
-    const digest = createHmac('sha1', Buffer.from(secret)).update(buffer).digest();
-    const offset = digest[digest.length - 1] & 0xf;
-    const code = (
-        ((digest[offset] & 0x7f) << 24) |
-        ((digest[offset + 1] & 0xff) << 16) |
-        ((digest[offset + 2] & 0xff) << 8) |
-        (digest[offset + 3] & 0xff)
-    ) % 1_000_000;
-
-    return code.toString().padStart(6, '0');
-}
-
-function isProductionConsoleRuntime() {
-    return process.env.NODE_ENV === 'production'
-        || process.env.APP_ENV === 'production'
-        || process.env.VERCEL_ENV === 'production';
-}
-
-function canUseConsoleDevMfaBypass() {
-    return !isProductionConsoleRuntime()
-        && process.env.NODE_ENV === 'development'
-        && process.env.LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
-}
-
-export function verifyConsoleTotp(code: string, email: string) {
-    const normalizedCode = code.trim();
-    const devCode = process.env.PLATFORM_CONSOLE_DEV_MFA_CODE;
-
-    if (canUseConsoleDevMfaBypass() && devCode && normalizedCode === devCode) {
-        return true;
-    }
-
-    const secret = getConsoleTotpSecretForPrincipal(email);
-    if (!secret || !/^\d{6}$/.test(normalizedCode)) return false;
-
-    const secretBytes = decodeBase32(secret);
-    const counter = Math.floor(Date.now() / 30_000);
-
-    for (let offset = -1; offset <= 1; offset += 1) {
-        if (hotp(secretBytes, counter + offset) === normalizedCode) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 export async function writeConsoleAuditLog(input: {
