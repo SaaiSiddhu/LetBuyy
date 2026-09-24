@@ -224,8 +224,8 @@
     },
     {
       "path": "sections/search-box.liquid",
-      "checksum": "4646e84620b24242bfe1d660542f8b56a97fd20cfdaf5033656fb852d0f28ea1",
-      "sizeBytes": 675
+      "checksum": "6fa0fc146d03a7bef6a2f72f8faaa25b614d5e3df893c9618ca1d94a98b7e23c",
+      "sizeBytes": 1335
     },
     {
       "path": "sections/services-grid.liquid",
@@ -418,7 +418,7 @@
     "sections/product-detail.liquid": "13765642cf8f2c49f89bbbd5e1bfc714d3f7a4c9b7fd8d2e456db479b336d71d",
     "sections/product-grid.liquid": "17e2e1817ee1c4fd9f6376833f5d1eab28a100cb9454ec5a50adcf789c933a63",
     "sections/rich-content.liquid": "86452487b09bdc54e4d4029331e918250501a0e0ba2254d1e06a7dda39e9a62f",
-    "sections/search-box.liquid": "4646e84620b24242bfe1d660542f8b56a97fd20cfdaf5033656fb852d0f28ea1",
+    "sections/search-box.liquid": "6fa0fc146d03a7bef6a2f72f8faaa25b614d5e3df893c9618ca1d94a98b7e23c",
     "sections/services-grid.liquid": "376e52310c3199f10864112bfd5c732aa953e71768d86fc00684a666f4b3363c",
     "sections/skills-section.liquid": "4f832cfea145c662962b1f3d7fec3c72923e9e3f5fa7584fecf75ffd90feba51",
     "sections/spotlight.liquid": "e0e15edab1e97440f292af7dbed3229682d176ed64ce792ed027d266b8443556",
@@ -449,5 +449,5 @@
     "templates/product.json": "9330a1ff4aa481a0fc009385a05c407027fedb92d9ebcac98df9be906d603228",
     "templates/search.json": "e18c080a797ad3e009e19d65477b2cc557a2033c79d12248b637d6d2e10ed1d2"
   },
-  "contentHash": "c2850829e49442d0c4cbb578497f8d6ccd5359d3a2c88c695e4dfa398d0264b1"
+  "contentHash": "2d5fd2e0808b04c48564ec7e8ef7af94253d5ccd908602ff2f8255397b32e853"
 }
