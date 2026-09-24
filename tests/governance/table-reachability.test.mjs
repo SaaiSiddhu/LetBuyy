@@ -34,6 +34,12 @@ const EXEMPT = {
             + 'what the order already shows',
         blockedOn: 'D-3 (the multi-merchant flag, which is what gives the parent something to say)',
     },
+    migration_privilege_journal: {
+        why: 'rollback evidence, not application data: migration 256 records every EXECUTE privilege it '
+            + 'changes here before changing it, and only 256\'s rollback reads it back. PUBLIC, anon, '
+            + 'authenticated and app_tenant are revoked from it',
+        blockedOn: 'nothing in the application should ever read it; the table is dropped by 256\'s rollback',
+    },
 };
 
 function governedTables() {

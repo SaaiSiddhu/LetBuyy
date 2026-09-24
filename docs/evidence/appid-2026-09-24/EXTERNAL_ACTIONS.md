@@ -26,6 +26,12 @@ them are byte-identical across the move), Firebase project settings, Supabase.
 | E-7 | Decide what the Marketplace app's web **service worker** should use. `apps/marketplace/mobile/web/firebase-messaging-sw.js` initialises Agrimore's `agrii-mate` Firebase project, not `letbuy-y`. Either point it at the app's own `letbuy-y` web configuration (already in `lib/firebase_options.dart`) or drop the web push worker until FB-4. | It is the one remaining `environment-validator` finding, and it is genuine, not a false positive. It was left unchanged because the Firebase retirement programme forbids switching live Firebase behaviour without a compatibility assessment, and whether the Flutter web target is deployed anywhere is UNKNOWN. | PENDING (owner decision) |
 | E-8 | Rotate or retire the old customer app's Razorpay **test-mode** key id that `docs/migration/repository_consolidation/12_final_verification.md` quoted in full; APPID-P2 redacted it from the file, but it stays in git history. | The journal itself recommended adding it to the rotation list; a key id is not a secret, but it belongs to a real account. | PENDING |
 
+## Database privileges (URGENT)
+
+| # | Action | Why | Status |
+|---|---|---|---|
+| E-11 | In the live Supabase project, run this read-only query in the SQL editor: `select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef and (has_function_privilege('anon', p.oid, 'EXECUTE') or has_function_privilege('authenticated', p.oid, 'EXECUTE'));` If it returns rows, the public API can call those functions with the anon key until migration 256 is applied. Then check whether the Data API exposes `public` (Project Settings, API), and review `gift_card_accounts`, the ledger tables and `audit_logs` for rows no merchant or backend action explains, plus the API logs for `/rest/v1/rpc/` calls. | On a database built from the migrations under Supabase's older default privileges, 158 of 163 SECURITY DEFINER functions were executable by `anon` and `authenticated`, and as `anon` the database accepted `issue_gift_card` and created a live gift card (APPID-SEC1). Newer Supabase images use different defaults, so the live state is UNKNOWN from the repository. No secret is involved, so nothing needs rotating; the question is exposure and whether it was used. | PENDING (urgent) |
+
 ## Other checkouts and machines
 
 | # | Action | Why | Status |
