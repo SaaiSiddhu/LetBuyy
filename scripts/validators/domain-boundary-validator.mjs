@@ -198,7 +198,6 @@ function classifyAppApiRoute(file) {
   // the buyer_accounts rows (BUYER-3); these routes only mint. That is the one thing the gateway
   // must not do, so this is a constitutional exception, not a convenience.
   if (file.startsWith("apps/platform/identity/src/app/api/buyer/")) return "app-local-buyer-auth";
-  if (file.startsWith("apps/platform/identity/src/app/api/email/")) return "identity-gateway-proxy";
   if (file.startsWith("apps/internal/console/src/app/api/console-auth/")) return "app-local-operator-auth";
   if (file.startsWith("apps/internal/console/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/frozen/operations-portal/src/app/api/")) return "gateway-proxy";
@@ -236,7 +235,10 @@ for (const file of appApiRoutes) {
 // app-local-buyer-auth like BUYER-4's two. They hold the one thing the gateway cannot, the
 // identity-platform host-only buyer cookie and the token minted from it; every database decision
 // stays in the gateway. Added to config/eslint/boundary-baseline.json in the same commit.
-reporter.assert(appApiRoutes.length === 197, `App-local API route inventory changed without updating P4-4 classification: expected 197, found ${appApiRoutes.length}`);
+// APPID-SEC2 (2026-09-24) — 195: - apps/platform/identity/src/app/api/email/store-creation-{success,failure},
+// which sent LetBuyy-branded email for anonymous callers. Their class, identity-gateway-proxy, had no
+// other member and goes with them; the two lines leave config/eslint/boundary-baseline.json too.
+reporter.assert(appApiRoutes.length === 195, `App-local API route inventory changed without updating P4-4 classification: expected 195, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {
