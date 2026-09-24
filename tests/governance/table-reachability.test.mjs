@@ -54,6 +54,13 @@ const EXEMPT = {
             + 'application code reading it directly would be the defect',
         blockedOn: 'nothing: its functions are its only intended readers and writers',
     },
+    buyer_firebase_links: {
+        why: 'maps a Firebase uid to the buyer who proved the same verified address, and only its own function '
+            + 'touches it: link_buyer_firebase_uid (259), which the gateway calls from '
+            + 'services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts behind POST /buyer/firebase-link. '
+            + 'The table is wired; it is read by FB-4 when each screen\'s Firestore data moves to its buyer',
+        blockedOn: 'nothing: its function is its only intended writer until FB-4, and the table is dropped at FB-5',
+    },
 };
 
 function governedTables() {
