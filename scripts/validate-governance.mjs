@@ -79,6 +79,7 @@ const validators = [
   "beta-readiness-validator.mjs",
   "architecture-validator.mjs",
   "runtime-validator.mjs",
+  "reference-isolation-validator.mjs",
   "runtime-manifest-validator.mjs",
   "runtime-topology-validator.mjs",
   "topology-drift-validator.mjs",

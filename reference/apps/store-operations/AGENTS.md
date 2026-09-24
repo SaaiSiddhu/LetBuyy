@@ -5,7 +5,7 @@ Purpose: Local operating rules for `reference/apps/store-operations`. Hand-autho
 ## Ownership Rules
 
 - Follow the root `AGENTS.md` and the Constitution before making architecture, money, identity, tenancy, or governance changes.
-- `apps/phase_2/*` is not ACTIVE, not RESERVED, not FROZEN — a structural tier for product capabilities outside the six-app core (Constitution amendment, 2026-09-02). Not subject to the RESERVED-must-stay-empty rule.
+- **REFERENCE class** (Constitution §16, Amendment 3, 2026-09-24): preserved donor source, not an application. Never built, deployed, installed as a pnpm or pub workspace member, or imported by anything outside `reference/` (`reference-isolation-validator`); still secret-scanned with no path exemption. Until 2026-09-24 this tree sat at `apps/phase_2/*`, the Amendment 1 tier, which no longer exists. Capabilities leave only by re-implementation in the recipient named in `README.md`, under its Transfer gates.
 - **Not production-ready.** See `README.md`: unassigned owner, `D0_DEPENDENT` backend target. Never represent as shippable.
 - Authorizes no new backend service — any backend work routes through the D-0-selected canonical backend, never a bespoke store-ops-only backend.
 
