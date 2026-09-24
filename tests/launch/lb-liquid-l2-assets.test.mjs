@@ -21,7 +21,9 @@ test('L2: renderer injects a theme :root token block + lb-* stylesheet into the 
 });
 
 test('L2: theme head assets are prepended to content_for_header (head injection point)', () => {
-  assert.match(renderer, /const themeHeadAssets = buildLiquidThemeHeadAssets\(bundle\)/);
+  // SUSTAINED-G2: buildLiquidThemeHeadAssets now also takes the merchant's raw custom CSS
+  // (input.storeTemplate.customCss), its own single Phase-AA enforcement point.
+  assert.match(renderer, /const themeHeadAssets = buildLiquidThemeHeadAssets\(bundle, input\.storeTemplate\.customCss\)/);
   assert.match(renderer, /const contentForHeader = `\$\{themeHeadAssets\}\$\{embedHeader\}`/);
 });
 
