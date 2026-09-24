@@ -3,7 +3,8 @@
 What APPID-P4d built and proved, on branch `letbuyy/appid-p4d-marketplace-mobile` (`dbdd192b`
 migration 259, `2d6ae00b` identity-platform and gateway, `db25638e` the Dart protocol, `d4bd403c` the
 app, `60df60df` one more protocol test, `2b651a0d` the rollback's DROP and the token route's
-contracts). Gate results are in the phase's `EXECUTION_LEDGER.md` row.
+contracts, the key-set constant's name in the commit after this record's first revision). Gate results
+are in the phase's `EXECUTION_LEDGER.md` row.
 Deployment is E-18 in `EXTERNAL_ACTIONS.md`. Nothing here is deployed, and no mobile build was
 published. The feature is compiled out of the app unless it is built with
 `--dart-define=LETBUYY_BUYER_SIGN_IN=true`.
@@ -77,7 +78,12 @@ So this phase completes the canonical flow for a native client instead of adding
    restored 258's function with CREATE OR REPLACE and no DROP, which the rollback rule refuses
    because a live function with another parameter list would survive as an overload; it now drops
    first. And two source contracts from APPID-P4a/P4b pinned the token route's old variable names;
-   they now pin the same guarantees against `grantForRedemption`, and three plants fail them.
+   they now pin the same guarantees against `grantForRedemption`, and three plants fail them. The
+   second gate caught a third: the environment scan read the constant holding Google's public key-set
+   URL as a hardcoded secret, because its name contained "TOKEN". It is renamed, not exempted.
+   The Postgres suite's seven tests also fail in the `--full` gate's `tests:all` lane, as every other
+   Postgres suite does there (that lane runs them against a stopped default container; the 258 suite's
+   tests fail the same way on `develop`); under the executable harness they pass 7 of 7.
 5. **A debug build initializes the native Firebase SDK by itself** (its init provider), with analytics
    collection on in the manifest. The emulator runs below may therefore have sent debug heartbeat or
    analytics events to `letbuy-y`, as every debug run of this app does.
