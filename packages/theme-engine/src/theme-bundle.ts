@@ -3134,6 +3134,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '    <button type="submit">Sign in</button>',
           '  </form>',
           '  <a href="{{ routes.customer_register_url }}">Create an account</a>',
+          // APPID-P4c: sign in with the buyer's LetBuyy account instead, through identity-platform.
+          '  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start">Continue with LetBuyy</a></p>',
           '</section>',
         ],
       }),

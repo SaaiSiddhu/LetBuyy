@@ -41,6 +41,9 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const turnstileRef = useRef<TurnstileHandle>(null);
+    // APPID-P4c: a LetBuyy account session at this store, separate from the store's own customer login.
+    const [letbuyyBuyer, setLetbuyyBuyer] = useState<{ email: string } | null>(null);
+    const [returnTo, setReturnTo] = useState('/');
 
     // Set initial state based on auth
     useEffect(() => {
@@ -57,6 +60,31 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
             }
         }
     }, [isOpen, isAuthenticated]);
+
+    // APPID-P4c: whether this browser is signed in here with its LetBuyy account. The gateway decides:
+    // the session works only at the store it was issued for, and only in the account's current epoch.
+    useEffect(() => {
+        if (!isOpen) return;
+        setReturnTo(`${window.location.pathname}${window.location.search}`);
+        let cancelled = false;
+        fetch('/api/buyer-auth/session', { cache: 'no-store' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((body: { buyer?: { email?: string } | null } | null) => {
+                if (!cancelled) setLetbuyyBuyer(body?.buyer?.email ? { email: body.buyer.email } : null);
+            })
+            .catch(() => {
+                if (!cancelled) setLetbuyyBuyer(null);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [isOpen]);
+
+    // Signs out of LetBuyy at this store only; other stores and identity-platform are unaffected.
+    const signOutOfLetbuyy = async () => {
+        await fetch('/api/buyer-auth/logout', { method: 'POST', headers: { Accept: 'application/json' } }).catch(() => undefined);
+        setLetbuyyBuyer(null);
+    };
 
     // Focus first input on state change
     useEffect(() => {
@@ -275,6 +303,31 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         >
                                             {loading ? <Loader2 size={18} className="animate-spin" /> : 'Continue'}
                                         </Button>
+                                        {letbuyyBuyer ? (
+                                            <div className="rounded-xl border border-[color:var(--border)] p-4 text-sm text-[color:var(--text)]">
+                                                <p>
+                                                    Signed in with LetBuyy as <strong>{letbuyyBuyer.email}</strong>
+                                                </p>
+                                                <Button
+                                                    unstyled
+                                                    type="button"
+                                                    onClick={signOutOfLetbuyy}
+                                                    className="mt-2 text-sm font-semibold text-[color:var(--primary)]"
+                                                >
+                                                    Sign out of LetBuyy here
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <p className="text-center text-xs text-[color:var(--text-secondary)]" aria-hidden="true">or</p>
+                                                <a
+                                                    href={`/api/buyer-auth/start?return_to=${encodeURIComponent(returnTo)}`}
+                                                    className="flex w-full items-center justify-center rounded-xl border border-[color:var(--border)] px-4 py-3 text-center text-sm font-semibold text-[color:var(--text)]"
+                                                >
+                                                    Continue with LetBuyy
+                                                </a>
+                                            </>
+                                        )}
                                     </motion.form>
                                 )}
 
