@@ -31,6 +31,9 @@ import {
 } from './app-block-model';
 // Phase AA — SAFE-CSS LAW: single enforcement point for merchant custom CSS.
 import { validateAndScopeCustomCss } from './custom-css-sanitizer';
+// SUSTAINED-G3 — the single canonical translation resolver (India-first fallback chain,
+// prototype-pollution-guarded). Do not reintroduce a second, duplicate lookup here.
+import { tLocale } from './theme-locale';
 import type {
   BlockModel,
   SectionModel,
@@ -1511,55 +1514,11 @@ function registerLetbuyyLiquidFilters(engine: Liquid, bundle: LiquidThemePackage
     if (basePath && (raw === basePath || raw.startsWith(`${basePath}/`))) return raw;
     return `${basePath}${raw}`;
   });
-  engine.registerFilter('t', (value: unknown, replacements?: unknown) => translateLiquidKey(bundle, locale, value, replacements));
-}
-
-function translateLiquidKey(
-  bundle: LiquidThemePackageBundle,
-  locale: string,
-  value: unknown,
-  replacements?: unknown,
-): string {
-  const key = String(value || '').trim();
-  if (!key) return '';
-
-  const dictionary = resolveLiquidLocaleDictionary(bundle, locale);
-  const translated = lookupTranslation(dictionary, key);
-  const template = typeof translated === 'string' ? translated : key;
-  const replacementRecord = asRecord(replacements);
-
-  return template.replace(/\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g, (match, name: string) => {
-    const replacement = replacementRecord[name];
-    return replacement === undefined || replacement === null ? match : String(replacement);
+  engine.registerFilter('t', (value: unknown, replacements?: unknown) => {
+    const key = String(value ?? '').trim();
+    if (!key) return '';
+    return tLocale(key, locale, bundle.locales, asRecord(replacements) as Record<string, string | number>);
   });
-}
-
-function resolveLiquidLocaleDictionary(
-  bundle: LiquidThemePackageBundle,
-  locale: string,
-): Record<string, unknown> {
-  const candidates = [
-    locale,
-    locale.split('-')[0],
-    'en',
-  ].filter(Boolean);
-
-  for (const candidate of candidates) {
-    const exact = bundle.locales[candidate];
-    if (exact && typeof exact === 'object') return exact as Record<string, unknown>;
-
-    const matchingKey = Object.keys(bundle.locales).find((key) => key.toLowerCase() === candidate.toLowerCase());
-    if (matchingKey) return bundle.locales[matchingKey] as Record<string, unknown>;
-  }
-
-  return {};
-}
-
-function lookupTranslation(dictionary: Record<string, unknown>, key: string): unknown {
-  return key.split('.').reduce<unknown>((current, segment) => {
-    if (!current || typeof current !== 'object' || Array.isArray(current)) return undefined;
-    return (current as Record<string, unknown>)[segment];
-  }, dictionary);
 }
 
 function formatLiquidMoney(value: unknown, currency: unknown = 'INR'): string {

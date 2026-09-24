@@ -33,9 +33,10 @@ test('LiquidRenderer keeps snippets first-party-scoped and provides the t filter
   const bundleSource = read('packages/theme-engine/src/theme-bundle.ts');
 
   assert.match(rendererSource, /engine\.registerFilter\('t'/);
-  assert.match(rendererSource, /function translateLiquidKey/);
-  assert.match(rendererSource, /function resolveLiquidLocaleDictionary/);
-  assert.match(rendererSource, /function lookupTranslation/);
+  // SUSTAINED-G3: the t filter delegates to the single canonical, tested, India-first,
+  // prototype-pollution-guarded translation resolver — not a second, duplicate inline lookup.
+  assert.match(rendererSource, /import \{ tLocale \} from '\.\/theme-locale'/);
+  assert.match(rendererSource, /tLocale\(key, locale, bundle\.locales/);
   assert.match(bundleSource, /'\{% render'/);
   assert.match(bundleSource, /Liquid source contains forbidden fragment/);
 });
