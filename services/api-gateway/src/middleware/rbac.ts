@@ -245,15 +245,41 @@ async function hasPartnerDeveloperEntry(db: ReturnType<typeof getSupabaseAdmin>,
     return Boolean(data);
 }
 
-async function activeEmployeeForUser(db: RbacDb, userId: string) {
-    const { data } = await db
-        .from('employees')
-        .select('id, user_id, email, role, role_id, permissions, is_active, status')
+/**
+ * The platform's own staff: `employees` rows that belong to NO store.
+ *
+ * The same table holds every merchant's store staff (store_id → sites.id), written by the merchant's
+ * own staff routes, and nothing a merchant writes may count as the platform's. Until APPID-P5b the
+ * platform RBAC read this table by user alone, so an active store `editor` held the platform operator
+ * tier (merchant:pii, risk:decide), a store `admin` the admin tier, and a store owner could add any
+ * scope through the row's permissions JSON. Every operator-side read of `employees` goes through here.
+ */
+export function platformEmployeeRows(db: RbacDb, columns: string) {
+    // `store_id IS NULL` is the predicate that excludes every store's rows, and the tenant query guard
+    // counts a filter on a scope column as scoping (tenant-scoped.ts), so this passes it without widening it.
+    return db.from('employees').select(columns).filter('store_id', 'is', null).is('deleted_at', null);
+}
+
+interface PlatformEmployeeRow {
+    id: string;
+    user_id: string | null;
+    email: string | null;
+    role: string | null;
+    role_id: string | null;
+    permissions: unknown;
+    is_active: boolean | null;
+    status: string | null;
+}
+
+async function activeEmployeeForUser(db: RbacDb, userId: string): Promise<PlatformEmployeeRow | null> {
+    const { data, error } = await platformEmployeeRows(db, 'id, user_id, email, role, role_id, permissions, is_active, status')
         .eq('user_id', userId)
         .in('status', ['active'])
         .maybeSingle();
 
-    return data || null;
+    // Fail closed: a platform employee that cannot be read grants nothing, and says so.
+    if (error) throw new Error('Platform employee lookup failed');
+    return (data as unknown as PlatformEmployeeRow | null) || null;
 }
 
 async function readEmployeeRolePermissions(db: RbacDb, roleId: unknown): Promise<unknown> {

@@ -1534,6 +1534,22 @@ export function planEmployeeInviteAcceptance(
   };
 }
 
+/**
+ * What a store owner may give their own staff (APPID-P5b): the store roles and permission keys the
+ * merchant app offers (apps/merchant/web/src/lib/staff/roles.ts), and nothing else. A store's staff
+ * row lives in the same `employees` table as the platform's own staff; these bounds keep a merchant
+ * from writing a platform role or scope into it. The platform RBAC ignores store rows regardless.
+ */
+export const LETBUYY_STORE_STAFF_ROLES = ['manager', 'editor', 'fulfillment', 'marketing', 'support', 'viewer', 'staff'] as const;
+export const LETBUYY_STORE_STAFF_PERMISSIONS = [
+  'products:read', 'products:write', 'orders:read', 'orders:write', 'customers:read', 'customers:write',
+  'content:write', 'marketing:write', 'shipping:write', 'returns:write', 'reports:read', 'settings:write',
+] as const;
+
+function isStoreStaffRole(value: unknown): value is (typeof LETBUYY_STORE_STAFF_ROLES)[number] {
+  return typeof value === 'string' && (LETBUYY_STORE_STAFF_ROLES as readonly string[]).includes(value);
+}
+
 export function planEmployeeStaffCreate(
   body: Record<string, unknown>,
   createdBy: string,
@@ -1545,7 +1561,10 @@ export function planEmployeeStaffCreate(
     return { ok: false, message: 'email and store_id required' };
   }
 
-  const role = typeof body.role === 'string' && body.role ? body.role : 'editor';
+  if (body.role !== undefined && body.role !== null && body.role !== '' && !isStoreStaffRole(body.role)) {
+    return { ok: false, message: `role must be one of ${LETBUYY_STORE_STAFF_ROLES.join(', ')}` };
+  }
+  const role = isStoreStaffRole(body.role) ? body.role : 'editor';
 
   return {
     ok: true,
@@ -1589,11 +1608,28 @@ export function planEmployeeInvite(
   };
 }
 
-export function planEmployeeUpdate(body: Record<string, unknown>): Record<string, unknown> {
+export function planEmployeeUpdate(body: Record<string, unknown>): AuthPlanResult<Record<string, unknown>> {
   const updates: Record<string, unknown> = {};
-  if (body.role) updates.role = body.role;
-  if (body.permissions) updates.permissions = body.permissions;
-  return updates;
+  if (body.role !== undefined) {
+    if (!isStoreStaffRole(body.role)) {
+      return { ok: false, message: `role must be one of ${LETBUYY_STORE_STAFF_ROLES.join(', ')}` };
+    }
+    updates.role = body.role;
+  }
+  if (body.permissions !== undefined) {
+    const permissions = body.permissions as { granted?: unknown } | null;
+    const granted = permissions && typeof permissions === 'object' && !Array.isArray(permissions) ? permissions.granted : undefined;
+    const onlyGranted = permissions && typeof permissions === 'object' && Object.keys(permissions).every((key) => key === 'granted');
+    if (!onlyGranted || !Array.isArray(granted)
+      || granted.some((key) => typeof key !== 'string' || !(LETBUYY_STORE_STAFF_PERMISSIONS as readonly string[]).includes(key))) {
+      return { ok: false, message: 'permissions must be { granted: [...] } with store permission keys only' };
+    }
+    updates.permissions = { granted: [...new Set(granted as string[])] };
+  }
+  if (Object.keys(updates).length === 0) {
+    return { ok: false, message: 'role or permissions required' };
+  }
+  return { ok: true, value: updates };
 }
 
 export function employeeRemovalPatch(deletedAt: string): Record<string, unknown> {

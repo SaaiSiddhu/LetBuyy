@@ -414,7 +414,11 @@ router.patch('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const updates = planEmployeeUpdate(body);
+    const plan = planEmployeeUpdate(body);
+    if (!plan.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: plan.message } }, 400);
+    }
+    const updates = plan.value;
 
     const { data, error } = await db
         .from('employees')

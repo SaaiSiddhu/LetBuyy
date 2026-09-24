@@ -10,6 +10,7 @@ import { ValidationError } from '../../lib/errors';
 import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
 import {
     loadEffectivePermissionScopes,
+    platformEmployeeRows,
     requirePermission,
     requireRoleCategory,
     requireSuperAdmin,
@@ -72,15 +73,16 @@ async function readJson(c: AppContext): Promise<unknown> {
     return c.req.json().catch(() => ({}));
 }
 
+// Platform employees only: a store's staff row is never an RBAC subject here (APPID-P5b).
 async function activeEmployeeIdForUser(db: Db, userId: string): Promise<string | null> {
-    const { data } = await db
-        .from('employees')
-        .select('id')
+    const { data, error } = await platformEmployeeRows(db, 'id')
         .eq('user_id', userId)
         .eq('status', 'active')
         .maybeSingle();
+    if (error) throw new Error('Platform employee lookup failed');
 
-    return typeof data?.id === 'string' ? data.id : null;
+    const row = data as unknown as { id?: unknown } | null;
+    return typeof row?.id === 'string' ? row.id : null;
 }
 
 async function writeAudit(
@@ -110,12 +112,11 @@ async function writeAudit(
 }
 
 async function employeeExists(db: Db, employeeId: string): Promise<boolean> {
-    const { data } = await db
-        .from('employees')
-        .select('id')
+    const { data, error } = await platformEmployeeRows(db, 'id')
         .eq('id', employeeId)
         .eq('status', 'active')
         .maybeSingle();
+    if (error) throw new Error('Platform employee lookup failed');
 
     return Boolean(data);
 }
@@ -124,13 +125,12 @@ router.get('/employees/:employeeId/permissions', requirePermission('rbac:view'),
     const employeeId = c.req.param('employeeId');
     const db = getSupabaseAdmin(c);
 
-    const { data: employee, error } = await db
-        .from('employees')
-        .select('id, user_id, email, role, role_id, permissions, status, is_active')
+    const { data: found, error } = await platformEmployeeRows(db, 'id, user_id, email, role, role_id, permissions, status, is_active')
         .eq('id', employeeId)
         .maybeSingle();
 
     if (error) throw new Error('Employee permission lookup failed');
+    const employee = found as unknown as { id: string; user_id: string | null; email: string | null } | null;
     if (!employee) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Employee not found' } }, 404);
     }
@@ -170,16 +170,20 @@ router.patch('/employees/:employeeId/permissions', requirePermission('rbac:manag
 
     const employeeId = c.req.param('employeeId');
     const db = getSupabaseAdmin(c);
+    // A store's staff row is not the platform's to grant scopes on (APPID-P5b): only a row with no store.
     const { data, error } = await db
         .from('employees')
         .update({
             permissions: { scopes: parsed.data.scopes },
         })
         .eq('id', employeeId)
+        .filter('store_id', 'is', null)
+        .is('deleted_at', null)
         .select('id, user_id, email, role, permissions, status')
-        .single();
+        .maybeSingle();
 
-    if (error || !data) throw new Error('Employee permission update failed');
+    if (error) throw new Error('Employee permission update failed');
+    if (!data) return c.json({ error: { code: 'NOT_FOUND', message: 'Employee not found' } }, 404);
 
     await writeAudit(db, {
         actorId: actorUserId(c),
