@@ -44,9 +44,46 @@ function scopedColumnsForTable(table: string, scopeColumns: readonly string[]): 
     return scopeColumns;
 }
 
-function expressionHasScope(value: unknown, scopeColumns: readonly string[]): boolean {
-    if (typeof value !== 'string') return false;
-    return scopeColumns.some((column) => new RegExp(`\\b${column}\\b`).test(value));
+// Which `.filter(column, operator, value)` operators actually narrow a query to a specific
+// tenant, as opposed to merely mentioning the scope column. `eq`/`in` are exact matches -- the
+// only shapes `.eq()`/`.in()` themselves can express, which is why those two methods never needed
+// this check. `filter()` and `or()` accept ANY PostgREST operator as a string, so the column name
+// alone proves nothing: `.filter('store_id', 'neq', otherStoreId)` names the scope column but
+// EXCLUDES exactly one store and matches every other tenant's rows -- the opposite of scoping.
+// Range (`gt`/`gte`/`lt`/`lte`) and pattern (`like`/`ilike`) operators have the same problem: none
+// of them names a specific, bounded set of tenants.
+//
+// The one sanctioned exception is `<scopeColumn> IS NULL`: `middleware/rbac.ts`,
+// `routes/operations/rbac.ts` and `routes/internal-console.ts` (APPID-P5b) all use
+// `.filter('store_id', 'is', null)` to read PLATFORM employees, a real, narrow, well-defined
+// non-tenant category (no store at all) -- not a bypass, because it identifies exactly one fixed
+// set of rows, the same as an `eq` would for one store. `IS NOT NULL`/anything else `is` can
+// express is not in that set and is refused like every other non-equality operator.
+function isSafeFilterOperator(operator: unknown, value: unknown): boolean {
+    if (operator === 'eq' || operator === 'in') return true;
+    if (operator === 'is' && String(value) === 'null') return true;
+    return false;
+}
+
+// PostgREST's `or=(a.eq.b,c.is.null)` grammar: comma-separated alternatives, each
+// `column.operator.value`. The column is the text before the first dot; the operator is the next
+// token (the value may itself legally contain dots -- an ISO timestamp, for instance -- so it is
+// never parsed past the operator). An OR is safely scoped only if AT LEAST ONE alternative both
+// names a scope column and uses one of the operators above -- exactly mirroring the semantics an
+// `eq`/`in` predicate on its own already has, just spread across the OR's branches.
+function orIsSafelyScoped(expression: unknown, scopeColumns: readonly string[]): boolean {
+    if (typeof expression !== 'string') return false;
+    return expression.split(',').some((alternative) => {
+        const columnEnd = alternative.indexOf('.');
+        if (columnEnd < 0) return false;
+        const column = alternative.slice(0, columnEnd);
+        if (!scopeColumns.includes(column)) return false;
+        const rest = alternative.slice(columnEnd + 1);
+        const operatorEnd = rest.indexOf('.');
+        const operator = operatorEnd < 0 ? rest : rest.slice(0, operatorEnd);
+        const value = operatorEnd < 0 ? '' : rest.slice(operatorEnd + 1);
+        return isSafeFilterOperator(operator, value);
+    });
 }
 
 function markScopeFromCall(
@@ -57,8 +94,14 @@ function markScopeFromCall(
     args: unknown[],
 ): void {
     const columns = scopedColumnsForTable(table, scopeColumns);
-    if (method === 'eq' || method === 'in' || method === 'filter') {
+    if (method === 'eq' || method === 'in') {
         if (typeof args[0] === 'string' && columns.includes(args[0])) state.scoped = true;
+        return;
+    }
+    if (method === 'filter') {
+        if (typeof args[0] === 'string' && columns.includes(args[0]) && isSafeFilterOperator(args[1], args[2])) {
+            state.scoped = true;
+        }
         return;
     }
     if (method === 'match' && args[0] && typeof args[0] === 'object') {
@@ -68,7 +111,7 @@ function markScopeFromCall(
         return;
     }
     if (method === 'or') {
-        if (expressionHasScope(args[0], columns)) state.scoped = true;
+        if (orIsSafelyScoped(args[0], columns)) state.scoped = true;
         return;
     }
     if (method === 'insert' || method === 'upsert') {
