@@ -12,11 +12,16 @@
 
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
+import { sendBuyerEmailCode } from '../../lib/buyer-email-code';
+import { verifyInternalAppRequest } from '../../lib/internal-auth';
 import { getSupabaseAdmin } from '../../lib/supabase';
 import {
     registerBuyerAccountRoutes,
     BUYER_ACCOUNT_COLUMNS,
+    type EmailChallengeOutcome,
+    type EmailChallengeStart,
     type OrderClaimOutcome,
+    type SessionRevocation,
     type StoreLinkOutcome,
 } from './buyer-account-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
@@ -35,18 +40,24 @@ import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerRealmRoutesDeps {
     normalizeEmail: (email: string) => string;
-    requireStorefrontInternal: (c: AppContext) => Promise<Response | null>;
+}
+
+/// identity-platform signs its internal calls as the 'accounts' app (its lib/api/client.ts), the same
+/// app name routes/auth.ts accepts for the merchant realm.
+async function requireIdentityInternal(c: AppContext): Promise<Response | null> {
+    if (await verifyInternalAppRequest(c, 'accounts')) return null;
+    return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid internal identity signature' } }, 401);
 }
 
 export function registerBuyerRealmRoutes(
     router: Hono<{ Bindings: Env }>,
     deps: BuyerRealmRoutesDeps,
 ): void {
-    const { normalizeEmail, requireStorefrontInternal } = deps;
+    const { normalizeEmail } = deps;
 
     registerBuyerAccountRoutes(router, {
         normalizeEmail,
-        requireStorefrontInternal,
+        requireIdentityInternal,
         loadBuyerByEmail: async (c, email) => getSupabaseAdmin(c)
             .from('buyer_accounts')
             .select(BUYER_ACCOUNT_COLUMNS)
@@ -78,6 +89,30 @@ export function registerBuyerRealmRoutes(
             });
             return { data: (data ?? null) as OrderClaimOutcome | null, error };
         },
+        // Migration 257. Codes are generated, hashed, limited, expired and audited in the database.
+        startEmailChallenge: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('start_buyer_email_challenge', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_purpose: input.purpose,
+            });
+            return { data: (data ?? null) as EmailChallengeStart | null, error };
+        },
+        consumeEmailChallenge: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('consume_buyer_email_challenge', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_purpose: input.purpose,
+                p_code: input.code,
+                p_new_password_hash: input.newPasswordHash,
+            });
+            return { data: (data ?? null) as EmailChallengeOutcome | null, error };
+        },
+        revokeSessions: async (c, buyerAccountId) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('revoke_buyer_sessions', {
+                p_buyer_account_id: buyerAccountId,
+            });
+            return { data: (data ?? null) as SessionRevocation | null, error };
+        },
+        sendEmailCode: sendBuyerEmailCode,
     });
 
     // CAP-FB-NOTIF (D-9): the buyer's own inbox. Every read and write is scoped by the buyer id the

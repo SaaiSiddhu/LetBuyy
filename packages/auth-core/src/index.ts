@@ -142,6 +142,18 @@ export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
  * SSO convenience that justifies a parent domain for merchants is exactly what makes it wrong here.
  */
 export const LETBUYY_BUYER_SESSION_COOKIE = 'lb_buyer_session';
+/**
+ * The header a buyer session travels in when there is no cookie to carry it: identity-platform
+ * forwarding a buyer's token to the gateway, and non-browser clients. One constant for both ends,
+ * so the name the gateway reads and the name its callers send cannot drift apart.
+ */
+export const LETBUYY_BUYER_SESSION_HEADER = 'X-LetBuyy-Buyer-Session';
+/**
+ * The buyer-session claim carrying buyer_accounts.session_epoch at issuance (APPID-P4a, migration
+ * 257). identity-platform writes it; the gateway refuses a token whose epoch is not the account's
+ * current one. One constant for both ends, for the same reason as the header above.
+ */
+export const LETBUYY_BUYER_SESSION_EPOCH_CLAIM = 'sep';
 export const LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session';
 export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;

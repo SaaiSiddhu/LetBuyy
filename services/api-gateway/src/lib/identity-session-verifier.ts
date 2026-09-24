@@ -1,4 +1,5 @@
 import { createLocalJWKSet, jwtVerify, type JSONWebKeySet } from 'jose';
+import { LETBUYY_BUYER_SESSION_EPOCH_CLAIM } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 
 const MERCHANT_SESSION_AUDIENCE = 'letbuyy:merchant-session';
@@ -73,7 +74,7 @@ async function validateIdentityIssuedSessionToken(
     token: string,
     subject: string,
     contract: SessionRealmContract,
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{ ok: boolean; reason?: string; claims?: Record<string, unknown> }> {
     const { label } = contract;
 
     if (token.length > 4096 || token.split('.').length !== 3 || !/^[A-Za-z0-9._~-]+$/.test(token)) {
@@ -112,6 +113,7 @@ async function validateIdentityIssuedSessionToken(
         return { ok: false, reason: 'identity public JWKS is required' };
     }
 
+    let verifiedClaims: Record<string, unknown>;
     try {
         const { payload: verifiedPayload, protectedHeader } = await jwtVerify(
             token,
@@ -144,11 +146,12 @@ async function validateIdentityIssuedSessionToken(
         if (typeof verifiedPayload.jti !== 'string' || verifiedPayload.jti.length < 16) {
             return { ok: false, reason: `${label} replay id is missing` };
         }
+        verifiedClaims = verifiedPayload as Record<string, unknown>;
     } catch {
         return { ok: false, reason: `${label} signature verification failed` };
     }
 
-    return { ok: true };
+    return { ok: true, claims: verifiedClaims };
 }
 
 export async function validateIdentityIssuedMerchantSessionToken(
@@ -156,7 +159,10 @@ export async function validateIdentityIssuedMerchantSessionToken(
     token: string,
     userId: string,
 ): Promise<{ ok: boolean; reason?: string }> {
-    return validateIdentityIssuedSessionToken(env, token, userId, MERCHANT_REALM);
+    // The merchant contract is unchanged by APPID-P4a: the verified claims the buyer path needs for
+    // its session epoch are not part of what this returns.
+    const result = await validateIdentityIssuedSessionToken(env, token, userId, MERCHANT_REALM);
+    return result.ok ? { ok: true } : { ok: false, reason: result.reason };
 }
 
 /// Verifies a marketplace buyer session (D-8). `buyerAccountId` is a buyer_accounts.id.
@@ -168,7 +174,7 @@ export async function validateIdentityIssuedBuyerSessionToken(
     env: Env,
     token: string,
     buyerAccountId: string,
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{ ok: boolean; reason?: string; claims?: Record<string, unknown> }> {
     return validateIdentityIssuedSessionToken(env, token, buyerAccountId, BUYER_REALM);
 }
 
@@ -187,10 +193,18 @@ export async function validateIdentityIssuedBuyerSessionToken(
 /// is normally a red flag: the value is never trusted on its own. If the token is forged, signature
 /// verification fails. If `sub` was tampered with, it no longer matches the signed payload and
 /// jwtVerify's own subject check rejects it. The unverified read only chooses which claim to prove.
+///
+/// It also returns the SESSION EPOCH the token was issued in (APPID-P4a, migration 257), read from
+/// the verified payload's `sep` claim (LETBUYY_BUYER_SESSION_EPOCH_CLAIM). The caller compares it
+/// with buyer_accounts.session_epoch; a password reset or "sign out everywhere" advances that, and
+/// every older token stops working. A token without the claim was issued before epochs existed and
+/// counts as epoch 1, the column's starting value, so those sessions end at the account's first
+/// reset rather than all at once. A claim that is present but not a positive integer is refused:
+/// nothing identity-platform issues looks like that.
 export async function resolveIdentityIssuedBuyerSession(
     env: Env,
     token: string,
-): Promise<{ ok: true; buyerAccountId: string } | { ok: false; reason: string }> {
+): Promise<{ ok: true; buyerAccountId: string; sessionEpoch: number } | { ok: false; reason: string }> {
     if (token.length > 4096 || token.split('.').length !== 3) {
         return { ok: false, reason: 'buyer session token is malformed' };
     }
@@ -202,5 +216,10 @@ export async function resolveIdentityIssuedBuyerSession(
     const verified = await validateIdentityIssuedBuyerSessionToken(env, token, subject);
     if (!verified.ok) return { ok: false, reason: verified.reason || 'buyer session verification failed' };
 
-    return { ok: true, buyerAccountId: subject };
+    const epoch = verified.claims?.[LETBUYY_BUYER_SESSION_EPOCH_CLAIM];
+    if (epoch === undefined) return { ok: true, buyerAccountId: subject, sessionEpoch: 1 };
+    if (typeof epoch !== 'number' || !Number.isInteger(epoch) || epoch < 1) {
+        return { ok: false, reason: 'buyer session epoch is invalid' };
+    }
+    return { ok: true, buyerAccountId: subject, sessionEpoch: epoch };
 }

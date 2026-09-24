@@ -39,6 +39,18 @@ const AUTH_RATE_LIMITS = {
     'reset-password': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:resetpw' },
     verify: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:verify' },
     verify_otp: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:verify_otp' },
+    // identity-platform declares these in its own lib/rate-limit.ts, and a name missing here is
+    // answered 400, which identity-platform treats as "not allowed" outside development. Until
+    // APPID-P4a the three below were missing, so every production buyer register and sign-in, and
+    // every merchant account switch, answered 429. tests/contracts/identity-rate-limit-buckets.test.ts
+    // now keeps the two tables equal.
+    switch: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:switch' },
+    'buyer-register': { limit: 3, windowMs: 60 * 60_000, prefix: 'rl:buyer-register' },
+    'buyer-login': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:buyer-login' },
+    'buyer-verify-send': { limit: 3, windowMs: 15 * 60_000, prefix: 'rl:buyer-verify-send' },
+    'buyer-verify-confirm': { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:buyer-verify-confirm' },
+    'buyer-recover-send': { limit: 3, windowMs: 15 * 60_000, prefix: 'rl:buyer-recover-send' },
+    'buyer-recover-confirm': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:buyer-recover-confirm' },
 } as const;
 const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60;
 

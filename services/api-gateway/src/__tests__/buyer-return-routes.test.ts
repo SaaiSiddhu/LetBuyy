@@ -11,6 +11,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import {
     registerBuyerReturnRoutes,
     type BuyerReturnRequestRow,
@@ -54,6 +55,7 @@ function harness(options: { owns?: boolean; alreadyOpen?: boolean } = {}) {
         listBuyerReturnRequests: async () => ({ data: [CREATED], error: null }),
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, calls };
 }

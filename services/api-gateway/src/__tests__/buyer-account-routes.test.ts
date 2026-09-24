@@ -31,6 +31,7 @@ async function accountRow(overrides: Partial<BuyerAccountRow> = {}): Promise<Buy
         password_hash: await bcrypt.hash(PASSWORD, 4),
         email_verified: false,
         status: 'active',
+        session_epoch: 1,
         ...overrides,
     };
 }
@@ -45,11 +46,11 @@ function app(options: {
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerAccountRoutes(router, {
         normalizeEmail: (email) => email.trim().toLowerCase(),
-        requireStorefrontInternal: async (c) =>
+        requireIdentityInternal: async (c) =>
             (options.internalOk ?? true)
                 ? null
                 : (c as unknown as { json: (b: unknown, s: number) => Response }).json(
-                      { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid internal storefront signature' } },
+                      { success: false, error: { code: 'UNAUTHORIZED', message: 'Invalid internal identity signature' } },
                       401,
                   ),
         loadBuyerByEmail: async (_c, email) => {
@@ -66,6 +67,11 @@ function app(options: {
         loadBuyerById: async () => ({ data: options.existing ?? null, error: null }),
         linkStoreCustomer: async () => ({ data: { outcome: 'unverified' }, error: null }),
         claimOrders: async () => ({ data: { outcome: 'unverified' }, error: null }),
+        // APPID-P4a deps; their routes are covered in buyer-email-verification-routes.test.ts.
+        startEmailChallenge: async () => ({ data: { outcome: 'rate_limited' }, error: null }),
+        consumeEmailChallenge: async () => ({ data: { outcome: 'invalid' }, error: null }),
+        revokeSessions: async () => ({ data: { outcome: 'buyer_unavailable' }, error: null }),
+        sendEmailCode: async () => ({ sent: false }),
     });
     const outer = new Hono<{ Bindings: Env }>();
     outer.route('/storefront', router);

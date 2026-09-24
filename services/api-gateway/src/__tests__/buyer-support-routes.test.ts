@@ -12,6 +12,7 @@ import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { installBuyerSessionState } from './buyer-session-state-fake';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from '../routes/storefront/buyer-support-routes';
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -48,6 +49,7 @@ function harness(opts: { ownedBy?: string } = {}) {
         addRequesterMessage: async (_c, ticket, body) => { calls.inserted.push(body); return { data: { id: 'm2', author_type: 'requester', body, created_at: 'now' }, error: null }; },
     });
     const app = new Hono<{ Bindings: Env }>();
+    installBuyerSessionState(app);
     app.route('/storefront', router);
     return { app, calls };
 }
