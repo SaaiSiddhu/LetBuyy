@@ -39,7 +39,11 @@ test('products are isolated by owned store for read, update, and delete paths', 
     assert.match(routeSource, /service\.updateProduct\(productId,\s*customUser\.id,\s*body as Record<string, unknown>,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(adapterSource, /private async getOwnedProduct/);
-    assert.match(adapterSource, /await this\.assertStoreOwnership\(ownedProduct\.store_id,\s*userId,\s*sessionStoreId/);
+    // APPID-FIX2: the lookup itself now carries the store predicate (resolveOwnedStoreIds ->
+    // .in('store_id', storeIds)) instead of fetching the row unscoped and checking ownership after --
+    // the unscoped shape is refused outright by the tenant query guard, not merely "not proven isolated".
+    assert.match(adapterSource, /resolveOwnedStoreIds\(userId,\s*sessionStoreId\)/);
+    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.in\('store_id',\s*storeIds\)/);
 });
 
 test('orders are isolated by owned store before listing, reading, and mutating', () => {

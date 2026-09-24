@@ -62,9 +62,18 @@ test('product updates and deletes use owned-product lookup before mutation', () 
     assert.match(routeSource, /router\.delete\('\/:id'/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(adapterSource, /private async getOwnedProduct/);
-    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
-    assert.match(adapterSource, /await this\.assertStoreOwnership\(ownedProduct\.store_id,\s*userId,\s*sessionStoreId/);
-    assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\)/);
+    // APPID-FIX2: getOwnedProduct used to look the row up by `.eq('id', productId)` alone, then check
+    // ownership on the row it got back -- a shape the tenant query guard refuses outright ("products
+    // requires a tenant/owner predicate before execution"), which 500'd PATCH/DELETE even after the
+    // staff check had already cleared the product's real store. Ownership is now asked in the query
+    // itself, the same scoped shape ownedProductStoreId already used.
+    assert.match(adapterSource, /resolveOwnedStoreIds\(userId,\s*sessionStoreId\)/);
+    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.in\('store_id',\s*storeIds\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
+    // The write and refresh-select that follow getOwnedProduct repeat the same id-only shape unless
+    // each one also carries the store predicate the guard requires.
+    assert.match(adapterSource, /\.update\(updatePlan\.safeUpdates\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
+    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)\s*\.single\(\)/);
+    assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\),\s*\}\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
 });
 
 test('collection updates and deletes verify collection ownership before mutation', () => {
