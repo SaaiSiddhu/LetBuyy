@@ -51,3 +51,20 @@ test('L7: the query string is escaped (no injection via search.terms)', async ()
   const html = result.liquid?.layoutHtml ?? '';
   assert.doesNotMatch(html, /<script/i);
 });
+
+test('SUSTAINED-G1: the search box renders a real <form> that GETs routes.search_url, so Enter submits without JS', async () => {
+  const result = await renderSearch('', []);
+  const html = result.liquid?.layoutHtml ?? '';
+  const formMatch = html.match(/<form[^>]*data-lb-search-form[^>]*>/);
+  assert.ok(formMatch, 'search-box section must render a <form data-lb-search-form> — a bare <input> with no <form> never submits on Enter');
+  const formTag = formMatch[0];
+  assert.match(formTag, /method="get"/);
+  assert.match(formTag, /action="[^"]*\/search"/, 'the form must GET to the search route, not the page it is embedded on');
+  assert.match(html, /<input[^>]*type="search"[^>]*name="search"[^>]*>/, 'the input must carry name="search" so the GET query string round-trips into search.terms');
+});
+
+test('SUSTAINED-G1: the search box input echoes an existing query back into its value attribute', async () => {
+  const result = await renderSearch('runner', []);
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /<input[^>]*name="search"[^>]*value="runner"/, 'value="{{ search.terms }}" must round-trip the current query into the input');
+});

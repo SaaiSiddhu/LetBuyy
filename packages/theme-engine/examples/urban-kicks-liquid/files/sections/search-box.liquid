@@ -1,5 +1,11 @@
 <section class="lb-search" data-section-id="{{ section.id }}">
-  <lb-search data-lb-island="search" data-search-url="{{ routes.search_url }}"><input type="search" placeholder="{{ section.settings.placeholder }}" aria-label="Search products"></lb-search>
+  <lb-search data-lb-island="search" data-search-url="{{ routes.search_url }}">
+    <form role="search" method="get" action="{{ routes.search_url }}" data-lb-search-form>
+      <label class="lb-sr-only" for="lb-search-input-{{ section.id }}">Search products</label>
+      <input type="search" name="search" id="lb-search-input-{{ section.id }}" data-lb-search-input placeholder="{{ section.settings.placeholder }}" aria-label="Search products" value="{{ search.terms }}">
+      <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="lb-sr-only">Search</span></button>
+    </form>
+  </lb-search>
   {% if search.terms %}<p class="lb-search__terms">Results for "{{ search.terms }}"</p>{% endif %}
 </section>
 {% schema %}
