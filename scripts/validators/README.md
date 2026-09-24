@@ -2,7 +2,7 @@
 
 `scripts/validators/` is the canonical home for executable governance checks. Validators must be deterministic, non-interactive, CI-safe, and must not read generated artifact directories as source authority.
 
-Shared helpers belong in `governance-common.mjs`. New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
+Shared helpers belong in `governance-common.mjs`. The one exception is `secret-scan-core.mjs`, the secret-scan library shared by `environment-validator.mjs` and `tests/governance/secret-scan-exceptions.test.mjs`, kept separate so that test can run the real validator in a throwaway repository with only three modules. It has no path exemptions: a reviewed exception binds one value in one file through `config/governance/secret-scan-exceptions.json` (APPID-P2). New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
 
 `operational-lifecycle-validator.mjs` hard-fails enterprise SDLC drift: staging lifecycle contracts, staging/production isolation, rollout controls, feature flag evaluation, sandbox providers, shadow traffic contracts, provider-failure drills, and stale live certification evidence.
 

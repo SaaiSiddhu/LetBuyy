@@ -5,6 +5,12 @@ import {
   readFile,
   formatOffenderList,
 } from "./governance-common.mjs";
+import {
+  SECRET_SCAN_EXCEPTIONS_PATH,
+  exceptionMatches,
+  exceptionRegistryProblems,
+  findSecretLikeValues,
+} from "./secret-scan-core.mjs";
 
 const reporter = createReporter("Environment validator");
 const trackedFiles = getTrackedFiles();
@@ -128,115 +134,50 @@ reporter.assert(
   "API gateway Env must not declare the removed EMAIL_QUEUE ghost binding; use NOTIFICATION_QUEUE",
 );
 
-const secretPatterns = [
-  { pattern: /\b(?:sk|pk|rk)_(?:live|test)_[A-Za-z0-9_=-]{20,}/, kind: "key" },
-  { pattern: /\bwhsec_[A-Za-z0-9_=-]{20,}/, kind: "key" },
-  { pattern: /\brzp_(?:live|test)_[A-Za-z0-9_=-]{8,}/, kind: "key" },
-  { pattern: /\bAIza[A-Za-z0-9_-]{20,}/, kind: "key" },
-  { pattern: /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/, kind: "pem" },
-];
-
-// Unambiguous "this value is a fixture, not a credential" markers. Deliberately
-// narrow (whole English phrases, never a bare word like "test") so a genuine
-// leaked secret — an opaque random string — cannot coincidentally match: a
-// real key does not spell out "do not expose" or "should never reach" inside
-// itself. Extends (never replaces) the R-21 secret scan; a match without one
-// of these markers on its own line still fails the validator.
-const fixtureMarkerPattern = /do[-_ ]?not[-_ ]?expose|should[-_ ]?never[-_ ]?reach|placeholder|redacted|\bdummy\b|\bexample\b/i;
-
-function lineContainingIndex(content, index) {
-  const lineStart = content.lastIndexOf("\n", index - 1) + 1;
-  const nextNewline = content.indexOf("\n", index);
-  return content.slice(lineStart, nextNewline === -1 ? content.length : nextNewline);
+// R-21 secret scan. Every tracked file is scanned, documentation and donor source included: APPID-P2
+// removed the docs/, AGENTS.md and config/env/templates/ prefix exemptions (the founder: "Do not exempt
+// all documentation or Markdown from secret scanning"). A reviewed exception binds one exact value in
+// one exact file through config/governance/secret-scan-exceptions.json; see secret-scan-core.mjs.
+// Messages carry path, line and kind, never a value.
+const trackedSet = new Set(trackedFiles);
+let exceptionRegistry = null;
+try {
+  exceptionRegistry = JSON.parse(readFile(SECRET_SCAN_EXCEPTIONS_PATH));
+} catch (error) {
+  reporter.assert(false, `Secret-scan exception registry ${SECRET_SCAN_EXCEPTIONS_PATH} must exist and parse: ${error.message}`);
 }
+const exceptions = exceptionRegistry?.exceptions ?? [];
+const registryProblems = exceptionRegistry ? exceptionRegistryProblems(exceptionRegistry, (file) => trackedSet.has(file)) : [];
+reporter.assert(
+  registryProblems.length === 0,
+  `Secret-scan exception registry is malformed: ${formatOffenderList(registryProblems, 20, "; ")}`,
+);
 
-function matchesGlobally(pattern, content) {
-  const flags = pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`;
-  return [...content.matchAll(new RegExp(pattern.source, flags))];
-}
-
-// A real committed PEM private key ships a full BEGIN...body...END block; a
-// bare BEGIN-header string used as a redaction-test fixture value has no
-// matching footer anywhere in the file. Require the footer before treating a
-// PEM header as a real key, so a fixture like `private_key: '-----BEGIN
-// PRIVATE KEY-----'` (asserting the value never reaches rendered output) does
-// not false-positive, while an actual leaked key (which always has both
-// markers plus body content) still does.
-function hasRealPemBlock(content) {
-  return /-----END (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/.test(content);
-}
-
-function hasUnexplainedSecretPattern(content) {
-  for (const { pattern, kind } of secretPatterns) {
-    const matches = matchesGlobally(pattern, content);
-    if (matches.length === 0) continue;
-    if (kind === "pem") {
-      if (hasRealPemBlock(content)) return true;
-      continue;
-    }
-    for (const match of matches) {
-      const line = lineContainingIndex(content, match.index);
-      if (!fixtureMarkerPattern.test(line)) return true;
-    }
-  }
-  return false;
-}
-
-const allowedSecretScanPrefixes = [
-  "config/env/templates/",
-  "docs/",
-  "AGENTS.md",
-];
-
-const secretOffenders = [];
-function hasHardcodedSecretAssignment(content) {
-  const assignmentPattern =
-    /(?:secret|token|password|private[_-]?key|service[_-]?role)[A-Za-z0-9_ .:-]*[=:]\s*["']([^"'\n]{16,})["']/gi;
-
-  for (const match of content.matchAll(assignmentPattern)) {
-    const value = match[1].trim();
-    const lowerValue = value.toLowerCase();
-
-    if (/^[A-Z0-9_]+$/.test(value)) continue;
-    if (lowerValue.includes("process.env") || lowerValue.includes("env.") || (lowerValue.startsWith("env(") && lowerValue.endsWith(")"))) continue;
-    if (lowerValue.includes("replace") || lowerValue.includes("example") || lowerValue.includes("placeholder")) continue;
-    if (lowerValue.includes("redacted") || lowerValue.includes("dummy") || lowerValue.includes("test_")) continue;
-    // Same unambiguous fixture-marker set used for the regex-pattern scan below
-    // (R-18: precision, not weakening — a real credential cannot coincidentally
-    // spell out "do not expose" or "should never reach" inside itself).
-    if (fixtureMarkerPattern.test(value)) continue;
-    if (value.startsWith("$") || value.startsWith("{")) continue;
-    if (/\s/.test(value)) continue;
-    if (/^[a-z0-9_./-]+$/.test(value)) continue;
-
-    const characterClassCount = [
-      /[a-z]/.test(value),
-      /[A-Z]/.test(value),
-      /[0-9]/.test(value),
-      /[+/=_-]/.test(value),
-    ].filter(Boolean).length;
-    if (characterClassCount < 3) continue;
-
-    return true;
-  }
-
-  return false;
-}
-
+const unexcepted = [];
+const usedExceptions = new Set();
 for (const file of trackedFiles) {
-  if (allowedSecretScanPrefixes.some((prefix) => file === prefix || file.startsWith(prefix))) continue;
-
   const content = readFile(file);
   if (!content) continue;
-
-  if (hasUnexplainedSecretPattern(content) || hasHardcodedSecretAssignment(content)) {
-    secretOffenders.push(file);
+  for (const finding of findSecretLikeValues(content)) {
+    const index = exceptions.findIndex((entry) => exceptionMatches(entry, file, finding));
+    if (index === -1) unexcepted.push(`${file}:${finding.line} (${finding.kind})`);
+    else usedExceptions.add(index);
   }
 }
 
 reporter.assert(
-  secretOffenders.length === 0,
-  `Tracked files contain secret-like values and must be redacted or moved to the secret store: ${formatOffenderList(secretOffenders)}`,
+  unexcepted.length === 0,
+  `Tracked files contain secret-like values and must be redacted or moved to the secret store: ${formatOffenderList(unexcepted)}`,
 );
 
-reporter.finish(`${trackedFiles.length} tracked files scanned`);
+// Fails in the other direction too: an exception whose value has left its file is removed, not kept.
+const staleExceptions = exceptions
+  .map((entry, index) => ({ entry, index }))
+  .filter(({ index }) => !usedExceptions.has(index))
+  .map(({ entry }) => `${entry.path} (${entry.kind})`);
+reporter.assert(
+  staleExceptions.length === 0,
+  `Secret-scan exceptions no longer match any value and must be removed: ${formatOffenderList(staleExceptions)}`,
+);
+
+reporter.finish(`${trackedFiles.length} tracked files scanned, ${exceptions.length} reviewed exceptions`);

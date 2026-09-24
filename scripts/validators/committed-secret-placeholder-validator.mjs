@@ -14,7 +14,9 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-const ROOTS = ['apps', 'services'];
+// reference/ holds preserved donor source (Amendment 3). It is never deployed, but a donor that carried a
+// credential placeholder would carry it into any port, so it is scanned like the runtimes (APPID-P2).
+const ROOTS = ['apps', 'services', 'reference'];
 const CREDENTIAL_KEY = /^[A-Za-z0-9_]*(_SECRET|_TOKEN|_PRIVATE_KEY)$/;
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.next', '.turbo', 'build']);
 const violations = [];

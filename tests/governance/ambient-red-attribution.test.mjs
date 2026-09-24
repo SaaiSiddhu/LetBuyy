@@ -36,10 +36,13 @@ const KNOWN_REDS = [
         validator: 'environment-validator',
         why: 'flags tracked files containing secret-like values',
         classify(path) {
-            // Google's own documented public client identifiers (AIza…), classified NOT secrets in
-            // docs/migration/repository_consolidation/00c_credential_exposure_and_rotation.md.
-            if (/^apps\/marketplace\/mobile\//.test(path)) {
-                return 'firebase public client identifier (customer_app), not a secret';
+            // APPID-P2 (2026-09-24): LetBuyy's own Firebase and Maps client keys are now reviewed,
+            // value-bound exceptions (config/governance/secret-scan-exceptions.json), so they no longer
+            // reach this list, and a whole-app prefix rule here would absorb the next real finding in the
+            // same app. What remains is not a LetBuyy key at all: the Marketplace web service worker
+            // initialises Agrimore's agrii-mate Firebase project. A genuine finding, recorded for the owner.
+            if (path === 'apps/marketplace/mobile/web/firebase-messaging-sw.js') {
+                return 'another product\'s Firebase project (agrii-mate) in the Marketplace web service worker: genuine finding, owner action';
             }
             return null;
         },
@@ -69,7 +72,7 @@ function runValidator(name) {
 
 // Positive match on repository-path shape. Nothing here depends on the validator's phrasing.
 function offenderPaths(output) {
-    const pattern = /\b(?:apps|packages|services|scripts|config|database|tests|tools|docs|infra)\/[A-Za-z0-9_.@/-]+/g;
+    const pattern = /\b(?:apps|packages|services|scripts|config|database|tests|tools|docs|infra|reference)\/[A-Za-z0-9_.@/-]+/g;
     return [...new Set(output.match(pattern) || [])].sort();
 }
 
@@ -188,6 +191,8 @@ test('the classifiers are specific, not catch-alls', () => {
     const environment = KNOWN_REDS.find((r) => r.validator === 'environment-validator');
     assert.equal(environment.classify('services/api-gateway/src/routes/payments.ts'), null);
     assert.equal(environment.classify('packages/dart/marketplace_services/lib/src/other_service.dart'), null);
+    // The app's reviewed Firebase config is an exception now; a new offender beside it is a finding.
+    assert.equal(environment.classify('apps/marketplace/mobile/lib/firebase_options.dart'), null);
     // And each must still accept its own.
-    assert.ok(environment.classify('apps/marketplace/mobile/lib/firebase_options.dart'));
+    assert.ok(environment.classify('apps/marketplace/mobile/web/firebase-messaging-sw.js'));
 });
