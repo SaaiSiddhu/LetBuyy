@@ -3,12 +3,12 @@
 // Server Component context — including in a plain node:test run.
 //
 // `path` is the full request target, including any query string
-// (apiClientInputToLetbuyyApiPath appends `url.search`). The nine literal checks below are
+// (apiClientInputToLetbuyyApiPath appends `url.search`). The literal checks below are
 // exact-string `===` comparisons, so ANY call carrying a query param — which is most GET calls,
 // e.g. `?store_id=...&email=...` — failed every branch, silently skipped signing, and the
 // gateway correctly rejected the unsigned request. Match on the pathname alone (query string and
 // any trailing slash stripped) so the predicate is invariant to how the caller shaped the URL,
-// without changing which nine paths (plus the orders/contact pattern) are matched — this must
+// without changing which paths (the literals plus the orders/contact pattern) are matched — this must
 // stay an exact allowlist, never a prefix match, since these are internal-only endpoints and
 // widening the match would sign — and thus internally-authorize — more than intended.
 export function isStorefrontInternalOnlyPath(path: string): boolean {
@@ -22,5 +22,7 @@ export function isStorefrontInternalOnlyPath(path: string): boolean {
         || pathname === '/storefront/customer/order-credential/login'
         || pathname === '/storefront/customer/order-credential/login-success'
         || pathname === '/storefront/customer/order-stats'
+        // APPID-P4c: the gateway accepts a buyer's storefront session only through this server.
+        || pathname === '/storefront/buyer/storefront-session'
         || /^\/storefront\/[^/]+\/orders\/contact$/.test(pathname);
 }

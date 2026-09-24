@@ -207,6 +207,9 @@ function classifyAppApiRoute(file) {
   if (file.startsWith("apps/merchant/web/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/frozen/app-store/src/app/api/")) return "gateway-proxy";
   if (file.startsWith("apps/frozen/theme-store/src/app/api/")) return "gateway-proxy";
+  // APPID-P4c: the storefront's end of buyer sign-in. It holds the store-host __Host- cookies and asks
+  // identity-platform for the token; every database decision stays in the gateway.
+  if (file.startsWith("apps/commerce/web/src/app/api/buyer-auth/")) return "app-local-buyer-auth";
   if (file === "apps/commerce/web/src/app/api/customer/session/route.ts") return "app-local-session";
   if (file === "apps/commerce/web/src/app/api/customer/logout/route.ts") return "app-local-session";
   if (file === "apps/commerce/web/src/app/api/seed/route.ts") return "blocked-local-safety";
@@ -242,7 +245,9 @@ for (const file of appApiRoutes) {
 // app-local-buyer-auth: the step that asks the gateway for a code after the buyer chose to continue, and
 // the exchange that mints the storefront session. Both only call the gateway and sign; neither touches
 // a database. Added to config/eslint/boundary-baseline.json in the same commit.
-reporter.assert(appApiRoutes.length === 197, `App-local API route inventory changed without updating P4-4 classification: expected 197, found ${appApiRoutes.length}`);
+// APPID-P4c (2026-09-24) — 201: + apps/commerce/web/src/app/api/buyer-auth/{start,callback,session,logout},
+// class app-local-buyer-auth. Added to config/eslint/boundary-baseline.json in the same commit.
+reporter.assert(appApiRoutes.length === 201, `App-local API route inventory changed without updating P4-4 classification: expected 201, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {

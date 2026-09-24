@@ -111,13 +111,17 @@ const nextConfig: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      {
-        // Cache Next.js assets
-        source: '/_next/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
-      },
+      // Cache Next.js assets. Production only: a production build names each chunk by its content,
+      // so a year is safe; development serves every version of a chunk under one name, and a year
+      // (or even five minutes) of caching shows a developer code they have already changed.
+      ...(process.env.NODE_ENV === 'production'
+        ? [{
+            source: '/_next/static/:path*',
+            headers: [
+              { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+            ],
+          }]
+        : []),
       {
         // Cache images for 24 hours
         source: '/_next/image/:path*',
@@ -126,8 +130,19 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // All pages — security headers + short cache
-        source: '/:path*',
+        // API responses: security headers, and NO caching directive, so each route decides its own.
+        // (APPID-P4c) The page rule below used to reach /api/* too, and a Cache-Control here wins over
+        // the route's own, so every storefront API answer, sessions and profiles included, was sent
+        // `public, max-age=300` whatever the route said.
+        source: '/api/:path*',
+        headers: [
+          ...createSecurityHeaders({ frameAncestors }),
+        ],
+      },
+      {
+        // All pages — security headers + short cache. Not /api/* (above) and not /_next/* (Next's
+        // own assets, above): the last matching rule wins, and this one used to override both.
+        source: '/((?!api/|_next/).*)',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
           ...createSecurityHeaders({ frameAncestors }),
