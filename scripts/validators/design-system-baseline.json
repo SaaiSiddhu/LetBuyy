@@ -4,7 +4,7 @@
   "scope": {
     "themableSurfaces": "apps/*/src/**/*.{ts,tsx,css}",
     "exiledApps": [
-      "apps/marketing-site"
+      "apps/marketing/web"
     ],
     "inlineStyleCap": 673,
     "ratchetPerWavePercent": 10

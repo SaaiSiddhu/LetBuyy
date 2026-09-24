@@ -8,7 +8,7 @@ function read(path) {
 
 test('identity foundation flags default off and use strict true checks', () => {
   const authFlags = read('packages/auth-core/src/feature-flags.ts');
-  const identityFeatures = read('apps/identity-platform/src/lib/config/features.ts');
+  const identityFeatures = read('apps/platform/identity/src/lib/config/features.ts');
 
   for (const flag of [
     'FEATURE_IDENTITY_PROVIDER',
@@ -37,7 +37,7 @@ test('identity foundation flags default off and use strict true checks', () => {
 
 test('legacy cookie names and attributes remain the current golden surface', () => {
   const authCore = read('packages/auth-core/src/index.ts');
-  const identityCookies = read('apps/identity-platform/src/lib/auth/cookies.ts');
+  const identityCookies = read('apps/platform/identity/src/lib/auth/cookies.ts');
 
   assert.match(authCore, /LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session'/);
   assert.match(authCore, /LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session'/);

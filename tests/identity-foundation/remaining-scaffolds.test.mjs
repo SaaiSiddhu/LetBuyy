@@ -58,15 +58,15 @@ test('migration scaffolding writes only new identity foundation tables and dry-r
 
 test('OIDC skeleton exposes disabled routes plus callback and consent placeholders', () => {
   for (const route of [
-    'apps/identity-platform/src/app/.well-known/openid-configuration/route.ts',
-    'apps/identity-platform/src/app/.well-known/jwks.json/route.ts',
-    'apps/identity-platform/src/app/jwks/route.ts',
-    'apps/identity-platform/src/app/oauth2/authorize/route.ts',
-    'apps/identity-platform/src/app/oauth2/token/route.ts',
-    'apps/identity-platform/src/app/oauth2/userinfo/route.ts',
-    'apps/identity-platform/src/app/oauth2/logout/route.ts',
-    'apps/identity-platform/src/app/oauth2/callback/route.ts',
-    'apps/identity-platform/src/app/oauth2/consent/route.ts',
+    'apps/platform/identity/src/app/.well-known/openid-configuration/route.ts',
+    'apps/platform/identity/src/app/.well-known/jwks.json/route.ts',
+    'apps/platform/identity/src/app/jwks/route.ts',
+    'apps/platform/identity/src/app/oauth2/authorize/route.ts',
+    'apps/platform/identity/src/app/oauth2/token/route.ts',
+    'apps/platform/identity/src/app/oauth2/userinfo/route.ts',
+    'apps/platform/identity/src/app/oauth2/logout/route.ts',
+    'apps/platform/identity/src/app/oauth2/callback/route.ts',
+    'apps/platform/identity/src/app/oauth2/consent/route.ts',
   ]) {
     assert.match(read(route), /oidcSkeletonResponse/);
   }

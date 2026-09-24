@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import { dirname, resolve as resolvePath } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolvePlatformDomain } from "@letbuyy/shared-types";
-import { createSecurityHeaders } from "../../config/security/next-security-headers";
+import { createSecurityHeaders } from "../../../config/security/next-security-headers";
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
 

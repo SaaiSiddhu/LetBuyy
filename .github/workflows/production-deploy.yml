@@ -403,15 +403,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - app: marketing-site
+          - app: marketing/web
             project_id: PRODUCTION_MARKETING_PROJECT_ID
-          - app: identity-platform
+          - app: platform/identity
             project_id: PRODUCTION_IDENTITY_PROJECT_ID
-          - app: merchant_web
+          - app: merchant/web
             project_id: PRODUCTION_MERCHANT_PROJECT_ID
-          - app: customer_web
+          - app: commerce/web
             project_id: PRODUCTION_STOREFRONT_PROJECT_ID
-          - app: admin_web
+          - app: internal/console
             project_id: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID
     steps:
       - uses: actions/checkout@v4
@@ -448,9 +448,9 @@ jobs:
           WORKER_API_BASE_URL: https://api.letbuyy.com/v1
           AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET }}
           CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}
-          ACCOUNTS_COOKIE_SECRET: ${{ matrix.app == 'identity-platform' && secrets.PRODUCTION_ACCOUNTS_COOKIE_SECRET || '' }}
+          ACCOUNTS_COOKIE_SECRET: ${{ matrix.app == 'platform/identity' && secrets.PRODUCTION_ACCOUNTS_COOKIE_SECRET || '' }}
           LETBUYY_IDENTITY_ISSUER: https://accounts.letbuyy.com
-          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'identity-platform' && secrets.PRODUCTION_IDENTITY_PRIVATE_JWK || '' }}
+          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'platform/identity' && secrets.PRODUCTION_IDENTITY_PRIVATE_JWK || '' }}
           CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET }}
           INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}
           RESEND_API_KEY: ${{ secrets.PRODUCTION_RESEND_API_KEY }}

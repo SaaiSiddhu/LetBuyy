@@ -94,9 +94,9 @@ test('trust safety appeal SoD rejects the enforcing reviewer', () => {
 
 test('trust safety API client and operator pages are wired to real backend paths', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const consoleSource = repositorySource('apps/admin_web/src/app/(dashboard)/trust-safety/page.tsx');
-    const opsSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/trust-safety/page.tsx');
-    const opsLayoutSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/layout.tsx');
+    const consoleSource = repositorySource('apps/internal/console/src/app/(dashboard)/trust-safety/page.tsx');
+    const opsSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/trust-safety/page.tsx');
+    const opsLayoutSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/layout.tsx');
 
     assert.match(clientSource, /trustSafetyOverview/);
     assert.match(clientSource, /\/operations\/trust-safety\/overview/);

@@ -31,7 +31,7 @@
       "lcis_api_service"
     ],
     "mustBeHumanDecisionRequiredRationale": {
-      "mobile_merchant_app": "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md ART-04, AGENTS.md ARCH-R1 and LETBUYY_CANONICAL_SYSTEMS.md row 28 currently classify apps/merchant_app as CANONICAL with no V1 / V1.1 split. No ARB amendment authorising a V1.1 deferral was found. Wave 0 therefore MUST NOT record a deferral. Mobile work is preserved and must not be merged into the Web V1 integration branch.",
+      "mobile_merchant_app": "GOVERNANCE_REWRITE_2026_06_10/LETBUYY_CONSTITUTION.md ART-04, AGENTS.md ARCH-R1 and LETBUYY_CANONICAL_SYSTEMS.md row 28 currently classify apps/merchant/mobile as CANONICAL with no V1 / V1.1 split. No ARB amendment authorising a V1.1 deferral was found. Wave 0 therefore MUST NOT record a deferral. Mobile work is preserved and must not be merged into the Web V1 integration branch.",
       "lcis_api_service": "services/lcis-api is a real built Hono service (package @letbuyy/lcis-api, src + test + build/typecheck/test/start scripts) that appears in no governance topology document — not in the CLAUDE.md canonical runtime map, not in canonicalServiceRoots or reservedServiceRoots in scripts/validators/governance-common.mjs. Undocumented runtime; human classification required."
     },
     "forbiddenClassificationsFor": {
@@ -49,7 +49,7 @@
     },
     {
       "id": "ESC-DEFERRED-LIVE",
-      "summary": "Nine capabilities the Web V1 brief lists as deferred are already built, unflagged and navigation-reachable. There is no feature-flag pattern in apps/merchant_web/src or apps/customer_web/src.",
+      "summary": "Nine capabilities the Web V1 brief lists as deferred are already built, unflagged and navigation-reachable. There is no feature-flag pattern in apps/merchant/web/src or apps/commerce/web/src.",
       "owner": "human / ARB",
       "thisRegistryDoes": "Records each as WEB_V1_DEFERRED with its current activation baselined, so the set cannot grow. It disables nothing.",
       "evidence": "docs/launch/web-v1-wave-0-2026-08-09/08_WEB_V1_PERIMETER_AND_EXCLUSIONS.md Finding P-2"
@@ -79,63 +79,63 @@
   "newEvidenceBeyondPhase1": [
     "alternative_psps is NOT cleanly deferred. Stripe executes in the canonical gateway behind an env-var presence check only (ESC-STRIPE-LIVE). Phase 1 doc 07 §5 recorded the opposite and cited it as the model the other deferrals should follow; that conclusion is falsified at the gateway layer.",
     "A Wasm app-functions runtime is present in the canonical gateway source tree (ESC-WASM-APPFUNCTIONS). Phase 1 did not surface it.",
-    "apps/customer_web/src/app/store/[subdomain]/collections/[slug] is a live customer-facing collection page; Phase 1 recorded collections as a merchant-side capability only."
+    "apps/commerce/web/src/app/store/[subdomain]/collections/[slug] is a live customer-facing collection page; Phase 1 recorded collections as a merchant-side capability only."
   ],
   "knownActivationsBaseline": {
     "heading": "KNOWN VIOLATIONS BASELINE — NOT A CLEAN STATE",
     "statement": "Each signal below is an excluded, forbidden or unratified capability that is ALREADY ACTIVE at baselineSha ee3711829d857e986014c5811bb94d86ebc3d343. This list exists so the perimeter check can fail on growth. It is not permission, not an approval, and not evidence of compliance.",
     "recordedCount": 32,
     "signals": [
-      { "signal": "multi_variant_products::merchant_variant_editor", "evidence": "apps/merchant_web/src/app/[store]/products/new/page.tsx — variant matrix builder present, no gate", "expectedRemoval": false },
-      { "signal": "multi_variant_products::storefront_variant_selector", "evidence": "apps/customer_web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx — variant selection wired", "expectedRemoval": false },
-      { "signal": "collections::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
-      { "signal": "collections::merchant_api", "evidence": "apps/merchant_web/src/app/api/stores/[store]/collections/route.ts", "expectedRemoval": false },
-      { "signal": "collections::storefront_collection_page", "evidence": "apps/customer_web/src/app/store/[subdomain]/collections/[slug] — live customer-facing collection page", "expectedRemoval": false },
-      { "signal": "smart_collections::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/smart-collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "multi_variant_products::merchant_variant_editor", "evidence": "apps/merchant/web/src/app/[store]/products/new/page.tsx — variant matrix builder present, no gate", "expectedRemoval": false },
+      { "signal": "multi_variant_products::storefront_variant_selector", "evidence": "apps/commerce/web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx — variant selection wired", "expectedRemoval": false },
+      { "signal": "collections::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "collections::merchant_api", "evidence": "apps/merchant/web/src/app/api/stores/[store]/collections/route.ts", "expectedRemoval": false },
+      { "signal": "collections::storefront_collection_page", "evidence": "apps/commerce/web/src/app/store/[subdomain]/collections/[slug] — live customer-facing collection page", "expectedRemoval": false },
+      { "signal": "smart_collections::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx — nav-linked, no gate", "expectedRemoval": false },
       { "signal": "smart_collections::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/smart-collections', smartCollectionsRouter)", "expectedRemoval": false },
-      { "signal": "gift_cards::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/gift-cards/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "gift_cards::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx — nav-linked, no gate", "expectedRemoval": false },
       { "signal": "gift_cards::gateway_router_file", "evidence": "services/api-gateway/src/routes/gift-cards.ts", "expectedRemoval": false },
       { "signal": "gift_cards::gateway_registration", "evidence": "services/api-gateway/src/routes/products.ts — registerGiftCardRoutes(...) under /products/gift-cards*", "expectedRemoval": false },
-      { "signal": "staff_roles::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/settings/users/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
-      { "signal": "multi_location_inventory::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/locations/page.tsx — nav-linked, no gate", "expectedRemoval": false },
-      { "signal": "multi_location_inventory::merchant_api", "evidence": "apps/merchant_web/src/app/api/stores/[store]/inventory-locations", "expectedRemoval": false },
-      { "signal": "purchase_orders::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/purchase-orders/page.tsx — nav-linked, no gate", "expectedRemoval": false },
-      { "signal": "purchase_orders::merchant_api", "evidence": "apps/merchant_web/src/app/api/stores/[store]/purchase-orders", "expectedRemoval": false },
-      { "signal": "purchase_orders::suppliers_ui", "evidence": "apps/merchant_web/src/app/[store]/products/suppliers/page.tsx — nav-linked as Vendors", "expectedRemoval": false },
-      { "signal": "transfers::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/products/transfers/page.tsx — nav-linked, no gate", "expectedRemoval": false },
-      { "signal": "transfers::merchant_api", "evidence": "apps/merchant_web/src/app/api/stores/[store]/transfers", "expectedRemoval": false },
+      { "signal": "staff_roles::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/settings/users/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "multi_location_inventory::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/locations/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "multi_location_inventory::merchant_api", "evidence": "apps/merchant/web/src/app/api/stores/[store]/inventory-locations", "expectedRemoval": false },
+      { "signal": "purchase_orders::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/purchase-orders/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "purchase_orders::merchant_api", "evidence": "apps/merchant/web/src/app/api/stores/[store]/purchase-orders", "expectedRemoval": false },
+      { "signal": "purchase_orders::suppliers_ui", "evidence": "apps/merchant/web/src/app/[store]/products/suppliers/page.tsx — nav-linked as Vendors", "expectedRemoval": false },
+      { "signal": "transfers::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/products/transfers/page.tsx — nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "transfers::merchant_api", "evidence": "apps/merchant/web/src/app/api/stores/[store]/transfers", "expectedRemoval": false },
       { "signal": "whatsapp_sms_push::gateway_router_file", "evidence": "services/api-gateway/src/routes/whatsapp.ts", "expectedRemoval": false },
       { "signal": "whatsapp_sms_push::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/whatsapp', ...) / api.route('/wa', ...) with no feature gate", "expectedRemoval": false },
-      { "signal": "ai_features::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/ai/page.tsx — nav-linked as AI Studio", "expectedRemoval": false },
+      { "signal": "ai_features::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/ai/page.tsx — nav-linked as AI Studio", "expectedRemoval": false },
       { "signal": "ai_features::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/ai', aiRouter)", "expectedRemoval": false },
       { "signal": "headless_storefront_api::gateway_graphql_gate", "evidence": "services/api-gateway/src/index.ts — graphQLFeatureGate on /storefront/graphql and /graphql/storefront; middleware default is enabled outside production", "expectedRemoval": false },
-      { "signal": "custom_domains::merchant_ui", "evidence": "apps/merchant_web/src/app/[store]/settings/domains/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
+      { "signal": "custom_domains::merchant_ui", "evidence": "apps/merchant/web/src/app/[store]/settings/domains/page.tsx — settings-nav-linked, no gate", "expectedRemoval": false },
       { "signal": "custom_domains::gateway_mount", "evidence": "services/api-gateway/src/index.ts — api.route('/domains', ...) and api.route('/custom', ...)", "expectedRemoval": false },
       { "signal": "app_marketplace_backend::gateway_app_store_routes", "evidence": "services/api-gateway/src/routes/app-store/ — third-party app OAuth, billing and revenue share on the always-deployed gateway", "expectedRemoval": true },
-      { "signal": "app_bridge_host::merchant_bridge_client", "evidence": "apps/merchant_web/src/components/apps/EmbeddedAppBridgeClient.tsx — working postMessage extension host in a deploy target", "expectedRemoval": true },
+      { "signal": "app_bridge_host::merchant_bridge_client", "evidence": "apps/merchant/web/src/components/apps/EmbeddedAppBridgeClient.tsx — working postMessage extension host in a deploy target", "expectedRemoval": true },
       { "signal": "checkout_extensions::gateway_extension_gate", "evidence": "services/api-gateway/src/index.ts — extensionsFeatureGate mounted on /storefront/:subdomain/checkout/extensions and app-store extension routes", "expectedRemoval": true },
       { "signal": "alternative_psps::runtime_client_wiring", "evidence": "services/api-gateway/src/routes/payments.ts:13,1276 and services/api-gateway/src/routes/storefront/checkout-payment-routes.ts:23,993 — Stripe executes against c.env.STRIPE_SECRET_KEY (declared at index.ts:142). See escalation ESC-STRIPE-LIVE. Falsifies the Phase 1 'cleanly deferred' conclusion.", "expectedRemoval": false },
       { "signal": "third_party_runtime_execution::runtime_wiring", "evidence": "services/api-gateway/src/extensions/app-functions-runtime.ts:437 — WebAssembly.instantiate for third-party app functions; no importer found inside services/api-gateway/src, so present and compiled but not mounted. See escalation ESC-WASM-APPFUNCTIONS.", "expectedRemoval": true },
-      { "signal": "mobile_merchant_app::source_root", "evidence": "apps/merchant_app — Flutter runtime exists and is preserved. Recorded as EXISTENCE ONLY. This is not a deferral and not an in-scope decision; the governance chain still calls it CANONICAL.", "expectedRemoval": false },
+      { "signal": "mobile_merchant_app::source_root", "evidence": "apps/merchant/mobile — Flutter runtime exists and is preserved. Recorded as EXISTENCE ONLY. This is not a deferral and not an in-scope decision; the governance chain still calls it CANONICAL.", "expectedRemoval": false },
       { "signal": "lcis_api_service::source_root", "evidence": "services/lcis-api — built Hono service (@letbuyy/lcis-api) absent from every governance topology document. Recorded as EXISTENCE ONLY, pending human classification.", "expectedRemoval": false }
     ]
   },
   "capabilities": [
-    { "id": "merchant_web_auth", "title": "Merchant web authentication (two-issuer)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/identity-platform, services/api-gateway auth routes" },
-    { "id": "store_creation_and_publication", "title": "Store creation and publication", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/identity-platform create-store, apps/merchant_web" },
-    { "id": "storefront_host_routing", "title": "Storefront host routing", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/customer_web/src/proxy.ts" },
-    { "id": "single_variant_products", "title": "Single-variant products", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant_web products, services/api-gateway /products" },
-    { "id": "inventory_and_reservations", "title": "Inventory and reservations (single location)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant_web products/reservations, services/api-gateway /inventory" },
-    { "id": "cart", "title": "Cart", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/customer_web cart" },
-    { "id": "checkout", "title": "Checkout", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/customer_web checkout, services/api-gateway /checkout" },
+    { "id": "merchant_web_auth", "title": "Merchant web authentication (two-issuer)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/platform/identity, services/api-gateway auth routes" },
+    { "id": "store_creation_and_publication", "title": "Store creation and publication", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/platform/identity create-store, apps/merchant/web" },
+    { "id": "storefront_host_routing", "title": "Storefront host routing", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/commerce/web/src/proxy.ts" },
+    { "id": "single_variant_products", "title": "Single-variant products", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant/web products, services/api-gateway /products" },
+    { "id": "inventory_and_reservations", "title": "Inventory and reservations (single location)", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant/web products/reservations, services/api-gateway /inventory" },
+    { "id": "cart", "title": "Cart", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/commerce/web cart" },
+    { "id": "checkout", "title": "Checkout", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/commerce/web checkout, services/api-gateway /checkout" },
     { "id": "payments_razorpay_and_cod", "title": "Razorpay and COD payments", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /payments, /cod" },
     { "id": "canonical_money_ledger", "title": "Canonical money ledger", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "SECURITY DEFINER RPCs; enforced by scripts/validators/canonical-ledger-only-validator.mjs" },
-    { "id": "orders", "title": "Orders", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant_web orders, services/api-gateway /orders" },
+    { "id": "orders", "title": "Orders", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant/web orders, services/api-gateway /orders" },
     { "id": "fulfilment_and_tracking", "title": "Fulfilment and tracking", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /shipping, /shipping/labels, /returns" },
     { "id": "refunds", "title": "Refunds", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway refund path; step-up gated" },
     { "id": "coupons", "title": "Coupons", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /coupons, /discounts" },
     { "id": "gst_and_invoicing", "title": "GST and immutable invoicing", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /tax, /shipping-tax; merchant settings/taxes" },
-    { "id": "shipping", "title": "Shipping rates and zones", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant_web settings/shipping, services/api-gateway /shipping" },
+    { "id": "shipping", "title": "Shipping rates and zones", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "apps/merchant/web settings/shipping, services/api-gateway /shipping" },
     { "id": "single_theme_and_editor_path", "title": "One theme and one editor path", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "packages/theme-engine, merchant online-store/themes; ART-17 enforced by no-new-react-sections-validator.mjs" },
     { "id": "transactional_email", "title": "Transactional email", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "services/api-gateway /email, /notifications" },
     { "id": "account_privacy_and_legal_controls", "title": "Account, privacy and legal controls", "classification": "WEB_V1_REQUIRED", "enforcement": "none", "surface": "storefront account/privacy/terms, merchant settings/policies" },
@@ -148,8 +148,8 @@
       "enforcement": "ratchet",
       "note": "Already live and unflagged at baseline. Baselined, not permitted.",
       "probes": [
-        { "id": "merchant_variant_editor", "kind": "content", "files": ["apps/merchant_web/src/app/[store]/products/new/page.tsx"], "pattern": "buildVariantMatrix|VariantOption|normalizeApiVariants" },
-        { "id": "storefront_variant_selector", "kind": "content", "files": ["apps/customer_web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx"], "pattern": "selectedVariant|variantId" }
+        { "id": "merchant_variant_editor", "kind": "content", "files": ["apps/merchant/web/src/app/[store]/products/new/page.tsx"], "pattern": "buildVariantMatrix|VariantOption|normalizeApiVariants" },
+        { "id": "storefront_variant_selector", "kind": "content", "files": ["apps/commerce/web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx"], "pattern": "selectedVariant|variantId" }
       ]
     },
     {
@@ -158,10 +158,10 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/collections/page.tsx"] },
-        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant_web/src/app/api/stores/[store]/collections/route.ts"] },
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/collections/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant/web/src/app/api/stores/[store]/collections/route.ts"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/collections'" },
-        { "id": "storefront_collection_page", "kind": "path", "paths": ["apps/customer_web/src/app/store/[subdomain]/collections"] }
+        { "id": "storefront_collection_page", "kind": "path", "paths": ["apps/commerce/web/src/app/store/[subdomain]/collections"] }
       ]
     },
     {
@@ -170,7 +170,7 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/smart-collections/page.tsx"] },
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/smart-collections/page.tsx"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/smart-collections'" }
       ]
     },
@@ -181,10 +181,10 @@
       "enforcement": "ratchet",
       "note": "Merchant issuance is live at baseline. Storefront redemption at checkout is NOT live at baseline and is the primary new-activation probe.",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/gift-cards/page.tsx"] },
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx"] },
         { "id": "gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/gift-cards.ts"] },
         { "id": "gateway_registration", "kind": "content", "files": ["services/api-gateway/src/routes/products.ts"], "pattern": "registerGiftCardRoutes" },
-        { "id": "storefront_checkout_redemption", "kind": "content", "files": ["apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx"], "pattern": "gift.?card", "patternFlags": "i" }
+        { "id": "storefront_checkout_redemption", "kind": "content", "files": ["apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx"], "pattern": "gift.?card", "patternFlags": "i" }
       ]
     },
     {
@@ -193,7 +193,7 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/settings/users/page.tsx"] }
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/settings/users/page.tsx"] }
       ]
     },
     {
@@ -202,8 +202,8 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/locations/page.tsx"] },
-        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant_web/src/app/api/stores/[store]/inventory-locations"] }
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/locations/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant/web/src/app/api/stores/[store]/inventory-locations"] }
       ]
     },
     {
@@ -212,9 +212,9 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/purchase-orders/page.tsx"] },
-        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant_web/src/app/api/stores/[store]/purchase-orders"] },
-        { "id": "suppliers_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/suppliers/page.tsx"] }
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/purchase-orders/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant/web/src/app/api/stores/[store]/purchase-orders"] },
+        { "id": "suppliers_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/suppliers/page.tsx"] }
       ]
     },
     {
@@ -223,8 +223,8 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/products/transfers/page.tsx"] },
-        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant_web/src/app/api/stores/[store]/transfers"] }
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/products/transfers/page.tsx"] },
+        { "id": "merchant_api", "kind": "path", "paths": ["apps/merchant/web/src/app/api/stores/[store]/transfers"] }
       ]
     },
     {
@@ -236,7 +236,7 @@
       "probes": [
         { "id": "gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/whatsapp.ts"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(whatsapp|wa)'" },
-        { "id": "merchant_navigation_entry", "kind": "content", "files": ["apps/merchant_web/src/components/merchantNavigation.ts", "apps/merchant_web/src/components/settings/settings-navigation.ts"], "pattern": "whatsapp", "patternFlags": "i" },
+        { "id": "merchant_navigation_entry", "kind": "content", "files": ["apps/merchant/web/src/components/merchantNavigation.ts", "apps/merchant/web/src/components/settings/settings-navigation.ts"], "pattern": "whatsapp", "patternFlags": "i" },
         { "id": "sms_gateway_router_file", "kind": "path", "paths": ["services/api-gateway/src/routes/sms.ts"] }
       ]
     },
@@ -246,7 +246,7 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/ai/page.tsx"] },
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/ai/page.tsx"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/ai'" }
       ]
     },
@@ -259,7 +259,7 @@
       "probes": [
         { "id": "gateway_route_files", "kind": "path", "paths": ["services/api-gateway/src/routes/stripe.ts", "services/api-gateway/src/routes/paypal.ts", "services/api-gateway/src/routes/cashfree.ts", "services/api-gateway/src/routes/payu.ts", "services/api-gateway/src/routes/phonepe.ts"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(stripe|paypal|cashfree|payu|phonepe)'" },
-        { "id": "runtime_client_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "services/api-gateway/src"], "pattern": "stripeClient|paypalClient|cashfreeClient|createStripe|createPaypal|loadStripe" }
+        { "id": "runtime_client_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "services/api-gateway/src"], "pattern": "stripeClient|paypalClient|cashfreeClient|createStripe|createPaypal|loadStripe" }
       ]
     },
     {
@@ -270,7 +270,7 @@
       "note": "Distinct from LetBuyy's own SaaS plan billing, which is WEB_V1_REQUIRED. All probes INACTIVE at baseline.",
       "probes": [
         { "id": "gateway_route_file", "kind": "path", "paths": ["services/api-gateway/src/routes/subscriptions.ts"] },
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/customer_web/src", "services/api-gateway/src"], "pattern": "subscriptionPlanId|recurringOrder|subscription_commerce|recurringInterval" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/commerce/web/src", "services/api-gateway/src"], "pattern": "subscriptionPlanId|recurringOrder|subscription_commerce|recurringInterval" }
       ]
     },
     {
@@ -279,7 +279,7 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "services/api-gateway/src"], "pattern": "presentmentCurrency|multiCurrency|currencySwitcher|currency_conversion_rate" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "services/api-gateway/src"], "pattern": "presentmentCurrency|multiCurrency|currencySwitcher|currency_conversion_rate" }
       ]
     },
     {
@@ -299,7 +299,7 @@
       "classification": "WEB_V1_DEFERRED",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/admin_web/src", "services/api-gateway/src"], "pattern": "resellerProgram|reseller_program|resellerTier|whiteLabelPartner" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/internal/console/src", "services/api-gateway/src"], "pattern": "resellerProgram|reseller_program|resellerTier|whiteLabelPartner" }
       ]
     },
     {
@@ -309,7 +309,7 @@
       "enforcement": "ratchet",
       "note": "Task perimeter defers custom domains unless separately proven. Live at baseline; baselined, not permitted. A separate proof of readiness may reclassify this to WEB_V1_REQUIRED by human edit.",
       "probes": [
-        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant_web/src/app/[store]/settings/domains/page.tsx"] },
+        { "id": "merchant_ui", "kind": "path", "paths": ["apps/merchant/web/src/app/[store]/settings/domains/page.tsx"] },
         { "id": "gateway_mount", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "api\\.route\\('/(domains|custom)'" }
       ]
     },
@@ -334,8 +334,8 @@
       "governanceRefs": ["AGENTS.md NEVER-R3", "AGENTS.md AGENT-R13"],
       "note": "DO NOT EDIT under this workflow. Owned by codex/emergency-appbridge-killswitch.",
       "probes": [
-        { "id": "merchant_bridge_client", "kind": "path", "paths": ["apps/merchant_web/src/components/apps/EmbeddedAppBridgeClient.tsx"] },
-        { "id": "storefront_bridge_host", "kind": "scan", "roots": ["apps/customer_web/src"], "pattern": "AppBridge|createAdminUiExtensionBridgeContext" }
+        { "id": "merchant_bridge_client", "kind": "path", "paths": ["apps/merchant/web/src/components/apps/EmbeddedAppBridgeClient.tsx"] },
+        { "id": "storefront_bridge_host", "kind": "scan", "roots": ["apps/commerce/web/src"], "pattern": "AppBridge|createAdminUiExtensionBridgeContext" }
       ]
     },
     {
@@ -346,7 +346,7 @@
       "governanceRefs": ["LETBUYY_CONSTITUTION.md ART-16", "AGENTS.md NEVER-R3"],
       "probes": [
         { "id": "gateway_extension_gate", "kind": "content", "files": ["services/api-gateway/src/index.ts"], "pattern": "extensionsFeatureGate" },
-        { "id": "storefront_extension_render", "kind": "scan", "roots": ["apps/customer_web/src"], "pattern": "checkoutExtension|CheckoutExtension|renderExtensionSlot" }
+        { "id": "storefront_extension_render", "kind": "scan", "roots": ["apps/commerce/web/src"], "pattern": "checkoutExtension|CheckoutExtension|renderExtensionSlot" }
       ]
     },
     {
@@ -356,7 +356,7 @@
       "enforcement": "ratchet",
       "governanceRefs": ["AGENTS.md NEVER-R3"],
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "WebAssembly\\.(instantiate|compile)|isolated-vm|\\bvm2\\b|quickjs|new Function\\(" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "WebAssembly\\.(instantiate|compile)|isolated-vm|\\bvm2\\b|quickjs|new Function\\(" }
       ]
     },
     {
@@ -365,7 +365,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bCQRS\\b|CommandBus|QueryBus|commandHandlerRegistry" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bCQRS\\b|CommandBus|QueryBus|commandHandlerRegistry" }
       ]
     },
     {
@@ -374,7 +374,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bEventStore\\b|eventSourcing|aggregateVersion|rehydrateAggregate" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "\\bEventStore\\b|eventSourcing|aggregateVersion|rehydrateAggregate" }
       ]
     },
     {
@@ -383,7 +383,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "SagaOrchestrator|sagaOrchestrator|sagaStep|compensatingTransactionEngine" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "SagaOrchestrator|sagaOrchestrator|sagaStep|compensatingTransactionEngine" }
       ]
     },
     {
@@ -392,7 +392,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "multiRegion|regionFailover|MULTI_REGION|secondaryRegionEndpoint" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "multiRegion|regionFailover|MULTI_REGION|secondaryRegionEndpoint" }
       ]
     },
     {
@@ -401,7 +401,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "shardKey|databaseShard|shardId|shardRouter" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "shardKey|databaseShard|shardId|shardRouter" }
       ]
     },
     {
@@ -410,7 +410,7 @@
       "classification": "FORBIDDEN_FROZEN",
       "enforcement": "ratchet",
       "probes": [
-        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant_web/src", "apps/customer_web/src", "apps/identity-platform/src", "apps/admin_web/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "istio|linkerd|serviceMesh|envoyProxy|sidecarProxy", "patternFlags": "i" }
+        { "id": "runtime_wiring", "kind": "scan", "roots": ["apps/merchant/web/src", "apps/commerce/web/src", "apps/platform/identity/src", "apps/internal/console/src", "services/api-gateway/src", "services/mobile-bff/src", "services/webhook-service/src", "services/queue-workers/src"], "pattern": "istio|linkerd|serviceMesh|envoyProxy|sidecarProxy", "patternFlags": "i" }
       ]
     },
     {
@@ -438,12 +438,12 @@
 
     {
       "id": "mobile_merchant_app",
-      "title": "apps/merchant_app (Flutter merchant application)",
+      "title": "apps/merchant/mobile (Flutter merchant application)",
       "classification": "HUMAN_DECISION_REQUIRED",
       "enforcement": "ratchet",
       "humanDecisionNote": "The governance chain currently classifies this runtime as CANONICAL (Constitution ART-04, AGENTS.md ARCH-R1, LETBUYY_CANONICAL_SYSTEMS.md row 28) with no V1 / V1.1 split, and no ARB amendment authorising a V1.1 deferral exists. Wave 0 asserts NO deferral. The work is preserved and must not be merged into the Web V1 integration branch. This registry records existence only.",
       "probes": [
-        { "id": "source_root", "kind": "path", "paths": ["apps/merchant_app"] },
+        { "id": "source_root", "kind": "path", "paths": ["apps/merchant/mobile"] },
         { "id": "web_deploy_matrix_entry", "kind": "content", "files": [".github/workflows/production-deploy.yml"], "pattern": "app:\\s*merchant-app" }
       ]
     },

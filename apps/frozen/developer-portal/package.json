@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/developer-portal-capability-messaging.test.mjs tests/api-graphql/sdk-contract.test.mjs"
+    "test": "cd ../../.. && node --test tests/federation/developer-portal-capability-messaging.test.mjs tests/api-graphql/sdk-contract.test.mjs"
   },
   "dependencies": {
     "@letbuyy/ui": "workspace:*",

@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Merchant Control Plane",
-  "runtimeRoot": "apps/merchant_web",
+  "runtimeRoot": "apps/merchant/web",
   "actorType": [
     "merchant",
     "store-staff"
@@ -9,7 +9,7 @@
   "runtimeCategory": "next-app",
   "runtimeClassification": "merchant-web",
   "ownership": {
-    "sourceAuthority": "apps/merchant_web",
+    "sourceAuthority": "apps/merchant/web",
     "businessAuthority": "Merchant dashboard for store configuration, CMS, products, orders, themes, analytics, and settings.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -49,7 +49,7 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/merchant_web/next.config.ts"
+      "apps/merchant/web/next.config.ts"
     ]
   },
   "environmentAuthority": {

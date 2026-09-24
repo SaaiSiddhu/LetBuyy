@@ -1076,7 +1076,7 @@ export function registerStorefrontCustomerEngagementRoutes(
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('orders')
-            // Every column here is read by mapOrderDetailDrop in apps/customer_web/src/lib/customer-drop.ts.
+            // Every column here is read by mapOrderDetailDrop in apps/commerce/web/src/lib/customer-drop.ts.
             // Before F-ORDERDETAIL-1 the list stopped after created_at, so the nine fields below fell back
             // to 0 / '' / null / 'cod' / 'pending' and the customer order-detail page rendered a zero
             // subtotal, no discount, no shipping cost, an always-COD payment method and an always-pending

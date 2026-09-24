@@ -87,7 +87,7 @@ test('Task 015 event catalog and live-path registry cover auth/security outcomes
     const eventCore = repositorySource('packages/event-core/src/index.ts');
     const humanRequired = repositorySource('EXECUTABLE_HUMAN_REQUIRED.md');
     const liveSkips = repositorySource('tests/executable/human-required-live-paths.test.mjs');
-    const operationsPage = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx');
+    const operationsPage = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/operations/page.tsx');
 
     assert.match(eventCore, /'auth\.login'/);
     assert.match(eventCore, /'auth\.stepup'/);

@@ -25,7 +25,7 @@ test('gateway install/uninstall claim an Idempotency-Key and replay completed re
 });
 
 test('marketplace install route forwards the Idempotency-Key to the gateway (H9)', () => {
-  const route = read('apps/app-marketplace/src/app/api/apps/[id]/install/route.ts');
+  const route = read('apps/frozen/app-store/src/app/api/apps/[id]/install/route.ts');
   assert.match(route, /headers\.get\('idempotency-key'\)/);
   assert.match(route, /idempotencyKey \? \{ idempotencyKey \} : undefined/);
 });

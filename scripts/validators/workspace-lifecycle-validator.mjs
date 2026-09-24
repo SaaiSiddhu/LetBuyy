@@ -65,12 +65,26 @@ for (const [name, version] of Object.entries(rootPackage?.devDependencies ?? {})
 }
 
 for (const requiredPattern of [
-  '- "apps/*"',
-  '- "apps/mobile/*"',
+  // D-APP-LAYOUT (Amendment 3, 2026-09-24): every Next application root is listed explicitly.
+  '- "apps/commerce/web"',
+  '- "apps/merchant/web"',
+  '- "apps/platform/identity"',
+  '- "apps/internal/console"',
+  '- "apps/marketing/web"',
+  '- "apps/frozen/app-store"',
+  '- "apps/frozen/theme-store"',
+  '- "apps/frozen/developer-portal"',
+  '- "apps/frozen/operations-portal"',
   '- "packages/typescript/*"',
   '- "services/*"',
 ]) {
   reporter.assert(workspace.includes(requiredPattern), `pnpm workspace missing required pattern ${requiredPattern}`);
+}
+
+// A recursive or container-wide apps glob would enroll whatever lands under a container next, and
+// reference/ donor source must never become a workspace member (Amendment 3's REFERENCE class).
+for (const forbiddenPattern of ['"apps/*"', '"apps/**"', '"apps/*/*"', '"reference/', '"apps/deferred/', '"apps/reserved/']) {
+  reporter.assert(!workspace.includes(forbiddenPattern), `pnpm workspace must not include the pattern ${forbiddenPattern}`);
 }
 
 for (const requiredPackage of [

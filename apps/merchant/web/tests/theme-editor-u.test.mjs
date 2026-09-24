@@ -34,7 +34,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../../../..', import.meta.url).pathname;
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8');
@@ -43,7 +43,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant_web/src';
+const MCP_BASE = 'apps/merchant/web/src';
 const CONTROLS_DIR = `${MCP_BASE}/components/theme-editor/controls`;
 const RENDERER = `${MCP_BASE}/components/theme-editor/SchemaFormRenderer.tsx`;
 const THEME_SCHEMAS = `${MCP_BASE}/lib/theme-schemas.ts`;

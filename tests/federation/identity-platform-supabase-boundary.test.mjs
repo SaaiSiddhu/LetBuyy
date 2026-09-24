@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-const appRoot = 'apps/identity-platform';
+const appRoot = 'apps/platform/identity';
 
 function read(path) {
   return readFileSync(path, 'utf8');

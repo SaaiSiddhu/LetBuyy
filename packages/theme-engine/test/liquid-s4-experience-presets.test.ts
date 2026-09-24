@@ -254,7 +254,7 @@ test('Defect 2: resolveExperiencePresetItems returns an empty array (not a throw
 });
 
 test('Defect 2: ExperiencePicker fails soft on zero presets — source contains an explained empty state, not a blank panel', () => {
-  const picker = readAppFile('../../../apps/merchant_web/src/components/theme-editor/ExperiencePicker.tsx');
+  const picker = readAppFile('../../../apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx');
   assert.match(picker, /presets\.length === 0/, 'must branch on an empty preset list');
   assert.match(picker, /No Experiences on this theme yet/, 'must explain the empty state to the merchant, not render blank');
 });
@@ -311,11 +311,11 @@ test('W3: applying preset A then preset B lands cleanly on B\'s values, with no 
 });
 
 test('W3/Defect 2: no second preset system — ExperiencePicker takes presets as a prop (not the registry); the editor page resolves them from settings_data.presets', () => {
-  const picker = readAppFile('../../../apps/merchant_web/src/components/theme-editor/ExperiencePicker.tsx');
+  const picker = readAppFile('../../../apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx');
   assert.equal(/listExperiences\(\s*\)/.test(picker), false, 'ExperiencePicker must not call the registry\'s listExperiences() itself — presets come from the bundle, passed in as a prop');
   assert.match(picker, /presets: ExperiencePresetItem\[\]/, 'presets must be a typed prop');
 
-  const editorPage = readAppFile('../../../apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+  const editorPage = readAppFile('../../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
   assert.match(editorPage, /resolveExperiencePresetItems/, 'the editor page must resolve presets from the loaded settings_data.presets');
   assert.equal(/getExperience\(experienceId\)/.test(editorPage), false, 'applyExperience must no longer look a preset up in the registry by id');
   assert.equal(/\bbuildExperienceSettingsOverlay\(/.test(editorPage), false, 'the editor page must no longer recompute overlay values — it reads them from the resolved bundle preset');

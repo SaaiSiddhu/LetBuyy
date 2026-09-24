@@ -5,7 +5,7 @@
 /// public endpoints and publishable identifiers belong here. Signing material, service-role keys and
 /// provider secrets stay server-side.
 ///
-/// The pattern deliberately matches `apps/merchant_app/lib/config/app_config.dart`
+/// The pattern deliberately matches `apps/merchant/mobile/lib/config/app_config.dart`
 /// (`String.fromEnvironment` with a production default) rather than inventing a second convention.
 class AppConfig {
   AppConfig._();

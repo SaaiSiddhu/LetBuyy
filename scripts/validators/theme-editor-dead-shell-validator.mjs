@@ -25,7 +25,7 @@ const archivedHooks = [
 
 for (const component of archivedComponents) {
   reporter.assert(
-    !exists(`apps/merchant_web/src/components/theme-editor/${component}.tsx`),
+    !exists(`apps/merchant/web/src/components/theme-editor/${component}.tsx`),
     `theme editor dead shell component ${component}.tsx must stay out of active source`,
   );
   reporter.assert(
@@ -36,7 +36,7 @@ for (const component of archivedComponents) {
 
 for (const hook of archivedHooks) {
   reporter.assert(
-    !exists(`apps/merchant_web/src/hooks/${hook}.ts`),
+    !exists(`apps/merchant/web/src/hooks/${hook}.ts`),
     `theme editor dead shell hook ${hook}.ts must stay out of active source`,
   );
   reporter.assert(
@@ -46,15 +46,15 @@ for (const hook of archivedHooks) {
 }
 
 reporter.assert(
-  exists("apps/merchant_web/src/components/theme-editor/CenterPanel.tsx"),
+  exists("apps/merchant/web/src/components/theme-editor/CenterPanel.tsx"),
   "live theme editor CenterPanel must remain active because the editor page imports it",
 );
 reporter.assert(
-  exists("apps/merchant_web/src/components/theme-editor/SchemaFormRenderer.tsx"),
+  exists("apps/merchant/web/src/components/theme-editor/SchemaFormRenderer.tsx"),
   "live theme editor SchemaFormRenderer must remain active because the editor page imports it",
 );
 
-const editorPage = readFile("apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx");
+const editorPage = readFile("apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx");
 reporter.assert(
   editorPage.includes("import CenterPanel from '@/components/theme-editor/CenterPanel'"),
   "theme editor page must keep using the live CenterPanel implementation",
@@ -73,7 +73,7 @@ const forbiddenSpecifiers = [
 ];
 
 const activeRefs = trackedFiles.filter((file) => {
-  if (!file.startsWith("apps/merchant_web/src/")) return false;
+  if (!file.startsWith("apps/merchant/web/src/")) return false;
   if (!/\.(?:ts|tsx)$/.test(file)) return false;
   const source = readFile(file);
   return forbiddenSpecifiers.some((specifier) => source.includes(specifier));

@@ -139,7 +139,7 @@ packages/typescript/*/dist/
 key.jks
 *.jks
 **/build/
-apps/mobile/**/build/
+apps/reserved/**/build/
 packages/dart/**/build/
 *.dill
 *.dill.track.dill
@@ -208,4 +208,4 @@ graphify-out/launch-command-center.json
 .tmp/
 
 # S1/W4 render-parity harness — temp per-run React section copies with mocked Next.js imports.
-apps/storefront-runtime/src/__liquid_parity_harness__/
+apps/commerce/web/src/__liquid_parity_harness__/

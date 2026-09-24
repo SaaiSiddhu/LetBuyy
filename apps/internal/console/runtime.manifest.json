@@ -1,14 +1,14 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Platform Console",
-  "runtimeRoot": "apps/admin_web",
+  "runtimeRoot": "apps/internal/console",
   "actorType": [
     "platform-operator"
   ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "platform-governance-control-plane",
   "ownership": {
-    "sourceAuthority": "apps/admin_web",
+    "sourceAuthority": "apps/internal/console",
     "businessAuthority": "Super-admin governance surface for platform users, stores, subscriptions, employees, analytics, MFA, settings, and audit logs.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -46,7 +46,7 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/admin_web/next.config.ts"
+      "apps/internal/console/next.config.ts"
     ]
   },
   "environmentAuthority": {

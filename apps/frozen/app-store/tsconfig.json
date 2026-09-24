@@ -24,10 +24,10 @@
     ],
     "paths": {
       "@letbuyy/api-client": [
-        "../../packages/typescript/api-client/src/index.ts"
+        "../../../packages/typescript/api-client/src/index.ts"
       ],
       "@letbuyy/shared-types": [
-        "../../packages/shared-types/src/index.ts"
+        "../../../packages/shared-types/src/index.ts"
       ],
       "@/*": [
         "./src/*"
@@ -45,5 +45,5 @@
   "exclude": [
     "node_modules"
   ],
-  "extends": "../../tsconfig.base.json"
+  "extends": "../../../tsconfig.base.json"
 }

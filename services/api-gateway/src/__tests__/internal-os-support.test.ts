@@ -77,9 +77,9 @@ test('support operations routes enforce scopes, reason capture, audit, SLA, CSAT
 
 test('support API client and operations portal expose real ticket workspace methods', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const ticketPageSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/tickets/page.tsx');
-    const dashboardSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/page.tsx');
-    const moduleProbeSource = repositorySource('apps/platform-operations-portal/src/lib/api/employee-modules.ts');
+    const ticketPageSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/tickets/page.tsx');
+    const dashboardSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/page.tsx');
+    const moduleProbeSource = repositorySource('apps/frozen/operations-portal/src/lib/api/employee-modules.ts');
 
     for (const method of [
         'supportOverview',

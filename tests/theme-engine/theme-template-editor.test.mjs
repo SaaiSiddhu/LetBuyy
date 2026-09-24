@@ -8,10 +8,10 @@ const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
 const API_CLIENT_SOURCE = 'packages/typescript/api-client/src/index.ts';
 const GATEWAY_ROUTE_SOURCE = 'services/api-gateway/src/routes/themes.ts';
 const THEME_EXECUTION_SOURCE = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
-const EDITOR_ROUTE_SOURCE = 'apps/merchant_web/src/app/api/themes/[themeId]/editor/route.ts';
-const DRAFT_ROUTE_SOURCE = 'apps/merchant_web/src/app/api/themes/[themeId]/editor/draft/route.ts';
-const EDITOR_PAGE_SOURCE = 'apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx';
-const MOBILE_THEME_SERVICE_SOURCE = 'apps/merchant_app/lib/services/theme_service.dart';
+const EDITOR_ROUTE_SOURCE = 'apps/merchant/web/src/app/api/themes/[themeId]/editor/route.ts';
+const DRAFT_ROUTE_SOURCE = 'apps/merchant/web/src/app/api/themes/[themeId]/editor/draft/route.ts';
+const EDITOR_PAGE_SOURCE = 'apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx';
+const MOBILE_THEME_SERVICE_SOURCE = 'apps/merchant/mobile/lib/services/theme_service.dart';
 
 function read(path) {
   return readFileSync(path, 'utf8');

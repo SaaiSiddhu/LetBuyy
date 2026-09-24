@@ -27,34 +27,34 @@
         "./src/*"
       ],
       "@letbuyy/auth-core": [
-        "../../packages/auth-core/src/index.ts"
+        "../../../packages/auth-core/src/index.ts"
       ],
       "@letbuyy/billing-core": [
-        "../../packages/billing-core/src/index.ts"
+        "../../../packages/billing-core/src/index.ts"
       ],
       "@letbuyy/checkout-core": [
-        "../../packages/checkout-core/src/index.ts"
+        "../../../packages/checkout-core/src/index.ts"
       ],
       "@letbuyy/cms-core": [
-        "../../packages/cms-core/src/index.ts"
+        "../../../packages/cms-core/src/index.ts"
       ],
       "@letbuyy/commerce-core": [
-        "../../packages/commerce-core/src/index.ts"
+        "../../../packages/commerce-core/src/index.ts"
       ],
       "@letbuyy/event-core": [
-        "../../packages/event-core/src/index.ts"
+        "../../../packages/event-core/src/index.ts"
       ],
       "@letbuyy/notification-core": [
-        "../../packages/notification-core/src/index.ts"
+        "../../../packages/notification-core/src/index.ts"
       ],
       "@letbuyy/shared-types": [
-        "../../packages/shared-types/src/index.ts"
+        "../../../packages/shared-types/src/index.ts"
       ],
       "@letbuyy/tenant-core": [
-        "../../packages/tenant-core/src/index.ts"
+        "../../../packages/tenant-core/src/index.ts"
       ],
       "@letbuyy/theme-engine": [
-        "../../packages/theme-engine/src/index.ts"
+        "../../../packages/theme-engine/src/index.ts"
       ]
     }
   },
@@ -69,5 +69,5 @@
   "exclude": [
     "node_modules"
   ],
-  "extends": "../../tsconfig.base.json"
+  "extends": "../../../tsconfig.base.json"
 }

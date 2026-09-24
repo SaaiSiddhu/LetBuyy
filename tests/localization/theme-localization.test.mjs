@@ -6,9 +6,9 @@ import ts from 'typescript';
 import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const THEME_BUNDLE_SOURCE = 'packages/theme-engine/src/theme-bundle.ts';
-const ADMIN_LOCALES_SOURCE = 'apps/merchant_web/src/lib/i18n/admin-locales.ts';
-const STOREFRONT_STORE_SERVICE_SOURCE = 'apps/customer_web/src/lib/store-service.ts';
-const ADMIN_SETTINGS_PAGE_SOURCE = 'apps/merchant_web/src/app/[store]/settings/general/page.tsx';
+const ADMIN_LOCALES_SOURCE = 'apps/merchant/web/src/lib/i18n/admin-locales.ts';
+const STOREFRONT_STORE_SERVICE_SOURCE = 'apps/commerce/web/src/lib/store-service.ts';
+const ADMIN_SETTINGS_PAGE_SOURCE = 'apps/merchant/web/src/app/[store]/settings/general/page.tsx';
 const STORES_ROUTE_SOURCE = 'services/api-gateway/src/routes/stores.ts';
 
 function createSchema(parseFn = (value) => ({ success: true, data: value })) {

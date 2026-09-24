@@ -254,7 +254,7 @@ const SEED_OBJECTIVES = [
         target: 'yes',
         current: 'yes',
         met: true,
-        source: 'apps/identity-platform/src/app/onboarding/page.tsx (CONNECTED)',
+        source: 'apps/platform/identity/src/app/onboarding/page.tsx (CONNECTED)',
         connected: true,
       },
       {
@@ -262,7 +262,7 @@ const SEED_OBJECTIVES = [
         target: 'yes',
         current: 'partial',
         met: false,
-        source: 'apps/identity-platform/src/app/api/auth/create-store/route.ts (CONNECTED — needs theme assign)',
+        source: 'apps/platform/identity/src/app/api/auth/create-store/route.ts (CONNECTED — needs theme assign)',
         connected: true,
       },
       {

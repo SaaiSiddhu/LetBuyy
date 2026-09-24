@@ -60,7 +60,7 @@ export const COOKIE_NAMES = {
  *     this cookie via the parent domain, so one login at the accounts app is
  *     valid across all of them (SSO).
  *   • Storefronts use HOST-ONLY customer cookies in a separate realm
- *     (apps/customer_web/src/lib/session.ts — no `domain` attribute).
+ *     (apps/commerce/web/src/lib/session.ts — no `domain` attribute).
  *     The two realms never share a cookie; that is the tenant-isolation guarantee.
  *     NEVER set a parent-domain attribute on a storefront cookie.
  *

@@ -48,7 +48,7 @@ before(() => {
 
 describe('PrInput zod validation', () => {
   it('accepts valid input with changedFiles only', () => {
-    const parsed = PrInputSchema.parse({ changedFiles: ['apps/identity-platform/src/auth/route.ts'] });
+    const parsed = PrInputSchema.parse({ changedFiles: ['apps/platform/identity/src/auth/route.ts'] });
     assert.equal(parsed.changedFiles.length, 1);
     assert.equal(parsed.changedSymbols, undefined);
   });
@@ -88,19 +88,19 @@ describe('filePathToDomain heuristics', () => {
   });
 
   it('maps identity-platform auth file → authentication', () => {
-    assert.equal(filePathToDomain('apps/identity-platform/src/app/api/auth/session/route.ts'), 'authentication');
+    assert.equal(filePathToDomain('apps/platform/identity/src/app/api/auth/session/route.ts'), 'authentication');
   });
 
   it('maps orders page → orders', () => {
-    assert.equal(filePathToDomain('apps/merchant_web/src/app/[store]/orders/page.tsx'), 'orders');
+    assert.equal(filePathToDomain('apps/merchant/web/src/app/[store]/orders/page.tsx'), 'orders');
   });
 
   it('maps inventory page → inventory', () => {
-    assert.equal(filePathToDomain('apps/merchant_web/src/app/[store]/products/inventory/page.tsx'), 'inventory');
+    assert.equal(filePathToDomain('apps/merchant/web/src/app/[store]/products/inventory/page.tsx'), 'inventory');
   });
 
   it('maps customer-web → storefront', () => {
-    assert.equal(filePathToDomain('apps/customer_web/src/proxy.ts'), 'storefront');
+    assert.equal(filePathToDomain('apps/commerce/web/src/proxy.ts'), 'storefront');
   });
 
   it('maps theme-engine → themes', () => {
@@ -132,7 +132,7 @@ describe('matchesAny sensitivity patterns', () => {
   });
 
   it('AUTH_PATTERNS match session file', () => {
-    assert.ok(matchesAny('apps/identity-platform/src/lib/auth/cookies.ts', AUTH_PATTERNS));
+    assert.ok(matchesAny('apps/platform/identity/src/lib/auth/cookies.ts', AUTH_PATTERNS));
   });
 
   it('AUTH_PATTERNS match jwt reference', () => {
@@ -160,8 +160,8 @@ describe('matchesAny sensitivity patterns', () => {
   });
 
   it('no false positive on unrelated file', () => {
-    assert.ok(!matchesAny('apps/marketing-site/src/app/globals.css', PAYMENT_PATTERNS));
-    assert.ok(!matchesAny('apps/marketing-site/src/app/globals.css', AUTH_PATTERNS));
+    assert.ok(!matchesAny('apps/marketing/web/src/app/globals.css', PAYMENT_PATTERNS));
+    assert.ok(!matchesAny('apps/marketing/web/src/app/globals.css', AUTH_PATTERNS));
   });
 });
 
@@ -173,7 +173,7 @@ describe('analyzePr — docs-only change', () => {
   before(async () => {
     resetEngine();
     report = await analyzePr(
-      { changedFiles: ['docs/architecture/overview.md', 'README.md', 'apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['docs/architecture/overview.md', 'README.md', 'apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
   });
@@ -302,7 +302,7 @@ describe('analyzePr — auth/session change', () => {
   before(async () => {
     resetEngine();
     report = await analyzePr(
-      { changedFiles: ['apps/identity-platform/src/lib/auth/cookies.ts'] },
+      { changedFiles: ['apps/platform/identity/src/lib/auth/cookies.ts'] },
       makeStubEngine(),
     );
   });
@@ -331,9 +331,9 @@ describe('analyzePr — cross-domain PR', () => {
     report = await analyzePr(
       {
         changedFiles: [
-          'apps/merchant_web/src/app/[store]/orders/page.tsx',
-          'apps/merchant_web/src/app/[store]/products/inventory/page.tsx',
-          'apps/customer_web/src/proxy.ts',
+          'apps/merchant/web/src/app/[store]/orders/page.tsx',
+          'apps/merchant/web/src/app/[store]/products/inventory/page.tsx',
+          'apps/commerce/web/src/proxy.ts',
         ],
       },
       makeStubEngine(),
@@ -393,7 +393,7 @@ describe('analyzePr — frozen app touch', () => {
   before(async () => {
     resetEngine();
     report = await analyzePr(
-      { changedFiles: ['apps/app-marketplace/src/pages/listing.tsx'] },
+      { changedFiles: ['apps/frozen/app-store/src/pages/listing.tsx'] },
       makeStubEngine(),
     );
   });
@@ -427,7 +427,7 @@ describe('analyzePr — determinism', () => {
   });
 
   it('same input produces same validationWarnings count', async () => {
-    const input = { changedFiles: ['apps/identity-platform/src/lib/auth/cookies.ts'] };
+    const input = { changedFiles: ['apps/platform/identity/src/lib/auth/cookies.ts'] };
     const stub = makeStubEngine();
     resetEngine();
     const r1 = await analyzePr(input, stub);
@@ -450,7 +450,7 @@ describe('renderComment — shape', () => {
         changedFiles: [
           'services/api-gateway/src/routes/payment/razorpay-verify.ts',
           'database/supabase/migrations/178_x.sql',
-          'apps/identity-platform/src/lib/auth/cookies.ts',
+          'apps/platform/identity/src/lib/auth/cookies.ts',
         ],
       },
       makeStubEngine(),
@@ -516,7 +516,7 @@ describe('renderJson', () => {
   it('produces valid JSON', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     const json = renderJson(report);
@@ -540,7 +540,7 @@ describe('renderSummary', () => {
   it('contains LCIS PR Summary heading', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     const summary = renderSummary(report);
@@ -571,7 +571,7 @@ describe('evidence trail', () => {
   it('every file-mapped domain produces evidence', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/identity-platform/src/lib/auth/cookies.ts'] },
+      { changedFiles: ['apps/platform/identity/src/lib/auth/cookies.ts'] },
       makeStubEngine(),
     );
     const fileEvidence = report.evidence.filter((e) => e.kind === 'file');
@@ -581,7 +581,7 @@ describe('evidence trail', () => {
   it('evidence entries have non-empty ref', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
     );
     for (const e of report.evidence) {

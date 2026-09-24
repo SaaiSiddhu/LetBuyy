@@ -2,13 +2,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const TEMPLATE_RESOLVER_SOURCE = 'apps/customer_web/src/lib/theme-engine/template-resolver.ts';
-const COMPOSITION_ENGINE_SOURCE = 'apps/customer_web/src/lib/theme-engine/composition-engine.tsx';
-const DATA_BINDING_SOURCE = 'apps/customer_web/src/lib/theme-engine/data-binding-engine.ts';
-const STOREFRONT_TYPES_SOURCE = 'apps/customer_web/src/lib/theme-engine/types.ts';
-const STOREFRONT_GLOBALS_SOURCE = 'apps/customer_web/src/app/globals.css';
-const CUSTOMER_DROP_SOURCE = 'apps/customer_web/src/lib/customer-drop.ts';
-const LAYOUT_SOURCE = 'apps/customer_web/src/app/store/[subdomain]/layout.tsx';
+const TEMPLATE_RESOLVER_SOURCE = 'apps/commerce/web/src/lib/theme-engine/template-resolver.ts';
+const COMPOSITION_ENGINE_SOURCE = 'apps/commerce/web/src/lib/theme-engine/composition-engine.tsx';
+const DATA_BINDING_SOURCE = 'apps/commerce/web/src/lib/theme-engine/data-binding-engine.ts';
+const STOREFRONT_TYPES_SOURCE = 'apps/commerce/web/src/lib/theme-engine/types.ts';
+const STOREFRONT_GLOBALS_SOURCE = 'apps/commerce/web/src/app/globals.css';
+const CUSTOMER_DROP_SOURCE = 'apps/commerce/web/src/lib/customer-drop.ts';
+const LAYOUT_SOURCE = 'apps/commerce/web/src/app/store/[subdomain]/layout.tsx';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -240,7 +240,7 @@ test('D7 font loading wires experience fonts for active theme settings', () => {
 });
 
 test('customer register route and Liquid form support the no-JS form submit path', () => {
-  const routeSource = read('apps/customer_web/src/app/api/customer/register/route.ts');
+  const routeSource = read('apps/commerce/web/src/app/api/customer/register/route.ts');
   // The route must parse both JSON and HTML form submissions (an HTML form posts
   // application/x-www-form-urlencoded; request.json() alone would throw a 500).
   assert.match(routeSource, /request\.formData\(\)/);
@@ -280,7 +280,7 @@ test('F5 chrome-fallback seam: composition-engine renders React chrome on Liquid
 });
 
 test('F6 proxy password gate accepts both JSON and urlencoded form bodies', () => {
-  const proxySource = read('apps/customer_web/src/proxy.ts');
+  const proxySource = read('apps/commerce/web/src/proxy.ts');
 
   // F6: handlePasswordSubmit must branch on Content-Type.
   assert.match(proxySource, /application\/x-www-form-urlencoded/);
@@ -296,7 +296,7 @@ test('F6 proxy password gate accepts both JSON and urlencoded form bodies', () =
 });
 
 test('F7-Lane-B lb-logout island is registered and implements progressive-enhancement POST logout', () => {
-  const source = read('apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx');
+  const source = read('apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx');
 
   // lb-logout must be defined as a custom element.
   assert.match(source, /class LbLogoutElement/);

@@ -24,7 +24,7 @@ const PROVIDER_LIB = 'services/api-gateway/src/lib/domain-provider.ts';
 const HEALTH_LIB = 'services/api-gateway/src/lib/custom-domain-health.ts';
 const DNS_LIB = 'services/api-gateway/src/lib/dns.ts';
 const VERCEL_LIB = 'services/api-gateway/src/lib/vercel-domains.ts';
-const PROXY = 'apps/customer_web/src/proxy.ts';
+const PROXY = 'apps/commerce/web/src/proxy.ts';
 const RESOLVER = 'services/api-gateway/src/middleware/store-context.ts';
 
 function structure() {

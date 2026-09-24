@@ -16,11 +16,11 @@ const dartClientSource = readFileSync(
     'utf8',
 );
 const mobileServiceSource = readFileSync(
-    new URL('../../../../apps/merchant_app/lib/services/analytics_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant/mobile/lib/services/analytics_service.dart', import.meta.url),
     'utf8',
 );
 const mobileScreenSource = readFileSync(
-    new URL('../../../../apps/merchant_app/lib/screens/analytics/analytics_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant/mobile/lib/screens/analytics/analytics_screen.dart', import.meta.url),
     'utf8',
 );
 

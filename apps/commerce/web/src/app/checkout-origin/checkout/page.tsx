@@ -145,7 +145,7 @@ export default async function CheckoutOriginPage({
 
     const brandingInput = await loadBranding(verified.siteId);
     // T8/W2 — resolved from the store's own already-computed templateConfig.themeSettings (the
-    // exact same object apps/customer_web/src/app/store/[subdomain]/layout.tsx derives the
+    // exact same object apps/commerce/web/src/app/store/[subdomain]/layout.tsx derives the
     // real storefront's CSS variables from — see mapSupabaseToStore in lib/store-service.ts), so
     // checkout inherits the merchant's real theme without a second configuration step. The
     // store_branding row (brandingInput) layers a checkout-specific override on top where set.

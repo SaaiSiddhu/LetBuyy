@@ -22,7 +22,7 @@
  *   inline styles / arbitrary radius-shadow classes).
  *
  * Scope:
- *   Themable surfaces are app source TS/TSX/CSS files, except apps/marketing-site,
+ *   Themable surfaces are app source TS/TSX/CSS files, except apps/marketing/web,
  *   which is intentionally exiled from the Wave 5 score until a product-owned token
  *   migration decision is made.
  *
@@ -47,7 +47,7 @@ const TOKEN_LAYER = [
     'config/tailwind',
 ];
 
-const EXILED_APP_ROOTS = new Set(['apps/marketing-site']);
+const EXILED_APP_ROOTS = new Set(['apps/marketing/web']);
 const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist', 'build', 'coverage', 'storybook-screenshots', '.git']);
 
 function walk(dir, exts, out = []) {
@@ -74,43 +74,45 @@ const appSourceFiles = walk(APPS_DIR, ['.tsx', '.ts']).filter((f) => !isExiledAp
 const tsxSurfaceFiles = appSourceFiles.filter((f) => f.endsWith('.tsx'));
 const layoutFiles = appSourceFiles.filter((f) => /\/app\/layout\.tsx$/.test(rel(f)));
 const localWorkspaceFiles = [
-    join(ROOT, 'apps', 'admin-web', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
-    join(ROOT, 'apps', 'platform-operations-portal', 'src', 'components', '_local-ui', 'ops-workspace.tsx'),
+    // D-APP-LAYOUT paths. The first entry named 'admin-web' (a dash, a folder that never existed) from
+    // Phase M until 2026-09-24, so existsSync dropped it and the console's workspace went unchecked.
+    join(ROOT, 'apps', 'internal', 'console', 'src', 'components', '_local-ui', 'console-workspace.tsx'),
+    join(ROOT, 'apps', 'frozen', 'operations-portal', 'src', 'components', '_local-ui', 'ops-workspace.tsx'),
 ].filter(existsSync);
 const darkModeReachabilityTargets = [
     {
         surface: 'customer-web',
-        files: ['apps/customer_web/src/app/storefront-landing.tsx'],
+        files: ['apps/commerce/web/src/app/storefront-landing.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
         surface: 'marketing-site',
-        files: ['apps/marketing-site/src/components/Header.tsx'],
+        files: ['apps/marketing/web/src/components/Header.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
         surface: 'app-marketplace',
-        files: ['apps/app-marketplace/src/components/Header.tsx'],
+        files: ['apps/frozen/app-store/src/components/Header.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
         surface: 'developer-portal',
-        files: ['apps/developer-portal/src/components/PortalShell.tsx', 'apps/developer-portal/src/components/PortalChrome.tsx'],
+        files: ['apps/frozen/developer-portal/src/components/PortalShell.tsx', 'apps/frozen/developer-portal/src/components/PortalChrome.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
         surface: 'theme-marketplace',
-        files: ['apps/theme-marketplace/src/components/layout/navbar.tsx'],
+        files: ['apps/frozen/theme-store/src/components/layout/navbar.tsx'],
         patterns: [/function ThemeToggle\(/, /setTheme\(/],
     },
     {
         surface: 'admin-web',
-        files: ['apps/admin_web/src/app/(dashboard)/layout.tsx'],
+        files: ['apps/internal/console/src/app/(dashboard)/layout.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
     {
         surface: 'platform-operations-portal',
-        files: ['apps/platform-operations-portal/src/app/(dashboard)/layout.tsx'],
+        files: ['apps/frozen/operations-portal/src/app/(dashboard)/layout.tsx'],
         patterns: [/<ThemeToggleButton\b/],
     },
 ];
@@ -123,8 +125,8 @@ const darkModeReachabilityTargets = [
 const forcedLightSurfaces = [
     {
         surface: 'identity-platform',
-        layout: 'apps/identity-platform/src/app/layout.tsx',
-        sourceRoot: 'apps/identity-platform/src',
+        layout: 'apps/platform/identity/src/app/layout.tsx',
+        sourceRoot: 'apps/platform/identity/src',
     },
 ];
 const stripComments = (text) => text

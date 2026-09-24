@@ -6,9 +6,9 @@ function read(path) {
   return readFileSync(path, 'utf8');
 }
 
-const reference = read('apps/developer-portal/src/lib/reference.ts');
-const homePage = read('apps/developer-portal/src/app/page.tsx');
-const sdkPage = read('apps/developer-portal/src/app/sdk/page.tsx');
+const reference = read('apps/frozen/developer-portal/src/lib/reference.ts');
+const homePage = read('apps/frozen/developer-portal/src/app/page.tsx');
+const sdkPage = read('apps/frozen/developer-portal/src/app/sdk/page.tsx');
 const appEngine = read('packages/shared-types/src/app-platform.ts');
 const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
 const storefrontGraphQL = read('services/api-gateway/src/graphql/storefront.ts');

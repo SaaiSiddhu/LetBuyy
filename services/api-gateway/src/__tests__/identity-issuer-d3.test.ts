@@ -10,15 +10,15 @@ const identitySessionVerifier = readFileSync(
     'utf8',
 );
 const identitySession = readFileSync(
-    new URL('../../../../apps/identity-platform/src/lib/auth/session.ts', import.meta.url),
+    new URL('../../../../apps/platform/identity/src/lib/auth/session.ts', import.meta.url),
     'utf8',
 );
 const identityIssuedSession = readFileSync(
-    new URL('../../../../apps/identity-platform/src/lib/auth/identity-issued-session.ts', import.meta.url),
+    new URL('../../../../apps/platform/identity/src/lib/auth/identity-issued-session.ts', import.meta.url),
     'utf8',
 );
 const identityCookies = readFileSync(
-    new URL('../../../../apps/identity-platform/src/lib/auth/cookies.ts', import.meta.url),
+    new URL('../../../../apps/platform/identity/src/lib/auth/cookies.ts', import.meta.url),
     'utf8',
 );
 const apiGatewayPackage = readFileSync(new URL('../../package.json', import.meta.url), 'utf8');

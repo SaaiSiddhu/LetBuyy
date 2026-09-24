@@ -225,7 +225,7 @@ function makeStubEaos(overrides: EaosStubOverrides = {}): OrchestrationEngine {
   return engine as OrchestrationEngine;
 }
 
-async function analyze(overrides: EaosStubOverrides = {}, files = ['apps/merchant_web/src/app/[store]/orders/page.tsx']): Promise<PrReport> {
+async function analyze(overrides: EaosStubOverrides = {}, files = ['apps/merchant/web/src/app/[store]/orders/page.tsx']): Promise<PrReport> {
   resetEngine();
   return analyzeWithExecution(
     { changedFiles: files },
@@ -502,25 +502,25 @@ describe('analyzeWithExecution — back-compat with V1-V5 entry points', () => {
 
   it('analyzeWithVerdicts returns executionVerdicts: []', async () => {
     resetEngine();
-    const report = await analyzeWithVerdicts({ changedFiles: ['apps/marketing-site/src/app/page.tsx'] }, makeStubEngine());
+    const report = await analyzeWithVerdicts({ changedFiles: ['apps/marketing/web/src/app/page.tsx'] }, makeStubEngine());
     assert.deepEqual(report.executionVerdicts, []);
   });
 
   it('analyzeWithGovernance returns executionVerdicts: []', async () => {
     resetEngine();
-    const report = await analyzeWithGovernance({ changedFiles: ['apps/marketing-site/src/app/page.tsx'] }, makeStubEngine());
+    const report = await analyzeWithGovernance({ changedFiles: ['apps/marketing/web/src/app/page.tsx'] }, makeStubEngine());
     assert.deepEqual(report.executionVerdicts, []);
   });
 
   it('analyzeWithOperations returns executionVerdicts: []', async () => {
     resetEngine();
-    const report = await analyzeWithOperations({ changedFiles: ['apps/marketing-site/src/app/page.tsx'] }, makeStubEngine());
+    const report = await analyzeWithOperations({ changedFiles: ['apps/marketing/web/src/app/page.tsx'] }, makeStubEngine());
     assert.deepEqual(report.executionVerdicts, []);
   });
 
   it('analyzeWithEngineering returns executionVerdicts: []', async () => {
     resetEngine();
-    const report = await analyzeWithEngineering({ changedFiles: ['apps/marketing-site/src/app/page.tsx'] }, makeStubEngine());
+    const report = await analyzeWithEngineering({ changedFiles: ['apps/marketing/web/src/app/page.tsx'] }, makeStubEngine());
     assert.deepEqual(report.executionVerdicts, []);
   });
 });

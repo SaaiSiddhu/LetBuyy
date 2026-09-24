@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@import "../../../../config/tailwind/letbuyy-tokens.css";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
-@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+@source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 :root {
   --developer-font-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

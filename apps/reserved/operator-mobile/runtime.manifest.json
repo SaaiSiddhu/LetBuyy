@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Admin App",
-  "runtimeRoot": "apps/admin_app",
+  "runtimeRoot": "apps/reserved/operator-mobile",
   "actorType": [
     "platform-operator",
     "admin"
@@ -9,8 +9,8 @@
   "runtimeCategory": "reserved-mobile-app",
   "runtimeClassification": "reserved-mobile-operator-runtime",
   "ownership": {
-    "sourceAuthority": "apps/admin_app",
-    "businessAuthority": "Reserved/not-implemented mobile platform-operator runtime. Its former Firestore implementation (seller/user management, commissions, marketing, moderation queues, KYC) was deleted in phase FB-1 under the owner decision of 2026-09-05 to retire Firebase completely; it had never shipped a signed release. This root owns no active operator behavior. apps/admin_web owns the active platform-operator surface and services/api-gateway owns the operator APIs behind it (/operations/marketplace-listings, PHASE-ADM-1).",
+    "sourceAuthority": "apps/reserved/operator-mobile",
+    "businessAuthority": "Reserved/not-implemented mobile platform-operator runtime. Its former Firestore implementation (seller/user management, commissions, marketing, moderation queues, KYC) was deleted in phase FB-1 under the owner decision of 2026-09-05 to retire Firebase completely; it had never shipped a signed release. This root owns no active operator behavior. apps/internal/console owns the active platform-operator surface and services/api-gateway owns the operator APIs behind it (/operations/marketplace-listings, PHASE-ADM-1).",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
       "docs/governance/runtime-boundaries.md",
@@ -50,11 +50,11 @@
   },
   "observabilityAuthority": {
     "correlationId": "none-active-reserved-root",
-    "logging": "No active mobile operator runtime logging; apps/admin_web and services/api-gateway emit current operator telemetry.",
+    "logging": "No active mobile operator runtime logging; apps/internal/console and services/api-gateway emit current operator telemetry.",
     "audit": "No active audit emission from this reserved mobile root; operator mutations are audited by services/api-gateway (audit_logs)."
   },
   "executionAuthority": {
-    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/admin_web owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
+    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/internal/console owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
     "orchestrationRole": "No active service-local event helpers execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
     "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires mobile source, package/deployment config, tests, and governance approval.",
     "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
@@ -97,7 +97,7 @@
   "implementationStatus": {
     "status": "reserved-not-implemented",
     "sourceState": "manifest-and-agents-only",
-    "currentActiveOwner": "apps/admin_web owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
+    "currentActiveOwner": "apps/internal/console owns the active platform-operator presentation surface and services/api-gateway owns operator API behavior; no operator mobile app is implemented.",
     "activationRequirement": "Reserved by phase FB-1 (2026-09-05). Reactivation requires BOTH a named trigger and human approval: the admin_web moderation port (CAP-ADM-2) complete, a measured demand for a mobile operator surface, and gateway-wired source with tests, deployment config and an ARB-approved governance update. The deleted implementation was Firestore-backed and must never be restored; it is readable in git history at the parent of the FB-1 branch as a behavioural reference only."
   }
 }

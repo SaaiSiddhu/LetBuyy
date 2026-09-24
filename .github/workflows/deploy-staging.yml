@@ -129,11 +129,11 @@ jobs:
     strategy:
       matrix:
         app:
-          - { name: identity-platform, project_secret: STAGING_IDENTITY_PROJECT_ID }
-          - { name: merchant_web, project_secret: STAGING_MERCHANT_PROJECT_ID }
-          - { name: customer_web, project_secret: STAGING_STOREFRONT_PROJECT_ID }
-          - { name: marketing-site, project_secret: STAGING_MARKETING_PROJECT_ID }
-          - { name: admin_web, project_secret: STAGING_PLATFORM_CONSOLE_PROJECT_ID }
+          - { name: platform/identity, project_secret: STAGING_IDENTITY_PROJECT_ID }
+          - { name: merchant/web, project_secret: STAGING_MERCHANT_PROJECT_ID }
+          - { name: commerce/web, project_secret: STAGING_STOREFRONT_PROJECT_ID }
+          - { name: marketing/web, project_secret: STAGING_MARKETING_PROJECT_ID }
+          - { name: internal/console, project_secret: STAGING_PLATFORM_CONSOLE_PROJECT_ID }
 
     steps:
       - name: Checkout

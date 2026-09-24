@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Mobile Merchant App",
-  "runtimeRoot": "apps/merchant_app",
+  "runtimeRoot": "apps/merchant/mobile",
   "actorType": [
     "merchant",
     "store-staff"
@@ -9,7 +9,7 @@
   "runtimeCategory": "flutter-app",
   "runtimeClassification": "mobile-merchant-web",
   "ownership": {
-    "sourceAuthority": "apps/merchant_app",
+    "sourceAuthority": "apps/merchant/mobile",
     "businessAuthority": "Native merchant operations, dashboard, builder, products, themes, preview, and store management surfaces.",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
@@ -47,7 +47,7 @@
   "deploymentAuthority": {
     "platform": "Mobile app stores",
     "config": [
-      "apps/merchant_app/pubspec.yaml"
+      "apps/merchant/mobile/pubspec.yaml"
     ]
   },
   "environmentAuthority": {

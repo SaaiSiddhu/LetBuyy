@@ -12,9 +12,9 @@ import test from 'node:test';
 
 const ordersSource = readFileSync(new URL('../routes/orders.ts', import.meta.url), 'utf8');
 const analyticsSource = readFileSync(
-    new URL('../../../../apps/merchant_web/src/app/[store]/analytics/page.tsx', import.meta.url), 'utf8');
+    new URL('../../../../apps/merchant/web/src/app/[store]/analytics/page.tsx', import.meta.url), 'utf8');
 const ordersPageSource = readFileSync(
-    new URL('../../../../apps/merchant_web/src/app/[store]/orders/page.tsx', import.meta.url), 'utf8');
+    new URL('../../../../apps/merchant/web/src/app/[store]/orders/page.tsx', import.meta.url), 'utf8');
 
 test('the orders list expands pending to include pending_cod', () => {
     assert.match(

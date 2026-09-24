@@ -178,19 +178,19 @@ jobs:
     strategy:
       matrix:
         include:
-          - app: marketing-site
+          - app: marketing/web
             project_id: STAGING_MARKETING_PROJECT_ID
             app_url: https://www-staging.letbuyy.com
-          - app: identity-platform
+          - app: platform/identity
             project_id: STAGING_IDENTITY_PROJECT_ID
             app_url: https://accounts-staging.letbuyy.com
-          - app: merchant_web
+          - app: merchant/web
             project_id: STAGING_MERCHANT_PROJECT_ID
             app_url: https://admin-staging.letbuyy.com
-          - app: customer_web
+          - app: commerce/web
             project_id: STAGING_STOREFRONT_PROJECT_ID
             app_url: https://store-staging.letbuyy.com
-          - app: admin_web
+          - app: internal/console
             project_id: STAGING_PLATFORM_CONSOLE_PROJECT_ID
             app_url: https://console-staging.letbuyy.com
     steps:
@@ -229,9 +229,9 @@ jobs:
           WORKER_API_BASE_URL: https://api-staging.letbuyy.com/v1
           AUTH_SECRET: ${{ secrets.STAGING_AUTH_SECRET }}
           CUSTOMER_SESSION_SECRET: ${{ secrets.STAGING_CUSTOMER_SESSION_SECRET }}
-          ACCOUNTS_COOKIE_SECRET: ${{ matrix.app == 'identity-platform' && secrets.STAGING_ACCOUNTS_COOKIE_SECRET || '' }}
+          ACCOUNTS_COOKIE_SECRET: ${{ matrix.app == 'platform/identity' && secrets.STAGING_ACCOUNTS_COOKIE_SECRET || '' }}
           LETBUYY_IDENTITY_ISSUER: https://accounts-staging.letbuyy.com
-          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'identity-platform' && secrets.STAGING_IDENTITY_PRIVATE_JWK || '' }}
+          LETBUYY_IDENTITY_PRIVATE_JWK: ${{ matrix.app == 'platform/identity' && secrets.STAGING_IDENTITY_PRIVATE_JWK || '' }}
           CSRF_SECRET: ${{ secrets.STAGING_CSRF_SECRET }}
           INTERNAL_API_SECRET: ${{ secrets.STAGING_INTERNAL_API_SECRET }}
           RESEND_API_KEY: ${{ secrets.STAGING_RESEND_API_KEY }}

@@ -5,7 +5,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 
 /**
  * Cloudflare Turnstile, invisible mode.
  *
- * Ported from apps/customer_web rather than imported: the two are
+ * Ported from apps/commerce/web rather than imported: the two are
  * separate Next applications and cross-app component imports are a boundary
  * violation here. Behaviour is deliberately identical, including the dev
  * bypass, so the two properties cannot drift into different bot-protection

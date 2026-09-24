@@ -17,15 +17,15 @@ dependencies:
   # CUS-1: the canonical gateway client. The marketplace repository seam in lib/data reads through
   # this; no screen consumes it yet (see that file for the measured reason).
   letbuyy_api_client:
-    path: ../../packages/dart/api_client
+    path: ../../../packages/dart/api_client
   letbuyy_marketplace_core:
-    path: ../../packages/dart/marketplace_core
+    path: ../../../packages/dart/marketplace_core
   letbuyy_marketplace_models:
-    path: ../../packages/dart/marketplace_models
+    path: ../../../packages/dart/marketplace_models
   letbuyy_marketplace_services:
-    path: ../../packages/dart/marketplace_services
+    path: ../../../packages/dart/marketplace_services
   letbuyy_marketplace_ui_kit:
-    path: ../../packages/dart/marketplace_ui_kit
+    path: ../../../packages/dart/marketplace_ui_kit
 
   # State Management
   provider: ^6.1.2

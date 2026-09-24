@@ -15,7 +15,7 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
     services/api-gateway/src/index.ts|services/api-gateway/src/middleware/*|services/api-gateway/src/lib/*|services/api-gateway/src/routes/*|\
     services/api-gateway/src/tenant/*|services/api-gateway/src/identity-foundation/*|services/api-gateway/wrangler.toml|\
     services/webhook-service/*|services/queue-workers/*|services/mobile-bff/*|services/compatibility/*|*/wrangler.toml|\
-    apps/identity-platform/src/lib/*|apps/identity-platform/src/app/api/*|apps/*/src/middleware.ts|apps/*/src/proxy.ts|apps/*/src/app/api/*|\
+    apps/platform/identity/src/lib/*|apps/platform/identity/src/app/api/*|apps/*/src/middleware.ts|apps/*/src/proxy.ts|apps/*/src/app/api/*|\
     apps/*/src/lib/*auth*|apps/*/src/lib/*session*|apps/*/src/lib/*cookie*|apps/*/src/lib/*csp*|apps/*/src/lib/*tenant*|\
     packages/tenant-core/*|packages/session-core/*|packages/token-core/*|packages/identity-core/*|packages/auth-core/*|packages/permission-core/*|\
     packages/payments/*|packages/billing-core/*|packages/checkout-core/*|packages/infrastructure/*|packages/theme-engine/src/*sanit*|\
@@ -36,13 +36,13 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
       out="${out:+$out,}money"; lane money;;
   esac
   case "$f" in
-    apps/customer_app/*|apps/merchant_app/*|apps/phase_2/*|packages/dart/*|pubspec.yaml|*.dart) out="${out:+$out,}mobile"; lane mobile;;
+    apps/marketplace/mobile/*|apps/merchant/mobile/*|apps/deferred/*|reference/apps/*|packages/dart/*|pubspec.yaml|*.dart) out="${out:+$out,}mobile"; lane mobile;;
   esac
   case "$f" in
-    apps/customer_app/*|apps/phase_2/*|apps/marketing-site/*|apps/app-marketplace/*|apps/developer-portal/*|apps/theme-marketplace/*|apps/platform-operations-portal/*)
+    apps/marketplace/mobile/*|apps/deferred/*|reference/apps/*|apps/marketing/web/*|apps/frozen/app-store/*|apps/frozen/developer-portal/*|apps/frozen/theme-store/*|apps/frozen/operations-portal/*)
       case "$f" in *.tsx|*.css|*.dart|*.arb) out="${out:+$out,}uiux-hold"; lane uiux-hold;; esac;;
     packages/typescript/ui/*|packages/dart/ui_kit/*|apps/*/src/app/*.tsx|apps/*/src/components/*|apps/*/src/features/*|apps/*/src/*.css|apps/*/tailwind.config.*|\
-    apps/merchant_app/lib/*.dart|scripts/generators/generate-design-tokens.mjs|scripts/generators/generate-mobile-tokens.mjs|scripts/validators/validate-design-system.mjs|scripts/validators/design-system-baseline.json)
+    apps/merchant/mobile/lib/*.dart|scripts/generators/generate-design-tokens.mjs|scripts/generators/generate-mobile-tokens.mjs|scripts/validators/validate-design-system.mjs|scripts/validators/design-system-baseline.json)
       out="${out:+$out,}uiux"; lane uiux;;
   esac
   case "$f" in
@@ -50,7 +50,7 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
       case "$f" in *.test.tsx|*.stories.tsx|*_test.dart|*/test/*) ;; *) out="${out:+$out,}feedback"; lane feedback;; esac;;
   esac
   case "$f" in
-    packages/theme-engine/*|apps/customer_web/src/*theme*|apps/customer_web/src/*liquid*|apps/customer_web/src/*render*) out="${out:+$out,}theme"; lane theme;;
+    packages/theme-engine/*|apps/commerce/web/src/*theme*|apps/commerce/web/src/*liquid*|apps/commerce/web/src/*render*) out="${out:+$out,}theme"; lane theme;;
   esac
   case "$f" in
     .github/*|turbo.json|tsconfig*.json|scripts/validate-governance.mjs|scripts/validators/*|scripts/governance/*) out="${out:+$out,}ci"; lane ci;;
@@ -60,14 +60,14 @@ while IFS= read -r f; do [ -z "$f" ] && continue; out=""
     docs/active/*|docs/governance/*|*/AGENTS.md|*/runtime.manifest.json|.claude/skills/*|config/governance/*) out="${out:+$out,}governance"; lane governance;;
   esac
   case "$f" in
-    apps/app-marketplace/*|apps/developer-portal/*|apps/theme-marketplace/*|apps/platform-operations-portal/*) out="${out:+$out,}frozen"; lane frozen;;
+    apps/frozen/app-store/*|apps/frozen/developer-portal/*|apps/frozen/theme-store/*|apps/frozen/operations-portal/*) out="${out:+$out,}frozen"; lane frozen;;
   esac
   case "$f" in
-    services/checkout-runtime/*|services/event-bus/*|services/notification-service/*|services/analytics-pipeline/*|services/media-service/*|services/search-service/*|apps/mobile/*|\
-    apps/admin_app/*)
+    services/checkout-runtime/*|services/event-bus/*|services/notification-service/*|services/analytics-pipeline/*|services/media-service/*|services/search-service/*|apps/reserved/*|\
+    apps/reserved/operator-mobile/*)
       # "Gained source" means source is there AFTER the change. A diff that DELETES
       # source from a reserved root is the rule being satisfied, not broken — and it
-      # is exactly what phase FB-1 did to apps/admin_app, which is how this was
+      # is exactly what phase FB-1 did to apps/reserved/operator-mobile, which is how this was
       # found. Classify by path, then confirm the file still exists before flagging.
       case "$f" in */runtime.manifest.json|*/AGENTS.md) ;; *) if [ -e "$f" ]; then out="${out:+$out,}reserved"; lane reserved; fi;; esac;;
   esac

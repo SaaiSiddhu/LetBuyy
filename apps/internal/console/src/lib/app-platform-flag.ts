@@ -3,7 +3,7 @@ const POSITIVE = new Set(['1', 'true', 'on', 'enabled', 'yes'])
 /**
  * ART-22 / ART-16 / NEVER-R3 fail-closed gate, mirroring the api-gateway kill switch
  * at services/api-gateway/src/middleware/appPlatformKillSwitch.ts and the merchant
- * mirror at apps/merchant_web/src/lib/app-platform-flag.ts.
+ * mirror at apps/merchant/web/src/lib/app-platform-flag.ts.
  *
  * Guards the OPERATOR plane of the frozen seam: marketplace listing review/approval
  * and the developer back office (moderation, payouts, disputes).

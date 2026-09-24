@@ -1308,7 +1308,7 @@ function buildLiquidScope(
       return { ...grouped, ...flat, ...filterBlockedSettingsKeys(asRecord(input.liquidContext?.settings)) };
     })(),
     // T1/W1 — the routes drop, now base-path-aware. Every real storefront page under Liquid lives at
-    // /store/{subdomain}/... (see apps/customer_web/src/app/store/[subdomain]/**) — that path
+    // /store/{subdomain}/... (see apps/commerce/web/src/app/store/[subdomain]/**) — that path
     // is directly, unconditionally reachable on ANY host, confirmed by reading proxy.ts: /store/<sub>
     // is the internal rewrite TARGET (`rewriteToStore`), and proxy.ts explicitly skips its access
     // gate for requests that already start with /store/ ("reached as a URL instead of as a rewrite...

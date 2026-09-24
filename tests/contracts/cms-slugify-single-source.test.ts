@@ -7,9 +7,9 @@ import { fileURLToPath } from 'node:url';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const merchantSlugFiles = [
-    'apps/merchant_web/src/app/[store]/posts/page.tsx',
-    'apps/merchant_web/src/app/[store]/pages/page.tsx',
-    'apps/merchant_web/src/app/[store]/online-store/pages/page.tsx',
+    'apps/merchant/web/src/app/[store]/posts/page.tsx',
+    'apps/merchant/web/src/app/[store]/pages/page.tsx',
+    'apps/merchant/web/src/app/[store]/online-store/pages/page.tsx',
 ];
 
 function read(path: string): string {
@@ -37,8 +37,8 @@ test('merchant CMS pages import slugifyCmsTitle instead of declaring local slugi
 });
 
 test('merchant package and runtime manifest declare cms-core authority', () => {
-    const packageJson = JSON.parse(read(join(repoRoot, 'apps/merchant_web/package.json')));
-    const runtimeManifest = JSON.parse(read(join(repoRoot, 'apps/merchant_web/runtime.manifest.json')));
+    const packageJson = JSON.parse(read(join(repoRoot, 'apps/merchant/web/package.json')));
+    const runtimeManifest = JSON.parse(read(join(repoRoot, 'apps/merchant/web/runtime.manifest.json')));
 
     assert.equal(packageJson.dependencies['@letbuyy/cms-core'], 'workspace:*');
     assert.equal(runtimeManifest.allowedDependencies.workspacePackages.includes('@letbuyy/cms-core'), true);

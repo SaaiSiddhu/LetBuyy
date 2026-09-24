@@ -116,9 +116,9 @@ test('developer suspension and payout release require distinct second approvers'
 
 test('developer 360 API client and operations portal are wired to real backend paths', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const pageSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/developers/page.tsx');
-    const layoutSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/layout.tsx');
-    const dashboardSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/page.tsx');
+    const pageSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/developers/page.tsx');
+    const layoutSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/layout.tsx');
+    const dashboardSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/page.tsx');
 
     for (const method of [
         'developerSearch',

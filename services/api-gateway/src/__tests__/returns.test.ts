@@ -6,7 +6,7 @@ const routeSource = readFileSync(new URL('../routes/returns.ts', import.meta.url
 const indexSource = readFileSync(new URL('../index.ts', import.meta.url), 'utf8');
 const bffSource = readFileSync(new URL('../../../mobile-bff/src/index.ts', import.meta.url), 'utf8');
 const checkoutCoreSource = readFileSync(new URL('../../../../packages/checkout-core/src/index.ts', import.meta.url), 'utf8');
-const mobileBlockedSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/platform_blocked_service.dart', import.meta.url), 'utf8');
+const mobileBlockedSource = readFileSync(new URL('../../../../apps/merchant/mobile/lib/services/platform_blocked_service.dart', import.meta.url), 'utf8');
 
 test('merchant returns route is mounted and mobile allowlisted', () => {
     assert.match(indexSource, /import returnsRouter from '\.\/routes\/returns'/);

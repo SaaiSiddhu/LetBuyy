@@ -14,7 +14,7 @@ function read(relativePath: string): string {
 }
 
 test('storefront proxy enforces access modes before render', () => {
-  const proxy = read('apps/customer_web/src/proxy.ts');
+  const proxy = read('apps/commerce/web/src/proxy.ts');
 
   assert.match(proxy, /resolveStorefrontHost/);
   assert.match(proxy, /\/v1\/internal\/store-access\/resolve/);
@@ -29,7 +29,7 @@ test('storefront proxy enforces access modes before render', () => {
 });
 
 test('storefront gate cookies are host-only and use shared __Host names', () => {
-  const proxy = read('apps/customer_web/src/proxy.ts');
+  const proxy = read('apps/commerce/web/src/proxy.ts');
   const authCore = read('packages/auth-core/src/storefront-access.ts');
 
   assert.match(authCore, /LETBUYY_STOREFRONT_GATE_COOKIE\s*=\s*['"]__Host-/);
@@ -37,11 +37,11 @@ test('storefront gate cookies are host-only and use shared __Host names', () => 
   assert.match(proxy, /\/v1\/internal\/store-access\/verify/);
   assert.match(proxy, /LETBUYY_STOREFRONT_GATE_COOKIE/);
   assert.doesNotMatch(proxy, /\bdomain\s*:/);
-  assert.equal(existsSync(join(repoRoot, 'apps/customer_web/src/app/api/store-access/password/route.ts')), false);
+  assert.equal(existsSync(join(repoRoot, 'apps/commerce/web/src/app/api/store-access/password/route.ts')), false);
 });
 
 test('preview mode cannot create real storefront orders', () => {
-  const orderRoute = read('apps/customer_web/src/app/api/orders/route.ts');
+  const orderRoute = read('apps/commerce/web/src/app/api/orders/route.ts');
 
   assert.match(orderRoute, /LETBUYY_STOREFRONT_PREVIEW_COOKIE/);
   assert.match(orderRoute, /x-letbuyy-preview-checkout-mode/);

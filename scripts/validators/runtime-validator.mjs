@@ -5,11 +5,16 @@ import {
   canonicalServiceRoots,
   createReporter,
   exists,
+  aliasContainerCarveOut,
+  appGroupContainers,
+  deferredAppRoots,
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
   frozenAppRoots,
   getTrackedFiles,
-  phase2AppRoots,
+  isForbiddenRuntimePath,
+  referenceAppRoots,
+  referenceRoot,
   reservedMobileRuntimeRoots,
   root,
   startsWithPrefix,
@@ -19,8 +24,8 @@ import {
 const reporter = createReporter("Runtime validator");
 const trackedFiles = getTrackedFiles();
 
-const allowedAppRoots = new Set([...canonicalAppRoots, ...frozenAppRoots, ...reservedMobileRuntimeRoots]);
-const allowedPhase2Roots = new Set(phase2AppRoots);
+const allowedAppRoots = new Set([...canonicalAppRoots, ...frozenAppRoots, ...reservedMobileRuntimeRoots, ...deferredAppRoots]);
+const trackedSet = new Set(trackedFiles);
 const appEntries = fs.readdirSync(path.join(root, "apps"), { withFileTypes: true });
 const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 
@@ -33,31 +38,70 @@ for (const forbiddenRoot of forbiddenRuntimePrefixes) {
   );
 }
 
+// Amendment 3 (2026-09-24): the two carved-out alias containers may exist, but only to hold their
+// approved roots. Any tracked file elsewhere under them is forbidden runtime topology.
+for (const container of Object.keys(aliasContainerCarveOut)) {
+  const trackedOffenders = trackedFiles.filter((file) => startsWithPrefix(file, container) && isForbiddenRuntimePath(file));
+  reporter.assert(
+    trackedOffenders.length === 0,
+    `Carved-out alias container holds files outside its approved roots: ${container} (${formatOffenderList(trackedOffenders, 5)})`,
+  );
+}
+
+// Every directory under apps/ is a grouping container, and every directory inside a container is one
+// of that container's approved application roots or a nested container. This walks the FILESYSTEM on
+// purpose: an old flat path kept alive only by ignored files (an .env.local, a keystore, a build
+// cache) is exactly the leftover that must surface after a move.
+function walkContainer(container) {
+  const approved = new Set(appGroupContainers[container]);
+  for (const child of fs.readdirSync(path.join(root, container), { withFileTypes: true })) {
+    const childPath = `${container}/${child.name}`;
+    if (!child.isDirectory()) {
+      reporter.assert(!trackedSet.has(childPath), `A grouping container holds a tracked file (a container is never an application root): ${childPath}`);
+      continue;
+    }
+    if (childPath in appGroupContainers) {
+      reporter.assert(approved.has(childPath), `Unexpected nested container under ${container}: ${childPath}`);
+      walkContainer(childPath);
+      continue;
+    }
+    reporter.assert(approved.has(childPath) && allowedAppRoots.has(childPath), `Unexpected application root under ${container}: ${childPath}`);
+  }
+}
+
 for (const entry of appEntries) {
-  if (!entry.isDirectory()) continue;
-  const appRoot = `apps/${entry.name}`;
-
-  if (entry.name === "mobile") {
-    const mobileEntries = fs.readdirSync(path.join(root, "apps/mobile"), { withFileTypes: true });
-    for (const mobileEntry of mobileEntries) {
-      if (!mobileEntry.isDirectory()) continue;
-      const mobileRoot = `apps/mobile/${mobileEntry.name}`;
-      reporter.assert(allowedAppRoots.has(mobileRoot), `Unexpected mobile app runtime root: ${mobileRoot}`);
-    }
+  const top = `apps/${entry.name}`;
+  if (!entry.isDirectory()) {
+    reporter.assert(!trackedSet.has(top), `apps/ holds a tracked file outside every container: ${top}`);
     continue;
   }
-
-  if (entry.name === "phase_2") {
-    const phase2Entries = fs.readdirSync(path.join(root, "apps/phase_2"), { withFileTypes: true });
-    for (const phase2Entry of phase2Entries) {
-      if (!phase2Entry.isDirectory()) continue;
-      const phase2Root = `apps/phase_2/${phase2Entry.name}`;
-      reporter.assert(allowedPhase2Roots.has(phase2Root), `Unexpected phase_2 app runtime root: ${phase2Root}`);
-    }
+  if (!(top in appGroupContainers)) {
+    reporter.assert(false, `Unexpected directory under apps/ (not a grouping container): ${top}`);
     continue;
   }
+  walkContainer(top);
+}
 
-  reporter.assert(allowedAppRoots.has(appRoot), `Unexpected app runtime root: ${appRoot}`);
+// reference/ (Amendment 3's REFERENCE class): nothing but reference/apps/<approved donor>.
+if (exists(referenceRoot)) {
+  for (const entry of fs.readdirSync(path.join(root, referenceRoot), { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    reporter.assert(entry.name === "apps", `Unexpected directory under ${referenceRoot}/: ${referenceRoot}/${entry.name}`);
+  }
+  const referenceApps = path.join(root, referenceRoot, "apps");
+  if (fs.existsSync(referenceApps)) {
+    for (const entry of fs.readdirSync(referenceApps, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const referencePath = `${referenceRoot}/apps/${entry.name}`;
+      reporter.assert(referenceAppRoots.includes(referencePath), `Unexpected reference root: ${referencePath}`);
+    }
+  }
+}
+for (const referencePath of referenceAppRoots) {
+  reporter.assert(exists(referencePath), `Missing reference root: ${referencePath}`);
+}
+for (const deferredRoot of deferredAppRoots) {
+  reporter.assert(exists(deferredRoot), `Missing deferred application root: ${deferredRoot}`);
 }
 
 for (const appRoot of canonicalAppRoots) {

@@ -1,6 +1,6 @@
 // CAP-FB-SOCIAL (D-9) — the buyer→seller follower graph (schema: migration 229).
 //
-// The seller profile in apps/customer_app renders a Follow button whose onTap is
+// The seller profile in apps/marketplace/mobile renders a Follow button whose onTap is
 // `setState(() => _isFollowing = !_isFollowing)` and nothing else, beside `final int _followersCount = 0`
 // — a field that can never change. The button has been reporting a state it never stored. This is the
 // state.

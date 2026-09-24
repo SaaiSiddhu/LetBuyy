@@ -5,9 +5,11 @@ import {
   deprecatedTrackedPrefixes,
   domainPackageRoots,
   exists,
+  aliasContainerCarveOut,
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
   getTrackedFiles,
+  isForbiddenRuntimePath,
   rejectedPackageRoots,
   startsWithPrefix,
   formatOffenderList,
@@ -112,6 +114,16 @@ for (const prefix of [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees]) {
   reporter.assert(
     offenders.length === 0,
     `Forbidden runtime topology path has tracked files: ${prefix} (${formatOffenderList(offenders, 5)})`,
+  );
+}
+
+// Amendment 3 (2026-09-24): apps/merchant and apps/internal are permitted ONLY as grouping containers
+// of their approved roots. The container may exist; anything else beneath it may not.
+for (const [container, approvedRoots] of Object.entries(aliasContainerCarveOut)) {
+  const offenders = trackedFiles.filter((file) => startsWithPrefix(file, container) && isForbiddenRuntimePath(file));
+  reporter.assert(
+    offenders.length === 0,
+    `Carved-out alias container ${container} may hold only ${approvedRoots.join(", ")} (${formatOffenderList(offenders, 5)})`,
   );
 }
 

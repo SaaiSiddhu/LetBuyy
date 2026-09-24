@@ -494,7 +494,7 @@ test('Y-8 NOT-CONNECTED placeholder carries required data-app-block attributes a
   );
   assert.ok(
     APP_BLOCK_NOT_CONNECTED_REASON.includes('FROZEN'),
-    'Y-8: APP_BLOCK_NOT_CONNECTED_REASON must explicitly state that apps/app-marketplace is FROZEN',
+    'Y-8: APP_BLOCK_NOT_CONNECTED_REASON must explicitly state that apps/frozen/app-store is FROZEN',
   );
 });
 

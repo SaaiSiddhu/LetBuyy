@@ -13,8 +13,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
-const COMPONENT = 'apps/customer_web/src/components/layout/announcement-bar.tsx';
-const registry = read('apps/customer_web/src/lib/theme-engine/renderer-registry.tsx');
+const COMPONENT = 'apps/commerce/web/src/components/layout/announcement-bar.tsx';
+const registry = read('apps/commerce/web/src/lib/theme-engine/renderer-registry.tsx');
 const component = read(COMPONENT);
 const schema = read('packages/theme-engine/src/theme-registry.ts');
 const freezeValidator = read('scripts/validators/no-new-react-sections-validator.mjs');

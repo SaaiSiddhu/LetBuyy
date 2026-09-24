@@ -5,11 +5,11 @@ import { fileURLToPath } from "node:url";
 
 const requireFromConfig = createRequire(import.meta.url);
 const { createSecurityHeaders } = requireFromConfig(
-  "../../config/security/next-security-headers.ts",
-) as typeof import("../../config/security/next-security-headers");
+  "../../../config/security/next-security-headers.ts",
+) as typeof import("../../../config/security/next-security-headers");
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
-const workspaceRoot = resolve(appRoot, "../..");
+const workspaceRoot = resolve(appRoot, "../../..");
 const workspaceModules = resolve(workspaceRoot, "node_modules/.pnpm/node_modules");
 
 const workspacePackages = [
@@ -23,14 +23,14 @@ const workspacePackages = [
 ];
 
 const workspacePackageAliases = {
-  "@letbuyy/api-client": resolve(appRoot, "../../packages/typescript/api-client/src/index.ts"),
-  "@letbuyy/api-types": resolve(appRoot, "../../packages/typescript/api-types/src/index.ts"),
-  "@letbuyy/auth-core": resolve(appRoot, "../../packages/auth-core/src/index.ts"),
-  "@letbuyy/cms-core": resolve(appRoot, "../../packages/cms-core/src/index.ts"),
-  "@letbuyy/shared-types": resolve(appRoot, "../../packages/shared-types/src/index.ts"),
-  "@letbuyy/theme-engine": resolve(appRoot, "../../packages/theme-engine/src/index.ts"),
-  "@letbuyy/ui": resolve(appRoot, "../../packages/typescript/ui/src/index.ts"),
-  "@letbuyy/ui/formatting": resolve(appRoot, "../../packages/typescript/ui/src/formatting.ts"),
+  "@letbuyy/api-client": resolve(appRoot, "../../../packages/typescript/api-client/src/index.ts"),
+  "@letbuyy/api-types": resolve(appRoot, "../../../packages/typescript/api-types/src/index.ts"),
+  "@letbuyy/auth-core": resolve(appRoot, "../../../packages/auth-core/src/index.ts"),
+  "@letbuyy/cms-core": resolve(appRoot, "../../../packages/cms-core/src/index.ts"),
+  "@letbuyy/shared-types": resolve(appRoot, "../../../packages/shared-types/src/index.ts"),
+  "@letbuyy/theme-engine": resolve(appRoot, "../../../packages/theme-engine/src/index.ts"),
+  "@letbuyy/ui": resolve(appRoot, "../../../packages/typescript/ui/src/index.ts"),
+  "@letbuyy/ui/formatting": resolve(appRoot, "../../../packages/typescript/ui/src/formatting.ts"),
   "lucide-react": resolve(appRoot, "../../node_modules/.pnpm/node_modules/lucide-react"),
   "tailwind-merge": resolve(appRoot, "../../node_modules/.pnpm/node_modules/tailwind-merge"),
   zod: resolve(appRoot, "../../node_modules/.pnpm/node_modules/zod"),
@@ -80,7 +80,7 @@ const nextConfig: NextConfig = {
       config.resolve.fallback = { ...(config.resolve.fallback || {}), jsdom: false };
 
       // Same barrel problem one layer deeper, and identical to the fix in
-      // apps/customer_web/next.config.ts: theme-engine's index re-exports
+      // apps/commerce/web/next.config.ts: theme-engine's index re-exports
       // theme-packager, which imports `node:crypto` for build-time bundle
       // checksums. The theme editor page value-imports from that barrel, so
       // webpack must build every `export *` target and hits the node: request.

@@ -10,7 +10,7 @@ import {
 
 /**
  * Guards the one asset class in this repository that cannot be rebuilt: a
- * shipped Android applicationId. apps/admin_app/android/app/build.gradle.kts
+ * shipped Android applicationId. apps/reserved/operator-mobile/android/app/build.gradle.kts
  * once carried applicationId "com.letbuyy.letbuyy" -- the customer app's
  * shipped identity -- undetected through Phase 0 and fourteen further
  * phases, found only by a human diffing two files by hand (Phase R,

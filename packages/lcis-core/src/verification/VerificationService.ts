@@ -395,7 +395,7 @@ export class VerificationService {
     const DEPRECATED_ALIASES = new Set([
       'apps/admin', 'apps/auth', 'apps/checkout', 'apps/internal',
       'apps/merchant', 'apps/storefront', 'apps/analytics',
-      'apps/mobile/operator-team-app', 'apps/customer_web/consumer-storefront',
+      'apps/mobile/operator-team-app', 'apps/commerce/web/consumer-storefront',
     ]);
 
     const vercelApps = summary.vercelApps ?? [];

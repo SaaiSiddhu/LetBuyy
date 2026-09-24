@@ -11,8 +11,8 @@ const routeSource = readFileSync(new URL('../routes/domains.ts', import.meta.url
 const sharedTypes = repositorySource('packages/shared-types/src/index.ts');
 const tsClient = repositorySource('packages/typescript/api-client/src/index.ts');
 const dartClient = repositorySource('packages/dart/api_client/lib/src/api_client.dart');
-const mobileService = repositorySource('apps/merchant_app/lib/services/custom_domains.dart');
-const mobileScreen = repositorySource('apps/merchant_app/lib/screens/settings/domain_settings_screen.dart');
+const mobileService = repositorySource('apps/merchant/mobile/lib/services/custom_domains.dart');
+const mobileScreen = repositorySource('apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart');
 const bffSource = repositorySource('services/mobile-bff/src/index.ts');
 
 test('sandbox registrar verifies the sandbox buy-domain checkout path', async () => {

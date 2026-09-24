@@ -57,8 +57,8 @@ reporter.assert(appStoreShared.includes('LETBUYY_INTERNAL_API_SECRET'), 'app-sto
 reporter.assert(!appStoreShared.includes('AUTH_SECRET'), 'app-store shared platform token must not use AUTH_SECRET');
 
 for (const file of [
-  'apps/identity-platform/src/lib/api/client.ts',
-  'apps/customer_web/src/lib/api/client.ts',
+  'apps/platform/identity/src/lib/api/client.ts',
+  'apps/commerce/web/src/lib/api/client.ts',
 ]) {
   assertIncludes(file, 'createLetbuyyInternalAppHeaders', `${file} must use shared JTI app header signer`);
   assertNotIncludes(file, 'hmacSha256Hex', `${file} must not hand-roll internal app signatures`);
@@ -66,10 +66,10 @@ for (const file of [
 }
 
 for (const file of [
-  'apps/merchant_web/src/lib/api/client.ts',
-  'apps/app-marketplace/src/lib/api/client.ts',
-  'apps/theme-marketplace/src/lib/api/client.ts',
-  'apps/platform-operations-portal/src/lib/api/client.ts',
+  'apps/merchant/web/src/lib/api/client.ts',
+  'apps/frozen/app-store/src/lib/api/client.ts',
+  'apps/frozen/theme-store/src/lib/api/client.ts',
+  'apps/frozen/operations-portal/src/lib/api/client.ts',
 ]) {
   assertIncludes(file, 'LETBUYY_INTERNAL_API_SECRET', `${file} must prefer the dedicated internal secret`);
   assertNotIncludes(file, 'AUTH_SECRET', `${file} must not pass AUTH_SECRET into internal auth`);
@@ -124,7 +124,7 @@ const twoFactorRoute = readFile('services/api-gateway/src/routes/two-factor.ts')
 reporter.assert(twoFactorRoute.includes('env.TOTP_ENCRYPTION_KEY'), 'TOTP encryption must use the dedicated TOTP key');
 reporter.assert(!twoFactorRoute.includes('env.AUTH_SECRET || env.INTERNAL_API_SECRET'), 'TOTP encryption must not share auth/internal secrets');
 
-const consoleAuth = readFile('apps/admin_web/src/lib/console-auth-server.ts');
+const consoleAuth = readFile('apps/internal/console/src/lib/console-auth-server.ts');
 for (const fragment of [
   'PLATFORM_CONSOLE_TOTP_SECRETS',
   'getConsoleTotpSecretForPrincipal',
@@ -134,7 +134,7 @@ for (const fragment of [
   reporter.assert(consoleAuth.includes(fragment), `platform console per-principal TOTP missing: ${fragment}`);
 }
 
-const oidcDisabled = readFile('apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts');
+const oidcDisabled = readFile('apps/platform/identity/src/lib/identity-foundation/oidc-disabled.ts');
 reporter.assert(!oidcDisabled.includes('mock: true'), 'OIDC disabled scaffold must not emit mock:true runtime payloads');
 reporter.assert(oidcDisabled.includes('implemented: false'), 'OIDC disabled scaffold must be honest-disabled');
 reporter.assert(!oidcDisabled.includes('DISABLED_JWKS'), 'OIDC scaffold must not publish hard-coded disabled JWKS');

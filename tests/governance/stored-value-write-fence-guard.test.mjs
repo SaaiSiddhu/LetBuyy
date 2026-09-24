@@ -103,7 +103,7 @@ test('the strict arm covers apps too, not only services and packages', () => {
     // an app, which the gateway-proxy route-ownership rule forbids. The arm it sits beside scans only
     // services and packages, so this is pinned rather than assumed.
     const { ok, output } = runValidator([{
-        path: 'apps/merchant_web/src/app/api/loyalty/route.ts',
+        path: 'apps/merchant/web/src/app/api/loyalty/route.ts',
         text: `export async function POST(db) {\n`
             + `    await db.from('loyalty_ledger_entries').insert({ points: 1000 });\n`
             + `}\n`,

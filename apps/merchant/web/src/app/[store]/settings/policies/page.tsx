@@ -23,7 +23,7 @@ import { SettingsPane } from '@/components/settings/SettingsPane'
 // a DB_ERROR. The storefront has always read published policies exclusively from the
 // `storefront_policies` table (ContentService.getPolicy/listPolicies, and the footer's
 // shop.policies drop). This page now talks to the already-existing, already-correct
-// /api/stores/:store/policies proxy (apps/merchant_web/src/app/api/stores/[store]/
+// /api/stores/:store/policies proxy (apps/merchant/web/src/app/api/stores/[store]/
 // policies/**), which was built but never wired to any page. `policyType` below is the
 // storefront_policies.policy_type value each field maps to.
 interface PolicyField {

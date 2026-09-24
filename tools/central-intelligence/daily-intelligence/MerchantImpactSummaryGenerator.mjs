@@ -173,7 +173,7 @@ async function buildStoreThemeCheckoutHealthSection() {
 
   // Store health (structural)
   lines.push('### Storefront');
-  lines.push('- Runtime: `apps/customer_web` (Next.js, Cloudflare Workers) — structural status CONNECTED');
+  lines.push('- Runtime: `apps/commerce/web` (Next.js, Cloudflare Workers) — structural status CONNECTED');
   lines.push('- Liquid canary: OFF by default (`THEME_LIQUID_RENDERING_DEFAULT_ENABLED=false`) — CONNECTED');
   lines.push('- React hybrid: ON by default — CONNECTED');
   lines.push('- Live store error rate: **NOT CONNECTED** (source: Cloudflare Analytics Engine)');

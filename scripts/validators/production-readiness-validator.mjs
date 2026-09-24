@@ -54,7 +54,7 @@ const requiredFiles = [
   activeSupabaseSchemaMigrationPath,
   "database/supabase/verification/063_absolute_production_operationalization.sql",
   "database/supabase/verification/064_live_production_certification.sql",
-  "apps/admin_web/src/app/(dashboard)/operations/page.tsx",
+  "apps/internal/console/src/app/(dashboard)/operations/page.tsx",
   "docs/runbooks/incident-sev1.md",
   "docs/runbooks/queue-dlq-redrive.md",
   "docs/runbooks/deployment-rollback.md",

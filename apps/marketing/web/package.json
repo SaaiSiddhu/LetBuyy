@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/marketing-site-auth-boundary.test.mjs"
+    "test": "cd ../../.. && node --test tests/federation/marketing-site-auth-boundary.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

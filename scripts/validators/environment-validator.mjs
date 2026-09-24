@@ -89,12 +89,12 @@ for (const key of requiredWorkerEnvKeys) {
 const runtimeEnvOwnership = JSON.parse(readFile("config/env/ownership/runtime-env-ownership.json"));
 const secretMatrix = JSON.parse(readFile("config/env/staging-production-secret-matrix.json"));
 const forbiddenEnvOwners = [
-  "apps/app-marketplace",
-  "apps/developer-portal",
-  "apps/theme-marketplace",
-  "apps/platform-operations-portal",
-  "apps/mobile/shopper-app",
-  "apps/mobile/operator-app",
+  "apps/frozen/app-store",
+  "apps/frozen/developer-portal",
+  "apps/frozen/theme-store",
+  "apps/frozen/operations-portal",
+  "apps/reserved/legacy-shopper-mobile",
+  "apps/reserved/legacy-operator-mobile",
   "services/checkout-runtime",
   "services/search-service",
   "services/media-service",

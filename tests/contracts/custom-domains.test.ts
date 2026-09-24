@@ -65,12 +65,12 @@ test('custom-domain tables remain api-gateway single-writer owned', () => {
   assert.match(validator, /site_preview_links/);
   assert.match(validator, /site_gate_attempts/);
   // F-RENAMESTALE-1. This read /apps\/customer-web\/src/ and had been failing since Phase M renamed
-  // that root to apps/customer_web. The rename was correct; the assertion was not updated. Note which
+  // that root to apps/commerce/web. The rename was correct; the assertion was not updated. Note which
   // direction that brittleness runs: this test broke because the validator was FIXED, and it would
   // have passed happily if the validator had been left policing a directory that no longer exists.
   // So the path is asserted AND checked to exist, which makes the next rename fail for the right
   // reason instead of the wrong one.
-  const customerStorefrontRoot = 'apps/customer_web/src';
+  const customerStorefrontRoot = 'apps/commerce/web/src';
   assert.match(validator, new RegExp(customerStorefrontRoot.replace(/\//g, '\\/')));
   assert.equal(
     existsSync(join(repoRoot, customerStorefrontRoot)),
@@ -84,8 +84,8 @@ test('custom-domain health exposes DNS, SSL, and renewal state to mobile', () =>
   const sharedTypes = read('packages/shared-types/src/index.ts');
   const route = read('services/api-gateway/src/routes/custom-domains.ts');
   const stores = read('services/api-gateway/src/routes/stores.ts');
-  const mobileService = read('apps/merchant_app/lib/services/custom_domains.dart');
-  const mobileScreen = read('apps/merchant_app/lib/screens/settings/domain_settings_screen.dart');
+  const mobileService = read('apps/merchant/mobile/lib/services/custom_domains.dart');
+  const mobileScreen = read('apps/merchant/mobile/lib/screens/settings/domain_settings_screen.dart');
 
   assert.match(sharedTypes, /CustomDomainHealthSchema/);
   assert.match(route, /readCustomDomainHealth\(c\.env/);

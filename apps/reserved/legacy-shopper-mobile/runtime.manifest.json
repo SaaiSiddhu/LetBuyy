@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Mobile Shopper App",
-  "runtimeRoot": "apps/mobile/shopper-app",
+  "runtimeRoot": "apps/reserved/legacy-shopper-mobile",
   "actorType": [
     "shopper",
     "customer"
@@ -9,8 +9,8 @@
   "runtimeCategory": "reserved-mobile-app",
   "runtimeClassification": "reserved-mobile-customer-runtime",
   "ownership": {
-    "sourceAuthority": "apps/mobile/shopper-app",
-    "businessAuthority": "Reserved/not-implemented mobile shopper runtime. This root currently has no deployable source and does not own active customer browsing, cart, checkout, account, order, or mobile release behavior. Active shopper/customer behavior remains in apps/customer_web and services/api-gateway until a human-approved mobile shopper build scope adds source, tests, deployment config, and governance approval.",
+    "sourceAuthority": "apps/reserved/legacy-shopper-mobile",
+    "businessAuthority": "Reserved/not-implemented mobile shopper runtime. This root currently has no deployable source and does not own active customer browsing, cart, checkout, account, order, or mobile release behavior. Active shopper/customer behavior remains in apps/commerce/web and services/api-gateway until a human-approved mobile shopper build scope adds source, tests, deployment config, and governance approval.",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
       "docs/governance/runtime-boundaries.md",
@@ -54,7 +54,7 @@
     "audit": "No active audit emission from this reserved mobile root."
   },
   "executionAuthority": {
-    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/customer_web owns active shopper/customer presentation flows and services/api-gateway owns active customer/storefront API behavior; no shopper mobile app is implemented.",
+    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/commerce/web owns active shopper/customer presentation flows and services/api-gateway owns active customer/storefront API behavior; no shopper mobile app is implemented.",
     "orchestrationRole": "No active service-local event helpers execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
     "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires mobile source, package/deployment config, tests, and governance approval.",
     "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
@@ -97,7 +97,7 @@
   "implementationStatus": {
     "status": "reserved-not-implemented",
     "sourceState": "manifest-and-agents-only",
-    "currentActiveOwner": "apps/customer_web owns active shopper/customer presentation flows and services/api-gateway owns active customer/storefront API behavior; no shopper mobile app is implemented.",
+    "currentActiveOwner": "apps/commerce/web owns active shopper/customer presentation flows and services/api-gateway owns active customer/storefront API behavior; no shopper mobile app is implemented.",
     "activationRequirement": "Build a real gateway-wired mobile first screen, add source/package/deployment config, tests, and governance approval before claiming active mobile runtime ownership."
   }
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Theme Marketplace",
-  "runtimeRoot": "apps/theme-marketplace",
+  "runtimeRoot": "apps/frozen/theme-store",
   "actorType": [
     "merchant",
     "theme-developer"
@@ -9,7 +9,7 @@
   "runtimeCategory": "frozen-next-app",
   "runtimeClassification": "marketplace-control-plane",
   "ownership": {
-    "sourceAuthority": "apps/theme-marketplace",
+    "sourceAuthority": "apps/frozen/theme-store",
     "businessAuthority": "Theme catalog, theme details, checkout, acquisition, and marketplace discovery flows.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",

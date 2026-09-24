@@ -16,7 +16,7 @@
  *
  * HONESTY LAW — metafield source
  *   Resolves to fallback (or null). The exact missing piece:
- *   apps/customer_web/src/lib/theme-engine/metafield-service.ts (NOT CONNECTED in Phase W).
+ *   apps/commerce/web/src/lib/theme-engine/metafield-service.ts (NOT CONNECTED in Phase W).
  *   Until that hydration service is wired and its output is included in SiteDrops, metafield
  *   descriptors will always return the fallback value so merchants see a graceful placeholder.
  *
@@ -83,7 +83,7 @@ export interface ResourceBinding {
  * customer-web render path has no metafield hydration service.
  *
  * Exact missing piece:
- *   apps/customer_web/src/lib/theme-engine/metafield-service.ts
+ *   apps/commerce/web/src/lib/theme-engine/metafield-service.ts
  *
  * Until that file is created and the fetched values are injected into SiteDrops.metafieldsById,
  * this descriptor resolves to `fallback` (or null). No data is fabricated.
@@ -241,7 +241,7 @@ function resolveDescriptor(
 
       case 'metafield':
         // NOT-CONNECTED in Phase W.
-        // Exact missing piece: apps/customer_web/src/lib/theme-engine/metafield-service.ts
+        // Exact missing piece: apps/commerce/web/src/lib/theme-engine/metafield-service.ts
         // Once the hydration service is built and injects metafield values into SiteDrops,
         // this branch should look up descriptor.owner_id + namespace + key in that map.
         return descriptor.fallback ?? null;

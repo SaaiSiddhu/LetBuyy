@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@letbuyy/identity-platform",
+  "buildCommand": "cd ../../.. && pnpm turbo build --filter=@letbuyy/identity-platform",
   "outputDirectory": ".next",
   "installCommand": "pnpm install --frozen-lockfile",
   "regions": ["bom1"],

@@ -1,8 +1,8 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import { createLetbuyyBoundaryConfig } from "../../config/eslint/letbuyy-boundaries.mjs";
-import uiPlugin from "../../packages/typescript/ui/eslint/index.cjs";
+import { createLetbuyyBoundaryConfig } from "../../../config/eslint/letbuyy-boundaries.mjs";
+import uiPlugin from "../../../packages/typescript/ui/eslint/index.cjs";
 
 const eslintConfig = defineConfig([
   ...nextVitals,

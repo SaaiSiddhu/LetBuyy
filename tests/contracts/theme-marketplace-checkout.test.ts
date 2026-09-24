@@ -5,9 +5,9 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
-const checkoutPagePath = join(testDir, '../../apps/theme-marketplace/src/app/checkout/page.tsx');
-const themeRoutePath = join(testDir, '../../apps/theme-marketplace/src/app/api/themes/[slug]/route.ts');
-const themeServicePath = join(testDir, '../../apps/theme-marketplace/src/lib/theme-service.ts');
+const checkoutPagePath = join(testDir, '../../apps/frozen/theme-store/src/app/checkout/page.tsx');
+const themeRoutePath = join(testDir, '../../apps/frozen/theme-store/src/app/api/themes/[slug]/route.ts');
+const themeServicePath = join(testDir, '../../apps/frozen/theme-store/src/lib/theme-service.ts');
 const apiClientPath = join(testDir, '../../packages/typescript/api-client/src/index.ts');
 const gatewayThemesRoutePath = join(testDir, '../../services/api-gateway/src/routes/themes.ts');
 const gatewayThemePurchaseRoutePath = join(testDir, '../../services/api-gateway/src/routes/themes/theme-purchase-routes.ts');

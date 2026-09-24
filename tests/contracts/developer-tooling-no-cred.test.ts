@@ -13,8 +13,8 @@ import {
 const testDir = dirname(fileURLToPath(import.meta.url));
 const developerRouteSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store/developer-routes.ts'), 'utf8');
 const apiClientSource = readFileSync(join(testDir, '../../packages/typescript/api-client/src/index.ts'), 'utf8');
-const developerSurfaceSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/developer-surface.ts'), 'utf8');
-const referenceSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/reference.ts'), 'utf8');
+const developerSurfaceSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/developer-surface.ts'), 'utf8');
+const referenceSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/reference.ts'), 'utf8');
 
 test('app manifest validation is package-owned and produces registration plans', () => {
     const manifest = createExampleLetbuyyAppManifest();

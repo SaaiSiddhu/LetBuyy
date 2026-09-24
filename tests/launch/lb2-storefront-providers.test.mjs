@@ -12,13 +12,13 @@ function read(relPath) {
 }
 
 const checkoutClient = read(
-  'apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx',
+  'apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx',
 );
 const successPage = read(
-  'apps/customer_web/src/app/store/[subdomain]/checkout/success/page.tsx',
+  'apps/commerce/web/src/app/store/[subdomain]/checkout/success/page.tsx',
 );
 const paypalReturnPage = read(
-  'apps/customer_web/src/app/store/[subdomain]/checkout/paypal-return/page.tsx',
+  'apps/commerce/web/src/app/store/[subdomain]/checkout/paypal-return/page.tsx',
 );
 
 test('LB-2(a): no Stripe handler or button label in checkout-client', () => {

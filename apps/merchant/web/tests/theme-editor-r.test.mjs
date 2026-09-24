@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../../../..', import.meta.url).pathname;
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8');
@@ -24,7 +24,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant_web/src';
+const MCP_BASE = 'apps/merchant/web/src';
 const EDITOR_PAGE = `${MCP_BASE}/app/[store]/online-store/themes/[themeId]/editor/page.tsx`;
 const CONFLICT_DIALOG = `${MCP_BASE}/components/theme-editor/ConflictDialog.tsx`;
 const SECTION_TREE_PANEL = `${MCP_BASE}/components/theme-editor/SectionTreePanel.tsx`;

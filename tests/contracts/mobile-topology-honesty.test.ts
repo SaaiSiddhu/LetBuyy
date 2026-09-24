@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 
 const reservedMobileRoots = [
-  'apps/mobile/shopper-app',
-  'apps/mobile/operator-app',
+  'apps/reserved/legacy-shopper-mobile',
+  'apps/reserved/legacy-operator-mobile',
 ];
 
 function readJson(path: string) {
@@ -26,24 +26,24 @@ test('shopper and operator mobile roots are reserved rather than active canonica
   const source = readFileSync(resolve(repoRoot, 'scripts/validators/governance-common.mjs'), 'utf8');
 
   assert.match(source, /export const reservedMobileRuntimeRoots = \[/);
-  assert.match(source, /"apps\/mobile\/shopper-app"/);
-  assert.match(source, /"apps\/mobile\/operator-app"/);
+  assert.match(source, /"apps\/reserved\/legacy-shopper-mobile"/);
+  assert.match(source, /"apps\/reserved\/legacy-operator-mobile"/);
 
   const canonicalBlock = source.match(/export const canonicalAppRoots = \[([\s\S]*?)\];/)?.[1] ?? '';
   // F-RENAMESTALE-1. This read /"apps\/mobile\/merchant-app"/ and had been failing since Phase M
-  // renamed that root to apps/merchant_app (governance-common.mjs:81). The load-bearing half of this
+  // renamed that root to apps/merchant/mobile (governance-common.mjs:81). The load-bearing half of this
   // test is the two doesNotMatch assertions below — a RESERVED root must never appear among the
   // canonical ones — and they never stopped holding. Only the positive literal went stale. It is now
   // checked to exist as well, so a future rename fails this for the right reason.
-  const merchantAppRoot = 'apps/merchant_app';
+  const merchantAppRoot = 'apps/merchant/mobile';
   assert.match(canonicalBlock, new RegExp(`"${merchantAppRoot.replace(/\//g, '\\/')}"`));
   assert.equal(
     existsSync(resolve(repoRoot, merchantAppRoot)),
     true,
     `canonicalAppRoots must name a root that exists; ${merchantAppRoot} is missing`,
   );
-  assert.doesNotMatch(canonicalBlock, /apps\/mobile\/shopper-app/);
-  assert.doesNotMatch(canonicalBlock, /apps\/mobile\/operator-app/);
+  assert.doesNotMatch(canonicalBlock, /apps\/reserved\/legacy-shopper-mobile/);
+  assert.doesNotMatch(canonicalBlock, /apps\/reserved\/legacy-operator-mobile/);
 });
 
 test('reserved mobile roots contain only AGENTS and runtime manifest files', () => {
@@ -81,6 +81,6 @@ test('reserved mobile roots are absent from deployment and production topology',
     assert.equal(productionRoots.has(root), false);
   }
 
-  assert.equal(deploymentRoots.has('apps/merchant_app'), true);
-  assert.equal(productionRoots.has('apps/merchant_app'), true);
+  assert.equal(deploymentRoots.has('apps/merchant/mobile'), true);
+  assert.equal(productionRoots.has('apps/merchant/mobile'), true);
 });

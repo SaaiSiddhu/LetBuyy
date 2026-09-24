@@ -1,15 +1,15 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Mobile Operator App",
-  "runtimeRoot": "apps/mobile/operator-app",
+  "runtimeRoot": "apps/reserved/legacy-operator-mobile",
   "actorType": [
     "platform-operator"
   ],
   "runtimeCategory": "reserved-mobile-app",
   "runtimeClassification": "reserved-mobile-platform-operator-runtime",
   "ownership": {
-    "sourceAuthority": "apps/mobile/operator-app",
-    "businessAuthority": "Reserved/not-implemented mobile operator companion runtime. The generated Flutter counter starter was archived; this root currently has no deployable source and does not own active platform-operator workflows, mobile release behavior, privileged operations, or production execution. Active operator behavior remains in apps/admin_web, apps/platform-operations-portal, and services/api-gateway until a human-approved native operator scope adds source, tests, deployment config, and governance approval.",
+    "sourceAuthority": "apps/reserved/legacy-operator-mobile",
+    "businessAuthority": "Reserved/not-implemented mobile operator companion runtime. The generated Flutter counter starter was archived; this root currently has no deployable source and does not own active platform-operator workflows, mobile release behavior, privileged operations, or production execution. Active operator behavior remains in apps/internal/console, apps/frozen/operations-portal, and services/api-gateway until a human-approved native operator scope adds source, tests, deployment config, and governance approval.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
       "docs/governance/mobile-governance.md",
@@ -54,7 +54,7 @@
     "audit": "No active audit emission from this reserved mobile root."
   },
   "executionAuthority": {
-    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/admin_web owns active super-admin presentation, apps/platform-operations-portal owns active employee operations presentation, and services/api-gateway owns active operational APIs; no operator mobile app is implemented.",
+    "executionRole": "Reserved/not-implemented mobile root; does not own active routing, rendering, presentation adapters, runtime transport, mobile release artifacts, or runtime bootstrapping. apps/internal/console owns active super-admin presentation, apps/frozen/operations-portal owns active employee operations presentation, and services/api-gateway owns active operational APIs; no operator mobile app is implemented.",
     "orchestrationRole": "No active service-local event helpers execution; current workflows delegate to implemented web and service runtimes plus package-owned policy.",
     "infrastructureOwnership": "No active runtime infrastructure ownership; future activation requires mobile source, package/deployment config, tests, and governance approval.",
     "eventOwnership": "No active event execution ownership; current event handling delegates to implemented runtimes.",
@@ -97,7 +97,7 @@
   "implementationStatus": {
     "status": "reserved-not-implemented",
     "sourceState": "manifest-and-agents-only",
-    "currentActiveOwner": "apps/admin_web owns active super-admin presentation, apps/platform-operations-portal owns active employee operations presentation, and services/api-gateway owns active operational APIs; no operator mobile app is implemented.",
+    "currentActiveOwner": "apps/internal/console owns active super-admin presentation, apps/frozen/operations-portal owns active employee operations presentation, and services/api-gateway owns active operational APIs; no operator mobile app is implemented.",
     "activationRequirement": "Build a real gateway-wired mobile first screen, add source/package/deployment config, tests, and governance approval before claiming active mobile runtime ownership."
   }
 }

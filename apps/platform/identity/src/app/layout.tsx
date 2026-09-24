@@ -4,21 +4,21 @@ import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 import "./globals.css";
 
 const letbuyySans = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
   variable: "--font-letbuyy-sans",
   display: "swap",
   weight: "100 900",
 });
 
 const letbuyyDisplay = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
   variable: "--font-letbuyy-display",
   display: "swap",
   weight: "100 900",
 });
 
 const letbuyyMono = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
   variable: "--font-letbuyy-mono",
   display: "swap",
   weight: "100 900",
@@ -103,7 +103,7 @@ export default function RootLayout({
       <body className="antialiased">
         {/* surface="admin" + forcedTheme="light": the accounts/auth flow is the
             merchant identity surface, so it must carry the exact same ink
-            primary/secondary brand as apps/merchant_web rather than
+            primary/secondary brand as apps/merchant/web rather than
             the shared default violet "identity" surface used to fall back to. */}
         <LetbuyyThemeProvider surface="admin" forcedTheme="light">
           {children}

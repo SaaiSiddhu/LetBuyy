@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const dropSource = readFileSync(
-    new URL('../../../../apps/customer_web/src/lib/customer-drop.ts', import.meta.url), 'utf8');
+    new URL('../../../../apps/commerce/web/src/lib/customer-drop.ts', import.meta.url), 'utf8');
 const routeSource = readFileSync(
     new URL('../routes/storefront/customer-engagement-routes.ts', import.meta.url), 'utf8');
 

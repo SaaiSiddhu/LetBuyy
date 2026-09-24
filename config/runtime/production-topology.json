@@ -82,78 +82,78 @@
     },
     {
       "runtimeName": "Identity Platform",
-      "runtimeRoot": "apps/identity-platform",
+      "runtimeRoot": "apps/platform/identity",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/identity-platform/vercel.json"
+        "apps/platform/identity/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Storefront Runtime",
-      "runtimeRoot": "apps/customer_web",
+      "runtimeRoot": "apps/commerce/web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/customer_web/vercel.json"
+        "apps/commerce/web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Merchant Control Plane",
-      "runtimeRoot": "apps/merchant_web",
+      "runtimeRoot": "apps/merchant/web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/merchant_web/vercel.json"
+        "apps/merchant/web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Marketing Site",
-      "runtimeRoot": "apps/marketing-site",
+      "runtimeRoot": "apps/marketing/web",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/marketing-site/vercel.json"
+        "apps/marketing/web/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Platform Console",
-      "runtimeRoot": "apps/admin_web",
+      "runtimeRoot": "apps/internal/console",
       "environment": "production",
       "status": "active",
       "deploymentKind": "vercel-next",
       "deploymentManifests": [
-        "apps/admin_web/vercel.json"
+        "apps/internal/console/vercel.json"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Mobile Merchant App",
-      "runtimeRoot": "apps/merchant_app",
+      "runtimeRoot": "apps/merchant/mobile",
       "environment": "production",
       "status": "active",
       "deploymentKind": "mobile-app",
       "deploymentManifests": [
-        "apps/merchant_app/pubspec.yaml"
+        "apps/merchant/mobile/pubspec.yaml"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
     {
       "runtimeName": "Customer App",
-      "runtimeRoot": "apps/customer_app",
+      "runtimeRoot": "apps/marketplace/mobile",
       "environment": "production",
       "status": "active",
       "deploymentKind": "mobile-app",
       "deploymentManifests": [
-        "apps/customer_app/pubspec.yaml"
+        "apps/marketplace/mobile/pubspec.yaml"
       ],
       "outbox": "transactional outbox via Supabase/Postgres"
     },
@@ -207,7 +207,7 @@
     },
     {
       "runtimeName": "app-marketplace",
-      "runtimeRoot": "apps/app-marketplace",
+      "runtimeRoot": "apps/frozen/app-store",
       "environment": "frozen",
       "status": "frozen",
       "deploymentKind": "not-deployed",
@@ -215,7 +215,7 @@
     },
     {
       "runtimeName": "developer-portal",
-      "runtimeRoot": "apps/developer-portal",
+      "runtimeRoot": "apps/frozen/developer-portal",
       "environment": "frozen",
       "status": "frozen",
       "deploymentKind": "not-deployed",
@@ -223,7 +223,7 @@
     },
     {
       "runtimeName": "theme-marketplace",
-      "runtimeRoot": "apps/theme-marketplace",
+      "runtimeRoot": "apps/frozen/theme-store",
       "environment": "frozen",
       "status": "frozen",
       "deploymentKind": "not-deployed",
@@ -231,7 +231,7 @@
     },
     {
       "runtimeName": "platform-operations-portal",
-      "runtimeRoot": "apps/platform-operations-portal",
+      "runtimeRoot": "apps/frozen/operations-portal",
       "environment": "frozen",
       "status": "frozen",
       "deploymentKind": "not-deployed",

@@ -32,11 +32,11 @@ const skippedHumanSource = readFileSync(
     'utf8',
 );
 const mobileServiceSource = readFileSync(
-    new URL('../../../../apps/merchant_app/lib/services/whatsapp_service.dart', import.meta.url),
+    new URL('../../../../apps/merchant/mobile/lib/services/whatsapp_service.dart', import.meta.url),
     'utf8',
 );
 const customerDetailSource = readFileSync(
-    new URL('../../../../apps/merchant_app/lib/screens/customers/customer_detail_screen.dart', import.meta.url),
+    new URL('../../../../apps/merchant/mobile/lib/screens/customers/customer_detail_screen.dart', import.meta.url),
     'utf8',
 );
 

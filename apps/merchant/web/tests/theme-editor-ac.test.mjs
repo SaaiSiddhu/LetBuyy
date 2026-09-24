@@ -91,7 +91,7 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import test from 'node:test'
 
-const ROOT = new URL('../../..', import.meta.url).pathname
+const ROOT = new URL('../../../..', import.meta.url).pathname
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8')
@@ -100,13 +100,13 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`)
 }
 
-const MCP_BASE = 'apps/merchant_web/src'
+const MCP_BASE = 'apps/merchant/web/src'
 
 // ── File paths ─────────────────────────────────────────────────────────────────
 
 const AI_PANEL    = `${MCP_BASE}/components/theme-editor/AICustomizationPanel.tsx`
 const AI_PROXY    = `${MCP_BASE}/app/api/themes/[themeId]/editor/ai-customization/route.ts`
-const PKG_JSON    = 'apps/merchant_web/package.json'
+const PKG_JSON    = 'apps/merchant/web/package.json'
 
 // Foreign WIP files — must not be imported or modified.
 const EDITOR_PAGE = `${MCP_BASE}/app/[store]/online-store/themes/[themeId]/editor/page.tsx`
@@ -601,6 +601,6 @@ test('phase-ac: package.json test command includes theme-editor-ac.test.mjs', ()
     assert.match(
         read(PKG_JSON),
         /theme-editor-ac\.test\.mjs/,
-        'apps/merchant_web/package.json test command must include theme-editor-ac.test.mjs'
+        'apps/merchant/web/package.json test command must include theme-editor-ac.test.mjs'
     )
 })

@@ -5,11 +5,11 @@ import { fileURLToPath } from "node:url";
 
 const requireFromConfig = createRequire(import.meta.url);
 const { createSecurityHeaders } = requireFromConfig(
-  "../../config/security/next-security-headers.ts",
-) as typeof import("../../config/security/next-security-headers");
+  "../../../config/security/next-security-headers.ts",
+) as typeof import("../../../config/security/next-security-headers");
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
-const workspaceRoot = resolve(appRoot, "../..");
+const workspaceRoot = resolve(appRoot, "../../..");
 const workspaceModules = resolve(workspaceRoot, "node_modules/.pnpm/node_modules");
 
 const workspacePackages = [
@@ -20,11 +20,11 @@ const workspacePackages = [
 ];
 
 const workspacePackageAliases = {
-  "@letbuyy/api-client": resolve(appRoot, "../../packages/typescript/api-client/src/index.ts"),
-  "@letbuyy/api-types": resolve(appRoot, "../../packages/typescript/api-types/src/index.ts"),
-  "@letbuyy/shared-types": resolve(appRoot, "../../packages/shared-types/src/index.ts"),
-  "@letbuyy/ui": resolve(appRoot, "../../packages/typescript/ui/src/index.ts"),
-  "@letbuyy/ui/formatting": resolve(appRoot, "../../packages/typescript/ui/src/formatting.ts"),
+  "@letbuyy/api-client": resolve(appRoot, "../../../packages/typescript/api-client/src/index.ts"),
+  "@letbuyy/api-types": resolve(appRoot, "../../../packages/typescript/api-types/src/index.ts"),
+  "@letbuyy/shared-types": resolve(appRoot, "../../../packages/shared-types/src/index.ts"),
+  "@letbuyy/ui": resolve(appRoot, "../../../packages/typescript/ui/src/index.ts"),
+  "@letbuyy/ui/formatting": resolve(appRoot, "../../../packages/typescript/ui/src/formatting.ts"),
   "tailwind-merge": resolve(appRoot, "../../node_modules/.pnpm/node_modules/tailwind-merge"),
 };
 

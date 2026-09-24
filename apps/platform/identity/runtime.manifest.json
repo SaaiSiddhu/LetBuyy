@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Identity Platform",
-  "runtimeRoot": "apps/identity-platform",
+  "runtimeRoot": "apps/platform/identity",
   "actorType": [
     "merchant",
     "store-staff"
@@ -9,7 +9,7 @@
   "runtimeCategory": "next-app",
   "runtimeClassification": "identity-control-plane",
   "ownership": {
-    "sourceAuthority": "apps/identity-platform",
+    "sourceAuthority": "apps/platform/identity",
     "businessAuthority": "Merchant authentication, onboarding, password, OTP, OAuth callback, and store selection UI.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -47,7 +47,7 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/identity-platform/next.config.ts"
+      "apps/platform/identity/next.config.ts"
     ]
   },
   "environmentAuthority": {

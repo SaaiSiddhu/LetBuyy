@@ -30,7 +30,7 @@
 //
 // Run (server must already be up — see docs/evidence/liquid-load/S6-load-summary.md for the exact
 // command used to start it):
-//   node apps/customer_web/scripts/liquid-load-harness.mjs \
+//   node apps/commerce/web/scripts/liquid-load-harness.mjs \
 //     --base-url=http://localhost:3939 --rps=10 --duration=15 --warmup-requests=5 --trials=3 \
 //     --surfaces=index,product,collection \
 //     --out=docs/evidence/liquid-load/S7-load-results.json
@@ -41,7 +41,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 import { performance } from 'node:perf_hooks';
 
-const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..');
 
 // ---------------------------------------------------------------------------------------------
 // CLI args (no dependency — hand-parsed; this harness is small enough not to justify minimist/yargs)

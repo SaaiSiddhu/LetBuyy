@@ -59,8 +59,8 @@ test('env templates document the current staging and production Vercel project s
 });
 
 test('empty codex route proof directories are absent from active app source', () => {
-    assert.equal(existsSync(path('apps/merchant_web/src/app/codex-theme-editor-empty-proof')), false);
-    assert.equal(existsSync(path('apps/merchant_web/src/app/__codex-theme-editor-empty-proof')), false);
+    assert.equal(existsSync(path('apps/merchant/web/src/app/codex-theme-editor-empty-proof')), false);
+    assert.equal(existsSync(path('apps/merchant/web/src/app/__codex-theme-editor-empty-proof')), false);
 });
 
 test('dead residue validator is wired into governance', () => {

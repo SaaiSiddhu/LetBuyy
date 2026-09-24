@@ -4,8 +4,8 @@ import { test } from 'node:test';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 const exportRoute = read('services/api-gateway/src/routes/export.ts');
-const importProxy = read('apps/merchant_web/src/app/api/stores/[store]/products/import/route.ts');
-const exportPage = read('apps/merchant_web/src/app/[store]/export/page.tsx');
+const importProxy = read('apps/merchant/web/src/app/api/stores/[store]/products/import/route.ts');
+const exportPage = read('apps/merchant/web/src/app/[store]/export/page.tsx');
 
 test('gateway CSV export routes enqueue async R2-backed jobs', () => {
   for (const fragment of [

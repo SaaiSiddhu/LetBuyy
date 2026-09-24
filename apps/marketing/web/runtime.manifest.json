@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Marketing Site",
-  "runtimeRoot": "apps/marketing-site",
+  "runtimeRoot": "apps/marketing/web",
   "actorType": [
     "visitor",
     "prospect"
@@ -9,7 +9,7 @@
   "runtimeCategory": "next-app",
   "runtimeClassification": "public-marketing-plane",
   "ownership": {
-    "sourceAuthority": "apps/marketing-site",
+    "sourceAuthority": "apps/marketing/web",
     "businessAuthority": "Public LetBuyy marketing, pricing, product narrative, and conversion routing.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -48,7 +48,7 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/marketing-site/next.config.ts"
+      "apps/marketing/web/next.config.ts"
     ]
   },
   "environmentAuthority": {

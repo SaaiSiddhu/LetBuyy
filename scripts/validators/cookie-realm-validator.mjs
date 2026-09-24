@@ -8,11 +8,11 @@ import {
 
 const reporter = createReporter("Cookie realm validator");
 
-const storefrontFiles = listWorkspaceFiles(["apps/customer_web/src"])
+const storefrontFiles = listWorkspaceFiles(["apps/commerce/web/src"])
   .filter((file) => sourceExtensions.has(path.extname(file)) && !file.endsWith(".d.ts"));
 const platformCookieFiles = [
-  "apps/identity-platform/src/lib/auth/cookies.ts",
-  "apps/merchant_web/src/app/api/auth/logout/route.ts",
+  "apps/platform/identity/src/lib/auth/cookies.ts",
+  "apps/merchant/web/src/app/api/auth/logout/route.ts",
 ];
 
 for (const file of storefrontFiles) {
@@ -36,7 +36,7 @@ for (const file of platformCookieFiles) {
   );
 }
 
-const identityCookieSource = readFile("apps/identity-platform/src/lib/auth/cookies.ts");
+const identityCookieSource = readFile("apps/platform/identity/src/lib/auth/cookies.ts");
 reporter.assert(
   !/\.letbuyy\.com/.test(identityCookieSource),
   "identity-platform cookie helper must not hardcode the future platform cookie domain",

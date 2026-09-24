@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/admin-web-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
+    "test": "cd ../../.. && node --test tests/federation/admin-web-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

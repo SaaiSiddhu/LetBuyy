@@ -3,7 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
 
-const appRoot = 'apps/marketing-site';
+const appRoot = 'apps/marketing/web';
 const sourceRoot = join(appRoot, 'src');
 const skippedDirs = new Set(['.next', '.turbo', 'coverage', 'dist', 'node_modules']);
 

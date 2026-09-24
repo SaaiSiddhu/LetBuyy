@@ -27,12 +27,32 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // that names no real folder shows up as a folder the generator invented.
 const realFolders = (parent) => readdirSync(join(ROOT, parent))
     .filter((name) => existsSync(join(ROOT, parent, name, 'package.json')));
+// D-APP-LAYOUT (2026-09-24): Next application roots now sit under grouping containers (apps/commerce/web,
+// apps/frozen/app-store, ...). Collect every directory under apps/ that owns a package.json, as a path
+// relative to apps/, skipping installed and generated trees.
+const SKIP = new Set(['node_modules', '.next', '.turbo', 'dist', 'build', '.dart_tool']);
+function realAppRoots(dir = join(ROOT, 'apps'), prefix = '') {
+    const found = [];
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || SKIP.has(entry.name)) continue;
+        const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (existsSync(join(dir, entry.name, 'package.json'))) found.push(relPath);
+        else found.push(...realAppRoots(join(dir, entry.name), relPath));
+    }
+    return found;
+}
+const listDirs = (dir, prefix = '') => readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => {
+        const relPath = prefix ? `${prefix}/${entry.name}` : entry.name;
+        return [relPath, ...listDirs(join(dir, entry.name), relPath)];
+    });
 
 function scratchRepo() {
     const root = mkdtempSync(join(tmpdir(), 'letbuyy-local-env-'));
     cpSync(join(ROOT, 'scripts', 'dev'), join(root, 'scripts', 'dev'), { recursive: true });
     cpSync(join(ROOT, 'config', 'env', 'templates'), join(root, 'config', 'env', 'templates'), { recursive: true });
-    for (const app of realFolders('apps')) mkdirSync(join(root, 'apps', app), { recursive: true });
+    for (const app of realAppRoots()) mkdirSync(join(root, 'apps', app), { recursive: true });
     for (const service of realFolders('services')) mkdirSync(join(root, 'services', service), { recursive: true });
     return root;
 }
@@ -61,11 +81,11 @@ test('every APP_PORTS key is a real app folder whose dev script serves that port
 
 test('the generator writes each app its own .env.local and creates no other folder', () => {
     const root = scratchRepo();
-    const before = readdirSync(join(root, 'apps')).sort();
+    const before = listDirs(join(root, 'apps')).sort();
     const result = spawnSync(process.execPath, [join(root, 'scripts', 'dev', 'setup-local-env.mjs')], { encoding: 'utf8' });
     assert.equal(result.status, 0, result.stderr);
 
-    assert.deepEqual(readdirSync(join(root, 'apps')).sort(), before, 'the generator must not invent app folders');
+    assert.deepEqual(listDirs(join(root, 'apps')).sort(), before, 'the generator must not invent app folders');
     for (const app of Object.keys(APP_PORTS)) {
         assert.ok(existsSync(join(root, 'apps', app, '.env.local')), `apps/${app}/.env.local was not written`);
     }
@@ -101,7 +121,7 @@ test('the generated stack can resolve a store and keep checkout on this machine'
     const result = spawnSync(process.execPath, [join(root, 'scripts', 'dev', 'setup-local-env.mjs')], { encoding: 'utf8' });
     assert.equal(result.status, 0, result.stderr);
 
-    const localCheckout = `http://checkout.localhost:${APP_PORTS.customer_web}`;
+    const localCheckout = `http://checkout.localhost:${APP_PORTS['commerce/web']}`;
     for (const service of Object.keys(SERVICE_PORTS)) {
         const vars = envFile(join(root, 'services', service, '.dev.vars'));
         const allowlist = (vars.INTERNAL_GATEWAY_IP_ALLOWLIST ?? '').split(',').map((entry) => entry.trim());
@@ -111,7 +131,7 @@ test('the generated stack can resolve a store and keep checkout on this machine'
         assert.equal(vars.CHECKOUT_ORIGIN, localCheckout, `${service}: CHECKOUT_ORIGIN must be the local checkout host`);
     }
 
-    const storefront = envFile(join(root, 'apps', 'customer_web', '.env.local'));
+    const storefront = envFile(join(root, 'apps', 'commerce', 'web', '.env.local'));
     assert.equal(storefront.CHECKOUT_ORIGIN, localCheckout);
     assert.equal(storefront.NEXT_PUBLIC_STORE_ROOT_DOMAIN, 'localhost', 'checkout.localhost is only a checkout host under this root');
     assert.equal(storefront.INTERNAL_API_SECRET, envFile(join(root, 'services', 'api-gateway', '.dev.vars')).INTERNAL_API_SECRET,

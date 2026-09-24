@@ -1,11 +1,11 @@
 @import "tailwindcss";
-@import "../../../../config/tailwind/letbuyy-tokens.css";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
 /* Must precede the @source directives: CSS requires every @import to come
    before any other at-rule, and Tailwind's @source counts. */
 @import "./header.css";
 @import "./footer.css";
 @source "./**/*.{ts,tsx}";
-@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+@source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 /* ═══════════════════════════════════════════════════
    THEME MARKETPLACE — Design Tokens (Shared)

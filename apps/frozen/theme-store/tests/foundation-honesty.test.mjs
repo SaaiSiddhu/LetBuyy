@@ -5,8 +5,8 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const testDir = fileURLToPath(new URL('.', import.meta.url));
-const repoRoot = join(testDir, '..', '..', '..');
-const appRoot = join(repoRoot, 'apps', 'theme-marketplace');
+const repoRoot = join(testDir, '..', '..', '..', '..');
+const appRoot = join(repoRoot, 'apps', 'frozen', 'theme-store');
 const srcRoot = join(appRoot, 'src');
 
 function walkSource(dir) {

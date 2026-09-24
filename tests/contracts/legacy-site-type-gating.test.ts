@@ -43,7 +43,7 @@ test('tenant-core classifies only online store as active acquisition', () => {
 test('gateway and identity creation paths fail closed for unavailable site types by default', () => {
     const gatewayStores = read(join(repoRoot, 'services/api-gateway/src/routes/stores.ts'));
     const gatewayOnboarding = read(join(repoRoot, 'services/api-gateway/src/routes/onboarding.ts'));
-    const identityCreateStore = read(join(repoRoot, 'apps/identity-platform/src/app/api/auth/create-store/route.ts'));
+    const identityCreateStore = read(join(repoRoot, 'apps/platform/identity/src/app/api/auth/create-store/route.ts'));
 
     assert.match(gatewayStores, /isComingSoonSiteType\(body\.site_type\)[\s\S]{0,140}comingSoonSiteTypeCreationResponse/);
     assert.match(gatewayStores, /isLegacySiteType\(body\.site_type\)[\s\S]{0,140}legacySiteTypeCreationAllowed/);
@@ -63,17 +63,17 @@ test('gateway and identity creation paths fail closed for unavailable site types
 });
 
 test('public acquisition surfaces show landing and blog as launch-disabled', () => {
-    const identityOnboarding = read(join(repoRoot, 'apps/identity-platform/src/app/onboarding/page.tsx'));
+    const identityOnboarding = read(join(repoRoot, 'apps/platform/identity/src/app/onboarding/page.tsx'));
     const identityAuthPages = [
-        read(join(repoRoot, 'apps/identity-platform/src/app/login/page.tsx')),
-        read(join(repoRoot, 'apps/identity-platform/src/app/signup/page.tsx')),
-        read(join(repoRoot, 'apps/identity-platform/src/app/lookup/page.tsx')),
+        read(join(repoRoot, 'apps/platform/identity/src/app/login/page.tsx')),
+        read(join(repoRoot, 'apps/platform/identity/src/app/signup/page.tsx')),
+        read(join(repoRoot, 'apps/platform/identity/src/app/lookup/page.tsx')),
     ].join('\n');
-    const createPageRelative = existsSync(join(repoRoot, 'apps/marketing-site/src/app/[locale]/create/page.tsx'))
-        ? 'apps/marketing-site/src/app/[locale]/create/page.tsx'
-        : 'apps/marketing-site/src/app/create/page.tsx';
+    const createPageRelative = existsSync(join(repoRoot, 'apps/marketing/web/src/app/[locale]/create/page.tsx'))
+        ? 'apps/marketing/web/src/app/[locale]/create/page.tsx'
+        : 'apps/marketing/web/src/app/create/page.tsx';
     const marketingCreate = read(join(repoRoot, createPageRelative));
-    const marketingSiteTypes = read(join(repoRoot, 'apps/marketing-site/src/components/SiteTypes.tsx'));
+    const marketingSiteTypes = read(join(repoRoot, 'apps/marketing/web/src/components/SiteTypes.tsx'));
 
     const defaultIdentityTypes = identityOnboarding.match(/const SITE_TYPES:[\s\S]*?\]\n\nconst LEGACY_SITE_TYPES/);
     assert.ok(defaultIdentityTypes);
@@ -101,7 +101,7 @@ test('public acquisition surfaces show landing and blog as launch-disabled', () 
 test('legacy site-type status is documented and validator-guarded', () => {
     const featureFlagGovernance = read(join(repoRoot, 'docs/governance/feature-flag-governance.md'));
     const domainGovernance = read(join(repoRoot, 'docs/governance/domain-governance.md'));
-    const developerSurface = read(join(repoRoot, 'apps/developer-portal/src/lib/developer-surface.ts'));
+    const developerSurface = read(join(repoRoot, 'apps/frozen/developer-portal/src/lib/developer-surface.ts'));
     const validator = read(join(repoRoot, 'scripts/validators/legacy-site-type-validator.mjs'));
     const governanceRunner = read(join(repoRoot, 'scripts/validate-governance.mjs'));
 

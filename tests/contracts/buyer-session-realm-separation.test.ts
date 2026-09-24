@@ -24,10 +24,10 @@ const code = (source: string) => source
     .replace(/(^|[^:])\/\/.*$/gm, '$1');
 
 const authCore = read('packages/auth-core/src/index.ts');
-const buyerSession = read('apps/identity-platform/src/lib/auth/buyer-session.ts');
-const buyerLogin = read('apps/identity-platform/src/app/api/buyer/login/route.ts');
-const buyerRegister = read('apps/identity-platform/src/app/api/buyer/register/route.ts');
-const rateLimit = read('apps/identity-platform/src/lib/rate-limit.ts');
+const buyerSession = read('apps/platform/identity/src/lib/auth/buyer-session.ts');
+const buyerLogin = read('apps/platform/identity/src/app/api/buyer/login/route.ts');
+const buyerRegister = read('apps/platform/identity/src/app/api/buyer/register/route.ts');
+const rateLimit = read('apps/platform/identity/src/lib/rate-limit.ts');
 
 test('the buyer session has its OWN cookie name, distinct from merchant and customer', () => {
     // Reusing either name would put one realm's credential exactly where another's is expected.

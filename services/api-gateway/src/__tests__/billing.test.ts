@@ -44,11 +44,11 @@ test('Task 014 billing APIs are mounted in the monolith and use billing-core con
 
 test('Task 014 removes the 2.5% GMV rake from data defaults, checkout payloads, and merchant UI copy', () => {
     const billingCore = repositorySource('packages/billing-core/src/index.ts');
-    const planUi = repositorySource('apps/merchant_web/src/lib/billing/plan-ui.ts');
-    const selectPlan = repositorySource('apps/merchant_web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx');
+    const planUi = repositorySource('apps/merchant/web/src/lib/billing/plan-ui.ts');
+    const selectPlan = repositorySource('apps/merchant/web/src/app/[store]/access_account/checkout/select-plan/SelectPlanClient.tsx');
     // Checkout moved from settings/subscribe/checkout/SubscribeCheckoutClient.tsx to the
     // full-screen access_account/checkout/checkout/CheckoutClient.tsx (the old file is now a redirect).
-    const subscribeCheckout = repositorySource('apps/merchant_web/src/app/[store]/access_account/checkout/checkout/CheckoutClient.tsx');
+    const subscribeCheckout = repositorySource('apps/merchant/web/src/app/[store]/access_account/checkout/checkout/CheckoutClient.tsx');
     const migration = repositorySource('database/supabase/migrations/152_executable_billing_autopay.sql');
 
     assert.doesNotMatch(billingCore, /gmv_percentage:\s*2\.5/);

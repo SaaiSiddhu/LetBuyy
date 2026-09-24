@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=@letbuyy/admin-web",
+  "buildCommand": "cd ../../.. && pnpm turbo build --filter=@letbuyy/admin-web",
   "outputDirectory": ".next",
   "installCommand": "pnpm install --frozen-lockfile",
   "regions": ["bom1"],

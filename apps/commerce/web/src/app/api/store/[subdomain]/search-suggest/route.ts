@@ -11,7 +11,7 @@
 // already sits behind the gateway's global queryCostRateLimit middleware (services/api-gateway/src/
 // index.ts:683, `api.use('/*', queryCostRateLimit(...))`), so this endpoint is rate-limited the
 // moment it's called — there is no separate customer-web rate limiter anywhere in this app to
-// duplicate (checked: no rate-limit utility exists under apps/customer_web/src).
+// duplicate (checked: no rate-limit utility exists under apps/commerce/web/src).
 //
 // Route-ownership lockstep: this route does not touch a database. It calls ProductService, which
 // calls createStorefrontApiClient() (a proxy to the api-gateway) — the same pattern store-lookup and

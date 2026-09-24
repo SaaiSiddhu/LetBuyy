@@ -7,11 +7,11 @@ import { fileURLToPath } from 'node:url';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const authRoutePath = join(testDir, '../../services/api-gateway/src/routes/auth.ts');
 const merchantPasswordPath = join(testDir, '../../services/api-gateway/src/lib/merchant-password.ts');
-const identityLoginPath = join(testDir, '../../apps/identity-platform/src/app/api/auth/login/route.ts');
-const identityLookupPath = join(testDir, '../../apps/identity-platform/src/app/api/auth/lookup/route.ts');
-const identitySetPasswordPath = join(testDir, '../../apps/identity-platform/src/app/api/auth/set-password/route.ts');
-const identityResetPasswordPath = join(testDir, '../../apps/identity-platform/src/app/api/auth/reset-password/route.ts');
-const identityPasswordPath = join(testDir, '../../apps/identity-platform/src/lib/auth/password.ts');
+const identityLoginPath = join(testDir, '../../apps/platform/identity/src/app/api/auth/login/route.ts');
+const identityLookupPath = join(testDir, '../../apps/platform/identity/src/app/api/auth/lookup/route.ts');
+const identitySetPasswordPath = join(testDir, '../../apps/platform/identity/src/app/api/auth/set-password/route.ts');
+const identityResetPasswordPath = join(testDir, '../../apps/platform/identity/src/app/api/auth/reset-password/route.ts');
+const identityPasswordPath = join(testDir, '../../apps/platform/identity/src/lib/auth/password.ts');
 const domainValidatorPath = join(testDir, '../../scripts/validators/domain-boundary-validator.mjs');
 
 function read(path: string): string {

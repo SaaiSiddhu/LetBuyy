@@ -1,6 +1,19 @@
 packages:
-  - "apps/*"
-  - "apps/mobile/*"
+  # Application roots (D-APP-LAYOUT, Constitution Amendment 3, 2026-09-24), listed EXPLICITLY. A recursive
+  # apps/** glob would pull in anything later added under a grouping container, and reference/ donors
+  # must never be members. Flutter roots (marketplace/mobile, merchant/mobile, deferred/delivery/mobile)
+  # have no package.json and are Dart pub workspace members instead (pubspec.yaml).
+  - "apps/commerce/web"
+  - "apps/merchant/web"
+  - "apps/platform/identity"
+  - "apps/internal/console"
+  - "apps/marketing/web"
+  # Frozen applications stay installable (their code and seams are kept, ART-22/ART-24). The root build,
+  # lint, typecheck and default dev scripts exclude them by package name.
+  - "apps/frozen/app-store"
+  - "apps/frozen/theme-store"
+  - "apps/frozen/developer-portal"
+  - "apps/frozen/operations-portal"
   - "packages/shared-types"
   - "packages/tenant-core"
   - "packages/commerce-core"

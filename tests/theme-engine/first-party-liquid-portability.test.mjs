@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const THEME_BUNDLE_SOURCE = 'packages/theme-engine/src/theme-bundle.ts';
 const THEME_GOVERNANCE_SOURCE = 'packages/theme-engine/src/theme-governance.ts';
-const STOREFRONT_REACT_REGISTRY_SOURCE = 'apps/customer_web/src/lib/theme-engine/renderer-registry.tsx';
+const STOREFRONT_REACT_REGISTRY_SOURCE = 'apps/commerce/web/src/lib/theme-engine/renderer-registry.tsx';
 
 function read(path) {
   return readFileSync(path, 'utf8');

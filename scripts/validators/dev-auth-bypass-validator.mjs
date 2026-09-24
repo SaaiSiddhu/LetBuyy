@@ -5,10 +5,10 @@ import {
 
 const reporter = createReporter("Dev auth bypass validator");
 
-const signupRoute = readFile("apps/identity-platform/src/app/api/auth/signup/route.ts");
-const identityTurnstile = readFile("apps/identity-platform/src/lib/turnstile.ts");
-const turnstileWidget = readFile("apps/identity-platform/src/components/TurnstileWidget.tsx");
-const consoleAuth = readFile("apps/admin_web/src/lib/console-auth-server.ts");
+const signupRoute = readFile("apps/platform/identity/src/app/api/auth/signup/route.ts");
+const identityTurnstile = readFile("apps/platform/identity/src/lib/turnstile.ts");
+const turnstileWidget = readFile("apps/platform/identity/src/components/TurnstileWidget.tsx");
+const consoleAuth = readFile("apps/internal/console/src/lib/console-auth-server.ts");
 const envTemplate = readFile("config/env/templates/next-app.env.example");
 const envSchema = readFile("config/env/schemas/next-app.schema.json");
 

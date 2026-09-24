@@ -35,11 +35,11 @@ async function depReasoner() {
 
 /** Canonical runtimes that have their own deploy pipeline */
 const CANONICAL_RUNTIMES = [
-  'apps/customer_web',
-  'apps/merchant_web',
-  'apps/identity-platform',
-  'apps/marketing-site',
-  'apps/admin_web',
+  'apps/commerce/web',
+  'apps/merchant/web',
+  'apps/platform/identity',
+  'apps/marketing/web',
+  'apps/internal/console',
   'services/api-gateway',
   'services/queue-workers',
   'services/webhook-service',

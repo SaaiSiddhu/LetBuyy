@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 
-const appRoot = 'apps/platform-operations-portal';
+const appRoot = 'apps/frozen/operations-portal';
 
 function read(path) {
   return readFileSync(path, 'utf8');

@@ -8,9 +8,9 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const customerRoutesPath = join(repoRoot, 'services/api-gateway/src/routes/storefront/customer-engagement-routes.ts');
 const rateLimitPath = join(repoRoot, 'services/api-gateway/src/middleware/rateLimit.ts');
-const storefrontLoginApiPath = join(repoRoot, 'apps/customer_web/src/app/api/customer/login/route.ts');
-const customerAuthContextPath = join(repoRoot, 'apps/customer_web/src/context/customer-auth-context.tsx');
-const accountSheetPath = join(repoRoot, 'apps/customer_web/src/components/account/account-bottom-sheet.tsx');
+const storefrontLoginApiPath = join(repoRoot, 'apps/commerce/web/src/app/api/customer/login/route.ts');
+const customerAuthContextPath = join(repoRoot, 'apps/commerce/web/src/context/customer-auth-context.tsx');
+const accountSheetPath = join(repoRoot, 'apps/commerce/web/src/components/account/account-bottom-sheet.tsx');
 const internalPaymentContractPath = join(repoRoot, 'tests/contracts/storefront-internal-payment-routes.test.ts');
 
 function read(path: string): string {

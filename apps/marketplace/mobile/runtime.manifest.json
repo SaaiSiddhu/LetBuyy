@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Customer App",
-  "runtimeRoot": "apps/customer_app",
+  "runtimeRoot": "apps/marketplace/mobile",
   "actorType": [
     "customer",
     "buyer"
@@ -9,7 +9,7 @@
   "runtimeCategory": "flutter-app",
   "runtimeClassification": "mobile-customer-app",
   "ownership": {
-    "sourceAuthority": "apps/customer_app",
+    "sourceAuthority": "apps/marketplace/mobile",
     "businessAuthority": "Buyer-facing marketplace app — browse, search, cart, checkout, orders, wishlist, AI chat, and reels. Play Store production identity com.letbuyy.letbuyy.",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
@@ -48,7 +48,7 @@
   "deploymentAuthority": {
     "platform": "Mobile app stores",
     "config": [
-      "apps/customer_app/pubspec.yaml"
+      "apps/marketplace/mobile/pubspec.yaml"
     ]
   },
   "environmentAuthority": {

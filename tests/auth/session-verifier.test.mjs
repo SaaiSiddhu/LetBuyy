@@ -342,17 +342,17 @@ test('platform console session and magic-link tokens are signed and verified onl
 
 test('runtime auth surfaces import the shared verifier instead of local HMAC session copies', () => {
   const sharedAuthFiles = [
-    'apps/identity-platform/src/lib/api/client.ts',
-    'apps/identity-platform/src/proxy.ts',
-    'apps/merchant_web/src/lib/api/client.ts',
-    'apps/merchant_web/src/proxy.ts',
-    'apps/app-marketplace/src/lib/api/client.ts',
-    'apps/app-marketplace/src/proxy.ts',
-    'apps/theme-marketplace/src/lib/api/client.ts',
-    'apps/customer_web/src/lib/session.ts',
-    'apps/admin_web/src/lib/console-session.ts',
-    'apps/admin_web/src/proxy.ts',
-    'apps/platform-operations-portal/src/proxy.ts',
+    'apps/platform/identity/src/lib/api/client.ts',
+    'apps/platform/identity/src/proxy.ts',
+    'apps/merchant/web/src/lib/api/client.ts',
+    'apps/merchant/web/src/proxy.ts',
+    'apps/frozen/app-store/src/lib/api/client.ts',
+    'apps/frozen/app-store/src/proxy.ts',
+    'apps/frozen/theme-store/src/lib/api/client.ts',
+    'apps/commerce/web/src/lib/session.ts',
+    'apps/internal/console/src/lib/console-session.ts',
+    'apps/internal/console/src/proxy.ts',
+    'apps/frozen/operations-portal/src/proxy.ts',
   ];
 
   for (const file of sharedAuthFiles) {
@@ -367,7 +367,7 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
 });
 
 test('storefront exposes customer federation redemption through the shared verifier', () => {
-  const source = readFileSync('apps/customer_web/src/lib/session.ts', 'utf8');
+  const source = readFileSync('apps/commerce/web/src/lib/session.ts', 'utf8');
 
   assert.match(source, /createSessionFromFederationToken/);
   assert.match(source, /redeemCustomerFederationToken/);

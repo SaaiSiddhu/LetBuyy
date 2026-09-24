@@ -1,7 +1,7 @@
 @import "tailwindcss";
-@import "../../../../config/tailwind/letbuyy-tokens.css";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
-@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+@source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 /* ======================================
    LETBUYY ADMIN — DESIGN SYSTEM
@@ -162,7 +162,7 @@
    and LetbuyyThemeProvider, so .dark can never be applied to <html> — this
    entire palette (including several lavender/violet literals) was dead code
    that only made the "off-brand purple" family easier to reintroduce by
-   copy-paste. See the identical fix in apps/identity-platform. */
+   copy-paste. See the identical fix in apps/platform/identity. */
 
 @theme inline {
   --color-background: var(--background);

@@ -1,8 +1,8 @@
 @import "tailwindcss";
-@import "../../../../config/tailwind/letbuyy-tokens.css";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
 @source "./**/*.{ts,tsx}";
 @source "../../packages/typescript/ui/src/**/*.{ts,tsx}";
-@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+@source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 :root {
   --font-system: var(--font-letbuyy-sans), Arial, Helvetica, sans-serif;

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../../../../config/tailwind/letbuyy-tokens.css";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
 
 @theme {
   --color-primary: var(--primary);

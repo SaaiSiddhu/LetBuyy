@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Developer Portal",
-  "runtimeRoot": "apps/developer-portal",
+  "runtimeRoot": "apps/frozen/developer-portal",
   "actorType": [
     "developer",
     "partner"
@@ -9,7 +9,7 @@
   "runtimeCategory": "frozen-next-app",
   "runtimeClassification": "developer-ecosystem-plane",
   "ownership": {
-    "sourceAuthority": "apps/developer-portal",
+    "sourceAuthority": "apps/frozen/developer-portal",
     "businessAuthority": "Developer documentation, API reference, OAuth and webhook guides, SDK quick-starts, and partner dashboard shell.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",

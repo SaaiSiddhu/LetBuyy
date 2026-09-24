@@ -28,8 +28,8 @@ const themeRegistry = read('packages/theme-engine/src/theme-registry.ts');
 const themeGovernance = read('packages/theme-engine/src/theme-governance.ts');
 const themeIndex = read('packages/theme-engine/src/index.ts');
 const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
-const rendererRegistry = read('apps/customer_web/src/lib/theme-engine/renderer-registry.tsx');
-const templateResolver = read('apps/customer_web/src/lib/theme-engine/template-resolver.ts');
+const rendererRegistry = read('apps/commerce/web/src/lib/theme-engine/renderer-registry.tsx');
+const templateResolver = read('apps/commerce/web/src/lib/theme-engine/template-resolver.ts');
 const noNewReactSectionsValidator = read('scripts/validators/no-new-react-sections-validator.mjs');
 const packageTest = read('packages/theme-engine/test/theme-engine.test.ts');
 const themeRoadmap = read('docs/themes/enterprise-theme-engine/10_THEME_ENGINE_IMPLEMENTATION_ROADMAP.md');
@@ -95,7 +95,7 @@ if (/\.replace\(/.test(sanitizerFunction)) {
 if (!/outputEscape:\s*'escape'/.test(themeRenderer)) {
   failures.push('LiquidJS renderer must enable outputEscape auto-escaping');
 }
-const frozenReactSectionCount = [...noNewReactSectionsValidator.matchAll(/apps\/customer_web\/src\/components\/sections\/[^"]+\.tsx/g)].length;
+const frozenReactSectionCount = [...noNewReactSectionsValidator.matchAll(/apps\/commerce\/web\/src\/components\/sections\/[^"]+\.tsx/g)].length;
 if (frozenReactSectionCount !== 20) {
   failures.push(`React section freeze validator must enumerate 20 frozen sections; found ${frozenReactSectionCount}`);
 }

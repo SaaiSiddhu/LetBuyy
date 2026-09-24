@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "App Marketplace",
-  "runtimeRoot": "apps/app-marketplace",
+  "runtimeRoot": "apps/frozen/app-store",
   "actorType": [
     "merchant",
     "developer"
@@ -9,7 +9,7 @@
   "runtimeCategory": "frozen-next-app",
   "runtimeClassification": "marketplace-control-plane",
   "ownership": {
-    "sourceAuthority": "apps/app-marketplace",
+    "sourceAuthority": "apps/frozen/app-store",
     "businessAuthority": "App discovery, installation, developer submission, app review, and extension marketplace flows.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",

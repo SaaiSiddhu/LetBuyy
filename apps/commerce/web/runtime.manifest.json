@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Storefront Runtime",
-  "runtimeRoot": "apps/customer_web",
+  "runtimeRoot": "apps/commerce/web",
   "actorType": [
     "shopper",
     "customer"
@@ -9,7 +9,7 @@
   "runtimeCategory": "next-app",
   "runtimeClassification": "tenant-data-plane",
   "ownership": {
-    "sourceAuthority": "apps/customer_web",
+    "sourceAuthority": "apps/commerce/web",
     "businessAuthority": "Shopper storefront, public catalog, cart, checkout, customer account, and theme presentation runtime.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
@@ -52,7 +52,7 @@
   "deploymentAuthority": {
     "platform": "Vercel",
     "config": [
-      "apps/customer_web/next.config.ts"
+      "apps/commerce/web/next.config.ts"
     ]
   },
   "environmentAuthority": {

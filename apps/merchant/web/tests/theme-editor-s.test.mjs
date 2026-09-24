@@ -19,7 +19,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../../../..', import.meta.url).pathname;
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8');
@@ -28,7 +28,7 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant_web/src';
+const MCP_BASE = 'apps/merchant/web/src';
 const CENTER_PANEL = `${MCP_BASE}/components/theme-editor/CenterPanel.tsx`;
 const INSPECTOR_OVERLAY = `${MCP_BASE}/components/theme-editor/PreviewInspectorOverlay.tsx`;
 const PROTOCOL = 'packages/theme-engine/src/editor-bridge-protocol.ts';

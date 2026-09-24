@@ -77,7 +77,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../../../..', import.meta.url).pathname;
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8');
@@ -86,11 +86,11 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant_web/src';
+const MCP_BASE = 'apps/merchant/web/src';
 const PROXY_ROUTE = `${MCP_BASE}/app/api/stores/[store]/themes/app-blocks/route.ts`;
 const APP_BLOCK_PANEL = `${MCP_BASE}/components/theme-editor/AppBlockSlotPanel.tsx`;
 const CSS_MODULE = `${MCP_BASE}/components/theme-editor/controls/controls.module.css`;
-const PKG_JSON = 'apps/merchant_web/package.json';
+const PKG_JSON = 'apps/merchant/web/package.json';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FILE EXISTENCE

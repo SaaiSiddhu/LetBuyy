@@ -179,7 +179,7 @@ class ArchitectureReasoner {
       data: ['services/api-gateway → Supabase (Postgres + RLS)'],
       service: ['services/queue-workers', 'services/webhook-service'],
       api: ['services/api-gateway (Hono /v1)'],
-      app: ['apps/merchant_web', 'apps/identity-platform', 'apps/customer_web', 'apps/marketing-site', 'apps/admin_web'],
+      app: ['apps/merchant/web', 'apps/platform/identity', 'apps/commerce/web', 'apps/marketing/web', 'apps/internal/console'],
       ui: ['@letbuyy/ui (design system)'],
     };
 

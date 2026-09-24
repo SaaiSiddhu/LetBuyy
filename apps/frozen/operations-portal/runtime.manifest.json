@@ -1,14 +1,14 @@
 {
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Platform Operations Portal",
-  "runtimeRoot": "apps/platform-operations-portal",
+  "runtimeRoot": "apps/frozen/operations-portal",
   "actorType": [
     "platform-employee"
   ],
   "runtimeCategory": "frozen-next-app",
   "runtimeClassification": "platform-operations-control-plane",
   "ownership": {
-    "sourceAuthority": "apps/platform-operations-portal",
+    "sourceAuthority": "apps/frozen/operations-portal",
     "businessAuthority": "Employee operations surface for support, operational queues, marketing workflows, store and user review, and invites.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",

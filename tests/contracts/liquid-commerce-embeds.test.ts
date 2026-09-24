@@ -12,7 +12,7 @@ import {
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const rendererSource = readFileSync(join(testDir, '../../packages/theme-engine/src/theme-renderer.ts'), 'utf8');
-const compositionSource = readFileSync(join(testDir, '../../apps/customer_web/src/lib/theme-engine/composition-engine.tsx'), 'utf8');
+const compositionSource = readFileSync(join(testDir, '../../apps/commerce/web/src/lib/theme-engine/composition-engine.tsx'), 'utf8');
 
 function commerceBundle(): LiquidThemePackageBundle {
     const bundle = createMinimalLiquidThemeBundleFixture();

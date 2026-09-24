@@ -57,7 +57,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const ROOT = new URL('../../..', import.meta.url).pathname;
+const ROOT = new URL('../../../..', import.meta.url).pathname;
 
 function read(rel) {
     return readFileSync(`${ROOT}/${rel}`, 'utf8');
@@ -66,14 +66,14 @@ function exists(rel) {
     return existsSync(`${ROOT}/${rel}`);
 }
 
-const MCP_BASE = 'apps/merchant_web/src';
+const MCP_BASE = 'apps/merchant/web/src';
 const CONTROLS_DIR = `${MCP_BASE}/components/theme-editor/controls`;
 const RENDERER = `${MCP_BASE}/components/theme-editor/SchemaFormRenderer.tsx`;
 
 const RESOURCE_PICKER = `${CONTROLS_DIR}/ResourcePickerControl.tsx`;
 const CSS_MODULE = `${CONTROLS_DIR}/controls.module.css`;
 const PROXY_ROUTE = `${MCP_BASE}/app/api/stores/[store]/resource-search/route.ts`;
-const PKG_JSON = 'apps/merchant_web/package.json';
+const PKG_JSON = 'apps/merchant/web/package.json';
 
 // ── File existence ─────────────────────────────────────────────────────────────
 

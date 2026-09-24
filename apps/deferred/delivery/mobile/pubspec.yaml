@@ -10,17 +10,17 @@ resolution: workspace
 
 dependencies:
   quickcommerce_api:
-    path: ../../../packages/dart/quickcommerce_api
+    path: ../../../../packages/dart/quickcommerce_api
   quickcommerce_design_system:
-    path: ../../../packages/dart/quickcommerce_design_system
+    path: ../../../../packages/dart/quickcommerce_design_system
   quickcommerce_domain:
-    path: ../../../packages/dart/quickcommerce_domain
+    path: ../../../../packages/dart/quickcommerce_domain
   quickcommerce_observability:
-    path: ../../../packages/dart/quickcommerce_observability
+    path: ../../../../packages/dart/quickcommerce_observability
   quickcommerce_offline:
-    path: ../../../packages/dart/quickcommerce_offline
+    path: ../../../../packages/dart/quickcommerce_offline
   quickcommerce_realtime:
-    path: ../../../packages/dart/quickcommerce_realtime
+    path: ../../../../packages/dart/quickcommerce_realtime
   dio: ^5.9.2
   drift: ^2.24.0
   flutter:

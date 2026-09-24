@@ -15,71 +15,71 @@ const repoRoot = join(testDir, '../..');
 
 const archivedFiles = [
     [
-        'apps/customer_web/src/app/store/[subdomain]/product/[productId]/add-to-cart-button.tsx',
+        'apps/commerce/web/src/app/store/[subdomain]/product/[productId]/add-to-cart-button.tsx',
         'docs/archive/dead-code/storefront-runtime/app/product/add-to-cart-button.tsx',
     ],
     [
-        'apps/customer_web/src/components/ui/reveal.tsx',
+        'apps/commerce/web/src/components/ui/reveal.tsx',
         'docs/archive/dead-code/storefront-runtime/components/ui/reveal.tsx',
     ],
     [
-        'apps/customer_web/src/components/ui/badge.tsx',
+        'apps/commerce/web/src/components/ui/badge.tsx',
         'docs/archive/dead-code/storefront-runtime/components/ui/badge.tsx',
     ],
     [
-        'apps/customer_web/src/components/policy-page.tsx',
+        'apps/commerce/web/src/components/policy-page.tsx',
         'docs/archive/dead-code/storefront-runtime/components/policy-page.tsx',
     ],
     [
-        'apps/customer_web/src/components/layout/floating-header.tsx',
+        'apps/commerce/web/src/components/layout/floating-header.tsx',
         'docs/archive/dead-code/storefront-runtime/components/layout/floating-header.tsx',
     ],
     [
-        'apps/customer_web/src/components/cart-icon.tsx',
+        'apps/commerce/web/src/components/cart-icon.tsx',
         'docs/archive/dead-code/storefront-runtime/components/cart-icon.tsx',
     ],
     [
-        'apps/customer_web/src/components/wishlist/wishlist-button.tsx',
+        'apps/commerce/web/src/components/wishlist/wishlist-button.tsx',
         'docs/archive/dead-code/storefront-runtime/components/wishlist/wishlist-button.tsx',
     ],
     [
-        'apps/customer_web/src/components/coming-soon/components/shared/email-signup.tsx',
+        'apps/commerce/web/src/components/coming-soon/components/shared/email-signup.tsx',
         'docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/email-signup.tsx',
     ],
     [
-        'apps/customer_web/src/components/coming-soon/components/shared/powered-by.tsx',
+        'apps/commerce/web/src/components/coming-soon/components/shared/powered-by.tsx',
         'docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/powered-by.tsx',
     ],
     [
-        'apps/customer_web/src/components/coming-soon/components/shared/animated-background.tsx',
+        'apps/commerce/web/src/components/coming-soon/components/shared/animated-background.tsx',
         'docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/animated-background.tsx',
     ],
     [
-        'apps/customer_web/src/components/coming-soon/components/shared/countdown-timer.tsx',
+        'apps/commerce/web/src/components/coming-soon/components/shared/countdown-timer.tsx',
         'docs/archive/dead-code/storefront-runtime/components/coming-soon/shared/countdown-timer.tsx',
     ],
     [
-        'apps/merchant_web/src/components/plans/PlanBillingTimeline.tsx',
+        'apps/merchant/web/src/components/plans/PlanBillingTimeline.tsx',
         'docs/archive/dead-code/merchant-control-plane/components/plans/PlanBillingTimeline.tsx',
     ],
     [
-        'apps/merchant_web/src/components/plans/PlanCard.tsx',
+        'apps/merchant/web/src/components/plans/PlanCard.tsx',
         'docs/archive/dead-code/merchant-control-plane/components/plans/PlanCard.tsx',
     ],
     [
-        'apps/merchant_web/src/components/plans/ComparePlans.tsx',
+        'apps/merchant/web/src/components/plans/ComparePlans.tsx',
         'docs/archive/dead-code/merchant-control-plane/components/plans/ComparePlans.tsx',
     ],
     [
-        'apps/merchant_web/src/components/WelcomeScreen.tsx',
+        'apps/merchant/web/src/components/WelcomeScreen.tsx',
         'docs/archive/dead-code/merchant-control-plane/components/WelcomeScreen.tsx',
     ],
     [
-        'apps/merchant_web/src/components/SettingsSidebar.tsx',
+        'apps/merchant/web/src/components/SettingsSidebar.tsx',
         'docs/archive/dead-code/merchant-control-plane/components/SettingsSidebar.tsx',
     ],
     [
-        'apps/app-marketplace/src/components/HeroSection.tsx',
+        'apps/frozen/app-store/src/components/HeroSection.tsx',
         'docs/archive/dead-code/app-marketplace/components/HeroSection.tsx',
     ],
     [
@@ -115,11 +115,11 @@ test('verified TypeScript dead-source files are archived outside active source',
 
 test('active replacements remain available after the archive move', () => {
     assert.equal(
-        existsSync(path('apps/merchant_web/src/components/settings/SettingsShell.tsx')),
+        existsSync(path('apps/merchant/web/src/components/settings/SettingsShell.tsx')),
         true,
     );
     assert.equal(
-        existsSync(path('apps/customer_web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx')),
+        existsSync(path('apps/commerce/web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx')),
         true,
     );
     assert.equal(existsSync(path('services/api-gateway/src/routes/products.ts')), true);

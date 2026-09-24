@@ -7,21 +7,21 @@ import { BRAND, buildBrandSameAs } from "@letbuyy/shared-types";
 import { LetbuyyThemeProvider, ThemeScript } from "@letbuyy/ui";
 
 const letbuyySans = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
   variable: "--font-letbuyy-sans",
   display: "swap",
   weight: "100 900",
 });
 
 const letbuyyDisplay = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
   variable: "--font-letbuyy-display",
   display: "swap",
   weight: "100 900",
 });
 
 const letbuyyMono = localFont({
-  src: "../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
+  src: "../../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
   variable: "--font-letbuyy-mono",
   display: "swap",
   weight: "100 900",

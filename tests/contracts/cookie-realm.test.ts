@@ -31,7 +31,7 @@ function collectSourceFiles(directory: string, files: string[] = []): string[] {
 
 test('customer-web cookie writes are host-only', () => {
   const offenders: string[] = [];
-  for (const absolutePath of collectSourceFiles(join(repoRoot, 'apps/customer_web/src'))) {
+  for (const absolutePath of collectSourceFiles(join(repoRoot, 'apps/commerce/web/src'))) {
     const source = readFileSync(absolutePath, 'utf8');
     const writesCookie = /cookies(?:\(\))?\.set|response\.cookies\.set|Set-Cookie/i.test(source);
     if ((writesCookie && /\bdomain\s*:/.test(source)) || /Domain=\.letbuyy\.(?:store|com)/i.test(source)) {
@@ -43,8 +43,8 @@ test('customer-web cookie writes are host-only', () => {
 });
 
 test('platform cookie domain is env-driven and storefront gate cookie uses __Host prefix', () => {
-  const identityCookies = read('apps/identity-platform/src/lib/auth/cookies.ts');
-  const merchantLogout = read('apps/merchant_web/src/app/api/auth/logout/route.ts');
+  const identityCookies = read('apps/platform/identity/src/lib/auth/cookies.ts');
+  const merchantLogout = read('apps/merchant/web/src/app/api/auth/logout/route.ts');
   const authCore = read('packages/auth-core/src/storefront-access.ts');
 
   assert.match(identityCookies, /process\.env\.COOKIE_DOMAIN/);

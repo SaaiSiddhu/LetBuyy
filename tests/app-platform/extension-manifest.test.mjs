@@ -7,8 +7,8 @@ import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const APP_ENGINE_SOURCE = 'packages/shared-types/src/app-platform.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
-const DEVELOPER_REFERENCE_SOURCE = 'apps/developer-portal/src/lib/reference.ts';
-const OPERATIONS_REVIEW_PAGE_SOURCE = 'apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx';
+const DEVELOPER_REFERENCE_SOURCE = 'apps/frozen/developer-portal/src/lib/reference.ts';
+const OPERATIONS_REVIEW_PAGE_SOURCE = 'apps/frozen/operations-portal/src/app/(dashboard)/operations/page.tsx';
 const APP_EXTENSION_REGISTRY_MIGRATION = 'database/supabase/migrations/076_app_extension_registry.sql';
 const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
 const appStoreRouteSource = readAppStoreRouteSource();
@@ -256,7 +256,7 @@ test('WS13 X6 publishes lifecycle observability and developer review handoff', (
   assert.ok(snapshot.routes.includes('PATCH /v1/app-store/installations/:id/functions/:registrationId'));
   assert.ok(snapshot.observability.signals.includes('app_extension.lifecycle.status_changed'));
   assert.ok(snapshot.observability.signals.includes('app_function.execution.duration_ms'));
-  assert.ok(snapshot.developer_handoff.sdk_source_files.includes('apps/developer-portal/src/lib/reference.ts'));
+  assert.ok(snapshot.developer_handoff.sdk_source_files.includes('apps/frozen/developer-portal/src/lib/reference.ts'));
   assert.ok(snapshot.review_checklist.some((item) => item.key === 'deterministic_wasm_functions'));
 
   for (const marker of [

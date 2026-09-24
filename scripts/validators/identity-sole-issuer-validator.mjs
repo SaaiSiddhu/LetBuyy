@@ -23,7 +23,7 @@ const signingPatterns = [
 
 const offenders = [];
 for (const entry of phaseBEntries(["apps", "services", "packages"])) {
-  if (entry.path.startsWith("apps/identity-platform/") && !entry.extra) continue;
+  if (entry.path.startsWith("apps/platform/identity/") && !entry.extra) continue;
   if (legacyAllowedUntilD3.has(entry.path) && !entry.extra) continue;
 
   for (const pattern of signingPatterns) {
@@ -31,7 +31,7 @@ for (const entry of phaseBEntries(["apps", "services", "packages"])) {
       offenders,
       entry,
       pattern,
-      () => "token signing outside apps/identity-platform is forbidden",
+      () => "token signing outside apps/platform/identity is forbidden",
     );
   }
 }

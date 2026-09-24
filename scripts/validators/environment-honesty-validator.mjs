@@ -61,13 +61,13 @@ reporter.assert(
   `Active source must not hardcode staging/retired LetBuyy production defaults: ${formatOffenderList(offenders, 20)}`,
 );
 
-const identityClient = readFile("apps/identity-platform/src/lib/api/client.ts");
+const identityClient = readFile("apps/platform/identity/src/lib/api/client.ts");
 reporter.assert(
   identityClient.includes("Identity API base URL is not configured"),
   "Identity API client must fail loudly without an API URL outside production",
 );
 
-const operationsClient = readFile("apps/platform-operations-portal/src/lib/api/client.ts");
+const operationsClient = readFile("apps/frozen/operations-portal/src/lib/api/client.ts");
 reporter.assert(
   operationsClient.includes("Platform operations API base URL is not configured"),
   "Platform operations API client must fail loudly without an API URL outside production",

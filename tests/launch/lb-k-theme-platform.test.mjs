@@ -23,7 +23,7 @@ const exists = (p) => existsSync(resolve(ROOT, p));
 // ─── Freeze: storefront install route ────────────────────────────────────────
 
 test('K5/freeze: storefront install route returns HTTP 410 Gone (permanently frozen)', () => {
-  const src = read('apps/customer_web/src/app/api/themes/install/route.ts');
+  const src = read('apps/commerce/web/src/app/api/themes/install/route.ts');
   // The route must return a 410 response — never a 200/201/404.
   assert.match(src, /status:\s*410/, 'route must carry { status: 410 }');
   // Must declare a POST handler (not GET/PUT) so only install attempts are blocked.
@@ -36,7 +36,7 @@ test('K5/freeze: storefront install route returns HTTP 410 Gone (permanently fro
 });
 
 test('K5/freeze: storefront install route has no bypass path (no early-return 200)', () => {
-  const src = read('apps/customer_web/src/app/api/themes/install/route.ts');
+  const src = read('apps/commerce/web/src/app/api/themes/install/route.ts');
   // Only one exported function — no GET/PUT/PATCH that could be mistaken for an install path.
   assert.doesNotMatch(src, /export\s+async\s+function\s+GET\b/);
   assert.doesNotMatch(src, /export\s+async\s+function\s+PUT\b/);
@@ -47,9 +47,9 @@ test('K5/freeze: storefront install route has no bypass path (no early-return 20
 // ─── Freeze: frozen-app runtime manifests ────────────────────────────────────
 
 const FROZEN_APPS = [
-  'apps/theme-marketplace',
-  'apps/app-marketplace',
-  'apps/developer-portal',
+  'apps/frozen/theme-store',
+  'apps/frozen/app-store',
+  'apps/frozen/developer-portal',
 ];
 
 for (const appRoot of FROZEN_APPS) {
@@ -297,9 +297,9 @@ test('K5/contract-doc: contract doc declares the storefront install route 410', 
 
 test('K5/contract-doc: contract doc names all three frozen apps', () => {
   const doc = read(CONTRACT_DOC);
-  assert.match(doc, /apps\/theme-marketplace/);
-  assert.match(doc, /apps\/app-marketplace/);
-  assert.match(doc, /apps\/developer-portal/);
+  assert.match(doc, /apps\/frozen\/theme-store/);
+  assert.match(doc, /apps\/frozen\/app-store/);
+  assert.match(doc, /apps\/frozen\/developer-portal/);
 });
 
 test('K5/contract-doc: contract doc carries honesty marker for analytics (NOT CONNECTED)', () => {

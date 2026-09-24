@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "cd ../.. && node --test tests/federation/app-marketplace-thin-client.test.mjs tests/federation/app-install-idempotency.test.mjs tests/federation/app-extensions-quality-gate.test.mjs tests/federation/app-review-verified-install.test.mjs tests/federation/marketplace-submission-review.test.mjs tests/federation/marketplace-service-error-handling.test.mjs tests/federation/marketplace-review-queues.test.mjs"
+    "test": "cd ../../.. && node --test tests/federation/app-marketplace-thin-client.test.mjs tests/federation/app-install-idempotency.test.mjs tests/federation/app-extensions-quality-gate.test.mjs tests/federation/app-review-verified-install.test.mjs tests/federation/marketplace-submission-review.test.mjs tests/federation/marketplace-service-error-handling.test.mjs tests/federation/marketplace-review-queues.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

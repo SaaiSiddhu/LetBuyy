@@ -16,11 +16,11 @@ const stagingWorkflows = [
 const retiredProductionDomain = ["letbuyy", "store"].join(".");
 
 const expectedApps = [
-  "apps/marketing-site",
-  "apps/identity-platform",
-  "apps/merchant_web",
-  "apps/customer_web",
-  "apps/admin_web",
+  "apps/marketing/web",
+  "apps/platform/identity",
+  "apps/merchant/web",
+  "apps/commerce/web",
+  "apps/internal/console",
 ];
 
 const expectedWorkers = [
@@ -31,10 +31,10 @@ const expectedWorkers = [
 ];
 
 const frozenAppRoots = [
-  "apps/app-marketplace",
-  "apps/developer-portal",
-  "apps/theme-marketplace",
-  "apps/platform-operations-portal",
+  "apps/frozen/app-store",
+  "apps/frozen/developer-portal",
+  "apps/frozen/theme-store",
+  "apps/frozen/operations-portal",
 ];
 
 for (const appRoot of expectedApps) {

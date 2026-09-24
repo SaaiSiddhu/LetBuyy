@@ -226,7 +226,7 @@ test('LB-7: hosted checkout delivery step calls resolveShippingRate', () => {
 
 const CHECKOUT_CLIENT = path.join(
     repoRoot,
-    'apps/customer_web/src/app/store/[subdomain]/checkout/checkout-client.tsx',
+    'apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx',
 );
 
 test('LB-7: checkout-client.tsx fetches /api/shipping/rates', () => {
@@ -253,7 +253,7 @@ test('LB-7: checkout-client.tsx sends shippingRateId in order payload', () => {
 
 const STOREFRONT_RATES_PROXY = path.join(
     repoRoot,
-    'apps/customer_web/src/app/api/shipping/rates/route.ts',
+    'apps/commerce/web/src/app/api/shipping/rates/route.ts',
 );
 
 test('LB-7: storefront /api/shipping/rates proxy route exists', () => {
@@ -324,11 +324,11 @@ test('LB-7: coupons bogo guard returns UNSUPPORTED_DISCOUNT_TYPE error code', ()
 
 const MCP_RATES_POST = path.join(
     repoRoot,
-    'apps/merchant_web/src/app/api/stores/[store]/shipping/rates/route.ts',
+    'apps/merchant/web/src/app/api/stores/[store]/shipping/rates/route.ts',
 );
 const MCP_RATES_DELETE = path.join(
     repoRoot,
-    'apps/merchant_web/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts',
+    'apps/merchant/web/src/app/api/stores/[store]/shipping/rates/[rateId]/route.ts',
 );
 
 test('LB-7: MCP shipping rates POST proxy route exists', () => {
@@ -348,7 +348,7 @@ test('LB-7: MCP shipping rates DELETE proxy route exists', () => {
 
 const MCP_SHIPPING_PAGE = path.join(
     repoRoot,
-    'apps/merchant_web/src/app/[store]/settings/shipping/page.tsx',
+    'apps/merchant/web/src/app/[store]/settings/shipping/page.tsx',
 );
 
 test('LB-7: MCP shipping page includes handleAddRate callback', () => {
