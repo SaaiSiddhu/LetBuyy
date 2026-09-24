@@ -15,13 +15,13 @@
 
 BEGIN;
 
-DO $$
+DO $rollback_precondition$
 BEGIN
   IF to_regprocedure('public.request_order_return(uuid, uuid, text, text)') IS NULL THEN
     RAISE EXCEPTION 'rollback 255 expects public.request_order_return(uuid, uuid, text, text); the live signature differs, so restoring 225''s body would add an overload. Refusing.';
   END IF;
 END;
-$$;
+$rollback_precondition$;
 
 DROP FUNCTION IF EXISTS public.link_buyer_store_customer(uuid, uuid);
 DROP FUNCTION IF EXISTS public.claim_buyer_orders(uuid, uuid);
