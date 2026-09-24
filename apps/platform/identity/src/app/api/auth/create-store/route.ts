@@ -4,6 +4,7 @@ import { getSessionCookie } from '@/lib/auth/cookies'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl, getStorefrontUrl } from '@/lib/config/urls'
+import { sendStoreCreatedEmail } from '@/lib/email/resend'
 
 const ACTIVE_SITE_TYPES = ['store'] as const
 const COMING_SOON_SITE_TYPES = ['landing', 'blog'] as const
@@ -120,22 +121,30 @@ export async function POST(request: NextRequest) {
 
         const site = storePayload.data
 
-        // Send store creation success email (fire-and-forget)
+        // The store-created email, sent here to the merchant this request has already authenticated.
+        // It used to be sent by fetching the public /api/email/store-creation-success route, which
+        // sent the same branded email for any caller, to any address, with any links (APPID-SEC2).
+        // Awaited, because a serverless function may be stopped once it responds; a failure never
+        // fails store creation.
         try {
-            const emailApiUrl = '/api/email/store-creation-success'
-            await fetch(new URL(emailApiUrl, request.url), {
+            const storeUrl = getStorefrontUrl(normalizedSubdomain)
+            const adminUrl = getAdminDashboardUrl(normalizedSubdomain)
+            const result = await sendStoreCreatedEmail(session.email, storeName.trim(), siteType, storeUrl, adminUrl)
+            await identityApiRequest('/notifications/email-log', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                requireSession: true,
+                sessionToken,
                 body: JSON.stringify({
-                    email: session.email,
-                    storeName: storeName.trim(),
-                    storeType: siteType,
-                    storeUrl: getStorefrontUrl(normalizedSubdomain),
-                    adminUrl: getAdminDashboardUrl(normalizedSubdomain),
+                    recipient_email: session.email,
+                    email_type: 'store_created_success',
+                    subject: 'Your LetBuyy workspace was created',
+                    status: result.success ? 'sent' : 'failed',
+                    error_message: result.error || null,
+                    metadata: { storeName: storeName.trim(), storeType: siteType, storeUrl, adminUrl },
                 }),
             })
-        } catch {
-            // Non-critical — don't fail store creation if email fails
+        } catch (emailError) {
+            console.error('[create-store] store-created email failed:', emailError instanceof Error ? emailError.message : String(emailError))
         }
 
         return NextResponse.json({
@@ -143,10 +152,12 @@ export async function POST(request: NextRequest) {
             store: site,
         })
     } catch (error) {
+        // The detail goes to the log, not to the browser: an exception message can carry internal
+        // hostnames, query text or configuration.
         const msg = error instanceof Error ? error.message : String(error)
         console.error('[create-store] caught exception:', msg)
         return NextResponse.json(
-            { error: `Internal server error: ${msg}` },
+            { error: 'Something went wrong creating your store. Please try again.' },
             { status: 500 }
         )
     }

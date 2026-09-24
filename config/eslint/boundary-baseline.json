@@ -61,8 +61,6 @@
     "apps/platform/identity/src/app/api/buyer/sign-out-everywhere/route.ts",
     "apps/platform/identity/src/app/api/buyer/verify-email/confirm/route.ts",
     "apps/platform/identity/src/app/api/buyer/verify-email/send/route.ts",
-    "apps/platform/identity/src/app/api/email/store-creation-failure/route.ts",
-    "apps/platform/identity/src/app/api/email/store-creation-success/route.ts",
     "apps/marketing/web/src/app/api/founding-pricing/route.ts",
     "apps/merchant/web/src/app/api/auth/logout/route.ts",
     "apps/merchant/web/src/app/api/employees/accept-invite/route.ts",
