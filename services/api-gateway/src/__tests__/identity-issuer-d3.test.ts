@@ -84,10 +84,10 @@ test('D3 lb_accounts cookie lifetime is capped to 90 days', () => {
 test('D3 deployment contracts separate identity signing and service verification keys', () => {
     assert.match(productionDeploy, /HAS_PRODUCTION_IDENTITY_PRIVATE_JWK/);
     assert.match(productionDeploy, /HAS_PRODUCTION_IDENTITY_PUBLIC_JWKS/);
-    assert.match(productionDeploy, /LETBUYY_IDENTITY_PRIVATE_JWK: \$\{\{ matrix\.app == 'identity-platform' && secrets\.PRODUCTION_IDENTITY_PRIVATE_JWK \|\| '' \}\}/);
+    assert.match(productionDeploy, /LETBUYY_IDENTITY_PRIVATE_JWK: \$\{\{ matrix\.app == 'platform\/identity' && secrets\.PRODUCTION_IDENTITY_PRIVATE_JWK \|\| '' \}\}/);
     assert.match(productionDeploy, /wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env production/);
 
-    assert.match(stagingDeploy, /LETBUYY_IDENTITY_PRIVATE_JWK: \$\{\{ matrix\.app == 'identity-platform' && secrets\.STAGING_IDENTITY_PRIVATE_JWK \|\| '' \}\}/);
+    assert.match(stagingDeploy, /LETBUYY_IDENTITY_PRIVATE_JWK: \$\{\{ matrix\.app == 'platform\/identity' && secrets\.STAGING_IDENTITY_PRIVATE_JWK \|\| '' \}\}/);
     assert.match(stagingDeploy, /wrangler secret put LETBUYY_IDENTITY_PUBLIC_JWKS --env staging/);
 
     for (const envFile of [nextAppEnvTemplate, productionEnvExample, stagingEnvExample]) {

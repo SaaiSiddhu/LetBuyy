@@ -13,7 +13,7 @@ const nodes = g.nodes || [], links = g.links || g.edges || [];
 const st = statSync(GRAPH);
 const langs = {}, ws = {};
 let routes = 0, pages = 0;
-const wsOf = (sf) => (sf.match(/^(apps\/mobile\/[^/]+|apps\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/) || ['(root)'])[0];
+const wsOf = (sf) => (sf.match(/^(apps\/deferred\/[^/]+\/[^/]+|reference\/apps\/[^/]+|apps\/[^/]+\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/) || ['(root)'])[0];
 for (const n of nodes) {
   const sf = n.source_file || '';
   const ext = (sf.match(/\.([a-z0-9]+)$/i) || [])[1];

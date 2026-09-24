@@ -234,7 +234,7 @@ for (const file of appApiRoutes) {
 reporter.assert(appApiRoutes.length === 191, `App-local API route inventory changed without updating P4-4 classification: expected 191, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
-  if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {
+  if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {
     return classifyAppApiRoute(file);
   }
   if (file.startsWith("apps/platform/identity/src/lib/")) return "app-local-auth";

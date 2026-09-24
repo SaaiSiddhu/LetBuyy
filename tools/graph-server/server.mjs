@@ -660,7 +660,7 @@ const DOMAINS = {
 };
 
 function workspaceOf(sf) {
-  const m = (sf || '').match(/^(apps\/mobile\/[^/]+|apps\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/);
+  const m = (sf || '').match(/^(apps\/deferred\/[^/]+\/[^/]+|reference\/apps\/[^/]+|apps\/[^/]+\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/);
   return m ? m[1] : '(root)';
 }
 
