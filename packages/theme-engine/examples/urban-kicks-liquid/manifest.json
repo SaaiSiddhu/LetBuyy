@@ -119,8 +119,8 @@
     },
     {
       "path": "sections/customer-login.liquid",
-      "checksum": "c8f686c246a09d8e7482fa81a5353a74394249eeb9d99093ab01dd8753ee678e",
-      "sizeBytes": 1541
+      "checksum": "4cb81c8cb762ce03abce8bdbd63dcebce77de4d284c1a39d9c8b9f1c32f8cfc1",
+      "sizeBytes": 1633
     },
     {
       "path": "sections/customer-order-detail.liquid",
@@ -397,7 +397,7 @@
     "sections/cta-section.liquid": "bb82b3600e464a9959cf3a8e10c3ffe0abc90a731372fccf938caa4486914e37",
     "sections/customer-account.liquid": "8634e5668eca6204286f02c059065b2676522fa1baebdb18497b33f306e2d0df",
     "sections/customer-addresses.liquid": "28f454848612c9eabb5434f6576a46f4cffdcb313346c7069a3af82367054136",
-    "sections/customer-login.liquid": "c8f686c246a09d8e7482fa81a5353a74394249eeb9d99093ab01dd8753ee678e",
+    "sections/customer-login.liquid": "4cb81c8cb762ce03abce8bdbd63dcebce77de4d284c1a39d9c8b9f1c32f8cfc1",
     "sections/customer-order-detail.liquid": "2ee7f5fcf03b7a7e5ffcdefb3ac8be06e55866ac932fda1205a95c4963dfafc9",
     "sections/customer-orders.liquid": "99890527310493d15697431eea2dacd293de37205f424a53d54141a3858afad8",
     "sections/customer-register.liquid": "d4a1f7dab5076b3aa780718112a935ff74651a04274e9e205a6b3d0fc6d290eb",
@@ -449,5 +449,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "6c4284296e265af3261f6bff15a38681a43c7507461c5b7517915f05442b85ca"
+  "contentHash": "4faee0935f11ddbf518c9a4c7ff923c5cfcb7cca04a17ba64b289c02a5c9178d"
 }

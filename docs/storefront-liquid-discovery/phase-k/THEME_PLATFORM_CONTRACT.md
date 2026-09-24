@@ -35,9 +35,9 @@ without an ARB-approved reopen trigger that modifies their `runtime.manifest.jso
 
 | App | Path | Reason |
 |-----|------|--------|
-| Theme Marketplace | `apps/theme-marketplace` | Pending consolidation, not production |
-| App Marketplace | `apps/app-marketplace` | Pending consolidation, not production |
-| Developer Portal | `apps/developer-portal` | Pending consolidation, not production |
+| Theme Marketplace | `apps/frozen/theme-store` (formerly `apps/theme-marketplace`) | Pending consolidation, not production |
+| App Marketplace | `apps/frozen/app-store` (formerly `apps/app-marketplace`) | Pending consolidation, not production |
+| Developer Portal | `apps/frozen/developer-portal` (formerly `apps/developer-portal`) | Pending consolidation, not production |
 
 **Canonical evidence:** each frozen app carries `"runtimeCategory": "frozen-next-app"` and
 `"deploymentAuthority": { "platform": "frozen-not-deployed", "config": [] }` in its
@@ -507,11 +507,11 @@ The following are **net-new** exports added by Phase K Lane-A. They are re-expor
 
 ## 11. What This Contract Does NOT Cover
 
-- **Live marketplace UI** — `apps/theme-marketplace` is frozen. No UI contract.
+- **Live marketplace UI** — `apps/frozen/theme-store` is frozen. No UI contract.
 - **Live analytics values** — NOT CONNECTED. This contract defines shapes only.
 - **Payment / purchase flows** — owned by the Razorpay/payment domain. Out of scope.
-- **App marketplace installs** — `apps/app-marketplace` is frozen. Out of scope.
-- **Developer portal API keys** — `apps/developer-portal` is frozen. Out of scope.
+- **App marketplace installs** — `apps/frozen/app-store` is frozen. Out of scope.
+- **Developer portal API keys** — `apps/frozen/developer-portal` is frozen. Out of scope.
 - **Theme rendering** — the render path is byte-identical. Phase K adds zero render code.
 - **DB schema changes** — Phase K is a pure library layer. No migrations.
 
