@@ -65,7 +65,7 @@ test('Wave 0 backup policy and restore drill are staged as build-and-prove only'
 test('frozen path gate rejects staged locked files unless commit-msg carries override trailer', () => {
   const hook = readFileSync('scripts/validators/frozen-path-override-gate.mjs', 'utf8');
   assert.match(hook, /FROZEN-OVERRIDE:/);
-  assert.match(hook, /apps\/identity-platform\/src\/lib\/auth\/cookies\.ts/);
+  assert.match(hook, /apps\/platform\/identity\/src\/lib\/auth\/cookies\.ts/);
   assert.match(hook, /database\/supabase\/migrations\/139_executable_foundation_ledger_core\.sql/);
 
   const preCommit = readFileSync('scripts/git-hooks/pre-commit', 'utf8');

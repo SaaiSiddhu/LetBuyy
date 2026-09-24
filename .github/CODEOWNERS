@@ -14,15 +14,17 @@
 
 /.gitattributes @saai-sidd
 /.gitignore @saai-sidd
-/apps/storefront-runtime/ @saai-sidd
-/apps/merchant-control-plane/ @saai-sidd
-/apps/identity-platform/ @saai-sidd
-/apps/app-marketplace/ @saai-sidd
-/apps/theme-marketplace/ @saai-sidd
-/apps/marketing-site/ @saai-sidd
-/apps/platform-console/ @saai-sidd
-/apps/platform-operations-portal/ @saai-sidd
-/apps/mobile/ @saai-sidd
+# Application roots (D-APP-LAYOUT, Constitution Amendment 3, 2026-09-24).
+/apps/marketplace/ @saai-sidd
+/apps/merchant/ @saai-sidd
+/apps/commerce/ @saai-sidd
+/apps/platform/ @saai-sidd
+/apps/internal/ @saai-sidd
+/apps/marketing/ @saai-sidd
+/apps/deferred/ @saai-sidd
+/apps/frozen/ @saai-sidd
+/apps/reserved/ @saai-sidd
+/reference/ @saai-sidd
 
 /services/ @saai-sidd
 /packages/ @saai-sidd

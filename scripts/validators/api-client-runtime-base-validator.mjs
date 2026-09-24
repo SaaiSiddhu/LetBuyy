@@ -24,15 +24,15 @@ reporter.assert(
 );
 
 const baseWrapperFiles = [
-  "apps/merchant_web/src/lib/api/client.ts",
-  "apps/customer_web/src/lib/api/client.ts",
-  "apps/customer_web/src/lib/api/browser-client.ts",
-  "apps/identity-platform/src/lib/api/client.ts",
-  "apps/app-marketplace/src/lib/api/client.ts",
-  "apps/theme-marketplace/src/lib/api/client.ts",
-  "apps/admin_web/src/lib/console-api.ts",
-  "apps/platform-operations-portal/src/lib/api/client.ts",
-  "apps/marketing-site/src/app/[locale]/create/page.tsx",
+  "apps/merchant/web/src/lib/api/client.ts",
+  "apps/commerce/web/src/lib/api/client.ts",
+  "apps/commerce/web/src/lib/api/browser-client.ts",
+  "apps/platform/identity/src/lib/api/client.ts",
+  "apps/frozen/app-store/src/lib/api/client.ts",
+  "apps/frozen/theme-store/src/lib/api/client.ts",
+  "apps/internal/console/src/lib/console-api.ts",
+  "apps/frozen/operations-portal/src/lib/api/client.ts",
+  "apps/marketing/web/src/app/[locale]/create/page.tsx",
 ];
 
 for (const file of baseWrapperFiles) {
@@ -56,8 +56,8 @@ for (const file of baseWrapperFiles) {
 }
 
 for (const file of [
-  "apps/merchant_web/src/lib/api/client.ts",
-  "apps/customer_web/src/lib/api/client.ts",
+  "apps/merchant/web/src/lib/api/client.ts",
+  "apps/commerce/web/src/lib/api/client.ts",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -70,13 +70,13 @@ for (const file of [
   );
 }
 
-const marketingPackage = readJson("apps/marketing-site/package.json");
+const marketingPackage = readJson("apps/marketing/web/package.json");
 reporter.assert(
   marketingPackage?.dependencies?.["@letbuyy/api-client"] === "workspace:*",
   "marketing-site must declare @letbuyy/api-client when using shared API base helpers",
 );
 
-const marketingManifest = readJson("apps/marketing-site/runtime.manifest.json");
+const marketingManifest = readJson("apps/marketing/web/runtime.manifest.json");
 reporter.assert(
   marketingManifest?.allowedDependencies?.workspacePackages?.includes("@letbuyy/api-client"),
   "marketing-site runtime manifest must allow @letbuyy/api-client",

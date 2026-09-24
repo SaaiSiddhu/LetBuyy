@@ -38,14 +38,14 @@ independent certificate / nameserver lifecycles.
 
 | Host | Runtime root | Hosting | Exposure | Notes |
 |---|---|---|---|---|
-| `letbuyy.com`, `www.letbuyy.com` | `apps/marketing-site` | Vercel | Public | Marketing/pricing/conversion. **Must not host auth pages** (AGENTS auth rule) — login links redirect to `accounts.`. |
-| `accounts.letbuyy.com` | `apps/identity-platform` | Vercel | Public | **Canonical auth owner.** Login, signup, OTP, password, OAuth callback, store selection, session issuance. |
-| `admin.letbuyy.com` | `apps/merchant_web` | Vercel | Auth-gated | Per-store merchant dashboard, CMS, products, orders, settings, themes, analytics. |
-| `apps.letbuyy.com` | `apps/app-marketplace` | Vercel | Public + partner-gated | App marketplace storefront + partner app submission/review. |
-| `themes.letbuyy.com` | `apps/theme-marketplace` | Vercel | Public + partner-gated | Theme catalog, detail, acquisition. |
-| `developer.letbuyy.com` | `apps/developer-portal` | Vercel | Public docs + partner dash | API reference, SDK quick-starts, partner dashboard shell. |
-| `console.letbuyy.com` | `apps/admin_web` | Vercel | **Internal-restricted** | Super-admin. Email allowlist + 2FA/TOTP + IP/VPN + audit (AGENTS console rule). |
-| `team.letbuyy.com` | `apps/platform-operations-portal` | Vercel | **Internal-restricted** | Employee support/ops portal. Same hardening as console. |
+| `letbuyy.com`, `www.letbuyy.com` | `apps/marketing/web` | Vercel | Public | Marketing/pricing/conversion. **Must not host auth pages** (AGENTS auth rule) — login links redirect to `accounts.`. |
+| `accounts.letbuyy.com` | `apps/platform/identity` | Vercel | Public | **Canonical auth owner.** Login, signup, OTP, password, OAuth callback, store selection, session issuance. |
+| `admin.letbuyy.com` | `apps/merchant/web` | Vercel | Auth-gated | Per-store merchant dashboard, CMS, products, orders, settings, themes, analytics. |
+| `apps.letbuyy.com` | `apps/frozen/app-store` | Vercel | Public + partner-gated | App marketplace storefront + partner app submission/review. |
+| `themes.letbuyy.com` | `apps/frozen/theme-store` | Vercel | Public + partner-gated | Theme catalog, detail, acquisition. |
+| `developer.letbuyy.com` | `apps/frozen/developer-portal` | Vercel | Public docs + partner dash | API reference, SDK quick-starts, partner dashboard shell. |
+| `console.letbuyy.com` | `apps/internal/console` | Vercel | **Internal-restricted** | Super-admin. Email allowlist + 2FA/TOTP + IP/VPN + audit (AGENTS console rule). |
+| `team.letbuyy.com` | `apps/frozen/operations-portal` | Vercel | **Internal-restricted** | Employee support/ops portal. Same hardening as console. |
 | `api.letbuyy.com` | `services/api-gateway` | Cloudflare Workers | Public API | Sole Commerce API backend. Hono `/v1`. Proxied (orange-cloud). |
 | `webhooks.letbuyy.com` | `services/webhook-service` | Cloudflare Workers | Provider callbacks | Signature-verified provider webhooks. Proxied. |
 
@@ -53,8 +53,8 @@ independent certificate / nameserver lifecycles.
 
 | Host | Runtime root | Hosting | Exposure | Notes |
 |---|---|---|---|---|
-| `{merchant}.letbuyy.com` | `apps/customer_web` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.com`. |
-| `<merchant-custom-domain>` | `apps/customer_web` | Vercel custom domains | Public shopper | Merchant brings own domain via CNAME (see §7). |
+| `{merchant}.letbuyy.com` | `apps/commerce/web` | Vercel (wildcard `*`) | Public shopper | Default per-tenant subdomain, e.g. `myshop.letbuyy.com`. |
+| `<merchant-custom-domain>` | `apps/commerce/web` | Vercel custom domains | Public shopper | Merchant brings own domain via CNAME (see §7). |
 | `letbuyy.com`, `www.letbuyy.com` | — | Cloudflare redirect | Public | **Decision (§14):** recommend 301 → `letbuyy.com`. Apex is not a tenant. |
 
 > Naming reminder (AGENTS): database tables use `sites`; URLs/UI say `store`. The host label
@@ -247,12 +247,12 @@ patterns to the new hosts (`api.letbuyy.com/*`, `webhooks.letbuyy.com/*`). Keep 
 ### 5.5 Storefront wildcard → tenant rewrite (already built; host source changes)
 
 Storefront-runtime already resolves tenants from the host label and rewrites to
-`/store/[subdomain]` (`apps/customer_web/src/app/store/[subdomain]/...`,
+`/store/[subdomain]` (`apps/commerce/web/src/app/store/[subdomain]/...`,
 `src/app/api/store-lookup`, identity `validate-subdomain`). The split changes only the **host
 the middleware trusts**:
 
 ```ts
-// apps/customer_web/src/middleware.ts  (canonical host resolution — illustrative)
+// apps/commerce/web/src/middleware.ts  (canonical host resolution — illustrative)
 const host = req.headers.get("host")!.toLowerCase();
 const STORE_ROOT = "letbuyy.com";
 
@@ -280,7 +280,7 @@ subdomains in the create-store validator so a merchant can't claim a system labe
 
 ## 7. Custom merchant domains (already a feature — canonical flow)
 
-Surfaces exist: `apps/merchant_web/src/app/[store]/settings/domains/page.tsx`,
+Surfaces exist: `apps/merchant/web/src/app/[store]/settings/domains/page.tsx`,
 mobile `custom_domains.dart` / `domain_settings_screen.dart`. Canonical activation sequence
 (AGENTS custom-domain rule):
 

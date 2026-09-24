@@ -5,11 +5,11 @@
     "template": "config/env/templates/next-app.env.example",
     "secretStore": "Vercel project environment",
     "owners": [
-      "apps/customer_web",
-      "apps/merchant_web",
-      "apps/identity-platform",
-      "apps/marketing-site",
-      "apps/admin_web"
+      "apps/commerce/web",
+      "apps/merchant/web",
+      "apps/platform/identity",
+      "apps/marketing/web",
+      "apps/internal/console"
     ],
     "rules": [
       "No tracked .env files.",
@@ -40,7 +40,7 @@
     "template": "config/env/templates/mobile.dart-defines.example",
     "secretStore": "Mobile CI dart-define and platform secret injection",
     "owners": [
-      "apps/merchant_app"
+      "apps/merchant/mobile"
     ],
     "rules": [
       "No provider secret keys in Flutter source.",

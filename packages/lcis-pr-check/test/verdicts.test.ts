@@ -179,7 +179,7 @@ describe('analyzeWithVerdicts — verdicts array structure', () => {
   before(async () => {
     resetEngine();
     report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       makeStubEis(),
     );
@@ -371,7 +371,7 @@ describe('analyzeWithVerdicts — launch verdict mapping', () => {
   it('GO → launch PASS', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ launchDecision: 'GO' }),
     );
@@ -382,7 +382,7 @@ describe('analyzeWithVerdicts — launch verdict mapping', () => {
   it('CONDITIONAL_GO → launch WARN', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ launchDecision: 'CONDITIONAL_GO' }),
     );
@@ -393,7 +393,7 @@ describe('analyzeWithVerdicts — launch verdict mapping', () => {
   it('NO_GO → launch FAIL', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ launchDecision: 'NO_GO' }),
     );
@@ -404,7 +404,7 @@ describe('analyzeWithVerdicts — launch verdict mapping', () => {
   it('launch FAIL verdict findings include blocker details', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ launchDecision: 'NO_GO' }),
     );
@@ -420,7 +420,7 @@ describe('analyzeWithVerdicts — rollback readiness mapping', () => {
   it('READY → rollback PASS', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ rollbackReadiness: 'READY' }),
     );
@@ -431,7 +431,7 @@ describe('analyzeWithVerdicts — rollback readiness mapping', () => {
   it('CONDITIONAL → rollback WARN', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ rollbackReadiness: 'CONDITIONAL' }),
     );
@@ -480,7 +480,7 @@ describe('analyzeWithVerdicts — coverage verdict', () => {
   it('good coverage (no gaps) → coverage PASS', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis({ coverageMissingCritical: false, coverageConfidence: 0.9 }),
     );
@@ -542,7 +542,7 @@ describe('analyzeWithVerdicts — verdicts in renderJson', () => {
   it('JSON output contains verdicts array', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis(),
     );
@@ -555,7 +555,7 @@ describe('analyzeWithVerdicts — verdicts in renderJson', () => {
   it('JSON verdict objects have all required fields', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       makeStubEis(),
     );
@@ -589,7 +589,7 @@ describe('analyzeWithVerdicts — verdicts in renderSummary', () => {
     resetEngine();
     const { analyzePr } = await import('../src/analyze');
     const report = await analyzePr(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     const summary = renderSummary(report);
@@ -614,7 +614,7 @@ describe('analyzeWithVerdicts — determinism', () => {
   });
 
   it('same input → same security verdict', async () => {
-    const input = { changedFiles: ['apps/identity-platform/src/lib/auth/cookies.ts'] };
+    const input = { changedFiles: ['apps/platform/identity/src/lib/auth/cookies.ts'] };
     const eis = makeStubEis();
     resetEngine();
     const stub = makeStubEngine();

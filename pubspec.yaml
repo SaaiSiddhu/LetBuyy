@@ -7,39 +7,15 @@ environment:
   sdk: '^3.11.0'
 
 # ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
-# New structure: six-app model roots + packages/dart/*
-# Updated 2026-09-02 (Phase M, Stage 6): apps/mobile/merchant-app renamed to
-# apps/merchant_app in Stage 3 — the only one of the six-app-model Flutter
-# apps that is native to this repository. See CLAUDE.md's "Six-App Target
-# Topology" section.
-#
-# apps/customer_app (Stage 3, cross-repo from System A) and
-# apps/phase_2/{rider_app,store_ops_app} (Stage 4, cross-repo from System B)
-# are deliberately NOT workspace members yet (Stage 8 finding, corrected
-# after two broken attempts): customer_app path-depended on System
-# A's own packages/{core,models,services,ui_kit} (4 packages); the phase_2
-# apps path-depend on 6 packages/agrimore_* packages. None of those 10
-# packages were copied into this repository — Stage 5 deliberately deferred
-# ALL packages/agrimore_*-and-packages/core-class consolidation as
-# D0_BLOCKED, since verifying they're genuinely compatible with (not
-# name-colliding against) this workspace's own packages/dart/{core,models,
-# ui_kit} needs real per-package comparison, not a rushed copy under this
-# stage's time pressure. Declaring resolution: workspace on any of these 4
-# apps without their dependencies present breaks pub resolution for the
-# ENTIRE workspace, not just that app (reproduced and reverted twice this
-# stage — see the journal). All four apps' own README.md already discloses
-# "NOT production-ready" for the phase_2 pair; customer_app carries real
-# production-relevant identity (it is the shipped Play Store app) but its
-# *shared Dart package* dependencies were unresolved pending the deferred
-# package-unification pass — not being a pub workspace member yet was an
-# accurate reflection of that, not a regression that stage caused.
-#
-# Updated 2026-09-05 (phase FB-1): apps/admin_app is no longer a workspace
-# member and no longer has a pubspec.yaml. Its Firestore implementation was
-# deleted under the owner's decision to retire Firebase completely, and the
-# root is now RESERVED (manifest-only). See apps/admin_app/AGENTS.md.
+# Updated 2026-09-24 (APPID-P1, D-APP-LAYOUT, Constitution Amendment 3): the Flutter application roots
+# are apps/merchant/mobile, apps/marketplace/mobile and the deferred apps/deferred/delivery/mobile.
+# reference/apps/* (the preserved seller and store-operations donors) are deliberately NOT members:
+# reference code is never built, and store-operations' own `resolution: workspace` only matters if
+# someone runs pub get inside it. The reserved roots (apps/reserved/*) hold no pubspec at all.
+# The pre-2026-09-24 history of this list (Phase M/N, FB-1) is in git and
+# docs/migration/repository_consolidation/.
 workspace:
-  - apps/merchant_app
+  - apps/merchant/mobile
   - packages/dart/core
   - packages/dart/api_client
   - packages/dart/models
@@ -54,10 +30,9 @@ workspace:
   - packages/dart/marketplace_ui_kit
   - packages/dart/marketplace_models
   - packages/dart/marketplace_services
-  - apps/customer_app
+  - apps/marketplace/mobile
   - packages/dart/quickcommerce_core
-  - apps/phase_2/rider_app
-  - apps/phase_2/store_ops_app
+  - apps/deferred/delivery/mobile
 
 
 
@@ -72,12 +47,9 @@ melos:
   scripts:
     # Run apps
     run:builder:
-      run: cd apps/merchant_app && flutter run
+      run: cd apps/merchant/mobile && flutter run
       description: Run the Builder (Store Builder) app
     
-    run:super_admin:
-      run: cd apps/mobile/operator-app && flutter run
-      description: Run the Super Admin app
 
     # Build commands
     build:android:

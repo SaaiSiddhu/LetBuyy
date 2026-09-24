@@ -5,9 +5,9 @@ import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs
 
 const APP_ENGINE_SOURCE = readFileSync('packages/shared-types/src/app-platform.ts', 'utf8');
 const STOREFRONT_ROUTE_SOURCE = readStorefrontRouteSource();
-const STORE_SERVICE_SOURCE = readFileSync('apps/customer_web/src/lib/store-service.ts', 'utf8');
-const APP_BLOCK_SLOT_SOURCE = readFileSync('apps/customer_web/src/components/sections/app-block-slot.tsx', 'utf8');
-const RENDERER_REGISTRY_SOURCE = readFileSync('apps/customer_web/src/lib/theme-engine/renderer-registry.tsx', 'utf8');
+const STORE_SERVICE_SOURCE = readFileSync('apps/commerce/web/src/lib/store-service.ts', 'utf8');
+const APP_BLOCK_SLOT_SOURCE = readFileSync('apps/commerce/web/src/components/sections/app-block-slot.tsx', 'utf8');
+const RENDERER_REGISTRY_SOURCE = readFileSync('apps/commerce/web/src/lib/theme-engine/renderer-registry.tsx', 'utf8');
 
 test('shared app-platform owns Built-for-LetBuyy quality gate rules', () => {
   assert.match(APP_ENGINE_SOURCE, /export function evaluateBuiltForLetBuyyQualityGate/);

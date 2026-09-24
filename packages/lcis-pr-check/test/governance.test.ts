@@ -189,7 +189,7 @@ describe('analyzeWithGovernance — governanceVerdicts structure', () => {
     resetEngine();
     const gov = makeStubGov();
     report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       eisFrom(gov),
       gov,
@@ -252,7 +252,7 @@ describe('backward compat — analyzePr returns governanceVerdicts: []', () => {
     resetEngine();
     const gov = makeStubGov();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       eisFrom(gov),
     );
@@ -439,7 +439,7 @@ describe('analyzeWithGovernance — governance composite logic', () => {
       } as unknown as Finding],
     });
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(), eisFrom(gov), gov,
     );
     const gv = report.governanceVerdicts.find((v) => v.dimension === 'governance')!;
@@ -451,7 +451,7 @@ describe('analyzeWithGovernance — governance composite logic', () => {
     resetEngine();
     const gov = makeStubGov();
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(), eisFrom(gov), gov,
     );
     const gv = report.governanceVerdicts.find((v) => v.dimension === 'governance')!;
@@ -463,7 +463,7 @@ describe('analyzeWithGovernance — governance composite logic', () => {
     resetEngine();
     const gov = makeStubGov({ healthScore: 72 });
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(), eisFrom(gov), gov,
     );
     const gv = report.governanceVerdicts.find((v) => v.dimension === 'governance')!;
@@ -534,7 +534,7 @@ describe('analyzeWithGovernance — governanceVerdicts in renderJson', () => {
     resetEngine();
     const gov = makeStubGov();
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(), eisFrom(gov), gov,
     );
     const json = renderJson(report);
@@ -547,7 +547,7 @@ describe('analyzeWithGovernance — governanceVerdicts in renderJson', () => {
     resetEngine();
     const gov = makeStubGov();
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(), eisFrom(gov), gov,
     );
     const parsed = JSON.parse(renderJson(report)) as PrReport;
@@ -578,7 +578,7 @@ describe('analyzeWithGovernance — governanceVerdicts in renderSummary', () => 
   it('summary does NOT contain Governance line for analyzePr (backward compat)', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     const summary = renderSummary(report);

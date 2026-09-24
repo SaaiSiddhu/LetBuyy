@@ -4,9 +4,9 @@ import test from 'node:test';
 
 const authRouteSource = readFileSync('services/api-gateway/src/routes/auth.ts', 'utf8');
 const intentMigrationSource = readFileSync('database/supabase/migrations/078_password_set_intents.sql', 'utf8');
-const verifyOtpRouteSource = readFileSync('apps/identity-platform/src/app/api/auth/verify-otp/route.ts', 'utf8');
-const setPasswordRouteSource = readFileSync('apps/identity-platform/src/app/api/auth/set-password/route.ts', 'utf8');
-const cookieSource = readFileSync('apps/identity-platform/src/lib/auth/cookies.ts', 'utf8');
+const verifyOtpRouteSource = readFileSync('apps/platform/identity/src/app/api/auth/verify-otp/route.ts', 'utf8');
+const setPasswordRouteSource = readFileSync('apps/platform/identity/src/app/api/auth/set-password/route.ts', 'utf8');
+const cookieSource = readFileSync('apps/platform/identity/src/lib/auth/cookies.ts', 'utf8');
 
 test('password-set intents are persisted server-side with lifecycle controls', () => {
   assert.match(intentMigrationSource, /CREATE TABLE IF NOT EXISTS public\.auth_password_set_intents/);

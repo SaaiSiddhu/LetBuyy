@@ -13,8 +13,8 @@ const nextTemplate = readFile("config/env/templates/next-app.env.example");
 const dns = readFile("infrastructure/dns/dns.tf");
 const gateway = readFile("services/api-gateway/src/routes/custom-domains.ts");
 const config = readFile("services/api-gateway/src/lib/custom-domain-config.ts");
-const merchant = readFile("apps/merchant_web/src/app/[store]/settings/domains/page.tsx");
-const mobile = readFile("apps/merchant_app/lib/services/custom_domains.dart");
+const merchant = readFile("apps/merchant/web/src/app/[store]/settings/domains/page.tsx");
+const mobile = readFile("apps/merchant/mobile/lib/services/custom_domains.dart");
 
 for (const fragment of [
   "CUSTOM_DOMAIN_CNAME_TARGET=connect.letbuyy.com",
@@ -37,8 +37,8 @@ reporter.assert(mobile.includes("NEXT_PUBLIC_CUSTOM_DOMAIN_CNAME_TARGET"), "mobi
 
 for (const root of [
   "services/api-gateway/src",
-  "apps/merchant_web/src",
-  "apps/merchant_app/lib",
+  "apps/merchant/web/src",
+  "apps/merchant/mobile/lib",
 ]) {
   for (const file of listWorkspaceFiles([root]).filter((candidate) => sourceExtensions.has(path.extname(candidate)))) {
     const source = readFile(file);

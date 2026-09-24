@@ -23,19 +23,19 @@ test('identity repository boundary maps to legacy tables without introducing sto
 });
 
 test('OIDC provider skeleton routes stay disabled by the central feature flag', () => {
-  const helper = read('apps/identity-platform/src/lib/identity-foundation/oidc-disabled.ts');
+  const helper = read('apps/platform/identity/src/lib/identity-foundation/oidc-disabled.ts');
   assert.match(helper, /FEATURE_IDENTITY_PROVIDER/);
   assert.match(helper, /IDENTITY_PROVIDER_DISABLED/);
   assert.match(helper, /status: 404/);
   assert.match(helper, /status: 501/);
 
   for (const route of [
-    'apps/identity-platform/src/app/.well-known/openid-configuration/route.ts',
-    'apps/identity-platform/src/app/jwks/route.ts',
-    'apps/identity-platform/src/app/oauth2/authorize/route.ts',
-    'apps/identity-platform/src/app/oauth2/token/route.ts',
-    'apps/identity-platform/src/app/oauth2/userinfo/route.ts',
-    'apps/identity-platform/src/app/oauth2/logout/route.ts',
+    'apps/platform/identity/src/app/.well-known/openid-configuration/route.ts',
+    'apps/platform/identity/src/app/jwks/route.ts',
+    'apps/platform/identity/src/app/oauth2/authorize/route.ts',
+    'apps/platform/identity/src/app/oauth2/token/route.ts',
+    'apps/platform/identity/src/app/oauth2/userinfo/route.ts',
+    'apps/platform/identity/src/app/oauth2/logout/route.ts',
   ]) {
     assert.match(read(route), /oidcSkeletonResponse/);
   }

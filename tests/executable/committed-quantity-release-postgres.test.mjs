@@ -1,7 +1,7 @@
 // F-COMMITTED-1 (CAP-C47) — a released commitment must stop counting as committed.
 //
 // commit_inventory_reservation adds the reservation's quantity to inventory_levels.committed_quantity.
-// Nothing anywhere subtracted it, so the column only grew and the figure apps/merchant_app shows the
+// Nothing anywhere subtracted it, so the column only grew and the figure apps/merchant/mobile shows the
 // merchant as "committed" drifted upward without bound. Not an oversell risk — reserve_inventory gates
 // on `available`, which every release path already restored — but a reporting column that becomes
 // progressively false, and nothing failed while it did.

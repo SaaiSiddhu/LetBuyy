@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
-const identityCookiesSource = readFileSync('apps/identity-platform/src/lib/auth/cookies.ts', 'utf8');
-const identityProxySource = readFileSync('apps/identity-platform/src/proxy.ts', 'utf8');
-const identityCsrfSource = readFileSync('apps/identity-platform/src/lib/auth/csrf.ts', 'utf8');
-const identityCsrfClientSource = readFileSync('apps/identity-platform/src/lib/csrf-client.ts', 'utf8');
-const mobileStoreAuthSource = readFileSync('apps/merchant_app/lib/services/store_auth_service.dart', 'utf8');
+const identityCookiesSource = readFileSync('apps/platform/identity/src/lib/auth/cookies.ts', 'utf8');
+const identityProxySource = readFileSync('apps/platform/identity/src/proxy.ts', 'utf8');
+const identityCsrfSource = readFileSync('apps/platform/identity/src/lib/auth/csrf.ts', 'utf8');
+const identityCsrfClientSource = readFileSync('apps/platform/identity/src/lib/csrf-client.ts', 'utf8');
+const mobileStoreAuthSource = readFileSync('apps/merchant/mobile/lib/services/store_auth_service.dart', 'utf8');
 const gatewaySecuritySource = readFileSync('services/api-gateway/src/middleware/security.ts', 'utf8');
 const storefrontRouteSource = readStorefrontRouteSource();
 

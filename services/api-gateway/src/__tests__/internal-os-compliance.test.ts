@@ -79,8 +79,8 @@ test('compliance internal console routes are mounted with reason capture, read a
 
 test('compliance API client and platform console expose the real workflow without unavailable placeholders', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const pageSource = repositorySource('apps/admin_web/src/app/(dashboard)/compliance/page.tsx');
-    const layoutSource = repositorySource('apps/admin_web/src/app/(dashboard)/layout.tsx');
+    const pageSource = repositorySource('apps/internal/console/src/app/(dashboard)/compliance/page.tsx');
+    const layoutSource = repositorySource('apps/internal/console/src/app/(dashboard)/layout.tsx');
     const sharedTypesSource = repositorySource('packages/shared-types/src/index.ts');
 
     for (const method of [

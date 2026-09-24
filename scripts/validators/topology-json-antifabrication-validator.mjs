@@ -31,10 +31,10 @@ for (const runtimeRoot of reservedServiceRoots) {
 }
 
 for (const runtimeRoot of [
-  "apps/app-marketplace",
-  "apps/developer-portal",
-  "apps/theme-marketplace",
-  "apps/platform-operations-portal",
+  "apps/frozen/app-store",
+  "apps/frozen/developer-portal",
+  "apps/frozen/theme-store",
+  "apps/frozen/operations-portal",
 ]) {
   const productionRuntime = productionRuntimeByRoot.get(runtimeRoot);
   reporter.assert(productionRuntime, `Frozen app missing explicit production topology status: ${runtimeRoot}`);

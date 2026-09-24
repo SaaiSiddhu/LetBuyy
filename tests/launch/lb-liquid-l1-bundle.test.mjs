@@ -14,7 +14,7 @@ const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 const bundle = JSON.parse(read('database/supabase/seeds/generated/urban-kicks-liquid-bundle.json'));
 const migration = read('database/supabase/migrations/171_liquid_bundle_persistence.sql');
 const seed = read('database/supabase/seeds/urban-kicks-theme.sql');
-const templateResolver = read('apps/customer_web/src/lib/theme-engine/template-resolver.ts');
+const templateResolver = read('apps/commerce/web/src/lib/theme-engine/template-resolver.ts');
 const themeGovernance = read('packages/theme-engine/src/theme-governance.ts');
 
 test('L1: persisted bundle is a Liquid renderer bundle', () => {

@@ -31,8 +31,11 @@ function toRepoPath(filename) {
   return path.relative(repoRoot, absolutePath).split(path.sep).join("/");
 }
 
+// D-APP-LAYOUT (2026-09-24): application roots sit one to three levels below apps/ (apps/commerce/web,
+// apps/frozen/app-store, apps/deferred/delivery/mobile). A single-segment pattern here silently stopped
+// matching every moved route, which is how this freeze would have stopped enforcing without a single red.
 function isAppApiRoute(repoPath) {
-  return /^apps\/[^/]+\/src\/app\/api\/(?:.*\/)?route\.[jt]sx?$/.test(repoPath);
+  return /^apps\/(?:[^/]+\/){1,3}src\/app\/api\/(?:.*\/)?route\.[jt]sx?$/.test(repoPath);
 }
 
 function getStringValue(node) {

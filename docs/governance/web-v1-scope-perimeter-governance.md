@@ -16,7 +16,7 @@ It freezes the Web V1 capability perimeter as data and fails the check when an *
 
 - It does not remove, disable, gate or flag any capability.
 - It does not implement the Wave 1 removal or cutover.
-- It does not classify `apps/merchant_app` as deferred. The governance chain calls that runtime CANONICAL and no ARB amendment authorises a V1.1 deferral, so it is registered `HUMAN_DECISION_REQUIRED`.
+- It does not classify `apps/merchant/mobile` as deferred. The governance chain calls that runtime CANONICAL and no ARB amendment authorises a V1.1 deferral, so it is registered `HUMAN_DECISION_REQUIRED`.
 - It does not touch App Bridge, app-store or marketplace code. That surface is owned by a separate urgent security task; this registry records it as an open escalation only.
 
 ## The baseline is not a clean state

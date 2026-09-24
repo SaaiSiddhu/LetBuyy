@@ -37,12 +37,12 @@ reporter.assert(
 );
 
 for (const file of [
-  "apps/merchant_web/src/app/[store]/orders/page.tsx",
-  "apps/merchant_web/src/app/[store]/settings/billing/page.tsx",
-  "apps/merchant_web/src/app/[store]/settings/plan/page.tsx",
-  "apps/admin_web/src/lib/console-api.ts",
-  "apps/platform-operations-portal/src/app/(dashboard)/operations/onboarding/page.tsx",
-  "apps/app-marketplace/src/app/(store)/apps/[slug]/page.tsx",
+  "apps/merchant/web/src/app/[store]/orders/page.tsx",
+  "apps/merchant/web/src/app/[store]/settings/billing/page.tsx",
+  "apps/merchant/web/src/app/[store]/settings/plan/page.tsx",
+  "apps/internal/console/src/lib/console-api.ts",
+  "apps/frozen/operations-portal/src/app/(dashboard)/operations/onboarding/page.tsx",
+  "apps/frozen/app-store/src/app/(store)/apps/[slug]/page.tsx",
 ]) {
   reporter.assert(
     readFile(file).includes("@letbuyy/ui/formatting"),

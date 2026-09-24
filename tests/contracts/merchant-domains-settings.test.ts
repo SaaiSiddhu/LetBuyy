@@ -14,7 +14,7 @@ function read(relativePath: string): string {
 }
 
 test('merchant domains settings renders custom-domain and access controls', () => {
-  const page = read('apps/merchant_web/src/app/[store]/settings/domains/page.tsx');
+  const page = read('apps/merchant/web/src/app/[store]/settings/domains/page.tsx');
 
   assert.match(page, /Your domains|Ownership/);
   assert.match(page, /Connect existing domain|DNS/);
@@ -22,14 +22,14 @@ test('merchant domains settings renders custom-domain and access controls', () =
 });
 
 test('merchant domain settings calls gateway endpoints directly with merchant credentials', () => {
-  const page = read('apps/merchant_web/src/app/[store]/settings/domains/page.tsx');
+  const page = read('apps/merchant/web/src/app/[store]/settings/domains/page.tsx');
 
   assert.match(page, /domainsClient|gatewayUrl\('\/custom\/domains'\)/);
-  assert.equal(existsSync(join(repoRoot, 'apps/merchant_web/src/app/api/stores/[store]/custom-domain/route.ts')), false);
-  assert.equal(existsSync(join(repoRoot, 'apps/merchant_web/src/app/api/stores/[store]/store-access/route.ts')), false);
+  assert.equal(existsSync(join(repoRoot, 'apps/merchant/web/src/app/api/stores/[store]/custom-domain/route.ts')), false);
+  assert.equal(existsSync(join(repoRoot, 'apps/merchant/web/src/app/api/stores/[store]/store-access/route.ts')), false);
 });
 
 test('merchant domain settings do not access Supabase directly', () => {
-  const source = read('apps/merchant_web/src/app/[store]/settings/domains/page.tsx');
+  const source = read('apps/merchant/web/src/app/[store]/settings/domains/page.tsx');
   assert.doesNotMatch(source, /createSupabase|SUPABASE_SERVICE_ROLE|\.from\(/);
 });

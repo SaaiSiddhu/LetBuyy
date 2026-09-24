@@ -61,7 +61,7 @@ test('D10 /api/customer/register proxy route exists and exports POST handler', (
   // This is a static contract test — read-only source inspection, no network calls.
   const routePath = resolve(
     import.meta.dirname ?? __dirname,
-    '../../../apps/customer_web/src/app/api/customer/register/route.ts',
+    '../../../apps/commerce/web/src/app/api/customer/register/route.ts',
   );
   let routeSource: string;
   try {

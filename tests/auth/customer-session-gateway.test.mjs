@@ -7,8 +7,8 @@ const authCoreSessionSource = readFileSync('packages/auth-core/src/customer-sess
 const gatewaySessionMiddleware = readFileSync('services/api-gateway/src/middleware/customer-session.ts', 'utf8');
 const storefrontRouteSource = readStorefrontRouteSource();
 const storefrontGraphQLSource = readFileSync('services/api-gateway/src/graphql/storefront.ts', 'utf8');
-const storefrontApiClientSource = readFileSync('apps/customer_web/src/lib/api/client.ts', 'utf8');
-const storefrontSetPasswordRouteSource = readFileSync('apps/customer_web/src/app/api/customer/set-password/route.ts', 'utf8');
+const storefrontApiClientSource = readFileSync('apps/commerce/web/src/lib/api/client.ts', 'utf8');
+const storefrontSetPasswordRouteSource = readFileSync('apps/commerce/web/src/app/api/customer/set-password/route.ts', 'utf8');
 const customerResetMigrationSource = readFileSync('database/supabase/migrations/077_customer_reset_tokens.sql', 'utf8');
 
 test('auth-core exposes a 30-minute HMAC customer session primitive', () => {

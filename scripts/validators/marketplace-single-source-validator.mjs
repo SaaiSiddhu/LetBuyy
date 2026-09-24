@@ -37,8 +37,8 @@ reporter.assert(
 );
 
 for (const file of [
-  "apps/app-marketplace/src/lib/logger.ts",
-  "apps/theme-marketplace/src/lib/logger.ts",
+  "apps/frozen/app-store/src/lib/logger.ts",
+  "apps/frozen/theme-store/src/lib/logger.ts",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -52,8 +52,8 @@ for (const file of [
 }
 
 for (const file of [
-  "apps/app-marketplace/src/components/MarketplaceUnavailable.tsx",
-  "apps/theme-marketplace/src/components/marketplace-unavailable.tsx",
+  "apps/frozen/app-store/src/components/MarketplaceUnavailable.tsx",
+  "apps/frozen/theme-store/src/components/marketplace-unavailable.tsx",
 ]) {
   const source = readFile(file);
   reporter.assert(

@@ -28,7 +28,7 @@ function read(relativePath: string): string {
 test('marketing dead twin components are archived outside active source', () => {
     for (const file of deadTwins) {
         assert.equal(
-            existsSync(join(repoRoot, 'apps/marketing-site/src/components', file)),
+            existsSync(join(repoRoot, 'apps/marketing/web/src/components', file)),
             false,
             `${file} must not exist under active marketing components`,
         );
@@ -41,9 +41,9 @@ test('marketing dead twin components are archived outside active source', () => 
 });
 
 test('marketing homepage keeps importing only the live component family', () => {
-    const pagePath = existsSync(join(repoRoot, 'apps/marketing-site/src/app/[locale]/page.tsx'))
-        ? 'apps/marketing-site/src/app/[locale]/page.tsx'
-        : 'apps/marketing-site/src/app/page.tsx';
+    const pagePath = existsSync(join(repoRoot, 'apps/marketing/web/src/app/[locale]/page.tsx'))
+        ? 'apps/marketing/web/src/app/[locale]/page.tsx'
+        : 'apps/marketing/web/src/app/page.tsx';
     const source = read(pagePath);
 
     for (const liveComponent of [

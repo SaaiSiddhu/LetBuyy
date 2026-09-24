@@ -2,15 +2,15 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 const nextConfigModules = [
-  ['app-marketplace', '../../apps/app-marketplace/next.config.ts'],
-  ['developer-portal', '../../apps/developer-portal/next.config.ts'],
-  ['identity-platform', '../../apps/identity-platform/next.config.ts'],
-  ['marketing-site', '../../apps/marketing-site/next.config.ts'],
-  ['merchant-web', '../../apps/merchant_web/next.config.ts'],
-  ['admin-web', '../../apps/admin_web/next.config.ts'],
-  ['platform-operations-portal', '../../apps/platform-operations-portal/next.config.ts'],
-  ['customer-web', '../../apps/customer_web/next.config.ts'],
-  ['theme-marketplace', '../../apps/theme-marketplace/next.config.ts'],
+  ['app-marketplace', '../../apps/frozen/app-store/next.config.ts'],
+  ['developer-portal', '../../apps/frozen/developer-portal/next.config.ts'],
+  ['identity-platform', '../../apps/platform/identity/next.config.ts'],
+  ['marketing-site', '../../apps/marketing/web/next.config.ts'],
+  ['merchant-web', '../../apps/merchant/web/next.config.ts'],
+  ['admin-web', '../../apps/internal/console/next.config.ts'],
+  ['platform-operations-portal', '../../apps/frozen/operations-portal/next.config.ts'],
+  ['customer-web', '../../apps/commerce/web/next.config.ts'],
+  ['theme-marketplace', '../../apps/frozen/theme-store/next.config.ts'],
 ] as const;
 
 function headerMap(headers: Array<{ key: string; value: string }>): Map<string, string> {

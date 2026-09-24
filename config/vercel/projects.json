@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "letbuyy-identity-platform",
-      "directory": "apps/identity-platform",
+      "directory": "apps/platform/identity",
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_IDENTITY_PROJECT_ID",
@@ -17,7 +17,7 @@
     },
     {
       "name": "letbuyy-merchant-web",
-      "directory": "apps/merchant_web",
+      "directory": "apps/merchant/web",
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_MERCHANT_PROJECT_ID",
@@ -32,7 +32,7 @@
     },
     {
       "name": "letbuyy-customer-web",
-      "directory": "apps/customer_web",
+      "directory": "apps/commerce/web",
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_STOREFRONT_PROJECT_ID",
@@ -47,7 +47,7 @@
     },
     {
       "name": "letbuyy-marketing-site",
-      "directory": "apps/marketing-site",
+      "directory": "apps/marketing/web",
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_MARKETING_PROJECT_ID",
@@ -62,7 +62,7 @@
     },
     {
       "name": "letbuyy-admin-web",
-      "directory": "apps/admin_web",
+      "directory": "apps/internal/console",
       "framework": "nextjs",
       "staging": {
         "project_id": "STAGING_PLATFORM_CONSOLE_PROJECT_ID",

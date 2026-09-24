@@ -10,22 +10,35 @@
 // tracked into runtime behaviour beyond untracked .env.local / .dev.vars files.
 
 /**
- * Next.js apps (dirname under apps/ -> http port). `next dev -p <port>`.
- * Keys are folder names exactly: the generator writes apps/<key>/.env.local and apply-dev-scripts patches
- * apps/<key>/package.json, so a key that names no folder configures nothing
- * (tests/governance/local-dev-env-generator.test.mjs).
+ * Next.js apps (application root under apps/ -> http port). `next dev -p <port>`.
+ * Keys are paths under apps/ exactly (D-APP-LAYOUT, Constitution Amendment 3, 2026-09-24): the generator
+ * writes apps/<key>/.env.local and apply-dev-scripts patches apps/<key>/package.json, so a key that names
+ * no application root configures nothing (tests/governance/local-dev-env-generator.test.mjs).
+ * Ports are unchanged by the move; only the keys follow the new paths.
  */
 export const APP_PORTS = {
-  customer_web: 9000,
-  merchant_web: 9001,
-  "identity-platform": 9002,
-  "app-marketplace": 9003,
-  "developer-portal": 9004,
-  "theme-marketplace": 9005,
-  "marketing-site": 9006,
-  admin_web: 9007,
-  "platform-operations-portal": 9008,
+  "commerce/web": 9000,
+  "merchant/web": 9001,
+  "platform/identity": 9002,
+  "frozen/app-store": 9003,
+  "frozen/developer-portal": 9004,
+  "frozen/theme-store": 9005,
+  "marketing/web": 9006,
+  "internal/console": 9007,
+  "frozen/operations-portal": 9008,
 };
+
+/**
+ * The maintained web applications `pnpm dev` starts by default. The frozen applications keep their ports
+ * and env files for deliberate use (`pnpm dev:frozen`), but never start by default (D-APP-LAYOUT).
+ */
+export const DEFAULT_DEV_APPS = [
+  "commerce/web",
+  "merchant/web",
+  "platform/identity",
+  "internal/console",
+  "marketing/web",
+];
 
 /** Storybook for the shared UI library (packages/typescript/ui). */
 export const STORYBOOK_PORT = 9009;

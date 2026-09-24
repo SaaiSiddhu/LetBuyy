@@ -102,10 +102,10 @@ test('shared environment preflight rejects sentinel secrets until evidence is re
 
 test('domain defaults stay on letbuyy.com until DNS cutover is approved', () => {
   for (const file of [
-    'apps/marketing-site/src/lib/public-urls.ts',
-    'apps/theme-marketplace/src/lib/public-urls.ts',
-    'apps/app-marketplace/src/lib/site-url.ts',
-    'apps/developer-portal/src/lib/site-url.ts',
+    'apps/marketing/web/src/lib/public-urls.ts',
+    'apps/frozen/theme-store/src/lib/public-urls.ts',
+    'apps/frozen/app-store/src/lib/site-url.ts',
+    'apps/frozen/developer-portal/src/lib/site-url.ts',
   ]) {
     const source = readFileSync(file, 'utf8');
     // DEPLOY-R3: `letbuyy.com` is the one canonical domain; the legacy-TLD literal is

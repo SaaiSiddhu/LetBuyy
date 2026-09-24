@@ -22,13 +22,13 @@ const read = (p) => {
 const checks = [
   {
     id: 'SEC-C1',
-    file: 'apps/identity-platform/src/app/api/auth/switch/route.ts',
+    file: 'apps/platform/identity/src/app/api/auth/switch/route.ts',
     mustContain: ["checkRateLimit('switch'", 'validateSession(', 'getAccounts()', 'isProvenAccount'],
     desc: '/switch must require rate-limit + a valid current session + target in signed accounts cookie',
   },
   {
     id: 'SEC-C2',
-    file: 'apps/admin_web/src/lib/console-session.ts',
+    file: 'apps/internal/console/src/lib/console-session.ts',
     mustContain: ["APP_ENV === 'production'", "VERCEL_ENV === 'production'"],
     desc: 'console session secret prod-gate must check APP_ENV and VERCEL_ENV, not NODE_ENV alone',
   },
@@ -40,7 +40,7 @@ const checks = [
   },
   {
     id: 'SEC-H3',
-    file: 'apps/identity-platform/src/lib/auth/cookies.ts',
+    file: 'apps/platform/identity/src/lib/auth/cookies.ts',
     mustContain: ['isProductionIdentityRuntime(process.env)'],
     desc: 'lb_accounts signing key must refuse the weak dev key in any production-like runtime',
   },
@@ -50,7 +50,7 @@ const checks = [
 const forbidden = [
   {
     id: 'SEC-C2-literal-default',
-    file: 'apps/admin_web/src/lib/console-session.ts',
+    file: 'apps/internal/console/src/lib/console-session.ts',
     // The literal may exist only inside the non-production branch. Fail if the prod
     // gate reverts to NODE_ENV-only (i.e. APP_ENV/VERCEL_ENV checks removed).
     mustNotMatch: /if \(process\.env\.NODE_ENV === 'production'\) \{\s*\n\s*return isSafeSecret/,

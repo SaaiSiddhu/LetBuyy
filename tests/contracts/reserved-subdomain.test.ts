@@ -76,7 +76,7 @@ test('storefront host parser is env-root driven and distinguishes custom domains
 test('gateway and storefront use tenant-core as the reserved-label source', () => {
   const gatewaySchema = read('services/api-gateway/src/schemas/store.schema.ts');
   const gatewayAuth = read('services/api-gateway/src/routes/auth.ts');
-  const storefrontSeo = read('apps/customer_web/src/lib/seo.ts');
+  const storefrontSeo = read('apps/commerce/web/src/lib/seo.ts');
 
   assert.match(gatewaySchema, /RESERVED_STOREFRONT_LABELS/);
   assert.match(gatewayAuth, /validateSubdomainFormat/);

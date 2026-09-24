@@ -57,9 +57,14 @@ moving a ref from outside. Since 2026-09-20 that is the primary checkout. D-BRAN
 **Resurrection check** — the retired paths that a stale branch can bring back (all must count 0 in
 `git ls-tree -r "$M" --name-only`): `apps/storefront-runtime/`, `apps/merchant-control-plane/`,
 `apps/platform-console/`, `apps/mobile/merchant-app/`, `Ecommerce/`, `apps/admin/`, `apps/auth/`,
-`apps/checkout/`, `apps/internal/`, `apps/merchant/`, `apps/storefront/`, `apps/analytics/`,
-`apps/mobile/operator-team-app/`, `legacy_archive_v2/`, `apps/customer_web/consumer-storefront/`,
-and any `*.jks` / `key.properties` / `.dev.vars` / `.env.local`.
+`apps/checkout/`, `apps/storefront/`, `apps/analytics/`, `apps/mobile/` (every former reserved or
+merchant mobile root, `operator-team-app` included), `legacy_archive_v2/`, `apps/commerce/web/consumer-storefront/`,
+the flat application roots that D-APP-LAYOUT retired on 2026-09-24 (`apps/customer_app/`, `apps/customer_web/`,
+`apps/merchant_app/`, `apps/merchant_web/`, `apps/admin_web/`, `apps/admin_app/`, `apps/identity-platform/`,
+`apps/marketing-site/`, `apps/app-marketplace/`, `apps/theme-marketplace/`, `apps/developer-portal/`,
+`apps/platform-operations-portal/`, `apps/phase_2/`), anything under `apps/merchant/` or `apps/internal/` outside
+their approved roots (`apps/merchant/web/`, `apps/merchant/mobile/`, `apps/internal/console/` — Constitution
+Amendment 3), and any `*.jks` / `key.properties` / `.dev.vars` / `.env.local`.
 
 A merge that fails any check is undone with `git -C "$D" merge --abort` (before commit) — never with
 `reset --hard` after commit; after commit, re-merge on top with the correction and report both SHAs.

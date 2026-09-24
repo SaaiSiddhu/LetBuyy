@@ -398,12 +398,12 @@ class SelfModelBuilder {
 
     // Canonical runtime topology from CLAUDE.md
     const canonicalRuntimes = [
-      'apps/customer_web',
-      'apps/merchant_web',
-      'apps/identity-platform',
-      'apps/marketing-site',
-      'apps/admin_web',
-      'apps/merchant_app',
+      'apps/commerce/web',
+      'apps/merchant/web',
+      'apps/platform/identity',
+      'apps/marketing/web',
+      'apps/internal/console',
+      'apps/merchant/mobile',
       'services/api-gateway',
       'services/mobile-bff',
       'services/webhook-service',

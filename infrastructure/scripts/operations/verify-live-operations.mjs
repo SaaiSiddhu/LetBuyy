@@ -41,7 +41,7 @@ async function getOperations(path) {
 assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 const routeSource = read("services/api-gateway/src/routes/operations.ts");
-const dashboardSource = read("apps/admin_web/src/app/(dashboard)/operations/page.tsx");
+const dashboardSource = read("apps/internal/console/src/app/(dashboard)/operations/page.tsx");
 
 for (const routeFragment of [
   "/runtime/overview",

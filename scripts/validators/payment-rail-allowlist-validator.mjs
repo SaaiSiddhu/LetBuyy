@@ -63,7 +63,7 @@ function hasNearbyBillingDomainMarker(text, matchIndex) {
   return window.includes(BILLING_DOMAIN_MARKER);
 }
 
-// Phase M2: apps/customer_web/src/lib/order-service.ts only MAPS DB
+// Phase M2: apps/commerce/web/src/lib/order-service.ts only MAPS DB
 // rows for display -- a read path, not a write path. create_checkout_order
 // accepted 'stripe'/'paypal' through migration 170 and 'cashfree' between
 // migrations 075 and 170 (database/supabase/migrations/
@@ -76,7 +76,7 @@ function hasNearbyBillingDomainMarker(text, matchIndex) {
 // PAYMENT-RAIL-VALIDATOR marker comment at its OrderPayment construction
 // site for the human-readable version of this same justification.
 const HISTORICAL_READ_PATH_FILE_EXCLUSIONS = new Set([
-  "apps/customer_web/src/lib/order-service.ts",
+  "apps/commerce/web/src/lib/order-service.ts",
 ]);
 
 // A narrower, surgical alternative to a whole-file exclusion: an inline

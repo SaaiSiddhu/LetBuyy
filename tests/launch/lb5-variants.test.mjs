@@ -9,15 +9,15 @@ const repoRoot = process.cwd();
 
 const newProductPage = path.join(
     repoRoot,
-    'apps/merchant_web/src/app/[store]/products/new/page.tsx',
+    'apps/merchant/web/src/app/[store]/products/new/page.tsx',
 );
 const cartCtx = path.join(
     repoRoot,
-    'apps/customer_web/src/context/cart-context.tsx',
+    'apps/commerce/web/src/context/cart-context.tsx',
 );
 const productDetails = path.join(
     repoRoot,
-    'apps/customer_web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx',
+    'apps/commerce/web/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx',
 );
 const storefrontRoutes = path.join(
     repoRoot,

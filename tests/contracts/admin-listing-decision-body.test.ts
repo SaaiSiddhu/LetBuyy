@@ -16,7 +16,7 @@ import {
     LISTING_DECISIONS,
     buildListingDecisionBody,
     newListingDecisionKey,
-} from '../../apps/admin_web/src/lib/listing-decision';
+} from '../../apps/internal/console/src/lib/listing-decision';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const LISTING = 'cccccccc-0000-4000-8000-0000000000c1';
@@ -54,7 +54,7 @@ test('keys are per form and fit the gateway bound; a negative decision without a
 });
 
 test('the page builds its body through buildListingDecisionBody and renders a key into every decision form', () => {
-    const page = readFileSync(join(testDir, '../../apps/admin_web/src/app/(dashboard)/marketplace-listings/page.tsx'), 'utf8');
+    const page = readFileSync(join(testDir, '../../apps/internal/console/src/app/(dashboard)/marketplace-listings/page.tsx'), 'utf8');
     assert.match(page, /const body = buildListingDecisionBody\(\{/);
     assert.match(page, /\{ method: 'POST', body \}/);
     assert.doesNotMatch(page, /body: reason \? \{ reason \} : \{\}/, 'the old key-less body must not come back');

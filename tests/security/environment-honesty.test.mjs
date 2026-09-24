@@ -19,14 +19,14 @@ test('environment honesty validator passes and is wired into governance', () => 
 
 test('active runtime source has no staging LetBuyy URL defaults', () => {
   for (const file of [
-    'apps/identity-platform/src/lib/api/client.ts',
-    'apps/identity-platform/src/lib/email/resend.ts',
-    'apps/identity-platform/src/lib/auth/cookies.ts',
-    'apps/merchant_web/src/lib/public-urls.ts',
-    'apps/marketing-site/src/lib/public-urls.ts',
-    'apps/platform-operations-portal/src/lib/api/client.ts',
-    'apps/customer_web/src/app/storefront-landing.tsx',
-    'apps/customer_web/src/lib/seo.ts',
+    'apps/platform/identity/src/lib/api/client.ts',
+    'apps/platform/identity/src/lib/email/resend.ts',
+    'apps/platform/identity/src/lib/auth/cookies.ts',
+    'apps/merchant/web/src/lib/public-urls.ts',
+    'apps/marketing/web/src/lib/public-urls.ts',
+    'apps/frozen/operations-portal/src/lib/api/client.ts',
+    'apps/commerce/web/src/app/storefront-landing.tsx',
+    'apps/commerce/web/src/lib/seo.ts',
     'services/api-gateway/src/lib/cors.ts',
     'services/api-gateway/src/routes/upload.ts',
   ]) {

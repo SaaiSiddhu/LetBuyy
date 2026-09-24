@@ -8,10 +8,10 @@ const OPERATIONS_INDEX = 'services/api-gateway/src/index.ts';
 const MARKETPLACE_REVIEW_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-reviews.ts';
 const REVIEW_HELPER = 'services/api-gateway/src/lib/marketplace-review-records.ts';
 const API_CLIENT = 'packages/typescript/api-client/src/index.ts';
-const OPERATIONS_PACKAGE = 'apps/platform-operations-portal/package.json';
-const OPERATIONS_MANIFEST = 'apps/platform-operations-portal/runtime.manifest.json';
-const OPERATIONS_API_CLIENT = 'apps/platform-operations-portal/src/lib/api/client.ts';
-const OPERATIONS_PAGE = 'apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx';
+const OPERATIONS_PACKAGE = 'apps/frozen/operations-portal/package.json';
+const OPERATIONS_MANIFEST = 'apps/frozen/operations-portal/runtime.manifest.json';
+const OPERATIONS_API_CLIENT = 'apps/frozen/operations-portal/src/lib/api/client.ts';
+const OPERATIONS_PAGE = 'apps/frozen/operations-portal/src/app/(dashboard)/operations/page.tsx';
 
 function read(path) {
   return readFileSync(path, 'utf8');

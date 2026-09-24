@@ -71,13 +71,13 @@ The forensic per-app ×9 scoring matrix this analysis is built on (`UI_UX_GOVERN
 
 ---
 
-### 3.A — MERCHANT CONTROL PLANE (`apps/merchant_web`, avg 6.6 — the primary OS)
+### 3.A — MERCHANT CONTROL PLANE (`apps/merchant/web`, avg 6.6 — the primary OS)
 
 The highest-value surface. Deepest `@letbuyy/ui` adoption (~74 import files), best accessibility on the platform, genuinely operator-first IA — but carries the single largest drift store and has not adopted the canonical shell.
 
 | Category | Current state (evidence) | 10/10 target | Governing rule |
 |---|---|---|---|
-| **Typography** | Consumes type tokens in components, but `globals.css` carries a large share of the platform's raw `font-size:px`; merchant is one of the 3 apps owning ~80% of raw px. (`apps/merchant_web/src/app/globals.css`; baseline `rawPxFontSize:536`.) Score 6. | All type via `var(--lb-font-size-*)`/`--lb-font-*`; Polaris-style hierarchy through weight+size+position; **tabular numerals on every money/quantity column** (orders, payouts, inventory). | UX-R7, UX-R20 |
+| **Typography** | Consumes type tokens in components, but `globals.css` carries a large share of the platform's raw `font-size:px`; merchant is one of the 3 apps owning ~80% of raw px. (`apps/merchant/web/src/app/globals.css`; baseline `rawPxFontSize:536`.) Score 6. | All type via `var(--lb-font-size-*)`/`--lb-font-*`; Polaris-style hierarchy through weight+size+position; **tabular numerals on every money/quantity column** (orders, payouts, inventory). | UX-R7, UX-R20 |
 | **Spacing** | Scored 5 purely on raw-px density: **2,210 raw px** in a **10,335-line** `globals.css`. The 12-step `--lb-space-*` scale (`tokens.ts:672-800`) is excellent and unused where it matters most. | `globals.css` reduced to a thin reset + token-derived aliases; all padding/margin/gap on `var(--lb-space-*)`. | UX-R6 |
 | **Component consistency** | Strong `@letbuyy/ui` adoption, but StatusBadge re-derived locally (part of the 5× platform pattern) and 112 app-local `--lb-*`/alias redefinitions shadow canonical tokens (most now derive via `color-mix()`, `globals.css:50-59`). Score 6. | Zero local StatusBadge re-derivation (exported `Badge`/`StatusVariant` only); zero app-local `--lb-*` redefinition outside `@letbuyy/ui`. | UX-R9, UX-R3 |
 | **Navigation** | **8/10** and operator-first, but **forks the shell** — uses `AdminShell`/`Sidebar`/`HeaderBar`/`AISidebar` + `merchantNavigation.ts` instead of `AppNavigation`. Active state is real (`isNavPathActive`) but hand-maintained. | Adopts `AppNavigation` (1st migration target, §6) preserving operator-first IA + command palette + `g o`/`g p`/`g c` shortcuts; inherits canonical width + `aria-current` for free. | UX-R10, UX-R11 |
@@ -92,7 +92,7 @@ The highest-value surface. Deepest `@letbuyy/ui` adoption (~74 import files), be
 
 ---
 
-### 3.B — STOREFRONT (`apps/customer_web`, avg 4.3 — the buyer surface, worst-drift app)
+### 3.B — STOREFRONT (`apps/commerce/web`, avg 4.3 — the buyer surface, worst-drift app)
 
 A deliberately bespoke buyer runtime that renders each merchant's chosen colors. The governing insight: **per-store dynamic theming is a legitimate, blessed axis — it is NOT drift.** The fix is to distinguish it from genuine hardcodes, not to force admin `--lb-*` onto merchant-themed surfaces.
 
@@ -154,7 +154,7 @@ The platform's top scorers on CSS discipline (37/38-line stylesheets) and the **
 
 ---
 
-### 3.E — MOBILE MERCHANT APP (`apps/merchant_app`, avg 4.4 — Flutter, 71k lines, a de-facto separate DS)
+### 3.E — MOBILE MERCHANT APP (`apps/merchant/mobile`, avg 4.4 — Flutter, 71k lines, a de-facto separate DS)
 
 The most-built surface in the repo with the strongest *rendered* dark mode — but effectively a **separate, un-tokenized design system**: the generated, in-sync bridge feeds screen code but **not the `ThemeData` that actually colors the app.**
 
@@ -479,7 +479,7 @@ The theme editor can compose sections the storefront renders as **fallbacks** �
 | **UX-R23** | Checkout + identity auth forms MUST follow Stripe form clarity: labeled fields, `aria-describedby` errors, focus management, generous rhythm, DS primitives only. | forms pass a11y + form-clarity review | a11y/E2E + ESLint `no-raw-form-controls` (error) | S1 | 4–5 | checkout (born-canonical); identity 43 inline / 11 `!important` |
 | **UX-R24** | The theme editor (the differentiator) MUST stay canonical and MUST-NOT regress undo/redo or device-preview; its chrome MUST use `var(--lb-*)`, not raw `letbuyyPrimitiveTokens`. | editor chrome on `var(--lb-*)`; undo/redo + preview intact | E2E (editor) + review | S3 | 5 | `editor/page.tsx:38` |
 | **UX-R25** | Mobile deep-links MUST be deliverable (OS intent filters → resolver); dead `go_router` MUST be removed. | deep-link opens the right screen; `go_router` gone | integration test + dep check | S3 | 6 | `deep_link_router.dart:53-78`; `AndroidManifest.xml` (LAUNCHER only) |
-| **UX-R26** | marketing-site exile is temporary: focus-visible + token migration MUST complete, then it MUST be un-exiled (un-exile is the LAST step). | `:focus-visible` present; 0 hex; removed from `exiledApps` | stylelint (post-migration) + a11y test | S2 | 5 | baseline `exiledApps:["apps/marketing-site"]` |
+| **UX-R26** | marketing-site exile is temporary: focus-visible + token migration MUST complete, then it MUST be un-exiled (un-exile is the LAST step). | `:focus-visible` present; 0 hex; removed from `exiledApps` | stylelint (post-migration) + a11y test | S2 | 5 | baseline `exiledApps:["apps/marketing/web"]` |
 | **UX-R27** | Marketing chrome MUST-NOT be forked across public surfaces; one shared `MarketingHeader`/`MarketingFooter`. | one marketing chrome source; duplicates deleted | composite-duplication check | S2 | 5 | app-marketplace vs marketing-site `{Header,Footer}` |
 | **UX-R28** | `packages/token-core` MUST be renamed (`@letbuyy/auth-token-core`) or documented as the auth/JWT envelope; `tokens.ts` MUST be documented as the design-token home. | no ambiguity in docs/code between auth-token-core and design tokens | doc check + importer resolve | S3 | 4 | `token-core/src/index.ts:4` (`TokenKind`) |
 | **UX-R29** | The ratchet MUST repay on a clock: every metric strictly decreasing ≥10%/release until 0 — MUST-NOT merely freeze. | each ratchet metric strictly decreasing each release | `validate:design-system --update` (scheduled, G1) | S1 | 4–5 | `design-system-baseline.json` `ratchetPerWavePercent:10` (advisory today) |

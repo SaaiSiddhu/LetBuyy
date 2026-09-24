@@ -7,14 +7,14 @@ const SCHEMA_REGISTRY = 'services/api-gateway/src/execution/schema-registry-exec
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
 const THEME_AUXILIARY_ROUTES = 'services/api-gateway/src/lib/theme-marketplace-auxiliary-routes.ts';
 const MARKETPLACE_REVIEW_ROUTE = 'services/api-gateway/src/routes/operations/marketplace-reviews.ts';
-const MERCHANT_INSTALL_ROUTE = 'apps/merchant_web/src/app/api/themes/install/route.ts';
-const THEME_SERVICE = 'apps/theme-marketplace/src/lib/theme-service.ts';
-const THEME_DETAIL_PAGE = 'apps/theme-marketplace/src/app/themes/[slug]/page.tsx';
-const THEME_INSTALL_PAGE = 'apps/theme-marketplace/src/app/install/page.tsx';
-const THEME_CHECKOUT_SUCCESS = 'apps/theme-marketplace/src/app/checkout/success/page.tsx';
-const THEME_PROXY = 'apps/theme-marketplace/src/proxy.ts';
+const MERCHANT_INSTALL_ROUTE = 'apps/merchant/web/src/app/api/themes/install/route.ts';
+const THEME_SERVICE = 'apps/frozen/theme-store/src/lib/theme-service.ts';
+const THEME_DETAIL_PAGE = 'apps/frozen/theme-store/src/app/themes/[slug]/page.tsx';
+const THEME_INSTALL_PAGE = 'apps/frozen/theme-store/src/app/install/page.tsx';
+const THEME_CHECKOUT_SUCCESS = 'apps/frozen/theme-store/src/app/checkout/success/page.tsx';
+const THEME_PROXY = 'apps/frozen/theme-store/src/proxy.ts';
 const API_CLIENT = 'packages/typescript/api-client/src/index.ts';
-const STOREFRONT_STORE_SERVICE = 'apps/customer_web/src/lib/store-service.ts';
+const STOREFRONT_STORE_SERVICE = 'apps/commerce/web/src/lib/store-service.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');

@@ -1,0 +1,2148 @@
+@import "tailwindcss";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
+@source "./**/*.{ts,tsx}";
+@source "../../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
+
+:root {
+  --developer-font-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --developer-font-display: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
+  --developer-font-mono: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  /*
+   * Developer portal brand ramp.
+   *
+   * The platform ships a violet token set (@letbuyy/ui `marketplace` surface,
+   * purple.500 #8B5CF6 -> purple.700 #6D28D9). The developer portal is the one
+   * surface that runs green: the same ramp structure and the same depth of
+   * dark, translated to the brand hue and anchored so that 700 is the CTA
+   * green this portal already used (#0F766E). Scoped to this app only — no
+   * other surface is repainted.
+   *
+   * The ramp is single-hue (~175deg). Chroma climbs toward the middle so 300/400
+   * stay luminous enough for text and icons on ink, while 700/800 stay deep
+   * enough to carry white CTA text at AA.
+   */
+  --developer-green-50: #ECFDF7;
+  --developer-green-100: #D0F7EA;
+  --developer-green-200: #A3EDD8;
+  --developer-green-300: #6EDCC2;
+  --developer-green-400: #3FC6AB;
+  --developer-green-500: #17A98F;
+  --developer-green-600: #128C77;
+  --developer-green-700: #0F766E;
+  --developer-green-800: #0C5D57;
+  --developer-green-900: #0A4A45;
+
+  /*
+   * Green-black inks. The platform violet inks (#0a0912 / #0d0b16 / #15131f /
+   * #1b1827) hue-rotated to the brand hue, with the elevation steps kept small
+   * and even so surfaces separate by shadow and hairline rather than by
+   * brightness — the thing that reads as expensive rather than as contrast.
+   */
+  --developer-ink-950: #05100E;
+  --developer-ink-900: #071411;
+  --developer-ink-850: #0A1A17;
+  --developer-ink-800: #0D211D;
+  --developer-ink-750: #112824;
+  --developer-ink-700: #16302B;
+
+  /* Semantic status colours stay non-green so SKIP / critical still read as warnings. */
+  --developer-accent-amber: rgb(180 83 9);
+  --developer-accent-rose: rgb(190 18 60);
+}
+
+/*
+ * Token overrides. Specificity is deliberate: @letbuyy/ui injects the violet
+ * set at `[data-letbuyy-surface="marketplace"][data-theme="…"]` (0,2,0), so the
+ * shell override uses `html[data-theme="…"] .developer-shell` (0,2,1) to win
+ * regardless of stylesheet order.
+ */
+html[data-theme="dark"],
+html[data-theme="dark"] .developer-shell {
+  --lb-color-bg: var(--developer-ink-950);
+  --lb-color-surface: var(--developer-ink-850);
+  --lb-color-surface-raised: var(--developer-ink-750);
+  --lb-color-surface-subdued: var(--developer-ink-900);
+  --lb-color-sidebar: var(--developer-ink-900);
+  --lb-color-header: var(--developer-ink-900);
+  --lb-color-card: var(--developer-ink-800);
+  --lb-color-overlay: rgba(5, 16, 14, 0.72);
+
+  --lb-color-border: rgba(63, 198, 171, 0.14);
+  --lb-color-border-subtle: rgba(63, 198, 171, 0.08);
+  --lb-color-border-strong: rgba(63, 198, 171, 0.26);
+  --lb-color-border-default: rgba(63, 198, 171, 0.14);
+
+  --lb-color-text: #E4F2EE;
+  --lb-color-text-subdued: #9DB8B2;
+  --lb-color-text-muted: #6E8A84;
+  --lb-color-text-inverse: #05100E;
+
+  /* Brand. The full primary family is set so @letbuyy/ui components
+     (Badge, ThemeToggleButton, inputs) inherit green instead of platform violet. */
+  --lb-color-primary: var(--developer-green-500);
+  --lb-color-primary-text: var(--developer-green-300);
+  --lb-color-primary-hover: var(--developer-green-400);
+  --lb-color-primary-active: var(--developer-green-600);
+  --lb-color-primary-subtle: rgba(23, 169, 143, 0.14);
+  --lb-color-primary-soft: rgba(23, 169, 143, 0.12);
+  --lb-color-primary-cta: var(--developer-green-700);
+  --lb-color-primary-cta-hover: var(--developer-green-600);
+  --lb-color-primary-cta-active: var(--developer-green-800);
+  --lb-color-primary-cta-text: #FFF;
+  --lb-color-secondary-action: var(--developer-green-400);
+  --lb-color-secondary-action-hover: var(--developer-green-300);
+  --lb-color-secondary-action-subtle: rgba(23, 169, 143, 0.12);
+  --lb-color-focus-ring: var(--developer-green-400);
+  --lb-color-brand-purple: var(--developer-green-500);
+
+  --lb-semantic-accent-hover: var(--developer-green-400);
+  --lb-semantic-accent-active: var(--developer-green-600);
+  --lb-semantic-accent-subtle: rgba(23, 169, 143, 0.14);
+
+  --lb-component-card-bg: var(--developer-ink-800);
+  --lb-component-card-border: rgba(63, 198, 171, 0.12);
+  --lb-component-card-shadow: 0 1px 0 0 rgba(163, 237, 216, 0.04) inset, 0 18px 40px -24px rgba(2, 10, 9, 0.9);
+  --lb-component-button-secondary-bg: var(--developer-ink-800);
+  --lb-component-button-secondary-border: rgba(63, 198, 171, 0.2);
+  --lb-component-button-secondary-text: var(--developer-green-200);
+  --lb-component-button-secondary-hover: var(--developer-ink-750);
+  --lb-component-button-primary-bg: var(--developer-green-700);
+  --lb-component-button-primary-hover: var(--developer-green-600);
+  --lb-component-button-primary-active: var(--developer-green-800);
+  --lb-component-button-primary-border: var(--developer-green-700);
+  --lb-component-button-primary-text: #FFF;
+  --lb-component-badge-accent-bg: rgba(23, 169, 143, 0.14);
+  --lb-component-badge-accent-border: rgba(63, 198, 171, 0.3);
+  --lb-component-badge-accent-text: var(--developer-green-300);
+  --lb-component-input-focus-border: var(--developer-green-500);
+  --lb-component-input-focus-ring: rgba(23, 169, 143, 0.22);
+
+  --developer-accent-solid: var(--developer-green-700);
+  --developer-accent-solid-hover: var(--developer-green-600);
+  --developer-accent-text: var(--developer-green-300);
+  --developer-icon-color: var(--developer-green-400);
+  --developer-console-bg: #04100E;
+  --developer-console-border: rgba(63, 198, 171, 0.14);
+  --developer-console-text: #C8E9DE;
+  --developer-glow: rgba(23, 169, 143, 0.18);
+  --developer-hairline: rgba(163, 237, 216, 0.06);
+  --developer-cta-shadow: 0 10px 30px -12px rgba(15, 118, 110, 0.7);
+
+  /* Table + inline-code surfaces. These must be theme-scoped: using the ink
+     ramp directly put a near-black header behind dark text in light mode. */
+  --developer-table-head-bg: var(--developer-ink-800);
+  --developer-code-chip-bg: var(--developer-ink-950);
+  --developer-code-chip-text: var(--developer-green-300);
+  --developer-row-hover: color-mix(in srgb, var(--developer-glow) 55%, transparent);
+
+  /* HTTP verbs. Reads stay in the brand ramp; mutating verbs borrow non-green
+     accents so a destructive call never reads as routine. */
+  --developer-verb-read: var(--developer-green-300);
+  --developer-verb-write: #7DD3FC;
+  --developer-verb-update: #FBBF24;
+  --developer-verb-delete: #FB7185;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] .developer-shell {
+  --lb-color-bg: #F5FAF8;
+  --lb-color-surface: #FFF;
+  --lb-color-surface-raised: #FFF;
+  --lb-color-surface-subdued: #EAF4F0;
+  --lb-color-sidebar: #FFF;
+  --lb-color-header: #FFF;
+  --lb-color-card: #FFF;
+  --lb-color-overlay: rgba(5, 16, 14, 0.4);
+
+  --lb-color-border: rgba(12, 93, 87, 0.14);
+  --lb-color-border-subtle: rgba(12, 93, 87, 0.08);
+  --lb-color-border-strong: rgba(12, 93, 87, 0.28);
+  --lb-color-border-default: rgba(12, 93, 87, 0.14);
+
+  --lb-color-text: #062420;
+  --lb-color-text-subdued: #40605A;
+  --lb-color-text-muted: #6A857F;
+  --lb-color-text-inverse: #FFF;
+
+  --lb-color-primary: var(--developer-green-700);
+  --lb-color-primary-text: var(--developer-green-800);
+  --lb-color-primary-hover: var(--developer-green-600);
+  --lb-color-primary-active: var(--developer-green-800);
+  --lb-color-primary-subtle: rgba(15, 118, 110, 0.1);
+  --lb-color-primary-soft: rgba(15, 118, 110, 0.08);
+  --lb-color-primary-cta: var(--developer-green-700);
+  --lb-color-primary-cta-hover: var(--developer-green-800);
+  --lb-color-primary-cta-active: var(--developer-green-900);
+  --lb-color-primary-cta-text: #FFF;
+  --lb-color-secondary-action: var(--developer-green-700);
+  --lb-color-secondary-action-hover: var(--developer-green-800);
+  --lb-color-secondary-action-subtle: rgba(15, 118, 110, 0.1);
+  --lb-color-focus-ring: var(--developer-green-600);
+  --lb-color-brand-purple: var(--developer-green-700);
+
+  --lb-semantic-accent-hover: var(--developer-green-600);
+  --lb-semantic-accent-active: var(--developer-green-800);
+  --lb-semantic-accent-subtle: rgba(15, 118, 110, 0.1);
+
+  --lb-component-card-bg: #FFF;
+  --lb-component-card-border: rgba(12, 93, 87, 0.12);
+  --lb-component-card-shadow: 0 1px 2px 0 rgba(6, 36, 32, 0.04), 0 12px 32px -20px rgba(6, 36, 32, 0.28);
+  --lb-component-button-secondary-bg: #FFF;
+  --lb-component-button-secondary-border: rgba(12, 93, 87, 0.2);
+  --lb-component-button-secondary-text: var(--developer-green-800);
+  --lb-component-button-secondary-hover: #EAF4F0;
+  --lb-component-button-primary-bg: var(--developer-green-700);
+  --lb-component-button-primary-hover: var(--developer-green-800);
+  --lb-component-button-primary-active: var(--developer-green-900);
+  --lb-component-button-primary-border: var(--developer-green-700);
+  --lb-component-button-primary-text: #FFF;
+  --lb-component-badge-accent-bg: rgba(15, 118, 110, 0.1);
+  --lb-component-badge-accent-border: rgba(15, 118, 110, 0.24);
+  --lb-component-badge-accent-text: var(--developer-green-800);
+  --lb-component-input-focus-border: var(--developer-green-600);
+  --lb-component-input-focus-ring: rgba(15, 118, 110, 0.18);
+
+  --developer-accent-solid: var(--developer-green-700);
+  --developer-accent-solid-hover: var(--developer-green-800);
+  --developer-accent-text: var(--developer-green-700);
+  --developer-icon-color: var(--developer-green-700);
+  --developer-console-bg: #04100E;
+  --developer-console-border: rgba(12, 93, 87, 0.18);
+  --developer-console-text: #C8E9DE;
+  --developer-glow: rgba(15, 118, 110, 0.09);
+  --developer-hairline: rgba(6, 36, 32, 0.05);
+  --developer-cta-shadow: 0 10px 24px -14px rgba(15, 118, 110, 0.55);
+
+  --developer-table-head-bg: #E3F0EB;
+  --developer-code-chip-bg: #EAF4F0;
+  --developer-code-chip-text: var(--developer-green-800);
+  --developer-row-hover: rgba(15, 118, 110, 0.05);
+
+  /* Darkened so each verb still clears AA against a white row. */
+  --developer-verb-read: var(--developer-green-800);
+  --developer-verb-write: #0369A1;
+  --developer-verb-update: #92400E;
+  --developer-verb-delete: #BE123C;
+}
+
+@theme inline {
+  --font-sans: var(--developer-font-sans);
+  --font-mono: var(--developer-font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--lb-color-bg);
+  color: var(--lb-color-text);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  /* Two washes, both token-driven: a broad radial bloom behind the hero and a
+     short vertical lift under the header. Keeps the page from reading as flat
+     black without raising the base lightness. */
+  background:
+    radial-gradient(1200px 520px at 18% -10%, var(--developer-glow), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--developer-glow) 55%, transparent), transparent 420px),
+    var(--lb-color-bg);
+  background-repeat: no-repeat;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.developer-shell {
+  min-height: 100vh;
+}
+
+.developer-container {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.developer-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  box-shadow: 0 1px 0 0 var(--developer-hairline);
+  background: color-mix(in srgb, var(--lb-color-bg) 82%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.developer-topbar-inner {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-4);
+}
+
+.developer-brand {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--lb-space-3);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.developer-brand-mark {
+  display: grid;
+  height: 36px;
+  width: 36px;
+  place-items: center;
+  border-radius: var(--lb-radius-md);
+  background: linear-gradient(150deg, var(--developer-green-500), var(--developer-green-800));
+  box-shadow:
+    0 0 0 1px var(--developer-hairline) inset,
+    var(--developer-cta-shadow);
+  color: white;
+  font-family: var(--developer-font-mono);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.developer-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-1);
+}
+
+.developer-nav a {
+  border-radius: var(--lb-radius-md);
+  padding: var(--lb-space-2) var(--lb-space-3);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-medium);
+}
+
+.developer-nav a:hover,
+.developer-nav a:focus-visible {
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text);
+  outline: none;
+}
+
+/* The shell (.dp-docs-content) owns page padding now; this only stacks blocks. */
+.developer-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-8);
+}
+
+.developer-hero {
+  display: grid;
+  gap: var(--lb-space-6);
+  align-items: stretch;
+  padding: var(--lb-space-8) 0 var(--lb-space-4);
+}
+
+.developer-hero-grid {
+  display: grid;
+  gap: var(--lb-space-5);
+  align-items: center;
+}
+
+.developer-kicker {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: var(--lb-space-2);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-primary-soft);
+  border-color: var(--lb-color-border-strong);
+  color: var(--developer-accent-text);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.01em;
+  padding: var(--lb-space-1) var(--lb-space-3);
+}
+
+.developer-title {
+  max-width: 860px;
+  margin: 0;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-display);
+  font-size: clamp(36px, 7vw, 72px);
+  font-weight: 760;
+  letter-spacing: 0;
+  line-height: 0.96;
+}
+
+.developer-lede {
+  max-width: 760px;
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.developer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lb-space-3);
+}
+
+.developer-action {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lb-space-2);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-component-button-secondary-bg);
+  color: var(--lb-color-text);
+  font-weight: var(--lb-font-weight-semibold);
+  padding: 0 var(--lb-space-4);
+}
+
+.developer-action.primary {
+  border-color: var(--developer-accent-solid);
+  background: linear-gradient(180deg, var(--developer-green-600), var(--developer-accent-solid));
+  box-shadow: var(--developer-cta-shadow);
+  color: white;
+}
+
+.developer-action {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.developer-action:hover {
+  border-color: var(--lb-color-border-strong);
+  background: var(--lb-component-button-secondary-hover);
+  transform: translateY(-1px);
+}
+
+.developer-action.primary:hover {
+  border-color: var(--developer-accent-solid-hover);
+  background: linear-gradient(180deg, var(--developer-green-500), var(--developer-accent-solid-hover));
+}
+
+.developer-action:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .developer-action {
+    transition: none;
+  }
+
+  .developer-action:hover {
+    transform: none;
+  }
+}
+
+.developer-console {
+  overflow: hidden;
+  border: 1px solid var(--developer-console-border);
+  border-radius: var(--lb-component-card-radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--developer-green-900) 22%, transparent), transparent 180px),
+    var(--developer-console-bg);
+  color: var(--developer-console-text);
+  box-shadow: var(--lb-component-card-shadow);
+}
+
+.developer-console-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--developer-console-border);
+  background: color-mix(in srgb, var(--developer-green-900) 16%, transparent);
+  padding: 12px 14px;
+}
+
+.developer-dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 999px;
+}
+
+/* Window dots run the brand ramp rather than macOS red/amber/green, so the
+   panel reads as one material instead of borrowing another product's chrome. */
+.developer-dot:nth-child(1) {
+  background: var(--developer-green-800);
+}
+
+.developer-dot:nth-child(2) {
+  background: var(--developer-green-600);
+}
+
+.developer-dot:nth-child(3) {
+  background: var(--developer-green-400);
+}
+
+.developer-code {
+  margin: 0;
+  overflow-x: auto;
+  padding: var(--lb-space-5);
+  font-family: var(--developer-font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.developer-band {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.developer-section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-2);
+  max-width: 780px;
+}
+
+.developer-section-heading h1,
+.developer-section-heading h2 {
+  margin: 0;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 740;
+  letter-spacing: 0;
+  line-height: 1.05;
+}
+
+.developer-section-heading p {
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-body);
+  line-height: 1.65;
+}
+
+.developer-grid {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.developer-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  /* A barely-there top-down lift so cards separate from the page by light
+     rather than by a heavier border. */
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--developer-glow) 30%, transparent), transparent 120px),
+    var(--lb-component-card-bg);
+  padding: var(--lb-density-card-padding);
+  box-shadow: var(--lb-component-card-shadow);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+a.developer-card:hover,
+a.developer-card:focus-visible {
+  border-color: var(--lb-color-border-strong);
+  box-shadow:
+    0 0 0 1px var(--developer-hairline) inset,
+    0 24px 50px -28px rgba(2, 10, 9, 0.95);
+  outline: none;
+}
+
+a.developer-card:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.developer-card h3 {
+  margin: 0;
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-section-title);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.developer-card p,
+.developer-card li {
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.6;
+}
+
+.developer-card p,
+.developer-card ul,
+.developer-card ol {
+  margin: 0;
+}
+
+.developer-card ul,
+.developer-card ol {
+  padding-left: 18px;
+}
+
+.developer-icon-line {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+}
+
+/* A status pill sitting inline with the heading was stealing enough width to
+   break titles mid-phrase ("Access token / exchange") in some cards but not
+   others. Stacking it is consistent at every card width. */
+.developer-card .developer-icon-line:has(> .developer-status) {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lb-space-2);
+}
+
+.developer-icon {
+  display: inline-flex;
+  color: var(--developer-icon-color);
+}
+
+.developer-route-list {
+  display: grid;
+  gap: var(--lb-space-2);
+}
+
+.developer-route {
+  display: grid;
+  gap: var(--lb-space-2);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+  padding: var(--lb-space-3);
+}
+
+.developer-route code {
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-mono);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  padding: 4px 8px;
+  white-space: normal;
+}
+
+.developer-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lb-space-2);
+}
+
+.developer-status {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  overflow-wrap: anywhere;
+  padding: 0 var(--lb-space-2);
+}
+
+.developer-status.live {
+  border-color: color-mix(in srgb, var(--developer-accent-text) 35%, var(--lb-color-border));
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+}
+
+.developer-status.skip {
+  border-color: color-mix(in srgb, var(--developer-accent-amber) 45%, var(--lb-color-border));
+  color: var(--developer-accent-amber);
+}
+
+.developer-two-column {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.developer-footer {
+  border-top: 1px solid var(--lb-color-border);
+  padding: var(--lb-space-6) 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+}
+
+/*
+ * Card grids are auto-fit, not fixed column counts. A hard `repeat(3, 1fr)`
+ * inside an 880px column gave each card ~270px, which is what was breaking
+ * "Authorization code" across two lines and leaving ragged card heights. With
+ * auto-fit the row re-flows to 2 (or 1) whenever 3 would go below a readable
+ * measure, and the cards keep an even rhythm at every width.
+ */
+@media (min-width: 720px) {
+  .developer-grid.two,
+  .developer-grid.three,
+  .developer-grid.four {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+@media (min-width: 820px) {
+  .developer-hero-grid,
+  .developer-two-column {
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  }
+}
+
+@media (min-width: 1180px) {
+  .developer-grid.four {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .developer-topbar-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: var(--lb-space-3) 0;
+  }
+
+  .developer-nav {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: var(--lb-space-1);
+  }
+
+  .developer-title {
+    font-size: 40px;
+  }
+
+  .developer-main {
+    padding-top: var(--lb-space-5);
+  }
+}
+
+/* ==========================================================================
+   Portal shell — masthead, section bar, left rail, footer.
+   Mobile-first: the base rules describe a ~360px phone. The left rail and the
+   tier-1 nav only exist from 1024px up; below that both live in the drawer.
+   ========================================================================== */
+
+.dp-visually-hidden {
+  position: absolute;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.dp-desktop-only {
+  display: none;
+}
+
+.dp-skip-link {
+  position: absolute;
+  z-index: 60;
+  top: 8px;
+  left: 8px;
+  border-radius: var(--lb-radius-md);
+  background: var(--developer-accent-solid);
+  color: #fff;
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-semibold);
+  padding: 10px 16px;
+  transform: translateY(-200%);
+}
+
+.dp-skip-link:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+  transform: translateY(0);
+}
+
+.dp-shell-container {
+  width: min(1400px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------- masthead */
+
+.dp-masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--lb-color-bg) 88%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.dp-masthead-row {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-3);
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  padding: 0 16px;
+}
+
+.dp-masthead-lead {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--lb-space-2);
+}
+
+.dp-brand {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--lb-space-2);
+}
+
+.dp-brand-mark {
+  height: 26px;
+  width: 26px;
+  flex: none;
+}
+
+.dp-brand-text {
+  color: var(--lb-color-text);
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.dp-brand-text strong {
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-masthead-trail {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--lb-space-1);
+}
+
+.dp-icon-button {
+  display: inline-grid;
+  height: 40px;
+  width: 40px;
+  flex: none;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--lb-radius-md);
+  background: transparent;
+  color: var(--lb-color-text-subdued);
+  cursor: pointer;
+}
+
+.dp-icon-button:hover,
+.dp-icon-button:focus-visible {
+  border-color: var(--lb-color-border);
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text);
+  outline: none;
+}
+
+/* No `display` here on purpose. This element is also `.dp-desktop-only`, and a
+   later same-specificity `display: flex` would override that rule's `none` and
+   leak the tier-1 nav onto phones. The 1024px block turns it into a flex row. */
+.dp-primary-nav {
+  align-items: center;
+  gap: var(--lb-space-1);
+}
+
+.dp-primary-link,
+.dp-trail-link {
+  border-radius: var(--lb-radius-md);
+  padding: var(--lb-space-2) var(--lb-space-3);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-medium);
+  white-space: nowrap;
+}
+
+.dp-primary-link:hover,
+.dp-trail-link:hover,
+.dp-primary-link:focus-visible,
+.dp-trail-link:focus-visible {
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text);
+  outline: none;
+}
+
+.dp-primary-link[aria-current="page"] {
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+}
+
+/* ------------------------------------------------------------ section bar */
+
+.dp-section-bar {
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  background: color-mix(in srgb, var(--lb-color-surface-subdued) 60%, transparent);
+}
+
+.dp-section-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-3);
+  /* The tab row scrolls rather than wraps on narrow screens, so the masthead
+     never grows a second line and push the content down. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 16px;
+}
+
+.dp-section-bar-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.dp-section-label {
+  flex: none;
+  color: var(--lb-color-text-muted);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dp-section-divider {
+  height: 14px;
+  width: 1px;
+  flex: none;
+  background: var(--lb-color-border);
+}
+
+.dp-section-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-1);
+}
+
+.dp-section-tab {
+  position: relative;
+  flex: none;
+  padding: 12px var(--lb-space-2);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-medium);
+  white-space: nowrap;
+}
+
+.dp-section-tab:hover,
+.dp-section-tab:focus-visible {
+  color: var(--lb-color-text);
+  outline: none;
+}
+
+.dp-section-tab[aria-current="page"] {
+  color: var(--lb-color-text);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-section-tab[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  right: var(--lb-space-2);
+  bottom: -1px;
+  left: var(--lb-space-2);
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--developer-accent-text);
+}
+
+/* ----------------------------------------------------------------- drawer */
+
+/* Fixed panel filling everything below the masthead, with its own scroll.
+   `--dp-masthead-h` is measured on open (see PortalShell) because the masthead
+   is two stacked rows whose height changes with the section-tab wrap. */
+.dp-drawer {
+  position: fixed;
+  z-index: 39;
+  top: var(--dp-masthead-h, 97px);
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-4);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  border-top: 1px solid var(--lb-color-border-subtle);
+  background: var(--lb-color-bg);
+  padding: var(--lb-space-4) 16px calc(var(--lb-space-8) + env(safe-area-inset-bottom, 0px));
+  overscroll-behavior: contain;
+}
+
+.dp-drawer-primary,
+.dp-drawer-trail {
+  display: grid;
+  gap: 2px;
+}
+
+.dp-drawer-trail {
+  border-top: 1px solid var(--lb-color-border-subtle);
+  padding-top: var(--lb-space-3);
+}
+
+.dp-drawer-primary-link {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--lb-radius-md);
+  padding: 0 var(--lb-space-3);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-body);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-drawer-primary-link[aria-current="page"] {
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+}
+
+.dp-drawer-rail {
+  border-top: 1px solid var(--lb-color-border-subtle);
+  padding-top: var(--lb-space-4);
+}
+
+/* -------------------------------------------------------------- left rail */
+
+.dp-rail-inner,
+.dp-drawer-rail {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.dp-filter {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: var(--lb-space-2);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text-muted);
+  padding: 0 var(--lb-space-3);
+}
+
+.dp-filter:focus-within {
+  border-color: var(--lb-component-input-focus-border);
+  box-shadow: 0 0 0 3px var(--lb-component-input-focus-ring);
+}
+
+.dp-filter-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lb-color-text);
+  font: inherit;
+  font-size: var(--lb-font-size-secondary);
+  outline: none;
+}
+
+.dp-filter-input::placeholder {
+  color: var(--lb-color-text-muted);
+}
+
+.dp-rail-group {
+  display: grid;
+  gap: 2px;
+}
+
+.dp-rail-group-title {
+  margin: 0 0 var(--lb-space-1);
+  padding: 0 var(--lb-space-3);
+  color: var(--lb-color-text-muted);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dp-rail-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dp-rail-link {
+  display: flex;
+  min-height: 36px;
+  align-items: center;
+  border-radius: var(--lb-radius-md);
+  padding: var(--lb-space-2) var(--lb-space-3);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.35;
+}
+
+.dp-rail-link:hover,
+.dp-rail-link:focus-visible {
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text);
+  outline: none;
+}
+
+.dp-rail-link[aria-current="page"] {
+  position: relative;
+  background: var(--lb-color-primary-soft);
+  color: var(--lb-color-text);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-rail-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--developer-accent-text);
+}
+
+.dp-rail-empty {
+  margin: 0;
+  padding: 0 var(--lb-space-3);
+  color: var(--lb-color-text-muted);
+  font-size: var(--lb-font-size-secondary);
+}
+
+/* ------------------------------------------------------------ page bodies */
+
+.dp-docs-body {
+  display: block;
+}
+
+.dp-docs-main {
+  min-width: 0;
+}
+
+.dp-docs-content {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: var(--lb-space-6) 0 var(--lb-space-10);
+}
+
+.dp-landing-main {
+  min-width: 0;
+}
+
+/* ----------------------------------------------------------------- footer */
+
+/*
+ * Floating panel rather than a full-bleed band: it sits on the page background,
+ * inset from every edge, and shares the content column's measure so its left
+ * edge lines up with the prose above it instead of running to the viewport.
+ */
+.dp-footer {
+  padding: var(--lb-space-6) 0;
+}
+
+/* Edge to edge, inset just enough for the rounded corners to read. */
+.dp-footer-panel {
+  position: relative;
+  overflow: hidden;
+  width: calc(100% - 24px);
+  margin: 0 auto;
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-xl);
+  background:
+    radial-gradient(720px 240px at 14% -10%, var(--developer-glow), transparent 70%),
+    linear-gradient(180deg, var(--lb-color-surface), var(--lb-color-surface-subdued));
+  padding: var(--lb-space-7) var(--lb-space-6) var(--lb-space-5);
+  box-shadow:
+    0 1px 0 0 var(--developer-hairline) inset,
+    0 26px 60px -34px rgba(2, 10, 9, 0.95);
+}
+
+/* Lit top edge — the detail that makes the panel read as raised rather than drawn. */
+.dp-footer-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--developer-green-400), transparent);
+  opacity: 0.55;
+}
+
+.dp-footer-top {
+  display: grid;
+  gap: var(--lb-space-6);
+}
+
+.dp-footer-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  margin-top: var(--lb-space-4);
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  padding: 4px var(--lb-space-3);
+}
+
+.dp-footer-dot {
+  height: 6px;
+  width: 6px;
+  border-radius: var(--lb-radius-full);
+  background: var(--developer-green-400);
+  box-shadow: 0 0 0 3px var(--lb-color-primary-soft);
+}
+
+.dp-footer-brand p {
+  max-width: 46ch;
+  margin: var(--lb-space-3) 0 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+.dp-footer-brand code {
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 12px;
+  padding: 1px 5px;
+}
+
+.dp-footer-columns {
+  display: grid;
+  gap: var(--lb-space-5);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dp-footer-column ul {
+  display: grid;
+  gap: var(--lb-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dp-footer-column a {
+  display: inline-block;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.dp-footer-column a:hover,
+.dp-footer-column a:focus-visible {
+  color: var(--developer-accent-text);
+  outline: none;
+  transform: translateX(2px);
+}
+
+.dp-footer-column a:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 3px;
+}
+
+.dp-footer-column-title {
+  margin: 0 0 var(--lb-space-3);
+  color: var(--lb-color-text-muted);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-footer-column a {
+    transition: none;
+  }
+
+  .dp-footer-column a:hover,
+  .dp-footer-column a:focus-visible {
+    transform: none;
+  }
+}
+
+.dp-footer-baseline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--lb-space-2) var(--lb-space-4);
+  margin-top: var(--lb-space-7);
+  border-top: 1px solid var(--lb-color-border-subtle);
+  padding-top: var(--lb-space-4);
+  color: var(--lb-color-text-muted);
+  font-size: var(--lb-font-size-caption);
+  line-height: 1.6;
+}
+
+.dp-footer-baseline > span:first-child {
+  color: var(--lb-color-text-subdued);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+/* ---------------------------------------------------------------- landing */
+
+.dp-hero {
+  position: relative;
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  background:
+    radial-gradient(900px 420px at 12% -25%, var(--developer-glow), transparent 68%),
+    var(--lb-color-surface-subdued);
+  padding: var(--lb-space-7) 0 var(--lb-space-8);
+}
+
+.dp-hero-grid {
+  display: grid;
+  gap: var(--lb-space-6);
+  align-items: center;
+}
+
+.dp-hero-copy {
+  display: grid;
+  gap: var(--lb-space-4);
+  justify-items: start;
+}
+
+/* Inline code inside prose, tinted to the brand rather than left as plain mono. */
+.developer-lede code,
+.developer-card p code,
+.dp-pillar p code {
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 0.88em;
+  padding: 1px 5px;
+}
+
+.dp-landing-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-8);
+  padding: var(--lb-space-8) 0 var(--lb-space-10);
+}
+
+.dp-pillars {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.dp-pillar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--developer-glow) 45%, transparent), transparent 170px),
+    var(--lb-component-card-bg);
+  padding: var(--lb-density-card-padding);
+  box-shadow: var(--lb-component-card-shadow);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dp-pillar:hover,
+.dp-pillar:focus-visible {
+  border-color: var(--lb-color-border-strong);
+  box-shadow:
+    0 0 0 1px var(--developer-hairline) inset,
+    0 24px 50px -28px rgba(2, 10, 9, 0.95);
+  outline: none;
+}
+
+.dp-pillar:focus-visible {
+  outline: 2px solid var(--lb-color-focus-ring);
+  outline-offset: 2px;
+}
+
+.dp-pillar-icon {
+  display: inline-grid;
+  height: 38px;
+  width: 38px;
+  place-items: center;
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+}
+
+.dp-pillar h2 {
+  margin: 0;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-display);
+  font-size: 24px;
+  font-weight: 680;
+  letter-spacing: -0.01em;
+}
+
+.dp-pillar p {
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.6;
+}
+
+.dp-pillar-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lb-space-2);
+  margin-top: auto;
+  padding-top: var(--lb-space-1);
+  color: var(--developer-accent-text);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dp-pillar,
+  .developer-card {
+    transition: none;
+  }
+}
+
+/* ----------------------------------------------------------- docs content */
+/*
+ * Section headers are centred; card and prose text stays left-aligned. Centring
+ * body copy as well would wreck the ragged-right edge that makes long technical
+ * paragraphs readable, so the centring stops at the header block.
+ */
+
+.dp-page-head {
+  display: grid;
+  justify-items: center;
+  gap: var(--lb-space-4);
+  margin-bottom: var(--lb-space-8);
+  padding-bottom: var(--lb-space-6);
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  text-align: center;
+}
+
+.dp-page-head h1 {
+  max-width: 20ch;
+  margin: 0;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-display);
+  font-size: clamp(32px, 5.5vw, 52px);
+  font-weight: 720;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+}
+
+.dp-page-head p {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.developer-section-heading {
+  margin-inline: auto;
+  align-items: center;
+  text-align: center;
+}
+
+/* Numbered install sequence. */
+.dp-steps {
+  display: grid;
+  gap: var(--lb-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: dp-step;
+}
+
+.dp-steps > li {
+  display: grid;
+  align-items: start;
+  gap: var(--lb-space-4);
+  grid-template-columns: auto minmax(0, 1fr);
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  background: var(--lb-component-card-bg);
+  padding: var(--lb-density-card-padding);
+  box-shadow: var(--lb-component-card-shadow);
+}
+
+.dp-step-index {
+  display: grid;
+  height: 34px;
+  width: 34px;
+  place-items: center;
+  border: 1px solid var(--lb-color-border-strong);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 14px;
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-steps h3 {
+  margin: 0 0 var(--lb-space-2);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-section-title);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.dp-steps p {
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+/* Check-marked fact panels. */
+.dp-facts {
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  background: var(--lb-color-surface-subdued);
+  padding: var(--lb-density-card-padding);
+}
+
+.dp-facts h3 {
+  margin: 0 0 var(--lb-space-3);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dp-facts ul {
+  display: grid;
+  gap: var(--lb-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dp-facts li {
+  display: grid;
+  align-items: start;
+  gap: var(--lb-space-3);
+  grid-template-columns: auto minmax(0, 1fr);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.6;
+}
+
+.dp-facts li svg {
+  margin-top: 2px;
+  height: 16px;
+  width: 16px;
+  flex: none;
+  color: var(--developer-accent-text);
+}
+
+.dp-facts-grid {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+/* ------------------------------------------------------- reference pages */
+/*
+ * `/oauth`, `/api-reference`, `/sdks`, and `/webhooks` render through
+ * `_local-ui/developer-docs` and use this `docs-*` vocabulary. The classes were
+ * being emitted with no rules behind them, so those pages fell back to UA
+ * defaults (an <h1> that read as body text, grids that stacked). These are the
+ * missing rules, mapped onto the same tokens as the rest of the portal.
+ */
+
+.docs-page-hero {
+  display: grid;
+  gap: var(--lb-space-3);
+  padding-bottom: var(--lb-space-2);
+}
+
+.docs-page-hero > div {
+  display: grid;
+  gap: var(--lb-space-3);
+  justify-items: start;
+}
+
+.docs-page-hero svg {
+  color: var(--developer-icon-color);
+}
+
+.docs-page-hero h1 {
+  margin: 0;
+  color: var(--lb-color-text);
+  font-family: var(--developer-font-display);
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 720;
+  letter-spacing: -0.015em;
+  line-height: 1.06;
+}
+
+.docs-page-hero p {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-body);
+  line-height: 1.65;
+}
+
+.docs-grid {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.docs-card {
+  min-width: 0;
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  background: var(--lb-component-card-bg);
+  padding: var(--lb-density-card-padding);
+  box-shadow: var(--lb-component-card-shadow);
+}
+
+.docs-card h2,
+.docs-card h3 {
+  color: var(--lb-color-text);
+}
+
+.docs-card p,
+.docs-card li,
+.docs-card dd {
+  color: var(--lb-color-text-subdued);
+  line-height: 1.6;
+}
+
+/* Source paths and endpoints inside reference cards. */
+.docs-card code {
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-surface-subdued);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 0.88em;
+  overflow-wrap: anywhere;
+  padding: 1px 5px;
+}
+
+.docs-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--lb-font-size-secondary);
+}
+
+.docs-card th,
+.docs-card td {
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  padding: var(--lb-space-2) var(--lb-space-2) var(--lb-space-2) 0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.docs-card th {
+  color: var(--lb-color-text);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.docs-card td {
+  color: var(--lb-color-text-subdued);
+  overflow-wrap: anywhere;
+}
+
+/* ================================================================
+   Reference-page vocabulary (`_local-ui/developer-docs`).
+   Eighteen of these classes were being emitted with no rules behind
+   them, so the matrices fell back to UA defaults — white tables with
+   grey text on a dark page, and headers that were effectively
+   invisible. These are the missing rules, on the same tokens as the
+   rest of the portal.
+   ================================================================ */
+
+.section-kicker {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid var(--lb-color-border-strong);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.04em;
+  padding: var(--lb-space-1) var(--lb-space-3);
+}
+
+.subtle-copy {
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+.anchor-section {
+  display: grid;
+  gap: var(--lb-space-4);
+  scroll-margin-top: 120px;
+}
+
+/* ------------------------------------------------------------- tables */
+
+.endpoint-table-wrap {
+  /* Wide matrices scroll inside their own box; the page never scrolls sideways. */
+  overflow-x: auto;
+  border: 1px solid var(--lb-color-border-subtle);
+  border-radius: var(--lb-radius-lg);
+  background: var(--lb-color-surface-subdued);
+  -webkit-overflow-scrolling: touch;
+}
+
+.endpoint-table,
+.docs-card table {
+  width: 100%;
+  /* Six columns inside 680px squeezed the subject column to ~70px, which is
+     what was breaking topic names and header words mid-token. The wrapper
+     scrolls, so a wider floor costs nothing. */
+  min-width: 900px;
+  border-collapse: collapse;
+  background: transparent;
+  font-size: var(--lb-font-size-secondary);
+}
+
+/* Keep the subject column from collapsing; let prose columns absorb the slack. */
+.endpoint-table tbody td:first-child,
+.endpoint-table thead th:first-child,
+.docs-card table tbody td:first-child,
+.docs-card table thead th:first-child {
+  min-width: 150px;
+}
+
+.endpoint-table thead th,
+.docs-card table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--lb-color-border);
+  background: var(--developer-table-head-bg);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.07em;
+  padding: var(--lb-space-3);
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.endpoint-table tbody td,
+.docs-card table tbody td {
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  color: var(--lb-color-text-subdued);
+  line-height: 1.6;
+  padding: var(--lb-space-3);
+  vertical-align: top;
+}
+
+.endpoint-table tbody tr:last-child td,
+.docs-card table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.endpoint-table tbody tr:hover td,
+.docs-card table tbody tr:hover td {
+  background: var(--developer-row-hover);
+}
+
+/* First column carries the row's subject — treat it as a row heading. */
+.endpoint-table tbody td:first-child,
+.docs-card table tbody td:first-child {
+  color: var(--lb-color-text);
+  font-weight: var(--lb-font-weight-medium);
+}
+
+.endpoint-table code,
+.docs-card table code {
+  border: 1px solid var(--lb-color-border-subtle);
+  border-radius: var(--lb-radius-sm);
+  background: var(--developer-code-chip-bg);
+  color: var(--developer-code-chip-text);
+  font-family: var(--developer-font-mono);
+  font-size: 12.5px;
+  overflow-wrap: anywhere;
+  padding: 2px 6px;
+}
+
+/* HTTP verb pills. Reads stay in the brand ramp; mutating verbs borrow the
+   non-green status accents so a destructive call never looks routine. */
+.method-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: var(--lb-radius-sm);
+  font-family: var(--developer-font-mono);
+  font-size: 11px;
+  font-weight: var(--lb-font-weight-semibold);
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.method-pill--get,
+.method-pill--head {
+  color: var(--developer-verb-read);
+}
+
+.method-pill--post {
+  color: var(--developer-verb-write);
+}
+
+.method-pill--put,
+.method-pill--patch {
+  color: var(--developer-verb-update);
+}
+
+.method-pill--delete {
+  color: var(--developer-verb-delete);
+}
+
+.source-ref {
+  color: var(--lb-color-text-muted);
+  font-family: var(--developer-font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* -------------------------------------------------------------- cards */
+
+.contract-grid,
+.example-grid {
+  display: grid;
+  gap: var(--lb-space-4);
+}
+
+.contract-card,
+.example-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--lb-space-3);
+  border: 1px solid var(--lb-component-card-border);
+  border-radius: var(--lb-component-card-radius);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--developer-glow) 32%, transparent), transparent 130px),
+    var(--lb-component-card-bg);
+  padding: var(--lb-density-card-padding);
+  box-shadow: var(--lb-component-card-shadow);
+}
+
+.contract-card--stacked {
+  gap: var(--lb-space-4);
+}
+
+.contract-card__header,
+.example-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lb-space-2);
+}
+
+.contract-card__header h3,
+.example-card__header h3,
+.contract-card h3,
+.example-card h3 {
+  margin: 0;
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-section-title);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.contract-card p,
+.example-card p {
+  margin: 0;
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--lb-color-border);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-surface-subdued);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-caption);
+  font-weight: var(--lb-font-weight-semibold);
+  padding: 2px var(--lb-space-2);
+  /* Without this a two-word category wraps inside the pill and it renders as a
+     tall oval rather than a chip. */
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------- code blocks */
+
+.code-sample {
+  overflow-x: auto;
+  border: 1px solid var(--developer-console-border);
+  border-radius: var(--lb-radius-lg);
+  background: var(--developer-console-bg);
+  color: var(--developer-console-text);
+  font-family: var(--developer-font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  padding: var(--lb-space-4);
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------- lists */
+
+.fact-list,
+.skip-list {
+  display: grid;
+  gap: var(--lb-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fact-list li,
+.skip-list li {
+  display: grid;
+  align-items: start;
+  gap: var(--lb-space-3);
+  grid-template-columns: auto minmax(0, 1fr);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+.fact-list li svg,
+.skip-list li svg {
+  margin-top: 3px;
+  height: 15px;
+  width: 15px;
+  flex: none;
+  color: var(--developer-accent-text);
+}
+
+.skip-list li svg {
+  color: var(--developer-accent-amber);
+}
+
+.step-list {
+  display: grid;
+  gap: var(--lb-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: docs-step;
+}
+
+.step-list > li {
+  position: relative;
+  border-left: 2px solid var(--lb-color-border);
+  padding: 0 0 var(--lb-space-1) var(--lb-space-5);
+  counter-increment: docs-step;
+}
+
+.step-list > li::before {
+  content: counter(docs-step);
+  position: absolute;
+  top: 0;
+  left: -13px;
+  display: grid;
+  height: 24px;
+  width: 24px;
+  place-items: center;
+  border: 1px solid var(--lb-color-border-strong);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-bg);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 12px;
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.step-list h3,
+.step-list strong {
+  display: block;
+  margin-bottom: var(--lb-space-1);
+  color: var(--lb-color-text);
+  font-size: var(--lb-font-size-secondary);
+  font-weight: var(--lb-font-weight-semibold);
+}
+
+.step-list p {
+  margin: 0 0 var(--lb-space-1);
+  color: var(--lb-color-text-subdued);
+  font-size: var(--lb-font-size-secondary);
+  line-height: 1.65;
+}
+
+.scope-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lb-space-2);
+}
+
+.scope-cloud code,
+.scope-cloud > span {
+  border: 1px solid var(--lb-color-border-strong);
+  border-radius: var(--lb-radius-full);
+  background: var(--lb-color-primary-soft);
+  color: var(--developer-accent-text);
+  font-family: var(--developer-font-mono);
+  font-size: 12px;
+  padding: 3px var(--lb-space-3);
+  white-space: nowrap;
+}
+
+/* The reference-page hero matches the centred docs header. */
+.docs-page-hero {
+  justify-items: center;
+  padding-bottom: var(--lb-space-5);
+  border-bottom: 1px solid var(--lb-color-border-subtle);
+  text-align: center;
+}
+
+.docs-page-hero > div {
+  justify-items: center;
+}
+
+/* ------------------------------------------------------------ breakpoints */
+
+@media (min-width: 640px) {
+  .dp-footer-columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .dp-masthead-row,
+  .dp-section-bar-inner {
+    padding: 0 24px;
+  }
+
+  .dp-docs-content {
+    width: min(920px, calc(100% - 64px));
+    padding-top: var(--lb-space-7);
+  }
+
+  .dp-pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .docs-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dp-facts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  .contract-grid,
+  .example-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  .dp-footer-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: var(--lb-space-8);
+  }
+
+  .dp-footer-panel {
+    width: calc(100% - 32px);
+    padding: var(--lb-space-8) var(--lb-space-8) var(--lb-space-5);
+  }
+
+  .dp-hero {
+    padding: var(--lb-space-8) 0 var(--lb-space-9);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dp-desktop-only {
+    display: revert;
+  }
+
+  .dp-primary-nav,
+  .dp-masthead-trail {
+    display: flex;
+  }
+
+  .dp-mobile-only {
+    display: none;
+  }
+
+  .dp-masthead-row {
+    min-height: 60px;
+    padding: 0 28px;
+  }
+
+  .dp-section-bar-inner {
+    padding: 0 28px;
+  }
+
+  /* The rail *column* runs the full height of the docs body so its divider
+     reaches the footer. The nav inside it is what sticks and scrolls — making
+     the column itself sticky is what previously stopped the divider short. */
+  .dp-docs-body {
+    display: grid;
+    align-items: stretch;
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+
+  .dp-rail {
+    border-right: 1px solid var(--lb-color-border-subtle);
+  }
+
+  .dp-rail .dp-rail-inner {
+    position: sticky;
+    top: 101px;
+    max-height: calc(100dvh - 101px);
+    overflow-y: auto;
+    padding: var(--lb-space-5) var(--lb-space-3) var(--lb-space-8);
+    overscroll-behavior: contain;
+  }
+
+  /* Centred in the main column, not pinned to the rail. Pinning left left a
+     dead zone the width of the content itself on wide monitors. */
+  .dp-docs-content {
+    width: min(1100px, calc(100% - 112px));
+    margin: 0 auto;
+    padding: var(--lb-space-8) 0 var(--lb-space-10);
+  }
+
+  .dp-hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .dp-docs-body {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+}

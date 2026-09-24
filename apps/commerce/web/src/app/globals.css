@@ -1,0 +1,653 @@
+@import "tailwindcss";
+@import "../../../../../config/tailwind/letbuyy-tokens.css";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+}
+
+:root {
+  --font-inter: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-outfit: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: var(--font-letbuyy-display), var(--font-letbuyy-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-lora: var(--font-letbuyy-display), Georgia, "Times New Roman", serif;
+  --font-space-grotesk: var(--font-letbuyy-display), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* D7: --font-playfair is now an honest fallback stack — Playfair Display loaded via Google Fonts
+     (buildGoogleFontsHref / layout.tsx). Previously this aliased to var(--font-letbuyy-display)
+     (a local sans-serif) which silently misrepresented the typeface. Georgia is the honest fallback. */
+  --font-playfair: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-nunito: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-open-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-dm-sans: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-montserrat: var(--font-letbuyy-display), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* D7: four experience font families missing from the original FONT_MAP, loaded via Google Fonts. */
+  --font-cormorant: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-libre-baskerville: "Libre Baskerville", Georgia, "Times New Roman", serif;
+  --font-source-sans: "Source Sans Pro", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-lato: "Lato", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --background: rgb(255 255 255);
+  --foreground: rgb(15 23 42);
+
+  /* Brand Colors */
+  --primary: rgb(99 102 241);
+  --secondary: rgb(139 92 246);
+  --accent: rgb(244 114 182);
+
+  /* UI Tokens */
+  --radius: 0.75rem;
+  --font-display: var(--font-outfit);
+  --font-body: var(--font-inter);
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-xl bg-[var(--lb-color-surface)]/70 border border-white/20 shadow-lg;
+  }
+
+  .glass-dark {
+    @apply backdrop-blur-xl bg-black/70 border border-white/10 shadow-lg text-white;
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+  }
+
+  /* ===== THEME-AWARE TEXT COLORS ===== */
+  .text-theme {
+    color: var(--text);
+  }
+
+  .text-theme-secondary {
+    color: var(--text-secondary);
+  }
+
+  .text-theme-muted {
+    color: var(--text-muted);
+  }
+
+  .text-theme-hint {
+    color: var(--text-hint);
+  }
+
+  .text-theme-inverse {
+    color: var(--text-inverse);
+  }
+
+  /* ===== THEME-AWARE BACKGROUNDS ===== */
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .bg-surface-hover:hover {
+    background-color: var(--surface-hover);
+  }
+
+  .border-theme {
+    border-color: var(--border-color);
+  }
+
+  /* ===== THEME-AWARE CARDS ===== */
+  .card-theme {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+  }
+
+  .card-theme-secondary {
+    background-color: var(--card-bg-secondary);
+  }
+
+  .text-card {
+    color: var(--card-text);
+  }
+
+  .text-card-muted {
+    color: var(--card-text-muted);
+  }
+
+  .border-card {
+    border-color: var(--card-border);
+  }
+
+  /* ===== FOOTER THEME UTILITIES ===== */
+  .footer-theme {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+  }
+
+  .footer-text-muted {
+    color: var(--footer-text-muted);
+  }
+
+  /* ===== HEADER THEME UTILITIES ===== */
+  .header-scrolled {
+    background-color: var(--header-bg-scrolled);
+    box-shadow: 0 2px 10px var(--header-shadow);
+  }
+
+  /* ===== INPUT/FORM THEME UTILITIES ===== */
+  .input-theme {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+    color: var(--input-text);
+  }
+
+  .input-theme::placeholder {
+    color: var(--input-placeholder);
+  }
+
+  /* ===== ICON THEME UTILITIES ===== */
+  .icon-theme {
+    color: var(--text);
+  }
+
+  .icon-theme-muted {
+    color: var(--text-muted);
+  }
+
+  .icon-theme-secondary {
+    color: var(--text-secondary);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(203 213 225);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(148 163 184);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.product-grid-dynamic {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.storefront-editor-section-frame {
+  position: relative;
+  display: block;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+  transition: outline-color 150ms ease, box-shadow 150ms ease;
+}
+
+.storefront-editor-section-frame::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2147483646;
+  border: 2px solid transparent;
+  content: "";
+  pointer-events: none;
+}
+
+.storefront-editor-section-frame[data-letbuyy-editor-section-type="header"] {
+  min-height: 72px;
+}
+
+.storefront-editor-section-frame:hover,
+.storefront-editor-section-frame:focus-visible {
+  outline-color: rgba(37, 99, 235, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.46);
+}
+
+.storefront-editor-section-frame:hover::after,
+.storefront-editor-section-frame:focus-visible::after {
+  border-color: rgba(37, 99, 235, 0.72);
+}
+
+.storefront-editor-section-frame--selected {
+  outline-color: rgb(37 99 235);
+  box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.72), 0 0 0 1px rgba(37, 99, 235, 0.28);
+}
+
+.storefront-editor-section-frame--selected::after {
+  border-color: rgb(37 99 235);
+}
+
+.storefront-editor-section-frame__label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2147483647;
+  display: inline-flex;
+  max-width: calc(100% - 1rem);
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(37 99 235);
+  color: rgb(255 255 255);
+  font-family: var(--font-inter);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 0.35rem 0.5rem;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.storefront-preview-route {
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--text);
+}
+
+.storefront-preview-route__canvas {
+  min-height: 100vh;
+  width: 100%;
+  margin-inline: auto;
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--text);
+  transition: max-width 160ms ease;
+}
+
+.storefront-preview-route--tablet .storefront-preview-route__canvas,
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas {
+  max-width: 768px;
+  border-inline: 1px solid var(--border-color);
+}
+
+.storefront-preview-route--mobile .storefront-preview-route__canvas,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas {
+  max-width: 390px;
+  border-inline: 1px solid var(--border-color);
+}
+
+.storefront-preview-route__canvas .storefront-editor-section-frame[data-letbuyy-editor-section-type="header"] header {
+  position: sticky;
+  inset-inline: auto;
+  top: 0;
+  width: 100%;
+}
+
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas .lg\:hidden,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .lg\:hidden {
+  display: flex !important;
+}
+
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas nav.lg\:flex,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas nav.lg\:flex {
+  display: none !important;
+}
+
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas .md\:px-6,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .md\:px-6 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas .lg\:grid-cols-3,
+html[data-letbuyy-preview-viewport="tablet"] .storefront-preview-route__canvas .lg\:grid-cols-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .sm\:grid-cols-2,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .md\:grid-cols-2,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .md\:grid-cols-3,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .md\:grid-cols-4,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .lg\:grid-cols-2,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .lg\:grid-cols-3,
+html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .lg\:grid-cols-4 {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.storefront-preview-empty {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: var(--lb-space-6, 1.5rem);
+  background: var(--lb-color-bg, var(--background));
+}
+
+.storefront-preview-empty__card {
+  display: grid;
+  width: min(100%, 36rem);
+  gap: var(--lb-space-4, 1rem);
+}
+
+.storefront-preview-empty__link {
+  justify-self: center;
+  border-radius: var(--lb-component-button-radius, 0.5rem);
+  background: var(--lb-component-button-primary-bg, var(--primary));
+  color: var(--lb-component-button-primary-text, rgb(255 255 255));
+  font-size: var(--lb-font-size-button, 0.875rem);
+  font-weight: var(--lb-font-weight-semibold, 600);
+  line-height: 1;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+}
+
+.storefront-preview-empty__link:hover {
+  background: var(--lb-component-button-primary-hover, var(--primary));
+}
+
+.storefront-empty-state {
+  --lb-density-card-padding: clamp(1rem, 4vw, 1.5rem);
+  --lb-density-empty-state-min-height: 12rem;
+  --lb-density-section-gap: 0.75rem;
+  --lb-size-empty-state-measure: 28rem;
+  --lb-component-card-radius: 0.5rem;
+  --lb-component-empty-state-bg: var(--surface);
+  --lb-component-empty-state-border: var(--border);
+  --lb-component-empty-state-title: var(--text);
+  --lb-component-empty-state-body: var(--text-secondary);
+  width: min(100%, 32rem);
+  min-height: 12rem;
+  margin-inline: auto;
+  border-color: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 96%, var(--primary));
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.storefront-empty-state__icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  color: var(--primary);
+}
+
+.storefront-empty-state h3,
+.storefront-empty-state p {
+  overflow-wrap: anywhere;
+}
+
+.storefront-empty-state__action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lb-space-2, 0.5rem);
+  border-radius: var(--lb-component-button-radius, 0.5rem);
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: var(--lb-font-size-button, 0.875rem);
+  font-weight: var(--lb-font-weight-semibold, 600);
+  line-height: 1;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.storefront-empty-state__action:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.storefront-loading-state {
+  display: grid;
+  min-height: 100vh;
+  gap: var(--lb-space-8, 2rem);
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--text);
+  padding-bottom: var(--lb-space-8, 2rem);
+  padding-top: 4.5rem;
+}
+
+.storefront-loading-state__hero {
+  min-height: clamp(18rem, 42vw, 34rem);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: var(--lb-space-6, 1.5rem);
+}
+
+.storefront-loading-state__hero-card {
+  height: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  opacity: 0.34;
+}
+
+.storefront-loading-state__section {
+  display: grid;
+  width: min(100% - 2rem, 72rem);
+  gap: var(--lb-space-5, 1.25rem);
+  margin-inline: auto;
+}
+
+.storefront-loading-state__section--muted {
+  min-height: 18rem;
+}
+
+.storefront-loading-state__heading {
+  max-width: 20rem;
+}
+
+.storefront-loading-state__grid {
+  display: grid;
+  gap: var(--lb-space-4, 1rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.storefront-loading-state__wide-card {
+  height: 16rem;
+}
+
+.storefront-list-loading-state {
+  display: grid;
+  gap: var(--lb-space-4, 1rem);
+  padding-block: var(--lb-space-6, 1.5rem);
+}
+
+.storefront-list-loading-state__heading {
+  max-width: 18rem;
+}
+
+.storefront-product-card,
+.storefront-collection-card {
+  min-width: 0;
+  isolation: isolate;
+}
+
+.storefront-product-card__media {
+  background: var(--card-bg-secondary);
+}
+
+.storefront-product-card__body {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.storefront-product-card__category,
+.storefront-product-card__title,
+.storefront-collection-card__title {
+  letter-spacing: 0;
+}
+
+.storefront-product-card__title,
+.storefront-collection-card__title {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .storefront-loading-state {
+    gap: var(--lb-space-6, 1.5rem);
+    padding-top: 3.5rem;
+  }
+
+  .storefront-loading-state__hero {
+    min-height: 16rem;
+  }
+
+  .storefront-loading-state__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.storefront-editor-section-frame:hover .storefront-editor-section-frame__label,
+.storefront-editor-section-frame:focus-visible .storefront-editor-section-frame__label,
+.storefront-editor-section-frame--selected .storefront-editor-section-frame__label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Phase S Inspector: flash animation ───────────────────────────────────── */
+/* Applied transiently by EditorPreviewSectionFrame when the bridge dispatches  */
+/* INSPECTOR_SECTION_SCROLLED_TO for this section (editor → scroll → flash).   */
+/* Duration must match FLASH_DURATION_MS in editor-preview-section-frame.tsx.  */
+@keyframes sf-section-frame-flash {
+  0%   {
+    outline-color: rgb(37 99 235);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35), inset 0 0 0 2px rgba(37, 99, 235, 0.9);
+  }
+  60%  {
+    outline-color: rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15), inset 0 0 0 1px rgba(37, 99, 235, 0.4);
+  }
+  100% {
+    outline-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.storefront-editor-section-frame--flash {
+  animation: sf-section-frame-flash 700ms ease-out forwards;
+}
+
+/* Honour the user's reduced-motion preference — the 700 ms FLASH_DURATION_MS timeout  */
+/* in editor-preview-section-frame.tsx still fires so the class is removed correctly;   */
+/* the frame just does not animate. (Editor-mode only; end-shoppers never see this.)    */
+@media (prefers-reduced-motion: reduce) {
+  .storefront-editor-section-frame--flash {
+    animation: none;
+  }
+}
+
+/* ── Phase S Inspector: section insert markers ─────────────────────────────── */
+/* Add-section intent buttons rendered at section boundaries.                   */
+/* pointer-enhancement only — tabIndex=-1, not reachable via keyboard Tab.     */
+.storefront-editor-section-insert {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  z-index: 2147483647;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--lb-space-6, 1.5rem);
+  height: var(--lb-space-6, 1.5rem);
+  padding: 0;
+  background: var(--lb-color-interactive, rgb(37 99 235));
+  color: var(--lb-color-text-inverse, rgb(255 255 255));
+  border: 2px solid var(--lb-color-text-inverse, rgb(255 255 255));
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease, transform 150ms ease;
+  pointer-events: auto;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.storefront-editor-section-insert--before {
+  top: -0.75rem;
+}
+
+.storefront-editor-section-insert--after {
+  bottom: -0.75rem;
+}
+
+/* Show insert markers when the section frame is hovered, focused, or selected */
+.storefront-editor-section-frame:hover .storefront-editor-section-insert,
+.storefront-editor-section-frame:focus-visible .storefront-editor-section-insert,
+.storefront-editor-section-frame--selected .storefront-editor-section-insert {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.storefront-editor-section-insert:hover,
+.storefront-editor-section-insert:focus-visible {
+  transform: translateX(-50%) scale(1.15);
+  background: var(--lb-color-interactive-hover, rgb(29 78 216));
+  outline: 2px solid var(--lb-color-focus-ring, rgb(147 197 253));
+  outline-offset: 1px;
+}
+
+@media (min-width: 768px) {
+  .product-grid-dynamic {
+    grid-template-columns: repeat(var(--product-grid-columns, 3), minmax(0, 1fr));
+  }
+}
+
+/* T5/W1 — a stale `@layer components { .lb-header, .lb-footer, ... }` prototype block used to live
+   here: an early, unmaintained duplicate of the real Liquid styling (liquid-theme.css + theme-engine's
+   LIQUID_THEME_BASE_CSS), unreferenced by any React component. Because it was layered and
+   liquid-theme.css never explicitly set `display` on .lb-header/.lb-footer, its `display:flex` won by
+   default cascade-layer fallthrough — centring the footer's columns instead of stacking them, and
+   clipping the header's full-bleed background band to a max-width box. Removed rather than patched;
+   liquid-theme.css is the sole owner of Liquid layout, LIQUID_THEME_BASE_CSS remains the sole owner
+   of the portable/exported-theme copy. */
+

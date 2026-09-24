@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const BUNDLE_SRC = 'packages/theme-engine/src/theme-bundle.ts';
-const ISLAND_SRC = 'apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx';
+const ISLAND_SRC = 'apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx';
 const RENDERER_SRC = 'packages/theme-engine/src/theme-renderer.ts';
 
 function read(path) {

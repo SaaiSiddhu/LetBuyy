@@ -660,7 +660,7 @@ const DOMAINS = {
 };
 
 function workspaceOf(sf) {
-  const m = (sf || '').match(/^(apps\/mobile\/[^/]+|apps\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/);
+  const m = (sf || '').match(/^(apps\/deferred\/[^/]+\/[^/]+|reference\/apps\/[^/]+|apps\/[^/]+\/[^/]+|services\/[^/]+|packages\/[^/]+\/[^/]+|packages\/[^/]+)/);
   return m ? m[1] : '(root)';
 }
 
@@ -819,8 +819,8 @@ const atlasCache = new Map();
 // ---- community profiling: derive a human-readable name + what-it-is from the graph ----
 const WS_NAMES = {
   'services/api-gateway': 'API Gateway', 'services/queue-workers': 'Queue Workers', 'services/webhook-service': 'Webhook Service', 'services/mobile-bff': 'Mobile BFF',
-  'apps/merchant_web': 'Merchant Control Plane', 'apps/customer_web': 'Storefront Runtime', 'apps/identity-platform': 'Identity Platform', 'apps/admin_web': 'Platform Console', 'apps/marketing-site': 'Marketing Site', 'apps/app-marketplace': 'App Marketplace', 'apps/theme-marketplace': 'Theme Marketplace', 'apps/developer-portal': 'Developer Portal', 'apps/platform-operations-portal': 'Ops Portal',
-  'apps/merchant_app': 'Merchant Mobile App',
+  'apps/merchant/web': 'Merchant Control Plane', 'apps/commerce/web': 'Storefront Runtime', 'apps/platform/identity': 'Identity Platform', 'apps/internal/console': 'Platform Console', 'apps/marketing/web': 'Marketing Site', 'apps/frozen/app-store': 'App Marketplace', 'apps/frozen/theme-store': 'Theme Marketplace', 'apps/frozen/developer-portal': 'Developer Portal', 'apps/frozen/operations-portal': 'Ops Portal',
+  'apps/merchant/mobile': 'Merchant Mobile App',
   'packages/theme-engine': 'Theme Engine', 'packages/shared-types': 'Shared Types', 'packages/commerce-core': 'Commerce Core', 'packages/checkout-core': 'Checkout Core', 'packages/auth-core': 'Auth Core', 'packages/identity-core': 'Identity Core', 'packages/session-core': 'Session Core', 'packages/permission-core': 'Permission Core', 'packages/infrastructure': 'Infrastructure', 'packages/notification-core': 'Notification Core', 'packages/event-core': 'Event Core', 'packages/billing-core': 'Billing Core', 'packages/tenant-core': 'Tenant Core', 'packages/cms-core': 'CMS Core', 'packages/audit-core': 'Audit Core',
   'packages/typescript/ui': 'UI Design System', 'packages/typescript/api-client': 'API Client', 'packages/typescript/api-types': 'API Types',
   'packages/dart/models': 'Dart Models', 'packages/dart/core': 'Dart Core', 'packages/dart/api_client': 'Dart API Client', 'packages/dart/ui_kit': 'Dart UI Kit',
@@ -918,7 +918,7 @@ const server = createServer((req, res) => {
     if (p === '/' || p === '/index.html') { res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); return res.end(indexHtml); }
     if (p === '/logo.svg' || p === '/mark.svg') {
       const file = p === '/mark.svg' ? 'letbuyy-mark.svg' : 'letbuyy-logo-dark.svg';
-      const fp = join(REPO_ROOT, 'apps/marketing-site/public/icons', file);
+      const fp = join(REPO_ROOT, 'apps/marketing/web/public/icons', file);
       if (existsSync(fp)) { res.writeHead(200, { 'content-type': 'image/svg+xml', 'cache-control': 'max-age=3600' }); return res.end(readFileSync(fp)); }
       res.writeHead(404); return res.end();
     }

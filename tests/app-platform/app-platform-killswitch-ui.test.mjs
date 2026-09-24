@@ -20,21 +20,21 @@ import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
 
-const FLAG_SOURCE = 'apps/merchant_web/src/lib/app-platform-flag.ts';
-const CONSOLE_FLAG_SOURCE = 'apps/admin_web/src/lib/app-platform-flag.ts';
+const FLAG_SOURCE = 'apps/merchant/web/src/lib/app-platform-flag.ts';
+const CONSOLE_FLAG_SOURCE = 'apps/internal/console/src/lib/app-platform-flag.ts';
 const FLAG_SOURCES = [FLAG_SOURCE, CONSOLE_FLAG_SOURCE];
 const GUARDED_PAGES = [
-    'apps/merchant_web/src/app/[store]/apps/page.tsx',
-    'apps/merchant_web/src/app/[store]/apps/[installationId]/page.tsx',
-    'apps/merchant_web/src/app/[store]/settings/apps/page.tsx',
+    'apps/merchant/web/src/app/[store]/apps/page.tsx',
+    'apps/merchant/web/src/app/[store]/apps/[installationId]/page.tsx',
+    'apps/merchant/web/src/app/[store]/settings/apps/page.tsx',
 ];
 // The OPERATOR plane of the same frozen seam. These drive
 // /v1/operations/marketplace-reviews (writes marketplace_apps.status = published) and
 // /v1/operations/developers (app_developers moderation, partner payout release), both of
 // which the gateway now 404s.
 const CONSOLE_GUARDED_PAGES = [
-    'apps/admin_web/src/app/(dashboard)/marketplace-governance/page.tsx',
-    'apps/admin_web/src/app/(dashboard)/developers/page.tsx',
+    'apps/internal/console/src/app/(dashboard)/marketplace-governance/page.tsx',
+    'apps/internal/console/src/app/(dashboard)/developers/page.tsx',
 ];
 const DEPLOY_WORKFLOWS = [
     '.github/workflows/production-deploy.yml',

@@ -4,6 +4,7 @@ import {
   listWorkspaceFiles,
   readFile,
   readJson,
+  rootSegment,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Domain boundary validator");
@@ -107,15 +108,15 @@ for (const [activeFile, archiveFile] of Object.entries(archivedSchemaFacades)) {
   reporter.assert(exists(archiveFile), `Archived schema facade must preserve forensic provenance: ${archiveFile}`);
 }
 
-reporter.assert(!exists("apps/customer_web/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
-const storefrontSourceFiles = listWorkspaceFiles(["apps/customer_web/src"]).filter((file) => /\.(ts|tsx)$/.test(file));
+reporter.assert(!exists("apps/commerce/web/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
+const storefrontSourceFiles = listWorkspaceFiles(["apps/commerce/web/src"]).filter((file) => /\.(ts|tsx)$/.test(file));
 for (const file of storefrontSourceFiles) {
   reporter.assert(!readFile(file).includes("@/types/store"), `Storefront source must import domain contracts directly, not through @/types/store: ${file}`);
 }
 reporter.assert(
-  readFile("apps/customer_web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/theme-engine") &&
-    readFile("apps/customer_web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/commerce-core") &&
-    readFile("apps/customer_web/src/lib/store-service.ts").includes("@letbuyy/tenant-core"),
+  readFile("apps/commerce/web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/theme-engine") &&
+    readFile("apps/commerce/web/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/commerce-core") &&
+    readFile("apps/commerce/web/src/lib/store-service.ts").includes("@letbuyy/tenant-core"),
   "Storefront runtime must consume extracted domain contracts directly from owning packages",
 );
 
@@ -163,13 +164,13 @@ const authRoute = readFile("services/api-gateway/src/routes/auth.ts");
 reporter.assert(authRoute.includes("@letbuyy/tenant-core"), "Auth route must consume tenant-core subdomain governance");
 reporter.assert(!/\bRESERVED_SUBDOMAINS\b|\bSUBDOMAIN_REGEX\b|\bfunction\s+validateSubdomainFormat\b/.test(authRoute), "Auth route must not redefine tenant subdomain validation");
 
-reporter.assert(!exists("apps/theme-marketplace/src/types/index.ts"), "Theme marketplace must not own a local theme type facade");
+reporter.assert(!exists("apps/frozen/theme-store/src/types/index.ts"), "Theme marketplace must not own a local theme type facade");
 
-const themeMarketplaceCard = readFile("apps/theme-marketplace/src/components/theme-card.tsx");
+const themeMarketplaceCard = readFile("apps/frozen/theme-store/src/components/theme-card.tsx");
 reporter.assert(themeMarketplaceCard.includes("@letbuyy/theme-engine"), "Theme marketplace presentation must consume theme-engine contracts directly");
 reporter.assert(!themeMarketplaceCard.includes("@/types"), "Theme marketplace presentation must not consume app-local theme DTOs");
 
-const themeMarketplaceService = readFile("apps/theme-marketplace/src/lib/theme-service.ts");
+const themeMarketplaceService = readFile("apps/frozen/theme-store/src/lib/theme-service.ts");
 reporter.assert(themeMarketplaceService.includes("@letbuyy/theme-engine"), "Theme marketplace service query contracts must consume theme-engine contracts");
 reporter.assert(!/\bexport\s+interface\s+Theme(SearchResult|Filters)\b/.test(themeMarketplaceService), "Theme marketplace service must not define reusable theme query DTOs locally");
 
@@ -179,12 +180,14 @@ reporter.assert(appApiOwnershipDoc.includes("gateway-proxy"), "App API route own
 reporter.assert(appApiOwnershipDoc.includes("app-local-session"), "App API route ownership governance doc must classify app-local session routes");
 reporter.assert(appApiOwnershipDoc.includes("blocked-local-safety"), "App API route ownership governance doc must classify blocked local safety routes");
 
+// D-APP-LAYOUT: application roots sit under grouping containers, so the owning root comes from the
+// governed lists (rootSegment), never from counting path segments.
 const appApiRoutes = listWorkspaceFiles(["apps"])
-  .filter((file) => /^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file))
+  .filter((file) => file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts"))
   .sort();
 
 function classifyAppApiRoute(file) {
-  if (file.startsWith("apps/identity-platform/src/app/api/auth/")) return "app-local-auth";
+  if (file.startsWith("apps/platform/identity/src/app/api/auth/")) return "app-local-auth";
   // D-8 (2026-09-05): the marketplace buyer realm. A SEPARATE class from app-local-auth, not a
   // widening of it -- buyer auth must never grant merchant rights (ART-05, SEC-R7), and keeping the
   // two trees distinct is what makes a buyer route landing in the merchant tree visible in a diff.
@@ -194,22 +197,22 @@ function classifyAppApiRoute(file) {
   // asymmetric issuer, and a previous phase closed a second live issuer as an S0. The gateway owns
   // the buyer_accounts rows (BUYER-3); these routes only mint. That is the one thing the gateway
   // must not do, so this is a constitutional exception, not a convenience.
-  if (file.startsWith("apps/identity-platform/src/app/api/buyer/")) return "app-local-buyer-auth";
-  if (file.startsWith("apps/identity-platform/src/app/api/email/")) return "identity-gateway-proxy";
-  if (file.startsWith("apps/admin_web/src/app/api/console-auth/")) return "app-local-operator-auth";
-  if (file.startsWith("apps/admin_web/src/app/api/")) return "gateway-proxy";
-  if (file.startsWith("apps/platform-operations-portal/src/app/api/")) return "gateway-proxy";
-  if (file.startsWith("apps/developer-portal/src/app/api/")) return "gateway-proxy";
-  if (file.startsWith("apps/marketing-site/src/app/api/")) return "gateway-proxy";
-  if (file === "apps/merchant_web/src/app/api/auth/logout/route.ts") return "app-local-session";
-  if (file.startsWith("apps/merchant_web/src/app/api/")) return "gateway-proxy";
-  if (file.startsWith("apps/app-marketplace/src/app/api/")) return "gateway-proxy";
-  if (file.startsWith("apps/theme-marketplace/src/app/api/")) return "gateway-proxy";
-  if (file === "apps/customer_web/src/app/api/customer/session/route.ts") return "app-local-session";
-  if (file === "apps/customer_web/src/app/api/customer/logout/route.ts") return "app-local-session";
-  if (file === "apps/customer_web/src/app/api/seed/route.ts") return "blocked-local-safety";
-  if (file === "apps/customer_web/src/app/api/themes/install/route.ts") return "blocked-local-safety";
-  if (file.startsWith("apps/customer_web/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/platform/identity/src/app/api/buyer/")) return "app-local-buyer-auth";
+  if (file.startsWith("apps/platform/identity/src/app/api/email/")) return "identity-gateway-proxy";
+  if (file.startsWith("apps/internal/console/src/app/api/console-auth/")) return "app-local-operator-auth";
+  if (file.startsWith("apps/internal/console/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/frozen/operations-portal/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/frozen/developer-portal/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/marketing/web/src/app/api/")) return "gateway-proxy";
+  if (file === "apps/merchant/web/src/app/api/auth/logout/route.ts") return "app-local-session";
+  if (file.startsWith("apps/merchant/web/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/frozen/app-store/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/frozen/theme-store/src/app/api/")) return "gateway-proxy";
+  if (file === "apps/commerce/web/src/app/api/customer/session/route.ts") return "app-local-session";
+  if (file === "apps/commerce/web/src/app/api/customer/logout/route.ts") return "app-local-session";
+  if (file === "apps/commerce/web/src/app/api/seed/route.ts") return "blocked-local-safety";
+  if (file === "apps/commerce/web/src/app/api/themes/install/route.ts") return "blocked-local-safety";
+  if (file.startsWith("apps/commerce/web/src/app/api/")) return "gateway-proxy";
   return null;
 }
 
@@ -220,22 +223,22 @@ for (const file of appApiRoutes) {
   routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
 }
 
-// T8/W0 — 189 as of apps/customer_web/src/app/api/store/[subdomain]/search-suggest/
-// BUYER-4 (2026-09-05) — 191: + apps/identity-platform/src/app/api/buyer/{login,register}, class
+// T8/W0 — 189 as of apps/commerce/web/src/app/api/store/[subdomain]/search-suggest/
+// BUYER-4 (2026-09-05) — 191: + apps/platform/identity/src/app/api/buyer/{login,register}, class
 // app-local-buyer-auth. Bumping this count is the deliberate maintenance action the classification
 // check expects; the two routes are also added to config/eslint/boundary-baseline.json, which is the
 // matching allowlist for letbuyy-boundaries/no-new-next-api-route.
 // route.ts (T5, commit 68ed4b29): a thin gateway-proxy read route, already correctly classified
-// by the existing `apps/customer_web/src/app/api/` catch-all above — this bump is the
+// by the existing `apps/commerce/web/src/app/api/` catch-all above — this bump is the
 // deliberate maintenance action the classification check above expects, not a workaround.
 reporter.assert(appApiRoutes.length === 191, `App-local API route inventory changed without updating P4-4 classification: expected 191, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
-  if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {
+  if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {
     return classifyAppApiRoute(file);
   }
-  if (file.startsWith("apps/identity-platform/src/lib/")) return "app-local-auth";
-  if (file === "apps/admin_web/src/lib/console-auth-server.ts") return "app-local-operator-auth";
+  if (file.startsWith("apps/platform/identity/src/lib/")) return "app-local-auth";
+  if (file === "apps/internal/console/src/lib/console-auth-server.ts") return "app-local-operator-auth";
   return null;
 }
 
@@ -245,7 +248,7 @@ function isAuthOwnedLocalFile(file) {
 }
 
 const appApiAndLibFiles = listWorkspaceFiles(["apps"])
-  .filter((file) => /^apps\/[^/]+\/src\/(?:app\/api|lib)\//.test(file) && /\.(ts|tsx)$/.test(file) && !file.startsWith("apps/marketing-site/src/lib/resources/"))
+  .filter((file) => (file.startsWith(`${rootSegment(file)}/src/app/api/`) || file.startsWith(`${rootSegment(file)}/src/lib/`)) && /\.(ts|tsx)$/.test(file) && !file.startsWith("apps/marketing/web/src/lib/resources/"))
   .sort();
 
 const directDbOrProviderMutationPattern =
@@ -270,9 +273,9 @@ reporter.assert(
 );
 
 const allowedOrderPresentationAdapters = new Set([
-  "apps/customer_web/src/app/api/orders/check/route.ts",
-  "apps/customer_web/src/app/api/orders/login/route.ts",
-  "apps/customer_web/src/app/api/orders/set-password/route.ts",
+  "apps/commerce/web/src/app/api/orders/check/route.ts",
+  "apps/commerce/web/src/app/api/orders/login/route.ts",
+  "apps/commerce/web/src/app/api/orders/set-password/route.ts",
 ]);
 const appRoutesUsingOrderService = appApiRoutes.filter((file) => readFile(file).includes("@/lib/order-service"));
 for (const file of appRoutesUsingOrderService) {
@@ -284,11 +287,11 @@ for (const file of appRoutesUsingOrderService) {
 reporter.assert(appRoutesUsingOrderService.length === allowedOrderPresentationAdapters.size, "Classified storefront order lookup adapter inventory changed; update P4-4 ownership governance");
 
 const mobileMerchantModelFacades = [
-  "apps/merchant_app/lib/models/order_model.dart",
-  "apps/merchant_app/lib/models/store_auth_request_model.dart",
-  "apps/merchant_app/lib/models/store_model.dart",
-  "apps/merchant_app/lib/models/store_theme_model.dart",
-  "apps/merchant_app/lib/models/theme_editor_models.dart",
+  "apps/merchant/mobile/lib/models/order_model.dart",
+  "apps/merchant/mobile/lib/models/store_auth_request_model.dart",
+  "apps/merchant/mobile/lib/models/store_model.dart",
+  "apps/merchant/mobile/lib/models/store_theme_model.dart",
+  "apps/merchant/mobile/lib/models/theme_editor_models.dart",
 ];
 
 for (const file of mobileMerchantModelFacades) {

@@ -18,9 +18,9 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const PROTOCOL = 'packages/theme-engine/src/editor-bridge-protocol.ts';
-const BRIDGE   = 'apps/customer_web/src/app/preview/storefront-preview-bridge.tsx';
-const FRAME    = 'apps/customer_web/src/lib/theme-engine/editor-preview-section-frame.tsx';
-const CSS      = 'apps/customer_web/src/app/globals.css';
+const BRIDGE   = 'apps/commerce/web/src/app/preview/storefront-preview-bridge.tsx';
+const FRAME    = 'apps/commerce/web/src/lib/theme-engine/editor-preview-section-frame.tsx';
+const CSS      = 'apps/commerce/web/src/app/globals.css';
 
 function read(path) { return readFileSync(path, 'utf8'); }
 

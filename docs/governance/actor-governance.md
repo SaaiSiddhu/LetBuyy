@@ -6,10 +6,10 @@ LetBuyy separates four primary actor classes:
 
 | Actor | Primary surfaces | Forbidden access |
 |---|---|---|
-| Shoppers | `apps/customer_web` | Merchant sessions, operator tools, draft/private tenant data |
-| Merchants | `apps/merchant_web`, `apps/identity-platform` | Other merchant tenants, platform operator controls |
-| Partners | `apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace` | Merchant-owned records without install/acquisition authority |
-| Platform operators | `apps/admin_web`, `apps/platform-operations-portal` | Direct data mutation without RBAC, audit, and reason capture |
+| Shoppers | `apps/commerce/web` | Merchant sessions, operator tools, draft/private tenant data |
+| Merchants | `apps/merchant/web`, `apps/platform/identity` | Other merchant tenants, platform operator controls |
+| Partners | `apps/frozen/app-store`, `apps/frozen/developer-portal`, `apps/frozen/theme-store` | Merchant-owned records without install/acquisition authority |
+| Platform operators | `apps/internal/console`, `apps/frozen/operations-portal` | Direct data mutation without RBAC, audit, and reason capture |
 
 ## Isolation Rules
 

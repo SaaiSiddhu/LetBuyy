@@ -19,7 +19,7 @@ const oauthRouteSource = readFileSync(
 );
 const sharedTypesSource = readFileSync(join(testDir, '../../packages/shared-types/src/index.ts'), 'utf8');
 const apiClientSource = readFileSync(join(testDir, '../../packages/typescript/api-client/src/index.ts'), 'utf8');
-const developerSurfaceSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/developer-surface.ts'), 'utf8');
+const developerSurfaceSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/developer-surface.ts'), 'utf8');
 
 test('app OAuth PKCE accepts only S256 challenges and verifies the code verifier', async () => {
     const verifier = 'pkce_verifier_'.repeat(4);

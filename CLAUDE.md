@@ -19,13 +19,13 @@
 | `services/api-gateway` | Hono/Cloudflare Worker modular monolith — synchronous commerce: products, inventory, cart, checkout, orders, payments, discounts, GST, shipping, settlement, customers, billing, analytics reads |
 | `services/queue-workers` | Asynchronous execution — transactional-outbox relay, notifications, reconciliation, settlements, abandoned carts, rollups, sweepers |
 | `services/mobile-bff` | Composite/fan-in BFF for the Flutter merchant application |
-| `apps/identity-platform` | **Sole canonical asymmetric token issuer** for the customer, merchant and operator realms; realm privileges strictly separated |
+| `apps/platform/identity` (formerly `apps/identity-platform`) | **Sole canonical asymmetric token issuer** for the customer, merchant and operator realms; realm privileges strictly separated |
 | `services/webhook-service` | Provider callback ingress + signed, deduplicated outbound webhooks |
-| `apps/customer_web` (formerly `apps/storefront-runtime`) | Buyer storefront, Liquid-first renderer, hosted `checkout.letbuyy.com` origin |
-| `apps/merchant_web` (formerly `apps/merchant-control-plane`) | Merchant web operating system |
-| `apps/marketing-site` | Public marketing and pricing surface |
+| `apps/commerce/web` (formerly `apps/customer_web`, before that `apps/storefront-runtime`) | Buyer storefront, Liquid-first renderer, hosted `checkout.letbuyy.com` origin |
+| `apps/merchant/web` (formerly `apps/merchant_web`, before that `apps/merchant-control-plane`) | Merchant web operating system |
+| `apps/marketing/web` (formerly `apps/marketing-site`) | Public marketing and pricing surface |
 
-Supporting, **non-extractable** surfaces: `apps/merchant_app` (formerly `apps/mobile/merchant-app`), `apps/admin_web` (formerly `apps/platform-console`) — they authorize no further backend extraction. Reserved services and mobile roots stay **empty** until a named trigger and human approval. Frozen/deprecated marketplace, portal and duplicate roots are **never** production topology. Apps must not import apps; services must not import apps; packages must not import apps or services — cross-runtime behavior moves through contracts, APIs, queues or public package exports.
+Supporting, **non-extractable** surfaces: `apps/merchant/mobile` (formerly `apps/merchant_app`, before that `apps/mobile/merchant-app`), `apps/internal/console` (formerly `apps/admin_web`, before that `apps/platform-console`) — they authorize no further backend extraction. Reserved services and mobile roots stay **empty** until a named trigger and human approval. Frozen/deprecated marketplace, portal and duplicate roots are **never** production topology. Apps must not import apps; services must not import apps; packages must not import apps or services — cross-runtime behavior moves through contracts, APIs, queues or public package exports.
 
 **Design law.** Modular monolith with explicit internal domain boundaries. Never create a microservice merely to make a domain look scalable — a domain is extracted only after measured pressure proves independent scaling or isolation is necessary **and** the ARB approves. The synchronous path performs only work required for a correct result; email, WhatsApp, webhooks, analytics and rollups run asynchronously. Runtime instances are **stateless**: process memory, Cloudflare isolate globals, KV, caches, D1 and Durable Objects must never become an accidental second authority for orders, money, inventory or tenant data. **Postgres is the canonical transactional commerce authority**; caches and projections are disposable and rebuildable.
 
@@ -61,7 +61,7 @@ Infrastructure may evolve; the canonical commerce rules, ledger, tenant model an
 
 ## Canonical Runtime Map
 
-**Updated 2026-09-02 (Phase M, Stage 3):** the six-app rename below has been **executed on disk** — `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/mobile/merchant-app`, and `apps/platform-console` no longer exist under those names; they are `apps/customer_web`, `apps/merchant_web`, `apps/merchant_app`, and `apps/admin_web` respectively. `governance-common.mjs`'s `canonicalAppRoots` array and the config/manifest files enumerated in `00b_topology_amendment_draft.md`'s §61 sweep **still reference the old names** — that repair is Stage 6 (Workspace and Configuration Repair) work, not yet done as of this edit. Until Stage 6 lands, the real governance gate (not `--plan`) will not resolve these paths correctly.
+**Updated 2026-09-24 (APPID-P1, D-APP-LAYOUT, Constitution Amendment 3):** the application roots below live at their grouped paths, moved with `git mv` and every caller migrated in the same phase (`governance-common.mjs`, workspaces, CI, deploy matrices, local dev, tests). The founder's mapping, with the Phase M names each root carried from 2026-09-02 until then, is in `.claude/skills/letbuyy/references/decisions.md` §2g. History: Phase M (2026-09-02) had renamed `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/mobile/merchant-app` and `apps/platform-console` to `apps/customer_web`, `apps/merchant_web`, `apps/merchant_app` and `apps/admin_web`; its "Stage 6 still pending" note was closed by Stage 6 itself and is superseded.
 
 Roots are **not** one undifferentiated list. Four classes, with different rules:
 
@@ -70,18 +70,18 @@ Roots are **not** one undifferentiated list. Four classes, with different rules:
 - `services/api-gateway`
 - `services/queue-workers`
 - `services/mobile-bff`
-- `apps/identity-platform`
+- `apps/platform/identity` (formerly `apps/identity-platform`)
 - `services/webhook-service`
-- `apps/customer_web` (formerly `apps/storefront-runtime`)
-- `apps/merchant_web` (formerly `apps/merchant-control-plane`)
-- `apps/marketing-site`
+- `apps/commerce/web` (formerly `apps/customer_web`, before that `apps/storefront-runtime`)
+- `apps/merchant/web` (formerly `apps/merchant_web`, before that `apps/merchant-control-plane`)
+- `apps/marketing/web` (formerly `apps/marketing-site`)
 
 **SUPPORTING (ride the canonical topology; non-extractable; authorize no further backend service):**
 
-- `apps/merchant_app` (formerly `apps/mobile/merchant-app`)
-- `apps/admin_web` (formerly `apps/platform-console`)
+- `apps/merchant/mobile` (formerly `apps/merchant_app`, before that `apps/mobile/merchant-app`)
+- `apps/internal/console` (formerly `apps/admin_web`, before that `apps/platform-console`)
 
-**The other four of the six product-facing app roots** (established this stage, cross-repository, from System A — see `10_merge_execution_journal.md` Stage 3 for survivor evidence): `apps/customer_app` (Play Store `com.letbuyy.letbuyy`), and `apps/admin_app`, which was **retired to a RESERVED root on 2026-09-05** (Constitution Amendment 2, phase FB-1): it was entirely Firestore-backed and had never shipped a signed release, so the owner's decision to delete Firebase removed the platform it ran on. Its 249 implementation files are deleted; the name and its two governance files remain, and `com.letbuyy.admin` is recorded as a retired applicationId. `apps/merchant_app` and `apps/merchant_web` are listed above since they map 1:1 from prior ACTIVE/SUPPORTING runtimes; `customer_app` and `admin_app` are new-to-C additions with no prior ACTIVE/SUPPORTING classification, so their tier (ACTIVE-equivalent, since they are two of the six core product names) is recorded here rather than invented a new class for them.
+**The other four of the six product-facing app roots** (established this stage, cross-repository, from System A — see `10_merge_execution_journal.md` Stage 3 for survivor evidence): `apps/marketplace/mobile` (formerly `apps/customer_app`; Play Store `com.letbuyy.letbuyy`), and `apps/reserved/operator-mobile` (formerly `apps/admin_app`), which was **retired to a RESERVED root on 2026-09-05** (Constitution Amendment 2, phase FB-1): it was entirely Firestore-backed and had never shipped a signed release, so the owner's decision to delete Firebase removed the platform it ran on. Its 249 implementation files are deleted; the name and its two governance files remain, and `com.letbuyy.admin` is recorded as a retired applicationId. `apps/merchant_app` and `apps/merchant_web` are listed above since they map 1:1 from prior ACTIVE/SUPPORTING runtimes; `customer_app` and `admin_app` are new-to-C additions with no prior ACTIVE/SUPPORTING classification, so their tier (ACTIVE-equivalent, since they are two of the six core product names) is recorded here rather than invented a new class for them.
 
 **RESERVED (manifest-only placeholders — MUST stay empty; no source, tests, or deployment config):**
 
@@ -91,16 +91,16 @@ Roots are **not** one undifferentiated list. Four classes, with different rules:
 - `services/analytics-pipeline`
 - `services/media-service`
 - `services/search-service`
-- `apps/mobile/shopper-app`
-- `apps/mobile/operator-app`
-- `apps/admin_app` — **reclassified ACTIVE → RESERVED on 2026-09-05** (Constitution Amendment 2, phase FB-1). Unlike the two above, this root once held real source; its Flutter/Firestore implementation was deleted when the owner retired Firebase. `apps/admin_web` owns the platform-operator surface (D-4), and `services/api-gateway`'s `/operations/marketplace-listings` owns the operator APIs. Reactivation needs the CAP-ADM-2 port complete, measured demand for a mobile operator surface, and ARB approval — and must be gateway-wired, never Firebase.
+- `apps/reserved/legacy-shopper-mobile` (formerly `apps/mobile/shopper-app`)
+- `apps/reserved/legacy-operator-mobile` (formerly `apps/mobile/operator-app`)
+- `apps/reserved/operator-mobile` (formerly `apps/admin_app`) — **reclassified ACTIVE → RESERVED on 2026-09-05** (Constitution Amendment 2, phase FB-1). Unlike the two above, this root once held real source; its Flutter/Firestore implementation was deleted when the owner retired Firebase. `apps/admin_web` owns the platform-operator surface (D-4), and `services/api-gateway`'s `/operations/marketplace-listings` owns the operator APIs. Reactivation needs the CAP-ADM-2 port complete, measured demand for a mobile operator surface, and ARB approval — and must be gateway-wired, never Firebase.
 
 **FROZEN (not production deploy targets; do not treat as active topology):**
 
-- `apps/app-marketplace`
-- `apps/developer-portal`
-- `apps/theme-marketplace`
-- `apps/platform-operations-portal` (pending consolidation into `apps/admin_web` (formerly `apps/platform-console`))
+- `apps/frozen/app-store` (formerly `apps/app-marketplace`)
+- `apps/frozen/developer-portal` (formerly `apps/developer-portal`)
+- `apps/frozen/theme-store` (formerly `apps/theme-marketplace`)
+- `apps/frozen/operations-portal` (formerly `apps/platform-operations-portal`; pending consolidation into `apps/internal/console`)
 
 Capability owners for reserved concerns are the implemented active runtimes until a **named trigger plus human approval** authorizes activation. Adding a runtime, or filling a reserved root, requires ARB approval and any necessary constitutional amendment **before** source is created.
 
@@ -116,13 +116,15 @@ Do not recreate or reference deprecated app aliases as active topology:
 - `apps/storefront`
 - `apps/analytics`
 - `apps/mobile/operator-team-app`
-- `apps/customer_web/consumer-storefront` (formerly `apps/storefront-runtime/consumer-storefront`)
+- `apps/commerce/web/consumer-storefront` (formerly `apps/customer_web/consumer-storefront`, before that `apps/storefront-runtime/consumer-storefront`)
 
-**Carve-out (Constitution amendment, 2026-09-02):** `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, and `apps/merchant_web` are approved six-app-model names, not instances of the deprecated `apps/admin`/`apps/merchant` aliases above — the prohibition names only the exact historical paths `apps/admin` and `apps/merchant`, never any of the four `_app`/`_web`-suffixed names. `scripts/validators/governance-common.mjs:203`'s `startsWithPrefix()` already treats this boundary correctly (`"apps/admin_app".startsWith("apps/admin/")` is `false`); this sentence closes a prose ambiguity, not a code defect.
+**Carve-out (Constitution amendment, 2026-09-02):** `apps/admin_app`, `apps/admin_web`, `apps/merchant_app`, and `apps/merchant_web` are approved six-app-model names, not instances of the deprecated `apps/admin`/`apps/merchant` aliases above — the prohibition names only the exact historical paths `apps/admin` and `apps/merchant`, never any of the four `_app`/`_web`-suffixed names. `scripts/validators/governance-common.mjs:203`'s `startsWithPrefix()` already treats this boundary correctly (`"apps/admin_app".startsWith("apps/admin/")` is `false`); this sentence closes a prose ambiguity, not a code defect. **Amendment 3 (2026-09-24):** those four names are now paths (`apps/reserved/operator-mobile`, `apps/internal/console`, `apps/merchant/mobile`, `apps/merchant/web`), and `apps/merchant` and `apps/internal` are permitted in exactly one role, as grouping containers of their approved roots (`apps/merchant/{web,mobile}`, `apps/internal/console`); a runtime root at either container, or any other descendant, is still prohibited, and `isForbiddenRuntimePath()` in `governance-common.mjs` is the one rule the five alias validators share.
 
 Historical references may remain only under `docs/archive/`.
 
-## Six-App Target Topology (Constitution amendment, 2026-09-02 — the six apps are executed; phase_2/auxiliary/TOOLING are authorized, not yet executed)
+## Six-App Target Topology (Constitution amendment, 2026-09-02 — HISTORICAL paths; see the 2026-09-24 section below for current paths)
+
+> **Paths in this section are the 2026-09-02 names.** Amendment 3 (2026-09-24) moved every root below to the grouped layout and replaced the `apps/phase_2/*` and `apps/auxiliary/` ideas with `apps/deferred/*` and `reference/apps/*`; the six-app product model itself stands.
 
 > **The Canonical Runtime Map above now reflects the current, live topology** — Stage 3 of the repository-consolidation merge executed the six-app rename/establishment on 2026-09-02 (six commits, `9ba4c438`…`b27a8b84`; survivor evidence and rejected-candidate disposition in `docs/migration/repository_consolidation/10_merge_execution_journal.md`, Stage 3). The `apps/phase_2/*`, `apps/auxiliary/`, and TOOLING items below remain authorized-but-not-yet-executed (Stage 4/backend-classification work). Per `docs/migration/repository_consolidation/00b_topology_amendment_draft.md` (Gaps 1–4), applied under the owner's standing six-app product/channel decision. **The owner's Signature Block in `00b` is not yet completed** — this amendment proceeds under the original brief's explicit instruction to apply it anyway and flag the missing signature, not to block on it. **`governance-common.mjs`'s arrays and the 18-file config sweep still reference the old runtime names — Stage 6 work, not done yet.**
 
@@ -136,7 +138,7 @@ Historical references may remain only under `docs/archive/`.
 
 Recorded in `.claude/skills/letbuyy/references/decisions.md` §2g (D-ONE-PRODUCT, D-APP-LAYOUT, D-ONE-IDENTITY, D-ONE-BUYER) and the Constitution §16, Amendment 3 (recorded unsigned, applied under the founder's instruction). They supersede the flat six-app **paths** above; the six-app product model stands.
 
-- **Layout (D-APP-LAYOUT).** `apps/marketplace/mobile` (was `customer_app`) · `apps/merchant/web` (`merchant_web`) · `apps/merchant/mobile` (`merchant_app`) · `apps/commerce/web` (`customer_web`) · `apps/platform/identity` (`identity-platform`) · `apps/internal/console` (`admin_web`) · `apps/marketing/web` (`marketing-site`) · `apps/deferred/delivery/mobile` (`phase_2/rider_app`) · `apps/frozen/{app-store,theme-store,developer-portal,operations-portal}` · `apps/reserved/{operator-mobile,legacy-shopper-mobile,legacy-operator-mobile}` · donors at `reference/apps/{marketplace-seller,store-operations}`. Containers are never application roots; `apps/merchant` and `apps/internal` are permitted only as containers of their approved descendants. Package names, mobile identities, deep links, signing, Worker, project and secret names are preserved. Executed by the APPID phases; until APPID-P1 merges, the map above still describes the tree.
+- **Layout (D-APP-LAYOUT).** `apps/marketplace/mobile` (was `customer_app`) · `apps/merchant/web` (`merchant_web`) · `apps/merchant/mobile` (`merchant_app`) · `apps/commerce/web` (`customer_web`) · `apps/platform/identity` (`identity-platform`) · `apps/internal/console` (`admin_web`) · `apps/marketing/web` (`marketing-site`) · `apps/deferred/delivery/mobile` (`phase_2/rider_app`) · `apps/frozen/{app-store,theme-store,developer-portal,operations-portal}` · `apps/reserved/{operator-mobile,legacy-shopper-mobile,legacy-operator-mobile}` · donors at `reference/apps/{marketplace-seller,store-operations}`. Containers are never application roots; `apps/merchant` and `apps/internal` are permitted only as containers of their approved descendants. Package names, mobile identities, deep links, signing, Worker, project and secret names are preserved. Executed on disk by APPID-P1 (2026-09-24); the Canonical Runtime Map above uses these paths.
 - **One identity (D-ONE-IDENTITY).** Every client authenticates through `identity-platform`, the sole issuer; services verify. First-party authorization code + PKCE for LetBuyy's own clients; the general OIDC provider stays deferred (ART-07). Operators sign in through `identity-platform`; a shared console bearer is never a human identity. The per-store customer login and Firebase Auth are transitional, each with a named retirement gate.
 - **One buyer (D-ONE-BUYER).** `buyer_accounts` is the one buyer principal across Marketplace, Quick and every storefront; `store_customers` rows are merchant-scoped relationships, not logins. Marketplace order views span merchants; a storefront shows only the buyer's orders at the server-resolved store. No account merge on unverified identifiers.
 
@@ -154,7 +156,7 @@ Run `node scripts/validate-governance.mjs` after topology, import, package, envi
 A multi-tenant India-first commerce platform. Core entities: **site** (the tenant/store, `site_id` everywhere), **store_customers** + **customer_credentials**, **products / collections / inventory**, **orders + order_items** (`*_minor bigint` money), **payment_transactions / refunds / payouts** (canonical ledger), **gift_card_accounts + gift_card_ledger_entries + gift_card_redemptions**, **shipping_rates**, GST invoices, **themes** (Liquid/React render).
 
 ## Subdomains & runtimes
-`{store}.letbuyy.com` + custom domains → `customer_web` (formerly `storefront-runtime`; `src/proxy.ts` host routing). Merchant UI → `merchant_web` (formerly `merchant-control-plane`). Auth → `identity-platform`. Ops → `admin_web` (formerly `platform-console`). All proxy into the canonical `services/api-gateway` (`/v1`, Hono). Async via `queue-workers`; webhooks via `webhook-service`.
+`{store}.letbuyy.com` + custom domains → `apps/commerce/web` (formerly `customer_web`, before that `storefront-runtime`; `src/proxy.ts` host routing). Merchant UI → `apps/merchant/web` (formerly `merchant_web`). Auth → `apps/platform/identity` (formerly `identity-platform`). Ops → `apps/internal/console` (formerly `admin_web`). All proxy into the canonical `services/api-gateway` (`/v1`, Hono). Async via `queue-workers`; webhooks via `webhook-service`.
 
 ## Money, payments, COD, GST (hard rules)
 - **Canonical ledger only:** money mutations are `SECURITY DEFINER` Postgres RPCs (`create_checkout_order`, `confirm_order_payment_with_ledger`, `complete_order_refund`, `issue_gift_card`, `set_gift_card_status`, `restore_gift_card_on_refund`) called via `db.rpc`. **Never** `.from(money_table).insert/update` in TS (`canonical-ledger-only-validator`).

@@ -3,10 +3,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const FEDERATED_PROXY_FILES = [
-  'apps/app-marketplace/src/proxy.ts',
-  'apps/theme-marketplace/src/proxy.ts',
-  'apps/admin_web/src/proxy.ts',
-  'apps/platform-operations-portal/src/proxy.ts',
+  'apps/frozen/app-store/src/proxy.ts',
+  'apps/frozen/theme-store/src/proxy.ts',
+  'apps/internal/console/src/proxy.ts',
+  'apps/frozen/operations-portal/src/proxy.ts',
 ];
 
 test('federated app proxies accept the shared merchant session verifier', () => {
@@ -23,10 +23,10 @@ test('federated app proxies accept the shared merchant session verifier', () => 
 test('federated apps redirect unauthenticated browser traffic to accounts lookup with return_to', () => {
   for (const file of FEDERATED_PROXY_FILES) {
     const source = readFileSync(file, 'utf8');
-    const resolverFile = file === 'apps/app-marketplace/src/proxy.ts'
-      ? 'apps/app-marketplace/src/lib/site-url.ts'
-      : file === 'apps/theme-marketplace/src/proxy.ts'
-        ? 'apps/theme-marketplace/src/lib/public-urls.ts'
+    const resolverFile = file === 'apps/frozen/app-store/src/proxy.ts'
+      ? 'apps/frozen/app-store/src/lib/site-url.ts'
+      : file === 'apps/frozen/theme-store/src/proxy.ts'
+        ? 'apps/frozen/theme-store/src/lib/public-urls.ts'
         : null;
     const centralResolver =
       Boolean(resolverFile) &&
@@ -45,7 +45,7 @@ test('federated apps redirect unauthenticated browser traffic to accounts lookup
 });
 
 test('theme marketplace protects account checkout and install routes at the edge', () => {
-  const source = readFileSync('apps/theme-marketplace/src/proxy.ts', 'utf8');
+  const source = readFileSync('apps/frozen/theme-store/src/proxy.ts', 'utf8');
 
   assert.match(source, /const PROTECTED_ROUTES = \['\/checkout', '\/dashboard', '\/install'\]/);
   assert.match(source, /'\/checkout\/:path\*'/);
@@ -54,8 +54,8 @@ test('theme marketplace protects account checkout and install routes at the edge
 });
 
 test('identity lookup is the shared return_to entry point for federated SSO', () => {
-  const lookupSource = readFileSync('apps/identity-platform/src/app/lookup/page.tsx', 'utf8');
-  const themeNavbarSource = readFileSync('apps/theme-marketplace/src/components/layout/navbar.tsx', 'utf8');
+  const lookupSource = readFileSync('apps/platform/identity/src/app/lookup/page.tsx', 'utf8');
+  const themeNavbarSource = readFileSync('apps/frozen/theme-store/src/components/layout/navbar.tsx', 'utf8');
 
   assert.match(lookupSource, /searchParams\.get\('return_to'\)/);
   assert.match(themeNavbarSource, /\?return_to=/);

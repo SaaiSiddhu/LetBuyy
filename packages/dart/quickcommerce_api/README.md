@@ -1,6 +1,6 @@
 # packages/dart/quickcommerce_api
 
-API contracts and client boundary for the quick-commerce channel apps (`apps/phase_2/rider_app`, `apps/phase_2/store_ops_app`).
+API contracts and client boundary for the quick-commerce channel apps (`apps/deferred/delivery/mobile`, `reference/apps/store-operations`).
 
 ## Provenance
 

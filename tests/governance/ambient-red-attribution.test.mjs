@@ -38,7 +38,7 @@ const KNOWN_REDS = [
         classify(path) {
             // Google's own documented public client identifiers (AIza…), classified NOT secrets in
             // docs/migration/repository_consolidation/00c_credential_exposure_and_rotation.md.
-            if (/^apps\/customer_app\//.test(path)) {
+            if (/^apps\/marketplace\/mobile\//.test(path)) {
                 return 'firebase public client identifier (customer_app), not a secret';
             }
             return null;
@@ -174,12 +174,12 @@ test("stale-artifact-validator's own verdict is exactly the offender set classif
 test('the by-method classification is specific, not a catch-all', () => {
     const { method, genuine } = classifyStaleArtifactOffenders({
         untrackedFiles: ['topology.txt'],
-        artifactDirectories: ['packages/auth-core/dist', 'apps/admin_web/build'],
-        workspaceFiles: ['apps/customer_web/src/app/page.tsx.broken'],
+        artifactDirectories: ['packages/auth-core/dist', 'apps/internal/console/build'],
+        workspaceFiles: ['apps/commerce/web/src/app/page.tsx.broken'],
     }, new Set(['packages/auth-core/dist']));
     assert.deepEqual(method, ['packages/auth-core/dist']);
     // A root-level scan file, a directory the cleanup would not delete, and a source backup are all genuine.
-    assert.deepEqual(genuine, ['topology.txt', 'apps/admin_web/build', 'apps/customer_web/src/app/page.tsx.broken']);
+    assert.deepEqual(genuine, ['topology.txt', 'apps/internal/console/build', 'apps/commerce/web/src/app/page.tsx.broken']);
 });
 
 test('the classifiers are specific, not catch-alls', () => {
@@ -189,5 +189,5 @@ test('the classifiers are specific, not catch-alls', () => {
     assert.equal(environment.classify('services/api-gateway/src/routes/payments.ts'), null);
     assert.equal(environment.classify('packages/dart/marketplace_services/lib/src/other_service.dart'), null);
     // And each must still accept its own.
-    assert.ok(environment.classify('apps/customer_app/lib/firebase_options.dart'));
+    assert.ok(environment.classify('apps/marketplace/mobile/lib/firebase_options.dart'));
 });

@@ -9,7 +9,7 @@
 #   --baseline     same as default, labelled BASELINE (run on the untouched branch before building)
 #   --security     default + tests/security + tests/auth + the d2 RLS red-team + wave-4 session security
 #   --ui           default + @letbuyy/ui validate:ui + design-system ratchet + token parity checks + lint:css
-#   --mobile       default + flutter analyze + flutter test for merchant_app (canary 172), customer_app
+#   --mobile       default + flutter analyze + flutter test for apps/merchant/mobile (canary 172), apps/marketplace/mobile
 #                  (admin_app was retired to a RESERVED root in FB-1, 2026-09-05 — it has no source to analyze)
 #   --full         security + ui + mobile + every tests/*/*.test.mjs + every runtime's own test script
 #   --flutter-build  adds flutter build apk --debug + aapt dump badging per app (run AFTER any --gate-real: the real lane deletes build/)
@@ -128,9 +128,9 @@ if [ "$MODE" = ui ] || [ "$MODE" = full ]; then
 fi
 if [ "$MODE" = mobile ] || [ "$MODE" = full ]; then
   if command -v flutter >/dev/null 2>&1; then
-    for app in merchant_app customer_app; do
-      run "flutter:$app:analyze" bash -c "cd apps/$app && flutter analyze"
-      run "flutter:$app:test"    bash -c "cd apps/$app && flutter test"
+    for app in merchant/mobile marketplace/mobile; do
+      run "flutter:${app//\//-}:analyze" bash -c "cd apps/$app && flutter analyze"
+      run "flutter:${app//\//-}:test"    bash -c "cd apps/$app && flutter test"
     done
   else skip flutter "flutter not on PATH"; fi
 fi
@@ -153,9 +153,9 @@ fi
 if [ $FLUTTER_BUILD = 1 ]; then
   if command -v flutter >/dev/null 2>&1; then
     AAPT="$(command -v aapt || ls "${ANDROID_HOME:-$HOME/Library/Android/sdk}"/build-tools/*/aapt 2>/dev/null | tail -1)"
-    for app in merchant_app customer_app; do
-      run "flutter:$app:build-apk" bash -c "cd apps/$app && flutter build apk --debug"
-      if [ -n "$AAPT" ]; then run "flutter:$app:badging" bash -c "$AAPT dump badging apps/$app/build/app/outputs/flutter-apk/app-debug.apk | grep -E '^package:'"; else skip "flutter:$app:badging" "aapt not found"; fi
+    for app in merchant/mobile marketplace/mobile; do
+      run "flutter:${app//\//-}:build-apk" bash -c "cd apps/$app && flutter build apk --debug"
+      if [ -n "$AAPT" ]; then run "flutter:${app//\//-}:badging" bash -c "$AAPT dump badging apps/$app/build/app/outputs/flutter-apk/app-debug.apk | grep -E '^package:'"; else skip "flutter:${app//\//-}:badging" "aapt not found"; fi
     done
     echo "  note: flutter build writes to tracked files — run git status and attribute every change"
   else skip flutter-build "flutter not on PATH"; fi

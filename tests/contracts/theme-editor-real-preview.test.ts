@@ -6,15 +6,15 @@ import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const editorPageSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx'),
+    join(testDir, '../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx'),
     'utf8',
 );
 const centerPanelSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/components/theme-editor/CenterPanel.tsx'),
+    join(testDir, '../../apps/merchant/web/src/components/theme-editor/CenterPanel.tsx'),
     'utf8',
 );
 const storefrontPreviewSource = readFileSync(
-    join(testDir, '../../apps/customer_web/src/app/preview/page.tsx'),
+    join(testDir, '../../apps/commerce/web/src/app/preview/page.tsx'),
     'utf8',
 );
 

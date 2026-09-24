@@ -109,7 +109,7 @@
     },
     {
       "runtimeName": "Identity Platform",
-      "runtimeRoot": "apps/identity-platform",
+      "runtimeRoot": "apps/platform/identity",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -130,7 +130,7 @@
     },
     {
       "runtimeName": "Storefront Runtime",
-      "runtimeRoot": "apps/customer_web",
+      "runtimeRoot": "apps/commerce/web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -151,7 +151,7 @@
     },
     {
       "runtimeName": "Merchant Control Plane",
-      "runtimeRoot": "apps/merchant_web",
+      "runtimeRoot": "apps/merchant/web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -172,7 +172,7 @@
     },
     {
       "runtimeName": "Marketing Site",
-      "runtimeRoot": "apps/marketing-site",
+      "runtimeRoot": "apps/marketing/web",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -193,7 +193,7 @@
     },
     {
       "runtimeName": "Platform Console",
-      "runtimeRoot": "apps/admin_web",
+      "runtimeRoot": "apps/internal/console",
       "deploymentKind": "vercel-next",
       "platform": "vercel",
       "regions": [
@@ -214,7 +214,7 @@
     },
     {
       "runtimeName": "Mobile Merchant App",
-      "runtimeRoot": "apps/merchant_app",
+      "runtimeRoot": "apps/merchant/mobile",
       "deploymentKind": "mobile-app",
       "platform": "mobile-distribution",
       "regions": [
@@ -235,7 +235,7 @@
     },
     {
       "runtimeName": "Customer App",
-      "runtimeRoot": "apps/customer_app",
+      "runtimeRoot": "apps/marketplace/mobile",
       "deploymentKind": "mobile-app",
       "platform": "mobile-distribution",
       "regions": [

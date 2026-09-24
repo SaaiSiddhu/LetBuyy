@@ -5,11 +5,11 @@ import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const SHARED_TYPES = 'packages/shared-types/src/index.ts';
 const API_CLIENT = 'packages/typescript/api-client/src/index.ts';
-const APP_MARKETPLACE_PACKAGE = 'apps/app-marketplace/package.json';
-const APP_MARKETPLACE_MANIFEST = 'apps/app-marketplace/runtime.manifest.json';
-const APP_MARKETPLACE_API_CLIENT = 'apps/app-marketplace/src/lib/api/client.ts';
-const APP_MARKETPLACE_DASHBOARD = 'apps/app-marketplace/src/app/(auth)/developers/dashboard/page.tsx';
-const APP_MARKETPLACE_HEADER = 'apps/app-marketplace/src/components/Header.tsx';
+const APP_MARKETPLACE_PACKAGE = 'apps/frozen/app-store/package.json';
+const APP_MARKETPLACE_MANIFEST = 'apps/frozen/app-store/runtime.manifest.json';
+const APP_MARKETPLACE_API_CLIENT = 'apps/frozen/app-store/src/lib/api/client.ts';
+const APP_MARKETPLACE_DASHBOARD = 'apps/frozen/app-store/src/app/(auth)/developers/dashboard/page.tsx';
+const APP_MARKETPLACE_HEADER = 'apps/frozen/app-store/src/components/Header.tsx';
 
 function read(path) {
   return readFileSync(path, 'utf8');

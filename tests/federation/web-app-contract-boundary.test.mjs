@@ -4,13 +4,13 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 const WEB_APPS = [
-  'apps/identity-platform',
-  'apps/app-marketplace',
-  'apps/theme-marketplace',
-  'apps/admin_web',
-  'apps/platform-operations-portal',
-  'apps/merchant_web',
-  'apps/customer_web',
+  'apps/platform/identity',
+  'apps/frozen/app-store',
+  'apps/frozen/theme-store',
+  'apps/internal/console',
+  'apps/frozen/operations-portal',
+  'apps/merchant/web',
+  'apps/commerce/web',
 ];
 
 const SKIPPED_DIRS = new Set(['node_modules', '.next', '.turbo', 'coverage', 'dist']);
@@ -55,7 +55,7 @@ test('all web apps are free of direct Supabase SDK imports', () => {
 });
 
 test('merchant and storefront apps no longer depend on the api-types aggregate', () => {
-  for (const app of ['apps/merchant_web', 'apps/customer_web']) {
+  for (const app of ['apps/merchant/web', 'apps/commerce/web']) {
     const packageJson = JSON.parse(read(join(app, 'package.json')));
     const tsconfig = read(join(app, 'tsconfig.json'));
     const manifest = read(join(app, 'runtime.manifest.json'));
@@ -69,21 +69,21 @@ test('merchant and storefront apps no longer depend on the api-types aggregate',
 });
 
 test('merchant control plane has no unused handwritten gateway fetch helper', () => {
-  assert.equal(existsSync('apps/merchant_web/src/lib/api.ts'), false);
-  assert.equal(existsSync('apps/merchant_web/src/lib/api/worker-client.ts'), false);
+  assert.equal(existsSync('apps/merchant/web/src/lib/api.ts'), false);
+  assert.equal(existsSync('apps/merchant/web/src/lib/api/worker-client.ts'), false);
 
-  const merchantApiClient = read('apps/merchant_web/src/lib/api/client.ts');
+  const merchantApiClient = read('apps/merchant/web/src/lib/api/client.ts');
   assert.match(merchantApiClient, /createLetbuyyApiClient/);
   assert.match(merchantApiClient, /createMerchantApiClient/);
   assert.doesNotMatch(merchantApiClient, /createWorkerApiClient|worker-client/);
 });
 
 test('storefront runtime gateway transport uses storefront API naming', () => {
-  assert.equal(existsSync('apps/customer_web/src/lib/worker-client.ts'), false);
-  assert.equal(existsSync('apps/customer_web/src/lib/browser-worker-client.ts'), false);
+  assert.equal(existsSync('apps/commerce/web/src/lib/worker-client.ts'), false);
+  assert.equal(existsSync('apps/commerce/web/src/lib/browser-worker-client.ts'), false);
 
-  const serverClient = read('apps/customer_web/src/lib/api/client.ts');
-  const browserClient = read('apps/customer_web/src/lib/api/browser-client.ts');
+  const serverClient = read('apps/commerce/web/src/lib/api/client.ts');
+  const browserClient = read('apps/commerce/web/src/lib/api/browser-client.ts');
   assert.match(serverClient, /createLetbuyyApiClient/);
   assert.match(serverClient, /createStorefrontApiClient/);
   assert.match(browserClient, /storefrontBrowserApiFetch/);
@@ -91,11 +91,11 @@ test('storefront runtime gateway transport uses storefront API naming', () => {
 });
 
 test('theme contracts resolve from theme-engine or shared-types in app source', () => {
-  const merchantThemeSchemas = read('apps/merchant_web/src/lib/theme-schemas.ts');
-  const storefrontDemo = read('apps/customer_web/src/lib/demo/urban-kicks-demo.ts');
-  const storefrontStoreService = read('apps/customer_web/src/lib/store-service.ts');
+  const merchantThemeSchemas = read('apps/merchant/web/src/lib/theme-schemas.ts');
+  const storefrontDemo = read('apps/commerce/web/src/lib/demo/urban-kicks-demo.ts');
+  const storefrontStoreService = read('apps/commerce/web/src/lib/store-service.ts');
 
-  assert.equal(existsSync('apps/customer_web/src/types/store.ts'), false);
+  assert.equal(existsSync('apps/commerce/web/src/types/store.ts'), false);
   assert.match(merchantThemeSchemas, /from '@letbuyy\/theme-engine'/);
   assert.match(storefrontDemo, /from '@letbuyy\/theme-engine'/);
   assert.match(storefrontDemo, /from '@letbuyy\/commerce-core'/);

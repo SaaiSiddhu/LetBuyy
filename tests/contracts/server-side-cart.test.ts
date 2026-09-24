@@ -8,9 +8,9 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const cartRoutesPath = join(testDir, '../../services/api-gateway/src/routes/storefront/cart-routes.ts');
 const publicRoutesSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/storefront/public-routes.ts'), 'utf8');
 const graphqlSource = readFileSync(join(testDir, '../../services/api-gateway/src/graphql/storefront.ts'), 'utf8');
-const cartContextSource = readFileSync(join(testDir, '../../apps/customer_web/src/context/cart-context.tsx'), 'utf8');
-const liquidIslandsSource = readFileSync(join(testDir, '../../apps/customer_web/src/lib/theme-engine/liquid-hydration-islands.tsx'), 'utf8');
-const developerReferenceSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/reference.ts'), 'utf8');
+const cartContextSource = readFileSync(join(testDir, '../../apps/commerce/web/src/context/cart-context.tsx'), 'utf8');
+const liquidIslandsSource = readFileSync(join(testDir, '../../apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx'), 'utf8');
+const developerReferenceSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/reference.ts'), 'utf8');
 
 function cartRoutesSource(): string {
     assert.equal(existsSync(cartRoutesPath), true, 'cart-routes.ts must exist under the storefront gateway route modules');

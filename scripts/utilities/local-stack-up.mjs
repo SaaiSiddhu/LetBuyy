@@ -38,16 +38,18 @@ const serviceRuntimes = [
   { name: "webhook-service", cwd: "services/webhook-service", url: `http://127.0.0.1:${ports.webhookService}/health` },
 ];
 
+// D-APP-LAYOUT (2026-09-24): the maintained apps start by default; the frozen ones only with --include-frozen.
+const includeFrozen = process.argv.includes("--include-frozen");
 const webApps = [
-  { name: "marketing-site", cwd: "apps/marketing-site", url: "http://127.0.0.1:3000" },
-  { name: "identity-platform", cwd: "apps/identity-platform", url: "http://127.0.0.1:3001" },
-  { name: "merchant-web", cwd: "apps/merchant_web", url: "http://127.0.0.1:3002" },
-  { name: "customer-web", cwd: "apps/customer_web", url: "http://127.0.0.1:3003" },
-  { name: "app-marketplace", cwd: "apps/app-marketplace", url: "http://127.0.0.1:3004" },
-  { name: "theme-marketplace", cwd: "apps/theme-marketplace", url: "http://127.0.0.1:3005" },
-  { name: "admin-web", cwd: "apps/admin_web", url: "http://127.0.0.1:3010" },
-  { name: "platform-operations-portal", cwd: "apps/platform-operations-portal", url: "http://127.0.0.1:3011" },
-];
+  { name: "marketing-site", cwd: "apps/marketing/web", url: "http://127.0.0.1:3000" },
+  { name: "identity-platform", cwd: "apps/platform/identity", url: "http://127.0.0.1:3001" },
+  { name: "merchant-web", cwd: "apps/merchant/web", url: "http://127.0.0.1:3002" },
+  { name: "customer-web", cwd: "apps/commerce/web", url: "http://127.0.0.1:3003" },
+  { name: "app-marketplace", cwd: "apps/frozen/app-store", url: "http://127.0.0.1:3004", frozen: true },
+  { name: "theme-marketplace", cwd: "apps/frozen/theme-store", url: "http://127.0.0.1:3005", frozen: true },
+  { name: "admin-web", cwd: "apps/internal/console", url: "http://127.0.0.1:3010" },
+  { name: "platform-operations-portal", cwd: "apps/frozen/operations-portal", url: "http://127.0.0.1:3011", frozen: true },
+].filter((app) => includeFrozen || !app.frozen);
 
 function localValue(label) {
   return `local-${label}-placeholder`;

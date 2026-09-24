@@ -9,10 +9,10 @@ const repoRoot = process.cwd();
 
 const gatewayProducts = path.join(repoRoot, 'services/api-gateway/src/routes/products.ts');
 const storefrontPublicRoutes = path.join(repoRoot, 'services/api-gateway/src/routes/storefront/public-routes.ts');
-const mcpCollectionsPage = path.join(repoRoot, 'apps/merchant_web/src/app/[store]/products/collections/page.tsx');
-const mcpProxyRoute = path.join(repoRoot, 'apps/merchant_web/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts');
-const storefrontCollectionPage = path.join(repoRoot, 'apps/customer_web/src/app/store/[subdomain]/collections/[slug]/page.tsx');
-const categoryGrid = path.join(repoRoot, 'apps/customer_web/src/components/sections/category-grid.tsx');
+const mcpCollectionsPage = path.join(repoRoot, 'apps/merchant/web/src/app/[store]/products/collections/page.tsx');
+const mcpProxyRoute = path.join(repoRoot, 'apps/merchant/web/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts');
+const storefrontCollectionPage = path.join(repoRoot, 'apps/commerce/web/src/app/store/[subdomain]/collections/[slug]/page.tsx');
+const categoryGrid = path.join(repoRoot, 'apps/commerce/web/src/components/sections/category-grid.tsx');
 const apiClient = path.join(repoRoot, 'packages/typescript/api-client/src/index.ts');
 
 function read(p) { return readFileSync(p, 'utf8'); }

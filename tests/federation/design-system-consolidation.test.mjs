@@ -52,13 +52,13 @@ test('all seven web apps consume the shared design-system package', () => {
 
 test('no app or package imports dead UI package names', () => {
   const checkedFiles = [
-    'apps/identity-platform/package.json',
-    'apps/customer_web/package.json',
-    'apps/theme-marketplace/package.json',
-    'apps/app-marketplace/package.json',
-    'apps/merchant_web/package.json',
-    'apps/admin_web/package.json',
-    'apps/platform-operations-portal/package.json',
+    'apps/platform/identity/package.json',
+    'apps/commerce/web/package.json',
+    'apps/frozen/theme-store/package.json',
+    'apps/frozen/app-store/package.json',
+    'apps/merchant/web/package.json',
+    'apps/internal/console/package.json',
+    'apps/frozen/operations-portal/package.json',
     'packages/typescript/ui/src/index.ts',
   ];
 

@@ -7,14 +7,14 @@ import { fileURLToPath } from 'node:url';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const webApps = [
-    'apps/app-marketplace',
-    'apps/identity-platform',
-    'apps/marketing-site',
-    'apps/merchant_web',
-    'apps/admin_web',
-    'apps/platform-operations-portal',
-    'apps/customer_web',
-    'apps/theme-marketplace',
+    'apps/frozen/app-store',
+    'apps/platform/identity',
+    'apps/marketing/web',
+    'apps/merchant/web',
+    'apps/internal/console',
+    'apps/frozen/operations-portal',
+    'apps/commerce/web',
+    'apps/frozen/theme-store',
 ];
 
 function read(path: string): string {

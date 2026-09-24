@@ -119,14 +119,14 @@ if (shouldRun("workers")) {
 if (shouldRun("apps")) {
   if (execute) requireEnv(["VERCEL_TOKEN", "VERCEL_ORG_ID"]);
   const appRoots = [
-    "apps/identity-platform",
-    "apps/merchant_web",
-    "apps/customer_web",
-    "apps/app-marketplace",
-    "apps/theme-marketplace",
-    "apps/marketing-site",
-    "apps/admin_web",
-    "apps/platform-operations-portal",
+    "apps/platform/identity",
+    "apps/merchant/web",
+    "apps/commerce/web",
+    "apps/frozen/app-store",
+    "apps/frozen/theme-store",
+    "apps/marketing/web",
+    "apps/internal/console",
+    "apps/frozen/operations-portal",
   ];
 
   for (const appRoot of appRoots) {

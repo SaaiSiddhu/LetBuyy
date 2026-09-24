@@ -8,12 +8,12 @@ import { formatInrCurrency } from '../../packages/typescript/ui/src/formatting';
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
 const currencyFiles = [
-    'apps/merchant_web/src/app/[store]/customers/page.tsx',
-    'apps/merchant_web/src/app/[store]/analytics/page.tsx',
-    'apps/merchant_web/src/app/[store]/dashboard/page.tsx',
-    'apps/merchant_web/src/app/[store]/dashboard/DashboardClient.tsx',
-    'apps/merchant_web/src/app/[store]/products/gift-cards/page.tsx',
-    'apps/app-marketplace/src/app/(store)/apps/[slug]/page.tsx',
+    'apps/merchant/web/src/app/[store]/customers/page.tsx',
+    'apps/merchant/web/src/app/[store]/analytics/page.tsx',
+    'apps/merchant/web/src/app/[store]/dashboard/page.tsx',
+    'apps/merchant/web/src/app/[store]/dashboard/DashboardClient.tsx',
+    'apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx',
+    'apps/frozen/app-store/src/app/(store)/apps/[slug]/page.tsx',
 ];
 
 function read(path: string): string {

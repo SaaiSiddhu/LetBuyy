@@ -9,16 +9,16 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { buildListingDecisionBody } from '../../apps/admin_web/src/lib/listing-decision';
+import { buildListingDecisionBody } from '../../apps/internal/console/src/lib/listing-decision';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const pagePath = join(root, 'apps/admin_web/src/app/(dashboard)/marketplace-listings/page.tsx');
+const pagePath = join(root, 'apps/internal/console/src/app/(dashboard)/marketplace-listings/page.tsx');
 const page = readFileSync(pagePath, 'utf8');
 const stripComments = (source: string) => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
 const code = stripComments(page);
 // F-ADM4-1: the decision body — reason check included — is built in one place shared with the contract
 // test that parses it against the gateway schema (tests/contracts/admin-listing-decision-body.test.ts).
-const decisionCode = stripComments(readFileSync(join(root, 'apps/admin_web/src/lib/listing-decision.ts'), 'utf8'));
+const decisionCode = stripComments(readFileSync(join(root, 'apps/internal/console/src/lib/listing-decision.ts'), 'utf8'));
 
 test('the moderation screen exists and lists the review queue', () => {
     // Without it nothing can reach 'approved', so marketplace_feed returns zero rows forever and
@@ -65,7 +65,7 @@ test('the screen adds NO app-local API route', () => {
     // collision. Reads use fetchConsoleApi and writes are server actions; a server action is not an
     // API route, so the freeze is respected rather than exempted.
     assert.ok(
-        !existsSync(join(root, 'apps/admin_web/src/app/api/marketplace-listings')),
+        !existsSync(join(root, 'apps/internal/console/src/app/api/marketplace-listings')),
         'no API route directory may be added for this screen',
     );
     assert.match(code, /fetchConsoleApi/);

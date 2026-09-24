@@ -44,8 +44,8 @@ for (const marker of [
   );
 }
 
-const identityCreateStore = readFile("apps/identity-platform/src/app/api/auth/create-store/route.ts");
-const identityOnboarding = readFile("apps/identity-platform/src/app/onboarding/page.tsx");
+const identityCreateStore = readFile("apps/platform/identity/src/app/api/auth/create-store/route.ts");
+const identityOnboarding = readFile("apps/platform/identity/src/app/onboarding/page.tsx");
 reporter.assert(
   identityCreateStore.includes("ACTIVE_SITE_TYPES = ['store']") &&
     identityCreateStore.includes("COMING_SOON_SITE_TYPES = ['landing', 'blog']") &&
@@ -56,8 +56,8 @@ reporter.assert(
 for (const [fileName, source] of [
   ["services/api-gateway/src/routes/stores.ts", gatewayStores],
   ["services/api-gateway/src/routes/onboarding.ts", gatewayOnboarding],
-  ["apps/identity-platform/src/app/api/auth/create-store/route.ts", identityCreateStore],
-  ["apps/identity-platform/src/app/onboarding/page.tsx", identityOnboarding],
+  ["apps/platform/identity/src/app/api/auth/create-store/route.ts", identityCreateStore],
+  ["apps/platform/identity/src/app/onboarding/page.tsx", identityOnboarding],
 ]) {
   reporter.assert(
     !/site creation is coming soon|Landing pages and blogs are coming soon|Coming soon/.test(source),
@@ -84,10 +84,10 @@ reporter.assert(
 );
 
 for (const file of [
-  "apps/merchant_web/src/app/launching-soon/page.tsx",
-  "apps/customer_web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+  "apps/merchant/web/src/app/launching-soon/page.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -101,11 +101,11 @@ for (const file of [
 }
 
 for (const file of [
-  "apps/customer_web/src/components/coming-soon/components/store/store-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
-  "apps/customer_web/src/components/coming-soon/components/blog/blog-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/store/store-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/landing/landing-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/portfolio/portfolio-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/resume/resume-coming-soon.tsx",
+  "apps/commerce/web/src/components/coming-soon/components/blog/blog-coming-soon.tsx",
 ]) {
   const source = readFile(file);
   reporter.assert(
@@ -118,7 +118,7 @@ for (const file of [
   );
 }
 
-const marketingCreate = readFile("apps/marketing-site/src/app/[locale]/create/page.tsx");
+const marketingCreate = readFile("apps/marketing/web/src/app/[locale]/create/page.tsx");
 reporter.assert(
   marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&
     marketingCreate.indexOf("portfolio") > marketingCreate.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
@@ -126,7 +126,7 @@ reporter.assert(
   "marketing create page must expose portfolio/resume only behind the public legacy flag",
 );
 
-const marketingSiteTypes = readFile("apps/marketing-site/src/components/SiteTypes.tsx");
+const marketingSiteTypes = readFile("apps/marketing/web/src/components/SiteTypes.tsx");
 reporter.assert(
   marketingSiteTypes.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") !== -1 &&
     marketingSiteTypes.indexOf("id: 'portfolio'") > marketingSiteTypes.indexOf("NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES") &&
@@ -135,11 +135,11 @@ reporter.assert(
 );
 
 const publicMarketingCopyOffenders = trackedFiles.filter((file) => {
-  if (!file.startsWith("apps/marketing-site/src/")) return false;
+  if (!file.startsWith("apps/marketing/web/src/")) return false;
   if (!/\.(?:ts|tsx)$/.test(file)) return false;
   if (
-    file === "apps/marketing-site/src/app/[locale]/create/page.tsx" ||
-    file === "apps/marketing-site/src/components/SiteTypes.tsx"
+    file === "apps/marketing/web/src/app/[locale]/create/page.tsx" ||
+    file === "apps/marketing/web/src/components/SiteTypes.tsx"
   ) {
     return false;
   }
@@ -150,7 +150,7 @@ reporter.assert(
   `Default marketing source must not advertise legacy portfolio/resume acquisition: ${publicMarketingCopyOffenders.join(", ")}`,
 );
 
-const developerSurface = readFile("apps/developer-portal/src/lib/developer-surface.ts");
+const developerSurface = readFile("apps/frozen/developer-portal/src/lib/developer-surface.ts");
 reporter.assert(
   developerSurface.includes("legacy site types only") &&
     developerSurface.includes("New portfolio acquisition is gated") &&
@@ -158,7 +158,7 @@ reporter.assert(
   "developer portal must mark portfolio/resume API surfaces as legacy-gated",
 );
 
-const merchantNavigation = readFile("apps/merchant_web/src/components/merchantNavigation.ts");
+const merchantNavigation = readFile("apps/merchant/web/src/components/merchantNavigation.ts");
 reporter.assert(
   !merchantNavigation.includes("ats-score") && !merchantNavigation.includes("PDF export"),
   "merchant resume navigation must not expose deleted ATS/PDF-export stub routes",

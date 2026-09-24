@@ -2,8 +2,7 @@ import path from "node:path";
 import {
   createReporter,
   extractSpecifiers,
-  forbiddenRuntimeRoots,
-  forbiddenRuntimeSubtrees,
+  isForbiddenRuntimePath,
   getTrackedFiles,
   packageRootForManifest,
   readFile,
@@ -45,7 +44,6 @@ function resolvedTarget(file, specifier) {
 }
 
 const sourceFiles = trackedFiles.filter((file) => sourceExtensions.has(path.extname(file)));
-const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 
 for (const file of sourceFiles) {
   const ownerRoot = rootForFile(file);
@@ -55,7 +53,7 @@ for (const file of sourceFiles) {
     const target = resolvedTarget(file, specifier);
     const targetRoot = rootForFile(target);
 
-    if (forbiddenRuntimePrefixes.some((prefix) => startsWithPrefix(target, prefix)) || specifier.includes("consumer-storefront")) {
+    if (isForbiddenRuntimePath(target) || specifier.includes("consumer-storefront")) {
       reporter.errors.push(`Imports may not target deprecated runtime topology: ${file} -> ${specifier}`);
     }
 

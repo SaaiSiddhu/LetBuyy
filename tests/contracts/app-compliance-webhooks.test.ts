@@ -19,7 +19,7 @@ const installLifecycleSource = readFileSync(
     'utf8',
 );
 const appStoreRootSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-store.ts'), 'utf8');
-const developerSurfaceSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/developer-surface.ts'), 'utf8');
+const developerSurfaceSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/developer-surface.ts'), 'utf8');
 
 test('app compliance webhook dispatch sends mandatory topics to eligible app subscriptions', async () => {
     const calls: Array<{ url: string; body: Record<string, unknown>; headers: Record<string, string> }> = [];

@@ -2,25 +2,25 @@
 
 ## App Boundaries
 
-- `apps/customer_web`: shopper-facing public store runtime and customer account flow.
-- `apps/merchant_web`: merchant operational UI and app-boundary API proxies.
-- `apps/identity-platform`: merchant identity, onboarding, store selection, password and OTP flows.
-- `apps/app-marketplace`: partner extension marketplace.
-- `apps/developer-portal`: developer documentation, API reference, SDK quick-starts, and partner dashboard shell.
-- `apps/theme-marketplace`: partner theme marketplace.
-- `apps/marketing-site`: public marketing and pricing.
-- `apps/admin_web`: platform super admin.
-- `apps/platform-operations-portal`: employee support and operations.
-- `apps/merchant_app`: Flutter merchant builder and store management.
-- `apps/customer_app`: Flutter buyer-facing marketplace app; shipped Play Store production identity `com.letbuyy.letbuyy`.
-- `apps/admin_app`: **RESERVED, manifest-only** (Constitution Amendment 2, 2026-09-05). Was a Flutter platform-operator app, never production-signed (debug-keystore release config), and entirely Firestore-backed; deleted in phase FB-1. `apps/admin_web` owns the platform-operator surface (D-4). Adding source here fails `no-reserved-service-activation-validator`.
+- `apps/commerce/web`: shopper-facing public store runtime and customer account flow.
+- `apps/merchant/web`: merchant operational UI and app-boundary API proxies.
+- `apps/platform/identity`: merchant identity, onboarding, store selection, password and OTP flows.
+- `apps/frozen/app-store`: partner extension marketplace.
+- `apps/frozen/developer-portal`: developer documentation, API reference, SDK quick-starts, and partner dashboard shell.
+- `apps/frozen/theme-store`: partner theme marketplace.
+- `apps/marketing/web`: public marketing and pricing.
+- `apps/internal/console`: platform super admin.
+- `apps/frozen/operations-portal`: employee support and operations.
+- `apps/merchant/mobile`: Flutter merchant builder and store management.
+- `apps/marketplace/mobile`: Flutter buyer-facing marketplace app; shipped Play Store production identity `com.letbuyy.letbuyy`.
+- `apps/reserved/operator-mobile`: **RESERVED, manifest-only** (Constitution Amendment 2, 2026-09-05). Was a Flutter platform-operator app, never production-signed (debug-keystore release config), and entirely Firestore-backed; deleted in phase FB-1. `apps/internal/console` owns the platform-operator surface (D-4). Adding source here fails `no-reserved-service-activation-validator`.
 
 ## Reserved Mobile Roots
 
 These roots are reserved but not implemented. Each contains only `AGENTS.md` and `runtime.manifest.json`; none owns active runtime behavior, deployment topology, production topology, app-store release artifacts, package manifests, tests, or source until a human-approved mobile scope adds real gateway-wired functionality and governance approval.
 
-- `apps/mobile/shopper-app`: reserved shopper mobile runtime.
-- `apps/mobile/operator-app`: reserved operator companion runtime.
+- `apps/reserved/legacy-shopper-mobile`: reserved shopper mobile runtime.
+- `apps/reserved/legacy-operator-mobile`: reserved operator companion runtime.
 
 ## Service Boundaries
 
@@ -48,7 +48,7 @@ These roots are canonical but not implemented. Each contains only `AGENTS.md` an
 - No package may import a runtime.
 - Cross-runtime work must go through HTTP contracts, event contracts, or package contracts.
 - Deprecated app aliases may not be recreated as placeholders or compatibility roots.
-- `apps/customer_web/consumer-storefront` may not be used as a nested runtime or theme authority.
+- `apps/commerce/web/consumer-storefront` may not be used as a nested runtime or theme authority.
 - Platform console and platform operations portal are separate runtimes: console is super-admin governance, while operations portal is employee workflow execution.
 - Runtime manifests are required at every app/service root and are the machine-readable boundary contract.
 - Mobile package dependencies must follow `core -> models -> services/ui_kit`; mobile apps must not import other mobile apps.

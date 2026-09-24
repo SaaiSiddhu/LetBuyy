@@ -25,19 +25,19 @@ tools/           — Central Intelligence System (LCIS) tooling
 
 | Slot | Path | Origin |
 |---|---|---|
-| `customer_app` | `apps/customer_app` | Cross-repo copy from System A's `apps/marketplace` — shipped Play Store production identity `com.letbuyy.letbuyy` |
-| `customer_web` | `apps/customer_web` | Renamed from `apps/storefront-runtime` (native to this repository) |
-| `merchant_app` | `apps/merchant_app` | Renamed from `apps/mobile/merchant-app` (native) |
-| `merchant_web` | `apps/merchant_web` | Renamed from `apps/merchant-control-plane` (native) |
-| `admin_app` | `apps/admin_app` | **RESERVED, manifest-only** since 2026-09-05 (Constitution Amendment 2). Was a cross-repo copy of System A's `apps/admin`, never production-signed; deleted with Firebase in phase FB-1 |
-| `admin_web` | `apps/admin_web` | Renamed from `apps/platform-console` (native) |
+| `customer_app` | `apps/marketplace/mobile` | Cross-repo copy from System A's `apps/marketplace` — shipped Play Store production identity `com.letbuyy.letbuyy` |
+| `customer_web` | `apps/commerce/web` | Renamed from `apps/storefront-runtime` (native to this repository) |
+| `merchant_app` | `apps/merchant/mobile` | Renamed from `apps/mobile/merchant-app` (native) |
+| `merchant_web` | `apps/merchant/web` | Renamed from `apps/merchant-control-plane` (native) |
+| `admin_app` | `apps/reserved/operator-mobile` | **RESERVED, manifest-only** since 2026-09-05 (Constitution Amendment 2). Was a cross-repo copy of System A's `apps/admin`, never production-signed; deleted with Firebase in phase FB-1 |
+| `admin_web` | `apps/internal/console` | Renamed from `apps/platform-console` (native) |
 
 Full survivor evidence and every rejected candidate's disposition: `docs/migration/repository_consolidation/04_application_survivor_scorecard.md`, `07_final_path_mapping.md`, and the Stage 3 entry in `10_merge_execution_journal.md`.
 
 ## Structural tiers beyond the six-app model
 
 - **`apps/phase_2/*`** (`rider_app`, `store_ops_app`) — quick-commerce capabilities with no System-A or System-C equivalent, donated from System B. Not ACTIVE, RESERVED, or FROZEN; not production-ready; not yet Dart pub workspace members (see `17_remaining_migration_backlog.md`).
-- **The auxiliary tier** — a directory-grouping label (not a new authority tier) for real, governed, non-six-app-name runtimes (`apps/identity-platform`, `apps/marketing-site`). Authorized by the Constitution amendment; the apps have not been physically relocated under a new path this phase.
+- **The auxiliary tier** — a directory-grouping label (not a new authority tier) for real, governed, non-six-app-name runtimes (`apps/platform/identity`, `apps/marketing/web`). Authorized by the Constitution amendment; the apps have not been physically relocated under a new path this phase.
 - **`services/compatibility/*`** — bounded, non-deployed bridges holding System A's Firebase Cloud Functions and System B's Cloudflare Workers, verbatim, pending a future D-0 (canonical backend) decision. Explicitly not wired into any canonical ACTIVE runtime.
 - **TOOLING** (`services/lcis-api`, `tools/graph-server`, `tools/central-intelligence`, 19 `packages/lcis-*`) — the Central Intelligence System's own dev-time tooling, non-deployed, non-commerce.
 

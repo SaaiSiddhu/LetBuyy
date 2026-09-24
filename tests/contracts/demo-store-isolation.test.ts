@@ -5,11 +5,11 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
-const storeServicePath = join(testDir, '../../apps/customer_web/src/lib/store-service.ts');
-const productServicePath = join(testDir, '../../apps/customer_web/src/lib/product-service.ts');
-const previewPagePath = join(testDir, '../../apps/customer_web/src/app/preview/page.tsx');
-const demoShortcutPath = join(testDir, '../../apps/customer_web/src/app/demo/urban-kicks/page.tsx');
-const editorPagePath = join(testDir, '../../apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+const storeServicePath = join(testDir, '../../apps/commerce/web/src/lib/store-service.ts');
+const productServicePath = join(testDir, '../../apps/commerce/web/src/lib/product-service.ts');
+const previewPagePath = join(testDir, '../../apps/commerce/web/src/app/preview/page.tsx');
+const demoShortcutPath = join(testDir, '../../apps/commerce/web/src/app/demo/urban-kicks/page.tsx');
+const editorPagePath = join(testDir, '../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
 const themeGovernancePath = join(testDir, '../../docs/governance/theme-engine-governance.md');
 
 function read(path: string): string {

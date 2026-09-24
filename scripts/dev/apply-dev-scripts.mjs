@@ -11,7 +11,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { APP_PORTS, SERVICE_PORTS, STORYBOOK_PORT } from "./ports.mjs";
+import { APP_PORTS, DEFAULT_DEV_APPS, SERVICE_PORTS, STORYBOOK_PORT } from "./ports.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -78,10 +78,22 @@ patch(`package.json`, (pkg) => {
   // `dev` = apps + Storybook only (fast, low-CPU): no Cloudflare Workers, so the
   // 4 `tsc --noEmit` custom builds don't fight the Next cold-compiles for CPU.
   // `dev:all` boots everything including the workers.
+  // D-APP-LAYOUT: the default boots the MAINTAINED apps by package name, never a path glob -- apps/ now
+  // nests containers, and a glob would start the frozen applications (and anything added later) by accident.
+  const maintained = DEFAULT_DEV_APPS
+    .map((app) => JSON.parse(readFileSync(path.join(repoRoot, "apps", app, "package.json"), "utf8")).name)
+    .map((name) => `--filter=${name}`)
+    .join(" ");
+  const frozen = Object.keys(APP_PORTS)
+    .filter((app) => app.startsWith("frozen/"))
+    .map((app) => JSON.parse(readFileSync(path.join(repoRoot, "apps", app, "package.json"), "utf8")).name)
+    .map((name) => `--filter=${name}`)
+    .join(" ");
   const devScripts = {
-    dev: `${setup} && ${run} --filter=./apps/* --filter=@letbuyy/ui`,
+    dev: `${setup} && ${run} ${maintained} --filter=@letbuyy/ui`,
     "dev:all": `${setup} && ${run}`,
-    "dev:apps": `${setup} && ${run} --filter=./apps/*`,
+    "dev:apps": `${setup} && ${run} ${maintained}`,
+    "dev:frozen": `${setup} && ${run} ${frozen}`,
     "dev:services": `${setup} && ${run} --filter=./services/*`,
     "dev:storybook": `turbo run dev --filter=@letbuyy/ui`,
     "dev:setup": `${setup} --force`,

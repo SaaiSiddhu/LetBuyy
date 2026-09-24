@@ -96,9 +96,9 @@ test('shared deterministic review checks hard-fail risky app and weak theme subm
 
 test('api client and operations portal expose reviewer workflow methods', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
-    const pageSource = repositorySource('apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx');
-    const consoleGovernanceSource = repositorySource('apps/admin_web/src/app/(dashboard)/marketplace-governance/page.tsx');
-    const consoleWorkspaceSource = repositorySource('apps/admin_web/src/components/_local-ui/console-workspace.tsx');
+    const pageSource = repositorySource('apps/frozen/operations-portal/src/app/(dashboard)/operations/page.tsx');
+    const consoleGovernanceSource = repositorySource('apps/internal/console/src/app/(dashboard)/marketplace-governance/page.tsx');
+    const consoleWorkspaceSource = repositorySource('apps/internal/console/src/components/_local-ui/console-workspace.tsx');
 
     for (const method of [
         'marketplaceReview',

@@ -6,7 +6,7 @@ const THEME_BUNDLE_SOURCE = 'packages/theme-engine/src/theme-bundle.ts';
 const THEME_SCHEMA_ADAPTER_SOURCE = 'services/api-gateway/src/execution/schema-registry-execution.adapter.ts';
 const THEME_EXECUTION_ADAPTER_SOURCE = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
 const THEME_ROUTE_SOURCE = 'services/api-gateway/src/routes/themes.ts';
-const STOREFRONT_STORE_SERVICE_SOURCE = 'apps/customer_web/src/lib/store-service.ts';
+const STOREFRONT_STORE_SERVICE_SOURCE = 'apps/commerce/web/src/lib/store-service.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');

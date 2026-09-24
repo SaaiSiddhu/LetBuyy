@@ -54,7 +54,7 @@ for (const skipId of ['SKIP-W3-SENTRY-DSN', 'SKIP-W3-DNS-CUTOVER']) {
 }
 
 const brandSource = readFile('packages/shared-types/src/brand.ts');
-const marketingLayout = readFile('apps/marketing-site/src/app/layout.tsx');
+const marketingLayout = readFile('apps/marketing/web/src/app/layout.tsx');
 const brandHasUnfilledHumanFacts =
   brandSource.includes("name: ''") ||
   brandSource.includes("foundingDate: ''") ||
@@ -77,10 +77,10 @@ reporter.assert(
 );
 
 for (const file of [
-  'apps/marketing-site/src/lib/public-urls.ts',
-  'apps/theme-marketplace/src/lib/public-urls.ts',
-  'apps/app-marketplace/src/lib/site-url.ts',
-  'apps/developer-portal/src/lib/site-url.ts',
+  'apps/marketing/web/src/lib/public-urls.ts',
+  'apps/frozen/theme-store/src/lib/public-urls.ts',
+  'apps/frozen/app-store/src/lib/site-url.ts',
+  'apps/frozen/developer-portal/src/lib/site-url.ts',
 ]) {
   reporter.assert(
     readFile(file).includes("const DEFAULT_PLATFORM_ROOT_DOMAIN = 'letbuyy.com'"),

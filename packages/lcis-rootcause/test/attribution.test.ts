@@ -21,7 +21,7 @@
  *  12. Malformed artifacts → never throw.
  *  13. Determinism — two identical calls produce identical results.
  *  14. Owner exclusion — domain with no owners → none contributed.
- *  15. Path substring matching (e.g. 'payments' matches 'apps/merchant_web/payments').
+ *  15. Path substring matching (e.g. 'payments' matches 'apps/merchant/web/payments').
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -60,7 +60,7 @@ const DOMAIN_INTEL = {
       rpcs: ['create_checkout_order'],
       queues: ['payment-queue'],
       workers: ['payment-worker'],
-      apps: ['apps/merchant_web'],
+      apps: ['apps/merchant/web'],
       owners: ['@payments-team', '@fintech-lead'],
     },
     {
@@ -72,7 +72,7 @@ const DOMAIN_INTEL = {
       rpcs: ['confirm_order'],
       queues: [],
       workers: [],
-      apps: ['apps/merchant_web'],
+      apps: ['apps/merchant/web'],
       owners: ['@orders-team'],
     },
     {
@@ -106,7 +106,7 @@ const INFRA_INTEL = {
   workers: [{ name: 'payment-worker', file: 'services/queue-workers/payment.ts' }],
   ownership: [
     { path: 'services/payments/', owners: ['@payments-infra'] },
-    { path: 'apps/merchant_web/', owners: ['@platform-team'] },
+    { path: 'apps/merchant/web/', owners: ['@platform-team'] },
     { path: 'services/webhooks/', owners: ['@webhook-team'] },
   ],
 };
@@ -482,9 +482,9 @@ describe('AttributionService', () => {
   // ── Infra path substring match ───────────────────────────────────────────────
 
   // 27
-  it('infra-intel path "apps/merchant_web/" matches domain "merchant"', () => {
+  it('infra-intel path "apps/merchant/web/" matches domain "merchant"', () => {
     const svc = new AttributionService(makeEngine(), fixedNow);
-    // 'merchant' is a substring of 'apps/merchant_web/'
+    // 'merchant' is a substring of 'apps/merchant/web/'
     const result = svc.ownersFor(['merchant']);
     assert.ok(result.includes('@platform-team'), 'path substring match must yield @platform-team');
   });

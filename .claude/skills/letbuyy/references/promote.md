@@ -70,7 +70,7 @@ repository deploys it; every item is an owner act:
 2. Play Store: `code merged ≠ backend deployed ≠ app submitted ≠ app approved ≠ app released ≠ release
    adopted`; verify the signing certificate fingerprint in the Play Console against the rescued
    keystores (`~/LetBuyy-signing-recovery-2026-08-29/`, 3 distinct hashes) — an agent never runs
-   `keytool` with a password; the customer app is built from `apps/customer_app` with
+   `keytool` with a password; the customer app is built from `apps/marketplace/mobile` with
    `--dart-define-from-file`, never with a committed key.
 3. Raise the minimum app version only after adoption clears the gate — never to force a migration.
 

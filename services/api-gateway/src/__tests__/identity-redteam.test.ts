@@ -23,7 +23,7 @@ import { validateIdentityIssuedMerchantSessionToken } from '../lib/identity-sess
 // opaque-merchant-session rotation reuse) and therefore NOT duplicated here.
 //
 // Isolation technique: the merchant realm's real signing key lives only in
-// apps/identity-platform and is never available to this test (by design —
+// apps/platform/identity and is never available to this test (by design —
 // verify-only runtimes never hold it). Every merchant-realm case below
 // generates its OWN throwaway ES256 keypair via jose.generateKeyPair and
 // installs its public half as the trusted LETBUYY_IDENTITY_PUBLIC_JWKS for

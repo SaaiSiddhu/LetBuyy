@@ -3,8 +3,8 @@
 **Scope (OWNER_DECISION 2026-09-04, D-UIUX):** review and build only against the **canonical design
 system** — `@letbuyy/ui` (`packages/typescript/ui`), its `--lb-*` token engine, the generated Dart
 bridge in `packages/dart/ui_kit`, and the constitution in `references/uiux/*.md` — for
-`apps/customer_web`, `apps/merchant_web`, `apps/admin_web`, `apps/identity-platform` and
-`apps/merchant_app`. **`apps/customer_app`, `apps/phase_2/*`, `apps/marketing-site`
+`apps/commerce/web`, `apps/merchant/web`, `apps/internal/console`, `apps/platform/identity` and
+`apps/merchant/mobile`. **`apps/marketplace/mobile`, `apps/phase_2/*`, `apps/marketing/web`
 and the FROZEN apps are ON HOLD**: donor UI is preserved by design until D-UX-DONORS lifts HOLD (D-0 = A and D-4 = `admin_web` were
 decided 2026-09-04; each port phase decides when a donor screen converges); the lane reviews
 them only for accessibility and safety regressions and never re-skins. If a request is donor or
@@ -73,7 +73,7 @@ marketing 1 · merchant_web 0 · identity 0. `DesignSystemRoot` merchant_web 1, 
 `a751a2ff`: 8 of 11 metrics **below** the 2026-08-14 baseline, 3 level, **0 HARD violations on the
 committed tree** (the validator passes in a clean worktree). The dirty primary checkout reports one —
 `identity-platform: dark-mode reachability target file is missing` — manufactured by another
-session's uncommitted deletion of `apps/identity-platform/src/lib/useAuthTheme.ts`; it is that
+session's uncommitted deletion of `apps/platform/identity/src/lib/useAuthTheme.ts`; it is that
 session's to resolve before it commits (`uiux/EVIDENCE_LEDGER.md`, `hazards.md`). **Resolved 2026-09-23:**
 the owner made identity light-only (D-AUTH-LIGHT), so the deletion landed through F-IDUI-1 and the
 invariant now asserts forced light instead.
@@ -103,7 +103,7 @@ node scripts/generators/generate-design-tokens.mjs --check && node scripts/gener
 pnpm --filter @letbuyy/ui run validate:ui                    # vitest + eslint rules + codemods + snapshots
 pnpm run lint:css                                            # stylelint on apps/**/src/**/*.css and packages/**/src/**/*.css
 node scripts/validators/provider-mode-badge-validator.mjs && node scripts/validators/token-source-single-validator.mjs && node scripts/validators/shell-single-validator.mjs
-( cd apps/merchant_app && flutter analyze && flutter test )  # the Flutter canary (172 tests)
+( cd apps/merchant/mobile && flutter analyze && flutter test )  # the Flutter canary (172 tests)
 ```
 
 ## 5. Lane report

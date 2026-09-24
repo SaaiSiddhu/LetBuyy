@@ -6,19 +6,19 @@ import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const editorPageSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx'),
+    join(testDir, '../../apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx'),
     'utf8',
 );
 const editorRouteSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/app/api/themes/[themeId]/editor/route.ts'),
+    join(testDir, '../../apps/merchant/web/src/app/api/themes/[themeId]/editor/route.ts'),
     'utf8',
 );
 const draftRouteSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/app/api/themes/[themeId]/editor/draft/route.ts'),
+    join(testDir, '../../apps/merchant/web/src/app/api/themes/[themeId]/editor/draft/route.ts'),
     'utf8',
 );
 const previewSessionRouteSource = readFileSync(
-    join(testDir, '../../apps/merchant_web/src/app/api/themes/[themeId]/preview-session/route.ts'),
+    join(testDir, '../../apps/merchant/web/src/app/api/themes/[themeId]/preview-session/route.ts'),
     'utf8',
 );
 const gatewayThemeAdapterSource = readFileSync(

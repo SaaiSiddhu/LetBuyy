@@ -10,7 +10,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 
 const gateway = read('services/api-gateway/src/routes/storefront/customer-registration.ts');
-const proxy = read('apps/customer_web/src/app/api/customer/register/route.ts');
+const proxy = read('apps/commerce/web/src/app/api/customer/register/route.ts');
 const apiClient = read('packages/typescript/api-client/src/index.ts');
 const validator = read('scripts/validators/domain-boundary-validator.mjs');
 
@@ -54,8 +54,8 @@ test('LB-12: route-count lockstep applied (188 routes)', () => {
 
 // ── LB-12 (UI): the storefront account bottom-sheet now wires the register branch. The backend
 // always existed; the bug was that the UI dead-ended new users and called setPassword (no token).
-const sheet = read('apps/customer_web/src/components/account/account-bottom-sheet.tsx');
-const authContext = read('apps/customer_web/src/context/customer-auth-context.tsx');
+const sheet = read('apps/commerce/web/src/components/account/account-bottom-sheet.tsx');
+const authContext = read('apps/commerce/web/src/context/customer-auth-context.tsx');
 
 test('LB-12 UI: bottom-sheet consumes register() and exposes a register state + handler', () => {
   assert.match(sheet, /login, setPassword, register, checkEmail, logout/);

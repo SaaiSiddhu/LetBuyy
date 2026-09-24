@@ -54,58 +54,72 @@ export const ignoredDirectoryNames = new Set([
   "temp",
 ]);
 
-// Updated 2026-09-02 (Phase M, Stage 6): the former apps/storefront-runtime,
-// apps/merchant-control-plane, apps/mobile/merchant-app, and
-// apps/platform-console are now apps/customer_web, apps/merchant_web,
-// apps/merchant_app, and apps/admin_web respectively (renamed on disk,
-// Stage 3). apps/customer_app and apps/admin_app were new additions
-// established the same stage (no prior ACTIVE/SUPPORTING classification to
-// rename from). See CLAUDE.md's "Six-App Target Topology" section and
-// docs/migration/repository_consolidation/10_merge_execution_journal.md.
+// Constitution Amendment 3 (2026-09-24, D-APP-LAYOUT, decisions.md §2g): application roots live
+// under GROUPING CONTAINERS. A container is never an application root and holds nothing but its
+// approved roots (see appGroupContainers below). Phase M's flat six-app paths (2026-09-02) and the
+// phase_2 tier are superseded as PATHS; the six-app product model stands. The executable history of
+// the moves is the APPID-P1 commit series; docs/archive keeps the old paths as written.
 //
-// Updated 2026-09-05 (phase FB-1): apps/admin_app moved from here to
-// reservedMobileRuntimeRoots. Its implementation was 100% Firestore-backed and
-// had never shipped a signed release; the owner's decision of 2026-09-05 retires
-// Firebase completely, so the source was deleted and the root reduced to the
-// manifest-only reserved shape. The NAME is deliberately kept -- the Constitution
-// admits it as one of six product-facing roots -- but it is now a reserved root,
-// which means no-reserved-service-activation-validator fails the gate on any
-// source file added under it until a named trigger and human approval reactivate
-// it. apps/admin_web is the active admin surface (D-4).
+// apps/reserved/operator-mobile (formerly apps/admin_app) has been RESERVED since phase FB-1
+// (2026-09-05): its Firestore implementation was deleted, the root is manifest-only, and
+// no-reserved-service-activation-validator fails the gate on any source file added under it until a
+// named trigger and human approval reactivate it. apps/internal/console is the one admin (D-4).
 export const canonicalAppRoots = [
-  "apps/customer_web",
-  "apps/merchant_web",
-  "apps/identity-platform",
-  "apps/marketing-site",
-  "apps/admin_web",
-  "apps/merchant_app",
-  "apps/customer_app",
+  "apps/commerce/web",
+  "apps/merchant/web",
+  "apps/platform/identity",
+  "apps/marketing/web",
+  "apps/internal/console",
+  "apps/merchant/mobile",
+  "apps/marketplace/mobile",
 ];
 
 export const frozenAppRoots = [
-  "apps/app-marketplace",
-  "apps/developer-portal",
-  "apps/theme-marketplace",
-  "apps/platform-operations-portal",
+  "apps/frozen/app-store",
+  "apps/frozen/developer-portal",
+  "apps/frozen/theme-store",
+  "apps/frozen/operations-portal",
 ];
 
 export const reservedMobileRuntimeRoots = [
-  "apps/mobile/shopper-app",
-  "apps/mobile/operator-app",
+  "apps/reserved/legacy-shopper-mobile",
+  "apps/reserved/legacy-operator-mobile",
   // Reserved by phase FB-1 (2026-09-05), not a placeholder that never held source:
   // the Firestore implementation was deleted and this root reduced to
-  // AGENTS.md + runtime.manifest.json. See apps/admin_app/AGENTS.md.
-  "apps/admin_app",
+  // AGENTS.md + runtime.manifest.json. See apps/reserved/operator-mobile/AGENTS.md.
+  "apps/reserved/operator-mobile",
 ];
 
-// apps/phase_2/* (Constitution amendment, 2026-09-02, Gap 4): product capabilities
-// outside the six-app core. Not ACTIVE, not RESERVED (holds real source), not
-// FROZEN. See CLAUDE.md's "Six-App Target Topology" section.
-export const phase2AppRoots = [
-  "apps/phase_2/rider_app",
-  "apps/phase_2/seller_app",
-  "apps/phase_2/store_ops_app",
+// apps/deferred/* (Amendment 3; the role Amendment 1 gave apps/phase_2/*): product capabilities
+// that hold real source but are not ACTIVE, not RESERVED and not FROZEN, and authorise no backend.
+// Activation needs its own amendment and ARB approval.
+export const deferredAppRoots = [
+  "apps/deferred/delivery/mobile",
 ];
+
+// reference/apps/* (Amendment 3, new REFERENCE class): preserved donor source. Never deployed,
+// never a runtime, workspace, build or deploy member, never imported by an active application --
+// yet still inside secret scanning (environment-validator scans every tracked file outside docs/).
+export const referenceRoot = "reference";
+export const referenceAppRoots = [
+  "reference/apps/marketplace-seller",
+  "reference/apps/store-operations",
+];
+
+// Every grouping container and exactly what it may hold. A value is either an application root or
+// a nested container (apps/deferred holds the apps/deferred/delivery container).
+export const appGroupContainers = {
+  "apps/marketplace": ["apps/marketplace/mobile"],
+  "apps/merchant": ["apps/merchant/web", "apps/merchant/mobile"],
+  "apps/commerce": ["apps/commerce/web"],
+  "apps/platform": ["apps/platform/identity"],
+  "apps/internal": ["apps/internal/console"],
+  "apps/marketing": ["apps/marketing/web"],
+  "apps/deferred": ["apps/deferred/delivery"],
+  "apps/deferred/delivery": [...deferredAppRoots],
+  "apps/frozen": [...frozenAppRoots],
+  "apps/reserved": [...reservedMobileRuntimeRoots],
+};
 
 // services/compatibility/* (Stage 5, Phase M, 2026-09-02): bounded,
 // non-deployed compatibility bridges — verbatim copies of System A's Firebase
@@ -123,6 +137,7 @@ export const compatibilityBridgeRoots = [
   "services/compatibility",
 ];
 
+// The deprecated app aliases (ARCH-R10), as history recorded them.
 export const deprecatedAppAliasRoots = [
   "apps/admin",
   "apps/analytics",
@@ -133,13 +148,21 @@ export const deprecatedAppAliasRoots = [
   "apps/storefront",
 ];
 
+// Amendment 3's exact carve-out: two alias paths are permitted ONLY as grouping containers of these
+// approved roots. Anything else under them -- a file directly in the container, a runtime root AT the
+// container, or any other descendant -- is still forbidden runtime topology.
+export const aliasContainerCarveOut = {
+  "apps/merchant": ["apps/merchant/web", "apps/merchant/mobile"],
+  "apps/internal": ["apps/internal/console"],
+};
+
 export const forbiddenRuntimeRoots = [
-  ...deprecatedAppAliasRoots,
+  ...deprecatedAppAliasRoots.filter((alias) => !(alias in aliasContainerCarveOut)),
   "apps/mobile/operator-team-app",
 ];
 
 export const forbiddenRuntimeSubtrees = [
-  "apps/customer_web/consumer-storefront",
+  "apps/commerce/web/consumer-storefront",
 ];
 
 export const canonicalServiceRoots = [
@@ -294,6 +317,18 @@ export function startsWithPrefix(file, prefix) {
   return file === prefix || file.startsWith(`${prefix}/`);
 }
 
+// Amendment 3: the single forbidden-runtime-path rule. True when the path sits under a prohibited root
+// or subtree, or under a carved-out alias container anywhere other than one of its approved roots.
+// The container directory itself (e.g. "apps/merchant") is not forbidden: it exists to hold them.
+export function isForbiddenRuntimePath(file) {
+  if ([...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees].some((prefix) => startsWithPrefix(file, prefix))) return true;
+  for (const [container, approved] of Object.entries(aliasContainerCarveOut)) {
+    if (file === container) return false;
+    if (startsWithPrefix(file, container) && !approved.some((rootPath) => startsWithPrefix(file, rootPath))) return true;
+  }
+  return false;
+}
+
 export function listWorkspaceFiles(startDirs = [
   "apps",
   "packages",
@@ -391,7 +426,6 @@ const staleBackupArtifactPattern = /\.broken$/;
 export function collectStaleArtifactOffenders() {
   const untracked = getUntrackedFiles();
   const workspace = listWorkspaceFiles();
-  const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
   return {
     untrackedScanned: untracked.length,
     workspaceScanned: workspace.length,
@@ -401,7 +435,7 @@ export function collectStaleArtifactOffenders() {
       (file) =>
         debugArtifactPattern.test(file) ||
         staleBackupArtifactPattern.test(file) ||
-        forbiddenRuntimePrefixes.some((prefix) => startsWithPrefix(file, prefix)),
+        isForbiddenRuntimePath(file),
     ),
   };
 }
@@ -454,8 +488,17 @@ export function dirname(relPath) {
 
 export function rootSegment(relPath) {
   const segments = relPath.split("/");
-  if (segments[0] === "apps" && segments[1] === "mobile") return segments.slice(0, 3).join("/");
-  if (segments[0] === "apps" || segments[0] === "services") return segments.slice(0, 2).join("/");
+  if (segments[0] === "apps") {
+    // Amendment 3 (2026-09-24): application roots sit under grouping containers, so a root is found by
+    // the governed lists, never by counting segments. A path under apps/ outside every governed root
+    // (a leftover flat path, an unapproved child of a container) falls back to its first two
+    // segments -- a "root" no allowlist contains, so every consumer fails loudly on it.
+    const governedAppRoots = [...canonicalAppRoots, ...frozenAppRoots, ...reservedMobileRuntimeRoots, ...deferredAppRoots];
+    const owner = governedAppRoots.find((appRoot) => relPath === appRoot || relPath.startsWith(`${appRoot}/`));
+    return owner ?? segments.slice(0, 2).join("/");
+  }
+  if (segments[0] === "reference" && segments[1] === "apps" && segments.length > 2) return segments.slice(0, 3).join("/");
+  if (segments[0] === "services") return segments.slice(0, 2).join("/");
   if (segments[0] === "packages" && segments[1] === "typescript") return segments.slice(0, 3).join("/");
   if (segments[0] === "packages" && segments[1] === "dart") return segments.slice(0, 3).join("/");
   if (segments[0] === "packages") return segments.slice(0, 2).join("/");

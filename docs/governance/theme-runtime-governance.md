@@ -4,11 +4,11 @@ The storefront runtime currently contains the active theme presentation authorit
 
 ## Current Source Authority
 
-- Storefront runtime: `apps/customer_web`
+- Storefront runtime: `apps/commerce/web`
 - Theme contracts and schema registry: `packages/theme-engine`
-- Live theme engine modules: `apps/customer_web/src/lib/theme-engine`
-- Section renderer components: `apps/customer_web/src/components/sections`
-- Theme marketplace: `apps/theme-marketplace`
+- Live theme engine modules: `apps/commerce/web/src/lib/theme-engine`
+- Section renderer components: `apps/commerce/web/src/components/sections`
+- Theme marketplace: `apps/frozen/theme-store`
 
 ## Separation of Concerns
 
@@ -21,7 +21,7 @@ The storefront runtime currently contains the active theme presentation authorit
 
 ## Forbidden Patterns
 
-- Recreating `apps/customer_web/consumer-storefront`.
+- Recreating `apps/commerce/web/consumer-storefront`.
 - Importing theme marketplace code into the storefront runtime as live render authority.
 - Treating generated theme preview output as source.
 - Moving business logic into section components.
@@ -31,9 +31,9 @@ The storefront runtime currently contains the active theme presentation authorit
 
 Contract extraction has begun in `packages/theme-engine`. Runtime rendering migration is still explicit future work. Until then:
 
-- keep live rendering inside `apps/customer_web`
+- keep live rendering inside `apps/commerce/web`
 - keep contracts, schemas, templates, releases, and hydration contracts in `packages/theme-engine`
-- keep marketplace acquisition inside `apps/theme-marketplace`
+- keep marketplace acquisition inside `apps/frozen/theme-store`
 - keep shared contracts typed before reuse
 - document new renderer contracts before extracting package code
 

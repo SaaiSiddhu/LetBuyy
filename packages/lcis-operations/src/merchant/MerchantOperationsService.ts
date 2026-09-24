@@ -363,7 +363,7 @@ export class MerchantOperationsService {
           this.eb.artifact(MERCHANT_INTEL, 'summary.tenantTables', `${tenantTables} tenant tables on one schema`),
           this.eb.artifact(MERCHANT_INTEL, 'summary.singlePointOfDependency', 'Confirmed SPOF'),
           this.eb.table('sites', 'Tenant root — all merchants share this schema'),
-          this.eb.doc('verifySiteOwnership', 'Sole cross-tenant isolation middleware', 'apps/merchant_web'),
+          this.eb.doc('verifySiteOwnership', 'Sole cross-tenant isolation middleware', 'apps/merchant/web'),
         ],
       }));
     }

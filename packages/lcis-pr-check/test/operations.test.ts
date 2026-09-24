@@ -221,7 +221,7 @@ describe('Back-compat: operationalVerdict null in legacy entry points', () => {
 
   it('analyzeWithGovernance returns operationalVerdict: null', async () => {
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/identity-platform/src/auth/route.ts'] },
+      { changedFiles: ['apps/platform/identity/src/auth/route.ts'] },
       makeStubEngine(),
       makeStubEis(),
       makeStubGov(),
@@ -254,7 +254,7 @@ describe('analyzeWithOperations: operationalVerdict structure', () => {
   it('verdict is one of PASS | WARN | FAIL | UNKNOWN', async () => {
     const ops = makeStubOps();
     const report = await analyzeWithOperations(
-      { changedFiles: ['apps/marketing-site/src/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/page.tsx'] },
       makeStubEngine(), makeStubEis(), makeStubGov(), ops,
     );
     const valid = ['PASS', 'WARN', 'FAIL', 'UNKNOWN'];
@@ -264,7 +264,7 @@ describe('analyzeWithOperations: operationalVerdict structure', () => {
   it('existing verdicts array is still populated (additive)', async () => {
     const ops = makeStubOps();
     const report = await analyzeWithOperations(
-      { changedFiles: ['apps/identity-platform/src/auth/session.ts'] },
+      { changedFiles: ['apps/platform/identity/src/auth/session.ts'] },
       makeStubEngine(), makeStubEis(), makeStubGov(), ops,
     );
     assert.ok(Array.isArray(report.verdicts));
@@ -274,7 +274,7 @@ describe('analyzeWithOperations: operationalVerdict structure', () => {
   it('existing governanceVerdicts array is still populated (additive)', async () => {
     const ops = makeStubOps();
     const report = await analyzeWithOperations(
-      { changedFiles: ['apps/identity-platform/src/auth/session.ts'] },
+      { changedFiles: ['apps/platform/identity/src/auth/session.ts'] },
       makeStubEngine(), makeStubEis(), makeStubGov(), ops,
     );
     assert.ok(Array.isArray(report.governanceVerdicts));
@@ -405,7 +405,7 @@ describe('analyzeWithOperations: docs-only PR → PASS or UNKNOWN (no false alar
   it('marketing-site change with no ops findings → PASS or UNKNOWN', async () => {
     const ops = makeStubOps(); // clean
     const report = await analyzeWithOperations(
-      { changedFiles: ['apps/marketing-site/src/components/Hero.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/components/Hero.tsx'] },
       makeStubEngine(), makeStubEis(), makeStubGov(), ops,
     );
     const v = report.operationalVerdict?.verdict;

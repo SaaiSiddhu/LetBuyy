@@ -12,7 +12,7 @@ const reporter = createReporter("Mobile topology honesty validator");
 const trackedFiles = getTrackedFiles();
 
 reporter.assert(
-  canonicalAppRoots.includes("apps/merchant_app"),
+  canonicalAppRoots.includes("apps/merchant/mobile"),
   "Mobile merchant app must remain the only active mobile app runtime",
 );
 

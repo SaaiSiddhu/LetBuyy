@@ -51,8 +51,8 @@ test('shared structured logger emits marketplace app identity and context', () =
 
 test('marketplace apps wrap shared logger and unavailable component implementations', () => {
     const loggerFiles = [
-        'apps/app-marketplace/src/lib/logger.ts',
-        'apps/theme-marketplace/src/lib/logger.ts',
+        'apps/frozen/app-store/src/lib/logger.ts',
+        'apps/frozen/theme-store/src/lib/logger.ts',
     ];
     for (const file of loggerFiles) {
         const source = read(file);
@@ -62,8 +62,8 @@ test('marketplace apps wrap shared logger and unavailable component implementati
     }
 
     const unavailableFiles = [
-        'apps/app-marketplace/src/components/MarketplaceUnavailable.tsx',
-        'apps/theme-marketplace/src/components/marketplace-unavailable.tsx',
+        'apps/frozen/app-store/src/components/MarketplaceUnavailable.tsx',
+        'apps/frozen/theme-store/src/components/marketplace-unavailable.tsx',
     ];
     for (const file of unavailableFiles) {
         const source = read(file);

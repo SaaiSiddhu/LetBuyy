@@ -21,8 +21,8 @@ const giftEmail = read('services/api-gateway/src/lib/gift-card-email.ts');
 const worker = read('services/queue-workers/src/index.ts');
 const commerceCore = read('packages/commerce-core/src/index.ts');
 const apiClient = read('packages/typescript/api-client/src/index.ts');
-const mcpPage = read('apps/merchant_web/src/app/[store]/products/gift-cards/page.tsx');
-const mcpItemRoute = read('apps/merchant_web/src/app/api/stores/[store]/gift-cards/[id]/route.ts');
+const mcpPage = read('apps/merchant/web/src/app/[store]/products/gift-cards/page.tsx');
+const mcpItemRoute = read('apps/merchant/web/src/app/api/stores/[store]/gift-cards/[id]/route.ts');
 
 test('LB-11: migration 173 defines the canonical issuance + lifecycle RPCs (SECURITY DEFINER)', () => {
   for (const fn of [

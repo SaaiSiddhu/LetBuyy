@@ -51,16 +51,16 @@ test('api-client path conversion strips the configured versioned base path', () 
 
 test('active app API wrappers import shared base and path helpers', () => {
     const baseWrapperFiles = [
-        'apps/merchant_web/src/lib/api/client.ts',
-        'apps/customer_web/src/lib/api/client.ts',
-        'apps/identity-platform/src/lib/api/client.ts',
-        'apps/app-marketplace/src/lib/api/client.ts',
-        'apps/theme-marketplace/src/lib/api/client.ts',
-        'apps/admin_web/src/lib/console-api.ts',
-        'apps/platform-operations-portal/src/lib/api/client.ts',
-        existsSync(join(repoRoot, 'apps/marketing-site/src/app/[locale]/create/page.tsx'))
-            ? 'apps/marketing-site/src/app/[locale]/create/page.tsx'
-            : 'apps/marketing-site/src/app/create/page.tsx',
+        'apps/merchant/web/src/lib/api/client.ts',
+        'apps/commerce/web/src/lib/api/client.ts',
+        'apps/platform/identity/src/lib/api/client.ts',
+        'apps/frozen/app-store/src/lib/api/client.ts',
+        'apps/frozen/theme-store/src/lib/api/client.ts',
+        'apps/internal/console/src/lib/console-api.ts',
+        'apps/frozen/operations-portal/src/lib/api/client.ts',
+        existsSync(join(repoRoot, 'apps/marketing/web/src/app/[locale]/create/page.tsx'))
+            ? 'apps/marketing/web/src/app/[locale]/create/page.tsx'
+            : 'apps/marketing/web/src/app/create/page.tsx',
     ];
 
     for (const file of baseWrapperFiles) {
@@ -72,15 +72,15 @@ test('active app API wrappers import shared base and path helpers', () => {
     }
 
     for (const file of [
-        'apps/merchant_web/src/lib/api/client.ts',
-        'apps/customer_web/src/lib/api/client.ts',
+        'apps/merchant/web/src/lib/api/client.ts',
+        'apps/commerce/web/src/lib/api/client.ts',
     ]) {
         const source = read(file);
         assert.match(source, /apiClientInputToLetbuyyApiPath/);
         assert.doesNotMatch(source, /\bfunction\s+apiClientInputTo[A-Za-z]+ApiPath\b/);
     }
 
-    const browserClient = read('apps/customer_web/src/lib/api/browser-client.ts');
+    const browserClient = read('apps/commerce/web/src/lib/api/browser-client.ts');
     assert.match(browserClient, /apiClientInputToLetbuyyApiPath/);
     assert.match(browserClient, /resolveLetbuyyApiBaseUrl/);
     assert.match(browserClient, /`\/api\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\$\{apiPath\}`/);
@@ -88,8 +88,8 @@ test('active app API wrappers import shared base and path helpers', () => {
 });
 
 test('api-client base helper validator is wired into governance', () => {
-    const marketingPackage = JSON.parse(read('apps/marketing-site/package.json'));
-    const marketingManifest = JSON.parse(read('apps/marketing-site/runtime.manifest.json'));
+    const marketingPackage = JSON.parse(read('apps/marketing/web/package.json'));
+    const marketingManifest = JSON.parse(read('apps/marketing/web/runtime.manifest.json'));
     const validator = read('scripts/validators/api-client-runtime-base-validator.mjs');
     const governanceRunner = read('scripts/validate-governance.mjs');
 

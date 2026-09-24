@@ -12,8 +12,8 @@ const lockedPaths = [
   "database/supabase/migrations/147_executable_order_state_risk.sql",
   "packages/theme-engine/src/theme-registry.ts",
   "packages/typescript/ui/src/tokens.ts",
-  "apps/identity-platform/src/lib/auth/cookies.ts",
-  "apps/identity-platform/src/app/api/auth/switch/route.ts",
+  "apps/platform/identity/src/lib/auth/cookies.ts",
+  "apps/platform/identity/src/app/api/auth/switch/route.ts",
 ];
 
 function git(args) {

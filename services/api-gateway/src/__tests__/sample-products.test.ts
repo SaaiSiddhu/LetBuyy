@@ -5,8 +5,8 @@ import test from 'node:test';
 const productsRouteSource = readFileSync(new URL('../routes/products.ts', import.meta.url), 'utf8');
 const tsClientSource = readFileSync(new URL('../../../../packages/typescript/api-client/src/index.ts', import.meta.url), 'utf8');
 const dartClientSource = readFileSync(new URL('../../../../packages/dart/api_client/lib/src/api_client.dart', import.meta.url), 'utf8');
-const productServiceSource = readFileSync(new URL('../../../../apps/merchant_app/lib/services/product_service.dart', import.meta.url), 'utf8');
-const productsScreenSource = readFileSync(new URL('../../../../apps/merchant_app/lib/screens/products/products_screen.dart', import.meta.url), 'utf8');
+const productServiceSource = readFileSync(new URL('../../../../apps/merchant/mobile/lib/services/product_service.dart', import.meta.url), 'utf8');
+const productsScreenSource = readFileSync(new URL('../../../../apps/merchant/mobile/lib/screens/products/products_screen.dart', import.meta.url), 'utf8');
 
 const sampleRouteStart = productsRouteSource.indexOf("router.post('/sample'");
 const productDetailRouteStart = productsRouteSource.indexOf("router.get('/:id'");

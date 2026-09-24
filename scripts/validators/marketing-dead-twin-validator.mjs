@@ -20,7 +20,7 @@ const twins = [
 
 for (const file of twins) {
   reporter.assert(
-    !exists(`apps/marketing-site/src/components/${file}`),
+    !exists(`apps/marketing/web/src/components/${file}`),
     `marketing dead twin ${file} must stay out of active source`,
   );
   reporter.assert(
@@ -29,7 +29,7 @@ for (const file of twins) {
   );
 }
 
-const pageSource = readFile("apps/marketing-site/src/app/[locale]/page.tsx");
+const pageSource = readFile("apps/marketing/web/src/app/[locale]/page.tsx");
 for (const liveComponent of [
   "Header",
   "Hero",

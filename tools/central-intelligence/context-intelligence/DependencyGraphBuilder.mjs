@@ -9,7 +9,7 @@
  *
  * A "module" here is a workspace package identified by its package.json name
  * or, for files that don't belong to any package, the top-level directory
- * segment (e.g. "apps/identity-platform").
+ * segment (e.g. "apps/platform/identity").
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
@@ -52,7 +52,7 @@ function fileToPackage(file, filePackageMap) {
   for (const [prefix, pkgName] of filePackageMap) {
     if (file.startsWith(prefix)) return pkgName;
   }
-  // Fallback: first two path segments (e.g. apps/identity-platform)
+  // Fallback: first two path segments (e.g. apps/platform/identity)
   const parts = file.split('/');
   if (parts.length >= 2 && WORKSPACE_ROOTS.includes(parts[0])) {
     return `${parts[0]}/${parts[1]}`;

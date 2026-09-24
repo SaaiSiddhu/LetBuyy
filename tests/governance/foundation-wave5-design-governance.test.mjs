@@ -48,11 +48,11 @@ test('Wave 5 ratchet fails on new arbitrary-radius drift', () => {
 
 test('Wave 5 scope exiles marketing and forbids local workspace implementations', () => {
     const baseline = JSON.parse(readFileSync(BASELINE_PATH, 'utf8'));
-    assert.deepEqual(baseline.scope.exiledApps, ['apps/marketing-site']);
+    assert.deepEqual(baseline.scope.exiledApps, ['apps/marketing/web']);
 
     for (const file of [
-        'apps/admin_web/src/components/_local-ui/console-workspace.tsx',
-        'apps/platform-operations-portal/src/components/_local-ui/ops-workspace.tsx',
+        'apps/internal/console/src/components/_local-ui/console-workspace.tsx',
+        'apps/frozen/operations-portal/src/components/_local-ui/ops-workspace.tsx',
     ]) {
         const text = readFileSync(join(ROOT, file), 'utf8');
         assert.match(text, /InternalWorkspace/);
@@ -65,12 +65,12 @@ test('identity-platform stays light-only: the validator refuses an unforced layo
     // light-only lines are read: the scratch root lacks every other surface, which the validator also reports.
     const scratch = mkdtempSync(join(tmpdir(), 'letbuyy-light-only-'));
     const validator = join(scratch, 'scripts', 'validators', 'validate-design-system.mjs');
-    const layoutPath = join(scratch, 'apps', 'identity-platform', 'src', 'app', 'layout.tsx');
-    const pagePath = join(scratch, 'apps', 'identity-platform', 'src', 'app', 'login', 'page.tsx');
+    const layoutPath = join(scratch, 'apps', 'platform', 'identity', 'src', 'app', 'layout.tsx');
+    const pagePath = join(scratch, 'apps', 'platform', 'identity', 'src', 'app', 'login', 'page.tsx');
     mkdirSync(dirname(validator), { recursive: true });
     mkdirSync(dirname(pagePath), { recursive: true });
     copyFileSync(join(ROOT, 'scripts', 'validators', 'validate-design-system.mjs'), validator);
-    const committedLayout = readFileSync(join(ROOT, 'apps', 'identity-platform', 'src', 'app', 'layout.tsx'), 'utf8');
+    const committedLayout = readFileSync(join(ROOT, 'apps', 'platform', 'identity', 'src', 'app', 'layout.tsx'), 'utf8');
     const quietPage = 'export default function Login() { return null }\n';
     const lightOnlyFailures = (layout, page) => {
         writeFileSync(layoutPath, layout);

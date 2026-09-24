@@ -111,7 +111,7 @@ These stories render the same components with `data-density` and `data-letbuyy-d
 Notes:
 
 - The first sandboxed `pnpm turbo build` stalled during Next/Turbopack app builds.
-- The first escalated rerun found a stale `apps/customer_web/.next/lock` from the interrupted build.
+- The first escalated rerun found a stale `apps/commerce/web/.next/lock` from the interrupted build.
 - After stopping the stale `next build` process, the escalated `pnpm turbo build` passed.
 - Storybook emitted the normal Vite large-chunk warning.
 

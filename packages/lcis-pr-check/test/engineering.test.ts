@@ -334,7 +334,7 @@ describe('analyzeWithEngineering — six engineering dimensions present', () => 
   before(async () => {
     resetEngine();
     report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined,
       undefined,
@@ -399,7 +399,7 @@ describe('analyzeWithEngineering — back-compat: analyzePr returns []', () => {
   it('analyzeWithVerdicts returns engineeringVerdicts: [] (back-compat)', async () => {
     resetEngine();
     const report = await analyzeWithVerdicts(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     assert.ok(Array.isArray(report.engineeringVerdicts));
@@ -409,7 +409,7 @@ describe('analyzeWithEngineering — back-compat: analyzePr returns []', () => {
   it('analyzeWithGovernance returns engineeringVerdicts: [] (back-compat)', async () => {
     resetEngine();
     const report = await analyzeWithGovernance(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     assert.ok(Array.isArray(report.engineeringVerdicts));
@@ -419,7 +419,7 @@ describe('analyzeWithEngineering — back-compat: analyzePr returns []', () => {
   it('analyzeWithOperations returns engineeringVerdicts: [] (back-compat)', async () => {
     resetEngine();
     const report = await analyzeWithOperations(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     assert.ok(Array.isArray(report.engineeringVerdicts));
@@ -537,7 +537,7 @@ describe('analyzeWithEngineering — readiness decision mapping', () => {
   it('GO → engineering-readiness PASS', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ decision: 'GO' }),
@@ -549,7 +549,7 @@ describe('analyzeWithEngineering — readiness decision mapping', () => {
   it('CONDITIONAL_GO → engineering-readiness WARN', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ decision: 'CONDITIONAL_GO' }),
@@ -561,7 +561,7 @@ describe('analyzeWithEngineering — readiness decision mapping', () => {
   it('NO_GO → engineering-readiness FAIL', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ decision: 'NO_GO' }),
@@ -577,7 +577,7 @@ describe('analyzeWithEngineering — complexity band mapping', () => {
   it('trivial → engineering-complexity PASS', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ complexityBand: 'trivial' }),
@@ -589,7 +589,7 @@ describe('analyzeWithEngineering — complexity band mapping', () => {
   it('moderate → engineering-complexity WARN', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ complexityBand: 'moderate' }),
@@ -629,7 +629,7 @@ describe('analyzeWithEngineering — risk level mapping', () => {
   it('low → engineering-risk PASS', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ riskLevel: 'low' }),
@@ -641,7 +641,7 @@ describe('analyzeWithEngineering — risk level mapping', () => {
   it('medium → engineering-risk WARN', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/merchant_web/src/app/[store]/orders/page.tsx'] },
+      { changedFiles: ['apps/merchant/web/src/app/[store]/orders/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ riskLevel: 'medium' }),
@@ -694,7 +694,7 @@ describe('analyzeWithEngineering — coverage gap findings', () => {
   it('no gap findings → engineering-coverage PASS', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ gapFindings: [] }),
@@ -734,7 +734,7 @@ describe('analyzeWithEngineering — verification gate findings', () => {
   it('no gate findings → engineering-verification PASS', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins({ gateFindings: [], blockerFindings: [] }),
@@ -791,7 +791,7 @@ describe('analyzeWithEngineering — renderJson and renderSummary', () => {
   it('JSON output contains engineeringVerdicts array', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins(),
@@ -805,7 +805,7 @@ describe('analyzeWithEngineering — renderJson and renderSummary', () => {
   it('JSON engineering verdict objects have all required fields', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins(),
@@ -823,7 +823,7 @@ describe('analyzeWithEngineering — renderJson and renderSummary', () => {
   it('renderSummary contains Engineering line when verdicts present', async () => {
     resetEngine();
     const report = await analyzeWithEngineering(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
       undefined, undefined, undefined,
       makeStubEins(),
@@ -835,7 +835,7 @@ describe('analyzeWithEngineering — renderJson and renderSummary', () => {
   it('renderSummary does NOT contain Engineering line for analyzePr path', async () => {
     resetEngine();
     const report = await analyzePr(
-      { changedFiles: ['apps/marketing-site/src/app/page.tsx'] },
+      { changedFiles: ['apps/marketing/web/src/app/page.tsx'] },
       makeStubEngine(),
     );
     const summary = renderSummary(report);

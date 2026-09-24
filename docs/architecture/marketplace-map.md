@@ -1,10 +1,10 @@
 # Marketplace Map (frozen)
 
-`apps/app-marketplace` and `apps/theme-marketplace` are **frozen / pending consolidation** — NOT production deploy targets (`CLAUDE.md`, `deploy-matrix-topology-validator`).
+`apps/frozen/app-store` and `apps/frozen/theme-store` are **frozen / pending consolidation** — NOT production deploy targets (`CLAUDE.md`, `deploy-matrix-topology-validator`).
 
 ## Status
 - Excluded from the production deploy matrix and the root `build`/`typecheck` filters.
-- `apps/app-marketplace/src/proxy.ts` is **live Next 16 middleware** (host/auth routing) — not dead code; do not delete.
+- `apps/frozen/app-store/src/proxy.ts` is **live Next 16 middleware** (host/auth routing) — not dead code; do not delete.
 - `marketplace-display.ts` and similar have real inbound imports — treat "dead file" audit claims as unverified until proven.
 
 ## Guardrails

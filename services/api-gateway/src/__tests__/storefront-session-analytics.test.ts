@@ -15,8 +15,8 @@ const analyticsRoute = source('routes/analytics.ts');
 const sharedTypes = repositorySource('packages/shared-types/src/index.ts');
 const tsClient = repositorySource('packages/typescript/api-client/src/index.ts');
 const dartClient = repositorySource('packages/dart/api_client/lib/src/api_client.dart');
-const mobileService = repositorySource('apps/merchant_app/lib/services/analytics_service.dart');
-const mobileScreen = repositorySource('apps/merchant_app/lib/screens/analytics/analytics_screen.dart');
+const mobileService = repositorySource('apps/merchant/mobile/lib/services/analytics_service.dart');
+const mobileScreen = repositorySource('apps/merchant/mobile/lib/screens/analytics/analytics_screen.dart');
 const migration = repositorySource('database/supabase/migrations/155_storefront_session_analytics.sql');
 const rollback = repositorySource('database/supabase/rollback/155_storefront_session_analytics.rollback.sql');
 

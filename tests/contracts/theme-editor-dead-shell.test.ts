@@ -41,7 +41,7 @@ function read(relativePath: string): string {
 test('unused theme editor shell modules are archived outside active source', () => {
     for (const component of archivedComponents) {
         assert.equal(
-            existsSync(path(`apps/merchant_web/src/components/theme-editor/${component}.tsx`)),
+            existsSync(path(`apps/merchant/web/src/components/theme-editor/${component}.tsx`)),
             false,
             `${component}.tsx must not exist under active theme-editor components`,
         );
@@ -54,7 +54,7 @@ test('unused theme editor shell modules are archived outside active source', () 
 
     for (const hook of archivedHooks) {
         assert.equal(
-            existsSync(path(`apps/merchant_web/src/hooks/${hook}.ts`)),
+            existsSync(path(`apps/merchant/web/src/hooks/${hook}.ts`)),
             false,
             `${hook}.ts must not exist under active merchant hooks`,
         );
@@ -67,7 +67,7 @@ test('unused theme editor shell modules are archived outside active source', () 
 });
 
 test('live theme editor page keeps the active preview and schema renderer', () => {
-    const source = read('apps/merchant_web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
+    const source = read('apps/merchant/web/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx');
 
     assert.match(source, /@\/components\/theme-editor\/CenterPanel/);
     assert.match(source, /@\/components\/theme-editor\/SchemaFormRenderer/);

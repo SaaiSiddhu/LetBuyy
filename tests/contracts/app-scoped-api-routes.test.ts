@@ -14,7 +14,7 @@ const testDir = dirname(fileURLToPath(import.meta.url));
 const routeSource = readFileSync(join(testDir, '../../services/api-gateway/src/routes/app-api.ts'), 'utf8');
 const indexSource = readFileSync(join(testDir, '../../services/api-gateway/src/index.ts'), 'utf8');
 const apiClientSource = readFileSync(join(testDir, '../../packages/typescript/api-client/src/index.ts'), 'utf8');
-const developerPortalSource = readFileSync(join(testDir, '../../apps/developer-portal/src/lib/developer-surface.ts'), 'utf8');
+const developerPortalSource = readFileSync(join(testDir, '../../apps/frozen/developer-portal/src/lib/developer-surface.ts'), 'utf8');
 
 test('app scoped API accepts matching active installations and rejects missing scopes', async () => {
     const secret = 'app-api-token-secret';

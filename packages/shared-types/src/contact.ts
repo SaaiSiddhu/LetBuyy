@@ -5,7 +5,7 @@ import { z } from 'zod';
  * form.
  *
  * Three consumers read this file and they MUST agree:
- *   • apps/marketing-site  renders the dropdowns from it
+ *   • apps/marketing/web  renders the dropdowns from it
  *   • services/api-gateway validates the submission against it and routes the
  *     lead to a team using it
  *   • the transactional emails print the human labels from it

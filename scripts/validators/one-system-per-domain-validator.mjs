@@ -13,10 +13,10 @@ const activeRoots = new Set((productionTopology?.runtimes || [])
   .map((runtime) => runtime.runtimeRoot));
 
 for (const frozenRoot of [
-  "apps/app-marketplace",
-  "apps/developer-portal",
-  "apps/theme-marketplace",
-  "apps/platform-operations-portal",
+  "apps/frozen/app-store",
+  "apps/frozen/developer-portal",
+  "apps/frozen/theme-store",
+  "apps/frozen/operations-portal",
 ]) {
   reporter.assert(!activeRoots.has(frozenRoot), `${frozenRoot} must not be active production authority`);
 }

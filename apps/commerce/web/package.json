@@ -1,0 +1,45 @@
+{
+  "name": "@letbuyy/customer-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack -p 9000",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "cd ../../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/theme-engine/storefront-liquid-runtime.test.mjs tests/theme-engine/liquid-hydration-islands.test.mjs tests/theme-engine/liquid-hydration-islands-parity.test.mjs tests/theme-engine/editor-bridge-contract.test.mjs tests/theme-engine/inspector-bridge.test.mjs tests/launch/lb-e9-template-resolution.test.mjs tests/launch/lb-g-schema-governance.test.mjs tests/launch/lb-storefront-ssr-contracts.test.mjs tests/localization/theme-localization.test.mjs tests/launch/lb-k-theme-platform.test.mjs tests/launch/lb-l-ai-theme-platform.test.mjs"
+  },
+  "dependencies": {
+    "@letbuyy/api-client": "workspace:*",
+    "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/checkout-core": "workspace:*",
+    "@letbuyy/cms-core": "workspace:*",
+    "@letbuyy/commerce-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
+    "@letbuyy/tenant-core": "workspace:*",
+    "@letbuyy/theme-engine": "workspace:*",
+    "@letbuyy/ui": "workspace:*",
+    "@vercel/speed-insights": "^1.3.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.26",
+    "jose": "^6.1.3",
+    "jsdom": "^29.1.1",
+    "lucide-react": "^0.562.0",
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

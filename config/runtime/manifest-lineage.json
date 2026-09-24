@@ -26,7 +26,7 @@
       "path": "config/runtime/deployment-topology.json",
       "owner": "runtime-topology",
       "compatibility": "startup-order-compatible",
-      "checksum": "6ae26c3fa4b47037624b58ed345513836366a8d7d88f949f941c2ebdb3c1bd91"
+      "checksum": "4aa0be3fbc3f9deed9347764e98d388e86454b38decbf469af19b7dddf822d72"
     },
     {
       "path": "config/runtime/environment-lifecycle.json",
@@ -38,13 +38,13 @@
       "path": "config/runtime/rollout-lifecycle.json",
       "owner": "rollout-lifecycle",
       "compatibility": "canary-and-rollback-compatible",
-      "checksum": "36febc19fddad6adf677ac741ef6ed0b776bf056419a802cc21dac3d8daa7bcc"
+      "checksum": "bfe27d250a5e14227d7665f0f94f7a51a85b2d648352750c93feed76702c6aea"
     },
     {
       "path": "config/runtime/production-topology.json",
       "owner": "production-topology",
       "compatibility": "single-region-outbox-compatible",
-      "checksum": "2d3d0a880e56e7eccc8727b2024aecc5468c93514bde8efa207240f5881b3e64"
+      "checksum": "2f62e8f814ea50880c86bb46942e578a3ef498cbe0ab2926fcac81100c6e366d"
     },
     {
       "path": "config/runtime/live-production-certification.json",

@@ -286,8 +286,8 @@ export const APP_BLOCK_ERROR_PLACEHOLDER_CLASS = 'lb-app-block-placeholder--erro
 /**
  * The live app-content runtime is NOT CONNECTED.
  *
- * Missing piece: no live app server produces app-block HTML. apps/app-marketplace and
- * apps/developer-portal are FROZEN (not deploy targets). The buildLiquidAppBlocks
+ * Missing piece: no live app server produces app-block HTML. apps/frozen/app-store and
+ * apps/frozen/developer-portal are FROZEN (not deploy targets). The buildLiquidAppBlocks
  * function in customer-web/composition-engine.tsx constructs first-party static
  * HTML from metadata stored in app_installations / app_extension_registrations tables
  * (title, content.heading/body/cta, iframe_url). No external app server is called
@@ -310,4 +310,4 @@ export const APP_BLOCK_NOT_CONNECTED_REASON =
   'NOT-CONNECTED: no live app runtime produces app-block HTML. '
   + 'Missing piece: a live app server registered in app_installations and '
   + 'app_extension_registrations that can supply sanitized block HTML for a given '
-  + '(siteId, appId, extensionId) tuple. apps/app-marketplace is FROZEN.';
+  + '(siteId, appId, extensionId) tuple. apps/frozen/app-store is FROZEN.';

@@ -8,11 +8,11 @@ const internalConsoleMoneySource = readFileSync(
     'utf8',
 );
 const consoleLayoutSource = readFileSync(
-    new URL('../../../../apps/admin_web/src/app/(dashboard)/layout.tsx', import.meta.url),
+    new URL('../../../../apps/internal/console/src/app/(dashboard)/layout.tsx', import.meta.url),
     'utf8',
 );
 const consolePageSource = readFileSync(
-    new URL('../../../../apps/admin_web/src/app/(dashboard)/money-reconciliation/page.tsx', import.meta.url),
+    new URL('../../../../apps/internal/console/src/app/(dashboard)/money-reconciliation/page.tsx', import.meta.url),
     'utf8',
 );
 const canonicalLedgerValidator = readFileSync(

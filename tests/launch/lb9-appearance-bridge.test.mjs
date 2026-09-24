@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 const gatewaySelect = read('services/api-gateway/src/routes/storefront.ts');
-const storeService = read('apps/customer_web/src/lib/store-service.ts');
+const storeService = read('apps/commerce/web/src/lib/store-service.ts');
 
 test('LB-9: storefront site selects include site_settings', () => {
   // both the release and compat selects must carry site_settings now

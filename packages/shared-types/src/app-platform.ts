@@ -1255,7 +1255,7 @@ export function createAppExtensionDeveloperHandoff(): AppExtensionDeveloperHando
       'packages/shared-types/src/app-platform.ts',
       'services/api-gateway/src/extensions/app-functions-runtime.ts',
       'packages/typescript/api-client/src/index.ts',
-      'apps/developer-portal/src/lib/reference.ts',
+      'apps/frozen/developer-portal/src/lib/reference.ts',
     ],
     supported_surfaces: [...LETBUYY_APP_MANIFEST_EXTENSION_SURFACES],
     supported_function_hooks: [...LETBUYY_APP_FUNCTION_HOOKS],

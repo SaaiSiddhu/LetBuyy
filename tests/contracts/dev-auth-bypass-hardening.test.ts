@@ -7,15 +7,15 @@ import { fileURLToPath } from 'node:url';
 import {
     canUseIdentityDevAuthBypass,
     isProductionIdentityRuntime,
-} from '../../apps/identity-platform/src/lib/dev-auth-bypass';
+} from '../../apps/platform/identity/src/lib/dev-auth-bypass';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(testDir, '../..');
-const signupRoutePath = join(repoRoot, 'apps/identity-platform/src/app/api/auth/signup/route.ts');
-const identityDevBypassPath = join(repoRoot, 'apps/identity-platform/src/lib/dev-auth-bypass.ts');
-const identityTurnstilePath = join(repoRoot, 'apps/identity-platform/src/lib/turnstile.ts');
-const turnstileWidgetPath = join(repoRoot, 'apps/identity-platform/src/components/TurnstileWidget.tsx');
-const consoleAuthPath = join(repoRoot, 'apps/admin_web/src/lib/console-auth-server.ts');
+const signupRoutePath = join(repoRoot, 'apps/platform/identity/src/app/api/auth/signup/route.ts');
+const identityDevBypassPath = join(repoRoot, 'apps/platform/identity/src/lib/dev-auth-bypass.ts');
+const identityTurnstilePath = join(repoRoot, 'apps/platform/identity/src/lib/turnstile.ts');
+const turnstileWidgetPath = join(repoRoot, 'apps/platform/identity/src/components/TurnstileWidget.tsx');
+const consoleAuthPath = join(repoRoot, 'apps/internal/console/src/lib/console-auth-server.ts');
 const nextTemplatePath = join(repoRoot, 'config/env/templates/next-app.env.example');
 const nextSchemaPath = join(repoRoot, 'config/env/schemas/next-app.schema.json');
 const securityGovernancePath = join(repoRoot, 'docs/governance/security-operations-governance.md');

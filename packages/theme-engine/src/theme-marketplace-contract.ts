@@ -39,7 +39,7 @@
 //
 // SCOPE:
 //   This is the readiness gate contract, NOT a live pipeline.  The frozen apps
-//   (apps/app-marketplace, apps/developer-portal, apps/theme-marketplace) are
+//   (apps/frozen/app-store, apps/frozen/developer-portal, apps/frozen/theme-store) are
 //   NOT referenced here.  Marketplace launch remains ARB/human-gated.
 
 import {
