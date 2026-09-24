@@ -41,7 +41,7 @@ function app(options: {
     insertError?: unknown;
     internalOk?: boolean;
 } = {}) {
-    const calls = { insert: [] as unknown[], setPassword: [] as unknown[], lookups: [] as string[] };
+    const calls = { insert: [] as unknown[], lookups: [] as string[] };
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerAccountRoutes(router, {
         normalizeEmail: (email) => email.trim().toLowerCase(),
@@ -61,15 +61,11 @@ function app(options: {
             if (options.insertError) return { data: null, error: options.insertError };
             return { data: await accountRow({ email: row.email, password_hash: row.password_hash }), error: null };
         },
-        setBuyerPassword: async (_c, id, hash) => {
-            calls.setPassword.push({ id, hash });
-            return { data: await accountRow({ id, password_hash: hash }), error: null };
-        },
-        // BUYER-5's deps. This suite covers register and verify-credentials; the link route has its
-        // own file, because its risk is entirely different — it is about whose identity is used.
+        // BUYER-5 / APPID-P3 deps. This suite covers register and verify-credentials; the ownership
+        // routes have their own file, because their risk is entirely different: whose identity is used.
         loadBuyerById: async () => ({ data: options.existing ?? null, error: null }),
-        findOrCreateStoreCustomer: async () => ({ data: { id: 'store-customer-1' }, error: null }),
-        linkBuyerToStoreCustomer: async () => ({ error: null }),
+        linkStoreCustomer: async () => ({ data: { outcome: 'unverified' }, error: null }),
+        claimOrders: async () => ({ data: { outcome: 'unverified' }, error: null }),
     });
     const outer = new Hono<{ Bindings: Env }>();
     outer.route('/storefront', router);
@@ -115,14 +111,19 @@ test('register refuses to overwrite an existing password — that would be accou
     const harness = app({ existing: await accountRow() });
     const res = await post(harness, '/buyer/register', { email: EMAIL, password: 'a-different-password' });
     assert.equal(res.status, 409);
-    assert.equal(harness.calls.setPassword.length, 0, 'no write may happen on the takeover path');
+    assert.equal(harness.calls.insert.length, 0, 'no write may happen on the takeover path');
 });
 
-test('register sets a first password on an account that has none', async () => {
+test('register refuses an existing PASSWORD-LESS account too — its first credential needs proof (APPID-P3)', async () => {
+    // Until APPID-P3 this path set the password, so whoever typed the address first owned the account
+    // without ever proving they control it. A first credential on an existing account now goes
+    // through identity-platform's verified recovery path.
     const harness = app({ existing: await accountRow({ password_hash: null }) });
     const res = await post(harness, '/buyer/register', { email: EMAIL, password: PASSWORD });
-    assert.equal(res.status, 200);
-    assert.equal(harness.calls.setPassword.length, 1);
+    assert.equal(res.status, 409);
+    const body = await res.json() as { error: { code: string } };
+    assert.equal(body.error.code, 'ACCOUNT_EXISTS');
+    assert.equal(harness.calls.insert.length, 0, 'no account may be written on this path');
 });
 
 test('register rejects a password outside 8..128 characters', async () => {

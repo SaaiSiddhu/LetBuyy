@@ -13,7 +13,12 @@
 import type { Hono } from 'hono';
 import type { Env } from '../../index';
 import { getSupabaseAdmin } from '../../lib/supabase';
-import { registerBuyerAccountRoutes, BUYER_ACCOUNT_COLUMNS } from './buyer-account-routes';
+import {
+    registerBuyerAccountRoutes,
+    BUYER_ACCOUNT_COLUMNS,
+    type OrderClaimOutcome,
+    type StoreLinkOutcome,
+} from './buyer-account-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
@@ -52,50 +57,26 @@ export function registerBuyerRealmRoutes(
             .insert(row)
             .select(BUYER_ACCOUNT_COLUMNS)
             .single(),
-        setBuyerPassword: async (c, id, passwordHash) => getSupabaseAdmin(c)
-            .from('buyer_accounts')
-            .update({ password_hash: passwordHash, status: 'active' })
-            .eq('id', id)
-            .select(BUYER_ACCOUNT_COLUMNS)
-            .single(),
         loadBuyerById: async (c, id) => getSupabaseAdmin(c)
             .from('buyer_accounts')
             .select(BUYER_ACCOUNT_COLUMNS)
             .eq('id', id)
             .maybeSingle(),
-        findOrCreateStoreCustomer: async (c, storeId, email) => {
-            const db = getSupabaseAdmin(c);
-            const existing = await db
-                .from('store_customers')
-                .select('id')
-                .eq('store_id', storeId)
-                .eq('email', email)
-                .maybeSingle<{ id: string }>();
-            if (existing.error) return { data: null, error: existing.error };
-            if (existing.data) return { data: existing.data, error: null };
-            // store_customers is UNIQUE (store_id, email), so a concurrent create loses the race
-            // rather than duplicating. onConflict returns the winner instead of failing.
-            return db
-                .from('store_customers')
-                .upsert({ store_id: storeId, email }, { onConflict: 'store_id,email' })
-                .select('id')
-                .single<{ id: string }>();
+        // Migration 255. Verification, conflict refusal and the audit row are one database decision;
+        // the route only maps the outcome.
+        linkStoreCustomer: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('link_buyer_store_customer', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_site_id: input.siteId,
+            });
+            return { data: (data ?? null) as StoreLinkOutcome | null, error };
         },
-        linkBuyerToStoreCustomer: async (c, link) => {
-            // ignoreDuplicates: migration 223's unique indexes already guarantee one link per
-            // store_customers row and one per (buyer, site). Re-linking is a no-op, not an error --
-            // a shopper returning to a seller they already have an account with must not fail.
-            const { error } = await getSupabaseAdmin(c)
-                .from('buyer_store_customers')
-                .upsert(
-                    {
-                        buyer_account_id: link.buyerAccountId,
-                        store_customer_id: link.storeCustomerId,
-                        site_id: link.siteId,
-                    },
-                    { onConflict: 'buyer_account_id,store_customer_id', ignoreDuplicates: true },
-                );
-            return { error };
+        claimOrders: async (c, input) => {
+            const { data, error } = await getSupabaseAdmin(c).rpc('claim_buyer_orders', {
+                p_buyer_account_id: input.buyerAccountId,
+                p_site_id: input.siteId,
+            });
+            return { data: (data ?? null) as OrderClaimOutcome | null, error };
         },
     });
 
@@ -164,36 +145,16 @@ export function registerBuyerRealmRoutes(
             return { data: rows[0] ?? null, error: null };
         },
         listBuyerReturnRequests: async (c, buyerAccountId, limit) => {
+            // The buyer's orders are the explicit links (migration 255), the same record the write
+            // path's request_order_return checks. Matching a store customer's email to an order's
+            // contact address proves nothing until its owner has verified it and claimed the order.
             const db = getSupabaseAdmin(c);
-            const links = await db
-                .from('buyer_store_customers')
-                .select('store_customer_id')
+            const owned = await db
+                .from('buyer_order_links')
+                .select('order_id')
                 .eq('buyer_account_id', buyerAccountId);
-            if (links.error) return { data: null, error: links.error };
-            const linkRows = links.data ?? [];
-            if (linkRows.length === 0) return { data: [], error: null };
-
-            const customers = await db
-                .from('store_customers')
-                .select('store_id, email')
-                .in('id', linkRows.map((row) => row.store_customer_id as string));
-            if (customers.error) return { data: null, error: customers.error };
-            const owned = customers.data ?? [];
-            if (owned.length === 0) return { data: [], error: null };
-
-            const orders = await db
-                .from('orders')
-                .select('id, site_id, customer_email')
-                .in('site_id', owned.map((customer) => customer.store_id as string));
-            if (orders.error) return { data: null, error: orders.error };
-
-            // Narrowing by site alone is not enough — a seller has many customers. Both the seller
-            // AND the email must match, the same pair the RPC checks on the write path.
-            const ownedOrderIds = (orders.data ?? [])
-                .filter((order) => owned.some((customer) =>
-                    customer.store_id === order.site_id
-                    && String(customer.email).toLowerCase() === String(order.customer_email).toLowerCase()))
-                .map((order) => order.id as string);
+            if (owned.error) return { data: null, error: owned.error };
+            const ownedOrderIds = (owned.data ?? []).map((row) => row.order_id as string);
             if (ownedOrderIds.length === 0) return { data: [], error: null };
 
             return db
