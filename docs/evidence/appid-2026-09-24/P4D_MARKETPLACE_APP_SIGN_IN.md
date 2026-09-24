@@ -3,8 +3,8 @@
 What APPID-P4d built and proved, on branch `letbuyy/appid-p4d-marketplace-mobile` (`dbdd192b`
 migration 259, `2d6ae00b` identity-platform and gateway, `db25638e` the Dart protocol, `d4bd403c` the
 app, `60df60df` one more protocol test, `2b651a0d` the rollback's DROP and the token route's
-contracts, the key-set constant's name in the commit after this record's first revision). Gate results
-are in the phase's `EXECUTION_LEDGER.md` row.
+contracts, `0d18352f` the key-set constant's name). Gate results are in the phase's
+`EXECUTION_LEDGER.md` row.
 Deployment is E-18 in `EXTERNAL_ACTIONS.md`. Nothing here is deployed, and no mobile build was
 published. The feature is compiled out of the app unless it is built with
 `--dart-define=LETBUYY_BUYER_SIGN_IN=true`.
