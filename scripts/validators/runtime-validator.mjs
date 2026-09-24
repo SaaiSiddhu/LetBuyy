@@ -16,6 +16,7 @@ import {
   referenceAppRoots,
   referenceRoot,
   reservedMobileRuntimeRoots,
+  readFile,
   root,
   startsWithPrefix,
   formatOffenderList,
@@ -135,5 +136,26 @@ for (const serviceRoot of canonicalServiceRoots) {
     reporter.assert(exists(`${serviceRoot}/package.json`), `Active service source requires package manifest: ${serviceRoot}/package.json`);
   }
 }
+
+// APPID-P2 (2026-09-24): the application index is an index of these lists, never a second authority.
+// Its "## Application roots" table must name every governed root exactly once and nothing else, so it
+// cannot drift from the topology the way the pre-P2 index did (it still described apps/phase_2).
+const indexPath = "docs/architecture/APPLICATION_OWNERSHIP.md";
+const indexSection = readFile(indexPath).split(/^## /m).find((section) => section.startsWith("Application roots")) ?? "";
+const indexedRoots = [...indexSection.matchAll(/^\|\s*`([^`]+)`\s*\|/gm)].map((match) => match[1]);
+const governedRoots = [
+  ...canonicalAppRoots,
+  ...frozenAppRoots,
+  ...reservedMobileRuntimeRoots,
+  ...deferredAppRoots,
+  ...referenceAppRoots,
+];
+reporter.assert(indexSection !== "", `${indexPath} must have an "## Application roots" section`);
+const missingFromIndex = governedRoots.filter((rootPath) => !indexedRoots.includes(rootPath));
+const unknownInIndex = indexedRoots.filter((rootPath) => !governedRoots.includes(rootPath));
+const duplicatedInIndex = indexedRoots.filter((rootPath, index) => indexedRoots.indexOf(rootPath) !== index);
+reporter.assert(missingFromIndex.length === 0, `${indexPath} omits governed application roots: ${formatOffenderList(missingFromIndex)}`);
+reporter.assert(unknownInIndex.length === 0, `${indexPath} lists paths that are not governed application roots: ${formatOffenderList(unknownInIndex)}`);
+reporter.assert(duplicatedInIndex.length === 0, `${indexPath} lists roots more than once: ${formatOffenderList(duplicatedInIndex)}`);
 
 reporter.finish(`${canonicalAppRoots.length + canonicalServiceRoots.length} canonical runtime roots checked`);
