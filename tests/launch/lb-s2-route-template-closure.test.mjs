@@ -178,11 +178,28 @@ test('W2: the register form posts to the EXISTING /api/customer/register route, 
 
 test('W2: the search route matches the exact path + query param the lb-search island already submits to', () => {
   const island = read('apps/commerce/web/src/lib/theme-engine/liquid-hydration-islands.tsx');
+  // The island navigates to the URL its section gives it in data-search-url, the query in ?search=.
+  assert.match(island, /const searchUrl = this\.dataset\.searchUrl \|\| /);
+  assert.match(island, /const destination = new URL\(searchUrl, window\.location\.origin\);/);
   assert.match(island, /destination\.searchParams\.set\('search', query\)/);
+  // The section gives it the routes drop's search URL. 9c02d2ac (2026-08-25) replaced the literal
+  // "/search" this test used to pin: a bare /search reaches the store's search page only on the
+  // store's own host, where rewriteToStore prefixes it; the platform root host, where local
+  // development and theme-editor previews run, has no /search page.
   const searchSection = read('packages/theme-engine/examples/letbuyy-core-liquid/files/sections/search-box.liquid');
-  assert.match(searchSection, /data-search-url="\/search"/);
+  assert.match(searchSection, /<lb-search\b[^>]*\bdata-search-url="\{\{ routes\.search_url \}\}"/);
+  // routes.search_url is the store's own tree plus /search: the path of the page below on every host
+  // (rewriteToStore leaves a path already inside the store's tree unprefixed, and the platform root
+  // gates it against the store it names).
+  const renderer = read('packages/theme-engine/src/theme-renderer.ts');
+  const routesStart = renderer.indexOf('routes: (() => {');
+  assert.ok(routesStart > -1, 'theme-renderer.ts must build the routes drop');
+  const routesDrop = renderer.slice(routesStart, renderer.indexOf('})()', routesStart));
+  assert.match(routesDrop, /^routes: \(\(\) => \{\s*const basePath = `\/store\/\$\{input\.context\.subdomain\}`;/);
+  assert.match(routesDrop, /\bsearch_url: `\$\{basePath\}\/search`,/);
   const searchPage = read(`${STORE_ROOT}/search/page.tsx`);
   assert.match(searchPage, /searchParams\?: Promise<\{ search\?: string/);
+  assert.match(searchPage, /const term = query\?\.search\?\.trim\(\) \|\| '';/);
 });
 
 test('W2: the password route documents that the live gate is enforced by proxy.ts, not by this page', () => {
