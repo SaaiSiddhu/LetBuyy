@@ -152,7 +152,7 @@ export class ProductExecutionAdapter {
         await this.replaceProductOptions(data.id, createPlan.productOptions);
         await this.replaceProductVariants(data.id, input.price, createPlan.productVariants, userId);
         await this.setInventoryAvailable(data.id, null, createPlan.initialStock, userId, 'product.create');
-        const variants = await this.refreshProductVariantJsonbCache(data.id);
+        const variants = await this.refreshProductVariantJsonbCache(data.id, input.store_id);
         await this.recordProductUsage(input.store_id, 1, `product.create:${data.id}`, userId, data.id);
         return { ...data, variants };
     }
@@ -181,6 +181,7 @@ export class ProductExecutionAdapter {
                 .from('products')
                 .update(updatePlan.safeUpdates)
                 .eq('id', productId)
+                .eq('store_id', ownedProduct.store_id)
                 .select()
                 .single();
 
@@ -197,7 +198,7 @@ export class ProductExecutionAdapter {
                 ? updatePlan.safeUpdates.price
                 : Number(data?.price ?? ownedProduct.price ?? 0);
             await this.replaceProductVariants(productId, basePrice, updates.variants as ProductVariantInput[], userId);
-            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId);
+            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId, ownedProduct.store_id);
         }
 
         if (updatePlan.hasInventoryUpdate && typeof updates.stock === 'number') {
@@ -209,6 +210,7 @@ export class ProductExecutionAdapter {
                 .from('products')
                 .select()
                 .eq('id', productId)
+                .eq('store_id', ownedProduct.store_id)
                 .single();
 
             if (error) throw new Error(`Product refresh failed: ${error.message}`);
@@ -235,7 +237,8 @@ export class ProductExecutionAdapter {
                 is_active: false,
                 deleted_at: new Date().toISOString(),
             })
-            .eq('id', productId);
+            .eq('id', productId)
+            .eq('store_id', ownedProduct.store_id);
 
         if (error) throw new Error(`Delete failed: ${error.message}`);
         await this.recordProductUsage(ownedProduct.store_id, -1, `product.delete:${productId}`, userId, productId);
@@ -256,10 +259,17 @@ export class ProductExecutionAdapter {
             await this.assertStoreOwnership(storeId, userId, sessionStoreId, 'Not authorized for this store');
         }
 
+        // APPID-FIX2: the ownership question, in the query itself — a bare `.in('id', productIds)`
+        // has no store/site predicate and the tenant query guard refuses it outright, the same defect
+        // class as `getOwnedProduct`.
+        const ownedStoreIds = storeId ? [storeId] : await this.resolveOwnedStoreIds(userId, sessionStoreId);
+        if (ownedStoreIds.length === 0) throw new ForbiddenError('Not authorized for this store');
+
         const { data: products, error: productError } = await this.db
             .from('products')
             .select('id, store_id')
             .in('id', productIds)
+            .in('store_id', ownedStoreIds)
             .is('deleted_at', null);
 
         if (productError) throw new Error(`Bulk ownership check failed: ${productError.message}`);
@@ -294,6 +304,7 @@ export class ProductExecutionAdapter {
             .from('products')
             .update(update)
             .in('id', ownedProducts.map((product) => product.id))
+            .in('store_id', ownedStoreIds)
             .select('id');
 
         if (error) throw new Error(`Bulk action failed: ${error.message}`);
@@ -327,12 +338,11 @@ export class ProductExecutionAdapter {
     }
 
     /**
-     * The store a product belongs to, found among the caller's OWN stores (NotFound or Forbidden
-     * otherwise). Routes that know only the product use it to give the staff permission check the real
-     * store (APPID-P5b): a session usually carries none. It asks the ownership question in the query
-     * itself, with the store predicates the tenant query guard requires; a product id alone names no store.
+     * The caller's own store ids (APPID-FIX2: shared by every product lookup that starts from a
+     * product id alone, so each one carries the store predicate the tenant query guard requires
+     * instead of fetching the row unscoped and checking ownership afterward).
      */
-    async ownedProductStoreId(productId: string, userId: string, sessionStoreId?: string): Promise<string> {
+    private async resolveOwnedStoreIds(userId: string, sessionStoreId?: string): Promise<string[]> {
         let ownedStores = this.db
             .from('sites')
             .select('id')
@@ -341,7 +351,17 @@ export class ProductExecutionAdapter {
         if (sessionStoreId) ownedStores = ownedStores.eq('id', sessionStoreId);
         const { data: stores, error: storesError } = await ownedStores;
         if (storesError) throw new Error(`Store lookup failed: ${storesError.message}`);
-        const storeIds = ((stores ?? []) as { id: string }[]).map((store) => store.id);
+        return ((stores ?? []) as { id: string }[]).map((store) => store.id);
+    }
+
+    /**
+     * The store a product belongs to, found among the caller's OWN stores (NotFound or Forbidden
+     * otherwise). Routes that know only the product use it to give the staff permission check the real
+     * store (APPID-P5b): a session usually carries none. It asks the ownership question in the query
+     * itself, with the store predicates the tenant query guard requires; a product id alone names no store.
+     */
+    async ownedProductStoreId(productId: string, userId: string, sessionStoreId?: string): Promise<string> {
+        const storeIds = await this.resolveOwnedStoreIds(userId, sessionStoreId);
         if (storeIds.length === 0) throw new ForbiddenError('Not authorized for this product');
 
         const { data: product, error } = await this.db
@@ -356,20 +376,29 @@ export class ProductExecutionAdapter {
         return (product as { store_id: string }).store_id;
     }
 
+    /**
+     * APPID-FIX2: was `.eq('id', productId)` alone, then a separate `assertStoreOwnership` call on
+     * the row it returned — a query the tenant guard refuses outright ("products requires a
+     * tenant/owner predicate before execution"), which is why `PATCH`/`DELETE /v1/products/:id` 500'd
+     * even after the staff check (APPID-P5b's `ownedProductStoreId`) had already resolved and cleared
+     * the product's real store. Ownership is now asked in the same scoped shape `ownedProductStoreId`
+     * already uses: a product id alone never satisfies the guard, so it never leaves this store.
+     */
     private async getOwnedProduct(productId: string, userId: string, sessionStoreId?: string): Promise<OwnedProductRow> {
+        const storeIds = await this.resolveOwnedStoreIds(userId, sessionStoreId);
+        if (storeIds.length === 0) throw new ForbiddenError('Not authorized for this product');
+
         const { data: product, error } = await this.db
             .from('products')
             .select('id, store_id, price')
             .eq('id', productId)
+            .in('store_id', storeIds)
             .is('deleted_at', null)
             .maybeSingle();
 
         if (error) throw new Error(`Product lookup failed: ${error.message}`);
         if (!product) throw new NotFoundError('Product not found');
-
-        const ownedProduct = product as OwnedProductRow;
-        await this.assertStoreOwnership(ownedProduct.store_id, userId, sessionStoreId, 'Not authorized for this product');
-        return ownedProduct;
+        return product as OwnedProductRow;
     }
 
     private async assertProductQuota(storeId: string): Promise<void> {
@@ -588,7 +617,7 @@ export class ProductExecutionAdapter {
         return data as ProductVariantRow[] || [];
     }
 
-    private async refreshProductVariantJsonbCache(productId: string): Promise<Record<string, unknown>[]> {
+    private async refreshProductVariantJsonbCache(productId: string, storeId: string): Promise<Record<string, unknown>[]> {
         const variants = await this.loadExistingProductVariants(productId);
         const cache = variants.map((variant) => ({
             id: variant.id,
@@ -611,7 +640,8 @@ export class ProductExecutionAdapter {
         const { error } = await this.db
             .from('products')
             .update({ variants: cache })
-            .eq('id', productId);
+            .eq('id', productId)
+            .eq('store_id', storeId);
 
         if (error) throw new Error(`Product variant cache refresh failed: ${error.message}`);
         return cache;
