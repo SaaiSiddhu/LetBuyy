@@ -40,6 +40,13 @@ const EXEMPT = {
             + 'authenticated and app_tenant are revoked from it',
         blockedOn: 'nothing in the application should ever read it; the table is dropped by 256\'s rollback',
     },
+    buyer_email_challenges: {
+        why: 'holds the salted hashes of buyer one-time email codes, and only its own functions touch it: '
+            + 'start_buyer_email_challenge and consume_buyer_email_challenge (257), which the gateway calls '
+            + 'from services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts. The table is wired; '
+            + 'application code reading it directly would be the defect',
+        blockedOn: 'nothing: its functions are its only intended readers and writers',
+    },
 };
 
 function governedTables() {
