@@ -210,6 +210,11 @@ export interface StoreTemplateConfig {
   rendererEngine?: 'react' | 'liquid' | string;
   appBlocks?: unknown;
   releaseManifest?: Record<string, unknown>;
+  // SUSTAINED-G2 — the merchant's Appearance-page custom CSS (sites.site_settings.custom_css),
+  // raw/unscoped. Threaded through to LiquidRenderer.render() -> buildLiquidThemeHeadAssets(),
+  // which is the single Phase-AA enforcement point that validates, scopes and sanitizes it.
+  // Never pre-scope or pre-sanitize this value before it reaches that function.
+  customCss?: string;
   createdAt?: string;
   updatedAt?: string;
 }

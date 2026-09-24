@@ -885,7 +885,7 @@ export class LiquidRenderer implements ThemeRenderer {
       };
     }
 
-    const themeHeadAssets = buildLiquidThemeHeadAssets(bundle);
+    const themeHeadAssets = buildLiquidThemeHeadAssets(bundle, input.storeTemplate.customCss);
     // T2a-fix/W2/CAP-C19 — sanitized in parallel with (not instead of) the wholeDocument pass
     // layoutHtml already gets below; this is the SAME raw input run through the SAME allowHeadMetadata
     // DOMPurify config, just also captured as plain CSS text for a caller that renders a real <style>
