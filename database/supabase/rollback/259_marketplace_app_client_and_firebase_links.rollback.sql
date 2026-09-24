@@ -20,7 +20,10 @@ ALTER TABLE public.buyer_authorization_codes ADD CONSTRAINT buyer_authorization_
 ALTER TABLE public.buyer_authorization_codes ADD CONSTRAINT buyer_authorization_codes_storefront_site_check
   CHECK (client_id <> 'letbuyy-storefront' OR site_id IS NOT NULL);
 
--- 258's body, verbatim.
+-- 258's body, verbatim. Dropped first, so a live function with some other parameter list can never
+-- survive beside it as an overload (tests/governance/rollback-signature-precondition.test.mjs); the
+-- grants below are restored with it.
+DROP FUNCTION IF EXISTS public.issue_buyer_authorization_code(uuid, text, text, uuid, text);
 CREATE OR REPLACE FUNCTION public.issue_buyer_authorization_code(
   p_buyer_account_id uuid,
   p_client_id text,

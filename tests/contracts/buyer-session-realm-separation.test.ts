@@ -154,10 +154,14 @@ test('the token exchange touches no cookie, and takes its site only from the red
     for (const cookieUse of ['cookies(', 'request.cookies', 'BuyerSessionCookie', 'set-cookie', 'Set-Cookie']) {
         assert.ok(!source.includes(cookieUse), `the token route must not touch cookies (found ${cookieUse})`);
     }
-    assert.match(source, /const siteId = payload\?\.data\?\.site_id/, 'the site comes from the gateway redemption');
+    // APPID-P4d: the redemption decides everything the token carries, through grantForRedemption,
+    // which also decides WHICH token by the client the database recorded for the code.
+    assert.match(source, /const grant = redeemed\.ok \? grantForRedemption\(payload\?\.data\) : null/, 'the site, client and epoch come from the gateway redemption');
     assert.ok(!/params\.(site_id|store_id)|params\[['"](site_id|store_id)/.test(source), 'never from the request');
-    assert.match(source, /createIdentityIssuedStorefrontSessionToken\(\{ buyerAccountId: buyerId, siteId, sessionEpoch \}\)/,
+    assert.match(source, /createIdentityIssuedStorefrontSessionToken\(\{\s*buyerAccountId: grant\.buyerAccountId,\s*siteId: grant\.siteId,\s*sessionEpoch: grant\.sessionEpoch,\s*\}\)/,
         'the storefront session is minted with the redeemed buyer, site and epoch');
+    assert.match(source, /if \(grant\.kind === 'app'\) \{\s*const accessToken = await createIdentityIssuedBuyerSessionToken\(\{ buyerAccountId: grant\.buyerAccountId, sessionEpoch: grant\.sessionEpoch \}\)/,
+        'only an app code gets a platform buyer session, with the redeemed buyer and epoch');
 });
 
 test('every buyer route that mints a token puts the account session epoch in it', () => {
@@ -167,7 +171,10 @@ test('every buyer route that mints a token puts the account session epoch in it'
     const minting = buyerRoutes().filter(([, source]) => code(source).includes('createIdentityIssuedBuyerSessionToken('));
     assert.ok(minting.length >= 3, `expected login, register and recover/confirm to mint, found ${minting.map(([n]) => n).join(', ')}`);
     for (const [name, source] of minting) {
-        assert.match(source, /sessionEpoch: buyerSessionEpoch\(buyer\.session_epoch\)/, `${name} must mint with the epoch the gateway returned`);
+        // The token exchange mints with the epoch of the redeemed code, which the database confirmed is
+        // current as it redeemed it; grantForRedemption refuses a missing or malformed one.
+        const epoch = name === TOKEN_ROUTE ? /sessionEpoch: grant\.sessionEpoch/ : /sessionEpoch: buyerSessionEpoch\(buyer\.session_epoch\)/;
+        assert.match(source, epoch, `${name} must mint with the epoch the gateway returned`);
     }
 });
 
