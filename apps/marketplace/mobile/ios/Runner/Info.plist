@@ -54,6 +54,16 @@
 					<string>letbuy-y</string>
 				</array>
 			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>LetBuyy sign-in callback (APPID-P4d)</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.letbuyy.letbuyy</string>
+				</array>
+			</dict>
 		</array>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>

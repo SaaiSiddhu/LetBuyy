@@ -12,8 +12,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
+import '../../config/app_config.dart';
 import '../../providers/auth_provider.dart' as app_auth;
 import '../../widgets/auth_gate.dart';
+import '../../widgets/letbuyy_account_card.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../../widgets/premium_scaffold.dart';
@@ -520,6 +522,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ],
                   ),
+
+                  // APPID-P4d: the buyer's one LetBuyy account, only with LETBUYY_BUYER_SIGN_IN on.
+                  if (AppConfig.buyerSignInEnabled) ...[
+                    const SizedBox(height: 20),
+                    _buildSectionTitle('LetBuyy account', isDark),
+                    const SizedBox(height: 8),
+                    LetBuyyAccountCard(isDark: isDark),
+                  ],
 
                   const SizedBox(height: 20),
 

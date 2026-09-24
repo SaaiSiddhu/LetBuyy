@@ -13,6 +13,11 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'data/canonical_api.dart';
 import 'data/marketplace_repository.dart';
 
+// Sign in with LetBuyy (APPID-P4d), behind LETBUYY_BUYER_SIGN_IN
+import 'auth/buyer_sign_in_controller.dart';
+import 'auth/buyer_sign_in_wiring.dart';
+import 'config/app_config.dart';
+
 // App-specific providers
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
@@ -128,6 +133,14 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // ApiMarketplaceRepository or on an ApiClient directly, so the backend behind a screen is
         // one decision here rather than a per-file import.
         Provider<MarketplaceRepository>(create: (_) => buildMarketplaceRepository()),
+
+        // APPID-P4d: "Sign in with LetBuyy", built only with --dart-define=LETBUYY_BUYER_SIGN_IN=true.
+        // Not lazy, so a sign-in callback that arrived while the app was stopped is collected at launch.
+        if (AppConfig.buyerSignInEnabled)
+          ChangeNotifierProvider<BuyerSignInController>(
+            create: (_) => buildBuyerSignInController()..start(),
+            lazy: false,
+          ),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
