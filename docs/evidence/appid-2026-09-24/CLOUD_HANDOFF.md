@@ -111,7 +111,7 @@ and `config/env/production.env.template`; `setup-local-env.mjs` derives local ke
 
 | Flag | Default | Where |
 |---|---|---|
-| `MERCHANT_STAFF_RBAC_MODE` | `enforce`; `dryrun` honoured only outside production | `services/api-gateway/src/middleware/staff-permission.ts` |
+| `MERCHANT_STAFF_RBAC_MODE` | **not set anywhere** — not in `wrangler.toml`, not in any `config/env/*` template. The code's effective behavior with it unset is `enforce` in every environment: `staffRbacMode()` returns `'dryrun'` only when the variable's raw value is literally `dryrun` **and** `ENVIRONMENT` is not `production`; every other case, including unset, resolves to `enforce`. This is a code default, not a configured value — no deploy has ever set this variable. | `services/api-gateway/src/middleware/staff-permission.ts` (behavior); no template sets it |
 | `FEATURE_LIQUID` | `"true"` in the dev and staging var blocks, `"false"` in production | `services/api-gateway/wrangler.toml` |
 | `THEME_LIQUID_RENDERING_DEFAULT_ENABLED` | `false` | `packages/theme-engine/src/theme-governance.ts` |
 | `LETBUYY_BUYER_SIGN_IN` (dart-define) | off; "Sign in with LetBuyy" is compiled only with `=true` | `apps/marketplace/mobile/lib/main.dart` |
