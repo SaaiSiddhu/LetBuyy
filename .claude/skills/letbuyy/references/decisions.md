@@ -169,6 +169,14 @@ Given in chat on 2026-09-23, unprompted, while the local stack was being run. Th
 |---|---|---|
 | **D-AUTH-LIGHT** | **The identity surface (`apps/identity-platform`) is light-only, on the merchant admin ink brand, with no theme toggle.** This is the restyle held in `archive/design-tokens-ui-v2` since 2026-09-20. The owner: *"on one of our work we have edited te entireee letbuyy identiy app that remove the theme toggle and change the app color,.. and most of the UI/UX works t=have been done,... that must bee in this machine only,.. please find it out and merge that also properly bro,...."*; of the tag: *"most propbaly that the one i think so"* | **OWNER_DECISION**, executed by F-IDUI-1 (`letbuyy/idui1-identity-light-restyle`). It reverses D4 (`docs/governance/skipped-human-decisions.md`) for identity only, and makes identity the one canonical app outside UX-R13. `validate-design-system.mjs` now asserts forced light on both `ThemeScript` and `LetbuyyThemeProvider`, and no theme control anywhere in identity sources. It does not decide dark mode for any other app. It does not land the tag's other concerns (shipping/taxes unguarded clients plus the `@letbuyy/api-client` signature change; entitlement enrichment), which stay deferred. |
 
+## 2f. Owner decision of 2026-09-24 — three branches, one checkout — OWNER_DECISION
+
+Given in chat on 2026-09-24 with a request for a machine-wide sweep for LetBuyy work outside the primary checkout. The owner's words are quoted verbatim.
+
+| ID | Decision | Status and consequence |
+|---|---|---|
+| **D-THREE-BRANCHES** | **Between phases the repository holds exactly three branches (`develop`, `staging`, `main`) in one checkout, the primary.** The owner: *"do one moreeee massive massive reserach id there any letbuyy folders are left out of the merge and check the entireee machine and verify alll the git diff and merge it properly to only one main folder ,.... bro with excat 3 branches"* | **OWNER_DECISION**, executed by F-BRANCH3-1: the 13 merged phase branches of 2026-09-23/24 were deleted with `git branch -d`. From now on a phase branch is deleted after its bookkeeping commit, and its worktree is removed at merge (`references/merge.md`). An unmerged branch is never deleted: it is tagged `archive/*` or `preserved/*` first. It does not promote `staging` or `main`, which still need the owner's word in the same message, and it does not push. The autonomous loop still never deletes a branch (`references/run.md`). |
+
 ## 3. Constitutional rules that bind every phase — CONSTITUTIONAL_DECISION
 
 - **Money.** One append-only double-entry ledger; balance derived, never a mutable column; money
