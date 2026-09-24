@@ -93,7 +93,8 @@ git -C <wt> status --porcelain | wc -l                   # 0
 git -C <wt> ls-files --others --exclude-standard | wc -l # 0 (untracked = STOP: archive outside the repo first, verify, then proceed)
 git worktree remove <wt> && git worktree prune           # never rm -rf; refusing on dirty is a safety feature
 ```
-`df -h` before and after (`du` lies under APFS). Never delete the merged branch ref. Never remove the
+`df -h` before and after (`du` lies under APFS). Then delete the merged branch with `git branch -d <branch>`, never
+`-D`; its tip stays in its row (OWNER_DECISION D-THREE-BRANCHES, 2026-09-24: three branches, one checkout). Never remove the
 primary checkout, a `develop` worktree, any owner-owned legacy worktree, or any worktree holding an
 in-flight phase. RE-MEASURED 2026-09-23: `LetBuyy-develop` and `.claude/worktrees/*` no longer exist.
 A merge phase that leaves its worktree standing is `PARTIAL`.

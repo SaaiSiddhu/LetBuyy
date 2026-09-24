@@ -30,7 +30,8 @@ Measured facts carry the commit they were measured at. **Not a substitute for me
   `pnpm install --no-frozen-lockfile` (with `--config.strict-peer-dependencies=false` if the wrangler
   peer mismatch fires) regenerates it — commit the lockfile in that phase.
 - Worktree lifecycle has four steps; a merge phase that leaves its desk standing is `PARTIAL`. Never
-  `rm -rf` a worktree; never delete merged branch refs; archive untracked content before removal;
+  `rm -rf` a worktree; delete a MERGED branch only with `git branch -d` (D-THREE-BRANCHES), never `-D`,
+  and never delete an unmerged one without tagging it `archive/*` first; archive untracked content before removal;
   `df -h` before/after (`du` lies under APFS).
 
 ## Git, commits, branches
