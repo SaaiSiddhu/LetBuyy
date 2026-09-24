@@ -56,6 +56,8 @@
     "apps/platform/identity/src/app/api/buyer/login/route.ts",
     "apps/platform/identity/src/app/api/buyer/register/route.ts",
     "apps/platform/identity/src/app/api/buyer/logout/route.ts",
+    "apps/platform/identity/src/app/api/buyer/oauth/authorize/route.ts",
+    "apps/platform/identity/src/app/api/buyer/oauth/token/route.ts",
     "apps/platform/identity/src/app/api/buyer/recover/confirm/route.ts",
     "apps/platform/identity/src/app/api/buyer/recover/send/route.ts",
     "apps/platform/identity/src/app/api/buyer/sign-out-everywhere/route.ts",

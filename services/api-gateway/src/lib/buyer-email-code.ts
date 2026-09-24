@@ -23,9 +23,10 @@ export interface BuyerEmailCodeDelivery {
 
 export type BuyerEmailCodeSender = (env: Env, delivery: BuyerEmailCodeDelivery) => Promise<{ sent: boolean }>;
 
+// The same placeholder markers routes/auth.ts's isPlaceholderSecret uses.
 function configuredProvider(env: Env): boolean {
-    const apiKey = env.RESEND_API_KEY;
-    return Boolean(apiKey && !apiKey.toLowerCase().includes('replace-with') && !apiKey.toLowerCase().includes('placeholder'));
+    const apiKey = String(env.RESEND_API_KEY || '').toLowerCase();
+    return Boolean(apiKey) && !['placeholder', 'replace-with', 'dev-only'].some((marker) => apiKey.includes(marker));
 }
 
 /// The code is kept out of the subject line: subjects show in lock-screen previews and in the
@@ -57,23 +58,23 @@ export function buildBuyerEmailCodeMessage(delivery: BuyerEmailCodeDelivery): { 
 
 export const sendBuyerEmailCode: BuyerEmailCodeSender = async (env, delivery) => {
     const message = buildBuyerEmailCodeMessage(delivery);
-    if (!configuredProvider(env)) {
-        // Local development only. With no email provider AND a database on this machine, the code is
-        // written to the gateway console so the flow can be exercised end to end. It unlocks an
-        // account in that local database and nothing else; a deployed gateway meets neither condition.
-        if (isLocalSupabaseEnvironment(env)) {
-            console.info(JSON.stringify({
-                level: 'info',
-                service: 'letbuyy-api',
-                reason: 'local_buyer_email_code',
-                to: delivery.email,
-                purpose: delivery.purpose,
-                code: delivery.code,
-            }));
-            return { sent: true };
-        }
-        return { sent: false };
+    // A database on this machine holds only local accounts, so their codes go to the gateway console
+    // and never through the email provider, whatever key is configured. The local env generator's key
+    // ('re_local_dev_unused') looks real to any placeholder check, and until APPID-P4b's local run
+    // found it, local verification tried Resend, failed and answered 503. A deployed gateway never
+    // points at a database on localhost.
+    if (isLocalSupabaseEnvironment(env)) {
+        console.info(JSON.stringify({
+            level: 'info',
+            service: 'letbuyy-api',
+            reason: 'local_buyer_email_code',
+            to: delivery.email,
+            purpose: delivery.purpose,
+            code: delivery.code,
+        }));
+        return { sent: true };
     }
+    if (!configuredProvider(env)) return { sent: false };
 
     const result = await sendResendEmail({
         apiKey: env.RESEND_API_KEY,

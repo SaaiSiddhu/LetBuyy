@@ -238,7 +238,11 @@ for (const file of appApiRoutes) {
 // APPID-SEC2 (2026-09-24) — 195: - apps/platform/identity/src/app/api/email/store-creation-{success,failure},
 // which sent LetBuyy-branded email for anonymous callers. Their class, identity-gateway-proxy, had no
 // other member and goes with them; the two lines leave config/eslint/boundary-baseline.json too.
-reporter.assert(appApiRoutes.length === 195, `App-local API route inventory changed without updating P4-4 classification: expected 195, found ${appApiRoutes.length}`);
+// APPID-P4b (2026-09-24) — 197: + apps/platform/identity/src/app/api/buyer/oauth/{authorize,token}, class
+// app-local-buyer-auth: the step that asks the gateway for a code after the buyer chose to continue, and
+// the exchange that mints the storefront session. Both only call the gateway and sign; neither touches
+// a database. Added to config/eslint/boundary-baseline.json in the same commit.
+reporter.assert(appApiRoutes.length === 197, `App-local API route inventory changed without updating P4-4 classification: expected 197, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {

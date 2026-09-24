@@ -154,6 +154,21 @@ export const LETBUYY_BUYER_SESSION_HEADER = 'X-LetBuyy-Buyer-Session';
  * current one. One constant for both ends, for the same reason as the header above.
  */
 export const LETBUYY_BUYER_SESSION_EPOCH_CLAIM = 'sep';
+
+/**
+ * A buyer's session AT ONE STOREFRONT (APPID-P4b). identity-platform mints it when a storefront
+ * redeems a first-party authorization code, and it carries the site it was issued for. It is a
+ * separate audience from the platform buyer session on purpose: a storefront keeps its session in a
+ * cookie on the store's own host, and a merchant can repoint a custom domain at their own server, so
+ * a platform-wide buyer token there would reach every seller's orders. The gateway accepts this one
+ * only at its own site.
+ */
+export const LETBUYY_STOREFRONT_SESSION_AUDIENCE = 'letbuyy:storefront-session';
+export const LETBUYY_STOREFRONT_SESSION_HEADER = 'X-LetBuyy-Storefront-Session';
+export const LETBUYY_STOREFRONT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
+/** The storefront's first-party client id and its one callback path, exact, on the store's own host. */
+export const LETBUYY_STOREFRONT_CLIENT_ID = 'letbuyy-storefront';
+export const LETBUYY_STOREFRONT_BUYER_CALLBACK_PATH = '/api/buyer-auth/callback';
 export const LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session';
 export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;

@@ -31,6 +31,8 @@ interface StoreContext {
 
 export interface StorefrontHostSiteContext {
     id: string;
+    // The store's display name: public, and what identity-platform shows a buyer who is signing in.
+    name?: string | null;
     subdomain: string | null;
     custom_domain: string | null;
     custom_domain_status: string | null;
@@ -204,7 +206,7 @@ export async function resolveStorefrontSiteByHost(
     storeRootDomain: string | null | undefined,
 ): Promise<StorefrontHostSiteContext | null> {
     const parsed = resolveStorefrontHost(host, storeRootDomain);
-    const select = 'id, subdomain, custom_domain, custom_domain_status, access_mode, access_message, published, status';
+    const select = 'id, name, subdomain, custom_domain, custom_domain_status, access_mode, access_message, published, status';
 
     if (parsed.kind === 'subdomain') {
         const { data } = await db

@@ -429,3 +429,20 @@ test("identity-platform's own signed header reaches the buyer routes; the storef
         assert.equal((await call({})).status, 401, `${path}: nor an unsigned caller`);
     }
 });
+
+test('/buyer/me returns the session\'s public view to identity-platform, and nothing to anyone else', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness();
+    const me = (opts: { token?: string | null; internal?: boolean }) => h.app.request(
+        '/storefront/buyer/me',
+        { headers: { ...(opts.internal === false ? {} : IDENTITY), ...(opts.token ? { 'X-LetBuyy-Buyer-Session': opts.token } : {}) } },
+        { LETBUYY_IDENTITY_ISSUER: ISSUER, LETBUYY_IDENTITY_PUBLIC_JWKS: jwks } as unknown as Env,
+    );
+    const res = await me({ token: await mint(privateKey) });
+    assert.equal(res.status, 200);
+    const text = await res.text();
+    assert.ok(!text.includes('$2'), 'no bcrypt hash');
+    assert.deepEqual(JSON.parse(text).data.buyer, { id: BUYER_ID, email: 'shopper@example.com', email_verified: false, status: 'active', session_epoch: 1 });
+    assert.equal((await me({ token: await mint(privateKey), internal: false })).status, 401);
+    assert.equal((await me({ token: null })).status, 401);
+});

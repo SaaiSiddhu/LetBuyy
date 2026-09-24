@@ -47,6 +47,13 @@ const EXEMPT = {
             + 'application code reading it directly would be the defect',
         blockedOn: 'nothing: its functions are its only intended readers and writers',
     },
+    buyer_authorization_codes: {
+        why: 'holds the hashes of first-party sign-in codes, and only its own functions touch it: '
+            + 'issue_buyer_authorization_code and redeem_buyer_authorization_code (258), which the gateway '
+            + 'calls from services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts. The table is wired; '
+            + 'application code reading it directly would be the defect',
+        blockedOn: 'nothing: its functions are its only intended readers and writers',
+    },
 };
 
 function governedTables() {

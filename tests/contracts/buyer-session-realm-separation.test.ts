@@ -131,14 +131,33 @@ function buyerRoutes(): [string, string][] {
     return walk(dir).map((path) => [relative(dir, path), readFileSync(path, 'utf8')]);
 }
 
+// APPID-P4b: the token exchange is the one buyer route that is called server to server. It reads and
+// writes no cookie, so it has nothing for CSRF to protect; and it is the one route that names a site,
+// because the session it mints is bound to the store that redeemed the code.
+const TOKEN_ROUTE = 'oauth/token/route.ts';
+
 test('every buyer route validates CSRF, stays off the platform cookie helpers and carries no store', () => {
     const routes = buyerRoutes();
-    assert.ok(routes.length >= 8, `found ${routes.length} buyer routes`);
+    assert.ok(routes.length >= 10, `found ${routes.length} buyer routes`);
+    assert.ok(routes.some(([name]) => name === TOKEN_ROUTE), 'the token route exists');
     for (const [name, source] of routes) {
-        assert.match(source, /validateCsrf\(request\)/, `${name} must validate CSRF`);
         assert.ok(!/from '@\/lib\/auth\/cookies'/.test(code(source)), `${name} must not use the platform cookie helpers`);
+        if (name === TOKEN_ROUTE) continue;
+        assert.match(source, /validateCsrf\(request\)/, `${name} must validate CSRF`);
         assert.ok(!/store_id|site_id/.test(code(source)), `${name} must not carry a store — a buyer is not a tenant`);
     }
+});
+
+test('the token exchange touches no cookie, and takes its site only from the redeemed code', () => {
+    const source = code(new Map(buyerRoutes()).get(TOKEN_ROUTE) ?? '');
+    assert.ok(source, 'the token route exists');
+    for (const cookieUse of ['cookies(', 'request.cookies', 'BuyerSessionCookie', 'set-cookie', 'Set-Cookie']) {
+        assert.ok(!source.includes(cookieUse), `the token route must not touch cookies (found ${cookieUse})`);
+    }
+    assert.match(source, /const siteId = payload\?\.data\?\.site_id/, 'the site comes from the gateway redemption');
+    assert.ok(!/params\.(site_id|store_id)|params\[['"](site_id|store_id)/.test(source), 'never from the request');
+    assert.match(source, /createIdentityIssuedStorefrontSessionToken\(\{ buyerAccountId: buyerId, siteId, sessionEpoch \}\)/,
+        'the storefront session is minted with the redeemed buyer, site and epoch');
 });
 
 test('every buyer route that mints a token puts the account session epoch in it', () => {

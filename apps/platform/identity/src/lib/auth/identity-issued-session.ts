@@ -1,5 +1,9 @@
 import { SignJWT, importJWK, type JWK } from 'jose'
-import { LETBUYY_BUYER_SESSION_EPOCH_CLAIM } from '@letbuyy/auth-core'
+import {
+    LETBUYY_BUYER_SESSION_EPOCH_CLAIM,
+    LETBUYY_STOREFRONT_SESSION_AUDIENCE,
+    LETBUYY_STOREFRONT_SESSION_TTL_SECONDS,
+} from '@letbuyy/auth-core'
 import { isProductionIdentityRuntime } from '@/lib/dev-auth-bypass'
 
 const MERCHANT_SESSION_AUDIENCE = 'letbuyy:merchant-session'
@@ -128,6 +132,55 @@ export async function createIdentityIssuedBuyerSessionToken(input: {
         .setSubject(input.buyerAccountId)
         .setIssuedAt(nowSeconds)
         .setExpirationTime(nowSeconds + BUYER_SESSION_TTL_SECONDS)
+        .setJti(crypto.randomUUID())
+        .sign(key)
+}
+
+/// Mints a buyer's session AT ONE STOREFRONT (APPID-P4b), after the storefront's server redeemed a
+/// first-party authorization code for it. Unlike the platform buyer session it names the site, under
+/// its own audience, and lives 7 days rather than 30: the storefront keeps it in a cookie on the
+/// store's own host, which for a custom domain is a host the merchant controls. The gateway accepts it
+/// only at that site, only through the storefront's own server, and only in the account's current
+/// session epoch. The epoch is the one the database confirmed when it redeemed the code.
+export async function createIdentityIssuedStorefrontSessionToken(input: {
+    buyerAccountId: string
+    siteId: string
+    sessionEpoch: number
+}): Promise<string | null> {
+    if (!Number.isInteger(input.sessionEpoch) || input.sessionEpoch < 1) {
+        throw new Error('A storefront session token needs the account session epoch')
+    }
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.siteId)) {
+        throw new Error('A storefront session token needs the site it is for')
+    }
+    const privateJwk = parsePrivateJwk()
+    if (!privateJwk) {
+        if (isProductionIdentityRuntime(process.env)) {
+            throw new Error('LETBUYY_IDENTITY_PRIVATE_JWK is required for production storefront session issuance')
+        }
+        return null
+    }
+
+    const alg = resolveAlgorithm(privateJwk)
+    const key = await importJWK(privateJwk, alg)
+    const nowSeconds = Math.floor(Date.now() / 1000)
+
+    return new SignJWT({
+        realm: 'buyer',
+        token_use: 'storefront_session',
+        site_id: input.siteId.toLowerCase(),
+        [LETBUYY_BUYER_SESSION_EPOCH_CLAIM]: input.sessionEpoch,
+    })
+        .setProtectedHeader({
+            alg,
+            typ: 'JWT',
+            kid: typeof privateJwk.kid === 'string' ? privateJwk.kid : 'identity-platform-active',
+        })
+        .setIssuer(identityIssuer())
+        .setAudience(LETBUYY_STOREFRONT_SESSION_AUDIENCE)
+        .setSubject(input.buyerAccountId)
+        .setIssuedAt(nowSeconds)
+        .setExpirationTime(nowSeconds + LETBUYY_STOREFRONT_SESSION_TTL_SECONDS)
         .setJti(crypto.randomUUID())
         .sign(key)
 }
