@@ -6,13 +6,15 @@ import { BrandLogo } from '@/components/BrandLogo'
 import { BuyerAuthorize } from './authorize-client'
 
 /**
- * /buyer/authorize — where a storefront sends a buyer to sign in (APPID-P4b).
+ * /buyer/authorize — where a storefront (APPID-P4b) or the marketplace app (APPID-P4d) sends a buyer to
+ * sign in. The app opens this page in the system browser, never in a web view, so the password is
+ * typed into identity-platform's own origin and the app never sees it (RFC 8252).
  *
  * The request is checked before anything is shown: its shape here, and its callback by the gateway,
- * which must resolve it to a published store's own address. A request that fails either gets an error
- * on this page and is never redirected: sending an error back to an unchecked callback would make this
- * page an open redirect. A request that passes names the store, so the buyer knows where they are
- * going, and signing in never sends them anywhere by itself: they choose to continue.
+ * which must resolve it to a published store's own address or the app's one fixed callback. A request
+ * that fails either gets an error on this page and is never redirected: sending an error back to an
+ * unchecked callback would make this page an open redirect. A request that passes names where the
+ * buyer is going, and signing in never sends them anywhere by itself: they choose to continue.
  */
 export const dynamic = 'force-dynamic'
 
@@ -38,20 +40,23 @@ export default async function BuyerAuthorizePage({
     const params = await searchParams
     const request = parseAuthorizationRequest(params)
     if (!request) {
-        return <AuthorizeProblem message="This sign-in link is incomplete or has been changed. Go back to the store and choose Sign in again." />
+        return <AuthorizeProblem message="This sign-in link is incomplete or has been changed. Go back and choose Sign in again." />
     }
 
     const check = await identityApiRequest('/storefront/buyer/authorization-codes/check', {
         method: 'POST',
         body: JSON.stringify({ client_id: request.clientId, redirect_uri: request.redirectUri }),
     })
-    const checkPayload = await check.json().catch(() => null) as { data?: { site?: { id: string; name: string | null } } | null } | null
-    const site = checkPayload?.data?.site
-    if (!check.ok || !site) {
+    const checkPayload = await check.json().catch(() => null) as {
+        data?: { client?: string; site?: { id: string; name: string | null } | null } | null
+    } | null
+    const site = checkPayload?.data?.site ?? null
+    const toApp = checkPayload?.data?.client === 'app'
+    if (!check.ok || (!toApp && !site)) {
         return (
             <AuthorizeProblem
                 message={check.status === 400
-                    ? 'This sign-in link did not come from a LetBuyy store, so we won’t send your account there.'
+                    ? 'This sign-in link did not come from a LetBuyy store or the LetBuyy app, so we won’t send your account there.'
                     : 'Sign-in is unavailable right now. Try again in a moment.'}
             />
         )
@@ -71,7 +76,7 @@ export default async function BuyerAuthorizePage({
     return (
         <BuyerAuthorize
             request={request}
-            storeName={site.name || 'this store'}
+            destination={toApp ? { kind: 'app', name: 'the LetBuyy app' } : { kind: 'store', name: site?.name || 'this store' }}
             buyerEmail={buyerEmail}
             initialMode={params.screen === 'register' ? 'register' : 'sign-in'}
         />

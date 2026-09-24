@@ -19,6 +19,21 @@ class AppConfig {
     defaultValue: 'https://api.letbuyy.com/v1',
   );
 
+  /// identity-platform, where buyers sign in (APPID-P4d). Opened in the system browser; the app holds
+  /// no secret for it. http is accepted only for this machine's loopback, for development.
+  static const String identityBaseUrl = String.fromEnvironment(
+    'IDENTITY_BASE_URL',
+    defaultValue: 'https://accounts.letbuyy.com',
+  );
+
+  /// "Sign in with LetBuyy" (APPID-P4d, D-ONE-IDENTITY). Off until the Firebase cutover's gates are
+  /// met (FB-4). While off, the feature is not compiled into any screen. It only decides whether the
+  /// entry point is shown: the server trusts nothing the app says about it.
+  static const bool buyerSignInEnabled = bool.fromEnvironment(
+    'LETBUYY_BUYER_SIGN_IN',
+    defaultValue: false,
+  );
+
   /// Deployment environment label, for diagnostics only. Never used to gate behaviour: a client
   /// flag that changes what the app trusts is a flag an attacker sets.
   static const String environment = String.fromEnvironment(

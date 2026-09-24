@@ -1,6 +1,7 @@
 import { SignJWT, importJWK, type JWK } from 'jose'
 import {
     LETBUYY_BUYER_SESSION_EPOCH_CLAIM,
+    LETBUYY_BUYER_SESSION_TTL_SECONDS,
     LETBUYY_STOREFRONT_SESSION_AUDIENCE,
     LETBUYY_STOREFRONT_SESSION_TTL_SECONDS,
 } from '@letbuyy/auth-core'
@@ -14,7 +15,7 @@ const MERCHANT_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
 // but the audience is what the verifier refuses to accept across realms even if everything else were
 // somehow forged consistently. Never reuse the merchant audience here.
 const BUYER_SESSION_AUDIENCE = 'letbuyy:buyer-session'
-const BUYER_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
+const BUYER_SESSION_TTL_SECONDS = LETBUYY_BUYER_SESSION_TTL_SECONDS
 
 const DEFAULT_IDENTITY_ISSUER = 'https://accounts.letbuyy.com'
 

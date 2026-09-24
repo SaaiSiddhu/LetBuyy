@@ -85,6 +85,10 @@ dependencies:
   
   # Deep Linking
   app_links: ^6.3.2
+
+  # APPID-P4d: the buyer's LetBuyy session and an open sign-in attempt, in the Android Keystore / iOS
+  # Keychain. Same constraint as apps/merchant/mobile, so the workspace lock is unchanged.
+  flutter_secure_storage: ^9.2.4
   
   # Notifications
   flutter_local_notifications: ^18.0.1

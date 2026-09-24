@@ -9,9 +9,9 @@
 // So: host-only, always. No `domain` attribute is set here, and none should ever be added.
 
 import { cookies } from 'next/headers'
-import { LETBUYY_BUYER_SESSION_COOKIE } from '@letbuyy/auth-core'
+import { LETBUYY_BUYER_SESSION_COOKIE, LETBUYY_BUYER_SESSION_TTL_SECONDS } from '@letbuyy/auth-core'
 
-export const BUYER_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60
+export const BUYER_SESSION_TTL_SECONDS = LETBUYY_BUYER_SESSION_TTL_SECONDS
 
 /// The session epoch to put in a new token, from the buyer record the gateway returned (APPID-P4a).
 /// A gateway from before migration 257 returns none, and 1 is then safe: the gateway refuses a token

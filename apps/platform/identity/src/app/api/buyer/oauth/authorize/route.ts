@@ -8,7 +8,8 @@ import { gatewayErrorCode } from '@/lib/auth/buyer-email-code'
 import { callbackWithCode, parseAuthorizationRequest } from '@/lib/auth/buyer-authorization'
 
 /**
- * POST /api/buyer/oauth/authorize — the signed-in buyer chose to continue to a store (APPID-P4b).
+ * POST /api/buyer/oauth/authorize — the signed-in buyer chose to continue to a store (APPID-P4b) or to
+ * the marketplace app (APPID-P4d).
  *
  * The only way a code is issued. It takes a CSRF-checked POST from identity-platform's own authorize
  * page, never a GET: a code issued on arrival would let any page bounce a signed-in buyer through here
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
             }
             if (code === 'BUYER_DISABLED') return NextResponse.json({ error: 'This account is disabled.' }, { status: 403 })
             if (issued.status === 400) {
-                return NextResponse.json({ error: 'This sign-in link is not from a LetBuyy store.' }, { status: 400 })
+                return NextResponse.json({ error: 'This sign-in link is not from a LetBuyy store or the LetBuyy app.' }, { status: 400 })
             }
             return NextResponse.json({ error: 'Something went wrong. Try again in a moment.' }, { status: 503 })
         }

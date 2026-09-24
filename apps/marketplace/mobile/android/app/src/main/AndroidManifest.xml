@@ -140,6 +140,24 @@
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true"/>
         </activity>
 
+        <!-- APPID-P4d: the browser's "Sign in with LetBuyy" callback, com.letbuyy.letbuyy:/oauth/callback
+             (RFC 8252 private-use scheme). Exported because the browser must reach it; it shows nothing,
+             and the app checks every callback against the attempt it started, and redeems a code only
+             with that attempt's PKCE verifier. MainActivity's own deep links are unchanged. -->
+        <activity
+            android:name=".BuyerSignInCallbackActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.letbuyy.letbuyy"/>
+            </intent-filter>
+        </activity>
+
         <!-- Razorpay -->
         <activity android:name="com.razorpay.CheckoutActivity"
             android:exported="true"

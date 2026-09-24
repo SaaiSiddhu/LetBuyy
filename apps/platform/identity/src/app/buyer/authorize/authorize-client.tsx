@@ -10,6 +10,9 @@ import type { BuyerAuthorizationRequest } from '@/lib/auth/buyer-authorization'
 
 type Mode = 'sign-in' | 'register'
 
+/// Where the buyer goes after continuing: a store (named), or the marketplace app.
+export type AuthorizeDestination = { kind: 'store' | 'app'; name: string }
+
 const GENERIC = 'Something went wrong. Try again in a moment.'
 
 async function errorFrom(res: Response, fallback: string): Promise<string> {
@@ -18,21 +21,22 @@ async function errorFrom(res: Response, fallback: string): Promise<string> {
 }
 
 /**
- * The buyer either continues to the store as the account they are signed in as, switches account, or
- * signs in or creates an account first. Signing in only re-renders this page: going to the store is
+ * The buyer either continues to the store (or the app) as the account they are signed in as, switches
+ * account, or signs in or creates an account first. Signing in only re-renders this page: going on is
  * always the buyer's own click on Continue, which is the only thing that asks for a code.
  */
 export function BuyerAuthorize({
     request,
-    storeName,
+    destination,
     buyerEmail,
     initialMode,
 }: {
     request: BuyerAuthorizationRequest
-    storeName: string
+    destination: AuthorizeDestination
     buyerEmail: string | null
     initialMode: Mode
 }) {
+    const storeName = destination.name
     const router = useRouter()
     const mode = initialMode
     const [email, setEmail] = useState('')
@@ -128,7 +132,10 @@ export function BuyerAuthorize({
                     </div>
                     <h1 className="auth-title">Continue to {storeName}</h1>
                     <p className="auth-subtitle">
-                        You’re signed in to LetBuyy as <strong>{buyerEmail}</strong>. {storeName} will receive your email address.
+                        You’re signed in to LetBuyy as <strong>{buyerEmail}</strong>.{' '}
+                        {destination.kind === 'app'
+                            ? 'The app will be signed in to this account.'
+                            : `${storeName} will receive your email address.`}
                     </p>
 
                     {error && <div className="auth-error" role="alert" aria-live="assertive">{error}</div>}
@@ -154,7 +161,9 @@ export function BuyerAuthorize({
                 <p className="auth-subtitle">
                     {mode === 'sign-in'
                         ? `Use your LetBuyy account to continue to ${storeName}.`
-                        : `One account for ${storeName} and every other LetBuyy store.`}
+                        : destination.kind === 'app'
+                            ? 'One account for the LetBuyy app and every LetBuyy store.'
+                            : `One account for ${storeName} and every other LetBuyy store.`}
                 </p>
 
                 <form onSubmit={submitCredentials} className="auth-form">

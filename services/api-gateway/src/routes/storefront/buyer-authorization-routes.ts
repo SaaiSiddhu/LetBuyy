@@ -12,11 +12,21 @@
 // and its host against the storefront's own host resolver (a published store, at its primary domain).
 // A code is never issued for a URL that fails either, and identity-platform never redirects to one.
 //
+// THE MARKETPLACE APP (APPID-P4d, migration 259) is the second client. It is platform-wide, so its
+// code names no site and identity-platform mints it a platform buyer session. It has one callback,
+// its private-use scheme, compared exactly: there is no host to resolve and nothing to normalise.
+// It holds no secret, so its code is bound to it by PKCE alone (RFC 8252 §8.1).
+//
 // Nothing here mints a token. identity-platform is the sole issuer (ART-05).
 
 import type { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
-import { LETBUYY_STOREFRONT_BUYER_CALLBACK_PATH, LETBUYY_STOREFRONT_CLIENT_ID } from '@letbuyy/auth-core';
+import {
+    LETBUYY_MARKETPLACE_APP_CLIENT_ID,
+    LETBUYY_MARKETPLACE_APP_REDIRECT_URI,
+    LETBUYY_STOREFRONT_BUYER_CALLBACK_PATH,
+    LETBUYY_STOREFRONT_CLIENT_ID,
+} from '@letbuyy/auth-core';
 import type { Env } from '../../index';
 import { dbFailureBody, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
@@ -38,9 +48,15 @@ export type AuthorizationCodeIssue =
     | { outcome: 'buyer_unavailable' | 'invalid_request' };
 
 /// redeem_buyer_authorization_code (258). Every refusal is 'invalid_grant'; audit_logs has the reason.
+/// A storefront code carries its site; an app code carries none (259's constraint).
 export type AuthorizationCodeRedemption =
-    | { outcome: 'redeemed'; buyer_account_id: string; site_id: string; client_id: string; session_epoch: number }
+    | { outcome: 'redeemed'; buyer_account_id: string; site_id: string | null; client_id: string; session_epoch: number }
     | { outcome: 'invalid_grant' };
+
+/// Which client a request is for, once its callback has been accepted.
+export type ResolvedAuthorizationClient =
+    | { kind: 'storefront'; clientId: string; redirectUri: string; site: RedirectSite }
+    | { kind: 'app'; clientId: string; redirectUri: string; site: null };
 
 export interface BuyerAuthorizationRoutesDeps {
     requireIdentityInternal: (c: AppContext) => Promise<Response | null>;
@@ -52,7 +68,7 @@ export interface BuyerAuthorizationRoutesDeps {
     resolveRedirectSite: (c: AppContext, host: string) => Promise<{ data: RedirectSite | null; error: unknown }>;
     issueCode: (
         c: AppContext,
-        input: { buyerAccountId: string; clientId: string; redirectUri: string; siteId: string; codeChallenge: string },
+        input: { buyerAccountId: string; clientId: string; redirectUri: string; siteId: string | null; codeChallenge: string },
     ) => Promise<{ data: AuthorizationCodeIssue | null; error: unknown }>;
     redeemCode: (
         c: AppContext,
@@ -101,11 +117,17 @@ export function registerBuyerAuthorizationRoutes(
         await next();
     });
 
-    async function callbackSite(
+    async function resolveClient(
         c: AppContext,
         clientId: unknown,
         redirectUri: unknown,
-    ): Promise<{ site: RedirectSite; redirectUri: string } | { response: Response }> {
+    ): Promise<ResolvedAuthorizationClient | { response: Response }> {
+        if (clientId === LETBUYY_MARKETPLACE_APP_CLIENT_ID) {
+            if (redirectUri !== LETBUYY_MARKETPLACE_APP_REDIRECT_URI) {
+                return { response: c.json(failure('INVALID_REDIRECT', 'That return address is not the LetBuyy app.'), 400) };
+            }
+            return { kind: 'app', clientId, redirectUri, site: null };
+        }
         if (clientId !== LETBUYY_STOREFRONT_CLIENT_ID) {
             return { response: c.json(failure('UNAUTHORIZED_CLIENT', 'Unknown client.'), 400) };
         }
@@ -118,16 +140,16 @@ export function registerBuyerAuthorizationRoutes(
         if (!site) {
             return { response: c.json(failure('INVALID_REDIRECT', 'That return address is not a LetBuyy store.'), 400) };
         }
-        return { site, redirectUri };
+        return { kind: 'storefront', clientId, redirectUri, site };
     }
 
-    // Asked before the buyer signs in, so identity-platform can name the store, and refuse a callback
-    // that is not one, without a session.
+    // Asked before the buyer signs in, so identity-platform can name where the buyer is going (a store,
+    // or the app), and refuse a callback that is neither, without a session.
     router.post('/buyer/authorization-codes/check', identityInternal, async (c) => {
         const body = await c.req.json().catch(() => null) as { client_id?: unknown; redirect_uri?: unknown } | null;
-        const resolved = await callbackSite(c, body?.client_id, body?.redirect_uri);
+        const resolved = await resolveClient(c, body?.client_id, body?.redirect_uri);
         if ('response' in resolved) return resolved.response;
-        return c.json(success({ site: resolved.site }));
+        return c.json(success({ client: resolved.kind, site: resolved.site }));
     });
 
     router.post('/buyer/authorization-codes', identityInternal, requireBuyerSession, async (c) => {
@@ -140,15 +162,15 @@ export function registerBuyerAuthorizationRoutes(
         if (body?.code_challenge_method !== 'S256' || typeof body.code_challenge !== 'string' || !PKCE_CHALLENGE.test(body.code_challenge)) {
             return c.json(failure('INVALID_REQUEST', 'A PKCE S256 code challenge is required.'), 400);
         }
-        const resolved = await callbackSite(c, body.client_id, body.redirect_uri);
+        const resolved = await resolveClient(c, body.client_id, body.redirect_uri);
         if ('response' in resolved) return resolved.response;
 
-        // The buyer is the session's, never the body's.
+        // The buyer is the session's, never the body's; the site is the resolver's, never the body's.
         const { data: issued, error } = await issueCode(c, {
             buyerAccountId: session.buyerAccountId,
-            clientId: LETBUYY_STOREFRONT_CLIENT_ID,
+            clientId: resolved.clientId,
             redirectUri: resolved.redirectUri,
-            siteId: resolved.site.id,
+            siteId: resolved.site?.id ?? null,
             codeChallenge: body.code_challenge,
         });
         if (error || !issued) return c.json(dbFailureBody(), 500);
@@ -177,6 +199,12 @@ export function registerBuyerAuthorizationRoutes(
         });
         if (error || !redeemed) return c.json(dbFailureBody(), 500);
         if (redeemed.outcome !== 'redeemed') return invalidGrant();
+        // 259's constraint already ties the site to the client; checked again because identity-platform
+        // chooses which token to mint from this answer, and a platform session must never come out of
+        // a storefront code.
+        const storefrontCode = redeemed.client_id === LETBUYY_STOREFRONT_CLIENT_ID;
+        const appCode = redeemed.client_id === LETBUYY_MARKETPLACE_APP_CLIENT_ID;
+        if (!(storefrontCode && redeemed.site_id) && !(appCode && redeemed.site_id === null)) return invalidGrant();
 
         const { data: buyer, error: buyerError } = await loadBuyerById(c, redeemed.buyer_account_id);
         if (buyerError) return c.json(dbFailureBody(), 500);
@@ -184,6 +212,7 @@ export function registerBuyerAuthorizationRoutes(
 
         return c.json(success({
             buyer: publicBuyerAccount(buyer),
+            client_id: redeemed.client_id,
             site_id: redeemed.site_id,
             // The epoch the code was issued in, which the database has just confirmed is current.
             session_epoch: redeemed.session_epoch,
