@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, resolve as resolvePath } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
@@ -71,8 +72,28 @@ function createZodStub() {
   return { z };
 }
 
-function loadTypeScriptModule(sourcePath) {
-  const source = readFileSync(sourcePath, 'utf8');
+// Resolves a relative TypeScript specifier the same way Node/tsc would (an explicit extension, or
+// bare `./name` meaning `./name.ts`/`./name.tsx`/`./name/index.ts`) -- these source files are read
+// straight off disk, never through a bundler, so nothing else resolves this for us.
+function resolveRelativeSpecifier(fromPath, specifier) {
+  const base = resolvePath(dirname(fromPath), specifier);
+  for (const candidate of [base, `${base}.ts`, `${base}.tsx`, resolvePath(base, 'index.ts')]) {
+    if (existsSync(candidate)) return candidate;
+  }
+  throw new Error(`Cannot resolve "${specifier}" from ${fromPath} (tried ${base}, ${base}.ts, ${base}.tsx, ${base}/index.ts)`);
+}
+
+// A hand-rolled TS->CJS loader, not a bundler: it stubs `zod` (these files' only non-relative
+// dependency) and otherwise resolves and loads sibling/child relative imports recursively through
+// itself, with a cache so a diamond import graph loads each file once. Anything neither `zod` nor a
+// relative specifier still throws loudly -- the files this loader is asked to load are expected to
+// have no other external dependencies, and a new one appearing here is a real signal, not something
+// to silently stub away.
+function loadTypeScriptModule(sourcePath, cache = new Map()) {
+  const resolvedPath = resolvePath(sourcePath);
+  if (cache.has(resolvedPath)) return cache.get(resolvedPath);
+
+  const source = readFileSync(resolvedPath, 'utf8');
   const transpiled = ts.transpileModule(source, {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -82,12 +103,16 @@ function loadTypeScriptModule(sourcePath) {
   }).outputText;
 
   const module = { exports: {} };
+  cache.set(resolvedPath, module.exports); // set before evaluating, in case of a real cycle
   const sandbox = {
     module,
     exports: module.exports,
     require(specifier) {
       if (specifier === 'zod') return createZodStub();
-      throw new Error(`Unexpected test require from ${sourcePath}: ${specifier}`);
+      if (specifier.startsWith('./') || specifier.startsWith('../')) {
+        return loadTypeScriptModule(resolveRelativeSpecifier(resolvedPath, specifier), cache);
+      }
+      throw new Error(`Unexpected test require from ${resolvedPath}: ${specifier}`);
     },
     Date,
     Map,
@@ -101,7 +126,8 @@ function loadTypeScriptModule(sourcePath) {
     Object,
   };
 
-  vm.runInNewContext(transpiled, sandbox, { filename: sourcePath });
+  vm.runInNewContext(transpiled, sandbox, { filename: resolvedPath });
+  cache.set(resolvedPath, module.exports);
   return module.exports;
 }
 
