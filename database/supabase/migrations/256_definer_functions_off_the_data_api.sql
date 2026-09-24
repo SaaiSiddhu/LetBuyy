@@ -71,6 +71,9 @@ CREATE TABLE IF NOT EXISTS public.migration_privilege_journal (
 ALTER TABLE public.migration_privilege_journal ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.migration_privilege_journal FORCE ROW LEVEL SECURITY;
 REVOKE ALL ON public.migration_privilege_journal FROM PUBLIC, anon, authenticated, app_tenant;
+-- Read-only for the backend role, because every public relation must be readable by service_role on a
+-- database built from these migrations (254's invariant, enforced by service-role-fresh-db-grants).
+GRANT SELECT ON public.migration_privilege_journal TO service_role;
 
 DO $sec1$
 DECLARE
