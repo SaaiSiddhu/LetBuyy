@@ -17,7 +17,7 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveStorefrontSiteByHost } from '../middleware/store-context';
 import type { RedirectSite } from '../routes/storefront/buyer-authorization-routes';
-import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
+import { getSupabaseAdminUnguarded } from './supabase';
 
 export async function resolveStorefrontCallbackSite(
     c: Context<{ Bindings: Env }>,
@@ -29,7 +29,6 @@ export async function resolveStorefrontCallbackSite(
     if (!site || !site.published || (site.matched_domain_role ?? 'primary') !== 'primary') {
         return { data: null, error: null };
     }
-    const { data, error } = await getSupabaseAdmin(c).from('sites').select('name').eq('id', site.id).maybeSingle();
-    if (error) return { data: null, error };
-    return { data: { id: site.id, name: (data?.name as string | null | undefined) ?? null }, error: null };
+    // The resolver's one row already carries the store's public name, so no second read is needed.
+    return { data: { id: site.id, name: site.name ?? null }, error: null };
 }
