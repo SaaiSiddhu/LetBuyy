@@ -38,8 +38,8 @@ spend changes, Constitution changes, bypassing gates/hooks/protection, force-pus
 | Phase | Status | Branch/commit | Notes |
 |---|---|---|---|
 | A — Close APPID-FIX2 | **VERIFIED_LOCAL, MERGED_DEVELOP, PUSHED** | merge `d90618c4`, ledger `68269cb`, branch tip `8fefe38` (deleted, contained) | See `FIX2_PRODUCT_TENANT_GUARD.md`. `origin/develop` advanced `41af1cd9` → `68269cb` (fast-forward, pushed). `staging`/`main` unchanged at `1e6cc4c3`. |
-| B — Cloud validation dependability | **IN_PROGRESS** | `letbuyy/sustained-b-cloud-validation` (claimed at `68269cb`) | Non-Docker Postgres feasibility; cross-suite DB contamination; the 5 untested `apps/commerce/web/src` files; the localization runner defect. |
-| C — Tenant-guard predicate tightening | NOT_STARTED | — | Depends on B's harness being trustworthy for the negative-control suite. |
+| B — Cloud validation dependability | **VERIFIED_LOCAL** (A–D all solved; full `test:behavioral` not run to completion — see `SUSTAINED_B_C.md`) | `letbuyy/sustained-b-cloud-validation` | Non-Docker Postgres shim (A); cross-suite `DROP ROLE` contamination root-caused and fixed (B); 5 untested `apps/commerce/web/src` files wired in, 60 subtests (C); localization test harness fixed (D). See `SUSTAINED_B_C.md`. |
+| C — Tenant-guard predicate tightening | **VERIFIED_LOCAL** | same branch | `.filter()`/`.or()` now require `eq`/`in`/sanctioned-`IS NULL`, not any operator. Caller inventory: nothing legitimate changes. 11 new tests, real revert-and-watch. See `SUSTAINED_B_C.md`. |
 | D — Unified buyer account surfaces | NOT_STARTED | — | Large; will be sliced. |
 | E — Operator identity integration | NOT_STARTED | — | Large; may hit `BLOCKED_DECISION` on MFA/bootstrap policy. |
 | F — Merchant staff membership | NOT_STARTED | — | Depends on canonical-ownership decision between `employees` and `site_memberships`/`site_roles`. |
@@ -48,9 +48,17 @@ spend changes, Constitution changes, bypassing gates/hooks/protection, force-pus
 
 ## Infrastructure ground truth (measured this session, re-check before relying on it)
 
-- Docker: binary present, daemon **not running** (`docker info` fails). Every real-Postgres suite
-  (`test:governance`, `test:behavioral`, `test:foundation:wave*`, `gate.sh --real-db`) is
-  `BLOCKED_INFRA` until this changes. Phase B investigates a non-Docker disposable Postgres path.
+- Docker: binary present, daemon **not running** (`docker info` fails). **RESOLVED by Phase B.A**:
+  a native `postgresql-16` cluster is already installed in this container; `service postgresql
+  start` brings it up, and `scripts/dev/docker-shim/docker`, prepended to `PATH`, translates the
+  fixed subset of `docker inspect/run/start/stop/exec` this repo's harness uses onto it. Real-DB
+  suites are runnable this way (`test:governance`'s `test:behavioral` half, `test:foundation:wave*`,
+  individual `tests/executable/*-postgres.test.mjs` files all verified working) — but the FULL
+  `test:behavioral` list has not been run to completion in this container (stopped partway through
+  in favor of a faster, targeted repro of the B.B contamination bug; see `SUSTAINED_B_C.md`). The
+  Supabase-CLI-stack-only tests (`merchant-tenant-predicate.test.ts` and four siblings, container
+  name `supabase_db_supabase`) remain `BLOCKED_INFRA` — out of this phase's scope, already
+  self-skipping.
 - Flutter SDK: **not on PATH.** `gate.sh --mobile`/`--flutter-build` are `BLOCKED_INFRA`. No Flutter
   claim will be made without a real `flutter build`/`aapt dump badging`.
 - Playwright + Chromium: **pre-installed**, `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`. Real-browser
