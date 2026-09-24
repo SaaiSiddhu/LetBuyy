@@ -40,6 +40,12 @@ them are byte-identical across the move), Firebase project settings, Supabase.
 | E-13 | Confirm the gateway Worker has `RESEND_API_KEY` and `RESEND_FROM_EMAIL` set in each environment. | The gateway, not identity-platform, now emails buyer verification and password reset codes, so that no code ever crosses the internal API. Without the key, starting verification answers 503, and recovery sends nothing while still answering every address the same way. | PENDING |
 | E-14 | Know what the gateway deploy turns on, and watch the auth and rate-limit logs after it: buyer registration and sign-in through identity-platform, and merchant account switching (`/api/auth/switch`). | In production all three have answered 429, because the gateway's rate limiter did not know their bucket names, and buyer calls would then have met a 401, because the buyer routes accepted the storefront's internal signature and not identity-platform's. Development skips the remote rate limit, which is why neither showed. APPID-P4a fixed both. | PENDING |
 
+## Email relay (APPID-SEC2)
+
+| # | Action | Why | Status |
+|---|---|---|---|
+| E-15 | In Resend (email log) and the gateway's logs for `/auth/custom/emails/send`, look for store-created ("Your … is ready!") or "Store creation failed" emails sent to addresses that never created a store, or carrying links outside `letbuyy.com`. If any exist, treat them as phishing sent in LetBuyy's name: tell the recipients if they can be identified, and check the sending domain's reputation. | Until APPID-SEC2, identity-platform's `/api/email/store-creation-success` and `/api/email/store-creation-failure` sent those emails for any caller, to any address, with the caller's text and links inserted unescaped. Whether anyone used them is UNKNOWN from the repository. The routes are deleted once this deploys. | PENDING |
+
 ## Other checkouts and machines
 
 | # | Action | Why | Status |
