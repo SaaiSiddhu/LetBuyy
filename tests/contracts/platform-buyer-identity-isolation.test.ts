@@ -88,3 +88,48 @@ test('buyer_accounts carries no site_id — it is cross-tenant by design', () =>
         'buyer_accounts must not gain a site_id — a buyer identity is not a tenant, and site_id stays the tenant boundary',
     );
 });
+
+// APPID-P3 — migration 255 gives order ownership the same shape as the store link: a platform table,
+// never a column a merchant can read. Proven by execution in
+// tests/executable/buyer-verified-ownership-postgres.test.mjs; guarded here against the next edit.
+const ownershipMigration = readFileSync(join(migrationsDir, '255_buyer_verified_ownership_links.sql'), 'utf8');
+
+test('order ownership is NOT a column on orders', () => {
+    for (const file of migrationFiles) {
+        const sql = readFileSync(join(migrationsDir, file), 'utf8');
+        const addsColumn = /ALTER TABLE\s+(?:public\.)?orders\s+ADD COLUMN[^;]*buyer_account_id/is;
+        assert.ok(
+            !addsColumn.test(sql),
+            `${file} adds buyer_account_id to orders — merchants read orders under site RLS, so that column would let two merchants correlate one shopper. Ownership belongs in buyer_order_links.`,
+        );
+    }
+});
+
+test('buyer_order_links is ENABLE + FORCE RLS, revoked from tenant and API roles, granted to service_role', () => {
+    assert.match(ownershipMigration, /ALTER TABLE public\.buyer_order_links ENABLE ROW LEVEL SECURITY/);
+    assert.match(ownershipMigration, /ALTER TABLE public\.buyer_order_links FORCE ROW LEVEL SECURITY/);
+    const match = ownershipMigration.match(/REVOKE ALL ON public\.buyer_order_links FROM ([a-z_, ]+);/);
+    assert.ok(match, 'buyer_order_links must explicitly REVOKE');
+    const revoked = match![1].split(',').map((r) => r.trim());
+    for (const role of ['app_tenant', 'authenticated', 'anon']) assert.ok(revoked.includes(role), `must REVOKE from ${role}`);
+    assert.match(ownershipMigration, /GRANT [A-Z, ]+ ON public\.buyer_order_links TO service_role;/);
+});
+
+test('every ownership function is revoked from the Data API roles BY NAME, not only from PUBLIC', () => {
+    // Supabase's default privileges grant EXECUTE on new functions to anon and authenticated by name,
+    // so REVOKE ... FROM PUBLIC leaves them callable through /rest/v1/rpc. Each of these runs as its
+    // owner and takes a buyer or operator id, so either role reaching one could act as any buyer.
+    for (const fn of [
+        'link_buyer_store_customer(uuid, uuid)',
+        'claim_buyer_orders(uuid, uuid)',
+        'resolve_buyer_store_customer_link(uuid, uuid, uuid, text)',
+        'resolve_buyer_order_link(uuid, uuid, uuid, text)',
+        'request_order_return(uuid, uuid, text, text)',
+    ]) {
+        const escaped = fn.replace(/[()]/g, '\\$&');
+        const match = ownershipMigration.match(new RegExp(`REVOKE ALL ON FUNCTION public\\.${escaped} FROM ([a-zA-Z_, ]+);`));
+        assert.ok(match, `${fn} must be revoked`);
+        const revoked = match![1].split(',').map((r) => r.trim());
+        for (const role of ['PUBLIC', 'anon', 'authenticated', 'app_tenant']) assert.ok(revoked.includes(role), `${fn} must be revoked from ${role}`);
+    }
+});
