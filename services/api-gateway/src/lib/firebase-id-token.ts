@@ -19,7 +19,7 @@ import { createRemoteJWKSet, errors, jwtVerify, type JWTVerifyGetKey } from 'jos
 /// not a secret; named here because this bridge serves exactly this project and dies with it.
 export const FIREBASE_PROJECT_ID = 'letbuy-y';
 
-const SECURETOKEN_JWKS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
+const GOOGLE_SIGNING_KEYS_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com';
 const LINKABLE_PROVIDERS = new Set(['password', 'google.com']);
 const CLOCK_TOLERANCE_SECONDS = 60;
 
@@ -27,7 +27,7 @@ const CLOCK_TOLERANCE_SECONDS = 60;
 // costs one fetch, and it decides nothing about orders, money or tenants.
 let securetokenKeys: JWTVerifyGetKey | null = null;
 export function firebaseSigningKeys(): JWTVerifyGetKey {
-    securetokenKeys ??= createRemoteJWKSet(new URL(SECURETOKEN_JWKS_URL), { timeoutDuration: 5000 });
+    securetokenKeys ??= createRemoteJWKSet(new URL(GOOGLE_SIGNING_KEYS_URL), { timeoutDuration: 5000 });
     return securetokenKeys;
 }
 
