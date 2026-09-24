@@ -222,7 +222,7 @@ export function tLocale(
   // Missing key: return the key path without 't:' prefix (not the literal 't:key').
   if (template === undefined) return stripped;
 
-  // Apply {{ varname }} interpolation (same pattern as translateLiquidKey in theme-renderer.ts).
+  // Apply {{ varname }} interpolation (same pattern the Liquid t filter in theme-renderer.ts uses).
   if (!replacements || Object.keys(replacements).length === 0) return template;
   return template.replace(/\{\{\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\}\}/g, (match, name: string) => {
     const r = replacements[name];

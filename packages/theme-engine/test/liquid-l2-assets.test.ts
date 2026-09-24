@@ -13,11 +13,11 @@ import {
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
 
-function renderUrbanKicks(extraBundle = {}, storeTemplateOverrides = {}) {
+function renderUrbanKicks(extraBundle = {}, storeTemplateOverrides = {}, contextOverrides = {}) {
   const renderer = new LiquidRenderer();
   const bundle = { ...createUrbanKicksLiquidThemeBundleFixture(), ...extraBundle };
   return renderer.render({
-    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en' },
+    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/', previewMode: true, locale: 'en', ...contextOverrides },
     storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [], ...storeTemplateOverrides },
     routeTemplate: { id: 'index', type: 'index', layoutKey: 'theme', sections: [] },
     liquidBundle: bundle,
@@ -103,4 +103,30 @@ test('SUSTAINED-G2: no customCss on storeTemplate renders byte-identical to befo
   const withUndefinedCss = await renderUrbanKicks({}, { customCss: undefined });
   assert.equal(withUndefinedCss.liquid?.layoutHtml, withoutCss.liquid?.layoutHtml, 'omitting customCss must not change rendered output');
   assert.doesNotMatch(withoutCss.liquid?.layoutHtml ?? '', /data-lb-custom-css/, 'no custom-CSS tag without a value');
+});
+
+test('SUSTAINED-G3: the real render for locale "en" still resolves the shipped general.cart key unchanged', async () => {
+  // The header's `{{ "general.cart" | t }}` (theme-bundle.ts:1445) is the theme's one real,
+  // shipped use of the | t filter. It renders into result.liquid.header (the header/footer
+  // chrome is a separate render pass from the route's own layoutHtml). This proves the switch
+  // to tLocale() did not regress it.
+  const result = await renderUrbanKicks();
+  const header = result.liquid?.header ?? '';
+  assert.match(header, /<span class="lb-sr-only">Cart<\/span>/, 'the shipped en cart label must still resolve exactly as before');
+});
+
+test('SUSTAINED-G3: the | t filter now resolves through the India-first fallback chain (en-IN before bare en), proving it calls tLocale and not the old duplicate lookup', async () => {
+  // The bug this phase fixes: the OLD inline resolveLiquidLocaleDictionary's candidate chain was
+  // [locale, language, 'en'] -- it never tried 'en-IN' at all. tLocale's chain is
+  // [locale, language, 'en-IN', 'en']. For an unsupported locale like 'fr-FR' with BOTH an 'en-IN'
+  // and an 'en' entry present, the two implementations disagree on which one wins. Observing the
+  // en-IN value here is only possible if the filter now truly delegates to tLocale.
+  const localesWithBothEnVariants = {
+    en: { general: { cart: 'Cart' } },
+    'en-IN': { general: { cart: 'ENIN_CART_LABEL' } },
+  };
+  const result = await renderUrbanKicks({ locales: localesWithBothEnVariants }, {}, { locale: 'fr-FR' });
+  const header = result.liquid?.header ?? '';
+  assert.match(header, /<span class="lb-sr-only">ENIN_CART_LABEL<\/span>/, 'en-IN must be tried before bare en for an unresolved locale');
+  assert.doesNotMatch(header, /<span class="lb-sr-only">Cart<\/span>/, 'the old (wrong) fallback to bare en must not win');
 });
