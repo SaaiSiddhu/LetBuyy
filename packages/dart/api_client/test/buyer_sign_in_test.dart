@@ -130,6 +130,7 @@ void main() {
     test('any other address is rejected', () {
       for (final uri in [
         'com.letbuyy.letbuyy://oauth/callback?code=$code&state=${pending.state}',
+        'com.letbuyy.letbuyy://evil.example/oauth/callback?code=$code&state=${pending.state}',
         'com.letbuyy.letbuyy:/oauth/callback/?code=$code&state=${pending.state}',
         'com.letbuyy.letbuyy:/oauth/other?code=$code&state=${pending.state}',
         'com.letbuyy.letbuyy:/oauth/callback?code=$code&state=${pending.state}#x',
