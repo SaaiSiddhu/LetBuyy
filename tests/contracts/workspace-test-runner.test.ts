@@ -41,9 +41,26 @@ test('root and governance runners include workspace and TypeScript contract test
     const rootPackageJson = readPackageJson('.');
     assert.match(rootPackageJson.scripts?.test || '', /node --test --test-concurrency=1 tests\/\*\/\*\.test\.mjs/);
     assert.match(rootPackageJson.scripts?.test || '', /test:contracts/);
-    assert.match(rootPackageJson.scripts?.['test:behavioral'] || '', /node --test --test-concurrency=1 tests\/\*\/\*\.test\.mjs/);
+    // SUSTAINED-J: test:behavioral no longer inlines the raw `node --test` invocation -- it
+    // delegates to scripts/governance/test-behavioral.mjs, which routes the destructive-guard
+    // suites through their own dedicated disposable Postgres container/database (each throws at
+    // module load under the bare invocation, unconditionally, regardless of code changes) and
+    // still runs every other suite with the exact same `node --test --test-concurrency=1`
+    // invocation this test used to check for directly. The next assertion checks the wrapper
+    // itself still covers the full tests/*/*.test.mjs surface, so this isn't just a narrower check.
+    assert.match(rootPackageJson.scripts?.['test:behavioral'] || '', /node scripts\/governance\/test-behavioral\.mjs/);
     assert.match(rootPackageJson.scripts?.['test:workspaces'] || '', /turbo test/);
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
+});
+
+test('the test:behavioral wrapper still discovers and runs the full tests/*/*.test.mjs surface', () => {
+    const wrapper = readFileSync(join(repoRoot, 'scripts/governance/test-behavioral.mjs'), 'utf8');
+    // discoverAll() walks every immediate subdirectory of tests/ for *.test.mjs files -- the same
+    // set `tests/*/*.test.mjs` would glob -- rather than a narrower, hand-picked list.
+    assert.match(wrapper, /readdirSync\(join\(repoRoot, ['"]tests['"]\)/);
+    assert.match(wrapper, /\.test\.mjs['"]\)/);
+    // Every suite not in the destructive-guard allowlist still runs through the same real runner.
+    assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.rest\]/);
 });
 
 test('main CI runs the behavioral gate before filtered workspace tests', () => {

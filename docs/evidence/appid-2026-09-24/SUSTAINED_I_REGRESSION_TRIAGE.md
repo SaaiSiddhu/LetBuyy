@@ -60,6 +60,7 @@ unmodified test file from the `41af1cd9` worktree — proof, not inference:
 | domain boundary validator rejects app-local API ownership drift (`not ok 364`, residual) | same file | after the console-mfa fix, still fails on the *message-count* assertion (`/189 app API route ownership records checked/` vs actual `201`) — the identical 189-vs-201 drift as `not ok 363`, unrelated to console-mfa |
 | app billing approval does not fabricate provider success references (`not ok 368`) | `tests/federation/app-billing-payout.test.mjs` | reads `services/api-gateway/src/routes/app-store/billing-oauth-routes.ts`, last touched `d705397`, pre-baseline |
 | all seven web apps consume the shared design-system package (`not ok 386`) | `tests/federation/design-system-consolidation.test.mjs` | hardcodes path `apps/merchant-web/package.json` — stale even against the D-APP-LAYOUT rename's own `apps/merchant/web`; ENOENT is pure path-string debt in the test, not an app regression |
+| branch-dispositions validator passes on the repository ledger (`not ok 510`) | `tests/governance/branch-dispositions.test.mjs` | fails on advisories the validator itself declares non-blocking: "environment chain not measurable here (missing local refs: staging, main) — expected in a shallow CI clone" plus several "Recorded SHA `<x>` is not a commit in this repository (shallow clone)" lines for `staging`/`main`/several long-deleted branches. Reproduced byte-identically (same advisory list, same SHAs) running this exact test file, unmodified, checked out at `41af1cd9` — a pure shallow-clone environment limitation (this container's `git` history depth), not a code defect, and not something any phase's source changes could fix |
 | gateway auth middleware keeps the legacy branch order snapshot (`not ok 751`) | `tests/identity-foundation/production-parity.test.mjs` | reads `services/api-gateway/src/middleware/auth.ts` / `packages/auth-core/src/feature-flags.ts`, both pre-baseline (`d705397`) |
 | gateway verifier registry preserves legacy branch order (`not ok 757`) | `tests/identity-foundation/remaining-scaffolds.test.mjs` | reads `services/api-gateway/src/identity-foundation/auth-verifier-registry.ts`, pre-baseline (`d705397`) |
 | Experience Picker A/B (×3) (`not ok 775/777/778`) | `tests/launch/lb-experience-flow.test.mjs` | `apps/merchant/web/src/components/theme-editor/ExperiencePicker.tsx` last touched `19f79ba` (rename only), pre-baseline; the "editor" wiring file nowhere calls `buildExperienceSettingsOverlay` by that literal name in the current tree, a pre-existing implementation/test naming drift |
@@ -127,12 +128,40 @@ live credential or an owner decision — none is masking a code defect.
 
 ## Reconciliation against the log's own totals
 
-`# fail 28` = 21 (pre-existing, baseline-reproduced) + 4 (pre-existing, destructive-guard) + 1
-(pre-existing, theme-tenant-isolation `hookFailed`) + 1 (role contamination, FIXED) + 1 (console-mfa
-false positive, FIXED) = 28. `# cancelled 6` = theme-tenant-isolation's own 6 subtests, same root
-cause as its `hookFailed`. `# skipped 15` = the `[HUMAN-REQUIRED]` gates above. Every one of the 49
-outcomes this run reported beyond a plain `ok` is now attributed to a specific, evidenced cause —
-none left as an unattributed "unrelated" assertion.
+**Correction (SUSTAINED-J, recovered after a container restart; the original version of this section
+undercounted the baseline-reproduced bucket as 21 and, separately, conflated the console-mfa fix with
+removing a whole tallied item — both wrong, corrected here with the exact TAP line numbers, not by
+recollection).**
+
+The original run's TAP stream carries **29** distinct `not ok` lines, but Node's own summary reports
+`# fail 28` — one fewer. The reason is a Node test-runner accounting nuance, not a miscount: `not ok
+1979` (`theme tenant isolation`, `type: 'suite'`, `failureType: 'hookFailed'`) is visible as its own
+TAP line, but Node does not add it to `# fail`; its 6 subtests are tallied separately under `#
+cancelled 6` instead, and the suite's own failure is not double-counted. So:
+
+- **29 visible `not ok` lines** = **28 `# fail`-tallied items** + **1** (`not ok 1979`, counted only
+  under `# cancelled 6`).
+- The 28 `# fail`-tallied items in the *original* run = **23** pre-existing/baseline-reproduced (the
+  table above, including `not ok 510` — branch-dispositions, added in this correction) + **4**
+  pre-existing destructive-guard suites + **1** role-contamination failure (`not ok 318`,
+  security-rls-hardening, FIXED). `23 + 4 + 1 = 28`. ✓ matches `# fail 28` exactly.
+- The console-mfa false positive was **not** a separately-tallied item in either run — it was one of
+  two failure reasons inside the single subtest `not ok 364`, which is already one of the 23
+  baseline-reproduced items (it fails before the fix on the console-mfa pattern match *and* the
+  189-vs-201 message count together, and still fails after the fix on the 189-vs-201 reason alone).
+  Fixing it therefore does not change either run's fail count — it only removes one of two reasons
+  behind an already-counted line.
+- In the *final*, post-fix run (see the Confirmation section below), the same accounting holds: **28
+  visible `not ok` lines** = **27 `# fail`-tallied items** (`not ok 1979` again excluded) = **23**
+  pre-existing/baseline-reproduced (the identical set, `510` included) + **4** pre-existing
+  destructive-guard suites. `23 + 4 = 27`. ✓ matches `# fail 27` exactly — the role-contamination item
+  is gone (fixed), nothing else changed.
+
+`# cancelled 6` = theme-tenant-isolation's own 6 subtests, same root cause as its `hookFailed`, in
+both runs. `# skipped 15` = the `[HUMAN-REQUIRED]` gates above, in both runs. Every one of the 49
+(original) / 48 (final) outcomes either run reported beyond a plain `ok` is now attributed to a
+specific, evidenced cause, with the exact TAP line number cited — none left as an unattributed
+"unrelated" assertion, and none double-counted.
 
 ## Confirmation: full `test:behavioral` rerun after both fixes landed
 
@@ -151,3 +180,53 @@ and skipped (15, `[HUMAN-REQUIRED]`) counts are unchanged. No new failure was in
 fix. A separate, standalone run of all 56 `tests/executable/*.test.mjs` files together (not
 individually) also confirmed this: 238 pass, 4 fail (the same 4 pre-existing destructive-guard
 suites), 0 cancelled — no role-contamination failure anywhere in the set.
+
+## Exhaustive enumeration of the final run's 28 non-`ok` TAP lines (27 fail + 1 folded into cancelled)
+
+Recovered directly from `/tmp/sustained-i-final-test-behavioral.log` (preserved across the container
+restart). `not ok` numbers are the TAP sequence numbers from that specific run, not stable IDs.
+
+| TAP # | Test title | File | Kind | Classification |
+|---|---|---|---|---|
+| 5 | WS12 G6 migrated REST endpoints remain the external source of truth for parity reads | `tests/api-graphql/rest-shim-parity.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 54 | customer-web signs server-only legacy customer lookups | `tests/auth/customer-session-gateway.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 35 | `tests/executable/checkout-order-concurrency-postgres.test.mjs` | same | file-level (module-load guard throw) | PRE_EXISTING (destructive-guard, pre-baseline commit `d705397`) |
+| 46 | `tests/executable/gift-card-issue-idempotency-postgres.test.mjs` | same | file-level (module-load guard throw) | PRE_EXISTING (destructive-guard) |
+| 50 | `tests/executable/late-capture-after-release-postgres.test.mjs` | same | file-level (module-load guard throw) | PRE_EXISTING (destructive-guard) |
+| 59 | `tests/executable/money-rpc-idempotency-sweep-postgres.test.mjs` | same | file-level (module-load guard throw) | PRE_EXISTING (destructive-guard) |
+| 363 | app-local API route ownership is validator-enforced | `tests/federation/app-api-route-ownership.test.mjs` | leaf test | PRE_EXISTING (stale 189-vs-201 lockstep) |
+| 364 | domain boundary validator rejects app-local API ownership drift | `tests/federation/app-api-route-ownership.test.mjs` | leaf test | PRE_EXISTING (stale 189-vs-201 lockstep; console-mfa false positive already cleared by this phase) |
+| 368 | app billing approval does not fabricate provider success references | `tests/federation/app-billing-payout.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 386 | all seven web apps consume the shared design-system package | `tests/federation/design-system-consolidation.test.mjs` | leaf test | PRE_EXISTING (stale path string) |
+| 510 | branch-dispositions validator passes on the repository ledger | `tests/governance/branch-dispositions.test.mjs` | leaf test | PRE_EXISTING (shallow-clone environment limitation, baseline-reproduced) |
+| 751 | gateway auth middleware keeps the legacy branch order snapshot | `tests/identity-foundation/production-parity.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 757 | gateway verifier registry preserves legacy branch order and keeps OIDC dormant by default | `tests/identity-foundation/remaining-scaffolds.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 775 | A: the Experience Picker exists and renders experiences from the engine | `tests/launch/lb-experience-flow.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 777 | B: the editor wires the picker behind an Experiences panel and an apply handler | `tests/launch/lb-experience-flow.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 778 | B: applying an experience merges the token overlay into themeSettings (draft path) | `tests/launch/lb-experience-flow.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1694 | 5C Invite acceptance: public proxy forwards to the real gateway endpoint (pre-auth, no ownership check) + page consumes it without a dead link | `tests/launch/lb-phase5-commerce.test.mjs` | leaf test | PRE_EXISTING (Phase-N3 retirement, test never updated) |
+| 1761 | LB-11: route inventory lockstep is 188 and the rollback drops every new function | `tests/launch/lb11-giftcards.test.mjs` | leaf test | PRE_EXISTING (stale 188 lockstep) |
+| 1772 | LB-12: route-count lockstep applied (188 routes) | `tests/launch/lb12-registration.test.mjs` | leaf test | PRE_EXISTING (stale 188 lockstep) |
+| 1779 | LB-13-B: checkout-payment-routes.ts storefront razorpay verify contains assertProviderPaymentNotReplayed | `tests/launch/lb13-security-trio.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1819 | (P4-4) domain-boundary-validator expects 188 routes | `tests/launch/lb6-collections.test.mjs` | leaf test | PRE_EXISTING (stale 188 lockstep) |
+| 1902 | production app deployment matrices match production Vercel topology | `tests/operations/production-deploy-workflow.test.mjs` | leaf test | PRE_EXISTING (D-APP-LAYOUT config-sweep gap) |
+| 1935 | storefront product and order routes avoid JSONB reads when relational flags are on | `tests/performance/dual-model-consolidation.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1957 | public storefront REST reads are cached with request-normalized keys | `tests/performance/storefront-cache.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1958 | cached storefront responses carry store-scoped tags for provider purge support | `tests/performance/storefront-cache.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1970 | storefront checkout defers post-commit usage and GST work | `tests/performance/variant-checkout-deferral.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+| 1979 | theme tenant isolation (migration 196 RLS, live schema) | `tests/security/theme-tenant-isolation.test.mjs` | **suite** (`hookFailed`, `before` hook) — **not counted in `# fail`**; its 6 subtests are the entirety of `# cancelled 6` | PRE_EXISTING (docker-shim tooling artifact, baseline-reproduced under the shim) |
+| 1988 | converted Liquid theme keeps reusable and app block portability | `tests/theme-engine/first-party-liquid-portability.test.mjs` | leaf test | PRE_EXISTING (baseline-reproduced) |
+
+**Totals check**: 28 rows above; 27 are leaf/file-level items counted in `# fail 27`; row 1979 is the
+suite whose failure is reported via `# cancelled 6` instead. `27 + 1 = 28` visible `not ok` lines. ✓
+
+**Cancellations (`# cancelled 6`)**: all 6 are subtests of the `not ok 1979` suite above (`theme
+tenant isolation`'s `before` hook throws before any of its 6 declared tests can run, so Node marks
+all 6 `cancelled` rather than individually `not ok`). No cancellation exists outside this one suite.
+
+**Skips (`# skipped 15`)**: all 15 are `[HUMAN-REQUIRED]` gates (`HR-KMS-LIVE`, `HR-TURNSTILE-LIVE`,
+`HR-PA-SPLIT-LIVE`, `HR-MERCHANT-PSP-LIVE`, `HR-GST-IRP-LIVE`, `HR-CARRIER-LIVE`, `HR-DNS-CHECKOUT`,
+`HR-WHATSAPP-LIVE`, `HR-DLT-TRAI-LIVE`, `HR-ESP-LIVE`, `HR-AUTOPAY-LIVE`, `HR-LEGAL-DPDP-PA`,
+`HR-WAREHOUSE-LIVE`, `HR-AI-MODEL-LIVE`, `HR-PROD-MIGRATE-DEPLOY`) — each an intentional gate on a
+live credential or an owner/legal decision, none masking a required assertion that could otherwise
+run in this environment.
