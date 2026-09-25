@@ -46,14 +46,33 @@ spend changes, Constitution changes, bypassing gates/hooks/protection, force-pus
 | G — Storefront search/CSS/localization | **VERIFIED_LOCAL, MERGED_DEVELOP** (G1, G2, G3 all complete as scoped) | G1 merge `a167160`; G2 merge `df019bc`; G3 merge `892fecf`, ledger `c0412d0`, branch tip `c0412d0` (deleted, contained) | G1: search-box Liquid section rendered a bare `<input>` with no `<form>`; fixed to a real `<form method="get" action="{{ routes.search_url }}">`, matching the header's pattern. Real-browser (Playwright/Chromium) proof: Enter and Submit both navigate correctly. G2: the merchant custom CSS feature was fully validated and persisted, and the renderer had a complete, tested validate-and-scope function for it, but that function's only call site never passed the value — no merchant's custom CSS had ever reached a live storefront. Wired `StoreTemplateConfig.customCss` through `store-service.ts`'s existing appearance bridge to the renderer call site; 3 new render-pipeline tests, real revert-and-watch. G3: found TWO duplicate translation-lookup implementations — a tested, India-first, prototype-guarded `tLocale()` with zero real consumers, and a divergent, less-robust inline duplicate that the real `\| t` filter actually called. Deleted the duplicate, wired the filter to `tLocale()`; 2 new tests, real revert-and-watch. Separately found and explicitly NOT attempted: the shipped theme's translation catalog has exactly one key (English only) and `\| t` is used once in the whole theme — populating real 9-locale content is a large authoring project outside this phase's authority, recorded honestly. See `SUSTAINED_G1.md`, `SUSTAINED_G2.md`, `SUSTAINED_G3.md`. |
 | H — Integrated acceptance | **VERIFIED_LOCAL, MERGED_DEVELOP** | merge `3c77775`, ledger `db7c05d`, branch tip `db7c05d` (deleted, contained) | Completed SUSTAINED-B.B's own named gap: ran `pnpm run test:behavioral` (~230 files) to completion for the first time in this container (25.7 min, 2049 tests, 1983 pass, 45 fail). Classified all 46 failures against this session's full diff: 14 are the same transient `node_modules` filesystem blip seen twice in G1/G2 (not a code defect); 2 are real and attributable — a stale G2 test assertion, and extending SUSTAINED-B.B's own cross-suite Postgres role-contamination fix to 2 more files it never covered — both fixed with real revert-and-watch (the role fix proven via an actual planted-contamination reproduction). ~30 remaining failures touch none of this session's files; recorded honestly as a first-observed, un-triaged baseline for a future phase, neither claimed pre-existing nor attributed here. See `SUSTAINED_H.md`. |
 
-**Programme complete as scoped.** SUSTAINED-A through H are all `MERGED_DEVELOP` and pushed to
-`origin/develop` (`3c77775`); `staging`/`main` remain untouched at `1e6cc4c3` throughout, per the
-owner's "hold promotion" instruction. Two `BLOCKED_DECISION`s remain, correctly unresolved by this
-programme (SUSTAINED-E's operator-identity migration, SUSTAINED-F's staff-membership mechanism among
-three coexisting candidates) — both need the owner's word. One un-triaged `test:behavioral` baseline
-(~30 failures, SUSTAINED-H) remains for a future phase's dedicated triage. Single agent throughout
-this entire programme: no subagents, no workflow orchestration, no background coding agents, no
-scheduled/autonomous restart services.
+**Corrected 2026-09-25 (SUSTAINED-I).** The paragraph that used to follow this one said "programme
+complete as scoped." That overclaimed: every phase *branch that was opened* did reach
+`MERGED_DEVELOP`, and `staging`/`main` correctly stayed untouched — but D's own row above has said
+`IN_PROGRESS ... D1/D2/D4/D5/D6 NOT_STARTED` since it was first written, and that sentence never
+appeared in the closing summary. Read the four buckets below for the programme's real state as of
+`3c77775`; SUSTAINED-I (its own evidence doc) is closing exactly these gaps, not re-litigating what
+already merged.
+
+- **IMPLEMENTED, VERIFIED_LOCAL, MERGED_DEVELOP**: A, B, C, D3 (a bounded slice of D — not all of D),
+  G (G1/G2/G3), and 2 of H's 46 findings (H's own row names which). Each has a real revert-and-watch
+  or reproduction in its own evidence doc.
+- **INVESTIGATED, correctly `BLOCKED_DECISION`, no code change**: F (three coexisting staff-membership
+  mechanisms found, none picked). E's *migration itself* is the same status — only its bounded
+  MFA-hardening slice reached `MERGED_DEVELOP`. An investigation is real, recorded work; it was never
+  called an implementation here, but it also never belonged in a "complete" summary line.
+- **NOT STARTED / NOT DEMONSTRATED**: D1 (canonical profile fields), D2 (address book), D4 (cache-header
+  audit — including whether personalized account data can leak through caching), D5 (client/mobile UI
+  wiring beyond D3's one route), D6 (session lifecycle beyond what pre-dated this programme). Audited,
+  and where safely unblocked, implemented in SUSTAINED-I — see its evidence doc for exactly what moved.
+- **UN-TRIAGED**: the ~30 `test:behavioral` failures H's first-ever completed full run surfaced, none
+  touching this session's diff but none individually root-caused either. SUSTAINED-I's own rerun and
+  per-failure triage is closing this — see its evidence doc for the classification of every one.
+
+Two `BLOCKED_DECISION`s remain open for the owner; SUSTAINED-I produces a real decision package for
+each (canonical-registry evidence, alternatives, a recommendation) rather than resolving either alone.
+Single agent throughout this entire programme: no subagents, no workflow orchestration, no
+background coding agents, no scheduled/autonomous restart services.
 
 ## Infrastructure ground truth (measured this session, re-check before relying on it)
 
