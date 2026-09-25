@@ -268,18 +268,37 @@ class BuyerSignInClient {
 
 /// The buyer, as the gateway shows them to themselves.
 class BuyerAccount {
-  const BuyerAccount({required this.id, required this.email, required this.emailVerified});
+  const BuyerAccount({
+    required this.id,
+    required this.email,
+    required this.emailVerified,
+    this.fullName,
+    this.phone,
+  });
 
   final String id;
   final String email;
   final bool emailVerified;
+
+  /// D1 (SUSTAINED-J). Neither is verified -- phone especially: no phone-verification mechanism
+  /// exists anywhere in the buyer realm, so it is surfaced exactly as unverified as it is.
+  final String? fullName;
+  final String? phone;
 
   static BuyerAccount? fromJson(Object? json) {
     if (json is! Map) return null;
     final id = json['id'];
     final email = json['email'];
     if (id is! String || email is! String) return null;
-    return BuyerAccount(id: id, email: email, emailVerified: json['email_verified'] == true);
+    final fullName = json['full_name'];
+    final phone = json['phone'];
+    return BuyerAccount(
+      id: id,
+      email: email,
+      emailVerified: json['email_verified'] == true,
+      fullName: fullName is String ? fullName : null,
+      phone: phone is String ? phone : null,
+    );
   }
 }
 
@@ -332,4 +351,159 @@ class BuyerAccountApi {
       };
     }
   }
+
+  /// D1 (SUSTAINED-J). Allowlisted at the gateway (PATCH /storefront/buyer/profile) regardless of
+  /// what else this call's map contains -- only full_name/phone are ever reachable through it.
+  /// Pass `null` for a field to clear it; omit a key to leave it unchanged.
+  Future<BuyerAccount> updateProfile(String sessionToken, {Object? fullName = _unset, Object? phone = _unset}) async {
+    final update = <String, Object?>{
+      if (!identical(fullName, _unset)) 'full_name': fullName,
+      if (!identical(phone, _unset)) 'phone': phone,
+    };
+    final body = asJsonMap(await _client.patch(
+      '/storefront/buyer/profile',
+      body: update,
+      options: _session(sessionToken),
+    ));
+    final data = body['data'];
+    final account = BuyerAccount.fromJson(data is Map ? data['buyer'] : null);
+    if (account == null) {
+      throw const ApiException(message: 'Unexpected profile response.', statusCode: 502, code: 'INVALID_RESPONSE');
+    }
+    return account;
+  }
+}
+
+/// A private sentinel distinguishing "omit this field" from "set it to null", since both are valid,
+/// different requests for updateProfile's optional named parameters.
+const Object _unset = Object();
+
+/// D2 (SUSTAINED-J). The buyer's own address, shared across every store and the marketplace --
+/// never the per-store customer_addresses, a separate, already-complete realm (D-ONE-BUYER).
+class BuyerAddress {
+  const BuyerAddress({
+    required this.id,
+    required this.label,
+    required this.fullName,
+    this.phone,
+    required this.addressLine1,
+    this.addressLine2,
+    required this.city,
+    required this.state,
+    required this.postalCode,
+    required this.country,
+    this.landmark,
+    required this.isDefault,
+  });
+
+  final String id;
+  final String label;
+  final String fullName;
+  final String? phone;
+  final String addressLine1;
+  final String? addressLine2;
+  final String city;
+  final String state;
+  final String postalCode;
+  final String country;
+  final String? landmark;
+  final bool isDefault;
+
+  static BuyerAddress? fromJson(Object? json) {
+    if (json is! Map) return null;
+    final id = json['id'];
+    final fullName = json['full_name'];
+    final addressLine1 = json['address_line1'];
+    final city = json['city'];
+    final state = json['state'];
+    final postalCode = json['postal_code'];
+    if (id is! String || fullName is! String || addressLine1 is! String || city is! String || state is! String || postalCode is! String) {
+      return null;
+    }
+    final phone = json['phone'];
+    final addressLine2 = json['address_line2'];
+    final landmark = json['landmark'];
+    final country = json['country'];
+    final label = json['label'];
+    return BuyerAddress(
+      id: id,
+      label: label is String ? label : 'home',
+      fullName: fullName,
+      phone: phone is String ? phone : null,
+      addressLine1: addressLine1,
+      addressLine2: addressLine2 is String ? addressLine2 : null,
+      city: city,
+      state: state,
+      postalCode: postalCode,
+      country: country is String ? country : 'IN',
+      landmark: landmark is String ? landmark : null,
+      isDefault: json['is_default'] == true,
+    );
+  }
+
+  Map<String, Object?> toRequestBody() => {
+        'label': label,
+        'full_name': fullName,
+        if (phone != null) 'phone': phone,
+        'address_line1': addressLine1,
+        if (addressLine2 != null) 'address_line2': addressLine2,
+        'city': city,
+        'state': state,
+        'postal_code': postalCode,
+        'country': country,
+        if (landmark != null) 'landmark': landmark,
+        'is_default': isDefault,
+      };
+}
+
+/// The gateway's buyer address routes (GET/POST/PATCH/DELETE /storefront/buyer/addresses[/:id]),
+/// the same session-only gate as BuyerAccountApi.account and .updateProfile.
+class BuyerAddressApi {
+  BuyerAddressApi(this._client);
+
+  final ApiClient _client;
+
+  ApiRequestOptions _session(String sessionToken) =>
+      ApiRequestOptions(headers: {letbuyyBuyerSessionHeader: sessionToken});
+
+  Future<List<BuyerAddress>> list(String sessionToken) async {
+    final body = asJsonMap(await _client.get('/storefront/buyer/addresses', options: _session(sessionToken)));
+    final data = body['data'];
+    final addresses = data is Map ? data['addresses'] : null;
+    if (addresses is! List) return const [];
+    return addresses.map(BuyerAddress.fromJson).whereType<BuyerAddress>().toList(growable: false);
+  }
+
+  Future<BuyerAddress> create(String sessionToken, BuyerAddress address) async {
+    final body = asJsonMap(await _client.post(
+      '/storefront/buyer/addresses',
+      body: address.toRequestBody(),
+      options: _session(sessionToken),
+    ));
+    final saved = BuyerAddress.fromJson(asJsonMap(body['data'])['address']);
+    if (saved == null) {
+      throw const ApiException(message: 'Unexpected address response.', statusCode: 502, code: 'INVALID_RESPONSE');
+    }
+    return saved;
+  }
+
+  Future<BuyerAddress> update(String sessionToken, String addressId, BuyerAddress address) async {
+    final body = asJsonMap(await _client.patch(
+      '/storefront/buyer/addresses/$addressId',
+      body: address.toRequestBody(),
+      options: _session(sessionToken),
+    ));
+    final saved = BuyerAddress.fromJson(asJsonMap(body['data'])['address']);
+    if (saved == null) {
+      throw const ApiException(message: 'Unexpected address response.', statusCode: 502, code: 'INVALID_RESPONSE');
+    }
+    return saved;
+  }
+
+  /// A 404 [ApiException] means the address does not exist, or belongs to another buyer -- the
+  /// gateway answers the two identically, on purpose (buyer-address-routes.ts).
+  Future<void> delete(String sessionToken, String addressId) => _client.delete(
+        '/storefront/buyer/addresses/$addressId',
+        options: _session(sessionToken),
+      );
 }
