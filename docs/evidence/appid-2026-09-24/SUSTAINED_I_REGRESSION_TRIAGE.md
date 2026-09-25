@@ -133,3 +133,21 @@ false positive, FIXED) = 28. `# cancelled 6` = theme-tenant-isolation's own 6 su
 cause as its `hookFailed`. `# skipped 15` = the `[HUMAN-REQUIRED]` gates above. Every one of the 49
 outcomes this run reported beyond a plain `ok` is now attributed to a specific, evidenced cause —
 none left as an unattributed "unrelated" assertion.
+
+## Confirmation: full `test:behavioral` rerun after both fixes landed
+
+Per the owner's instruction to rerun the full suite after relevant fixes, ran `pnpm run
+test:behavioral` a second time on the tip carrying both fixes (`b0ae8c5`; role-cleanup port +
+console-mfa validator exemption + this triage doc). Result: `tests 2089, pass 2041, fail 27,
+cancelled 6, skipped 15, duration_ms 1485455` (~24.8 min) — **exactly one more pass and one fewer
+fail** than the pre-fix run (2040 pass / 28 fail), and the `not ok` list is now missing exactly one
+entry: `not ok 318 - migration 107 applies locally and closes anon-readable sensitive RLS policies`
+(the `security-rls-hardening-postgres.test.mjs` role-contamination failure this phase fixed). Every
+one of the remaining 27 failures matches, by title, an entry already classified PRE_EXISTING above —
+including `not ok 364` (domain boundary validator rejects app-local API ownership drift), which still
+fails, as predicted, on the separate pre-existing 189-vs-201 message-count assertion now that the
+console-mfa false positive inside the same subtest is cleared. Cancelled (6, theme-tenant-isolation)
+and skipped (15, `[HUMAN-REQUIRED]`) counts are unchanged. No new failure was introduced by either
+fix. A separate, standalone run of all 56 `tests/executable/*.test.mjs` files together (not
+individually) also confirmed this: 238 pass, 4 fail (the same 4 pre-existing destructive-guard
+suites), 0 cancelled — no role-contamination failure anywhere in the set.
