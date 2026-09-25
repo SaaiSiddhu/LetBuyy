@@ -96,7 +96,14 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
         context.read<BuyerAccountApi>().account(token),
         _addressApi.list(token),
       ], eagerError: false);
-      if (!_stillCurrent(token)) return;
+      if (!_stillCurrent(token)) {
+        // A different buyer is current now (switch or sign-out): this response belongs to nobody
+        // on screen any more. Still clear _loading -- otherwise build()'s own "buyer changed, load
+        // again" check (`!_loading`) can never fire, and the screen is stuck spinning forever for
+        // whoever is actually signed in now.
+        setState(() => _loading = false);
+        return;
+      }
       final account = results[0] as BuyerAccount;
       setState(() {
         _account = account;
@@ -106,7 +113,10 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
         _loading = false;
       });
     } on ApiException catch (error) {
-      if (!_stillCurrent(token)) return;
+      if (!_stillCurrent(token)) {
+        setState(() => _loading = false);
+        return;
+      }
       setState(() {
         _loading = false;
         _loadError = (error.statusCode == 401 || error.statusCode == 403)
@@ -116,7 +126,10 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
                 : 'We couldn’t load your account right now.';
       });
     } catch (_) {
-      if (!_stillCurrent(token)) return;
+      if (!_stillCurrent(token)) {
+        setState(() => _loading = false);
+        return;
+      }
       setState(() {
         _loading = false;
         _loadError = 'You seem to be offline. Check your connection and try again.';

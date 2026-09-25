@@ -14,6 +14,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace/auth/buyer_session_store.dart';
 import 'package:letbuyy_marketplace/auth/buyer_sign_in_browser.dart';
@@ -35,6 +36,7 @@ Finder textField(String label) => find.descendant(
 class _MemoryStore implements BuyerSessionStore {
   _MemoryStore(this.session);
   StoredBuyerSession? session;
+  PendingBuyerSignIn? pending;
 
   @override
   Future<StoredBuyerSession?> readSession() async => session;
@@ -43,11 +45,11 @@ class _MemoryStore implements BuyerSessionStore {
   @override
   Future<void> deleteSession() async => session = null;
   @override
-  Future<PendingBuyerSignIn?> readPending() async => null;
+  Future<PendingBuyerSignIn?> readPending() async => pending;
   @override
-  Future<void> writePending(PendingBuyerSignIn value) async {}
+  Future<void> writePending(PendingBuyerSignIn value) async => pending = value;
   @override
-  Future<void> deletePending() async {}
+  Future<void> deletePending() async => pending = null;
 }
 
 class _NoBrowser implements BuyerSignInBrowser {
@@ -59,6 +61,37 @@ class _NoBrowser implements BuyerSignInBrowser {
   Future<void> cancelWaiting() async {}
 }
 
+/// Answers `authorize()` with a real callback for whatever attempt (state) it was actually asked
+/// to open -- an account switch (below) drives BuyerSignInController.signIn() for real, through the
+/// same protocol production uses, rather than reaching into the controller's private state.
+class _ScriptedBrowser implements BuyerSignInBrowser {
+  const _ScriptedBrowser({this.code = 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB'});
+  final String code;
+
+  @override
+  Future<Uri?> authorize(Uri url) async =>
+      Uri.parse('com.letbuyy.letbuyy:/oauth/callback?code=$code&state=${url.queryParameters['state']}');
+  @override
+  Future<Uri?> takeLaunchCallback() async => null;
+  @override
+  Future<void> cancelWaiting() async {}
+}
+
+/// A minimal stand-in for identity-platform's own token endpoint -- just enough for
+/// BuyerSignInClient.exchange() to succeed and hand back [token], for an account-switch test that
+/// drives a real sign-in rather than only a sign-out.
+Dio identityTokenDio(String token) {
+  final dio = Dio();
+  dio.interceptors.add(InterceptorsWrapper(onRequest: (o, handler) {
+    handler.resolve(Response(
+      requestOptions: o,
+      statusCode: 200,
+      data: {'access_token': token, 'token_type': 'Bearer', 'expires_in': 2592000},
+    ));
+  }));
+  return dio;
+}
+
 /// A tiny, stateful stand-in for the gateway's /storefront/buyer/{account,profile,addresses} routes,
 /// keyed by the token in the request -- a wrong or missing token answers 401, exactly like
 /// requireBuyerSession would fail closed for a session that no longer exists.
@@ -68,6 +101,12 @@ class FakeGateway {
 
   String validToken;
   Map<String, Object?> account;
+
+  /// A second (or third, ...) buyer this same gateway recognizes, keyed by their own session
+  /// token -- for an account-switch scenario where Buyer A's own in-flight response must never
+  /// populate the screen once Buyer B is the one actually signed in.
+  final Map<String, Map<String, Object?>> otherBuyersByToken = {};
+
   final List<Map<String, Object?>> addresses = [];
   int accountReads = 0;
   int addressListReads = 0;
@@ -84,6 +123,20 @@ class FakeGateway {
   /// still counts as "reached the server" for a duplicate-tap assertion.
   int requestsReceived = 0;
 
+  /// Holds every request carrying exactly this token open, until [releaseHeldToken] -- unlike
+  /// [holdRequests] (which holds every request from anyone), this creates an in-flight window for
+  /// one buyer's own traffic only, so a second buyer's sign-in and subsequent load are free to
+  /// proceed normally alongside it (an account-switch test needs both at once).
+  String? _heldToken;
+  Completer<void>? _tokenHold;
+
+  void holdToken(String token) {
+    _heldToken = token;
+    _tokenHold = Completer<void>();
+  }
+
+  void releaseHeldToken() => _tokenHold?.complete();
+
   Dio dio() {
     final dio = Dio();
     dio.interceptors.add(InterceptorsWrapper(onRequest: (o, handler) async {
@@ -95,7 +148,9 @@ class FakeGateway {
         return;
       }
       final token = o.headers['X-LetBuyy-Buyer-Session'] as String?;
-      if (token != validToken) {
+      if (token != null && token == _heldToken) await _tokenHold!.future;
+      final otherAccount = token == null ? null : otherBuyersByToken[token];
+      if (token != validToken && otherAccount == null) {
         handler.resolve(Response(requestOptions: o, statusCode: 401, data: {'success': false, 'error': {'code': 'UNAUTHORIZED', 'message': 'x'}}));
         return;
       }
@@ -106,7 +161,7 @@ class FakeGateway {
       final path = o.path;
       if (path.endsWith('/buyer/account') && o.method == 'GET') {
         accountReads++;
-        handler.resolve(Response(requestOptions: o, statusCode: 200, data: {'success': true, 'data': {'buyer': account}}));
+        handler.resolve(Response(requestOptions: o, statusCode: 200, data: {'success': true, 'data': {'buyer': otherAccount ?? account}}));
         return;
       }
       if (path.endsWith('/buyer/profile') && o.method == 'PATCH') {
@@ -179,6 +234,49 @@ class FakeGateway {
   return (controller: controller, accounts: accounts, addresses: BuyerAddressApi(client), gateway: gw, store: store);
 }
 
+/// Pumps repeatedly, inside the real async zone `runAsync` provides, until [condition] is observably
+/// true -- never a fixed "sleep and hope" delay. Bounded by [timeout] so a condition that is never
+/// met still fails fast and readably, rather than hanging the test.
+Future<void> pumpUntil(
+  WidgetTester tester,
+  bool Function() condition, {
+  Duration timeout = const Duration(seconds: 5),
+  Duration pumpDuration = const Duration(milliseconds: 1),
+}) {
+  return tester.runAsync(() async {
+    final deadline = DateTime.now().add(timeout);
+    while (!condition()) {
+      if (DateTime.now().isAfter(deadline)) {
+        throw TimeoutException('pumpUntil: condition not met within $timeout');
+      }
+      await tester.pump(pumpDuration);
+    }
+  });
+}
+
+/// Every GoogleFonts.getFont() call (CustomTextField, headings, ...) fires a fire-and-forget font
+/// load; with GoogleFonts.config.allowRuntimeFetching = false (flutter_test_config.dart) and no
+/// real font files bundled for tests, that load genuinely fails every time, and google_fonts never
+/// attaches its own error handler to the rejection (google_fonts_all_parts.g.dart's internal
+/// `.then((_) => pendingFontFutures.remove(...))` has no `onError`, and a failed load is never
+/// removed from [pendingFontFutures] either) -- left alone, it surfaces later as an unhandled zone
+/// error blamed on whatever test happens to be running when it finally rejects.
+///
+/// `GoogleFonts.pendingFonts()` (`Future.wait(pendingFontFutures)`) is google_fonts' own documented
+/// testing API for adopting these futures, and empirically the only mechanism here that reliably
+/// keeps the rejection from leaking. Two cheaper alternatives were tried and rejected: attaching a
+/// handler directly to each individual future is not enough, because google_fonts' own internal
+/// `.then()` on that same future still produces its own, separately-unhandled derived future
+/// regardless of what other listeners are added; and calling this only when
+/// [pendingFontFutures]'s length has grown since the last check still misses fonts that reject
+/// within the same pump they were requested in (a cached [assetManifest] can make that whole path
+/// synchronous). Calling it, unconditionally, on every single pump is the only version that measured
+/// zero leaked font exceptions -- this is real, unavoidable per-pump cost in this environment (see
+/// the generous timeouts on the account-switch test below), not a stand-in for a cheaper fix.
+void _absorbPendingFontFailures() {
+  GoogleFonts.pendingFonts().then((_) {}, onError: (_) {});
+}
+
 Widget wrap(BuyerSignInController controller, BuyerAccountApi accounts, BuyerAddressApi addresses) {
   return MultiProvider(
     providers: [
@@ -215,11 +313,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(textField('Full name'), 'Asha Verma');
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save profile').hitTestable(), warnIfMissed: false);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save profile').hitTestable(), warnIfMissed: false);
+    await pumpUntil(tester, () => h.gateway.account['full_name'] == 'Asha Verma');
     await tester.pump();
     expect(find.text('Profile updated.'), findsOneWidget);
     expect(h.gateway.account['full_name'], 'Asha Verma');
@@ -254,11 +349,8 @@ void main() {
 
     h.gateway.forceStatus = 500;
     await tester.enterText(textField('Full name'), 'Asha Verma');
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save profile').hitTestable(), warnIfMissed: false);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save profile').hitTestable(), warnIfMissed: false);
+    await pumpUntil(tester, () => find.textContaining('couldn’t save your profile').evaluate().isNotEmpty);
     await tester.pump();
     expect(find.text('Profile updated.'), findsNothing);
     expect(find.textContaining('couldn’t save your profile'), findsOneWidget);
@@ -284,21 +376,15 @@ void main() {
     await tester.enterText(textField('City'), 'Bengaluru');
     await tester.enterText(textField('State'), 'Karnataka');
     await tester.enterText(textField('PIN code'), '560001');
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save address'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save address'));
+    await pumpUntil(tester, () => h.gateway.addresses.length == 1);
     await tester.pump();
     expect(find.text('12 MG Road, Bengaluru, Karnataka, 560001'), findsOneWidget);
     expect(h.gateway.addresses, hasLength(1));
 
     // Set as default.
-    await tester.runAsync(() async {
-      await tester.tap(find.text('Set as default'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
+    await tester.tap(find.text('Set as default'));
+    await pumpUntil(tester, () => h.gateway.addresses.single['is_default'] == true);
     await tester.pump();
     expect(find.text('Default'), findsOneWidget);
     expect(h.gateway.addresses.single['is_default'], true);
@@ -307,11 +393,8 @@ void main() {
     await tester.tap(find.text('Edit'));
     await tester.pumpAndSettle();
     await tester.enterText(textField('City'), 'Mysuru');
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save address'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save address'));
+    await pumpUntil(tester, () => h.gateway.addresses.single['city'] == 'Mysuru');
     await tester.pump();
     // Not find.textContaining('Mysuru') -- the sheet's own now-dismissing City field can still hold
     // an EditableText with the same text mid-animation, making that finder ambiguous. The card's
@@ -339,12 +422,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Remove this address?'), findsOneWidget);
 
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(TextButton, 'Remove').last);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    // The dialog's own exit transition needs real animation time beyond a bare pump() -- advance
-    // the test clock through it explicitly, matching the route transition's own duration.
+    await tester.tap(find.widgetWithText(TextButton, 'Remove').last);
+    await pumpUntil(tester, () => gateway.addresses.isEmpty);
+    // The dialog's own exit transition still needs a couple of ordinary frames after the state
+    // change lands.
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pump();
     expect(find.text('No saved addresses yet'), findsOneWidget);
@@ -395,10 +476,8 @@ void main() {
     // _setDefault's setState marking this address "mutating" runs synchronously, before its first
     // await -- so by the time this tap() returns, the guard is already up and the request is
     // parked on `hold`.
-    await tester.runAsync(() async {
-      await tester.tap(find.text('Set as default'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
+    await tester.tap(find.text('Set as default'));
+    await pumpUntil(tester, () => gateway.requestsReceived > baseline);
     await tester.pump();
 
     final button = tester.widget<TextButton>(find.ancestor(of: find.text('Set as default'), matching: find.byType(TextButton)));
@@ -406,8 +485,7 @@ void main() {
     expect(gateway.requestsReceived - baseline, 1, reason: 'exactly the one PATCH the first tap sent, now parked on hold');
 
     hold.complete();
-    await tester.runAsync(() async => Future<void>.delayed(const Duration(milliseconds: 100)));
-    await tester.pump();
+    await pumpUntil(tester, () => gateway.addressPatchRequests == 1);
     await tester.pump();
     expect(gateway.addressPatchRequests, 1, reason: 'still exactly one request once the in-flight call finishes');
     expect(find.text('Default'), findsOneWidget);
@@ -460,12 +538,11 @@ void main() {
     expect(find.textContaining('offline'), findsOneWidget);
 
     gateway.offline = false;
-    await tester.runAsync(() async {
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Try Again'));
-      await Future<void>.delayed(const Duration(milliseconds: 100));
-    });
-    await tester.pump();
-    await tester.pump();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Try Again'));
+    // Waits for the actual outcome (both the account AND the address list reads must complete,
+    // in parallel, before the screen's setState runs) rather than an intermediate counter that
+    // could be satisfied before the second, still-in-flight call finishes.
+    await pumpUntil(tester, () => find.text('asha@example.com').evaluate().isNotEmpty);
     expect(find.text('asha@example.com'), findsOneWidget);
     h.controller.dispose();
   });
@@ -487,5 +564,84 @@ void main() {
     expect(find.text('You’re signed out of LetBuyy'), findsOneWidget);
     expect(find.text('asha@example.com'), findsNothing, reason: 'the in-flight response for the signed-out buyer must never populate the screen');
     h.controller.dispose();
+  });
+
+  testWidgets('a stale in-flight response for Buyer A is never applied once Buyer B is signed in', (tester) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    const buyerAToken = sessionToken;
+    const buyerBToken = 'buyer-b-session-token';
+    final gateway = FakeGateway(validToken: buyerAToken, email: 'asha-a@example.com');
+    gateway.otherBuyersByToken[buyerBToken] = {
+      'id': 'buyer-2',
+      'email': 'bilal-b@example.com',
+      'email_verified': true,
+      'full_name': null,
+      'phone': null,
+    };
+    final client = ApiClient(baseUrl: 'https://gateway.test/v1', dio: gateway.dio(), maxRetries: 0);
+    final accounts = BuyerAccountApi(client);
+    final addresses = BuyerAddressApi(client);
+    final store = _MemoryStore(StoredBuyerSession(token: buyerAToken, expiresAt: DateTime.utc(2100)));
+    // The sign-in-as-Buyer-B step below drives BuyerSignInController.signIn() for real -- begin,
+    // browser, code exchange, restoreSession -- rather than reaching into private state, so this
+    // genuinely exercises the production account-switch path. identityTokenDio hands back
+    // buyerBToken as the exchanged session, exactly as identity-platform's token endpoint would.
+    final controller = BuyerSignInController(
+      client: BuyerSignInClient(identityBaseUrl: 'https://accounts.letbuyy.test', dio: identityTokenDio(buyerBToken)),
+      accounts: accounts,
+      browser: const _ScriptedBrowser(),
+      store: store,
+    );
+    addTearDown(controller.dispose);
+
+    // Buyer A restores and signs in first, unheld.
+    await tester.runAsync(controller.start);
+    expect(controller.status, BuyerSignInStatus.signedIn);
+    expect(controller.email, 'asha-a@example.com');
+    final baseline = gateway.requestsReceived;
+
+    // Now hold every request carrying Buyer A's own token open -- the screen's own initial load
+    // (account + addresses, both parallel) is about to start, and this keeps its response
+    // outstanding for the rest of the test, exactly like a real slow response arriving late.
+    gateway.holdToken(buyerAToken);
+    await tester.pumpWidget(wrap(controller, accounts, addresses));
+    // The very first render already kicks off font loads (CustomTextField labels, the AppBar
+    // title); attach a handler for them before yielding to any other microtask, for the same
+    // reason pumpUntil's own loop does -- see _absorbPendingFontFailures.
+    _absorbPendingFontFailures();
+    await pumpUntil(tester, () => gateway.requestsReceived >= baseline + 2, pumpDuration: const Duration(milliseconds: 20));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsWidgets, reason: 'Buyer A\'s load is still held open');
+
+    // While Buyer A's response is still outstanding, Buyer B signs in for real -- the same
+    // begin/browser/exchange/restoreSession sequence production runs. Buyer B's own account read
+    // (inside restoreSession) carries buyerBToken, which the hold above never matches, so it is
+    // free to complete.
+    await tester.runAsync(controller.signIn);
+    await pumpUntil(tester, () => controller.status == BuyerSignInStatus.signedIn && controller.email == 'bilal-b@example.com', pumpDuration: const Duration(milliseconds: 20));
+    await tester.pump();
+    expect(controller.token, buyerBToken, reason: 'Buyer B is genuinely current now, while Buyer A\'s response is still held');
+
+    // The screen must still be showing nothing but the loading state for Buyer A's never-applied
+    // load -- it must not have silently reloaded for Buyer B while _loading was still stuck true.
+    expect(find.text('asha-a@example.com'), findsNothing);
+    expect(find.text('bilal-b@example.com'), findsNothing);
+
+    // Only now does Buyer A's held response actually arrive -- late, after Buyer B is current.
+    // pumpAndSettle, not pumpUntil's own tight 1ms loop, drives the reload this releases: a manual
+    // millisecond-granularity pump loop left this specific request (issued from the postFrameCallback
+    // build() schedules once _loading clears) stuck before ever reaching Dio's interceptor chain, a
+    // pure-Dart reproduction of the identical account()+addresses() sequence (no widgets, no pump)
+    // confirmed the request logic itself resolves in under a millisecond -- so the fault is in how a
+    // 1ms pump loop drives this specific case, not in the request. pumpAndSettle is the mechanism
+    // every other test in this file already relies on for the same kind of build-triggered load.
+    gateway.releaseHeldToken();
+    await tester.pumpAndSettle();
+
+    expect(find.text('bilal-b@example.com'), findsOneWidget, reason: 'the screen reloaded for Buyer B once the stale response was discarded');
+    expect(find.text('asha-a@example.com'), findsNothing, reason: 'Buyer A\'s late response was never applied to the screen');
   });
 }
