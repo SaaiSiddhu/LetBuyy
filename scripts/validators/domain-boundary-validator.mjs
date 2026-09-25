@@ -247,7 +247,13 @@ for (const file of appApiRoutes) {
 // a database. Added to config/eslint/boundary-baseline.json in the same commit.
 // APPID-P4c (2026-09-24) — 201: + apps/commerce/web/src/app/api/buyer-auth/{start,callback,session,logout},
 // class app-local-buyer-auth. Added to config/eslint/boundary-baseline.json in the same commit.
-reporter.assert(appApiRoutes.length === 201, `App-local API route inventory changed without updating P4-4 classification: expected 201, found ${appApiRoutes.length}`);
+// SUSTAINED-K (D1/D2, 2026-09-25) — 204: + apps/commerce/web/src/app/api/buyer/{profile,addresses,
+// addresses/[id]}, class gateway-proxy (the existing fallback rule for apps/commerce/web/src/app/api/,
+// no new classifyAppApiRoute branch needed): each is a thin HTTP proxy to GET/PATCH /storefront/
+// buyer/profile and GET/POST/PATCH/DELETE /storefront/buyer/addresses[/:id], forwarding only the
+// buyer's own session token -- no database access, no commerce logic, nothing config/eslint/
+// boundary-baseline.json needs to know about (that allowlist is for app-local-* classes only).
+reporter.assert(appApiRoutes.length === 204, `App-local API route inventory changed without updating P4-4 classification: expected 204, found ${appApiRoutes.length}`);
 
 function appLocalOwnershipForFile(file) {
   if (file.startsWith(`${rootSegment(file)}/src/app/api/`) && file.endsWith("/route.ts")) {
