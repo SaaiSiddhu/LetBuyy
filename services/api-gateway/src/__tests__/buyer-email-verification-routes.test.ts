@@ -60,7 +60,7 @@ async function mint(privateKey: CryptoKey, opts: { sub?: string; sep?: unknown }
 
 const account = (over: Partial<BuyerAccountRow> = {}): BuyerAccountRow => ({
     id: BUYER_ID, email: 'shopper@example.com', password_hash: '$2a$04$notarealhashnotarealhashnotarealhashnotarealhashnotare',
-    email_verified: false, status: 'active', session_epoch: 1, ...over,
+    email_verified: false, status: 'active', session_epoch: 1, full_name: null, phone: null, ...over,
 });
 
 interface HarnessOptions {
@@ -123,6 +123,8 @@ function harness(options: HarnessOptions = {}) {
             calls.mailed.push(delivery);
             return { sent: options.mailerSent ?? true };
         },
+        // D1 (SUSTAINED-J); its own route is covered in buyer-profile-routes.test.ts.
+        updateBuyerProfile: async () => ({ data: null, error: null }),
     });
     const app = new Hono<{ Bindings: Env }>();
     installBuyerSessionState(app, options.sessionState ?? {});
@@ -365,6 +367,7 @@ test('a reset stores a bcrypt hash of the new password and returns the new epoch
     assert.ok(!text.includes('$2'), 'no bcrypt hash may appear in the response');
     assert.deepEqual((JSON.parse(text) as { data: { buyer: unknown } }).data.buyer, {
         id: BUYER_ID, email: 'shopper@example.com', email_verified: true, status: 'active', session_epoch: 4,
+        full_name: null, phone: null,
     });
     const [consumed] = h.calls.consumed;
     assert.equal(consumed.buyerAccountId, BUYER_ID);
@@ -442,7 +445,7 @@ test('/buyer/me returns the session\'s public view to identity-platform, and not
     assert.equal(res.status, 200);
     const text = await res.text();
     assert.ok(!text.includes('$2'), 'no bcrypt hash');
-    assert.deepEqual(JSON.parse(text).data.buyer, { id: BUYER_ID, email: 'shopper@example.com', email_verified: false, status: 'active', session_epoch: 1 });
+    assert.deepEqual(JSON.parse(text).data.buyer, { id: BUYER_ID, email: 'shopper@example.com', email_verified: false, status: 'active', session_epoch: 1, full_name: null, phone: null });
     assert.equal((await me({ token: await mint(privateKey), internal: false })).status, 401);
     assert.equal((await me({ token: null })).status, 401);
 });

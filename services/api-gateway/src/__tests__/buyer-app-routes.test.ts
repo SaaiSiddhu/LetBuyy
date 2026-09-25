@@ -50,7 +50,7 @@ async function mint(privateKey: CryptoKey, kind: 'buyer' | 'storefront' | 'merch
 
 const buyerRow = (over: Partial<BuyerAccountRow> = {}): BuyerAccountRow => ({
     id: BUYER_ID, email: 'asha@example.com', password_hash: '$2a$04$notarealhashnotarealhashnotarealhashnotarealhashnotare',
-    email_verified: true, status: 'active', session_epoch: 1, ...over,
+    email_verified: true, status: 'active', session_epoch: 1, full_name: null, phone: null, ...over,
 });
 
 interface HarnessOptions {
@@ -106,7 +106,7 @@ test('the account read returns the public view to a live buyer session, uncached
     assert.equal(res.headers.get('cache-control'), 'no-store');
     const text = await res.text();
     assert.ok(!text.includes('$2'), 'no bcrypt hash');
-    assert.deepEqual(JSON.parse(text).data.buyer, { id: BUYER_ID, email: 'asha@example.com', email_verified: true, status: 'active', session_epoch: 1 });
+    assert.deepEqual(JSON.parse(text).data.buyer, { id: BUYER_ID, email: 'asha@example.com', email_verified: true, status: 'active', session_epoch: 1, full_name: null, phone: null });
 });
 
 test('the account read refuses no session, another realm, an ended epoch and a disabled account, and fails closed', async () => {

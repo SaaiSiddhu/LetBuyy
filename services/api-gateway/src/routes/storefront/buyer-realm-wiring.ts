@@ -26,6 +26,7 @@ import {
     type SessionRevocation,
     type StoreLinkOutcome,
 } from './buyer-account-routes';
+import { registerBuyerAddressRoutes, type BuyerAddressRow } from './buyer-address-routes';
 import { registerBuyerAppRoutes, type FirebaseLinkOutcome } from './buyer-app-routes';
 import {
     registerBuyerAuthorizationRoutes,
@@ -128,6 +129,70 @@ export function registerBuyerRealmRoutes(
             return { data: (data ?? null) as SessionRevocation | null, error };
         },
         sendEmailCode: sendBuyerEmailCode,
+        // D1 (SUSTAINED-J, migration 260). A direct update, not an RPC: full_name/phone carry no
+        // verification, audit or conflict logic of their own (unlike email, which stays on the 257
+        // challenge RPCs), so there is nothing an RPC would add here that a scoped, allowlisted
+        // .update().eq('id', ...) does not already give.
+        updateBuyerProfile: async (c, input) => {
+            const updates: Record<string, string | null> = {};
+            if ('fullName' in input) updates.full_name = input.fullName ?? null;
+            if ('phone' in input) updates.phone = input.phone ?? null;
+            return getSupabaseAdmin(c)
+                .from('buyer_accounts')
+                .update(updates)
+                .eq('id', input.buyerAccountId)
+                .select(BUYER_ACCOUNT_COLUMNS)
+                .single();
+        },
+    });
+
+    // D2 (SUSTAINED-J, migration 260). Raw admin-client calls, not RPCs — matching
+    // customer-address-routes.ts's own established, unRPC'd pattern for the same shape of table
+    // (application-layer ownership predicate on every query, no complex outcome/audit logic an RPC
+    // would centralize). Every query below carries .eq('buyer_account_id', ...); nothing here ever
+    // trusts an address id alone.
+    registerBuyerAddressRoutes(router, {
+        listAddresses: async (c, buyerAccountId) => getSupabaseAdmin(c)
+            .from('buyer_addresses')
+            .select('*')
+            .eq('buyer_account_id', buyerAccountId)
+            .order('is_default', { ascending: false })
+            .order('created_at', { ascending: false }),
+        createAddress: async (c, { buyerAccountId, address }) => {
+            const db = getSupabaseAdmin(c);
+            if (address.is_default) {
+                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
+            }
+            return db
+                .from('buyer_addresses')
+                .insert({ ...address, buyer_account_id: buyerAccountId })
+                .select('*')
+                .single();
+        },
+        updateAddress: async (c, { buyerAccountId, addressId, address }) => {
+            const db = getSupabaseAdmin(c);
+            if (address.is_default) {
+                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
+            }
+            const { data, error } = await db
+                .from('buyer_addresses')
+                .update(address)
+                .eq('id', addressId)
+                .eq('buyer_account_id', buyerAccountId)
+                .select('*')
+                .maybeSingle();
+            return { data: (data ?? null) as BuyerAddressRow | null, error, notFound: !error && !data };
+        },
+        deleteAddress: async (c, { buyerAccountId, addressId }) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('buyer_addresses')
+                .delete()
+                .eq('id', addressId)
+                .eq('buyer_account_id', buyerAccountId)
+                .select('id')
+                .maybeSingle();
+            return { error, notFound: !error && !data };
+        },
     });
 
     // APPID-P4b (migration 258): storefront sign-in through identity-platform with a first-party code.

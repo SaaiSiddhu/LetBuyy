@@ -32,6 +32,8 @@ async function accountRow(overrides: Partial<BuyerAccountRow> = {}): Promise<Buy
         email_verified: false,
         status: 'active',
         session_epoch: 1,
+        full_name: null,
+        phone: null,
         ...overrides,
     };
 }
@@ -72,6 +74,8 @@ function app(options: {
         consumeEmailChallenge: async () => ({ data: { outcome: 'invalid' }, error: null }),
         revokeSessions: async () => ({ data: { outcome: 'buyer_unavailable' }, error: null }),
         sendEmailCode: async () => ({ sent: false }),
+        // D1 (SUSTAINED-J); its own route is covered in buyer-profile-routes.test.ts.
+        updateBuyerProfile: async () => ({ data: null, error: null }),
     });
     const outer = new Hono<{ Bindings: Env }>();
     outer.route('/storefront', router);

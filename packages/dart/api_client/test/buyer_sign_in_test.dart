@@ -280,5 +280,140 @@ void main() {
         throwsA(isA<ApiException>()),
       );
     });
+
+    test('updateProfile sends only the fields given, and distinguishes omitted from null', () async {
+      final full = gateway(200, {'success': true, 'data': {'buyer': {'id': 'b-1', 'email': 'a@example.com', 'email_verified': true, 'full_name': 'Asha K', 'phone': '9900011122'}}});
+      final account = await full.api.updateProfile('session-token', fullName: 'Asha K', phone: '9900011122');
+      expect(account.fullName, 'Asha K');
+      expect(account.phone, '9900011122');
+      final fullRequest = full.requests.single;
+      expect(fullRequest.method, 'PATCH');
+      expect(fullRequest.uri.toString(), 'https://gateway.test/v1/storefront/buyer/profile');
+      expect(fullRequest.data, {'full_name': 'Asha K', 'phone': '9900011122'});
+      expect(fullRequest.headers['X-LetBuyy-Buyer-Session'], 'session-token');
+
+      final nameOnly = gateway(200, {'success': true, 'data': {'buyer': {'id': 'b-1', 'email': 'a@example.com', 'email_verified': true, 'full_name': 'Asha K'}}});
+      await nameOnly.api.updateProfile('session-token', fullName: 'Asha K');
+      expect(nameOnly.requests.single.data, {'full_name': 'Asha K'}, reason: 'an omitted named parameter is never sent, not even as null');
+
+      final clearPhone = gateway(200, {'success': true, 'data': {'buyer': {'id': 'b-1', 'email': 'a@example.com', 'email_verified': true, 'full_name': 'Asha K'}}});
+      await clearPhone.api.updateProfile('session-token', phone: null);
+      expect(clearPhone.requests.single.data, {'phone': null}, reason: 'an explicit null clears the field, distinct from omitting it');
+    });
+
+    test('an unexpected updateProfile response is an ApiException, and a 401 still throws', () async {
+      await expectLater(
+        gateway(200, {'success': true, 'data': {'buyer': null}}).api.updateProfile('session-token', fullName: 'x'),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'INVALID_RESPONSE')),
+      );
+      await expectLater(
+        gateway(401, {'success': false, 'error': {'code': 'UNAUTHORIZED', 'message': 'x'}}).api.updateProfile('session-token', fullName: 'x'),
+        throwsA(isA<ApiException>().having((e) => e.statusCode, 'status', 401)),
+      );
+    });
+  });
+
+  group('the gateway buyer address routes', () {
+    ({BuyerAddressApi api, List<RequestOptions> requests}) gateway(int status, Object? body) {
+      final dio = Dio();
+      final requests = <RequestOptions>[];
+      dio.interceptors.add(InterceptorsWrapper(onRequest: (o, handler) {
+        requests.add(o);
+        handler.resolve(Response(requestOptions: o, statusCode: status, data: body));
+      }));
+      return (api: BuyerAddressApi(ApiClient(baseUrl: 'https://gateway.test/v1', dio: dio, maxRetries: 0)), requests: requests);
+    }
+
+    const addressJson = {
+      'id': 'addr-1',
+      'label': 'home',
+      'full_name': 'Asha K',
+      'phone': '9900011122',
+      'address_line1': '12 MG Road',
+      'address_line2': null,
+      'city': 'Bengaluru',
+      'state': 'Karnataka',
+      'postal_code': '560001',
+      'country': 'IN',
+      'landmark': null,
+      'is_default': true,
+    };
+
+    final address = BuyerAddress(
+      id: 'addr-1',
+      label: 'home',
+      fullName: 'Asha K',
+      phone: '9900011122',
+      addressLine1: '12 MG Road',
+      city: 'Bengaluru',
+      state: 'Karnataka',
+      postalCode: '560001',
+      country: 'IN',
+      isDefault: true,
+    );
+
+    test('list sends the session in the buyer header and parses every address, dropping malformed ones', () async {
+      final g = gateway(200, {'success': true, 'data': {'addresses': [addressJson, 'not-an-address']}});
+      final addresses = await g.api.list('session-token');
+      expect(addresses, hasLength(1));
+      expect(addresses.single.id, 'addr-1');
+      expect(addresses.single.city, 'Bengaluru');
+      final request = g.requests.single;
+      expect(request.method, 'GET');
+      expect(request.uri.toString(), 'https://gateway.test/v1/storefront/buyer/addresses');
+      expect(request.headers['X-LetBuyy-Buyer-Session'], 'session-token');
+    });
+
+    test('list returns an empty list, not an error, for an unexpected shape', () async {
+      final g = gateway(200, {'success': true, 'data': {'addresses': null}});
+      expect(await g.api.list('session-token'), isEmpty);
+    });
+
+    test('create sends the address body and the session header, and returns what the gateway saved', () async {
+      final g = gateway(201, {'success': true, 'data': {'address': addressJson}});
+      final saved = await g.api.create('session-token', address);
+      expect(saved.id, 'addr-1');
+      final request = g.requests.single;
+      expect(request.method, 'POST');
+      expect(request.uri.toString(), 'https://gateway.test/v1/storefront/buyer/addresses');
+      expect(request.data, address.toRequestBody());
+      expect(request.headers['X-LetBuyy-Buyer-Session'], 'session-token');
+    });
+
+    test('update targets the given address id', () async {
+      final g = gateway(200, {'success': true, 'data': {'address': addressJson}});
+      await g.api.update('session-token', 'addr-1', address);
+      final request = g.requests.single;
+      expect(request.method, 'PATCH');
+      expect(request.uri.toString(), 'https://gateway.test/v1/storefront/buyer/addresses/addr-1');
+      expect(request.data, address.toRequestBody());
+    });
+
+    test('a create or update with no address in the response is an ApiException', () async {
+      await expectLater(
+        gateway(200, {'success': true, 'data': {'address': null}}).api.create('session-token', address),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'INVALID_RESPONSE')),
+      );
+      await expectLater(
+        gateway(200, {'success': true, 'data': {'address': null}}).api.update('session-token', 'addr-1', address),
+        throwsA(isA<ApiException>().having((e) => e.code, 'code', 'INVALID_RESPONSE')),
+      );
+    });
+
+    test('delete targets the given address id and sends the session header', () async {
+      final g = gateway(200, {'success': true, 'data': {'deleted': true}});
+      await g.api.delete('session-token', 'addr-1');
+      final request = g.requests.single;
+      expect(request.method, 'DELETE');
+      expect(request.uri.toString(), 'https://gateway.test/v1/storefront/buyer/addresses/addr-1');
+      expect(request.headers['X-LetBuyy-Buyer-Session'], 'session-token');
+    });
+
+    test('a 404 for another buyer\'s address is an ApiException, indistinguishable from a missing one', () async {
+      await expectLater(
+        gateway(404, {'success': false, 'error': {'code': 'NOT_FOUND', 'message': 'Address not found.'}}).api.delete('session-token', 'addr-999'),
+        throwsA(isA<ApiException>().having((e) => e.statusCode, 'status', 404)),
+      );
+    });
   });
 }
