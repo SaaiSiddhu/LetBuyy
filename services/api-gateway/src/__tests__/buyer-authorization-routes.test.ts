@@ -66,7 +66,7 @@ async function mint(privateKey: CryptoKey, kind: 'buyer' | 'storefront', over: {
 
 const buyerRow = (over: Partial<BuyerAccountRow> = {}): BuyerAccountRow => ({
     id: BUYER_ID, email: 'shopper@example.com', password_hash: '$2a$04$notarealhashnotarealhashnotarealhashnotarealhashnotare',
-    email_verified: true, status: 'active', session_epoch: 1, ...over,
+    email_verified: true, status: 'active', session_epoch: 1, full_name: null, phone: null, ...over,
 });
 
 interface HarnessOptions {
@@ -243,7 +243,7 @@ test('redemption returns the buyer, site and epoch, and never a password hash', 
     const text = await res.text();
     assert.ok(!text.includes('$2'), 'no bcrypt hash in the response');
     assert.deepEqual(JSON.parse(text).data, {
-        buyer: { id: BUYER_ID, email: 'shopper@example.com', email_verified: true, status: 'active', session_epoch: 1 },
+        buyer: { id: BUYER_ID, email: 'shopper@example.com', email_verified: true, status: 'active', session_epoch: 1, full_name: null, phone: null },
         client_id: 'letbuyy-storefront',
         site_id: SITE,
         session_epoch: 1,

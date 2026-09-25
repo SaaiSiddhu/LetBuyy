@@ -97,6 +97,12 @@ export interface BuyerAccountRoutesDeps {
     ) => Promise<{ data: EmailChallengeOutcome | null; error: unknown }>;
     revokeSessions: (c: AppContext, buyerAccountId: string) => Promise<{ data: SessionRevocation | null; error: unknown }>;
     sendEmailCode: BuyerEmailCodeSender;
+    /// D1 (SUSTAINED-J). full_name/phone ONLY -- never email, password or any account-state column;
+    /// the route handler below is the one place that enforces that allowlist.
+    updateBuyerProfile: (
+        c: AppContext,
+        input: { buyerAccountId: string; fullName?: string | null; phone?: string | null },
+    ) => Promise<{ data: BuyerAccountRow | null; error: unknown }>;
 }
 
 export interface BuyerAccountRow {
@@ -106,9 +112,11 @@ export interface BuyerAccountRow {
     email_verified: boolean;
     status: string;
     session_epoch: number;
+    full_name: string | null;
+    phone: string | null;
 }
 
-export const BUYER_ACCOUNT_COLUMNS = 'id, email, password_hash, email_verified, status, session_epoch';
+export const BUYER_ACCOUNT_COLUMNS = 'id, email, password_hash, email_verified, status, session_epoch, full_name, phone';
 
 /// What a caller is allowed to see. password_hash is deliberately absent: it never leaves this file.
 export function publicBuyerAccount(row: BuyerAccountRow): Record<string, unknown> {
@@ -119,6 +127,10 @@ export function publicBuyerAccount(row: BuyerAccountRow): Record<string, unknown
         status: row.status,
         // identity-platform puts this in every token it issues for the account (requireBuyerSession).
         session_epoch: row.session_epoch,
+        // D1 (SUSTAINED-J) -- migration 260. Not verified: no phone-verification mechanism exists
+        // anywhere in the buyer realm, so phone is surfaced exactly as unverified as it is.
+        full_name: row.full_name,
+        phone: row.phone,
     };
 }
 
@@ -140,6 +152,7 @@ export function registerBuyerAccountRoutes(
         consumeEmailChallenge,
         revokeSessions,
         sendEmailCode,
+        updateBuyerProfile,
     } = deps;
 
     // For the routes that also need a buyer session: the internal check runs FIRST, so a caller
@@ -438,6 +451,58 @@ export function registerBuyerAccountRoutes(
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
         return c.json(success({ buyer: publicBuyerAccount(resolved.buyer) }));
+    });
+
+    // D1 (SUSTAINED-J) — the canonical buyer profile, read and updated by the buyer's own verified
+    // session, same gate as GET /buyer/orders (requireBuyerSession alone, no identityInternal): the
+    // buyer's own token is sufficient authorization for the buyer's own data; identityInternal is
+    // reserved for identity-platform's own broker-specific pages (/buyer/me above), not every
+    // buyer-consumable route. apps/commerce/web and apps/marketplace/mobile call this directly.
+    router.get('/buyer/profile', requireBuyerSession, async (c) => {
+        const resolved = await sessionBuyer(c);
+        if ('response' in resolved) return resolved.response;
+        return c.json(success({ buyer: publicBuyerAccount(resolved.buyer) }));
+    });
+
+    router.patch('/buyer/profile', requireBuyerSession, async (c) => {
+        const resolved = await sessionBuyer(c);
+        if ('response' in resolved) return resolved.response;
+
+        const body = await c.req.json().catch(() => null) as { full_name?: unknown; phone?: unknown } | null;
+        if (!body || typeof body !== 'object') {
+            return c.json(failure('VALIDATION', 'A JSON body is required'), 400);
+        }
+        // ALLOWLIST, not a spread of the body: email, password_hash, status, session_epoch and
+        // email_verified must never be reachable through this route, whatever the caller sends.
+        const update: { fullName?: string | null; phone?: string | null } = {};
+        if ('full_name' in body) {
+            if (body.full_name !== null && typeof body.full_name !== 'string') {
+                return c.json(failure('VALIDATION', 'full_name must be a string or null'), 400);
+            }
+            const trimmed = body.full_name === null ? null : body.full_name.trim();
+            if (trimmed !== null && trimmed.length > 200) {
+                return c.json(failure('VALIDATION', 'full_name must be 200 characters or fewer'), 400);
+            }
+            update.fullName = trimmed === '' ? null : trimmed;
+        }
+        if ('phone' in body) {
+            if (body.phone !== null && typeof body.phone !== 'string') {
+                return c.json(failure('VALIDATION', 'phone must be a string or null'), 400);
+            }
+            const trimmed = body.phone === null ? null : body.phone.trim();
+            if (trimmed !== null && trimmed.length > 32) {
+                return c.json(failure('VALIDATION', 'phone must be 32 characters or fewer'), 400);
+            }
+            update.phone = trimmed === '' ? null : trimmed;
+        }
+        if (Object.keys(update).length === 0) {
+            return c.json(failure('VALIDATION', 'full_name or phone is required'), 400);
+        }
+
+        const { data: updated, error } = await updateBuyerProfile(c, { buyerAccountId: resolved.buyer.id, ...update });
+        if (error || !updated) return c.json(dbFailureBody(), 500);
+
+        return c.json(success({ buyer: publicBuyerAccount(updated) }));
     });
 
     // "Sign out everywhere". Application logout is identity-platform clearing one cookie and never
