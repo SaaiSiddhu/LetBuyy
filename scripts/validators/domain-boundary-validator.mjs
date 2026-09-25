@@ -255,6 +255,13 @@ function appLocalOwnershipForFile(file) {
   }
   if (file.startsWith("apps/platform/identity/src/lib/")) return "app-local-auth";
   if (file === "apps/internal/console/src/lib/console-auth-server.ts") return "app-local-operator-auth";
+  // SUSTAINED-E (2026-09-24, bcadc99) added console-mfa.ts: RFC 6238 TOTP verification
+  // (createHmac('sha1', ...) + timingSafeEqual for constant-time code comparison), an
+  // operator-authentication concern, not a payment-provider signature check -- the same
+  // app-local-operator-auth class as console-auth-server.ts. Its own test file computes the
+  // same HMAC digest to assert against and is covered for the same reason.
+  if (file === "apps/internal/console/src/lib/console-mfa.ts") return "app-local-operator-auth";
+  if (file === "apps/internal/console/src/lib/console-mfa.test.ts") return "app-local-operator-auth";
   return null;
 }
 
