@@ -13,6 +13,7 @@ import '../screens/shop/seller_store_screen.dart'; // NEW
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
 import '../screens/profile/saved_addresses_screen.dart';
+import '../screens/profile/letbuyy_account_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/chat/ai_chat_screen.dart';
 // Return Screens
@@ -65,6 +66,10 @@ class AppRoutes {
   static const String orders = '/orders';
   static const String myOrders = '/my-orders';
   static const String addresses = '/profile/addresses';
+  // SUSTAINED-L: the canonical, cross-store buyer profile/address surface (LETBUYY_BUYER_SIGN_IN
+  // only) -- distinct from `editProfile`/`addresses` above, which are the Firebase-era, per-store
+  // screens and are unchanged by this route.
+  static const String letbuyyAccount = '/letbuyy-account';
   
   // Returns
   static const String myReturns = '/my-returns';
@@ -234,6 +239,9 @@ class AppRoutes {
       case addresses:
       case '/profile/addresses':
         return _buildRoute(const SavedAddressesScreen(), settings);
+
+      case letbuyyAccount:
+        return _buildRoute(const LetBuyyAccountScreen(), settings);
 
       case aiChat:
         return _buildRoute(const AIChatScreen(), settings);
