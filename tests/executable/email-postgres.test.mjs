@@ -21,6 +21,14 @@ function psql(sql) {
   ).trim();
 }
 
+function psqlInDatabase(database, sql, options = {}) {
+  return execFileSync(
+    'docker',
+    ['exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', database, '-v', 'ON_ERROR_STOP=1', '-qAt'],
+    { input: `SET client_min_messages TO warning;\n${sql}`, encoding: 'utf8', ...options },
+  ).trim();
+}
+
 function sqlString(value) {
   return `'${String(value).replaceAll("'", "''")}'`;
 }
@@ -30,7 +38,43 @@ function lastPsqlLine(output) {
   return lines.at(-1) || '';
 }
 
+// SUSTAINED-I -- same cross-suite role/database contamination
+// tenant-redteam-postgres.test.mjs's own clearRoleDependenciesInSiblingDatabases fixed
+// (letbuyy-executable-suites-contaminate-each-other, EXECUTION_LEDGER.md's F-HANDOFF-1 row):
+// app_user is a CLUSTER-WIDE role, but every *-postgres.test.mjs suite gets its own DATABASE,
+// left standing. Postgres's DROP ROLE refuses if the role still has a grant or owns an object
+// in ANY database on the cluster (pg_shdepend, cluster-wide), so once a sibling suite's
+// database has granted anything to it, this file's own DROP ROLE fails with "cannot be dropped
+// because some objects depend on it" even though nothing in THIS database still depends on it.
+// First observed for this file by SUSTAINED-I's completed full test:behavioral run; same fix
+// as SUSTAINED-H already ported to two other files.
+function clearRoleDependenciesInSiblingDatabases(roles) {
+  const others = psqlInDatabase('postgres', "SELECT datname FROM pg_database WHERE datname LIKE 'letbuyy\\_%' ESCAPE '\\';")
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((name) => name && name !== databaseName);
+  const roleList = roles.join(', ');
+  for (const database of others) {
+    try {
+      psqlInDatabase(database, `
+        DO $$
+        BEGIN
+          IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname IN (${roles.map(sqlString).join(', ')})) THEN
+            EXECUTE 'REASSIGN OWNED BY ${roleList} TO postgres';
+            EXECUTE 'DROP OWNED BY ${roleList}';
+          END IF;
+        END
+        $$;
+      `);
+    } catch (err) {
+      console.warn(`email-postgres: could not pre-clean role dependencies in ${database}: ${(err instanceof Error ? err.message : String(err)).split('\n')[0]}`);
+    }
+  }
+}
+
 function resetDatabase() {
+  clearRoleDependenciesInSiblingDatabases(['app_user']);
+
   psql(`
     DROP SCHEMA IF EXISTS public CASCADE;
     CREATE SCHEMA public;
