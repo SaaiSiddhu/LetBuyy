@@ -40,7 +40,7 @@ spend changes, Constitution changes, bypassing gates/hooks/protection, force-pus
 | A — Close APPID-FIX2 | **VERIFIED_LOCAL, MERGED_DEVELOP, PUSHED** | merge `d90618c4`, ledger `68269cb`, branch tip `8fefe38` (deleted, contained) | See `FIX2_PRODUCT_TENANT_GUARD.md`. `origin/develop` advanced `41af1cd9` → `68269cb` (fast-forward, pushed). `staging`/`main` unchanged at `1e6cc4c3`. |
 | B — Cloud validation dependability | **VERIFIED_LOCAL** (A–D all solved; full `test:behavioral` not run to completion — see `SUSTAINED_B_C.md`) | `letbuyy/sustained-b-cloud-validation` | Non-Docker Postgres shim (A); cross-suite `DROP ROLE` contamination root-caused and fixed (B); 5 untested `apps/commerce/web/src` files wired in, 60 subtests (C); localization test harness fixed (D). See `SUSTAINED_B_C.md`. |
 | C — Tenant-guard predicate tightening | **VERIFIED_LOCAL** | same branch | `.filter()`/`.or()` now require `eq`/`in`/sanctioned-`IS NULL`, not any operator. Caller inventory: nothing legitimate changes. 11 new tests, real revert-and-watch. See `SUSTAINED_B_C.md`. |
-| D — Unified buyer account surfaces | **IN_PROGRESS** (D3 slice VERIFIED_LOCAL, MERGED_DEVELOP; D1/D2/D4/D5/D6 NOT_STARTED) | D3 merge `ed7dc606`, ledger `0dee2bd`, branch tip `3fbd699` (deleted, contained) | `GET /buyer/orders`, marketplace cross-store, via `buyer_order_links`. D1/D2 need a migration (no `full_name`/`phone` on `buyer_accounts`, no `buyer_addresses` table) — deliberately not attempted without a schema-change phase of their own. See `SUSTAINED_D3.md`. |
+| D — Unified buyer account surfaces | **IN_PROGRESS**, RE-STATED by SUSTAINED-I/J: D3 slice VERIFIED_LOCAL/MERGED_DEVELOP · D4 VERIFIED (no fix needed) · D5 BLOCKED_INFRA · D6 backend substantially implemented already (a prior session's APPID-P4a work), client-wiring gap only (= D5's gap) · D1/D2 NOT_STARTED | D3 merge `ed7dc606`, ledger `0dee2bd`, branch tip `3fbd699` (deleted, contained) | `GET /buyer/orders`, marketplace cross-store, via `buyer_order_links`. D1/D2 need a migration (no `full_name`/`phone` on `buyer_accounts`, no `buyer_addresses` table) — deliberately not attempted without a schema-change phase of their own. See `SUSTAINED_D3.md`, `SUSTAINED_I_D_AUDIT.md`. |
 | E — Operator identity integration | **BLOCKED_DECISION** on the identity-platform migration itself; the console-MFA hardening slice **VERIFIED_LOCAL, MERGED_DEVELOP** | merge `96be3f9b`, ledger `ceb2d4c`, branch tip `e863d9a` (deleted, contained) | `apps/internal/console` has its own independent, dev-only, non-identity-platform-wired auth (login refuses outright in production). Migrating it is APPID-P4-scale work needing the owner's MFA/bootstrap policy word — recorded as `BLOCKED_DECISION`, not invented. Hardened the one bounded gap that needed no such decision: MFA lockout, replay rejection, constant-time compare. See `SUSTAINED_E.md`. |
 | F — Merchant staff membership | **BLOCKED_DECISION** (investigated, no code change) | ledger `022b2fc` | Not two but THREE mechanisms: `employees` (live), `site_memberships`/`site_roles` (fully built, never mounted), `identity-foundation`'s org model (a third, already calls (2) legacy, also never mounted). No live authorization gap — today's requests are decided by `employees` alone. See `SUSTAINED_F.md`. |
 | G — Storefront search/CSS/localization | **VERIFIED_LOCAL, MERGED_DEVELOP** (G1, G2, G3 all complete as scoped) | G1 merge `a167160`; G2 merge `df019bc`; G3 merge `892fecf`, ledger `c0412d0`, branch tip `c0412d0` (deleted, contained) | G1: search-box Liquid section rendered a bare `<input>` with no `<form>`; fixed to a real `<form method="get" action="{{ routes.search_url }}">`, matching the header's pattern. Real-browser (Playwright/Chromium) proof: Enter and Submit both navigate correctly. G2: the merchant custom CSS feature was fully validated and persisted, and the renderer had a complete, tested validate-and-scope function for it, but that function's only call site never passed the value — no merchant's custom CSS had ever reached a live storefront. Wired `StoreTemplateConfig.customCss` through `store-service.ts`'s existing appearance bridge to the renderer call site; 3 new render-pipeline tests, real revert-and-watch. G3: found TWO duplicate translation-lookup implementations — a tested, India-first, prototype-guarded `tLocale()` with zero real consumers, and a divergent, less-robust inline duplicate that the real `\| t` filter actually called. Deleted the duplicate, wired the filter to `tLocale()`; 2 new tests, real revert-and-watch. Separately found and explicitly NOT attempted: the shipped theme's translation catalog has exactly one key (English only) and `\| t` is used once in the whole theme — populating real 9-locale content is a large authoring project outside this phase's authority, recorded honestly. See `SUSTAINED_G1.md`, `SUSTAINED_G2.md`, `SUSTAINED_G3.md`. |
@@ -62,10 +62,32 @@ already merged.
   mechanisms found, none picked). E's *migration itself* is the same status — only its bounded
   MFA-hardening slice reached `MERGED_DEVELOP`. An investigation is real, recorded work; it was never
   called an implementation here, but it also never belonged in a "complete" summary line.
-- **NOT STARTED / NOT DEMONSTRATED**: D1 (canonical profile fields), D2 (address book), D4 (cache-header
-  audit — including whether personalized account data can leak through caching), D5 (client/mobile UI
-  wiring beyond D3's one route), D6 (session lifecycle beyond what pre-dated this programme). Audited,
-  and where safely unblocked, implemented in SUSTAINED-I — see its evidence doc for exactly what moved.
+- **VERIFIED, no fix needed**: D4 (personalized-account HTTP-caching leak) — SUSTAINED-I tested this
+  empirically (a real isolated Next.js 16.1.6 build proving `cookies()` usage classifies a route
+  `ƒ Dynamic` regardless of try/catch, plus a `no-store`-by-default fetch-client audit of every
+  personalized-data call site) and found no leak. This is a **negative result reached by testing**,
+  not an absence-of-evidence claim, and it does NOT belong in "not started" — it is a completed,
+  evidenced audit whose answer happens to be "no fix required." See `SUSTAINED_I_D_AUDIT.md`.
+- **NOT STARTED**: D1 (canonical profile fields — no migration ever added `full_name`/`phone` to
+  `buyer_accounts`), D2 (address book — no `buyer_addresses` table exists anywhere in the tree).
+  Both need their own migration + RLS phase; deliberately not attempted without one, per the explicit
+  instruction not to invent a second buyer-account model.
+- **BLOCKED_INFRA**: D5 (client/mobile UI wiring) — measured, not assumed: the gateway already carries
+  a substantial `/storefront/buyer/*` route family (register, verify, recover, sessions/revoke, `me`,
+  `orders` from D3, return-requests, loyalty, notifications, support, product-views, follows) with
+  **zero client consumers** in either `apps/commerce/web` or `apps/marketplace/mobile`. D3's own
+  cross-store `/buyer/orders` endpoint belongs in `apps/marketplace/mobile` per D-ONE-BUYER's realm
+  separation (a storefront shows only that store's `store_customers` order history — a different
+  realm), not `apps/commerce/web`. Blocked in this container specifically because the Flutter SDK was
+  not on `PATH` when SUSTAINED-I measured it — re-check before citing that as still true.
+- **SUBSTANTIALLY IMPLEMENTED already (a prior session's work), remaining gap is D5's, not D6's own**:
+  D6 (session lifecycle) — SUSTAINED-I found the *full* lifecycle already exists at the gateway layer
+  (register, verify-credentials, email-verification start/complete, password-recovery start/complete,
+  sign-out-everywhere via `sessions/revoke` backed by `buyer_accounts.session_epoch`, migration 257),
+  built by an earlier session's APPID-P4a phase, not by SUSTAINED-D3 and not new in SUSTAINED-I. This
+  was previously mischaracterized as "NOT_STARTED" in this file's closing summary — corrected here. A
+  plain single-device logout endpoint distinct from sign-out-everywhere was not found by name; per D5
+  above, none of D6's backend is client-wired in either app. See `SUSTAINED_I_D_AUDIT.md` §D6.
 - **TRIAGED — closed by SUSTAINED-I**: H's ~30 un-triaged `test:behavioral` failures are superseded by
   a fresh, complete `test:behavioral` run on the SUSTAINED-I tip (`c735b89`; 2089 tests, 2040 pass, 28
   fail, 6 cancelled, 15 skipped) with every one of the 49 non-`ok` outcomes individually attributed:
