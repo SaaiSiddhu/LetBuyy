@@ -12,8 +12,6 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 
-import '../../../providers/marketplace_ad_provider.dart';
-
 /// Ultra-Professional Product Card with Deal Support
 /// - Grid View: Flipkart-inspired compact card
 /// - List View: Amazon-inspired horizontal card
@@ -95,8 +93,7 @@ class _ProductCardState extends State<ProductCard>
 
   void _onTap() {
     HapticFeedback.lightImpact();
-    _trackSponsoredClick();
-    
+
     // Call onTap callback if provided (for extra actions like ad click tracking)
     widget.onTap?.call();
     
@@ -113,27 +110,6 @@ class _ProductCardState extends State<ProductCard>
         if (widget.adCampaignId != null) 'adCampaignId': widget.adCampaignId,
       },
     );
-  }
-
-  void _trackSponsoredClick() {
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      if (adProvider.isSponsored(widget.product.id)) {
-        final userId = safeFirebaseUserId();
-        adProvider.recordClick(widget.product.id, userId: userId);
-      }
-    } catch (_) {}
-  }
-
-  bool _isSponsored() {
-    // Use widget param first, fallback to checking ad provider
-    if (widget.isSponsored) return true;
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      return adProvider.isSponsored(widget.product.id);
-    } catch (_) {
-      return false;
-    }
   }
 
   bool get _hasDeal => _deal != null && _deal!.isActive;
@@ -176,7 +152,7 @@ class _ProductCardState extends State<ProductCard>
   // ---------------------------------------------------------------------------
   Widget _buildGridCard(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
     final discount = widget.product.discount;
-    final isSponsored = _isSponsored();
+    final isSponsored = widget.isSponsored;
     final hasDiscount = widget.product.originalPrice != null &&
         widget.product.originalPrice! > widget.product.price;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
@@ -522,7 +498,7 @@ class _ProductCardState extends State<ProductCard>
     final hasDiscount = widget.product.originalPrice != null &&
         widget.product.originalPrice! > widget.product.price;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
-    final isSponsored = _isSponsored();
+    final isSponsored = widget.isSponsored;
     
     // Deal-specific colors (RED theme)
     final dealBorderColor = _hasDeal 

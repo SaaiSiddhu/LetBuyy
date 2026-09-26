@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import '../../../providers/marketplace_ad_provider.dart';
 
 /// Compact, professional product card inspired by Flipkart's design
 /// Features: Minimal badges, prominent pricing, subtle animations, DEAL support
@@ -102,11 +101,10 @@ class _CompactProductCardState extends State<CompactProductCard>
 
   void _onTap() {
     HapticFeedback.lightImpact();
-    _trackSponsoredClick();
-    
+
     // Call onTap callback if provided (for extra actions like ad click tracking)
     widget.onTap?.call();
-    
+
     // Always navigate with source attribution for analytics
     Navigator.pushNamed(
       context,
@@ -116,16 +114,6 @@ class _CompactProductCardState extends State<CompactProductCard>
         if (widget.adCampaignId != null) 'adCampaignId': widget.adCampaignId,
       },
     );
-  }
-
-  void _trackSponsoredClick() {
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      if (adProvider.isSponsored(widget.product.id)) {
-        final userId = safeFirebaseUserId();
-        adProvider.recordClick(widget.product.id, userId: userId);
-      }
-    } catch (e) {}
   }
 
   @override
@@ -197,7 +185,11 @@ class _CompactProductCardState extends State<CompactProductCard>
 
   Widget _buildImageSection(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
     final discount = widget.product.discount ?? 0;
-    final isSponsored = _isSponsored();
+    // C3 (Firebase SDK removal): was Provider.of<MarketplaceAdProvider>(...), which always threw
+    // (never registered, see main.dart's own retirement comment) and was always caught to false --
+    // CompactProductCard has no isSponsored param of its own (unlike ProductCard) to fall back to,
+    // so this badge could never actually show. Same already-true value, computed directly.
+    const isSponsored = false;
 
     return Expanded(
       flex: 3,
@@ -557,12 +549,4 @@ class _CompactProductCardState extends State<CompactProductCard>
     }
   }
 
-  bool _isSponsored() {
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      return adProvider.isSponsored(widget.product.id);
-    } catch (e) {
-      return false;
-    }
-  }
 }
