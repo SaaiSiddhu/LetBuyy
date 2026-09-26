@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_marketplace/auth/buyer_sign_in_controller.dart';
 import 'address_selection_sheet.dart';
 import 'inline_voice_search_overlay.dart';
 
@@ -88,70 +91,10 @@ class HomeAppBar extends StatelessWidget {
           const SizedBox(width: 10),
           
           // Address Text
-          Expanded(child: _buildAddressStream(context)),
+          const Expanded(child: _HomeDeliveryAddressBar()),
           
           // Loyalty Points Badge
           _buildLoyaltyBadge(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressStream(BuildContext context) {
-    // Note: In a stateless widget, we might ideally pass the selected address as a param
-    // But for now, we'll keep the stream logic or use a provider if available
-    // Assuming Provider usage or local StreamBuilder for self-containment
-    
-    final userId = safeFirebaseUserId();
-    if (userId == null) return _buildAddressContent(context, 'Select delivery location');
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .where('isDefault', isEqualTo: true)
-          .limit(1)
-          .snapshots(),
-      builder: (context, snapshot) {
-        String addressText = 'Add delivery address';
-        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          final data = snapshot.data!.docs.first.data() as Map<String, dynamic>;
-          final line1 = data['addressLine1'] ?? '';
-          final city = data['city'] ?? '';
-          final state = data['state'] ?? '';
-          addressText = '$line1, $city, $state';
-          if (addressText.length > 35) addressText = '${addressText.substring(0, 32)}...';
-        }
-        return _buildAddressContent(context, addressText);
-      },
-    );
-  }
-
-  Widget _buildAddressContent(BuildContext context, String text) {
-    return GestureDetector(
-      onTap: () async {
-        HapticFeedback.mediumImpact();
-        await AddressSelectionSheet.show(context);
-        // Note: The parent might need to know about address changes if it maintains state
-        // For now, this triggers the sheet which updates Firestore/Provider
-      },
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 20),
         ],
       ),
     );
@@ -294,4 +237,143 @@ class HomeAppBar extends StatelessWidget {
     );
   }
 
+}
+
+// C3 (Firebase SDK removal, 27 September 2026 review finding 3 follow-up): this replaces
+// _buildAddressStream/_buildAddressContent, a THIRD independent, legacy Firebase-backed address
+// display in this app -- distinct from AddressProvider (already disconnected) and from
+// address_selection_sheet.dart's own list (already REWIRE'd onto BuyerAddressApi in an earlier
+// commit). It read FirebaseFirestore.instance.collection('addresses') directly, guarded by
+// safeFirebaseUserId() == null, which is always true under canonical auth -- so it never crashed,
+// but it also always showed the same "Select delivery location"/"Add delivery address" default,
+// on the app's most-visited screen, even after a real user picked a real address in the (now-
+// working) AddressSelectionSheet. That sheet already returns the selected AddressModel from
+// AddressSelectionSheet.show() (Navigator.pop(context, address)) -- this widget's onTap now uses
+// that return value directly, and separately loads the buyer's actual default address on account
+// change, both through the same canonical BuyerAddressApi and the same monotonic-generation-counter
+// pattern already established in address_selection_sheet.dart (see that file's own doc comment for
+// the two concurrency bugs a naive token-comparison approach has and why a generation counter avoids
+// both).
+class _HomeDeliveryAddressBar extends StatefulWidget {
+  const _HomeDeliveryAddressBar();
+
+  @override
+  State<_HomeDeliveryAddressBar> createState() => _HomeDeliveryAddressBarState();
+}
+
+class _HomeDeliveryAddressBarState extends State<_HomeDeliveryAddressBar> {
+  int _loadGeneration = 0;
+  String? _observedToken;
+  bool _loading = false;
+  AddressModel? _address;
+
+  bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final token = context.read<BuyerSignInController>().token;
+    if (token != _observedToken) {
+      _observedToken = token;
+      _startLoadForToken(token);
+    }
+  }
+
+  void _startLoadForToken(String? token) {
+    final generation = ++_loadGeneration;
+    setState(() {
+      _address = null;
+      _loading = token != null;
+    });
+    if (token == null) return;
+    _fetchDefaultAddress(token, generation);
+  }
+
+  Future<void> _fetchDefaultAddress(String token, int generation) async {
+    try {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (!_isCurrentGeneration(generation)) return;
+      BuyerAddress? defaultAddress;
+      for (final address in addresses) {
+        if (address.isDefault) {
+          defaultAddress = address;
+          break;
+        }
+      }
+      defaultAddress ??= addresses.isEmpty ? null : addresses.first;
+      setState(() {
+        _address = defaultAddress == null ? null : _toAddressModel(defaultAddress!);
+        _loading = false;
+      });
+    } catch (_) {
+      // Same fail-quiet contract this bar always had (its Firestore predecessor's builder never
+      // surfaced a load error either) -- falls back to the "Select delivery location" prompt below.
+      if (!_isCurrentGeneration(generation)) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  /// [BuyerAddress] has no photo/lat-long concept of its own -- this is purely a display adapter,
+  /// the same mapping address_selection_sheet.dart's own _addressModelFromBuyerAddress already uses.
+  AddressModel _toAddressModel(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
+  }
+
+  String get _displayText {
+    if (_loading) return 'Loading address...';
+    final address = _address;
+    if (address == null) return 'Select delivery location';
+    var text = '${address.addressLine1}, ${address.city}, ${address.state}';
+    if (text.length > 35) text = '${text.substring(0, 32)}...';
+    return text;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        HapticFeedback.mediumImpact();
+        final selected = await AddressSelectionSheet.show(context);
+        // The sheet already resolved this exact address against BuyerAddressApi to show it as a
+        // pickable card -- using it directly here means the bar updates the instant the sheet
+        // closes, with no extra round trip and no risk of racing a background refresh.
+        if (selected != null && mounted) {
+          setState(() => _address = selected);
+        }
+      },
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              _displayText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.2,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white, size: 20),
+        ],
+      ),
+    );
+  }
 }
