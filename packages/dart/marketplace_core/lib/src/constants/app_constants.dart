@@ -1,8 +1,8 @@
 class AppConstants {
   // App Info
-  static const String appName = 'Agrimate';
+  static const String appName = 'LetBuyy';
   static const String appVersion = '1.0.0';
-  static const String appTagline = 'Your Agricultural Marketplace';
+  static const String appTagline = 'Your Marketplace';
   
   // Pagination
   static const int productsPerPage = 20;
@@ -41,16 +41,16 @@ class AppConstants {
   static const String dateTimeFormat = 'dd MMM yyyy, hh:mm a';
   
   // Support
-  static const String supportEmail = 'support@agrimate.com';
+  static const String supportEmail = 'support@letbuyy.in';
   static const String supportPhone = '+91 9876543210';
-  
+
   // Social Media
-  static const String facebookUrl = 'https://facebook.com/agrimate';
-  static const String instagramUrl = 'https://instagram.com/agrimate';
-  static const String twitterUrl = 'https://twitter.com/agrimate';
-  
+  static const String facebookUrl = 'https://facebook.com/letbuyy';
+  static const String instagramUrl = 'https://instagram.com/letbuyy';
+  static const String twitterUrl = 'https://x.com/letbuyy';
+
   // Policies
-  static const String privacyPolicyUrl = 'https://agrimate.com/privacy';
-  static const String termsUrl = 'https://agrimate.com/terms';
-  static const String returnPolicyUrl = 'https://agrimate.com/returns';
+  static const String privacyPolicyUrl = 'https://letbuyy.com/privacy';
+  static const String termsUrl = 'https://letbuyy.com/terms';
+  static const String returnPolicyUrl = 'https://letbuyy.com/returns';
 }

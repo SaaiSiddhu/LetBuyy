@@ -1,6 +1,6 @@
 class ApiConstants {
   // Base URLs
-  static const String baseUrl = 'https://api.agrimate.com';
+  static const String baseUrl = 'https://api.letbuyy.com';
   static const String apiVersion = 'v1';
   static const String apiBaseUrl = '$baseUrl/api/$apiVersion';
 
