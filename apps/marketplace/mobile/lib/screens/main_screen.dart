@@ -219,9 +219,17 @@ class _MainScreenState extends State<MainScreen>
         ),
         // 🌐 WEB FIX: No bottom nav on web (use sidebar instead)
         // Only show bottom nav for native mobile apps
-        bottomNavigationBar: kIsWeb 
+        //
+        // C2 corrective (27 September 2026 review, finding 4): the Reels tab used to hide this bar
+        // for an immersive, TikTok-style full-screen video feed. Phase 1R replaced that feed with a
+        // plain "coming soon" placeholder (reels_feed_screen.dart) that has no app bar, no button,
+        // and nothing left to be immersive about -- hiding the ordinary way back out of a tab
+        // destination made it a dead end for anyone who doesn't know the OS back gesture already
+        // routes Home from here (_handleBackNavigation, below). Kept visible on every tab now,
+        // including Reels, until real reel media (Phase 7) brings back a reason to hide it.
+        bottomNavigationBar: kIsWeb
             ? null  // Web uses sidebar navigation
-            : (isOnReelsTab ? null : _buildPremiumFixedNavBar(isDark)),
+            : _buildPremiumFixedNavBar(isDark),
       ),
     );
   }
