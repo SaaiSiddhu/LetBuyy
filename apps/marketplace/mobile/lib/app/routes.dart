@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 // Splash screen removed - app starts directly
 import '../screens/onboarding/onboarding_screen.dart';
-import '../screens/auth/auth_screen.dart';
 import '../screens/main_screen.dart';
 import '../screens/web_main_screen.dart';
 import '../screens/shop/product_details_screen.dart';
@@ -46,9 +45,6 @@ class AppRoutes {
   // Root routes
   static const String splash = '/';
   static const String onboarding = '/onboarding';
-  static const String auth = '/auth';
-  static const String login = '/login';
-  static const String register = '/register';
 
   // Main navigation
   static const String main = '/main';
@@ -187,11 +183,6 @@ class AppRoutes {
 
       case onboarding:
         return _buildRoute(const OnboardingScreen(), settings);
-
-      case auth:
-      case login:
-      case register:
-        return _buildRoute(const AuthScreen(), settings);
 
       case main:
         final args = settings.arguments as Map<String, dynamic>?;

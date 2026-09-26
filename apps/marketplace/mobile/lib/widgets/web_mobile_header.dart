@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
+import '../auth/buyer_sign_in_controller.dart';
 
 /// Mobile-style header for web with hamburger menu
 /// Adapts the native mobile app bar design for mobile web
@@ -65,6 +66,13 @@ class WebMobileHeader extends StatelessWidget {
   }
 
   Widget _buildTopRow(BuildContext context, bool isDark) {
+    // Phase 1R corrective (C2): the "Login" vs. signed-in icon below used to check
+    // safeFirebaseCurrentUser() == null, which is always true now that canonical "Sign in with
+    // LetBuyy" is the app's sole sign-in and never touches FirebaseAuth -- meaning it always
+    // showed "Login" even for a signed-in buyer. Checks the canonical status instead.
+    final isSignedIn =
+        context.watch<BuyerSignInController>().status == BuyerSignInStatus.signedIn;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -113,9 +121,9 @@ class WebMobileHeader extends StatelessWidget {
           const SizedBox(width: 8),
 
           // Login Button
-          if (safeFirebaseCurrentUser() == null)
+          if (!isSignedIn)
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.login),
+              onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(

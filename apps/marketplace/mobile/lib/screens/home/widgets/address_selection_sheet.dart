@@ -596,7 +596,11 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
             onPressed: () {
               Navigator.pop(context);
               if (isGuest) {
-                Navigator.pushNamed(context, AppRoutes.auth);
+                // Phase 1R corrective (C2): was AppRoutes.auth (the legacy Firebase email/
+                // password/Google sign-in screen). Routes to the canonical "Sign in with
+                // LetBuyy" prompt (profile_screen.dart already shows it whenever not signed in)
+                // instead.
+                Navigator.pushNamed(context, AppRoutes.profile);
               } else {
                 Navigator.pushNamed(context, AppRoutes.addresses);
               }
