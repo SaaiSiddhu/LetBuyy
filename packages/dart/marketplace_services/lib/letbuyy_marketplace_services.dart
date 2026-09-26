@@ -17,6 +17,7 @@ export 'src/database_service.dart';
 
 // Authentication
 export 'src/auth_service.dart';
+export 'src/firebase_safety.dart';
 
 // Storage
 export 'src/storage_service.dart';

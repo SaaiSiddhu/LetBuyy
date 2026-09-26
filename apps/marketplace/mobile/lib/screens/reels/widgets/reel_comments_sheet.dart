@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
@@ -63,7 +62,7 @@ class _ReelCommentsSheetState extends State<ReelCommentsSheet> {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
 
-    final user = FirebaseAuth.instance.currentUser;
+    final user = safeFirebaseCurrentUser();
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please login to comment')),
@@ -137,7 +136,7 @@ class _ReelCommentsSheetState extends State<ReelCommentsSheet> {
   }
 
   Future<void> _toggleLike(ReelCommentModel comment) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
 
     HapticFeedback.lightImpact();
@@ -197,7 +196,7 @@ class _ReelCommentsSheetState extends State<ReelCommentsSheet> {
 
   /// Toggle seller "❤️ by creator" like on a comment
   Future<void> _toggleCreatorLike(ReelCommentModel comment) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId != widget.sellerId) return; // Only seller can do this
     
     HapticFeedback.mediumImpact();
@@ -215,7 +214,7 @@ class _ReelCommentsSheetState extends State<ReelCommentsSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final currentUserId = safeFirebaseUserId();
     final isSeller = currentUserId == widget.sellerId;
 
     return DraggableScrollableSheet(

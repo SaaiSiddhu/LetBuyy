@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -88,7 +87,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final userId = safeFirebaseUserId();
       if (userId == null) throw Exception('User not logged in');
 
       final cartProvider = context.read<CartProvider>();
@@ -218,7 +217,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Future<void> _proceedToConfirm() async {
     if (_isProcessing) return;
 
-    final user = FirebaseAuth.instance.currentUser;
+    final user = safeFirebaseCurrentUser();
     if (user == null) return;
 
     HapticFeedback.mediumImpact();

@@ -1,8 +1,8 @@
 // Loyalty Provider - State management for loyalty system
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
+import '../firebase_safety.dart';
 import '../loyalty_service.dart';
 
 /// Provider for loyalty points and tier management
@@ -49,7 +49,7 @@ class LoyaltyProvider with ChangeNotifier {
 
   /// Initialize loyalty for current user
   Future<void> init() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       _loyalty = null;
       _transactions = [];
@@ -110,7 +110,7 @@ class LoyaltyProvider with ChangeNotifier {
   /// Redeem points at checkout
   /// Returns true if successful
   Future<bool> redeemPoints(int pointsToRedeem, String orderId) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       _error = 'User not logged in';
       notifyListeners();

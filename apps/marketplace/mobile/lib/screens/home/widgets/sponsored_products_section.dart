@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -502,7 +501,7 @@ class _SponsoredProductsSectionState extends State<SponsoredProductsSection> {
   void _trackAdClick(BuildContext context, AdProductModel adProduct) {
     try {
       final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final userId = safeFirebaseUserId();
       
       adProvider.recordClickWithPlacement(
         adProduct.productId,

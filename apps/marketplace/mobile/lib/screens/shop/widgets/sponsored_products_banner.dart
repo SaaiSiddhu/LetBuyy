@@ -12,7 +12,6 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/providers/marketplace_ad_provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SponsoredProductsBanner extends StatelessWidget {
   final String? excludeProductId; // Don't show the current product in ads
@@ -119,7 +118,7 @@ class SponsoredProductsBanner extends StatelessWidget {
         // Track the click (with deduplication and placement info)
         try {
           final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-          final userId = FirebaseAuth.instance.currentUser?.uid;
+          final userId = safeFirebaseUserId();
           adProvider.recordClickWithPlacement(
             ad.productId,
             AdPlacement.productPage, // Seller sees: "Click from Product page"

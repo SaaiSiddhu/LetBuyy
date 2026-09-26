@@ -15,7 +15,7 @@ class ReturnService {
   ReturnService._internal();
 
   FirebaseFirestore get _firestore => FirebaseFirestore.instance;
-  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  FirebaseFunctions get _functions => FirebaseFunctions.instance;
   FirebaseStorage get _storage => FirebaseStorage.instance;
 
   // Collection references

@@ -587,7 +587,7 @@ class AuthService {
   // 🔥 EMAIL OTP AUTHENTICATION
   // ===========================
 
-  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  FirebaseFunctions get _functions => FirebaseFunctions.instance;
 
   /// Send OTP to email using Firebase Function
   Future<void> sendEmailOTP(String email) async {

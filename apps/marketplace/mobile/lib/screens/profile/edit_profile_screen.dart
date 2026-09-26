@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import '../../../providers/auth_provider.dart' as app_auth;
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -161,7 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
 
   Future<String?> _uploadPhotoToFirebase(File imageFile) async {
     try {
-      final userId = auth.FirebaseAuth.instance.currentUser?.uid;
+      final userId = safeFirebaseUserId();
 
       if (userId == null) {
         _showToastMessage('❌ User ID not found', isSuccess: false);

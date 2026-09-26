@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../app/routes.dart';
+import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import '../../providers/auth_provider.dart' as app_auth;
 
@@ -99,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
       _updateStatus('Welcome', 0.5);
       
       // Check cached user (INSTANT - no network call)
-      final cachedUser = FirebaseAuth.instance.currentUser;
+      final cachedUser = safeFirebaseCurrentUser();
       
       // Small delay just for smooth animation (NOT blocking network calls)
       await Future.delayed(const Duration(milliseconds: 400));
@@ -146,7 +147,7 @@ class _SplashScreenState extends State<SplashScreen>
     timeout = Timer(const Duration(seconds: 5), () {
       if (!completer.isCompleted) {
         subscription?.cancel();
-        completer.complete(FirebaseAuth.instance.currentUser);
+        completer.complete(safeFirebaseCurrentUser());
       }
     });
     

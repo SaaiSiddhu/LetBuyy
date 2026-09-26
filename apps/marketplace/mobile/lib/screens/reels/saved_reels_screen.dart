@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -43,7 +42,7 @@ class _SavedReelsScreenState extends State<SavedReelsScreen> {
   }
   
   Future<void> _loadSavedReels() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       setState(() => _isLoading = false);
       return;
@@ -239,7 +238,7 @@ class _SavedReelCardState extends State<_SavedReelCard> {
   }
   
   Future<void> _loadData() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     
     // Load stats
     try {
@@ -292,7 +291,7 @@ class _SavedReelCardState extends State<_SavedReelCard> {
   }
   
   Future<void> _toggleLike({bool doubleTap = false}) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
     HapticFeedback.mediumImpact();
     
@@ -314,7 +313,7 @@ class _SavedReelCardState extends State<_SavedReelCard> {
   }
   
   Future<void> _toggleFollow() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
     HapticFeedback.mediumImpact();
     
@@ -330,7 +329,7 @@ class _SavedReelCardState extends State<_SavedReelCard> {
   }
   
   Future<void> _unsave() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
     HapticFeedback.mediumImpact();
     

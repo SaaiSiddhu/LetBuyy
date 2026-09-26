@@ -6,7 +6,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -151,7 +150,7 @@ class _ReelsFeedScreenState extends State<ReelsFeedScreen> with WidgetsBindingOb
     // Deduplicate - only bill once per session
     if (_billedViews.contains(reelId)) return;
     
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     
     final success = await _adService.recordView(
       adProductId: boostedData.adProductId,
@@ -731,7 +730,7 @@ class _CachedReelPlayerState extends State<_CachedReelPlayer> {
   }
   
   Future<void> _checkIfLiked() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
     
     try {
@@ -747,7 +746,7 @@ class _CachedReelPlayerState extends State<_CachedReelPlayer> {
   
   // ✅ NEW: Check if reel is saved by user
   Future<void> _checkIfSaved() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
     
     try {
@@ -765,7 +764,7 @@ class _CachedReelPlayerState extends State<_CachedReelPlayer> {
   
   // ✅ NEW: Toggle save/unsave reel
   Future<void> _toggleSave() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please login to save reels')),
@@ -828,7 +827,7 @@ class _CachedReelPlayerState extends State<_CachedReelPlayer> {
     if (_hasTrackedView) return;
     _hasTrackedView = true;
     
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId != null) {
       widget.reelService.trackView(reelId: widget.reel.id, userId: userId);
     }
@@ -849,7 +848,7 @@ class _CachedReelPlayerState extends State<_CachedReelPlayer> {
   }
   
   Future<void> _toggleLike({bool fromDoubleTap = false}) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please login to like')),

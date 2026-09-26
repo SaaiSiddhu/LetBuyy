@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -315,7 +314,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   }
 
   Widget _buildAddressList(bool isDark) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     
     if (userId == null) {
       return _buildEmptyState(isDark, isGuest: true);
@@ -687,7 +686,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
         // Create temporary address from location
         final locationAddress = AddressModel(
           id: 'current_location',
-          userId: FirebaseAuth.instance.currentUser?.uid ?? '',
+          userId: safeFirebaseUserId() ?? '',
           name: 'Current Location',
           phone: '',
           addressLine1: '${place.street ?? ''} ${place.subLocality ?? ''}',
@@ -714,7 +713,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   }
 
   void _handleAddressAction(String action, AddressModel address) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return;
 
     switch (action) {

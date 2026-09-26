@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
@@ -79,7 +78,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   /// Saves this product to the user's recently viewed list in Firestore
   Future<void> _saveRecentlyViewed() async {
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+      final userId = safeFirebaseUserId();
       if (userId == null) return;
 
       final docRef = FirebaseFirestore.instance
@@ -141,7 +140,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           productId: widget.productId,
           source: source,
           adCampaignId: adCampaignId,
-          userId: FirebaseAuth.instance.currentUser?.uid,
+          userId: safeFirebaseUserId(),
         );
       }
       
@@ -231,7 +230,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         sellerId: product.sellerId,
         productId: product.id,
         source: TrafficSource.organic,
-        userId: FirebaseAuth.instance.currentUser?.uid,
+        userId: safeFirebaseUserId(),
         quantity: _quantity,
       );
 

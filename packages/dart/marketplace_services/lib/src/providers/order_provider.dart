@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../firebase_safety.dart';
 import 'package:letbuyy_marketplace_models/src/order_model.dart';
 import 'package:letbuyy_marketplace_models/src/order_timeline_model.dart';
 import 'package:letbuyy_marketplace_models/src/cart_item_model.dart'; // ✅ ADDED: For groupBySeller() extension
@@ -43,7 +44,7 @@ class OrderProvider with ChangeNotifier {
   void loadUserOrders() {
     try {
       final userId = _authService.currentUserId ?? 
-                     FirebaseAuth.instance.currentUser?.uid;
+                     safeFirebaseUserId();
       
       if (userId == null) {
         _error = '❌ User not authenticated';

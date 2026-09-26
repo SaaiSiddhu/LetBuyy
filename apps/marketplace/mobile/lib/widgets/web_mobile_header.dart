@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -114,7 +113,7 @@ class WebMobileHeader extends StatelessWidget {
           const SizedBox(width: 8),
 
           // Login Button
-          if (FirebaseAuth.instance.currentUser == null)
+          if (safeFirebaseCurrentUser() == null)
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, AppRoutes.login),
               child: Container(
@@ -192,7 +191,7 @@ class WebMobileHeader extends StatelessWidget {
   }
 
   Widget _buildAddressText(BuildContext context, bool isDark) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) {
       return _addressTapWrapper(context, 'Select delivery location');
     }

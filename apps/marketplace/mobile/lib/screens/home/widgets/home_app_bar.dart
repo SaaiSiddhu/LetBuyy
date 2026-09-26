@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -103,7 +102,7 @@ class HomeAppBar extends StatelessWidget {
     // But for now, we'll keep the stream logic or use a provider if available
     // Assuming Provider usage or local StreamBuilder for self-containment
     
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return _buildAddressContent(context, 'Select delivery location');
 
     return StreamBuilder<QuerySnapshot>(
@@ -159,7 +158,7 @@ class HomeAppBar extends StatelessWidget {
   }
 
   Widget _buildLoyaltyBadge(BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = safeFirebaseUserId();
     if (userId == null) return const SizedBox.shrink();
 
     return StreamBuilder<DocumentSnapshot>(

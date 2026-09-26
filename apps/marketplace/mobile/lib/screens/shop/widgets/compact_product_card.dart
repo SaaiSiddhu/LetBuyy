@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -123,7 +122,7 @@ class _CompactProductCardState extends State<CompactProductCard>
     try {
       final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
       if (adProvider.isSponsored(widget.product.id)) {
-        final userId = FirebaseAuth.instance.currentUser?.uid;
+        final userId = safeFirebaseUserId();
         adProvider.recordClick(widget.product.id, userId: userId);
       }
     } catch (e) {}

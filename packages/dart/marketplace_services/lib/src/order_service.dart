@@ -13,7 +13,7 @@ class OrderService {
   final LoyaltyService _loyaltyService = LoyaltyService();
   final InvoiceService _invoiceService = InvoiceService();
   final StockService _stockService = StockService();
-  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  FirebaseFunctions get _functions => FirebaseFunctions.instance;
 
   // ============================================
   // CREATE ORDER WITH STOCK REDUCTION + TIMELINE + COMMISSION
