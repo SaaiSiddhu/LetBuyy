@@ -119,9 +119,9 @@ class NotificationService {
     String? payload,
   }) async {
     const androidDetails = AndroidNotificationDetails(
-      'agrimate_channel',
-      'Agrimate Notifications',
-      channelDescription: 'Notifications for Agrimate app',
+      'letbuyy_channel',
+      'LetBuyy Notifications',
+      channelDescription: 'Notifications for the LetBuyy app',
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,

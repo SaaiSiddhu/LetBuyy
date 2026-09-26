@@ -40,7 +40,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Agrimate AI',
+                  'LetBuyy AI',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
