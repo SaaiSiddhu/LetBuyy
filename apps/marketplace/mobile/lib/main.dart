@@ -13,11 +13,10 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'data/canonical_api.dart';
 import 'data/marketplace_repository.dart';
 
-// Sign in with LetBuyy (APPID-P4d), behind LETBUYY_BUYER_SIGN_IN
+// Sign in with LetBuyy (APPID-P4d) — the app's sole sign-in as of Phase 1R
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'auth/buyer_sign_in_controller.dart';
 import 'auth/buyer_sign_in_wiring.dart';
-import 'config/app_config.dart';
 
 // App-specific providers
 import 'providers/auth_provider.dart';
@@ -135,21 +134,21 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // one decision here rather than a per-file import.
         Provider<MarketplaceRepository>(create: (_) => buildMarketplaceRepository()),
 
-        // APPID-P4d: "Sign in with LetBuyy", built only with --dart-define=LETBUYY_BUYER_SIGN_IN=true.
+        // APPID-P4d: "Sign in with LetBuyy" — Phase 1R made this the app's sole sign-in (no Firebase
+        // fallback), so it is always provided; AppConfig.buyerSignInEnabled stays a documented
+        // --dart-define override, never a condition on the controller's own presence, since
+        // profile_screen.dart and others now read it unconditionally.
         // Not lazy, so a sign-in callback that arrived while the app was stopped is collected at launch.
-        if (AppConfig.buyerSignInEnabled)
-          ChangeNotifierProvider<BuyerSignInController>(
-            create: (_) => buildBuyerSignInController()..start(),
-            lazy: false,
-          ),
+        ChangeNotifierProvider<BuyerSignInController>(
+          create: (_) => buildBuyerSignInController()..start(),
+          lazy: false,
+        ),
 
         // SUSTAINED-L: the buyer's canonical cross-store profile and address book, reachable once
         // signed in with LetBuyy. Lazy (unlike the controller above): nothing needs them before a
         // screen asks.
-        if (AppConfig.buyerSignInEnabled) ...[
-          Provider<BuyerAccountApi>(create: (_) => buildBuyerAccountApi()),
-          Provider<BuyerAddressApi>(create: (_) => buildBuyerAddressApi()),
-        ],
+        Provider<BuyerAccountApi>(create: (_) => buildBuyerAccountApi()),
+        Provider<BuyerAddressApi>(create: (_) => buildBuyerAddressApi()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

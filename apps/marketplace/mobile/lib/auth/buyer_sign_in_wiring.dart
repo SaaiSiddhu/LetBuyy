@@ -1,5 +1,5 @@
-// APPID-P4d — builds the app's "Sign in with LetBuyy" controller from its real parts. Only reached
-// when AppConfig.buyerSignInEnabled is on; with it off, main.dart never calls this.
+// APPID-P4d — builds the app's "Sign in with LetBuyy" controller from its real parts. main.dart
+// always calls this (Phase 1R): it's the app's sole sign-in, with no Firebase fallback.
 
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 

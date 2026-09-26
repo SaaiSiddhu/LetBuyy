@@ -178,8 +178,10 @@ void main() {
     h.controller.dispose();
   });
 
-  test('the feature is off unless the build turns it on', () {
-    expect(AppConfig.buyerSignInEnabled, isFalse);
+  test('the feature is on by default, and a build can still turn it off', () {
+    // Phase 1R: no Firebase fallback remains, so this is the app's sole sign-in and defaults on.
+    // The flag survives only as a documented --dart-define override, never a security boundary.
+    expect(AppConfig.buyerSignInEnabled, isTrue);
     expect(AppConfig.identityBaseUrl, 'https://accounts.letbuyy.com');
   });
 
