@@ -4,12 +4,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import '../auth/buyer_sign_in_controller.dart';
+import '../screens/home/widgets/address_selection_sheet.dart';
 
 /// Mobile-style header for web with hamburger menu
 /// Adapts the native mobile app bar design for mobile web
@@ -181,68 +183,7 @@ class WebMobileHeader extends StatelessWidget {
         children: [
           const Icon(Icons.location_on_outlined, color: Colors.white70, size: 14),
           const SizedBox(width: 4),
-          Text(
-            'Location not set',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.9),
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: _buildAddressText(context, isDark),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressText(BuildContext context, bool isDark) {
-    final userId = safeFirebaseUserId();
-    if (userId == null) {
-      return _addressTapWrapper(context, 'Select delivery location');
-    }
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .where('isDefault', isEqualTo: true)
-          .limit(1)
-          .snapshots(),
-      builder: (context, snapshot) {
-        String text = 'Select delivery location';
-        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          final data = snapshot.data!.docs.first.data() as Map<String, dynamic>;
-          final city = data['city'] ?? '';
-          final pincode = data['pincode'] ?? '';
-          text = city.isNotEmpty ? '$city - $pincode' : 'Select delivery location';
-        }
-        return _addressTapWrapper(context, text);
-      },
-    );
-  }
-
-  Widget _addressTapWrapper(BuildContext context, String text) {
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/profile/addresses'),
-      child: Row(
-        children: [
-          Flexible(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 2),
-          const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 14),
+          const Expanded(child: _WebDeliveryAddressBar()),
         ],
       ),
     );
@@ -317,6 +258,138 @@ class WebMobileHeader extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// C3 (Firebase SDK removal): replaces _buildAddressText/_addressTapWrapper -- the web platform's
+// own copy of the same bug already fixed in home_app_bar.dart's _HomeDeliveryAddressBar (that
+// file's own doc comment has the full account). It read FirebaseFirestore.instance.collection(
+// 'addresses') directly, guarded by safeFirebaseUserId() == null, always true under canonical
+// auth -- so this header, present on every web page via WebMobileHeader, always showed "Select
+// delivery location," never a real signed-in buyer's actual address. Its old tap target,
+// '/profile/addresses', is also a dead end: saved_addresses_screen.dart already renders an
+// unconditional empty state (its own C2-era retirement comment), so tapping through there could
+// never show a real address either -- redirected to AddressSelectionSheet.show(), the same
+// canonical, working picker home_app_bar.dart's own bar opens, rather than leave a "fixed the
+// display, still send you to a screen that can't show what you just saw" gap. Deliberately not
+// fixed here (separately scoped, larger than this header's own bug): saved_addresses_screen.dart's
+// and add_address_screen.dart's own dispositions.
+class _WebDeliveryAddressBar extends StatefulWidget {
+  const _WebDeliveryAddressBar();
+
+  @override
+  State<_WebDeliveryAddressBar> createState() => _WebDeliveryAddressBarState();
+}
+
+class _WebDeliveryAddressBarState extends State<_WebDeliveryAddressBar> {
+  int _loadGeneration = 0;
+  String? _observedToken;
+  bool _loading = false;
+  AddressModel? _address;
+
+  bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final token = context.read<BuyerSignInController>().token;
+    if (token != _observedToken) {
+      _observedToken = token;
+      _startLoadForToken(token);
+    }
+  }
+
+  void _startLoadForToken(String? token) {
+    final generation = ++_loadGeneration;
+    setState(() {
+      _address = null;
+      _loading = token != null;
+    });
+    if (token == null) return;
+    _fetchDefaultAddress(token, generation);
+  }
+
+  Future<void> _fetchDefaultAddress(String token, int generation) async {
+    try {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (!_isCurrentGeneration(generation)) return;
+      BuyerAddress? defaultAddress;
+      for (final address in addresses) {
+        if (address.isDefault) {
+          defaultAddress = address;
+          break;
+        }
+      }
+      defaultAddress ??= addresses.isEmpty ? null : addresses.first;
+      setState(() {
+        _address = defaultAddress == null ? null : _toAddressModel(defaultAddress!);
+        _loading = false;
+      });
+    } catch (_) {
+      if (!_isCurrentGeneration(generation)) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  /// Same display adapter address_selection_sheet.dart's own _addressModelFromBuyerAddress and
+  /// home_app_bar.dart's _HomeDeliveryAddressBar._toAddressModel already use.
+  AddressModel _toAddressModel(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
+  }
+
+  String get _displayText {
+    if (_loading) return 'Loading...';
+    final address = _address;
+    if (address == null) return 'Select delivery location';
+    // Preserves this header's own, more compact "city - postal code" format (distinct from
+    // home_app_bar.dart's fuller line1/city/state) -- a deliberate prior design choice for this
+    // narrower, mobile-style-on-web header, not something this fix changes.
+    return '${address.city} - ${address.zipcode}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () async {
+        HapticFeedback.mediumImpact();
+        final selected = await AddressSelectionSheet.show(context);
+        if (selected != null && mounted) {
+          setState(() => _address = selected);
+        }
+      },
+      child: Row(
+        children: [
+          Flexible(
+            child: Text(
+              _displayText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 2),
+          const Icon(Icons.keyboard_arrow_right_rounded, color: Colors.white, size: 14),
         ],
       ),
     );
