@@ -24,7 +24,6 @@ import '../screens/support/support_chat_screen.dart';
 import '../screens/support/support_conversations_screen.dart';
 // Reels
 import '../screens/reels/reels_feed_screen.dart';
-import '../screens/reels/saved_reels_screen.dart'; // ✅ NEW
 import '../screens/shop/seller_profile_screen.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../screens/search/search_screen.dart';
@@ -95,8 +94,7 @@ class AppRoutes {
   
   // Reels
   static const String reels = '/reels';
-  static const String savedReels = '/saved-reels'; // ✅ NEW
-  
+
   // Loyalty
   static const String loyalty = '/loyalty';
   
@@ -268,10 +266,6 @@ class AppRoutes {
       case myReturns:
         return _buildRoute(const MyReturnsScreen(), settings);
         
-      // ✅ Saved Reels
-      case savedReels:
-        return _buildRoute(const SavedReelsScreen(), settings);
-      
       case loyalty:
         return _buildRoute(const LoyaltyScreen(), settings);
         
