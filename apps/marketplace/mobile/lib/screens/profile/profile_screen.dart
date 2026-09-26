@@ -378,7 +378,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                         title: 'Addresses',
                         subtitle: '$_addressesCount saved',
                         iconColor: const Color(0xFF10B981),
-                        onTap: () => _navigateToRoute(AppRoutes.addresses),
+                        // Phase 1R corrective (C3): was AppRoutes.addresses (SavedAddressesScreen),
+                        // which C2 already disconnected to an unconditional "No Saved Addresses"
+                        // empty state -- it has no canonical successor wired in and cannot actually
+                        // manage an address. The real, canonical address book is
+                        // letbuyy_account_screen.dart (see address_selection_sheet.dart's own
+                        // identical redirection for "Add"/"Edit").
+                        onTap: () => _navigateToRoute(AppRoutes.letbuyyAccount),
                         isDark: isDark,
                       ),
                       _buildDivider(isDark),
@@ -1058,7 +1064,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             label: 'Addresses',
             count: _addressesCount,
             color: const Color(0xFF10B981),
-            onTap: () => _navigateToRoute(AppRoutes.addresses),
+            onTap: () => _navigateToRoute(AppRoutes.letbuyyAccount),
             isDark: isDark,
           ),
         ),

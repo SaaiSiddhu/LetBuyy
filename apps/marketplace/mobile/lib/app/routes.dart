@@ -11,7 +11,6 @@ import '../screens/shop/product_details_screen.dart';
 import '../screens/shop/seller_store_screen.dart'; // NEW
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
-import '../screens/profile/saved_addresses_screen.dart';
 import '../screens/profile/letbuyy_account_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/chat/ai_chat_screen.dart';
@@ -204,10 +203,11 @@ class AppRoutes {
       case myOrders:
         return _buildRoute(const OrdersScreen(), settings);
         
+      // C3 corrective: was SavedAddressesScreen (a redundant duplicate case label of the same
+      // route constant, plus a screen C2 had already disconnected to an unconditional empty
+      // state with no canonical successor). Both addresses and letbuyyAccount now land on the
+      // one real, BuyerAddressApi-backed address book.
       case addresses:
-      case '/profile/addresses':
-        return _buildRoute(const SavedAddressesScreen(), settings);
-
       case letbuyyAccount:
         return _buildRoute(const LetBuyyAccountScreen(), settings);
 

@@ -270,13 +270,14 @@ class WebMobileHeader extends StatelessWidget {
 // 'addresses') directly, guarded by safeFirebaseUserId() == null, always true under canonical
 // auth -- so this header, present on every web page via WebMobileHeader, always showed "Select
 // delivery location," never a real signed-in buyer's actual address. Its old tap target,
-// '/profile/addresses', is also a dead end: saved_addresses_screen.dart already renders an
-// unconditional empty state (its own C2-era retirement comment), so tapping through there could
-// never show a real address either -- redirected to AddressSelectionSheet.show(), the same
-// canonical, working picker home_app_bar.dart's own bar opens, rather than leave a "fixed the
-// display, still send you to a screen that can't show what you just saw" gap. Deliberately not
-// fixed here (separately scoped, larger than this header's own bug): saved_addresses_screen.dart's
-// and add_address_screen.dart's own dispositions.
+// '/profile/addresses', was also a dead end: saved_addresses_screen.dart rendered an unconditional
+// empty state (its own C2-era retirement comment), so tapping through there could never show a
+// real address either -- redirected to AddressSelectionSheet.show(), the same canonical, working
+// picker home_app_bar.dart's own bar opens, rather than leave a "fixed the display, still send you
+// to a screen that can't show what you just saw" gap. saved_addresses_screen.dart itself was
+// resolved in a later commit (deleted -- its every real entry point now points at
+// letbuyy_account_screen.dart, the actual canonical address book). add_address_screen.dart's own
+// disposition (raw Firestore writes, reachable from checkout_screen.dart) remains separately scoped.
 class _WebDeliveryAddressBar extends StatefulWidget {
   const _WebDeliveryAddressBar();
 

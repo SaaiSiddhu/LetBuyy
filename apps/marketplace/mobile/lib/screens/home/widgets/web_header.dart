@@ -19,7 +19,7 @@ import '../../shop/shop_screen.dart';
 import '../../cart/cart_screen.dart';
 import '../../wishlist/wishlist_screen.dart';
 import '../../profile/profile_screen.dart';
-import '../../profile/saved_addresses_screen.dart';
+import '../../profile/letbuyy_account_screen.dart';
 import '../../orders/orders_screen.dart';
 import '../../category/category_screen.dart';
 import '../../chat/ai_chat_screen.dart';
@@ -257,10 +257,16 @@ class _WebHeaderState extends State<WebHeader> {
                 // via the legacy AuthService/DatabaseService, with no canonical successor wired
                 // here. Its own read path never populated addresses (canonical sign-in never
                 // touches FirebaseAuth), so this pill already always showed "Add delivery address";
-                // this drops the Consumer and the broken in-page popup, and taps through directly
-                // to SavedAddressesScreen instead.
+                // this drops the Consumer and the broken in-page popup.
+                // C3 corrective: the tap target was SavedAddressesScreen, itself disconnected to
+                // an unconditional empty state with no canonical successor -- now points at
+                // letbuyy_account_screen.dart, the real, BuyerAddressApi-backed address book (see
+                // address_selection_sheet.dart's own identical redirection for "Add"/"Edit").
+                // The pill text itself still always reads "Add delivery address" regardless of a
+                // real saved address -- the same bug already fixed for home_app_bar.dart and
+                // web_mobile_header.dart, not yet ported to this file; separately scoped.
                 GestureDetector(
-                  onTap: () => _navigate(context, const SavedAddressesScreen()),
+                  onTap: () => _navigate(context, const LetBuyyAccountScreen()),
                   child: Row(
                     children: [
                       Icon(FontAwesomeIcons.locationDot.data, size: 13, color: colors.subText),
