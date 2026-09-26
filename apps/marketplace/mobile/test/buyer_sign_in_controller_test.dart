@@ -5,8 +5,7 @@
 // What must hold: an attempt is saved before the browser opens and spent exactly once; a callback that
 // does not answer it changes nothing and does not spend it; a callback after the app was stopped still
 // completes it; coming back without a callback is a cancel; an ended session signs the app out when it
-// starts or resumes; a session and a code never reach a message; and the Firebase link is attempted
-// with the Firebase token only after a real sign-in.
+// starts or resumes; a session and a code never reach a message.
 
 import 'dart:async';
 import 'dart:math';
@@ -79,13 +78,11 @@ Uri callbackFor(Uri url, {String code = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     Uri.parse('com.letbuyy.letbuyy:/oauth/callback?code=$code&state=${state ?? url.queryParameters['state']}');
 
 class Servers {
-  Servers({this.tokenStatus = 200, this.accountStatus = 200, this.linkOutcome = 'linked'});
+  Servers({this.tokenStatus = 200, this.accountStatus = 200});
   int tokenStatus;
   int accountStatus;
-  String linkOutcome;
   final tokenRequests = <RequestOptions>[];
   final accountRequests = <RequestOptions>[];
-  final linkRequests = <RequestOptions>[];
 
   Dio identityDio() {
     final dio = Dio();
@@ -120,8 +117,9 @@ class Servers {
         ));
         return;
       }
-      linkRequests.add(o);
-      handler.resolve(Response(requestOptions: o, statusCode: 200, data: {'success': true, 'data': {'linked': true, 'outcome': linkOutcome}}));
+      // The controller only ever calls /buyer/account. Anything else is a genuine bug, not a Firebase
+      // link request to wave through — Phase 1R removed that call entirely.
+      handler.reject(DioException(requestOptions: o, type: DioExceptionType.badResponse, message: 'unexpected gateway request: ${o.path}'));
     }));
     return dio;
   }
@@ -137,7 +135,6 @@ class Clock {
   MemoryStore? store,
   Servers? servers,
   Clock? clock,
-  Future<String?> Function()? firebaseIdToken,
   int seed = 1,
 }) {
   final s = store ?? MemoryStore();
@@ -149,7 +146,6 @@ class Clock {
     accounts: BuyerAccountApi(ApiClient(baseUrl: 'https://gateway.test/v1', dio: sv.gatewayDio(), maxRetries: 0)),
     browser: browser,
     store: s,
-    firebaseIdToken: firebaseIdToken,
     clock: c.call,
   );
   return (controller: controller, store: s, browser: browser, servers: sv, clock: c);
@@ -159,12 +155,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('a sign-in saves the attempt first, spends it once, and keeps only the session', () async {
-    final h = harness(firebaseIdToken: () async => 'firebase-id-token');
+    final h = harness();
     await h.controller.start();
     expect(h.controller.status, BuyerSignInStatus.signedOut);
 
     await h.controller.signIn();
-    await h.controller.linking;
     expect(h.store.pendingWrites, 1);
     expect(h.store.pending, isNull, reason: 'the attempt is spent');
     expect(h.store.session?.token, sessionToken);
@@ -180,8 +175,6 @@ void main() {
     expect(exchange['code_verifier'], isNotNull);
     expect(opened.toString().contains(exchange['code_verifier'] as String), isFalse, reason: 'the verifier never went to the browser');
     expect(h.servers.accountRequests.single.headers['X-LetBuyy-Buyer-Session'], sessionToken);
-    expect(h.servers.linkRequests.single.data, {'id_token': 'firebase-id-token'});
-    expect(h.controller.firebaseLink, FirebaseLinkResult.linked);
     h.controller.dispose();
   });
 
@@ -375,35 +368,16 @@ void main() {
 
   test('no message ever carries the session or the code', () async {
     final messages = <String?>[];
-    final h = harness(firebaseIdToken: () async => 'firebase-id-token');
+    final h = harness();
     h.controller.addListener(() => messages.add(h.controller.message));
     await h.controller.start();
     await h.controller.signIn();
-    await h.controller.linking;
     await h.controller.signOut();
     for (final message in messages.whereType<String>()) {
       expect(message.contains(sessionToken), isFalse);
       expect(message.contains('CCCCCCCC'), isFalse);
-      expect(message.contains('firebase-id-token'), isFalse);
     }
     h.controller.dispose();
-  });
-
-  test('without a Firebase user nothing is linked, and a settled link is not retried', () async {
-    final none = harness(firebaseIdToken: () async => null);
-    await none.controller.start();
-    await none.controller.signIn();
-    await none.controller.linking;
-    expect(none.servers.linkRequests, isEmpty);
-    expect(none.controller.firebaseLink, isNull);
-
-    final conflict = harness(firebaseIdToken: () async => 'firebase-id-token', servers: Servers(linkOutcome: 'already_linked'));
-    await conflict.controller.start();
-    await conflict.controller.signIn();
-    await conflict.controller.linking;
-    expect(conflict.controller.firebaseLink, FirebaseLinkResult.alreadyLinked);
-    none.controller.dispose();
-    conflict.controller.dispose();
   });
 
   test('the app lifecycle reaches the controller', () async {
@@ -417,8 +391,8 @@ void main() {
     h.controller.dispose();
   });
 
-  testWidgets('the card offers sign-in, then names the account, the link, and sign-out', (tester) async {
-    final h = harness(firebaseIdToken: () async => 'firebase-id-token');
+  testWidgets('the card offers sign-in, then names the account, and sign-out', (tester) async {
+    final h = harness();
     await tester.runAsync(h.controller.start);
     await tester.pumpWidget(ChangeNotifierProvider<BuyerSignInController>.value(
       value: h.controller,
@@ -427,13 +401,9 @@ void main() {
     expect(find.text('One account for the LetBuyy app and every LetBuyy store'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'Sign in with LetBuyy'), findsOneWidget);
 
-    await tester.runAsync(() async {
-      await h.controller.signIn();
-      await h.controller.linking;
-    });
+    await tester.runAsync(h.controller.signIn);
     await tester.pump();
     expect(find.text('Signed in as asha@example.com'), findsOneWidget);
-    expect(find.text('Your existing LetBuyy app account is linked to it.'), findsOneWidget);
     expect(find.widgetWithText(OutlinedButton, 'Sign out of LetBuyy on this device'), findsOneWidget);
     expect(find.textContaining(sessionToken), findsNothing);
 
@@ -442,12 +412,5 @@ void main() {
     expect(find.text('You’re signed out of LetBuyy on this device.'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, 'Sign in with LetBuyy'), findsOneWidget);
     h.controller.dispose();
-  });
-
-  test('every link result has words for the buyer', () {
-    for (final result in FirebaseLinkResult.values) {
-      expect(LetBuyyAccountCard.linkMessage(result), isNotEmpty, reason: result.name);
-    }
-    expect(LetBuyyAccountCard.linkMessage(null), isNull);
   });
 }
