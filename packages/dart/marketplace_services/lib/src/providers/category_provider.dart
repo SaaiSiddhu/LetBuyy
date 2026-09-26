@@ -96,6 +96,12 @@ class CategoryProvider with ChangeNotifier {
   }
 
   // 🚀 PERFORMANCE: Initialize from cache for instant startup
+  //
+  // C2 corrective (27 September 2026 review, finding 2): this called loadCategories() (no
+  // forceReload) intending a background revalidation, but loadCategories's own dedup guard
+  // (`if (!forceReload && _allCategories.isNotEmpty) return;`) made that a no-op the instant the
+  // cache populated _allCategories -- the real canonical fetch never actually ran. Same bug and
+  // same fix as ProductProvider.initializeFromCache.
   Future<void> initializeFromCache() async {
     if (_initializedFromCache) return;
     _initializedFromCache = true;
@@ -107,7 +113,7 @@ class CategoryProvider with ChangeNotifier {
       _notifySafely();
 
       // Refresh in background (don't await)
-      loadCategories();
+      loadCategories(forceReload: true);
     }
   }
 
@@ -198,8 +204,14 @@ class CategoryProvider with ChangeNotifier {
     }).toList(growable: false);
   }
 
+  // C2 corrective (27 September 2026 review, finding 2): was loadCategories() with no forceReload,
+  // making an explicit refresh a no-op once _allCategories was already non-empty -- the same
+  // dedup-guard interaction as initializeFromCache above. (An earlier pass through this file had
+  // briefly made this exact change, then reverted it to avoid an unrelated behavior change outside
+  // that commit's own scope; the review confirms it was a real bug all along, not just an
+  // incidental one worth leaving alone.)
   Future<void> refreshCategories() async {
-    await loadCategories();
+    await loadCategories(forceReload: true);
   }
 
   void selectCategory(String categoryId) {

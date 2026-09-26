@@ -17,6 +17,14 @@ class ProductProvider with ChangeNotifier {
   String? _error;
   bool _initializedFromCache = false;
 
+  // C2 corrective (27 September 2026 review, finding 2): marketplaceFeed is keyset-paged and this
+  // provider only ever requests one page (limit: 100) -- a category or search result with more
+  // than 100 live listings is silently truncated. Real "load more" pagination (consuming
+  // MarketplaceFeedPage.nextCursor across a second request) is out of scope for this pass; this
+  // field exists so that truncation is at least observable to a caller/UI rather than invisible,
+  // and so nothing here is tempted to present a capped list as the exhaustive catalog.
+  bool _hasMore = false;
+
   // ✅ NEW: State variables for variant management
   ProductVariant? _selectedVariant;
   Map<String, String> _selectedOptions = {};
@@ -29,12 +37,23 @@ class ProductProvider with ChangeNotifier {
   String? get error => _error;
   int get productCount => _products.length;
   bool get hasProducts => _products.isNotEmpty;
+  /// True when the last feed/search page fetched was not the last page -- see this field's own
+  /// doc comment on _hasMore.
+  bool get hasMore => _hasMore;
 
   // ✅ NEW: Getters for variants
   ProductVariant? get selectedVariant => _selectedVariant;
   Map<String, String> get selectedOptions => _selectedOptions;
 
   // 🚀 PERFORMANCE: Initialize from cache for instant startup
+  //
+  // C2 corrective (27 September 2026 review, finding 2): this called loadProducts() (no
+  // forceReload) intending a background revalidation, but loadProducts's own dedup guard
+  // (`if (!forceReload && _products.isNotEmpty ...) return;`) made that a no-op the instant the
+  // cache populated _products -- so the real canonical fetch never actually ran, and whatever was
+  // cached (including, on an in-place app update, data cached before this rewire) could persist
+  // indefinitely with no automatic path back to the live source. forceReload: true makes this a
+  // genuine revalidation, not just a cache hit.
   Future<void> initializeFromCache() async {
     if (_initializedFromCache) return;
     _initializedFromCache = true;
@@ -46,7 +65,7 @@ class ProductProvider with ChangeNotifier {
       _notifySafely();
 
       // Refresh in background (don't await)
-      loadProducts();
+      loadProducts(forceReload: true);
     }
   }
 
@@ -87,6 +106,7 @@ class ProductProvider with ChangeNotifier {
 
       final page = await _client.marketplaceFeed(category: categorySlug, limit: 100);
       _products = page.items.map(_productFromFeedItem).toList();
+      _hasMore = page.hasMore;
 
       if (categorySlug == null) {
         // 💾 Save to cache for instant loading next time
@@ -242,6 +262,7 @@ class ProductProvider with ChangeNotifier {
       _notifySafely();
       final page = await _client.marketplaceFeed(search: query, limit: 100);
       _products = page.items.map(_productFromFeedItem).toList();
+      _hasMore = page.hasMore;
       _isLoading = false;
       _notifySafely();
     } catch (e) {
@@ -279,8 +300,11 @@ class ProductProvider with ChangeNotifier {
     _notifySafely();
   }
 
+  // C2 corrective (27 September 2026 review, finding 2): was loadProducts() with no forceReload,
+  // making an explicit pull-to-refresh a no-op once _products was already non-empty -- exactly the
+  // same dedup-guard interaction as initializeFromCache above.
   Future<void> refreshProducts() async {
-    await loadProducts();
+    await loadProducts(forceReload: true);
   }
 
   void clearSelectedProduct() {
