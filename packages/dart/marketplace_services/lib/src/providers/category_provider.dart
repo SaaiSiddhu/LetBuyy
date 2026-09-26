@@ -1,16 +1,18 @@
 // lib/providers/category_provider.dart
 
 import 'package:flutter/material.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
-import '../database_service.dart';
 import '../cache_service.dart';
 
 class CategoryProvider with ChangeNotifier {
-  final DatabaseService _databaseService = DatabaseService();
+  CategoryProvider({required ApiClient client}) : _client = client;
+
+  final ApiClient _client;
   final CacheService _cacheService = CacheService();
 
   List<CategoryModel> _allCategories = [];
-  String? _selectedCategoryId; 
+  String? _selectedCategoryId;
   bool _isLoading = false;
   String? _error;
   bool _disposed = false;
@@ -68,8 +70,8 @@ class CategoryProvider with ChangeNotifier {
     while (currentId != null) {
       try {
         final category = _allCategories.firstWhere((c) => c.id == currentId);
-        breadcrumb.insert(0, category); 
-        currentId = category.parentId; 
+        breadcrumb.insert(0, category);
+        currentId = category.parentId;
       } catch (e) {
         currentId = null;
       }
@@ -97,13 +99,13 @@ class CategoryProvider with ChangeNotifier {
   Future<void> initializeFromCache() async {
     if (_initializedFromCache) return;
     _initializedFromCache = true;
-    
+
     final cachedCategories = await _cacheService.getCachedCategories();
     if (cachedCategories != null && cachedCategories.isNotEmpty) {
       _allCategories = cachedCategories;
       debugPrint('📂 CategoryProvider: Loaded ${_allCategories.length} from cache');
       _notifySafely();
-      
+
       // Refresh in background (don't await)
       loadCategories();
     }
@@ -115,27 +117,28 @@ class CategoryProvider with ChangeNotifier {
       debugPrint('📂 Categories load already in progress, skipping...');
       return;
     }
-    
+
     // 🚀 PERFORMANCE: Skip if already loaded (unless force reload)
     if (!forceReload && _allCategories.isNotEmpty) {
       debugPrint('📂 Categories already loaded (${_allCategories.length}), skipping fetch');
       return;
     }
-    
+
     try {
       _isLoading = true;
       _error = null;
       _notifySafely();
 
       debugPrint('🔍 Loading categories...');
-      
-      _allCategories = await _databaseService.getAllCategories();
+
+      final raw = await _client.marketplaceCategories();
+      _allCategories = _mapCategories(raw);
 
       // 💾 Save to cache for instant loading next time
       await _cacheService.cacheCategories(_allCategories);
 
       debugPrint('✅ Loaded ${_allCategories.length} categories');
-      
+
       _isLoading = false;
       _notifySafely();
     } catch (e) {
@@ -144,6 +147,55 @@ class CategoryProvider with ChangeNotifier {
       _notifySafely();
       debugPrint('❌ Error loading categories: $e');
     }
+  }
+
+  // C2 (canonical rewire): the live taxonomy comes back flat, keyed by its own row id, with
+  // `parent_id` in that same id-space and `slug` as the value marketplace_feed's `category` param
+  // filters by -- two different keyspaces for one hierarchy. `id`/`parentId` below carry the slug
+  // end to end, since that is the only identifier every screen already threads through selection,
+  // filtering and `ProductProvider.loadProducts(categoryId:)`, and the feed filter needs a slug.
+  // `level` is computed here by walking the real parent_id chain in id-space (not fabricated) --
+  // a root category is level 0, each level one hop further from a root. `isActive` is always true:
+  // `listMarketplaceCategoriesFromDatabase` (services/api-gateway) already filters to
+  // `is_active = true` server-side, so claiming true for everything the endpoint hands back
+  // reflects what it already guarantees, not an assumed default. `description`, the icon/banner
+  // image fields and `productCount` have no canonical equivalent yet -- left at their honest
+  // "nothing to show" defaults (empty string / null / zero), which every current consumer already
+  // treats as "don't render this" (categories_grid.dart's `if (category.productCount > 0)`,
+  // `_getCategoryIcon`'s null fallback to a generic icon, `CachedNetworkImage`'s errorWidget for a
+  // blank banner URL) rather than as a false claim.
+  List<CategoryModel> _mapCategories(List<MarketplaceCategory> raw) {
+    final byId = {for (final c in raw) c.id: c};
+    final slugById = {for (final c in raw) c.id: c.slug};
+
+    final levelCache = <String, int>{};
+    int levelOf(String id, [Set<String> visiting = const {}]) {
+      final cached = levelCache[id];
+      if (cached != null) return cached;
+      if (visiting.contains(id)) return 0; // defensive: a cycle should never occur
+      final parentId = byId[id]?.parentId;
+      final level = (parentId == null || !byId.containsKey(parentId))
+          ? 0
+          : 1 + levelOf(parentId, {...visiting, id});
+      levelCache[id] = level;
+      return level;
+    }
+
+    final now = DateTime.now();
+    return raw.map((c) {
+      final parentSlug = c.parentId != null ? slugById[c.parentId] : null;
+      return CategoryModel(
+        id: c.slug,
+        slug: c.slug,
+        name: c.name,
+        description: '',
+        parentId: parentSlug,
+        level: levelOf(c.id),
+        displayOrder: c.position,
+        isActive: true,
+        createdAt: now,
+      );
+    }).toList(growable: false);
   }
 
   Future<void> refreshCategories() async {

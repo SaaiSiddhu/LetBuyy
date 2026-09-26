@@ -387,26 +387,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 icon: Icons.store_outlined,
                                 iconColor: const Color(0xFFFF9800),
                                 isDark: isDark,
-                                child: _buildSellerSection(product.sellerId, isDark),
+                                child: _buildSellerSection(product.sellerId, product.storeName, isDark),
                               ),
 
                               const SizedBox(height: 12),
 
                               // 3. PRODUCT DESCRIPTION
-                              _buildSectionCard(
-                                title: 'Product Description',
-                                icon: Icons.description_outlined,
-                                iconColor: const Color(0xFF2196F3),
-                                isDark: isDark,
-                                child: Text(
-                                  product.description,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    height: 1.6,
-                                    color: isDark ? Colors.grey[300] : Colors.grey[700],
+                              if (product.description.isNotEmpty)
+                                _buildSectionCard(
+                                  title: 'Product Description',
+                                  icon: Icons.description_outlined,
+                                  iconColor: const Color(0xFF2196F3),
+                                  isDark: isDark,
+                                  child: Text(
+                                    product.description,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      height: 1.6,
+                                      color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                    ),
                                   ),
                                 ),
-                              ),
 
                               const SizedBox(height: 12),
 
@@ -426,8 +427,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               const SizedBox(height: 12),
 
                               // 5. CUSTOMER REVIEWS
+                              // C2 (canonical rewire): reviewCount has no canonical successor yet
+                              // (see ProductProvider's doc comment) and stays at its honest default
+                              // of 0 -- dropped from this heading rather than shown as "(0)" next to
+                              // ReviewsSection's own "reviews aren't available yet" empty state.
                               _buildSectionCard(
-                                title: 'Customer Reviews (${product.reviewCount})',
+                                title: 'Customer Reviews',
                                 icon: Icons.star_outline_rounded,
                                 iconColor: const Color(0xFFFFC107),
                                 isDark: isDark,
@@ -615,39 +620,43 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
                   children: [
-                    _buildStoreVisitLink(product.sellerId, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!),
+                    _buildStoreVisitLink(product.sellerId, product.storeName, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!),
                     const Spacer(),
-                    // Rating Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getRatingColor(product.rating).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating)),
-                          const SizedBox(width: 4),
-                          Text(
-                            product.rating.toStringAsFixed(1),
-                            style: TextStyle(
-                              color: _getRatingColor(product.rating),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                    // Rating Badge -- C2 (canonical rewire): rating has no canonical successor yet
+                    // and stays at ProductModel's honest default of 0.0 (see ProductProvider's doc
+                    // comment); hidden rather than shown as "★ 0.0 (0)" on every product, matching
+                    // product_card.dart's existing `if (product.rating > 0)` guard.
+                    if (product.rating > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getRatingColor(product.rating).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating)),
+                            const SizedBox(width: 4),
+                            Text(
+                              product.rating.toStringAsFixed(1),
+                              style: TextStyle(
+                                color: _getRatingColor(product.rating),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '(${product.reviewCount})',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[500] : Colors.grey[600],
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${product.reviewCount})',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? Colors.grey[500] : Colors.grey[600],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -800,56 +809,50 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildStoreVisitLink(String sellerId, bool isDark, Color accentColor) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('sellers').doc(sellerId).get(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox.shrink();
-        }
+  // C2 (canonical rewire): the same raw, unguarded FirebaseFirestore.instance().get() as
+  // _buildSellerSection above, at a second call site -- see that method's doc comment for why this
+  // was a live, unconditional crash risk. Replaced the same way, with product.storeName.
+  Widget _buildStoreVisitLink(String sellerId, String? storeName, bool isDark, Color accentColor) {
+    if (storeName == null || storeName.isEmpty) return const SizedBox.shrink();
 
-        final seller = SellerModel.fromMap(snapshot.data!.data() as Map<String, dynamic>, sellerId);
-
-        return GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
-          },
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Visit the ',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: accentColor,
-                    ),
-                  ),
-                  TextSpan(
-                    text: seller.storeName,
-                    style: TextStyle(
-                      fontSize: 14, // Slightly larger
-                      fontWeight: FontWeight.w800, // Extra bold
-                      color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700], // Distinct link color
-                      decoration: TextDecoration.underline, // Underline to indicate link
-                      decorationColor: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700],
-                    ),
-                  ),
-                  TextSpan(
-                    text: ' Store',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: accentColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
       },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: 'Visit the ',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: accentColor,
+                ),
+              ),
+              TextSpan(
+                text: storeName,
+                style: TextStyle(
+                  fontSize: 14, // Slightly larger
+                  fontWeight: FontWeight.w800, // Extra bold
+                  color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700], // Distinct link color
+                  decoration: TextDecoration.underline, // Underline to indicate link
+                  decorationColor: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700],
+                ),
+              ),
+              TextSpan(
+                text: ' Store',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: accentColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1027,31 +1030,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
           const SizedBox(height: 16),
 
-          // Rating & Stock Row
+          // Rating & Stock Row -- C2 (canonical rewire): rating/reviewCount have no canonical
+          // successor yet and stay at ProductModel's honest defaults (see ProductProvider's doc
+          // comment); hidden rather than shown as "0.0 ★" / "0 Reviews" on every product.
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getRatingColor(product.rating),
-                  borderRadius: BorderRadius.circular(6),
+              if (product.rating > 0) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getRatingColor(product.rating),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        product.rating.toStringAsFixed(1),
+                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.star_rounded, color: Colors.white, size: 14),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Text(
-                      product.rating.toStringAsFixed(1),
-                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.star_rounded, color: Colors.white, size: 14),
-                  ],
+                const SizedBox(width: 12),
+                Text(
+                  '${product.reviewCount} Reviews',
+                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '${product.reviewCount} Reviews',
-                style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint),
-              ),
+              ],
               const Spacer(),
               if (product.inStock)
                 Row(
@@ -1301,78 +1308,69 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildSellerSection(String sellerId, bool isDark) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('sellers').doc(sellerId).get(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox.shrink();
-        }
+  // C2 (canonical rewire): this built a raw, unguarded FirebaseFirestore.instance().get() as a
+  // FutureBuilder's `future:` argument -- evaluated synchronously during build(), unconditionally,
+  // on this screen's always-rendered "Seller Information" card. FirebaseFirestore.instance throws
+  // synchronously with no Firebase app initialized (confirmed empirically elsewhere this phase),
+  // so this threw on every visit to any product's detail page, this app's most-visited screen --
+  // not contained by a try/catch the way an async method's Firestore call would be, since nothing
+  // here was inside one. Replaced with product.storeName, which the canonical marketplace feed/
+  // listing endpoints already hand back directly (see ProductProvider's doc comments) -- no photo
+  // or seller-verified flag exists on that canonical shape yet, so this card now shows a generic
+  // store icon and no verified badge rather than inventing either.
+  Widget _buildSellerSection(String sellerId, String? storeName, bool isDark) {
+    if (storeName == null || storeName.isEmpty) return const SizedBox.shrink();
 
-        final seller = SellerModel.fromMap(snapshot.data!.data() as Map<String, dynamic>, sellerId);
-
-        return GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF2A2A2A) : Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                // Avatar
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                  ),
-                  child: ClipOval(
-                    child: seller.photoUrl != null
-                        ? CachedNetworkImage(imageUrl: seller.photoUrl!, fit: BoxFit.cover)
-                        : Icon(Icons.store, color: AppColors.primary),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            seller.storeName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                          if (seller.isVerified) ...[
-                            const SizedBox(width: 6),
-                            const Icon(Icons.verified, size: 16, color: AppColors.success),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Tap to view store',
-                        style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400]),
-              ],
-            ),
-          ),
-        );
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
       },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2A2A2A) : Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
+              child: ClipOval(
+                child: Icon(Icons.store, color: AppColors.primary),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    storeName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tap to view store',
+                    style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400]),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1495,14 +1493,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12),
-                        const SizedBox(width: 4),
-                        Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600])),
-                      ],
-                    ),
+                    // C2 (canonical rewire): rating has no canonical successor yet (see
+                    // ProductProvider's doc comment); hidden rather than shown as "★ 0.0".
+                    if (product.rating > 0) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12),
+                          const SizedBox(width: 4),
+                          Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600])),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

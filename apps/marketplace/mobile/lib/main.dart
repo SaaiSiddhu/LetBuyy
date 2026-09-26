@@ -97,10 +97,23 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // at the '/notifications' route, had zero live navigation anywhere in the app (grepped — no
         // pushNamed, no bell icon); both deleted rather than left wired to a dead identity source.
 
+        // C2 (canonical rewire): the shared canonical gateway client -- built once, registered
+        // ahead of every provider below that reads it (ProductProvider, CategoryProvider,
+        // MarketplaceRepository), so they all talk to the same connection pool instead of each
+        // opening its own.
+        Provider<ApiClient>(create: (_) => buildCanonicalApiClient()),
+
         // Shared providers from services package
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
-        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        // ProductProvider/CategoryProvider retired their Firestore-backed DatabaseService path
+        // (R1 corrective, C2 REWIRE): both now read the canonical marketplace feed/categories/
+        // listing endpoints through this shared ApiClient. See their own doc comments for exactly
+        // which fields the canonical gateway does not (yet) carry -- rating, reviews,
+        // specifications, shipping estimates, featured/new/trending/verified flags, related
+        // products, named variant option labels -- and how each is left at an honest default
+        // rather than a fabricated one.
+        ChangeNotifierProvider(create: (context) => ProductProvider(client: context.read<ApiClient>())),
+        ChangeNotifierProvider(create: (context) => CategoryProvider(client: context.read<ApiClient>())),
         // OrderProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
         // canonical successor. loadUserOrders() guards on a userId that's always null (same
         // pattern as several other providers this pass), but loadAllOrders()/createOrder()/
@@ -178,8 +191,10 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
 
         // FB-2: the canonical marketplace read path. Screens depend on the interface, never on
         // ApiMarketplaceRepository or on an ApiClient directly, so the backend behind a screen is
-        // one decision here rather than a per-file import.
-        Provider<MarketplaceRepository>(create: (_) => buildMarketplaceRepository()),
+        // one decision here rather than a per-file import. Shares the ApiClient registered above.
+        Provider<MarketplaceRepository>(
+          create: (context) => buildMarketplaceRepository(client: context.read<ApiClient>()),
+        ),
 
         // APPID-P4d: "Sign in with LetBuyy" — Phase 1R made this the app's sole sign-in (no Firebase
         // fallback), so it is always provided; AppConfig.buyerSignInEnabled stays a documented

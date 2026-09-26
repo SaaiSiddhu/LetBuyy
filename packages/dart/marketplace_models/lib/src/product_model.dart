@@ -128,6 +128,11 @@ class VariantOption {
 class ProductModel {
   final String id;
   final String sellerId;
+  // C2 (canonical rewire): the marketplace feed/listing endpoints hand back the seller's display
+  // name directly on every row (no separate seller-document fetch needed) -- see
+  // ProductProvider._productFromFeedItem/_productFromListingDetail. Null for a product built from
+  // any other source that doesn't carry it.
+  final String? storeName;
   final String name;
   final String description;
   final double salePrice;
@@ -188,6 +193,7 @@ class ProductModel {
   ProductModel({
     required this.id,
     required this.sellerId,
+    this.storeName,
     required this.name,
     required this.description,
     required this.salePrice,
@@ -439,6 +445,7 @@ class ProductModel {
   ProductModel copyWith({
     String? id,
     String? sellerId,
+    String? storeName,
     String? name,
     String? description,
     double? salePrice,
@@ -493,6 +500,7 @@ class ProductModel {
     return ProductModel(
       id: id ?? this.id,
       sellerId: sellerId ?? this.sellerId,
+      storeName: storeName ?? this.storeName,
       name: name ?? this.name,
       description: description ?? this.description,
       salePrice: salePrice ?? this.salePrice,

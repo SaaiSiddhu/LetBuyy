@@ -47,6 +47,12 @@ class _FilterDrawerState extends State<FilterDrawer> {
   // Discount filter (based on actual product discounts)
   Set<int> _availableDiscounts = {};
   int _selectedMinDiscount = 0;
+
+  // C2 (canonical rewire): rating has no canonical successor yet, so every product's rating stays
+  // at ProductModel's honest default of 0.0 (see ProductProvider's doc comment) -- tracked the same
+  // way as _availableDiscounts so the "Rating" section can hide itself rather than offer a filter
+  // that will always match zero products.
+  bool _hasAnyRating = false;
   
   // Deals toggle
   bool _dealsOnly = false;
@@ -123,11 +129,14 @@ class _FilterDrawerState extends State<FilterDrawer> {
     double minPrice = double.infinity;
     double maxPrice = 0;
     Set<int> discountBuckets = {};
+    bool hasAnyRating = false;
 
     for (final product in products) {
       // Price
       if (product.price < minPrice) minPrice = product.price;
       if (product.price > maxPrice) maxPrice = product.price;
+
+      if (product.rating > 0) hasAnyRating = true;
 
       // Discounts - collect actual discount percentages
       if (product.discount > 0) {
@@ -163,6 +172,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
     _minProductPrice = minPrice == double.infinity ? 0 : minPrice;
     _maxProductPrice = maxPrice == 0 ? 50000 : maxPrice;
     _availableDiscounts = discountBuckets;
+    _hasAnyRating = hasAnyRating;
 
     // Ensure min < max for RangeSlider
     if (_minProductPrice >= _maxProductPrice) {
@@ -185,12 +195,14 @@ class _FilterDrawerState extends State<FilterDrawer> {
       type: _FilterType.price,
     ));
 
-    // 2. Rating
-    _sections.add(_FilterSection(
-      title: 'Rating',
-      icon: FontAwesomeIcons.star.data,
-      type: _FilterType.rating,
-    ));
+    // 2. Rating (only if at least one product actually carries one)
+    if (_hasAnyRating) {
+      _sections.add(_FilterSection(
+        title: 'Rating',
+        icon: FontAwesomeIcons.star.data,
+        type: _FilterType.rating,
+      ));
+    }
 
     // 3. Discount (only if products have discounts)
     if (_availableDiscounts.isNotEmpty) {

@@ -17,7 +17,11 @@ dependencies:
     path: ../marketplace_core
   letbuyy_marketplace_models:
     path: ../marketplace_models
-  
+  # C2 (canonical rewire): ProductProvider/CategoryProvider read the canonical gateway through
+  # this client rather than Firestore -- see their own doc comments.
+  letbuyy_api_client:
+    path: ../api_client
+
   # Firebase — Phase 1R (R1.4): firebase_messaging and firebase_analytics removed, zero callers
   # remaining (FCMService/NotificationService/AnalyticsService all deleted). The rest stay: this
   # package's product/order/return/checkout/chat/reel/seller services have no canonical successor
