@@ -36,17 +36,28 @@ class _SponsoredProductsSectionState extends State<SponsoredProductsSection> {
     }
   }
 
+  // Phase 1R (R1.5, found via real device verification): building a StreamBuilder's `stream:`
+  // argument runs during build(), synchronously — a StreamBuilder only catches errors that arrive
+  // THROUGH the stream's error channel, never one thrown while constructing the stream itself.
+  Stream<QuerySnapshot> _adProductsStream() {
+    try {
+      return FirebaseFirestore.instance
+          .collection('ad_products')
+          .where('status', isEqualTo: 'active')
+          .orderBy('bidAmount', descending: true)
+          .limit(20)
+          .snapshots();
+    } catch (_) {
+      return const Stream.empty();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('ad_products')
-          .where('status', isEqualTo: 'active')
-          .orderBy('bidAmount', descending: true)
-          .limit(20)
-          .snapshots(),
+      stream: _adProductsStream(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const SizedBox.shrink();

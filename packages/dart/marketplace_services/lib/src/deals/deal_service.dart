@@ -159,19 +159,30 @@ class DealService {
   // ============ MARKETPLACE OPERATIONS ============
 
   /// Get all active deals for marketplace display
+  //
+  // Phase 1R (R1.5, found via real device verification): this used to build and return the
+  // Firestore stream directly, so calling it — not subscribing to it, calling it — threw
+  // synchronously once Firebase stopped initializing. A StreamBuilder only catches errors that
+  // arrive THROUGH a stream's error channel, never an exception thrown while constructing the
+  // stream object itself, so DealsSection's initState() (no try/catch of its own) crashed the
+  // whole widget. The try/catch has to live here, at every call site otherwise.
   Stream<List<DealModel>> getActiveDeals({int limit = 20}) {
-    final now = Timestamp.now();
-    return _firestore
-        .collection(_collection)
-        .where('status', isEqualTo: DealStatus.active.name)
-        .where('endDate', isGreaterThan: now)
-        .orderBy('endDate') // Ending soonest first
-        .limit(limit)
-        .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => DealModel.fromFirestore(doc))
-            .where((deal) => deal.hasStock) // Filter out sold-out deals
-            .toList());
+    try {
+      final now = Timestamp.now();
+      return _firestore
+          .collection(_collection)
+          .where('status', isEqualTo: DealStatus.active.name)
+          .where('endDate', isGreaterThan: now)
+          .orderBy('endDate') // Ending soonest first
+          .limit(limit)
+          .snapshots()
+          .map((snapshot) => snapshot.docs
+              .map((doc) => DealModel.fromFirestore(doc))
+              .where((deal) => deal.hasStock) // Filter out sold-out deals
+              .toList());
+    } catch (_) {
+      return Stream.value(const []);
+    }
   }
 
   /// Check if a product has an active deal
