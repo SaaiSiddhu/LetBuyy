@@ -74,9 +74,11 @@ export 'src/providers/wishlist_provider.dart';
 export 'src/providers/coupon_provider.dart';
 export 'src/providers/review_provider.dart';
 // banner_provider.dart retired (Phase 1R, R1.3): entirely Firestore/Storage, no canonical successor.
-export 'src/providers/sponsored_banner_provider.dart';
+// sponsored_banner_provider.dart and app_update_provider.dart exports retired (R1 corrective, C2):
+// both were entirely Firestore-backed with no canonical successor and no remaining consumer after
+// sponsored_banner.dart, download_screen.dart and mandatory_update_dialog.dart were disconnected/
+// deleted. Provider source files themselves stay until C3's Firebase SDK removal pass.
 export 'src/providers/address_provider.dart';
-export 'src/providers/app_update_provider.dart';
 export 'src/providers/ad_provider.dart';
 
 // Sponsored Ads

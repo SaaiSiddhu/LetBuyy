@@ -90,13 +90,15 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // ✅ ADDED: Missing providers
         // BannerProvider retired (Phase 1R, R1.3): it was entirely FirebaseFirestore/FirebaseStorage,
         // with no canonical successor. banner_carousel_section.dart now renders a static placeholder.
-        ChangeNotifierProvider(create: (_) => SponsoredBannerProvider()),
+        // SponsoredBannerProvider retired (R1 corrective, C2): its one consumer, sponsored_banner.dart,
+        // now renders SizedBox.shrink() unconditionally (matching its own prior empty state) instead of
+        // opening a FirebaseFirestore realtime listener with no canonical successor.
         ChangeNotifierProvider(create: (_) => CouponProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
-        // AppUpdateProvider retired (R1 corrective, C2): its one consumer, screens/downloads/
-        // download_screen.dart, is registered at '/downloads' with zero live navigation to it
-        // anywhere in the app (grepped) — "Legacy compatibility" per the route's own comment.
-        // Screen and provider source left in place; neither is constructed by the active app.
+        // AppUpdateProvider retired (R1 corrective, C2): its two consumers, the '/downloads' route's
+        // DownloadScreen and MandatoryUpdateDialog, had zero live navigation/construction anywhere in
+        // the active app (grepped) — "Legacy compatibility" per the route's own comment — so both were
+        // deleted along with the dead route, rather than left wired to a Firebase-backed provider.
 
         // ✅ ADDED: Sponsored Products Ads provider
         ChangeNotifierProvider(create: (_) => MarketplaceAdProvider()),

@@ -40,8 +40,6 @@ import '../screens/checkout/add_address_screen.dart';
 // Order Screens
 import '../screens/orders/order_details_screen.dart';
 import '../screens/orders/order_tracking_screen.dart';
-// Downloads
-import '../screens/downloads/download_screen.dart';
 
 class AppRoutes {
   static const String baseUrl = 'https://letbuyy.com';
@@ -117,9 +115,6 @@ class AppRoutes {
   
   // Add Address
   static const String addAddress = '/add-address';
-  
-  // Downloads
-  static const String download = '/download';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -389,11 +384,6 @@ class AppRoutes {
       // ✅ Add Address
       case addAddress:
         return _buildRoute(const AddAddressScreen(), settings);
-
-      // ✅ Downloads
-      case download:
-      case '/downloads': // Legacy compatibility
-        return _buildRoute(const DownloadScreen(), settings);
 
       default:
         return _buildErrorRoute('Route not found: ${settings.name}', settings);
