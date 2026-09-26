@@ -369,20 +369,16 @@ class _ShopAppBarState extends State<ShopAppBar>
     );
   }
 
+  // Phase 1R corrective (C2): AddressProvider was entirely FirebaseFirestore-backed via the
+  // legacy AuthService/DatabaseService, with no canonical successor wired into this widget.
+  // Its own read path already never populated addresses (canonical sign-in never touches
+  // FirebaseAuth, so AddressProvider's userId guard always short-circuited), so this drops the
+  // Consumer and uses the existing _currentLocationText fallback directly -- the exact value
+  // this already rendered.
   Widget _buildLocationLine(BuildContext context, bool isDark) {
-    return Consumer<AddressProvider>(
-      builder: (context, addressProvider, _) {
-        final address = addressProvider.addresses.isNotEmpty
-            ? addressProvider.addresses.firstWhere(
-                (a) => a.isDefault,
-                orElse: () => addressProvider.addresses.first,
-              )
-            : null;
-        final displayLoc = address != null
-            ? '${address.city}, ${address.state}'
-            : _currentLocationText;
+    final displayLoc = _currentLocationText;
 
-        return Container(
+    return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: isDark
@@ -436,11 +432,7 @@ class _ShopAppBarState extends State<ShopAppBar>
                       context,
                       MaterialPageRoute(
                           builder: (context) => const SavedAddressesScreen()),
-                    ).then((result) {
-                      if (result == true) {
-                        addressProvider.loadAddresses();
-                      }
-                    });
+                    );
                   },
                   borderRadius: BorderRadius.circular(4),
                   child: Container(
@@ -469,8 +461,6 @@ class _ShopAppBarState extends State<ShopAppBar>
             ],
           ),
         );
-      },
-    );
   }
 
   Widget _buildIconButton(

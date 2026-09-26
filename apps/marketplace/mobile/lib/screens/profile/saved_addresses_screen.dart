@@ -85,7 +85,6 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen>
     // --- End Toast Animations ---
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AddressProvider>().loadAddresses();
       _animationController.forward();
     });
   }
@@ -146,147 +145,6 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen>
     } else {
       _showToastMessage('Location coordinates not available',
           isSuccess: false); // ✅ Fixed
-    }
-  }
-
-  // ============================================
-  // DELETE ADDRESS WITH THEME-AWARE DIALOG
-  // ============================================
-  Future<void> _deleteAddress(String addressId, bool isDark) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: true,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surface, // ✅ Fixed
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: isDark
-                    ? AppColors.shadowDarkTheme
-                    : AppColors.shadowMedium, // ✅ Fixed
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // ✅ HEADER
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: AppColors.error.withValues(alpha: 0.1), // ✅ Fixed
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.delete_outline_rounded,
-                        size: 30,
-                        color: AppColors.error, // ✅ Fixed
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Delete Address?',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: isDark
-                            ? AppColors.textLight
-                            : AppColors.textPrimary, // ✅ Fixed
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'This action cannot be undone and will be permanently deleted.',
-                      style: TextStyle(
-                        color: isDark
-                            ? AppColors.textLightSecondary
-                            : AppColors.textSecondary, // ✅ Fixed
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              // ✅ ACTIONS
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          side: BorderSide(
-                            color: isDark
-                                ? AppColors.borderDark
-                                : AppColors.border, // ✅ Fixed
-                          ),
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: isDark
-                                ? AppColors.textLight
-                                : AppColors.textPrimary, // ✅ Fixed
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          backgroundColor: AppColors.error, // ✅ Fixed
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'Delete',
-                          style: TextStyle(
-                            color: AppColors.white, // ✅ Fixed
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    if (confirmed == true && mounted) {
-      final success =
-          await context.read<AddressProvider>().deleteAddress(addressId);
-
-      if (mounted) {
-        _showToastMessage(
-          success ? '✅ Address deleted successfully' : '❌ Failed to delete address',
-          isSuccess: success,
-        );
-      }
     }
   }
 
@@ -362,79 +220,15 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen>
 
               // ============================================
               // CONTENT
+              // Phase 1R corrective (C2): AddressProvider was entirely FirebaseFirestore-backed
+              // via the legacy AuthService/DatabaseService, with no canonical successor wired
+              // here. Its own read path never populated addresses (canonical sign-in never
+              // touches FirebaseAuth), so this Consumer always rendered the empty state below --
+              // this renders it unconditionally instead, without depending on the provider.
               // ============================================
-              Consumer<AddressProvider>(
-                builder: (context, addressProvider, child) {
-                  if (addressProvider.isLoading &&
-                      addressProvider.addresses.isEmpty) {
-                    return SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              color: isDark
-                                  ? AppColors.primaryLight
-                                  : AppColors.primary, // ✅ Fixed
-                              strokeWidth: 3,
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'Loading addresses...',
-                              style: TextStyle(
-                                color: isDark
-                                    ? AppColors.textLightSecondary
-                                    : AppColors.textSecondary, // ✅ Fixed
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (addressProvider.addresses.isEmpty) {
-                    return SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: _buildEmptyState(isDark: isDark));
-                  }
-
-                  return SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final address = addressProvider.addresses[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: _buildAddressCard(
-                              address: address,
-                              isDark: isDark,
-                              onDelete: () =>
-                                  _deleteAddress(address.id, isDark),
-                              onSetDefault: () async {
-                                HapticFeedback.selectionClick();
-                                final success = await addressProvider
-                                    .setDefaultAddress(address.id);
-                                if (mounted) {
-                                  _showToastMessage(
-                                      success
-                                          ? '✅ Default address updated'
-                                          : '❌ Failed to update',
-                                      isSuccess: success);
-                                }
-                              },
-                            ),
-                          );
-                        },
-                        childCount: addressProvider.addresses.length,
-                      ),
-                    ),
-                  );
-                },
-              ),
+              SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: _buildEmptyState(isDark: isDark)),
             ],
           ),
 
@@ -514,7 +308,6 @@ class _SavedAddressesScreenState extends State<SavedAddressesScreen>
             ),
           ).then((result) {
             if (result == true && mounted) {
-              context.read<AddressProvider>().loadAddresses();
               _showToastMessage('✅ Address added successfully');
             }
           });

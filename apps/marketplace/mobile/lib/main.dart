@@ -86,8 +86,13 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => OrderProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
-        ChangeNotifierProvider(create: (_) => AddressProvider()),
-        
+        // AddressProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed via the
+        // legacy AuthService/DatabaseService, with no canonical successor wired into its three
+        // consumers (web_header.dart's and shop_app_bar.dart's header pills, saved_addresses_screen.dart).
+        // Its own read path never populated addresses (canonical sign-in never touches FirebaseAuth,
+        // so its userId guard always short-circuited), so all three already rendered exactly the
+        // empty/default state they now render unconditionally, without the provider in the tree.
+
         // ✅ ADDED: Missing providers
         // BannerProvider retired (Phase 1R, R1.3): it was entirely FirebaseFirestore/FirebaseStorage,
         // with no canonical successor. banner_carousel_section.dart now renders a static placeholder.
