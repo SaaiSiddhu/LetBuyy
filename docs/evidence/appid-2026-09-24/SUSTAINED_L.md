@@ -1,5 +1,18 @@
 # SUSTAINED-L — marketplace account UI, Phase 2 closure
 
+> **Corrected 2026-09-26 (SUSTAINED-M).** This document's own final status line below reads
+> "IMPLEMENTED, VERIFIED_LOCAL" for the account-switch scenario and gives the 58-pass/1-skip result
+> as evidence — that overstated it. The 58/1 result is real, unchanged, and dated correctly below;
+> what it did **not** establish is the one skipped scenario itself (`skip: true`, on the exact test
+> this document is about). The accurate status, as of this document's own writing, was: the
+> profile/address UI and the `_loading` bug fix are IMPLEMENTED and MERGED_DEVELOP; the
+> account-switch regression test that verifies the fix was SKIPPED, not passing, and reliability
+> verification for that specific scenario was PENDING. SUSTAINED-M (`docs/evidence/appid-2026-09-24/
+> SUSTAINED_M.md`) subsequently root-caused the flakiness for real (a deterministic font-loading
+> seam, not a mitigation), restored the test, and proved it with a real negative control. Read
+> `SUSTAINED_M.md` for the current, accurate status; nothing below this notice is rewritten — it is
+> the historical record of what this phase actually did and found, on 2026-09-25.
+
 Continues `SUSTAINED_L_HANDOFF.md` (cloud→local handoff, `639ca1b`/`15359cf3`, Phase 2 stopped
 mid-work on budget exhaustion). This session resumed on the Mac, in the worktree the handoff
 instructed (`../LetBuyy-account-ui`, already present and synced with origin at `15359cf3` — no new

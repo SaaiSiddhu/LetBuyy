@@ -3,6 +3,7 @@ library;
 
 // Themes
 export 'src/themes/app_colors.dart';
+export 'src/themes/app_fonts.dart';
 export 'src/themes/app_theme.dart';
 export 'src/themes/app_text_styles.dart';
 

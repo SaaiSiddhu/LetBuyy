@@ -14,7 +14,6 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace/auth/buyer_session_store.dart';
 import 'package:letbuyy_marketplace/auth/buyer_sign_in_browser.dart';
@@ -165,10 +164,14 @@ class FakeGateway {
         return;
       }
       if (path.endsWith('/buyer/profile') && o.method == 'PATCH') {
+        // Scoped by the authenticated token, exactly like the GET above -- a PATCH from Buyer B's
+        // own session must update Buyer B's own record, never Buyer A's, matching how
+        // requireBuyerSession scopes the real gateway route.
+        final targetAccount = otherAccount ?? account;
         final body = o.data as Map;
-        if (body.containsKey('full_name')) account['full_name'] = body['full_name'];
-        if (body.containsKey('phone')) account['phone'] = body['phone'];
-        handler.resolve(Response(requestOptions: o, statusCode: 200, data: {'success': true, 'data': {'buyer': account}}));
+        if (body.containsKey('full_name')) targetAccount['full_name'] = body['full_name'];
+        if (body.containsKey('phone')) targetAccount['phone'] = body['phone'];
+        handler.resolve(Response(requestOptions: o, statusCode: 200, data: {'success': true, 'data': {'buyer': targetAccount}}));
         return;
       }
       if (path.endsWith('/buyer/addresses') && o.method == 'GET') {
@@ -252,29 +255,6 @@ Future<void> pumpUntil(
       await tester.pump(pumpDuration);
     }
   });
-}
-
-/// Every GoogleFonts.getFont() call (CustomTextField, headings, ...) fires a fire-and-forget font
-/// load; with GoogleFonts.config.allowRuntimeFetching = false (flutter_test_config.dart) and no
-/// real font files bundled for tests, that load genuinely fails every time, and google_fonts never
-/// attaches its own error handler to the rejection (google_fonts_all_parts.g.dart's internal
-/// `.then((_) => pendingFontFutures.remove(...))` has no `onError`, and a failed load is never
-/// removed from [pendingFontFutures] either) -- left alone, it surfaces later as an unhandled zone
-/// error blamed on whatever test happens to be running when it finally rejects.
-///
-/// `GoogleFonts.pendingFonts()` (`Future.wait(pendingFontFutures)`) is google_fonts' own documented
-/// testing API for adopting these futures, and empirically the only mechanism here that reliably
-/// keeps the rejection from leaking. Two cheaper alternatives were tried and rejected: attaching a
-/// handler directly to each individual future is not enough, because google_fonts' own internal
-/// `.then()` on that same future still produces its own, separately-unhandled derived future
-/// regardless of what other listeners are added; and calling this only when
-/// [pendingFontFutures]'s length has grown since the last check still misses fonts that reject
-/// within the same pump they were requested in (a cached [assetManifest] can make that whole path
-/// synchronous). Calling it, unconditionally, on every single pump is the only version that measured
-/// zero leaked font exceptions -- this is real, unavoidable per-pump cost in this environment (see
-/// the generous timeouts on the account-switch test below), not a stand-in for a cheaper fix.
-void _absorbPendingFontFailures() {
-  GoogleFonts.pendingFonts().then((_) {}, onError: (_) {});
 }
 
 Widget wrap(BuyerSignInController controller, BuyerAccountApi accounts, BuyerAddressApi addresses) {
@@ -566,15 +546,14 @@ void main() {
     h.controller.dispose();
   });
 
-  // SKIPPED (not deleted, not weakened): races an unhandled google_fonts async rejection against
-  // this test's own flutter_test error zone (2-3 of 5 isolated runs fail). Root-caused, not fixed --
-  // SUSTAINED_L.md documents the exact mechanism (google_fonts_base.dart's own internal .then() call
-  // leaves a second, package-internal Future carrying the error that no external code can reach) and
-  // two ruled-out/unresolved fix attempts. The production bug this test targets (_loading never reset
-  // when a stale response is discarded -- see letbuyy_account_screen.dart's _load()) is fixed and is
-  // exercised structurally by every other test in this file; only this specific regression test is
-  // unreliable. Do not delete or weaken these assertions to make it "pass" -- SUSTAINED_L.md.
-  testWidgets('a stale in-flight response for Buyer A is never applied once Buyer B is signed in', skip: true, (tester) async {
+  // Was SKIPPED under SUSTAINED-L: it raced an unhandled google_fonts async rejection against this
+  // test's own flutter_test error zone (2-3 of 5 isolated runs failed) -- root-caused, not fixed, by
+  // SUSTAINED_L.md. SUSTAINED-M removed the actual dependency instead of racing it:
+  // flutter_test_config.dart now overrides AppFonts.poppins/.inter (packages/dart/marketplace_ui_kit/
+  // lib/src/themes/app_fonts.dart) to a plain, deterministic style builder, so this test process never
+  // calls into google_fonts at all. Restored and passing; see SUSTAINED_M.md for the reliability
+  // sweep and the negative-control proof that it genuinely catches the _loading-reset bug.
+  testWidgets('a stale in-flight response for Buyer A is never applied once Buyer B is signed in', (tester) async {
     tester.view.physicalSize = const Size(800, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -616,10 +595,6 @@ void main() {
     // outstanding for the rest of the test, exactly like a real slow response arriving late.
     gateway.holdToken(buyerAToken);
     await tester.pumpWidget(wrap(controller, accounts, addresses));
-    // The very first render already kicks off font loads (CustomTextField labels, the AppBar
-    // title); attach a handler for them before yielding to any other microtask, for the same
-    // reason pumpUntil's own loop does -- see _absorbPendingFontFailures.
-    _absorbPendingFontFailures();
     await pumpUntil(tester, () => gateway.requestsReceived >= baseline + 2, pumpDuration: const Duration(milliseconds: 20));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsWidgets, reason: 'Buyer A\'s load is still held open');
@@ -651,5 +626,18 @@ void main() {
 
     expect(find.text('bilal-b@example.com'), findsOneWidget, reason: 'the screen reloaded for Buyer B once the stale response was discarded');
     expect(find.text('asha-a@example.com'), findsNothing, reason: 'Buyer A\'s late response was never applied to the screen');
+    expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'the screen recovered, not stuck showing the spinner forever');
+
+    // Subsequent actions use Buyer B's credentials, not Buyer A's: save a profile edit now, and
+    // confirm it lands on Buyer B's own record, never Buyer A's -- the fake server scopes PATCH
+    // /buyer/profile by the authenticated token exactly like the real gateway's requireBuyerSession
+    // does (see FakeGateway.dio() above).
+    await tester.enterText(textField('Full name'), 'Bilal Baig');
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save profile').hitTestable(), warnIfMissed: false);
+    await pumpUntil(tester, () => gateway.otherBuyersByToken[buyerBToken]!['full_name'] == 'Bilal Baig');
+    await tester.pump();
+    expect(find.text('Profile updated.'), findsOneWidget);
+    expect(gateway.otherBuyersByToken[buyerBToken]!['full_name'], 'Bilal Baig', reason: 'the PATCH landed on Buyer B\'s own record');
+    expect(gateway.account['full_name'], isNull, reason: 'Buyer A\'s record was never touched by an action taken after the switch');
   });
 }

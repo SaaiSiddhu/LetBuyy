@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'app_colors.dart';
+import 'app_fonts.dart';
 
 class AppTextStyles {
   // ============================================
   // DISPLAY STYLES - Hero text for landing pages
   // ============================================
-  static TextStyle displayLarge = GoogleFonts.poppins(
+  static TextStyle displayLarge = AppFonts.poppins(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
@@ -14,7 +15,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static TextStyle displayMedium = GoogleFonts.poppins(
+  static TextStyle displayMedium = AppFonts.poppins(
     fontSize: 28,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
@@ -22,7 +23,7 @@ class AppTextStyles {
     height: 1.2,
   );
   
-  static TextStyle displaySmall = GoogleFonts.poppins(
+  static TextStyle displaySmall = AppFonts.poppins(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
@@ -38,21 +39,21 @@ class AppTextStyles {
   // ============================================
   // HEADLINE STYLES - Section headers
   // ============================================
-  static TextStyle headlineLarge = GoogleFonts.poppins(
+  static TextStyle headlineLarge = AppFonts.poppins(
     fontSize: 22,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
   
-  static TextStyle headlineMedium = GoogleFonts.poppins(
+  static TextStyle headlineMedium = AppFonts.poppins(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
   
-  static TextStyle headlineSmall = GoogleFonts.poppins(
+  static TextStyle headlineSmall = AppFonts.poppins(
     fontSize: 18,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -67,21 +68,21 @@ class AppTextStyles {
   // ============================================
   // TITLE STYLES - Card titles, list items
   // ============================================
-  static TextStyle titleLarge = GoogleFonts.inter(
+  static TextStyle titleLarge = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.5,
   );
   
-  static TextStyle titleMedium = GoogleFonts.inter(
+  static TextStyle titleMedium = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.5,
   );
   
-  static TextStyle titleSmall = GoogleFonts.inter(
+  static TextStyle titleSmall = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -96,21 +97,21 @@ class AppTextStyles {
   // ============================================
   // BODY STYLES - Main content text
   // ============================================
-  static TextStyle bodyLarge = GoogleFonts.inter(
+  static TextStyle bodyLarge = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
     height: 1.5,
   );
   
-  static TextStyle bodyMedium = GoogleFonts.inter(
+  static TextStyle bodyMedium = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
     height: 1.5,
   );
   
-  static TextStyle bodySmall = GoogleFonts.inter(
+  static TextStyle bodySmall = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     color: AppColors.textSecondary,
@@ -125,21 +126,21 @@ class AppTextStyles {
   // ============================================
   // LABEL STYLES - Form labels, captions
   // ============================================
-  static TextStyle labelLarge = GoogleFonts.inter(
+  static TextStyle labelLarge = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     letterSpacing: 0.1,
   );
   
-  static TextStyle labelMedium = GoogleFonts.inter(
+  static TextStyle labelMedium = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     letterSpacing: 0.5,
   );
   
-  static TextStyle labelSmall = GoogleFonts.inter(
+  static TextStyle labelSmall = AppFonts.inter(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
@@ -154,25 +155,25 @@ class AppTextStyles {
   // ============================================
   // BUTTON STYLES
   // ============================================
-  static TextStyle buttonLarge = GoogleFonts.poppins(
+  static TextStyle buttonLarge = AppFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
   
-  static TextStyle buttonMedium = GoogleFonts.poppins(
+  static TextStyle buttonMedium = AppFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
   
-  static TextStyle buttonSmall = GoogleFonts.poppins(
+  static TextStyle buttonSmall = AppFonts.poppins(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
   
-  static TextStyle buttonText = GoogleFonts.poppins(
+  static TextStyle buttonText = AppFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.75,
@@ -182,28 +183,28 @@ class AppTextStyles {
   // ============================================
   // PRICE STYLES - E-commerce specific
   // ============================================
-  static TextStyle priceLarge = GoogleFonts.poppins(
+  static TextStyle priceLarge = AppFonts.poppins(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: AppColors.primary,
     height: 1.2,
   );
   
-  static TextStyle priceMedium = GoogleFonts.poppins(
+  static TextStyle priceMedium = AppFonts.poppins(
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: AppColors.primary,
     height: 1.3,
   );
   
-  static TextStyle priceSmall = GoogleFonts.poppins(
+  static TextStyle priceSmall = AppFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     color: AppColors.primary,
     height: 1.4,
   );
   
-  static TextStyle priceStrikethrough = GoogleFonts.inter(
+  static TextStyle priceStrikethrough = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     color: AppColors.textSecondary,
@@ -222,58 +223,58 @@ class AppTextStyles {
   // ============================================
   
   // Success styles
-  static TextStyle success = GoogleFonts.inter(
+  static TextStyle success = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.success,
   );
   
-  static TextStyle successBold = GoogleFonts.inter(
+  static TextStyle successBold = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.success,
   );
   
   // Error styles
-  static TextStyle error = GoogleFonts.inter(
+  static TextStyle error = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.error,
   );
   
-  static TextStyle errorBold = GoogleFonts.inter(
+  static TextStyle errorBold = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.error,
   );
   
-  static TextStyle errorSmall = GoogleFonts.inter(
+  static TextStyle errorSmall = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     color: AppColors.error,
   );
   
   // Warning styles
-  static TextStyle warning = GoogleFonts.inter(
+  static TextStyle warning = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.warning,
   );
   
-  static TextStyle warningBold = GoogleFonts.inter(
+  static TextStyle warningBold = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.warning,
   );
   
   // Info styles
-  static TextStyle info = GoogleFonts.inter(
+  static TextStyle info = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.info,
   );
   
-  static TextStyle infoBold = GoogleFonts.inter(
+  static TextStyle infoBold = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.info,
@@ -282,21 +283,21 @@ class AppTextStyles {
   // ============================================
   // DISCOUNT & BADGE STYLES
   // ============================================
-  static TextStyle discount = GoogleFonts.poppins(
+  static TextStyle discount = AppFonts.poppins(
     fontSize: 12,
     fontWeight: FontWeight.bold,
     color: AppColors.discountText,
     letterSpacing: 0.5,
   );
   
-  static TextStyle discountLarge = GoogleFonts.poppins(
+  static TextStyle discountLarge = AppFonts.poppins(
     fontSize: 16,
     fontWeight: FontWeight.bold,
     color: AppColors.discountText,
     letterSpacing: 0.5,
   );
   
-  static TextStyle badge = GoogleFonts.inter(
+  static TextStyle badge = AppFonts.inter(
     fontSize: 10,
     fontWeight: FontWeight.w600,
     color: AppColors.textLight,
@@ -308,7 +309,7 @@ class AppTextStyles {
   // ============================================
   
   // AppBar title
-  static TextStyle appBarTitle = GoogleFonts.poppins(
+  static TextStyle appBarTitle = AppFonts.poppins(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -318,21 +319,21 @@ class AppTextStyles {
   static TextStyle appBarTitleDark = appBarTitle.copyWith(color: AppColors.textLight);
   
   // Tab bar
-  static TextStyle tabBar = GoogleFonts.poppins(
+  static TextStyle tabBar = AppFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
   
   // Chip text
-  static TextStyle chip = GoogleFonts.inter(
+  static TextStyle chip = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.25,
   );
   
   // Dialog title
-  static TextStyle dialogTitle = GoogleFonts.poppins(
+  static TextStyle dialogTitle = AppFonts.poppins(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -341,7 +342,7 @@ class AppTextStyles {
   static TextStyle dialogTitleDark = dialogTitle.copyWith(color: AppColors.textLight);
   
   // Input text
-  static TextStyle input = GoogleFonts.inter(
+  static TextStyle input = AppFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
@@ -350,7 +351,7 @@ class AppTextStyles {
   static TextStyle inputDark = input.copyWith(color: AppColors.textLight);
   
   // Hint text
-  static TextStyle hint = GoogleFonts.inter(
+  static TextStyle hint = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     color: AppColors.textHint,
@@ -359,7 +360,7 @@ class AppTextStyles {
   static TextStyle hintDark = hint.copyWith(color: AppColors.textLightHint);
   
   // Link text
-  static TextStyle link = GoogleFonts.inter(
+  static TextStyle link = AppFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.primary,
@@ -369,7 +370,7 @@ class AppTextStyles {
   static TextStyle linkDark = link.copyWith(color: AppColors.primaryLight);
   
   // Caption
-  static TextStyle caption = GoogleFonts.inter(
+  static TextStyle caption = AppFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     color: AppColors.textSecondary,
@@ -379,7 +380,7 @@ class AppTextStyles {
   static TextStyle captionDark = caption.copyWith(color: AppColors.textLightSecondary);
   
   // Overline (labels above content)
-  static TextStyle overline = GoogleFonts.inter(
+  static TextStyle overline = AppFonts.inter(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
@@ -391,13 +392,13 @@ class AppTextStyles {
   // ============================================
   // ORDER STATUS STYLES
   // ============================================
-  static TextStyle orderStatus = GoogleFonts.poppins(
+  static TextStyle orderStatus = AppFonts.poppins(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
   
-  static TextStyle orderStatusLarge = GoogleFonts.poppins(
+  static TextStyle orderStatusLarge = AppFonts.poppins(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
