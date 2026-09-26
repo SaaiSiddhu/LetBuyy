@@ -18,7 +18,6 @@ import 'auth/buyer_sign_in_controller.dart';
 import 'auth/buyer_sign_in_wiring.dart';
 
 // App-specific providers
-import 'providers/user_provider.dart';
 import 'providers/search_provider.dart';
 
 // Routes
@@ -85,9 +84,15 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // mobile_auth_screen.dart, auth_bottom_sheet.dart and change_password_screen.dart were
         // all fully orphaned once their legacy entry points were rewired, and deleted outright.
 
-        // User provider
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        
+        // Firebase SDK removal pass (27 September 2026 review, finding 5): UserProvider was
+        // entirely FirebaseAuth-backed, and grepping every real reader of its own getters/methods
+        // anywhere in the app -- `Provider.of<UserProvider>`, `context.read<UserProvider>`,
+        // `userProvider.` -- found none. It was registered but never actually consumed by
+        // anything; deleted rather than left wired to a dead identity source with zero live
+        // callers, the same disposition as every other C2 orphan. providers/auth_provider.dart
+        // (AuthProvider, deregistered from this list earlier in C2) was a separate, already fully
+        // orphaned file this same pass also deleted.
+
         // Search provider
         ChangeNotifierProvider(create: (_) => SearchProvider()),
 
@@ -184,10 +189,16 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
 
         // ✅ ADDED: Loyalty Points provider
         ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
-        
-        // ✅ ADDED: Services for reviews
-        Provider<AuthService>(create: (_) => AuthService()),
-        Provider<DatabaseService>(create: (_) => DatabaseService()),
+
+        // Firebase SDK removal pass (27 September 2026 review, finding 5): AuthService/
+        // DatabaseService were registered "for reviews," but ReviewProvider itself (Firestore-
+        // backed, no canonical successor) was already retired in C2 -- and this same pass found
+        // and removed the one remaining live consumer, reviews_section.dart's still-wired "Add/
+        // Edit Review" button (see that file's own doc comment). Grepped every real (non-comment)
+        // reference to either type anywhere in the app: none left outside this registration and
+        // one already-dead, unreachable direct construction in payment_method_screen.dart's
+        // _createOrder (throws before reaching it; that file's own comment already explains why).
+        // Removed rather than left registered with nothing to serve.
 
         // FB-2: the canonical marketplace read path. Screens depend on the interface, never on
         // ApiMarketplaceRepository or on an ApiClient directly, so the backend behind a screen is
