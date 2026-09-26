@@ -26,6 +26,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   AddressModel? _selectedAddress;
   bool _isLoadingAddresses = true;
   List<AddressModel> _addresses = [];
+  String? _addressLoadError;
+
+  // C3 corrective (27 September 2026 review, finding 4): a monotonic generation counter, the same
+  // pattern already established in address_selection_sheet.dart/home_app_bar.dart/
+  // web_mobile_header.dart (see address_selection_sheet.dart's own doc comment for why a raw
+  // token comparison isn't enough). _loadAddresses() used to check only `mounted` before applying
+  // its result -- if the buyer's session ended or a different buyer signed in on this device while
+  // the request was in flight, a late response would populate this still-mounted screen with
+  // another buyer's addresses. Bumping the generation on every call and checking it's still current
+  // before any setState closes that window, and also fixes the silent-failure gap next to it: a
+  // failed load used to just stop the spinner, falling through to the same "No addresses found"
+  // text a genuinely-empty account shows -- indistinguishable from "you have no addresses" when
+  // the real story was "the request failed."
+  int _loadGeneration = 0;
+
+  bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
+
+  /// This screen has no reactive account-change listener (unlike address_selection_sheet.dart or
+  /// letbuyy_account_screen.dart, which stay open across an account switch) -- it loads once, from
+  /// initState, so a generation bump alone never fires here just because a different buyer signed
+  /// in mid-request. Checking the token itself is what actually catches that case: a load started
+  /// for [token] is only ever applied if that buyer is STILL the current one when the response
+  /// arrives, regardless of whether anything else ever triggered a second load.
+  bool _isStillCurrentBuyer(String token) =>
+      mounted && context.read<BuyerSignInController>().token == token;
 
   @override
   void initState() {
@@ -46,14 +71,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   // canonical BuyerAddressApi letbuyy_account_screen.dart and address_selection_sheet.dart use,
   // and resets the loading flag on every path, including "not signed in."
   Future<void> _loadAddresses() async {
+    final generation = ++_loadGeneration;
     final token = context.read<BuyerSignInController>().token;
     if (token == null) {
-      if (mounted) setState(() => _isLoadingAddresses = false);
+      if (_isCurrentGeneration(generation)) {
+        setState(() {
+          _isLoadingAddresses = false;
+          _addressLoadError = null;
+        });
+      }
       return;
     }
+    setState(() {
+      _isLoadingAddresses = true;
+      _addressLoadError = null;
+    });
     try {
       final addresses = await context.read<BuyerAddressApi>().list(token);
-      if (!mounted) return;
+      if (!_isCurrentGeneration(generation)) return;
+      if (!_isStillCurrentBuyer(token)) {
+        // A different buyer is current now than the one this request was made for -- this result
+        // belongs to nobody looking at the screen any more. Rather than apply it (another buyer's
+        // addresses) or leave this screen stuck on its pre-switch state (a spinner nothing will
+        // ever clear, since only this one load was ever in flight), start a fresh load for
+        // whoever is actually current -- self-healing rather than a second "stuck loading" bug.
+        _loadAddresses();
+        return;
+      }
       setState(() {
         _addresses = addresses.map(_toAddressModel).toList()
           ..sort((a, b) {
@@ -73,7 +117,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
     } catch (e) {
       debugPrint('Error loading addresses: $e');
-      if (mounted) setState(() => _isLoadingAddresses = false);
+      if (!_isCurrentGeneration(generation)) return;
+      if (!_isStillCurrentBuyer(token)) {
+        _loadAddresses();
+        return;
+      }
+      setState(() {
+        _isLoadingAddresses = false;
+        _addressLoadError = 'We couldn’t load your addresses right now.';
+      });
     }
   }
 
@@ -240,6 +292,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   strokeWidth: 2.5,
                 ),
               ),
+            )
+          else if (_addressLoadError != null)
+            Column(
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 48,
+                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _addressLoadError!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: _loadAddresses,
+                  child: const Text('Retry'),
+                ),
+                const SizedBox(height: 16),
+              ],
             )
           else if (_addresses.isEmpty)
             Column(

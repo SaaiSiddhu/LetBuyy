@@ -703,13 +703,28 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           ? await addressApi.create(token, buyerAddress)
           : await addressApi.update(token, widget.existingAddress!.id, buyerAddress);
 
+      // C3 corrective (27 September 2026 review, finding 4): was only `if (!mounted) return;` --
+      // the address is genuinely saved for whichever buyer `token` belonged to (correct, since
+      // that's the token the request actually carried), but if a DIFFERENT buyer has since signed
+      // in on this device while this request was in flight, this screen must not present that
+      // save as ITS current viewer's success. Popping with null rather than the saved address:
+      // the one live caller (checkout_screen.dart) doesn't read the popped value anyway, only
+      // triggers its own reload, and no future caller should be handed an address that belongs to
+      // whoever was signed in a moment ago, not to whoever is signed in now.
       if (!mounted) return;
+      if (context.read<BuyerSignInController>().token != token) {
+        Navigator.pop(context, null);
+        return;
+      }
       HapticFeedback.heavyImpact();
       _showSnackBar('Address saved!');
       await Future.delayed(const Duration(milliseconds: 600));
-      if (mounted) {
-        Navigator.pop(context, _toAddressModel(saved));
+      if (!mounted) return;
+      if (context.read<BuyerSignInController>().token != token) {
+        Navigator.pop(context, null);
+        return;
       }
+      Navigator.pop(context, _toAddressModel(saved));
     } on ApiException catch (error) {
       if (mounted) {
         _showSnackBar(
