@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -30,6 +31,32 @@ import 'package:letbuyy_marketplace_models/src/product_model.dart';
 // Firestore-multi-user era -- kept at a fixed, meaningless local sentinel rather than removed
 // outright, since it is still part of their public shape and mobile_cart_screen.dart's BOGO
 // free-item construction still plumbs it through unchanged.
+//
+// C3 corrective (27 September 2026 review, findings 1-2): the first version of this local rewrite
+// still had two real gaps of its own, both closed here:
+//
+// 1. Dishonest persistence contract. _save() caught SharedPreferences.setString's own thrown
+//    exceptions, but never inspected its RETURN VALUE (Future<bool> -- true only if the write
+//    genuinely landed) and every mutation method's `return true` after `await _save()` was
+//    unconditional, not derived from what _save() actually did. A platform-level failure that
+//    setString reports as `false` rather than throwing (the two are different signals) was
+//    invisible: the method still reported success, still notified listeners with the mutated
+//    in-memory state, and any caller relying on that boolean (mobile_wishlist_screen.dart's/
+//    web_wishlist_screen.dart's own "only remove from the wishlist once the cart add is confirmed"
+//    logic, added in this same phase) would have wrongly believed the move succeeded. Every
+//    mutation below now rolls back its in-memory change and returns false when the underlying save
+//    did not durably succeed, so "true" always means both applied AND persisted, never one without
+//    the other.
+// 2. Unordered initialization and concurrent writes. The constructor started _load() without
+//    awaiting it, and no mutation method awaited it either -- a mutation called before the initial
+//    disk read resolves could have its in-memory change silently discarded the moment _load()
+//    finally completes and unconditionally REPLACES _cart with whatever was on disk before that
+//    mutation ran. Separately, two overlapping mutations each independently awaited their own
+//    _save(), with no guarantee those two SharedPreferences.setString calls on the identical key
+//    would not interleave and let an older write "win" over a newer one. Every mutation now awaits
+//    _ready (resolved once, by the constructor's own load) before touching _cart, and every save
+//    request is chained through a single pending future so writes to this cart's one disk key
+//    always execute one at a time, in the order they were requested.
 class CartProvider with ChangeNotifier {
   static const _prefsKey = 'local_cart_v1';
   static const _localCartId = 'local-device-cart';
@@ -44,6 +71,8 @@ class CartProvider with ChangeNotifier {
   );
   bool _isLoading = true;
   String? _error;
+  late Future<void> _ready;
+  Future<void>? _pendingSave;
 
   CartModel? get cart => _cart;
   bool get isLoading => _isLoading;
@@ -55,8 +84,12 @@ class CartProvider with ChangeNotifier {
   List<CartItemModel> get items => _cart.items;
 
   CartProvider() {
-    _load();
+    _ready = _load();
   }
+
+  /// Exposed so a test (or a future caller) can deterministically wait for the same readiness
+  /// every mutation method already waits for internally.
+  Future<void> get ready => _ready;
 
   // C3: was `updateUserId`, a hook for the old multi-user Firestore cart with zero callers
   // anywhere in the app (grepped) -- there is now exactly one cart, this device's, so there is
@@ -82,14 +115,29 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _save() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_prefsKey, jsonEncode(_cart.toMap()));
-    } catch (e) {
-      debugPrint('❌ CartProvider: error saving local cart: $e');
-      _error = e.toString();
-    }
+  /// Chains every write behind the last one (and, on the very first call, behind the initial
+  /// load) so two nearly-simultaneous mutations can never let their disk writes interleave and
+  /// silently drop one of them -- SharedPreferences.setString gives no ordering guarantee across
+  /// overlapping calls on the same key, so this provides the one this cart's single disk key
+  /// needs. Reads _cart fresh when its OWN turn in the queue arrives rather than when it was
+  /// queued: since _cart only ever moves forward to each mutation's cumulative result, whichever
+  /// write actually runs next always persists the fully up-to-date state, not a stale snapshot.
+  Future<bool> _save() {
+    final previousTurn = _pendingSave ?? _ready;
+    final resultCompleter = Completer<bool>();
+    _pendingSave = previousTurn.catchError((_) {}).then((_) async {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final persisted = await prefs.setString(_prefsKey, jsonEncode(_cart.toMap()));
+        if (!persisted) _error = 'Could not save your cart on this device.';
+        resultCompleter.complete(persisted);
+      } catch (e) {
+        debugPrint('❌ CartProvider: error saving local cart: $e');
+        _error = e.toString();
+        resultCompleter.complete(false);
+      }
+    });
+    return resultCompleter.future;
   }
 
   void loadCart() {
@@ -104,6 +152,8 @@ class CartProvider with ChangeNotifier {
     int quantity = 1,
     String? variant,
   }) async {
+    await _ready;
+    final previousCart = _cart;
     try {
       final cartItem = CartItemModel(
         id: _uuid.v4(),
@@ -126,10 +176,16 @@ class CartProvider with ChangeNotifier {
       _cart = _cart.addItem(cartItem);
       _error = null;
       notifyListeners();
-      await _save();
+      final saved = await _save();
+      if (!saved) {
+        _cart = previousCart;
+        notifyListeners();
+        return false;
+      }
       return true;
     } catch (e) {
       debugPrint('❌ addItem error: $e');
+      _cart = previousCart;
       _error = e.toString();
       notifyListeners();
       return false;
@@ -137,6 +193,8 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<bool> addOrderItems(List<CartItemModel> orderItems) async {
+    await _ready;
+    final previousCart = _cart;
     try {
       if (orderItems.isEmpty) {
         _error = 'No items to add';
@@ -156,10 +214,16 @@ class CartProvider with ChangeNotifier {
       _cart = cart;
       _error = null;
       notifyListeners();
-      await _save();
+      final saved = await _save();
+      if (!saved) {
+        _cart = previousCart;
+        notifyListeners();
+        return false;
+      }
       return true;
     } catch (e) {
       debugPrint('❌ addOrderItems error: $e');
+      _cart = previousCart;
       _error = 'Error adding items: ${e.toString()}';
       notifyListeners();
       return false;
@@ -175,14 +239,22 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<bool> removeItem(String productId, {String? variant}) async {
+    await _ready;
+    final previousCart = _cart;
     try {
       _cart = _cart.removeItem(productId, variant: variant);
       _error = null;
       notifyListeners();
-      await _save();
+      final saved = await _save();
+      if (!saved) {
+        _cart = previousCart;
+        notifyListeners();
+        return false;
+      }
       return true;
     } catch (e) {
       debugPrint('❌ removeItem error: $e');
+      _cart = previousCart;
       _error = e.toString();
       notifyListeners();
       return false;
@@ -193,14 +265,22 @@ class CartProvider with ChangeNotifier {
     if (quantity <= 0) {
       return await removeItem(productId, variant: variant);
     }
+    await _ready;
+    final previousCart = _cart;
     try {
       _cart = _cart.updateItemQuantity(productId, quantity, variant: variant);
       _error = null;
       notifyListeners();
-      await _save();
+      final saved = await _save();
+      if (!saved) {
+        _cart = previousCart;
+        notifyListeners();
+        return false;
+      }
       return true;
     } catch (e) {
       debugPrint('❌ updateQuantity error: $e');
+      _cart = previousCart;
       _error = e.toString();
       notifyListeners();
       return false;
@@ -221,14 +301,22 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<bool> clearCart() async {
+    await _ready;
+    final previousCart = _cart;
     try {
       _cart = _cart.clearCart();
       _error = null;
       notifyListeners();
-      await _save();
+      final saved = await _save();
+      if (!saved) {
+        _cart = previousCart;
+        notifyListeners();
+        return false;
+      }
       return true;
     } catch (e) {
       debugPrint('❌ clearCart error: $e');
+      _cart = previousCart;
       _error = e.toString();
       notifyListeners();
       return false;
@@ -262,7 +350,8 @@ class CartProvider with ChangeNotifier {
       _cart.getItemByProductId(productId, variant: variant);
 
   Future<void> refreshCart() async {
-    await _load();
+    _ready = _load();
+    await _ready;
   }
 
   void clearError() {
