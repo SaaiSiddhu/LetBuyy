@@ -512,29 +512,41 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
       ),
     );
 
+    // Only a product that actually made it into the cart leaves the wishlist -- addItem can
+    // genuinely fail now (a real device storage error), and clearing the whole wishlist
+    // regardless used to silently lose any product whose add failed: gone from the wishlist,
+    // never in the cart either.
+    var movedCount = 0;
     for (var product in products) {
-      await cartProvider.addItem(product, quantity: 1);
+      final added = await cartProvider.addItem(product, quantity: 1);
+      if (added) {
+        movedCount++;
+        await wishlistProvider.removeItem(product.id);
+      }
     }
-
-    await wishlistProvider.clearWishlist();
 
     // Close loading
     if (mounted) Navigator.pop(context);
 
     if (mounted) {
+      final allMoved = movedCount == products.length;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
               Icon(
-                Icons.shopping_cart_rounded,
+                allMoved ? Icons.shopping_cart_rounded : Icons.error_outline_rounded,
                 color: Colors.white,
                 size: 20,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '${products.length} items moved to cart',
+                  allMoved
+                      ? '$movedCount items moved to cart'
+                      : (movedCount == 0
+                          ? 'Could not move items to cart'
+                          : '$movedCount of ${products.length} items moved to cart'),
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -543,20 +555,22 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
               ),
             ],
           ),
-          backgroundColor: AppColors.success,
+          backgroundColor: allMoved ? AppColors.success : (movedCount == 0 ? AppColors.error : AppColors.warning),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
           margin: const EdgeInsets.all(16),
           elevation: 4,
-          action: SnackBarAction(
-            label: 'View Cart',
-            textColor: Colors.white,
-            onPressed: () {
-              AppRoutes.navigateTo(context, AppRoutes.cart);
-            },
-          ),
+          action: movedCount > 0
+              ? SnackBarAction(
+                  label: 'View Cart',
+                  textColor: Colors.white,
+                  onPressed: () {
+                    AppRoutes.navigateTo(context, AppRoutes.cart);
+                  },
+                )
+              : null,
         ),
       );
     }

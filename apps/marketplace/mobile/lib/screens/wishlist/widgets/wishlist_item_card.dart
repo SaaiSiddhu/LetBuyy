@@ -250,13 +250,13 @@ class WishlistItemCard extends StatelessWidget {
                               : ElevatedButton.icon(
                                   onPressed: () async {
                                     HapticFeedback.mediumImpact();
-                                    await cartProvider.addItem(product, quantity: 1);
-                                    
+                                    final added = await cartProvider.addItem(product, quantity: 1);
+
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: const Text('Added to cart 🛒'),
-                                          backgroundColor: AppColors.success,
+                                          content: Text(added ? 'Added to cart 🛒' : 'Could not add to cart'),
+                                          backgroundColor: added ? AppColors.success : AppColors.error,
                                           behavior: SnackBarBehavior.floating,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10),
