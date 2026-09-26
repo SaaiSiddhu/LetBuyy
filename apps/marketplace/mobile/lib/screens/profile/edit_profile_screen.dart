@@ -1,15 +1,13 @@
 // lib/screens/user/profile/edit_profile_screen.dart
 
-import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import '../../../providers/auth_provider.dart' as app_auth;
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
+import '../../auth/buyer_sign_in_controller.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -31,10 +29,13 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   late AnimationController _avatarController;
   late Animation<double> _avatarScale;
 
-  File? _pickedImage;
-  String? _photoUrl;
   bool _isLoading = false;
-  bool _isUploadingImage = false;
+  // Phase 1R corrective (C2): profile photo editing removed. It was entirely Firebase Storage-
+  // backed (FirebaseStorage.instance) with no canonical successor -- BuyerAccountApi.updateProfile
+  // only carries fullName/phone. Worse than just disconnected: _saveProfile() uploaded a picked
+  // photo FIRST and aborted the whole save (including name/phone) if that failed, which it always
+  // would have, silently blocking real profile edits. Avatar still displays (falls back to the
+  // default icon, since there's never a photo URL now); there's just no way to change it.
 
   // --- Toast ---
   bool _showToast = false;
@@ -112,16 +113,23 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     });
   }
 
-  void _loadUserData() {
-    final authProvider =
-        Provider.of<app_auth.AuthProvider>(context, listen: false);
-    final user = authProvider.currentUser;
+  // Phase 1R corrective (C2): was Provider.of<AuthProvider>(...).currentUser -- AuthProvider is
+  // entirely FirebaseAuth-backed, and canonical "Sign in with LetBuyy" never touches FirebaseAuth,
+  // so this always found no user and left the form blank, even for a signed-in canonical buyer
+  // (this screen is only reachable from profile_screen.dart's signed-in-only menu). Fetches from
+  // the canonical BuyerAccountApi instead.
+  Future<void> _loadUserData() async {
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null) return;
 
-    if (user != null) {
-      _nameController.text = user.name ?? '';
-      _phoneController.text = user.phone ?? '';
-      _photoUrl = user.photoUrl;
-      debugPrint('✅ Loaded user data: ${user.name}');
+    try {
+      final account = await context.read<BuyerAccountApi>().account(token);
+      if (!mounted) return;
+      _nameController.text = account.fullName ?? '';
+      _phoneController.text = account.phone ?? '';
+      debugPrint('✅ Loaded buyer account: ${account.fullName}');
+    } catch (e) {
+      debugPrint('❌ Error loading buyer account: $e');
     }
   }
 
@@ -158,41 +166,6 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     super.dispose();
   }
 
-  Future<String?> _uploadPhotoToFirebase(File imageFile) async {
-    try {
-      final userId = safeFirebaseUserId();
-
-      if (userId == null) {
-        _showToastMessage('❌ User ID not found', isSuccess: false);
-        return null;
-      }
-
-      debugPrint('📸 Uploading profile photo for user: $userId');
-
-      setState(() => _isUploadingImage = true);
-
-      final fileName =
-          'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final ref = FirebaseStorage.instance.ref('users/$userId/$fileName');
-
-      final uploadTask = ref.putFile(imageFile);
-
-      await uploadTask;
-      final downloadUrl = await ref.getDownloadURL();
-      debugPrint('✅ Photo uploaded: $downloadUrl');
-
-      setState(() => _isUploadingImage = false);
-      _showToastMessage('✅ Photo uploaded successfully');
-
-      return downloadUrl;
-    } catch (e) {
-      debugPrint('❌ Upload error: $e');
-      setState(() => _isUploadingImage = false);
-      _showToastMessage('❌ Failed to upload photo', isSuccess: false);
-      return null;
-    }
-  }
-
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your name';
@@ -222,41 +195,32 @@ class _EditProfileScreenState extends State<EditProfileScreen>
     setState(() => _isLoading = true);
     HapticFeedback.mediumImpact();
 
+    // Phase 1R corrective (C2): was Provider.of<AuthProvider>(...).updateUserProfile(...),
+    // preceded by a Firebase Storage photo upload that aborted this whole save if it failed
+    // (which it always would have). Calls the canonical BuyerAccountApi directly; no photo field
+    // to carry (see the field-removal note above).
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null) {
+      _showToastMessage('❌ Your session has ended. Please sign in again.', isSuccess: false);
+      setState(() => _isLoading = false);
+      return;
+    }
+
     try {
-      String? photoUrl;
-
-      // Step 1: Upload photo if selected
-      if (_pickedImage != null) {
-        photoUrl = await _uploadPhotoToFirebase(_pickedImage!);
-        if (photoUrl == null) {
-          setState(() => _isLoading = false);
-          return;
-        }
-      }
-
-      // Step 2: Update profile via AuthProvider
-      final authProvider =
-          Provider.of<app_auth.AuthProvider>(context, listen: false);
-
-      final success = await authProvider.updateUserProfile(
-        name: _nameController.text.trim(),
-        phone: _phoneController.text.trim(),
-        photoUrl: photoUrl,
-      );
+      await context.read<BuyerAccountApi>().updateProfile(
+            token,
+            fullName: _nameController.text.trim(),
+            phone: _phoneController.text.trim(),
+          );
 
       if (!mounted) return;
 
-      if (success) {
-        _showToastMessage('✅ Profile updated successfully!');
-        Future.delayed(const Duration(milliseconds: 800), () {
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        });
-      } else {
-        _showToastMessage('❌ ${authProvider.error ?? 'Failed to update profile'}', isSuccess: false);
-        setState(() => _isLoading = false);
-      }
+      _showToastMessage('✅ Profile updated successfully!');
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
     } catch (e) {
       debugPrint('❌ Save profile error: $e');
       if (mounted) {
@@ -264,161 +228,6 @@ class _EditProfileScreenState extends State<EditProfileScreen>
         setState(() => _isLoading = false);
       }
     }
-  }
-
-  Future<void> _pickImage(bool isDark) async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      HapticFeedback.lightImpact();
-
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (context) => Container(
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surface, // ✅ Fixed
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          padding: const EdgeInsets.all(20),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.borderDark : AppColors.border, // ✅ Fixed
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Change Photo',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.textLight : AppColors.textPrimary, // ✅ Fixed
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildPhotoSourceButton(
-                        icon: Icons.camera_alt_outlined,
-                        label: 'Camera',
-                        onTap: () async {
-                          Navigator.pop(context);
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.camera,
-                            maxWidth: 1024,
-                            maxHeight: 1024,
-                            imageQuality: 85,
-                          );
-
-                          if (image != null) {
-                            setState(() {
-                              _pickedImage = File(image.path);
-                            });
-                          }
-                        },
-                        isDark: isDark
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildPhotoSourceButton(
-                        icon: Icons.image_outlined,
-                        label: 'Gallery',
-                        onTap: () async {
-                          Navigator.pop(context);
-                          final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery,
-                            maxWidth: 1024,
-                            maxHeight: 1024,
-                            imageQuality: 85,
-                          );
-
-                          if (image != null) {
-                            setState(() {
-                              _pickedImage = File(image.path);
-                            });
-                          }
-                        },
-                        isDark: isDark
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    } catch (e) {
-      _showToastMessage('❌ Error picking image', isSuccess: false);
-      debugPrint('Image picker error: $e');
-    }
-  }
-
-  Widget _buildPhotoSourceButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    required bool isDark
-  }) {
-    final color = isDark ? AppColors.primaryLight : AppColors.primary; // ✅ Fixed
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surface, // ✅ Fixed
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : AppColors.border, // ✅ Fixed
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? AppColors.shadowDark : AppColors.shadowLight, // ✅ Fixed
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? AppColors.textLight : AppColors.textPrimary, // ✅ Fixed
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _buildDefaultAvatar(bool isDark) {
@@ -463,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen>
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  if (!_isLoading && !_isUploadingImage) {
+                  if (!_isLoading) {
                     HapticFeedback.lightImpact();
                     Navigator.pop(context);
                   }
@@ -493,101 +302,31 @@ class _EditProfileScreenState extends State<EditProfileScreen>
   }
 
   Widget _buildAvatarSection(bool isDark) {
+    // Phase 1R corrective (C2): the "edit" overlay (opened the Firebase Storage photo picker)
+    // is gone -- see the field-removal note above -- so this always shows the default avatar now.
     return ScaleTransition(
       scale: _avatarScale,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Stack(
-            children: [
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: (isDark ? AppColors.primaryLight : AppColors.primary).withValues(alpha: 0.5), // ✅ Fixed
-                    width: 2
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark ? AppColors.shadowDark : AppColors.shadowLight, // ✅ Fixed
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: _pickedImage != null
-                      ? Image.file(
-                          _pickedImage!,
-                          fit: BoxFit.cover,
-                        )
-                      : (_photoUrl != null && _photoUrl!.isNotEmpty
-                          ? Image.network(
-                              _photoUrl!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return _buildDefaultAvatar(isDark);
-                              },
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Center(child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: isDark ? AppColors.primaryLight : AppColors.primary, // ✅ Fixed
-                                ));
-                              },
-                            )
-                          : _buildDefaultAvatar(isDark)),
-                ),
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: (isDark ? AppColors.primaryLight : AppColors.primary).withValues(alpha: 0.5), // ✅ Fixed
+                width: 2
               ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: (_isUploadingImage || _isLoading)
-                        ? null
-                        : () => _pickImage(isDark),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: isDark ? AppColors.primaryLight : AppColors.primary, // ✅ Fixed
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isDark ? AppColors.backgroundDark : AppColors.background, // ✅ Fixed
-                          width: 3,
-                        ),
-                        boxShadow: [
-                           BoxShadow(
-                            color: (isDark ? AppColors.primaryLight : AppColors.primary).withValues(alpha: 0.4), // ✅ Fixed
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: _isUploadingImage
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation(AppColors.white), // ✅ Fixed
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.edit_outlined,
-                              color: AppColors.white, // ✅ Fixed
-                              size: 18,
-                            ),
-                    ),
-                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark ? AppColors.shadowDark : AppColors.shadowLight, // ✅ Fixed
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
-              ),
-            ],
+              ],
+            ),
+            child: ClipOval(child: _buildDefaultAvatar(isDark)),
           ),
         ),
       ),
@@ -731,13 +470,11 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                               (isDark
                                       ? AppColors.primaryLight
                                       : AppColors.primary)
-                                  .withOpacity(
-                                      _isLoading || _isUploadingImage ? 0.7 : 1.0),
+                                  .withOpacity(_isLoading ? 0.7 : 1.0),
                               (isDark
                                       ? AppColors.primaryLight
                                       : AppColors.primary)
-                                  .withOpacity(
-                                      _isLoading || _isUploadingImage ? 0.5 : 0.8),
+                                  .withOpacity(_isLoading ? 0.5 : 0.8),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(14),
@@ -755,28 +492,26 @@ class _EditProfileScreenState extends State<EditProfileScreen>
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  onTap: (_isLoading || _isUploadingImage)
-                                      ? null
-                                      : _saveProfile,
+                                  onTap: _isLoading ? null : _saveProfile,
                                   borderRadius: BorderRadius.circular(14),
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        if (_isLoading || _isUploadingImage)
+                                        if (_isLoading)
                                           const SizedBox(
-                                            width: 18, 
-                                            height: 18, 
+                                            width: 18,
+                                            height: 18,
                                             child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white) // ✅ Fixed
                                           )
                                         else
                                           const Icon(Icons.check_circle_outline_rounded, color: AppColors.white, size: 18), // ✅ Fixed
-                                        
+
                                         const SizedBox(width: 10),
-                                        
+
                                         Text(
-                                          _isUploadingImage ? 'Uploading...' : (_isLoading ? 'Saving...' : 'Save Changes'),
+                                          _isLoading ? 'Saving...' : 'Save Changes',
                                           style: const TextStyle(
                                             color: AppColors.white, // ✅ Fixed
                                             fontSize: 15,
