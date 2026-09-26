@@ -45,18 +45,36 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   bool _isLoadingLocation = false;
   String _searchQuery = '';
 
-  // C2 (canonical rewire): saved addresses now read through BuyerAddressApi, the same canonical
-  // gateway letbuyy_account_screen.dart's tested address section already uses -- not the legacy
-  // Firestore stream this widget used to build directly (see _buildAddressList's own history).
-  bool _loadingAddresses = true;
+  // C2 corrective (address-sheet account transition): saved addresses now read through
+  // BuyerAddressApi, the same canonical gateway letbuyy_account_screen.dart's tested address
+  // section already uses -- not the legacy Firestore stream this widget used to build directly
+  // (see _buildAddressList's own history).
+  //
+  // A prior version of this rewire compared the controller's token against a `_loadedForToken`
+  // field inside build()/_buildAddressList and scheduled a reload via a post-frame callback when
+  // they differed. That had two real bugs: (1) the frame that first noticed a token change still
+  // rendered the PREVIOUS buyer's _addresses, since the reload was only *scheduled*, not applied,
+  // before that frame painted -- a direct A-to-B session change could briefly show A's addresses
+  // under B; (2) if the token changed while a request for the old buyer was still in flight,
+  // _loadingAddresses stayed true and nothing re-armed it for the new buyer, because the stale
+  // request's own completion found itself no-longer-current and returned without resetting
+  // anything -- the sheet could get stuck loading forever.
+  //
+  // Fixed with a monotonic generation counter instead of a token comparison. Every call to
+  // _startLoadForToken (from didChangeDependencies below, or a manual Retry) bumps the generation
+  // and SYNCHRONOUSLY clears the previous buyer's addresses/error/in-flight state in the same
+  // setState -- before anything can render under the new identity, not after a deferred callback
+  // fires. A response (success or failure, for a load or a mutation) is only ever applied if its
+  // generation is still the current one; an older generation's arrival can never re-suppress the
+  // loading state a newer generation already set, so there's no path back to "stuck."
+  int _loadGeneration = 0;
+  String? _observedToken;
+  bool _loadingAddresses = false;
   String? _addressLoadError;
   List<BuyerAddress> _addresses = const [];
-  // The token _addresses currently reflects. Recorded win or lose, so a failed load for an
-  // unchanged token doesn't retrigger itself forever on every rebuild -- a retry belongs to the
-  // Retry button, never an automatic loop (same reasoning as letbuyy_account_screen.dart's
-  // _tokenAtLastLoad).
-  String? _loadedForToken;
   final Set<String> _mutatingAddressIds = {};
+
+  bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
 
   @override
   void initState() {
@@ -70,7 +88,20 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
       curve: Curves.easeOutCubic,
     );
     _animationController.forward();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadAddresses());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Runs synchronously, once right after initState and again whenever a watched dependency
+    // (BuyerSignInController, via context.watch in build()) actually changes -- the correct
+    // Flutter hook for "identity just changed," never a deferred post-frame callback that would
+    // let one more frame render under the wrong buyer first.
+    final token = context.read<BuyerSignInController>().token;
+    if (token != _observedToken) {
+      _observedToken = token;
+      _startLoadForToken(token);
+    }
   }
 
   @override
@@ -332,20 +363,10 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
     );
   }
 
-  /// True while [token] is still the buyer this sheet is showing -- a response for a token that
-  /// has since changed (sign-out, or a different buyer signed in) is dropped, never applied. Same
-  /// reasoning as letbuyy_account_screen.dart's own _stillCurrent.
-  bool _stillCurrent(String token) => mounted && context.read<BuyerSignInController>().token == token;
-
   Widget _buildAddressList(bool isDark) {
+    // Establishes the dependency didChangeDependencies() reacts to; the reload itself happens
+    // there (or in initState's first call to it), never here -- see this class's own field docs.
     final token = context.watch<BuyerSignInController>().token;
-
-    // A sign-in/out while the sheet is already open (a concurrent flow, or a session check on
-    // resume ending the session) -- reload for the buyer actually current now, rather than show
-    // stale data left over from whoever _addresses was last fetched for.
-    if (token != _loadedForToken && !_loadingAddresses) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _loadAddresses());
-    }
 
     if (token == null) {
       return _buildEmptyState(isDark, isGuest: true);
@@ -410,33 +431,36 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
     );
   }
 
-  Future<void> _loadAddresses() async {
-    final token = context.read<BuyerSignInController>().token;
-    if (token == null) {
-      if (mounted) {
-        setState(() {
-          _loadingAddresses = false;
-          _addressLoadError = null;
-          _addresses = const [];
-          _loadedForToken = null;
-        });
-      }
-      return;
-    }
+  /// Bumps the generation and synchronously resets all account-scoped state for [token] --
+  /// called from didChangeDependencies() the instant identity changes, so no frame ever renders
+  /// the previous buyer's addresses, error, or in-flight mutations under a new one.
+  void _startLoadForToken(String? token) {
+    final generation = ++_loadGeneration;
     setState(() {
-      _loadingAddresses = true;
+      _addresses = const [];
       _addressLoadError = null;
-      _loadedForToken = token;
+      _mutatingAddressIds.clear();
+      _loadingAddresses = token != null;
     });
+    if (token == null) return;
+    _fetchAddresses(token, generation);
+  }
+
+  /// Re-runs the current buyer's load, e.g. from the error state's Retry button. A fresh
+  /// generation, exactly like a real identity change, so this also cleanly supersedes whatever
+  /// the previous, now-failed attempt left in flight.
+  void _retryLoad() => _startLoadForToken(context.read<BuyerSignInController>().token);
+
+  Future<void> _fetchAddresses(String token, int generation) async {
     try {
       final addresses = await context.read<BuyerAddressApi>().list(token);
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() {
         _addresses = addresses;
         _loadingAddresses = false;
       });
     } on ApiException catch (error) {
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() {
         _loadingAddresses = false;
         _addressLoadError = (error.statusCode == 401 || error.statusCode == 403)
@@ -446,7 +470,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
                 : 'We couldn’t load your addresses right now.';
       });
     } catch (_) {
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() {
         _loadingAddresses = false;
         _addressLoadError = 'You seem to be offline. Check your connection and try again.';
@@ -769,7 +793,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            onPressed: _loadAddresses,
+            onPressed: _retryLoad,
             child: const Text('Retry'),
           ),
         ],
@@ -911,10 +935,14 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
     } catch (_) {
       return;
     }
+    // Captured before the await: if a sign-out/switch or a Retry starts a fresh load while this
+    // mutation is in flight, its eventual result must never land on top of a different buyer's
+    // (or a freshly reloaded) _addresses -- see this class's own field docs.
+    final generation = _loadGeneration;
     setState(() => _mutatingAddressIds.add(address.id));
     try {
       final saved = await context.read<BuyerAddressApi>().update(token, current.id, _withDefault(current, true));
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() {
         _addresses = [
           for (final a in _addresses) a.id == saved.id ? saved : _withDefault(a, false),
@@ -930,7 +958,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
         ),
       );
     } catch (_) {
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() => _mutatingAddressIds.remove(address.id));
       _showError('Could not update default address');
     }
@@ -939,10 +967,11 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   Future<void> _deleteAddress(AddressModel address) async {
     final token = context.read<BuyerSignInController>().token;
     if (token == null || _mutatingAddressIds.contains(address.id)) return;
+    final generation = _loadGeneration;
     setState(() => _mutatingAddressIds.add(address.id));
     try {
       await context.read<BuyerAddressApi>().delete(token, address.id);
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() {
         _addresses = _addresses.where((a) => a.id != address.id).toList();
         _mutatingAddressIds.remove(address.id);
@@ -956,7 +985,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
         ),
       );
     } on ApiException catch (error) {
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() => _mutatingAddressIds.remove(address.id));
       // A 404 means the address is already gone (this device or another already deleted it) --
       // reflect that locally rather than tell the buyer their own delete failed.
@@ -966,7 +995,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
         _showError('Could not delete address');
       }
     } catch (_) {
-      if (!_stillCurrent(token)) return;
+      if (!_isCurrentGeneration(generation)) return;
       setState(() => _mutatingAddressIds.remove(address.id));
       _showError('Could not delete address');
     }
