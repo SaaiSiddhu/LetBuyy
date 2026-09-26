@@ -78,13 +78,28 @@ class AuthProvider with ChangeNotifier {
 
   void _initialize() {
     debugPrint('🔄 AuthProvider initializing... (Web: $kIsWeb)');
-    
-    // 🔥 WEB: Fast synchronous check
-    if (kIsWeb) {
-      _initializeWeb();
-    } else {
-      // Mobile: async initialization
-      _initializeMobile();
+
+    // Phase 1R corrective (C2): this whole chain (currentUser, then authStateChanges via
+    // _listenToAuthChanges) touches FirebaseAuth.instance unguarded, with no try/catch anywhere
+    // between here and the constructor. Confirmed empirically: FirebaseAuth.instance throws
+    // FirebaseException([core/no-app]) synchronously with no Firebase.initializeApp() call --
+    // meaning AuthProvider's own constructor threw, uncaught, the instant anything first read
+    // it. AuthProvider is read unconditionally inside CartScreen's Consumer<AuthProvider>, and
+    // CartScreen sits in MainScreen's IndexedStack (built eagerly, every tab, on every launch) --
+    // this was a guaranteed app-boot crash, not a single-tab one. Falls back to the same
+    // "no user" state the code already uses when currentUser is legitimately null.
+    try {
+      // 🔥 WEB: Fast synchronous check
+      if (kIsWeb) {
+        _initializeWeb();
+      } else {
+        // Mobile: async initialization
+        _initializeMobile();
+      }
+    } catch (e) {
+      debugPrint('⚠️ AuthProvider: Firebase unavailable, starting signed-out: $e');
+      _sessionRestored = true;
+      _isInitializing = false;
     }
   }
 
