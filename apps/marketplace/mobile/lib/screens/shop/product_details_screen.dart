@@ -220,8 +220,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         await cartProvider.clearCart();
       }
 
-      await cartProvider.addToCart(product, quantity: _quantity, variant: variantString);
-      
+      // C3 (Firebase SDK removal, 27 September 2026 review finding 5): was
+      // `await cartProvider.addToCart(...)` with the result discarded, then an unconditional
+      // success/navigation below -- back when CartProvider always failed (no userId ever
+      // available), this showed "Added to cart!" and, for Buy Now, opened checkout on an empty
+      // cart every single time. CartProvider is now a real local cart, so this checks addItem's
+      // actual result rather than assuming it.
+      final added = await cartProvider.addItem(product, quantity: _quantity, variant: variantString);
+      if (!added) {
+        _showSnackBar('Could not add to cart', isError: true);
+        return;
+      }
+
       // ✅ Track cart add for seller analytics
       await SellerAnalyticsService.trackAddToCart(
         sellerId: product.sellerId,

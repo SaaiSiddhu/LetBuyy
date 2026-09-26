@@ -1,142 +1,125 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:letbuyy_marketplace_models/src/wishlist_model.dart';
 import 'package:letbuyy_marketplace_models/src/product_model.dart';
-import '../database_service.dart';
-import '../auth_service.dart';
 
+// C3 (Firebase SDK removal, 27 September 2026 review finding 5) -- the same bug as CartProvider
+// (see that file's own doc comment for the full account): addItem/removeItem/clearWishlist all
+// required a userId that was always null (the updateUserId hook that would have supplied one had
+// zero callers anywhere in the app; AuthService.currentUserId is FirebaseAuth-backed and always
+// null under canonical auth), so the wishlist could never actually hold anything -- isInWishlist
+// would never return true even right after "successfully" adding something, since _wishlist itself
+// never loaded past its initial null. Per the owner's direction on the identical CartProvider bug,
+// this is now a real, working local (SharedPreferences-backed, device-scoped) wishlist.
 class WishlistProvider with ChangeNotifier {
-  final DatabaseService _databaseService = DatabaseService();
-  final AuthService _authService = AuthService();
+  static const _prefsKey = 'local_wishlist_v1';
+  static const _localWishlistId = 'local-device-wishlist';
 
-  WishlistModel? _wishlist;
-  bool _isLoading = false;
+  WishlistModel _wishlist = WishlistModel(
+    id: _localWishlistId,
+    userId: _localWishlistId,
+    productIds: const [],
+    updatedAt: DateTime.now(),
+  );
+  bool _isLoading = true;
   String? _error;
-  
-  // 🔥 Fix: Local variable to track ID
-  String? _currentUserId;
 
   WishlistModel? get wishlist => _wishlist;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  
-  int get itemCount => _wishlist?.totalItems ?? 0;
-  bool get isEmpty => _wishlist?.isEmpty ?? true;
-  List<String> get productIds => _wishlist?.productIds ?? [];
 
-  // =================================================
-  // 🔥 FIXED: Missing method called by main.dart
-  // =================================================
-  void updateUserId(String? userId) {
-    if (_currentUserId != userId) {
-      _currentUserId = userId;
-      if (userId != null) {
-        loadWishlist();
-      } else {
-        _wishlist = null;
-        notifyListeners();
+  int get itemCount => _wishlist.totalItems;
+  bool get isEmpty => _wishlist.isEmpty;
+  List<String> get productIds => _wishlist.productIds;
+
+  WishlistProvider() {
+    _load();
+  }
+
+  // C3: was a hook for the old multi-user Firestore wishlist with zero callers anywhere in the
+  // app (grepped) -- there is now exactly one wishlist, this device's. Kept as a harmless no-op;
+  // see CartProvider.updateUserId's own doc comment for the same reasoning.
+  void updateUserId(String? userId) {}
+
+  Future<void> _load() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_prefsKey);
+      if (jsonString != null) {
+        final map = jsonDecode(jsonString) as Map<String, dynamic>;
+        _wishlist = WishlistModel.fromMap(map, _localWishlistId);
       }
+    } catch (e) {
+      debugPrint('❌ WishlistProvider: error loading local wishlist: $e');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  // Load user wishlist
-  void loadWishlist() {
-    final userId = _currentUserId ?? _authService.currentUserId;
-    if (userId == null) return;
-
-    _databaseService.getUserWishlist(userId).listen(
-      (wishlist) {
-        _wishlist = wishlist;
-        notifyListeners();
-      },
-      onError: (error) {
-        _error = error.toString();
-        notifyListeners();
-      },
-    );
+  Future<void> _save() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_prefsKey, jsonEncode(_wishlist.toMap()));
+    } catch (e) {
+      debugPrint('❌ WishlistProvider: error saving local wishlist: $e');
+      _error = e.toString();
+    }
   }
 
-  // Add item to wishlist
+  void loadWishlist() {
+    // C3: was a Firestore listen() keyed on a userId that was always null. _load() (called once,
+    // from the constructor) already established this device's wishlist -- see
+    // CartProvider.loadCart's own doc comment for the identical reasoning.
+  }
+
   Future<bool> addItem(ProductModel product) async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) {
-        _error = 'Please login to add items to wishlist';
-        notifyListeners();
-        return false;
+      if (!_wishlist.productIds.contains(product.id)) {
+        _wishlist = _wishlist.copyWith(
+          productIds: [..._wishlist.productIds, product.id],
+          updatedAt: DateTime.now(),
+        );
       }
-
-      _isLoading = true;
+      _error = null;
       notifyListeners();
-
-      List<String> updatedIds = _wishlist?.productIds ?? [];
-      
-      if (!updatedIds.contains(product.id)) {
-        updatedIds.add(product.id);
-      }
-
-      final updatedWishlist = WishlistModel(
-        id: userId,
-        userId: userId,
-        productIds: updatedIds,
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateWishlist(userId, updatedWishlist);
-
-      _isLoading = false;
-      notifyListeners();
+      await _save();
       return true;
     } catch (e) {
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ NEW - Alias method for compatibility (addToWishlist)
   Future<void> addToWishlist(ProductModel product) async {
     await addItem(product);
   }
 
-  // Remove item from wishlist
   Future<bool> removeItem(String productId) async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) return false;
-
-      _isLoading = true;
-      notifyListeners();
-
-      List<String> updatedIds = _wishlist?.productIds ?? [];
-      updatedIds.remove(productId);
-
-      final updatedWishlist = WishlistModel(
-        id: userId,
-        userId: userId,
-        productIds: updatedIds,
+      _wishlist = _wishlist.copyWith(
+        productIds: _wishlist.productIds.where((id) => id != productId).toList(),
         updatedAt: DateTime.now(),
       );
-
-      await _databaseService.updateWishlist(userId, updatedWishlist);
-
-      _isLoading = false;
+      _error = null;
       notifyListeners();
+      await _save();
       return true;
     } catch (e) {
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ NEW - Alias method for compatibility (removeFromWishlist)
   Future<void> removeFromWishlist(String productId) async {
     await removeItem(productId);
   }
 
-  // Toggle wishlist item
   Future<bool> toggleItem(ProductModel product) async {
     if (isInWishlist(product.id)) {
       return await removeItem(product.id);
@@ -145,54 +128,32 @@ class WishlistProvider with ChangeNotifier {
     }
   }
 
-  // ✅ NEW - Toggle with product ID only
   Future<bool> toggleItemById(String productId, ProductModel product) async {
     return await toggleItem(product);
   }
 
-  // Check if product is in wishlist
-  bool isInWishlist(String productId) {
-    return _wishlist?.contains(productId) ?? false;
-  }
+  bool isInWishlist(String productId) => _wishlist.contains(productId);
 
-  // Clear wishlist
   Future<bool> clearWishlist() async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) return false;
-
-      _isLoading = true;
+      _wishlist = _wishlist.copyWith(productIds: const [], updatedAt: DateTime.now());
+      _error = null;
       notifyListeners();
-
-      final emptyWishlist = WishlistModel(
-        id: userId,
-        userId: userId,
-        productIds: [],
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateWishlist(userId, emptyWishlist);
-
-      _isLoading = false;
-      notifyListeners();
+      await _save();
       return true;
     } catch (e) {
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ NEW - Refresh wishlist
   Future<void> refreshWishlist() async {
-    loadWishlist();
+    await _load();
   }
 
-  // Clear error
   void clearError() {
     _error = null;
     notifyListeners();
   }
-
 }

@@ -838,12 +838,19 @@ class _ProductCardState extends State<ProductCard>
                       width: double.infinity,
                       height: 34,
                       child: ElevatedButton(
-                        onPressed: !widget.product.isPurchasable ? null : () {
+                        // C3 (Firebase SDK removal, 27 September 2026 review finding 5): was a
+                        // fire-and-forget `addItem(...)` call (not even awaited) followed by an
+                        // unconditional "Added to cart" snackbar -- back when CartProvider always
+                        // failed (no userId ever available), this claimed success on every tap
+                        // regardless. CartProvider is now a real local cart, so this awaits and
+                        // checks addItem's actual result.
+                        onPressed: !widget.product.isPurchasable ? null : () async {
                           HapticFeedback.mediumImpact();
-                          Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
+                          final added = await Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Added to cart'),
+                              content: Text(added ? 'Added to cart' : 'Could not add to cart'),
                               duration: const Duration(seconds: 1),
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

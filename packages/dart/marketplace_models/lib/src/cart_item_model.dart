@@ -1,5 +1,4 @@
 // lib/models/cart_item_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CartItemModel {
   final String id;
@@ -67,30 +66,11 @@ class CartItemModel {
   // ✅ NEW: Check if item belongs to a specific seller
   bool belongsToSeller(String checkSellerId) => sellerId == checkSellerId;
 
-  // Factory constructor from Firestore DocumentSnapshot
-  factory CartItemModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return CartItemModel(
-      id: doc.id,
-      productId: data['productId'] ?? '',
-      productName: data['productName'] ?? '',
-      productImage: data['productImage'] ?? '',
-      price: (data['price'] ?? 0).toDouble(),
-      quantity: data['quantity'] ?? 1,
-      userId: data['userId'] ?? '',
-      addedAt: (data['addedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      sellerId: data['sellerId'] as String?,           // ✅ ADDED
-      sellerName: data['sellerName'] as String?,       // ✅ ADDED
-      variant: data['variant'],
-      originalPrice: data['originalPrice']?.toDouble(),
-      discountPercentage: (data['discountPercentage'] ?? 0).toDouble(),
-      isFreeItem: data['isFreeItem'] ?? false,
-      freeItemLabel: data['freeItemLabel'],
-      linkedBuyItemId: data['linkedBuyItemId'],
-    );
-  }
-
-  // Factory constructor from Map (for nested cart items)
+  // C3 (Firebase SDK removal): fromFirestore(DocumentSnapshot) removed -- CartProvider is now a
+  // local-only (SharedPreferences-backed) cart, never a Firestore collection, so nothing
+  // constructs this from a snapshot any more. fromMap/toMap below no longer touch Timestamp;
+  // addedAt round-trips as milliseconds-since-epoch, the same convention CacheService already
+  // uses for ProductModel/CategoryModel's own local-cache serialization.
   factory CartItemModel.fromMap(Map<String, dynamic> map, [String? docId]) {
     return CartItemModel(
       id: docId ?? map['id'] ?? '',
@@ -100,8 +80,8 @@ class CartItemModel {
       price: (map['price'] ?? 0).toDouble(),
       quantity: map['quantity'] ?? 1,
       userId: map['userId'] ?? '',
-      addedAt: map['addedAt'] is Timestamp
-          ? (map['addedAt'] as Timestamp).toDate()
+      addedAt: map['addedAt'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(map['addedAt'] as int)
           : (map['addedAt'] is DateTime ? map['addedAt'] : DateTime.now()),
       sellerId: map['sellerId'] as String?,           // ✅ ADDED
       sellerName: map['sellerName'] as String?,       // ✅ ADDED
@@ -114,7 +94,7 @@ class CartItemModel {
     );
   }
 
-  // Convert to Map for Firestore
+  // Convert to Map for local storage (see fromMap's own doc comment on addedAt).
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -124,7 +104,7 @@ class CartItemModel {
       'price': price,
       'quantity': quantity,
       'userId': userId,
-      'addedAt': Timestamp.fromDate(addedAt),
+      'addedAt': addedAt.millisecondsSinceEpoch,
       'sellerId': sellerId,           // ✅ ADDED
       'sellerName': sellerName,       // ✅ ADDED
       'variant': variant,

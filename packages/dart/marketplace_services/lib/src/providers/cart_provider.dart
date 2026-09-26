@@ -1,106 +1,110 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:letbuyy_marketplace_models/src/cart_model.dart';
 import 'package:letbuyy_marketplace_models/src/cart_item_model.dart';
 import 'package:letbuyy_marketplace_models/src/product_model.dart';
-import '../database_service.dart';
-import '../auth_service.dart';
 
+// C3 (Firebase SDK removal, 27 September 2026 review finding 5) -- CartProvider used to require a
+// real userId (from a `updateUserId(String? userId)` hook with zero callers anywhere in the app, or
+// AuthService.currentUserId, FirebaseAuth-backed and always null under canonical auth) before any
+// mutation would actually reach _databaseService. Every real add-to-cart call site either awaited
+// the result and ignored it (product_details_screen.dart's _addToCart: `await
+// cartProvider.addToCart(...)` then an unconditional 'Added to cart!' snackbar, and for Buy Now, an
+// unconditional navigation straight to checkout) or didn't even await it (product_card.dart's grid
+// button). So the cart could never actually hold anything, anywhere, while every one of those call
+// sites told the buyer it just had. This was not introduced by this rewire -- it predates this
+// whole corrective phase -- but it is exactly the "transport/logic failure presented as success"
+// pattern the phase exists to catch, on the single most fundamental commerce action in the app.
+//
+// There is no canonical cart API to rewire onto (no cart concept exists anywhere in
+// letbuyy_api_client/the gateway surface). Per the owner's explicit direction, this is now a real,
+// working LOCAL cart instead: SharedPreferences-backed, scoped to this device, no cross-device
+// sync, no server-side authority -- but Add to Cart, quantity changes and checkout navigation now
+// genuinely reflect what's in it, rather than a permanently-empty cart behind a fake success
+// message. CartModel/CartItemModel's own immutable addItem/removeItem/updateItemQuantity/clearCart
+// methods (already pure, Firebase-independent value transforms) are reused as-is; only the
+// persistence layer underneath changes. `userId` on both models is a vestigial field from their
+// Firestore-multi-user era -- kept at a fixed, meaningless local sentinel rather than removed
+// outright, since it is still part of their public shape and mobile_cart_screen.dart's BOGO
+// free-item construction still plumbs it through unchanged.
 class CartProvider with ChangeNotifier {
-  final DatabaseService _databaseService = DatabaseService();
-  final AuthService _authService = AuthService();
+  static const _prefsKey = 'local_cart_v1';
+  static const _localCartId = 'local-device-cart';
+
   final Uuid _uuid = const Uuid();
 
-  CartModel? _cart;
-  bool _isLoading = false;
+  CartModel _cart = CartModel(
+    id: _localCartId,
+    userId: _localCartId,
+    items: const [],
+    updatedAt: DateTime.now(),
+  );
+  bool _isLoading = true;
   String? _error;
-  
-  // Track the current userId locally
-  String? _currentUserId;
 
   CartModel? get cart => _cart;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  
-  int get itemCount => _cart?.totalItems ?? 0;
-  double get subtotal => _cart?.subtotal ?? 0.0;
-  bool get isEmpty => _cart?.isEmpty ?? true;
-  List<CartItemModel> get items => _cart?.items ?? [];
 
-  // =================================================
-  // 🔥 FIXED: Missing method called by main.dart
-  // =================================================
-  void updateUserId(String? userId) {
-    if (_currentUserId != userId) {
-      _currentUserId = userId;
-      
-      if (userId != null) {
-        // User logged in -> Load data
-        loadCart();
-      } else {
-        // User logged out -> Clear data
-        _cart = null;
-        notifyListeners();
+  int get itemCount => _cart.totalItems;
+  double get subtotal => _cart.subtotal;
+  bool get isEmpty => _cart.isEmpty;
+  List<CartItemModel> get items => _cart.items;
+
+  CartProvider() {
+    _load();
+  }
+
+  // C3: was `updateUserId`, a hook for the old multi-user Firestore cart with zero callers
+  // anywhere in the app (grepped) -- there is now exactly one cart, this device's, so there is
+  // nothing to switch. Kept as a harmless no-op rather than deleted outright: main.dart and any
+  // other call site referencing it during a future canonical-account cart (a real, later-phase
+  // capability, not this one) would otherwise need rediscovering this method never existed.
+  void updateUserId(String? userId) {}
+
+  Future<void> _load() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString(_prefsKey);
+      if (jsonString != null) {
+        final map = jsonDecode(jsonString) as Map<String, dynamic>;
+        _cart = CartModel.fromMap(map, _localCartId);
       }
+    } catch (e) {
+      debugPrint('❌ CartProvider: error loading local cart: $e');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _save() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_prefsKey, jsonEncode(_cart.toMap()));
+    } catch (e) {
+      debugPrint('❌ CartProvider: error saving local cart: $e');
+      _error = e.toString();
     }
   }
 
   void loadCart() {
-    // Prefer the ID passed from ProxyProvider, fallback to AuthService
-    final userId = _currentUserId ?? _authService.currentUserId;
-    
-    if (userId == null) {
-      print('❌ CartProvider.loadCart: No user logged in');
-      _error = 'Please login';
-      notifyListeners();
-      return;
-    }
-
-    print('📦 CartProvider.loadCart: Loading for user $userId');
-    _databaseService.getUserCart(userId).listen(
-      (cart) {
-        if (cart != null) {
-          print('✅ CartProvider.loadCart: Cart loaded with ${cart.items.length} items');
-          _cart = cart;
-        } else {
-          print('✅ CartProvider.loadCart: Cart is empty, initializing new cart');
-          _cart = CartModel(
-            id: userId,
-            userId: userId,
-            items: [],
-            updatedAt: DateTime.now(),
-          );
-        }
-        _error = null;
-        notifyListeners();
-      },
-      onError: (error) {
-        print('❌ CartProvider.loadCart error: $error');
-        _error = error.toString();
-        notifyListeners();
-      },
-    );
+    // C3: was a Firestore listen() keyed on a userId that was always null. _load() (called once,
+    // from the constructor) already established this device's cart; a caller expecting a fresh
+    // read after some external change has nothing further to fetch -- there is no other writer of
+    // this cart to catch up with.
   }
 
-  // ✅ UPDATED: Now accepts variant parameter
   Future<bool> addItem(
     ProductModel product, {
     int quantity = 1,
-    String? variant, // ✅ ADD VARIANT PARAMETER
+    String? variant,
   }) async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) {
-        _error = 'Please login to add items to cart';
-        notifyListeners();
-        return false;
-      }
-
-      _isLoading = true;
-      notifyListeners();
-
-      print('🛒 Adding to cart: ${product.name}, variant: $variant, qty: $quantity');
-
       final cartItem = CartItemModel(
         id: _uuid.v4(),
         productId: product.id,
@@ -108,10 +112,10 @@ class CartProvider with ChangeNotifier {
         productImage: product.primaryImage,
         price: product.salePrice,
         quantity: quantity,
-        userId: userId,
+        userId: _localCartId,
         addedAt: DateTime.now(),
-        sellerId: product.sellerId,    // ✅ ADDED: Seller ID from product
-        sellerName: null,              // ✅ ADDED: Will be set from seller data if needed
+        sellerId: product.sellerId,
+        sellerName: product.storeName,
         variant: variant,
         originalPrice: product.originalPrice,
         discountPercentage: product.originalPrice != null && product.originalPrice! > product.salePrice
@@ -119,160 +123,49 @@ class CartProvider with ChangeNotifier {
             : 0.0,
       );
 
-      List<CartItemModel> updatedItems = _cart?.items ?? [];
-      
-      // ✅ UPDATED: Check both productId AND variant
-      final existingIndex = updatedItems.indexWhere(
-        (item) => item.productId == product.id && item.variant == variant,
-      );
-
-      if (existingIndex != -1) {
-        // Same product with same variant - increase quantity
-        updatedItems[existingIndex] = updatedItems[existingIndex].copyWith(
-          quantity: updatedItems[existingIndex].quantity + quantity,
-        );
-        print('✅ Updated existing item quantity: ${updatedItems[existingIndex].quantity}');
-      } else {
-        // New product or different variant - add as new item
-        updatedItems.add(cartItem);
-        print('✅ Added new item to cart');
-      }
-
-      final updatedCart = CartModel(
-        id: userId,
-        userId: userId,
-        items: updatedItems,
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateCart(userId, updatedCart);
-
-      _isLoading = false;
+      _cart = _cart.addItem(cartItem);
       _error = null;
       notifyListeners();
+      await _save();
       return true;
     } catch (e) {
-      print('❌ addItem error: $e');
+      debugPrint('❌ addItem error: $e');
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ UPDATED: addOrderItems now supports variants
   Future<bool> addOrderItems(List<CartItemModel> orderItems) async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      print('📦 [addOrderItems] Starting - userId: $userId, items: ${orderItems.length}');
-      
-      if (userId == null) {
-        _error = 'Please login to add items to cart';
-        print('❌ [addOrderItems] Error: User not logged in');
-        notifyListeners();
-        return false;
-      }
-
       if (orderItems.isEmpty) {
         _error = 'No items to add';
-        print('❌ [addOrderItems] Error: Empty items list');
         notifyListeners();
         return false;
       }
 
-      _isLoading = true;
-      notifyListeners();
-
-      print('📦 [addOrderItems] Fetching current cart from database...');
-      List<CartItemModel> updatedItems = [];
-      
-      try {
-        final currentCart = await _databaseService.getUserCart(userId).first;
-        if (currentCart != null) {
-          updatedItems = List.from(currentCart.items);
-          print('✅ [addOrderItems] Retrieved ${updatedItems.length} existing items');
-        } else {
-          print('📦 [addOrderItems] No existing cart, starting fresh');
-          updatedItems = [];
-        }
-      } catch (e) {
-        print('⚠️  [addOrderItems] Could not fetch current cart, starting fresh: $e');
-        updatedItems = [];
-      }
-      
-      int addedCount = 0;
-      List<String> addedProductNames = [];
-
-      for (var orderItem in orderItems) {
-        try {
-          final cartItem = CartItemModel(
-            id: _uuid.v4(),
-            productId: orderItem.productId,
-            productName: orderItem.productName,
-            productImage: orderItem.productImage,
-            price: orderItem.price,
-            quantity: orderItem.quantity,
-            userId: userId,
-            addedAt: DateTime.now(),
-            variant: orderItem.variant, // ✅ PRESERVE VARIANT
-            originalPrice: orderItem.originalPrice,
-            discountPercentage: orderItem.discountPercentage,
-          );
-
-          // ✅ UPDATED: Check both productId AND variant
-          final existingIndex = updatedItems.indexWhere(
-            (item) => item.productId == cartItem.productId && item.variant == cartItem.variant,
-          );
-
-          if (existingIndex != -1) {
-            final oldQty = updatedItems[existingIndex].quantity;
-            updatedItems[existingIndex] = updatedItems[existingIndex].copyWith(
-              quantity: oldQty + cartItem.quantity,
-            );
-          } else {
-            updatedItems.add(cartItem);
-          }
-
-          addedCount++;
-          addedProductNames.add(cartItem.productName);
-        } catch (itemError) {
-          print('❌ [addOrderItems] Error processing item: $itemError');
-          continue;
-        }
+      var cart = _cart;
+      for (final orderItem in orderItems) {
+        cart = cart.addItem(orderItem.copyWith(
+          id: _uuid.v4(),
+          userId: _localCartId,
+          addedAt: DateTime.now(),
+        ));
       }
 
-      if (addedCount == 0) {
-        _error = 'No valid items to add';
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
-
-      final updatedCart = CartModel(
-        id: userId,
-        userId: userId,
-        items: updatedItems,
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateCart(userId, updatedCart);
-      
-      _cart = updatedCart;
-      _isLoading = false;
+      _cart = cart;
       _error = null;
       notifyListeners();
-      
+      await _save();
       return true;
     } catch (e) {
-      print('❌ [addOrderItems] FATAL ERROR: $e');
+      debugPrint('❌ addOrderItems error: $e');
       _error = 'Error adding items: ${e.toString()}';
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ UPDATED: addToCart now supports variant
   Future<void> addToCart(
     ProductModel product, {
     int quantity = 1,
@@ -281,112 +174,44 @@ class CartProvider with ChangeNotifier {
     await addItem(product, quantity: quantity, variant: variant);
   }
 
-  // ✅ UPDATED: removeItem now supports variant
   Future<bool> removeItem(String productId, {String? variant}) async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) return false;
-
-      _isLoading = true;
-      notifyListeners();
-
-      List<CartItemModel> updatedItems = _cart?.items ?? [];
-      
-      // ✅ UPDATED: Remove based on productId AND variant
-      if (variant != null && variant.isNotEmpty) {
-        updatedItems.removeWhere(
-          (item) => item.productId == productId && item.variant == variant,
-        );
-      } else {
-        updatedItems.removeWhere(
-          (item) => item.productId == productId && (item.variant == null || item.variant!.isEmpty),
-        );
-      }
-
-      final updatedCart = CartModel(
-        id: userId,
-        userId: userId,
-        items: updatedItems,
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateCart(userId, updatedCart);
-
-      _cart = updatedCart;
-      _isLoading = false;
+      _cart = _cart.removeItem(productId, variant: variant);
       _error = null;
       notifyListeners();
+      await _save();
       return true;
     } catch (e) {
-      print('❌ removeItem error: $e');
+      debugPrint('❌ removeItem error: $e');
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ UPDATED: updateQuantity now supports variant
   Future<bool> updateQuantity(String productId, int quantity, {String? variant}) async {
+    if (quantity <= 0) {
+      return await removeItem(productId, variant: variant);
+    }
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) return false;
-
-      if (quantity <= 0) {
-        return await removeItem(productId, variant: variant);
-      }
-
-      _isLoading = true;
-      notifyListeners();
-
-      List<CartItemModel> updatedItems = _cart?.items ?? [];
-      
-      // ✅ UPDATED: Find item by productId AND variant
-      int index = -1;
-      if (variant != null && variant.isNotEmpty) {
-        index = updatedItems.indexWhere(
-          (item) => item.productId == productId && item.variant == variant,
-        );
-      } else {
-        index = updatedItems.indexWhere(
-          (item) => item.productId == productId && (item.variant == null || item.variant!.isEmpty),
-        );
-      }
-
-      if (index != -1) {
-        updatedItems[index] = updatedItems[index].copyWith(quantity: quantity);
-      }
-
-      final updatedCart = CartModel(
-        id: userId,
-        userId: userId,
-        items: updatedItems,
-        updatedAt: DateTime.now(),
-      );
-
-      await _databaseService.updateCart(userId, updatedCart);
-
-      _cart = updatedCart;
-      _isLoading = false;
+      _cart = _cart.updateItemQuantity(productId, quantity, variant: variant);
       _error = null;
       notifyListeners();
+      await _save();
       return true;
     } catch (e) {
-      print('❌ updateQuantity error: $e');
+      debugPrint('❌ updateQuantity error: $e');
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  // ✅ UPDATED: incrementQuantity now supports variant
   Future<bool> incrementQuantity(String productId, {String? variant}) async {
     final currentQuantity = getItemQuantity(productId, variant: variant);
     return await updateQuantity(productId, currentQuantity + 1, variant: variant);
   }
 
-  // ✅ UPDATED: decrementQuantity now supports variant
   Future<bool> decrementQuantity(String productId, {String? variant}) async {
     final currentQuantity = getItemQuantity(productId, variant: variant);
     if (currentQuantity <= 1) {
@@ -397,23 +222,14 @@ class CartProvider with ChangeNotifier {
 
   Future<bool> clearCart() async {
     try {
-      final userId = _currentUserId ?? _authService.currentUserId;
-      if (userId == null) return false;
-
-      _isLoading = true;
-      notifyListeners();
-
-      await _databaseService.clearCart(userId);
-
-      _cart = null;
-      _isLoading = false;
+      _cart = _cart.clearCart();
       _error = null;
       notifyListeners();
+      await _save();
       return true;
     } catch (e) {
-      print('❌ clearCart error: $e');
+      debugPrint('❌ clearCart error: $e');
       _error = e.toString();
-      _isLoading = false;
       notifyListeners();
       return false;
     }
@@ -437,60 +253,20 @@ class CartProvider with ChangeNotifier {
     return savings;
   }
 
-  // ✅ UPDATED: isInCart now checks variant
-  bool isInCart(String productId, {String? variant}) {
-    if (variant != null && variant.isNotEmpty) {
-      return _cart?.items.any(
-        (item) => item.productId == productId && item.variant == variant,
-      ) ?? false;
-    }
-    return _cart?.items.any(
-      (item) => item.productId == productId && (item.variant == null || item.variant!.isEmpty),
-    ) ?? false;
-  }
+  bool isInCart(String productId, {String? variant}) => _cart.hasProduct(productId, variant: variant);
 
-  // ✅ UPDATED: getItemQuantity now checks variant
-  int getItemQuantity(String productId, {String? variant}) {
-    try {
-      CartItemModel? item;
-      if (variant != null && variant.isNotEmpty) {
-        item = _cart?.items.firstWhere(
-          (item) => item.productId == productId && item.variant == variant,
-        );
-      } else {
-        item = _cart?.items.firstWhere(
-          (item) => item.productId == productId && (item.variant == null || item.variant!.isEmpty),
-        );
-      }
-      return item?.quantity ?? 0;
-    } catch (e) {
-      return 0;
-    }
-  }
+  int getItemQuantity(String productId, {String? variant}) =>
+      _cart.getItemByProductId(productId, variant: variant)?.quantity ?? 0;
 
-  // ✅ UPDATED: getCartItem now checks variant
-  CartItemModel? getCartItem(String productId, {String? variant}) {
-    try {
-      if (variant != null && variant.isNotEmpty) {
-        return _cart?.items.firstWhere(
-          (item) => item.productId == productId && item.variant == variant,
-        );
-      }
-      return _cart?.items.firstWhere(
-        (item) => item.productId == productId && (item.variant == null || item.variant!.isEmpty),
-      );
-    } catch (e) {
-      return null;
-    }
-  }
+  CartItemModel? getCartItem(String productId, {String? variant}) =>
+      _cart.getItemByProductId(productId, variant: variant);
 
   Future<void> refreshCart() async {
-    loadCart();
+    await _load();
   }
 
   void clearError() {
     _error = null;
     notifyListeners();
   }
-
 }

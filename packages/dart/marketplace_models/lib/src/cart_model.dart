@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'cart_item_model.dart';
 
 class CartModel {
@@ -14,21 +13,9 @@ class CartModel {
     required this.updatedAt,
   });
 
-  // Factory constructor from Firestore DocumentSnapshot
-  factory CartModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return CartModel(
-      id: doc.id,
-      userId: data['userId'] ?? '',
-      items: (data['items'] as List?)
-              ?.map((item) => CartItemModel.fromMap(item as Map<String, dynamic>))
-              .toList() ??
-          [],
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
-  }
-
-  // Factory constructor from Map with id
+  // C3 (Firebase SDK removal): fromFirestore(DocumentSnapshot) removed -- CartProvider is now a
+  // local-only (SharedPreferences-backed) cart; see CartItemModel's own doc comment on the
+  // updatedAt/addedAt serialization convention this now shares.
   factory CartModel.fromMap(Map<String, dynamic> map, String id) {
     return CartModel(
       id: id,
@@ -37,16 +24,18 @@ class CartModel {
               ?.map((item) => CartItemModel.fromMap(item as Map<String, dynamic>))
               .toList() ??
           [],
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: map['updatedAt'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
+          : DateTime.now(),
     );
   }
 
-  // Convert to Map for Firestore
+  // Convert to Map for local storage.
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
       'items': items.map((item) => item.toMap()).toList(),
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'updatedAt': updatedAt.millisecondsSinceEpoch,
     };
   }
 
