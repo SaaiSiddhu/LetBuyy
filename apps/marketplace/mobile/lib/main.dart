@@ -100,7 +100,13 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // now renders SizedBox.shrink() unconditionally (matching its own prior empty state) instead of
         // opening a FirebaseFirestore realtime listener with no canonical successor.
         ChangeNotifierProvider(create: (_) => CouponProvider()),
-        ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        // ReviewProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
+        // canonical successor. getReviewsStream() built a raw Firestore stream directly and
+        // unguarded in reviews_section.dart's build() -- a real crash risk on product_details_
+        // screen.dart, the app's most-visited screen -- and loadReviewStats() left its stats
+        // section spinning forever with nothing to populate it. Both consumers (reviews_section.dart,
+        // rate_your_purchases_section.dart) already reduced to their honest always-empty state;
+        // review_card.dart deleted outright (its only caller, the reviews list, is gone).
         // AppUpdateProvider retired (R1 corrective, C2): its two consumers, the '/downloads' route's
         // DownloadScreen and MandatoryUpdateDialog, had zero live navigation/construction anywhere in
         // the active app (grepped) — "Legacy compatibility" per the route's own comment — so both were

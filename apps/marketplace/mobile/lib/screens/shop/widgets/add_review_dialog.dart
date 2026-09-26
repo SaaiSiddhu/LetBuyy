@@ -207,10 +207,19 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
 
     final authService = context.read<AuthService>();
     final databaseService = DatabaseService();
-    final currentUserId = authService.getCurrentUserId();
-    final currentUser = await authService.getUserData(currentUserId!);
 
     try {
+      // Phase 1R corrective (C2): AuthService.getCurrentUserId() is always null now that
+      // canonical "Sign in with LetBuyy" is the app's sole sign-in and never touches
+      // FirebaseAuth -- this used to null-assert the result outside the try/catch below,
+      // crashing on every submit. No canonical successor is wired here yet, so this fails
+      // honestly instead.
+      final currentUserId = authService.getCurrentUserId();
+      if (currentUserId == null) {
+        throw Exception('You need to be signed in to submit a review');
+      }
+      final currentUser = await authService.getUserData(currentUserId);
+
       // 1. Upload Images
       List<String> imageUrls = await _uploadReviewImages();
       

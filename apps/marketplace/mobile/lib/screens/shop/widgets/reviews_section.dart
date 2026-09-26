@@ -4,7 +4,6 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'add_review_dialog.dart';
-import 'review_card.dart';
 
 class ReviewsSection extends StatefulWidget {
   final String productId;
@@ -35,10 +34,6 @@ class _ReviewsSectionState extends State<ReviewsSection> {
   }
   
   Future<void> _loadData() async {
-    // Load stats
-    Provider.of<ReviewProvider>(context, listen: false)
-        .loadReviewStats(widget.productId);
-    
     // Check for existing user review
     await _checkForExistingUserReview();
   }
@@ -136,144 +131,16 @@ class _ReviewsSectionState extends State<ReviewsSection> {
                   ),
           ],
         ),
-        const SizedBox(height: 16),
-        
-        // Stats Section
-        _buildStatsSection(),
-        
         const SizedBox(height: 24),
-        
-        // Reviews List
-        Expanded(
-          child: StreamProvider<List<ReviewModel>>.value(
-            value: Provider.of<ReviewProvider>(context, listen: false)
-                .getReviewsStream(widget.productId),
-            initialData: const [],
-            child: Consumer<List<ReviewModel>>(
-              builder: (context, reviews, child) {
-                if (reviews.isEmpty) {
-                  return _buildEmptyState();
-                }
-                
-                return ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: reviews.length,
-                  itemBuilder: (context, index) {
-                    return ReviewCard(
-                      review: reviews[index],
-                      isDark: widget.isDark,
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ),
+
+        // Phase 1R corrective (C2): ReviewProvider was entirely FirebaseFirestore-backed with no
+        // canonical successor. getReviewsStream() built a raw Firestore stream directly and
+        // unguarded (crash risk on this screen, product_details_screen.dart -- confirmed the same
+        // class of bug as sponsored_products_banner.dart); loadReviewStats() meant the stats
+        // section above would otherwise spin forever, since nothing would ever populate it. Both
+        // dropped; this always renders the honest empty state below instead.
+        Expanded(child: _buildEmptyState()),
       ],
-    );
-  }
-
-  Widget _buildStatsSection() {
-    return Consumer<ReviewProvider>(
-      builder: (context, provider, child) {
-        if (provider.reviewStats == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final stats = provider.reviewStats!;
-        return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: widget.isDark ? const Color(0xFF1E1E1E) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: widget.isDark ? Colors.grey[800]! : Colors.grey[200]!)
-          ),
-          child: Row(
-            children: [
-              // Overall Rating
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    Text(
-                      stats.averageRating.toStringAsFixed(1),
-                      style: TextStyle(
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        color: widget.isDark ? Colors.white : Colors.black87,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (i) => Icon(
-                        i < stats.averageRating.floor() ? Icons.star_rounded : Icons.star_border_rounded,
-                        color: Colors.amber[700],
-                        size: 16,
-                      )),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${stats.totalReviews} Reviews',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: widget.isDark ? Colors.grey[400] : Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Separator
-              Container(
-                width: 1,
-                height: 100,
-                color: widget.isDark ? Colors.grey[800] : Colors.grey[200],
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              // Rating Bars
-              Expanded(
-                flex: 3,
-                child: Column(
-                  children: List.generate(5, (index) {
-                    final stars = 5 - index;
-                    return _buildRatingBar(
-                      stars: stars,
-                      percentage: stats.getPercentageForRating(stars),
-                      isDark: widget.isDark,
-                    );
-                  }).toList(),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildRatingBar({required int stars, required double percentage, required bool isDark}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Text(
-            '$stars',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-          ),
-          const SizedBox(width: 4),
-          Icon(Icons.star, color: Colors.amber[700], size: 12),
-          const SizedBox(width: 8),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: percentage / 100,
-                backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                color: Colors.amber[700],
-                minHeight: 6,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
