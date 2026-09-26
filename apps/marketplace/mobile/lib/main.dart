@@ -83,7 +83,22 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
-        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        // OrderProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
+        // canonical successor. loadUserOrders() guards on a userId that's always null (same
+        // pattern as several other providers this pass), but loadAllOrders()/createOrder()/
+        // cancelOrder()/updateOrderStatus()/returnOrder()/loadOrderById() have no such guard, so
+        // they genuinely attempted Firestore whenever invoked. orders_screen.dart's Consumer
+        // already always rendered its "User not authenticated" error state (loadUserOrders()
+        // sets that error even though it never reaches Firestore); order_details_screen.dart's
+        // already always rendered its own error state (selectedOrder never populates, and this
+        // screen is only ever reached with an orderId, not a full order -- nothing in the app can
+        // currently produce one to fetch). order_tracking_screen.dart is architecturally
+        // different: it takes a full OrderModel constructor parameter and already fell back to
+        // it (`orderProvider.selectedOrder ?? widget.order`), so it renders correctly from that
+        // parameter alone -- only the optional timeline enrichment depended on the provider, and
+        // that already had a proper "No tracking information yet" empty state. profile_stats.dart
+        // and order_history_screen.dart were both already fully orphaned (zero live callers) and
+        // deleted outright.
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         // AddressProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed via the

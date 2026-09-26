@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
-import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
 
@@ -17,17 +15,17 @@ class OrderTrackingScreen extends StatefulWidget {
 }
 
 class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<OrderProvider>(context, listen: false)
-          .loadOrderById(widget.order.id);
-    });
-  }
-
+  // Phase 1R corrective (C2): OrderProvider was entirely FirebaseFirestore-backed with no
+  // canonical successor. loadOrderById()/selectedOrderTimeline could never actually populate
+  // (Firestore unreachable) -- this screen's own `orderProvider.selectedOrder ?? widget.order`
+  // fallback and the timeline's existing empty state ("No tracking information yet") already
+  // made that the observable behavior; this uses widget.order and an empty timeline directly,
+  // preserving that exact behavior without depending on the provider being in the tree.
   @override
   Widget build(BuildContext context) {
+    final order = widget.order;
+    const timeline = <OrderTimelineModel>[];
+
     return PremiumScaffold(
       // resizeToAvoidBottomInset handled internally
       // backgroundColor handled internally
@@ -39,31 +37,19 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
         ),
       ),
-      body: Consumer<OrderProvider>(
-        builder: (context, orderProvider, child) {
-          if (orderProvider.isLoadingTimeline) {
-            return Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
-          }
-
-          final timeline = orderProvider.selectedOrderTimeline;
-          final order = orderProvider.selectedOrder ?? widget.order;
-
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildOrderHeader(order),
-                const SizedBox(height: 12),
-                _buildProgressIndicator(order),
-                const SizedBox(height: 12),
-                if (timeline.isNotEmpty) _buildEstimatedDelivery(order),
-                const SizedBox(height: 12),
-                _buildTimeline(timeline),
-                const SizedBox(height: 80),
-              ],
-            ),
-          );
-        },
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildOrderHeader(order),
+            const SizedBox(height: 12),
+            _buildProgressIndicator(order),
+            const SizedBox(height: 12),
+            if (timeline.isNotEmpty) _buildEstimatedDelivery(order),
+            const SizedBox(height: 12),
+            _buildTimeline(timeline),
+            const SizedBox(height: 80),
+          ],
+        ),
       ),
     );
   }

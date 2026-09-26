@@ -92,7 +92,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
 
       final cartProvider = context.read<CartProvider>();
       final loyaltyProvider = context.read<LoyaltyProvider>();
-      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+      // Phase 1R corrective (C2): was Provider.of<OrderProvider>(...).createOrder(order) below.
+      // OrderProvider was entirely FirebaseFirestore-backed with no canonical successor; this
+      // whole method is unreachable already (throws at the userId == null check above), so this
+      // substitutes the same underlying DatabaseService call OrderProvider.createOrder() itself
+      // wraps, rather than keep a dead reference to a deregistered provider. A future phase
+      // reactivating checkout needs to rebuild this properly (likely onto the canonical gateway,
+      // per FB-2/3/4), not simply re-enable this legacy path -- the stock-reduction/seller-
+      // notification/analytics side effects OrderProvider.createOrder() adds are not reproduced.
+      final databaseService = DatabaseService();
 
       // Phase 1R corrective (C2): was couponProvider.calculateDiscount(...). CouponProvider was
       // entirely FirebaseFirestore-backed with no canonical successor; unreachable already, since
@@ -166,11 +174,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           createdAt: DateTime.now(),
         );
 
-        final createdOrderId = await orderProvider.createOrder(order);
-        
-        if (createdOrderId == null) {
-          throw Exception('Failed to create order for seller: $sellerId');
-        }
+        final createdOrderId = await databaseService.createOrder(order);
 
         debugPrint('✅ Order created: ${order.orderNumber} for seller: $sellerId');
         createdOrders.add(order);
