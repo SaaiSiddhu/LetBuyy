@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
@@ -32,34 +31,23 @@ import 'app/routes.dart';
 import 'screens/main_screen.dart';
 import 'screens/web_main_screen.dart';
 
-/// Firebase options
-import 'firebase_options.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // ✅ Use path-based URLs (no hash #)
   usePathUrlStrategy();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
-  // NOTE: App Check is NOT enabled since Cloud Functions don't enforce it
-  // Enable later when needed for production
-  
-  // Initialize SharedPreferencesService 
+
+  // Phase 1R (2026-09-26): Firebase is removed entirely — no real marketplace users existed to
+  // preserve, and canonical "Sign in with LetBuyy" is now this app's sole entry point (R1.2/R1.3).
+  // No Firebase.initializeApp(), no FCM boot, no Firebase analytics.
+
+  // Initialize SharedPreferencesService
   try {
     await SharedPreferencesService.init();
   } catch (e) {
     debugPrint('⚠️ SharedPreferencesService init error: $e');
   }
-  
-  // 🚀 PERFORMANCE: Defer FCM initialization to AFTER UI is visible
-  // This prevents blocking app startup with network calls
-  // FCM will initialize 2 seconds after runApp()
-  
+
   // Set preferred orientations (mobile only)
   if (!kIsWeb) {
     await SystemChrome.setPreferredOrientations([
@@ -67,21 +55,8 @@ void main() async {
       DeviceOrientation.portraitDown,
     ]);
   }
-  
-  runApp(const LetBuyyMarketplaceApp());
 
-  
-  // 🔔 Initialize FCM AFTER app starts (non-blocking)
-  if (!kIsWeb) {
-    Future.delayed(const Duration(seconds: 2), () async {
-      try {
-        await FCMService().initialize();
-        debugPrint('✅ FCM initialized successfully (deferred)');
-      } catch (e) {
-        debugPrint('⚠️ FCM init error: $e');
-      }
-    });
-  }
+  runApp(const LetBuyyMarketplaceApp());
 }
 
 class LetBuyyMarketplaceApp extends StatelessWidget {
