@@ -5,7 +5,7 @@ import 'fee_service.dart';
 
 /// Service for generating and managing order invoices/settlements
 class InvoiceService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final FeeService _feeService = FeeService();
 
   // ============================================

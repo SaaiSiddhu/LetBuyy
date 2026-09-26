@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_marketplace_models/src/review_model.dart';
 
 class ReviewProvider extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   final List<ReviewModel> _reviews = [];
   ReviewStats? _reviewStats;

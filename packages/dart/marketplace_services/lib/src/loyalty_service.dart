@@ -5,7 +5,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 /// Service for managing loyalty points, tiers, and transactions
 class LoyaltyService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Collection references
   CollectionReference get _loyaltyRef => _firestore.collection('loyalty');

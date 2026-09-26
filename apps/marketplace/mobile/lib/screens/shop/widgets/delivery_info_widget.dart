@@ -18,7 +18,7 @@ class DeliveryInfoWidget extends StatefulWidget {
 }
 
 class _DeliveryInfoWidgetState extends State<DeliveryInfoWidget> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {

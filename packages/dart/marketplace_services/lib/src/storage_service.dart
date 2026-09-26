@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 
 class StorageService {
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
 
   // ============================================
   // 🌐 WEB-SAFE UPLOAD METHODS (Uint8List)

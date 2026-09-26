@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_models/src/sponsored_banner_model.dart';
 
 class SponsoredBannerProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   List<SponsoredBannerModel> _sponsoredBanners = [];
   bool _isLoading = false;

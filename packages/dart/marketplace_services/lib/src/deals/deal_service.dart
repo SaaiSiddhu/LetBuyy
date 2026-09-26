@@ -5,7 +5,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 /// Service for managing seller promotional deals
 class DealService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   
   static const String _collection = 'deals';
 

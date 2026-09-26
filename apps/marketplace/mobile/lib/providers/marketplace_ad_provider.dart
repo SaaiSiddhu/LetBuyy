@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// Products in active ad campaigns will show "Ad" badges in existing grids
 class MarketplaceAdProvider extends ChangeNotifier {
   final AdService _adService = AdService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   
   /// Set of product IDs that are currently sponsored (for quick lookup)
   final Set<String> _sponsoredProductIds = {};

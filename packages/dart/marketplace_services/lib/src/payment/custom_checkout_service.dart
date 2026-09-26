@@ -20,7 +20,7 @@ class CustomCheckoutService {
   CustomCheckoutService._internal();
 
   final FirebaseFunctions _functions = FirebaseFunctions.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   Razorpay? _razorpay;
   bool _isInitialized = false;
 

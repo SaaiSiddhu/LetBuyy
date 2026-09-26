@@ -6,7 +6,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 /// Service for managing category attributes (faceted search)
 class CategoryAttributeService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Collection references
   CollectionReference get _categoryAttributesRef =>

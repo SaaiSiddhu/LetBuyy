@@ -6,8 +6,8 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 
 class SellerService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Collection references
   CollectionReference get _sellersCollection => _firestore.collection('sellers');

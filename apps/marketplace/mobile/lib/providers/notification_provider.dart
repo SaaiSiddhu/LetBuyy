@@ -99,8 +99,8 @@ class NotificationModel {
 }
 
 class NotificationProvider extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
 
   List<NotificationModel> _notifications = [];
   bool _isLoading = false;

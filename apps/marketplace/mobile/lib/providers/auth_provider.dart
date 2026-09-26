@@ -20,8 +20,8 @@ class AuthProvider with ChangeNotifier {
   // ============================================
 
   final AuthService _authService = AuthService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  FirebaseAuth get _firebaseAuth => FirebaseAuth.instance;
   SharedPreferences? _prefs;
 
   // ============================================

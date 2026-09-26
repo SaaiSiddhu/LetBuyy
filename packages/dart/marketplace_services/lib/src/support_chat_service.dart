@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 class SupportChatService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Collection references
   CollectionReference<Map<String, dynamic>> get _conversationsRef =>

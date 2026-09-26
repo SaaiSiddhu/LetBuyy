@@ -5,7 +5,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 /// Comprehensive Ads Service for Sponsored Products
 /// Handles campaigns, bidding, auction, billing, and analytics
 class AdService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // Collection references
   CollectionReference get _campaignsRef => _firestore.collection('ad_campaigns');

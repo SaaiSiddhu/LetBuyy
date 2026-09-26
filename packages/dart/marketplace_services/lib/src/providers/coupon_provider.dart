@@ -4,7 +4,7 @@ import 'package:letbuyy_marketplace_models/src/coupon_model.dart';
 import 'package:letbuyy_marketplace_models/src/cart_item_model.dart';
 
 class CouponProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   List<CouponModel> _availableCoupons = [];
   List<CouponModel> _coupons = [];

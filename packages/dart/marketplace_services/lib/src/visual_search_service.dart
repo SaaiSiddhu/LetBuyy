@@ -91,7 +91,7 @@ class VisualSearchService {
   static final VisualSearchService instance = VisualSearchService._();
   VisualSearchService._();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   GenerativeModel? _model;
 
   /// Initialize the Gemini Vision model

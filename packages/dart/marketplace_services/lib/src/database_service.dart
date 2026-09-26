@@ -6,7 +6,7 @@ import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 // ✅ NEW: Added for getUserProfile
 
 class DatabaseService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // ============================================
   // USERS

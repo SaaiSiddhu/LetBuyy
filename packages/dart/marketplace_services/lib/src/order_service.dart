@@ -9,7 +9,7 @@ import 'stock_service.dart';
 import 'seller_analytics_service.dart';
 
 class OrderService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final LoyaltyService _loyaltyService = LoyaltyService();
   final InvoiceService _invoiceService = InvoiceService();
   final StockService _stockService = StockService();

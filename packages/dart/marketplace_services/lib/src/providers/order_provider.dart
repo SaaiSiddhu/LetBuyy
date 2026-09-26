@@ -20,7 +20,7 @@ import '../seller_analytics_service.dart'; // ✅ ADDED: For order tracking
 class OrderProvider with ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
   final AuthService _authService = AuthService();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final StockService _stockService = StockService();
 
   List<OrderModel> _orders = [];

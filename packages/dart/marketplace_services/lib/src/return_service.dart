@@ -14,9 +14,9 @@ class ReturnService {
   factory ReturnService() => _instance;
   ReturnService._internal();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final FirebaseFunctions _functions = FirebaseFunctions.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
 
   // Collection references
   CollectionReference<Map<String, dynamic>> get _returnsRef =>

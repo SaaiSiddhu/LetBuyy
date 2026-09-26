@@ -4,7 +4,7 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 /// Service for managing admin-controlled fee configuration
 class FeeService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   
   /// Firestore path for fee configuration
   static const String _collection = 'delivery_settings';

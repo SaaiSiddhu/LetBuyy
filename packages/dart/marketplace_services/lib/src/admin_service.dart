@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 class AdminService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   // ============================================
   // PRODUCTS

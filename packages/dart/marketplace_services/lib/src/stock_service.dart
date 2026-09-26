@@ -68,7 +68,7 @@ class StockReduceResult {
 
 /// Service for atomic stock management operations
 class StockService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
 
   /// Validate if stock is available for all items in the cart
   /// Returns validation result with details of any issues
