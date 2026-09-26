@@ -93,8 +93,11 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SponsoredBannerProvider()),
         ChangeNotifierProvider(create: (_) => CouponProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
-        ChangeNotifierProvider(create: (_) => AppUpdateProvider()),
-        
+        // AppUpdateProvider retired (R1 corrective, C2): its one consumer, screens/downloads/
+        // download_screen.dart, is registered at '/downloads' with zero live navigation to it
+        // anywhere in the app (grepped) — "Legacy compatibility" per the route's own comment.
+        // Screen and provider source left in place; neither is constructed by the active app.
+
         // ✅ ADDED: Sponsored Products Ads provider
         ChangeNotifierProvider(create: (_) => MarketplaceAdProvider()),
         
