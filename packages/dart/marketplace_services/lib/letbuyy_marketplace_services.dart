@@ -22,8 +22,8 @@ export 'src/auth_service.dart';
 export 'src/storage_service.dart';
 
 // FCM & Notifications
-export 'src/fcm_service.dart';
-export 'src/notification_service.dart';
+// fcm_service.dart and notification_service.dart retired (Phase 1R, R1.4): FCM's only caller was
+// main.dart's now-removed boot sequence; both were already zero-referenced anywhere else.
 export 'src/order_notification_service.dart';
 
 // Order
@@ -45,7 +45,8 @@ export 'src/admin_service.dart';
 export 'src/ai_chat_service.dart';
 
 // Analytics
-export 'src/analytics_service.dart';
+// analytics_service.dart (firebase_analytics) retired (Phase 1R, R1.4): zero callers anywhere —
+// not to be confused with seller_analytics_service.dart (Firestore-based, still live, unrelated).
 
 // App Update
 export 'src/app_update_service.dart';
