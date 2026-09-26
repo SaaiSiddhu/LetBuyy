@@ -2,13 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
+import 'package:letbuyy_marketplace/auth/buyer_sign_in_controller.dart';
 
 class AddressSelectionSheet extends StatefulWidget {
   final Function(AddressModel)? onAddressSelected;
@@ -44,6 +45,19 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   bool _isLoadingLocation = false;
   String _searchQuery = '';
 
+  // C2 (canonical rewire): saved addresses now read through BuyerAddressApi, the same canonical
+  // gateway letbuyy_account_screen.dart's tested address section already uses -- not the legacy
+  // Firestore stream this widget used to build directly (see _buildAddressList's own history).
+  bool _loadingAddresses = true;
+  String? _addressLoadError;
+  List<BuyerAddress> _addresses = const [];
+  // The token _addresses currently reflects. Recorded win or lose, so a failed load for an
+  // unchanged token doesn't retrigger itself forever on every rebuild -- a retry belongs to the
+  // Retry button, never an automatic loop (same reasoning as letbuyy_account_screen.dart's
+  // _tokenAtLastLoad).
+  String? _loadedForToken;
+  final Set<String> _mutatingAddressIds = {};
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +70,7 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
       curve: Curves.easeOutCubic,
     );
     _animationController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadAddresses());
   }
 
   @override
@@ -287,7 +302,11 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
             onTap: () {
               HapticFeedback.lightImpact();
               Navigator.pop(context);
-              Navigator.pushNamed(context, AppRoutes.addresses);
+              // C2 (canonical rewire): was AppRoutes.addresses (SavedAddressesScreen), which C2
+              // already disconnected to an unconditional "No Saved Addresses" empty state -- it
+              // has no canonical successor wired in and cannot actually add an address. The real,
+              // canonical address book is letbuyy_account_screen.dart.
+              Navigator.pushNamed(context, AppRoutes.letbuyyAccount);
             },
             child: Row(
               children: [
@@ -313,56 +332,126 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
     );
   }
 
+  /// True while [token] is still the buyer this sheet is showing -- a response for a token that
+  /// has since changed (sign-out, or a different buyer signed in) is dropped, never applied. Same
+  /// reasoning as letbuyy_account_screen.dart's own _stillCurrent.
+  bool _stillCurrent(String token) => mounted && context.read<BuyerSignInController>().token == token;
+
   Widget _buildAddressList(bool isDark) {
-    final userId = safeFirebaseUserId();
-    
-    if (userId == null) {
+    final token = context.watch<BuyerSignInController>().token;
+
+    // A sign-in/out while the sheet is already open (a concurrent flow, or a session check on
+    // resume ending the session) -- reload for the buyer actually current now, rather than show
+    // stale data left over from whoever _addresses was last fetched for.
+    if (token != _loadedForToken && !_loadingAddresses) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadAddresses());
+    }
+
+    if (token == null) {
       return _buildEmptyState(isDark, isGuest: true);
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .orderBy('isDefault', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoadingState(isDark);
-        }
+    if (_loadingAddresses) {
+      return _buildLoadingState(isDark);
+    }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptyState(isDark);
-        }
+    if (_addressLoadError != null) {
+      return _buildErrorState(isDark, _addressLoadError!);
+    }
 
-        final addresses = snapshot.data!.docs
-            .map((doc) => AddressModel.fromFirestore(doc))
-            .toList();
+    final addresses = _addresses.map(_addressModelFromBuyerAddress).toList();
 
-        // Filter by search query
-        final filteredAddresses = _searchQuery.isEmpty
-            ? addresses
-            : addresses.where((addr) {
-                final query = _searchQuery.toLowerCase();
-                return addr.name.toLowerCase().contains(query) ||
-                    addr.addressLine1.toLowerCase().contains(query) ||
-                    addr.city.toLowerCase().contains(query) ||
-                    addr.zipcode.contains(query);
-              }).toList();
+    if (addresses.isEmpty) {
+      return _buildEmptyState(isDark);
+    }
 
-        if (filteredAddresses.isEmpty) {
-          return _buildNoResultsState(isDark);
-        }
+    // Filter by search query
+    final filteredAddresses = _searchQuery.isEmpty
+        ? addresses
+        : addresses.where((addr) {
+            final query = _searchQuery.toLowerCase();
+            return addr.name.toLowerCase().contains(query) ||
+                addr.addressLine1.toLowerCase().contains(query) ||
+                addr.city.toLowerCase().contains(query) ||
+                addr.zipcode.contains(query);
+          }).toList();
 
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: filteredAddresses.length,
-          itemBuilder: (context, index) {
-            return _buildAddressCard(filteredAddresses[index], isDark);
-          },
-        );
+    if (filteredAddresses.isEmpty) {
+      return _buildNoResultsState(isDark);
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: filteredAddresses.length,
+      itemBuilder: (context, index) {
+        return _buildAddressCard(filteredAddresses[index], isDark);
       },
     );
+  }
+
+  /// [BuyerAddress] has no photo/lat-long/type-icon concept of its own -- this is purely a display
+  /// adapter onto the model _buildAddressCard already renders (also used by the current-location
+  /// result below), never a second identity for the same address.
+  AddressModel _addressModelFromBuyerAddress(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
+  }
+
+  Future<void> _loadAddresses() async {
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null) {
+      if (mounted) {
+        setState(() {
+          _loadingAddresses = false;
+          _addressLoadError = null;
+          _addresses = const [];
+          _loadedForToken = null;
+        });
+      }
+      return;
+    }
+    setState(() {
+      _loadingAddresses = true;
+      _addressLoadError = null;
+      _loadedForToken = token;
+    });
+    try {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (!_stillCurrent(token)) return;
+      setState(() {
+        _addresses = addresses;
+        _loadingAddresses = false;
+      });
+    } on ApiException catch (error) {
+      if (!_stillCurrent(token)) return;
+      setState(() {
+        _loadingAddresses = false;
+        _addressLoadError = (error.statusCode == 401 || error.statusCode == 403)
+            ? 'Your LetBuyy sign-in has ended. Sign in again to see your addresses.'
+            : (error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT')
+                ? 'You seem to be offline. Check your connection and try again.'
+                : 'We couldn’t load your addresses right now.';
+      });
+    } catch (_) {
+      if (!_stillCurrent(token)) return;
+      setState(() {
+        _loadingAddresses = false;
+        _addressLoadError = 'You seem to be offline. Check your connection and try again.';
+      });
+    }
   }
 
   Widget _buildAddressCard(AddressModel address, bool isDark) {
@@ -602,7 +691,9 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
                 // instead.
                 Navigator.pushNamed(context, AppRoutes.profile);
               } else {
-                Navigator.pushNamed(context, AppRoutes.addresses);
+                // C2 (canonical rewire): was AppRoutes.addresses -- see the "Add New" header
+                // action's own comment above for why this now points at the real address book.
+                Navigator.pushNamed(context, AppRoutes.letbuyyAccount);
               }
             },
             icon: Icon(isGuest ? Icons.login_rounded : Icons.add_rounded),
@@ -653,6 +744,39 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
     );
   }
 
+  Widget _buildErrorState(bool isDark, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline_rounded,
+            size: 64,
+            color: isDark ? Colors.grey[700] : Colors.grey[300],
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.grey[400] : Colors.grey[600],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          OutlinedButton(
+            onPressed: _loadAddresses,
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleUseCurrentLocation() async {
     setState(() => _isLoadingLocation = true);
     HapticFeedback.mediumImpact();
@@ -687,10 +811,13 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         
-        // Create temporary address from location
+        // Create temporary address from location -- never persisted, so it carries no real
+        // buyer/userId identity (this used to read safeFirebaseUserId(), always null under
+        // canonical auth; AddressModel.userId is unused once this is only ever handed straight to
+        // widget.onAddressSelected).
         final locationAddress = AddressModel(
           id: 'current_location',
-          userId: safeFirebaseUserId() ?? '',
+          userId: '',
           name: 'Current Location',
           phone: '',
           addressLine1: '${place.street ?? ''} ${place.subLocality ?? ''}',
@@ -717,55 +844,18 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
   }
 
   void _handleAddressAction(String action, AddressModel address) async {
-    final userId = safeFirebaseUserId();
-    if (userId == null) return;
-
     switch (action) {
       case 'edit':
         Navigator.pop(context);
-        Navigator.pushNamed(context, AppRoutes.addresses);
+        // C2 (canonical rewire): was AppRoutes.addresses -- editing an address is full-form work
+        // this lightweight selection sheet doesn't duplicate; the real editor already lives in
+        // letbuyy_account_screen.dart.
+        Navigator.pushNamed(context, AppRoutes.letbuyyAccount);
         break;
 
       case 'default':
         HapticFeedback.mediumImpact();
-        try {
-          final batch = FirebaseFirestore.instance.batch();
-          
-          // Remove default from all user's addresses
-          final addresses = await FirebaseFirestore.instance
-              .collection('addresses')
-              .where('userId', isEqualTo: userId)
-              .get();
-          
-          for (final doc in addresses.docs) {
-            batch.update(doc.reference, {'isDefault': false});
-          }
-          
-          // Set new default
-          batch.update(
-            FirebaseFirestore.instance
-                .collection('addresses')
-                .doc(address.id),
-            {'isDefault': true},
-          );
-          
-          await batch.commit();
-          
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Default address updated'),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            );
-          }
-        } catch (e) {
-          _showError('Could not update default address');
-        }
+        await _setDefaultAddress(address);
         break;
 
       case 'delete':
@@ -789,29 +879,96 @@ class _AddressSelectionSheetState extends State<AddressSelectionSheet>
         );
 
         if (confirm == true) {
-          try {
-            await FirebaseFirestore.instance
-                .collection('addresses')
-                .doc(address.id)
-                .delete();
-            
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Address deleted'),
-                  backgroundColor: AppColors.warning,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              );
-            }
-          } catch (e) {
-            _showError('Could not delete address');
-          }
+          await _deleteAddress(address);
         }
         break;
+    }
+  }
+
+  /// [BuyerAddress] has no copyWith -- every mutation hand-constructs the next value from the
+  /// current one, same as letbuyy_account_screen.dart's own _withDefault.
+  BuyerAddress _withDefault(BuyerAddress a, bool isDefault) => BuyerAddress(
+        id: a.id,
+        label: a.label,
+        fullName: a.fullName,
+        phone: a.phone,
+        addressLine1: a.addressLine1,
+        addressLine2: a.addressLine2,
+        city: a.city,
+        state: a.state,
+        postalCode: a.postalCode,
+        country: a.country,
+        landmark: a.landmark,
+        isDefault: isDefault,
+      );
+
+  Future<void> _setDefaultAddress(AddressModel address) async {
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null || address.isDefault || _mutatingAddressIds.contains(address.id)) return;
+    BuyerAddress current;
+    try {
+      current = _addresses.firstWhere((a) => a.id == address.id);
+    } catch (_) {
+      return;
+    }
+    setState(() => _mutatingAddressIds.add(address.id));
+    try {
+      final saved = await context.read<BuyerAddressApi>().update(token, current.id, _withDefault(current, true));
+      if (!_stillCurrent(token)) return;
+      setState(() {
+        _addresses = [
+          for (final a in _addresses) a.id == saved.id ? saved : _withDefault(a, false),
+        ];
+        _mutatingAddressIds.remove(address.id);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Default address updated'),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    } catch (_) {
+      if (!_stillCurrent(token)) return;
+      setState(() => _mutatingAddressIds.remove(address.id));
+      _showError('Could not update default address');
+    }
+  }
+
+  Future<void> _deleteAddress(AddressModel address) async {
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null || _mutatingAddressIds.contains(address.id)) return;
+    setState(() => _mutatingAddressIds.add(address.id));
+    try {
+      await context.read<BuyerAddressApi>().delete(token, address.id);
+      if (!_stillCurrent(token)) return;
+      setState(() {
+        _addresses = _addresses.where((a) => a.id != address.id).toList();
+        _mutatingAddressIds.remove(address.id);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Address deleted'),
+          backgroundColor: AppColors.warning,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    } on ApiException catch (error) {
+      if (!_stillCurrent(token)) return;
+      setState(() => _mutatingAddressIds.remove(address.id));
+      // A 404 means the address is already gone (this device or another already deleted it) --
+      // reflect that locally rather than tell the buyer their own delete failed.
+      if (error.statusCode == 404) {
+        setState(() => _addresses = _addresses.where((a) => a.id != address.id).toList());
+      } else {
+        _showError('Could not delete address');
+      }
+    } catch (_) {
+      if (!_stillCurrent(token)) return;
+      setState(() => _mutatingAddressIds.remove(address.id));
+      _showError('Could not delete address');
     }
   }
 
