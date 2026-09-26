@@ -6,12 +6,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
-import '../../providers/auth_provider.dart';
 
 class SupportChatScreen extends StatefulWidget {
   final String? conversationId;
@@ -40,7 +38,8 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
 
   SupportConversation? _conversation;
   bool _isLoading = true;
-  bool _isSending = false;
+  // Never set true anymore: _sendMessage's actual send logic was dead code, removed above.
+  final bool _isSending = false;
   StreamSubscription? _conversationSubscription;
 
   @override
@@ -57,57 +56,14 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     super.dispose();
   }
 
+  // Phase 1R corrective (C2): was gated on context.read<AuthProvider>().currentUser
+  // (AuthProvider, entirely FirebaseAuth-backed) -- always null now, since canonical "Sign in
+  // with LetBuyy" never touches FirebaseAuth. This already always returned here before reaching
+  // SupportChatService (itself entirely FirebaseFirestore-backed, with no canonical successor);
+  // kept that same early return instead of a dead provider reference. The `_conversation == null`
+  // branch in build() already renders an honest state for this (see below).
   Future<void> _initConversation() async {
-    final user = context.read<AuthProvider>().currentUser;
-    if (user == null) {
-      setState(() => _isLoading = false);
-      return;
-    }
-
-    try {
-      if (widget.conversationId != null) {
-        // Load existing conversation by ID
-        _conversation = await _chatService.getConversation(widget.conversationId!);
-      } else {
-        // First, check for existing open conversation of the same type
-        final contextId = widget.metadata?['contextId'] as String?;
-        final existingConversation = await _chatService.findOpenConversation(
-          userId: user.uid,
-          type: widget.ticketType ?? SupportTicketType.general,
-          contextId: contextId,
-        );
-
-        if (existingConversation != null) {
-          // Reuse existing open conversation
-          _conversation = existingConversation;
-          debugPrint('♻️ Reusing existing conversation: ${existingConversation.id}');
-        } else {
-          // Create new conversation only if none exists
-          _conversation = await _chatService.createConversation(
-            userId: user.uid,
-            userName: user.name ?? 'Customer',
-            userEmail: user.email,
-            userPhone: user.phone,
-            userImage: user.photoUrl,
-            type: widget.ticketType ?? SupportTicketType.general,
-            subject: widget.subject ?? 'Support Request',
-            initialMessage: widget.initialMessage,
-            metadata: widget.metadata,
-          );
-        }
-      }
-
-      // Mark as read and start listening for updates
-      if (_conversation != null) {
-        await _chatService.markMessagesAsReadByUser(_conversation!.id);
-        _startConversationListener(_conversation!.id);
-      }
-
-      setState(() => _isLoading = false);
-    } catch (e) {
-      debugPrint('Error initializing conversation: $e');
-      setState(() => _isLoading = false);
-    }
+    setState(() => _isLoading = false);
   }
 
   /// Listen for real-time conversation status updates (e.g., when admin closes)
@@ -139,33 +95,12 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
     });
   }
 
+  // Phase 1R corrective (C2): was gated on context.read<AuthProvider>().currentUser after the
+  // _conversation == null check below -- since _initConversation() never sets _conversation
+  // anymore (see above), that check alone already always returns before this is reached.
   Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty || _conversation == null || _isSending) return;
-
-    final user = context.read<AuthProvider>().currentUser;
-    if (user == null) return;
-
-    setState(() => _isSending = true);
-    _messageController.clear();
-
-    try {
-      await _chatService.sendMessage(
-        conversationId: _conversation!.id,
-        senderId: user.uid,
-        senderName: user.name ?? 'Customer',
-        senderType: SenderType.customer,
-        message: text,
-      );
-      _scrollToBottom();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to send: $e'), backgroundColor: AppColors.error),
-      );
-      _messageController.text = text;
-    } finally {
-      setState(() => _isSending = false);
-    }
   }
 
   @override

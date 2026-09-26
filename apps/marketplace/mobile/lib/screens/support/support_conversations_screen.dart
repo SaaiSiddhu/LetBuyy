@@ -6,12 +6,9 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import '../../providers/auth_provider.dart';
 import 'support_chat_screen.dart';
-import '../../widgets/premium_scaffold.dart';
 
 class SupportConversationsScreen extends StatefulWidget {
   final bool showNewChatButton;
@@ -45,40 +42,14 @@ class _SupportConversationsScreenState extends State<SupportConversationsScreen>
     }
   }
 
+  // Phase 1R corrective (C2): was gated on context.read<AuthProvider>().currentUser
+  // (AuthProvider, entirely FirebaseAuth-backed) -- always null now, since canonical "Sign in
+  // with LetBuyy" never touches FirebaseAuth. This already always returned here before reaching
+  // SupportChatService (itself entirely FirebaseFirestore-backed, with no canonical successor,
+  // matching build()'s disposition above); kept that same early return instead of a dead
+  // provider reference.
   Future<void> _handleNewChatRequest() async {
-    final user = context.read<AuthProvider>().currentUser;
-    if (user == null) return;
-
-    // Check for existing open conversation with same context
-    final existingConversations = await _chatService
-        .getUserConversations(user.uid)
-        .first;
-
-    // Find an open conversation with matching type
-    SupportConversation? matchingConversation;
-    for (final conv in existingConversations) {
-      if (conv.isOpen && conv.type == widget.newChatType) {
-        // Check if context matches (e.g., same return appeal)
-        final contextId = widget.newChatMetadata?['contextId'] as String?;
-        if (contextId != null && conv.metadata?['contextId'] == contextId) {
-          matchingConversation = conv;
-          break;
-        } else if (contextId == null) {
-          matchingConversation = conv; // Use any open conversation of same type
-          break;
-        }
-      }
-    }
-
-    if (!mounted) return;
-
-    if (matchingConversation != null) {
-      // Navigate to existing conversation
-      _openChat(matchingConversation);
-    } else {
-      // Create new conversation
-      _startNewChat();
-    }
+    return;
   }
 
   void _openChat(SupportConversation conversation) {
@@ -168,32 +139,23 @@ class _SupportConversationsScreenState extends State<SupportConversationsScreen>
     );
   }
 
+  // Phase 1R corrective (C2): was context.watch<AuthProvider>().currentUser (AuthProvider,
+  // entirely FirebaseAuth-backed) -- always null now, since canonical "Sign in with LetBuyy"
+  // never touches FirebaseAuth. This screen is only reachable from profile_screen.dart's
+  // signed-in-only menu, so the buyer genuinely is signed in by the time they get here; there's
+  // just no canonical support-chat capability yet (SupportChatService is itself entirely
+  // FirebaseFirestore-backed, matching Returns' disposition this same pass). Renders the honest
+  // "not available" state directly instead of a misleading "please login"; the real body
+  // (_buildAppBar/_buildBody/_showNewChatOptions) was already unreachable.
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final user = context.watch<AuthProvider>().currentUser;
-
-    if (user == null) {
-      return Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0A0E14) : const Color(0xFFF5F7FA),
-        appBar: AppBar(title: const Text('Support')),
-        body: const Center(child: Text('Please login to access support')),
-      );
-    }
-
-    return PremiumScaffold(
-    // resizeToAvoidBottomInset handled internally
-    // backgroundColor handled internally
-    appBar: _buildAppBar(isDark),
-    body: _buildBody(isDark, user.uid),
-    floatingActionButton: widget.showNewChatButton ? FloatingActionButton.extended(
-      onPressed: _showNewChatOptions,
-      backgroundColor: AppColors.primary,
-      icon: const Icon(Icons.add_comment, color: Colors.white),
-      label: const Text('New Chat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-    ) : null,
-  );
-}
+    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF0A0E14) : const Color(0xFFF5F7FA),
+      appBar: AppBar(title: const Text('Support')),
+      body: const Center(child: Text('Support chat isn\'t available yet')),
+    );
+  }
 
   PreferredSizeWidget _buildAppBar(bool isDark) {
     return AppBar(

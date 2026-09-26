@@ -18,7 +18,6 @@ import 'auth/buyer_sign_in_controller.dart';
 import 'auth/buyer_sign_in_wiring.dart';
 
 // App-specific providers
-import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/search_provider.dart';
 
@@ -64,9 +63,28 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Auth provider
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        
+        // AuthProvider retired (R1 corrective, C2): entirely FirebaseAuth-backed with no
+        // canonical successor -- canonical "Sign in with LetBuyy" (BuyerSignInController) is
+        // this app's sole sign-in and never touches FirebaseAuth. Its constructor's own
+        // FirebaseAuth.instance.currentUser access threw uncaught with no try/catch anywhere in
+        // that chain (confirmed empirically; fixed and committed separately as an urgent, standalone
+        // safety fix before this deregistration, since cart_screen.dart's auth gate sat in
+        // MainScreen's eagerly-built IndexedStack -- a likely guaranteed crash on every app
+        // launch, not just one tab). Of its 12 consumers: cart_screen.dart/wishlist_screen.dart's
+        // outer gates and auth_gate.dart's AuthGatedWidget/requireAuth all checked the wrong
+        // (legacy) auth source and were rewired to canonical BuyerSignInController;
+        // edit_profile_screen.dart was rewired onto the canonical BuyerAccountApi (a real
+        // successor exists, matching its exact fullName/phone fields); support_chat_screen.dart,
+        // support_conversations_screen.dart, return_request_screen.dart and my_returns_screen.dart
+        // have no canonical successor yet (downstream of orders/returns/support, none of which
+        // have one) and were disconnected to an honest unavailable state, fixing "please login"
+        // wording that was actively misleading for a buyer who's genuinely signed in via
+        // canonical auth by the time these screens are reached; splash_screen.dart's reference
+        // was already fully dead code, left over when auth restoration moved off the splash
+        // screen; auth_screen.dart, web_auth_screen.dart, desktop_auth_screen.dart,
+        // mobile_auth_screen.dart, auth_bottom_sheet.dart and change_password_screen.dart were
+        // all fully orphaned once their legacy entry points were rewired, and deleted outright.
+
         // User provider
         ChangeNotifierProvider(create: (_) => UserProvider()),
         
