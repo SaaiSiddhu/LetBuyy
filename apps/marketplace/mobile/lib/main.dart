@@ -99,7 +99,19 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // SponsoredBannerProvider retired (R1 corrective, C2): its one consumer, sponsored_banner.dart,
         // now renders SizedBox.shrink() unconditionally (matching its own prior empty state) instead of
         // opening a FirebaseFirestore realtime listener with no canonical successor.
-        ChangeNotifierProvider(create: (_) => CouponProvider()),
+        // CouponProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
+        // canonical successor. Its methods had no userId guard (unlike LoyaltyProvider, kept
+        // registered), so they genuinely attempted Firestore queries whenever invoked --
+        // product_details_screen.dart called fetchAvailableCoupons() unconditionally on every
+        // view. Deeply embedded across checkout_screen.dart, payment_method_screen.dart (4 sites,
+        // including two order-placement code paths already unreachable since they sit behind an
+        // always-null safeFirebaseUserId()/safeFirebaseCurrentUser() guard), mobile_cart_screen.dart
+        // and web_cart_screen.dart (both via Consumer2<CartProvider, CouponProvider> wrapping the
+        // whole screen body), cart_summary.dart and coupon_selection_screen.dart (deleted outright,
+        // fully orphaned once its one opener was removed). Coupons could never actually load or
+        // apply in any of these (appliedCoupon/calculateDiscount already always resolved to
+        // null/0), so every fix computes that same already-true value directly or drops the
+        // now-nonfunctional "Apply Coupon" affordance, never a behavior change.
         // ReviewProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
         // canonical successor. getReviewsStream() built a raw Firestore stream directly and
         // unguarded in reviews_section.dart's build() -- a real crash risk on product_details_

@@ -9,7 +9,6 @@ import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'widgets/cart_item_card.dart';
 import 'widgets/empty_cart.dart';
-import 'coupon_selection_screen.dart';
 import '../checkout/checkout_screen.dart';
 import '../../widgets/premium_scaffold.dart';
 
@@ -360,8 +359,12 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     return PremiumScaffold(
       // backgroundColor handled by PremiumScaffold
       appBar: _buildAppBar(isDark, cardColor),
-      body: Consumer2<CartProvider, CouponProvider>(
-        builder: (context, cartProvider, couponProvider, child) {
+      // Phase 1R corrective (C2): was Consumer2<CartProvider, CouponProvider>. CouponProvider
+      // was entirely FirebaseFirestore-backed with no canonical successor; appliedCoupon was
+      // already always null (coupons could never load), so the BOGO auto-apply trigger below
+      // never fired and _calculateAdvancedPricing's coupon branch never ran.
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) {
           if (cartProvider.isLoading) {
             return _buildLoadingState(accentColor, isDark);
           }
@@ -372,19 +375,8 @@ class _MobileCartScreenState extends State<MobileCartScreen>
             );
           }
 
-          final currentCoupon = couponProvider.appliedCoupon;
-          if (currentCoupon != null && 
-              currentCoupon.type == CouponType.buyOneGetOne &&
-              _bogoFreeItems.isEmpty && 
-              !_isProcessingBogo) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _processBogoCoupon(currentCoupon, cartProvider);
-            });
-          }
-
           final pricingData = _calculateAdvancedPricing(
             cartProvider,
-            couponProvider,
           );
 
           return Stack(
@@ -415,15 +407,7 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                               accentColor,
                             ),
                             const SizedBox(height: 12),
-                            
-                            _buildCouponSection(
-                              couponProvider,
-                              isDark,
-                              cardColor,
-                              accentColor,
-                            ),
-                            const SizedBox(height: 12),
-                            
+
                             _buildDeliverySection(
                               cartProvider.items,
                               isDark,
@@ -434,7 +418,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                             
                             _buildAdvancedPriceSummary(
                               pricingData,
-                              couponProvider,
                               isDark,
                               cardColor,
                               accentColor,
@@ -468,36 +451,20 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     );
   }
 
+  // Phase 1R corrective (C2): CouponProvider was entirely FirebaseFirestore-backed with no
+  // canonical successor, and coupons could never actually be fetched or applied (Firestore
+  // unreachable) -- appliedCoupon was already always null, so couponDiscount/bogoValue/
+  // flatDiscount/percentageDiscount already always evaluated to 0. This computes the same
+  // always-true result directly instead of depending on the provider being in the tree.
   Map<String, double> _calculateAdvancedPricing(
     CartProvider cartProvider,
-    CouponProvider couponProvider,
   ) {
     final subtotal = cartProvider.subtotal;
-    final coupon = couponProvider.appliedCoupon;
-    
-    double couponDiscount = 0;
-    double bogoValue = 0;
-    double flatDiscount = 0;
-    double percentageDiscount = 0;
 
-    if (coupon != null) {
-      couponDiscount = couponProvider.calculateDiscount(
-        orderAmount: subtotal,
-        items: cartProvider.items,
-      );
-
-      switch (coupon.type) {
-        case CouponType.flat:
-          flatDiscount = couponDiscount;
-          break;
-        case CouponType.percentage:
-          percentageDiscount = couponDiscount;
-          break;
-        case CouponType.buyOneGetOne:
-          bogoValue = couponDiscount;
-          break;
-      }
-    }
+    const double couponDiscount = 0;
+    const double bogoValue = 0;
+    const double flatDiscount = 0;
+    const double percentageDiscount = 0;
 
     final shippingInfo = _calculateShippingFees(cartProvider.items);
     final shippingFee = shippingInfo.totalShippingFee;
@@ -748,133 +715,12 @@ Widget _buildCartItem({
 }
 
 
-  Widget _buildCouponSection(
-    CouponProvider couponProvider,
-    bool isDark,
-    Color cardColor,
-    Color accentColor,
-  ) {
-    final hasAppliedCoupon = couponProvider.appliedCoupon != null;
-    final isBogo = hasAppliedCoupon && couponProvider.appliedCoupon!.type == CouponType.buyOneGetOne;
-
-    return _buildCardSection(
-      isDark: isDark,
-      cardColor: cardColor,
-      title: 'Apply Coupon',
-      icon: Icons.local_offer_rounded,
-      accentColor: accentColor,
-      child: GestureDetector(
-        onTap: () async {
-          HapticFeedback.selectionClick();
-          await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => const CouponSelectionScreen(),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: hasAppliedCoupon
-                ? (isBogo ? AppColors.accent.withValues(alpha: isDark ? 0.15 : 0.08) : AppColors.success.withValues(alpha: isDark ? 0.15 : 0.08))
-                : (isDark ? Colors.grey[850] : Colors.grey[50]),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: hasAppliedCoupon
-                  ? (isBogo ? AppColors.accent.withValues(alpha: 0.3) : AppColors.success.withValues(alpha: 0.3))
-                  : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: hasAppliedCoupon
-                          ? (isBogo ? AppColors.accent.withValues(alpha: 0.2) : AppColors.success.withValues(alpha: 0.2))
-                          : accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: FaIcon(
-                      hasAppliedCoupon ? (isBogo ? FontAwesomeIcons.gift : FontAwesomeIcons.circleCheck) : FontAwesomeIcons.ticket,
-                      color: hasAppliedCoupon ? (isBogo ? AppColors.accent : AppColors.success) : accentColor,
-                      size: 16,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          hasAppliedCoupon ? couponProvider.appliedCoupon!.code : 'Select or enter coupon code',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: hasAppliedCoupon
-                                ? (isBogo ? AppColors.accent : AppColors.success)
-                                : (isDark ? Colors.white : Colors.black87),
-                          ),
-                        ),
-                        if (hasAppliedCoupon) ...[
-                          const SizedBox(height: 3),
-                          Text(
-                            isBogo ? '🎁 Buy 1 Get 1 Free Applied' : 'Coupon applied successfully',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (hasAppliedCoupon)
-                    IconButton(
-                      icon: Icon(Icons.close_rounded, size: 18, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                        couponProvider.removeCoupon();
-                        _bogoFreeItems.clear();
-                        setState(() {});
-                        SnackbarHelper.showInfo(context, 'Coupon removed');
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    )
-                  else
-                    Icon(Icons.arrow_forward_ios_rounded, size: 14, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                ],
-              ),
-              
-              if (isBogo && _bogoFreeItems.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.accentDark.withValues(alpha: 0.2) : AppColors.accentLight.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    children: [
-                      const FaIcon(FontAwesomeIcons.wandMagicSparkles, size: 12, color: AppColors.accent),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Free item automatically added to your cart',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? AppColors.accentLight : AppColors.accentDark),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // Phase 1R corrective (C2): "Apply Coupon" card removed outright (not just disconnected).
+  // CouponProvider was entirely FirebaseFirestore-backed with no canonical successor, so
+  // appliedCoupon was already always null -- this card was always in its "no coupon, tap to
+  // browse" state -- and tapping it opened coupon_selection_screen.dart, itself deleted this
+  // same pass as fully orphaned (coupons could never actually load). Offering a tap target to
+  // a screen that no longer exists would be worse than removing it from active navigation.
 
   Widget _buildDeliverySection(
     List<CartItemModel> items,
@@ -1179,7 +1025,6 @@ Widget _buildCartItem({
 
   Widget _buildAdvancedPriceSummary(
     Map<String, double> pricing,
-    CouponProvider couponProvider,
     bool isDark,
     Color cardColor,
     Color accentColor,
@@ -1192,7 +1037,10 @@ Widget _buildCartItem({
     final shippingFee = pricing['shippingFee']!;
     final expressDeliveryFee = pricing['expressDeliveryFee']!;
     final total = pricing['finalTotal']!;
-    final coupon = couponProvider.appliedCoupon;
+    // couponDiscount is always 0 (see _calculateAdvancedPricing), so the savings banner below
+    // never renders and never reads this -- kept as a typed null rather than removed, since the
+    // banner's text still references `coupon` structurally.
+    const CouponModel? coupon = null;
 
     return _buildCardSection(
       isDark: isDark,

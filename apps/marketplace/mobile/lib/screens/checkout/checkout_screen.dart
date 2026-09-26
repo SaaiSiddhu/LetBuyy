@@ -137,9 +137,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final backgroundColor = isDark ? AppColors.scaffoldDark : AppColors.scaffoldLight;
 
     final cartProvider = context.watch<CartProvider>();
-    final couponProvider = context.watch<CouponProvider>();
     final subtotal = cartProvider.subtotal;
-    final discount = couponProvider.calculateDiscount();
+    // Phase 1R corrective (C2): was couponProvider.calculateDiscount(). CouponProvider was
+    // entirely FirebaseFirestore-backed with no canonical successor; a coupon could never
+    // actually load, so this already always evaluated to 0.
+    const discount = 0.0;
     final total = subtotal - discount;
 
     return PremiumScaffold(

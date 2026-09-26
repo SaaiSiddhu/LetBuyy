@@ -71,10 +71,9 @@ export 'src/providers/order_provider.dart';
 export 'src/providers/category_provider.dart';
 export 'src/providers/cart_provider.dart';
 export 'src/providers/wishlist_provider.dart';
-export 'src/providers/coupon_provider.dart';
 // banner_provider.dart retired (Phase 1R, R1.3): entirely Firestore/Storage, no canonical successor.
-// sponsored_banner_provider.dart, app_update_provider.dart, address_provider.dart and
-// review_provider.dart exports retired (R1 corrective, C2): all Firestore-backed (address_provider.dart
+// sponsored_banner_provider.dart, app_update_provider.dart, address_provider.dart, review_provider.dart
+// and coupon_provider.dart exports retired (R1 corrective, C2): all Firestore-backed (address_provider.dart
 // via the legacy AuthService/DatabaseService) with no canonical successor and no remaining consumer
 // once their screens were disconnected. Provider source files themselves stay until C3's Firebase
 // SDK removal pass. ad_provider.dart (AdProvider, "Seller app" per its own doc comment) is a distinct

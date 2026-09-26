@@ -91,15 +91,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       if (userId == null) throw Exception('User not logged in');
 
       final cartProvider = context.read<CartProvider>();
-      final couponProvider = context.read<CouponProvider>();
       final loyaltyProvider = context.read<LoyaltyProvider>();
       final orderProvider = Provider.of<OrderProvider>(context, listen: false);
 
-      // Calculate total discount
-      final couponDiscount = couponProvider.calculateDiscount(
-        orderAmount: cartProvider.subtotal,
-        items: cartProvider.items,
-      );
+      // Phase 1R corrective (C2): was couponProvider.calculateDiscount(...). CouponProvider was
+      // entirely FirebaseFirestore-backed with no canonical successor; unreachable already, since
+      // this whole method throws at the userId == null check above before ever getting here.
+      const couponDiscount = 0.0;
       final loyaltyDiscount = _useLoyaltyPoints ? _loyaltyPointsToUse.toDouble() : 0.0;
       final totalDiscount = couponDiscount + loyaltyDiscount;
 
@@ -164,7 +162,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           razorpayOrderId: razorpayOrderId,
           razorpayPaymentId: razorpayPaymentId,
           razorpaySignature: razorpaySignature,
-          couponCode: isFirstOrder ? couponProvider.appliedCoupon?.code : null,
+          couponCode: null,
           createdAt: DateTime.now(),
         );
 
@@ -187,7 +185,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       }
 
       await cartProvider.clearCart();
-      couponProvider.removeCoupon();
 
       if (!mounted) return;
 
@@ -250,12 +247,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
 
 
-    // Calculate final total with discount
-    final couponProvider = context.read<CouponProvider>();
-    final discount = couponProvider.calculateDiscount(
-      orderAmount: cartProvider.subtotal,
-      items: cartProvider.items,
-    );
+    // Phase 1R corrective (C2): was couponProvider.calculateDiscount(...). CouponProvider was
+    // entirely FirebaseFirestore-backed with no canonical successor; unreachable already, since
+    // _proceedToConfirm returns at the `user == null` check above before ever getting here.
+    const discount = 0.0;
     final loyaltyDiscount = _useLoyaltyPoints ? _loyaltyPointsToUse.toDouble() : 0.0;
     final finalTotal = cartProvider.subtotal - discount - loyaltyDiscount;
 
@@ -491,14 +486,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
 
     final cart = context.watch<CartProvider>();
-    final coupon = context.watch<CouponProvider>();
-    
-    // Calculate discount with proper parameters
+
+    // Phase 1R corrective (C2): was context.watch<CouponProvider>()/coupon.calculateDiscount(...).
+    // CouponProvider was entirely FirebaseFirestore-backed with no canonical successor; a coupon
+    // could never actually load, so this already always evaluated to 0.
     final subtotal = cart.subtotal;
-    final discount = coupon.calculateDiscount(
-      orderAmount: subtotal,
-      items: cart.items,
-    );
+    const discount = 0.0;
     final total = subtotal - discount;
 
     return PremiumScaffold(
@@ -553,7 +546,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                     isDark: isDark,
                     cardColor: cardColor,
                     accentColor: accentColor,
-                    coupon: coupon,
                   ),
                   const SizedBox(height: 12),
                   _buildPaymentCard(isDark, cardColor, accentColor),
@@ -1085,7 +1077,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     required bool isDark,
     required Color cardColor,
     required Color accentColor,
-    required CouponProvider coupon,
   }) {
     return _buildCardSection(
       isDark: isDark,
@@ -1108,38 +1099,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ),
           ),
           _priceRow("Total Amount", total, isDark, isTotal: true, color: accentColor),
-          
-          // Coupon Applied Badge
-          if (coupon.appliedCoupon != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: isDark ? 0.15 : 0.08),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FaIcon(
-                    FontAwesomeIcons.ticket,
-                    size: 12,
-                    color: AppColors.success,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    '${coupon.appliedCoupon!.code} Applied',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.success,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          
+
+          // Phase 1R corrective (C2): "Coupon Applied" badge removed. CouponProvider was
+          // entirely FirebaseFirestore-backed with no canonical successor; appliedCoupon was
+          // already always null (coupons could never load), so this never rendered.
+
           // Savings Badge
           if (discount > 0) ...[
             const SizedBox(height: 8),

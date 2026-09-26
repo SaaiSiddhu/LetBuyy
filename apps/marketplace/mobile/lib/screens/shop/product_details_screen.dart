@@ -63,10 +63,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       if (!mounted) return;
       final provider = Provider.of<ProductProvider>(context, listen: false);
       provider.loadProductById(widget.productId);
-      
-      // Load coupons
-      Provider.of<CouponProvider>(context, listen: false).fetchAvailableCoupons();
-      
+
       // Save to recently viewed
       _saveRecentlyViewed();
       
@@ -1143,49 +1140,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  // REAL COUPONS SECTION
+  // Phase 1R corrective (C2): was Consumer<CouponProvider>. CouponProvider was entirely
+  // FirebaseFirestore-backed with no canonical successor; availableCoupons was already always
+  // empty (fetchAvailableCoupons() could never load anything, Firestore unreachable), so this
+  // section already always rendered nothing.
   Widget _buildCouponsSection(bool isDark) {
-    return Consumer<CouponProvider>(
-      builder: (context, couponProvider, _) {
-        final coupons = couponProvider.availableCoupons;
-        
-        if (coupons.isEmpty) return const SizedBox.shrink();
-
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF6B35).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.local_offer_rounded, color: Color(0xFFFF6B35), size: 18),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Available Coupons',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? AppColors.textLight : AppColors.textPrimary),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ...coupons.take(3).map((coupon) => _buildCouponItem(coupon, isDark)),
-            ],
-          ),
-        );
-      },
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildCouponItem(CouponModel coupon, bool isDark) {

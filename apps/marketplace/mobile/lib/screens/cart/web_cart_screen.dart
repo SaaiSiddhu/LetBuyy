@@ -145,8 +145,12 @@ class _WebCartScreenState extends State<WebCartScreen>
       resizeToAvoidBottomInset: false, // 🔥 KEYBOARD FIX
       backgroundColor: AppColors.background,
       appBar: _buildAppBar(),
-      body: Consumer2<CartProvider, CouponProvider>(
-        builder: (context, cartProvider, couponProvider, child) {
+      // Phase 1R corrective (C2): was Consumer2<CartProvider, CouponProvider>. CouponProvider
+      // was entirely FirebaseFirestore-backed with no canonical successor; calculateDiscount()
+      // already always returned 0 (coupons could never load), so this computes that same value
+      // directly instead of depending on the provider being in the tree.
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) {
           if (cartProvider.isLoading) {
             return _buildLoadingState();
           }
@@ -159,8 +163,7 @@ class _WebCartScreenState extends State<WebCartScreen>
 
           final deliveryCharge = 40.0;
           final tax = cartProvider.subtotal * 0.05;
-          // UPDATED: call calculateDiscount() without passing subtotal
-          final discount = couponProvider.calculateDiscount();
+          const discount = 0.0;
           final total = cartProvider.subtotal + deliveryCharge + tax - discount;
 
           return FadeTransition(
@@ -181,7 +184,6 @@ class _WebCartScreenState extends State<WebCartScreen>
                       width: 420,
                       child: _buildOrderSummary(
                         cartProvider,
-                        couponProvider,
                         deliveryCharge,
                         tax,
                         discount,
@@ -403,7 +405,6 @@ class _WebCartScreenState extends State<WebCartScreen>
 
   Widget _buildOrderSummary(
     CartProvider cartProvider,
-    CouponProvider couponProvider,
     double deliveryCharge,
     double tax,
     double discount,
@@ -433,7 +434,7 @@ class _WebCartScreenState extends State<WebCartScreen>
               deliveryCharge: deliveryCharge,
               tax: tax,
               total: total,
-              couponCode: couponProvider.appliedCoupon?.code,
+              couponCode: null,
             ),
           ),
           const SizedBox(height: 20),
