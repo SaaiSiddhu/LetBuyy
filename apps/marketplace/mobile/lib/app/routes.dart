@@ -24,7 +24,6 @@ import '../screens/support/support_chat_screen.dart';
 import '../screens/support/support_conversations_screen.dart';
 // Reels
 import '../screens/reels/reels_feed_screen.dart';
-import '../screens/shop/seller_profile_screen.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/search/visual_search_screen.dart';
@@ -80,7 +79,6 @@ class AppRoutes {
   static const String recentlyViewed = '/recently-viewed';
   
   // Seller Profile
-  static const String sellerProfile = '/seller-profile';
   static const String sellerStore = '/seller-store';
   
   // Checkout
@@ -137,15 +135,6 @@ class AppRoutes {
       if (reelId.isNotEmpty) {
         debugPrint('🎬 Opening specific reel: $reelId');
         return _buildRoute(ReelsFeedScreen(initialReelId: reelId), settings);
-      }
-    }
-    
-    // ✅ Handle /seller-profile/:id routes
-    if (routeName.startsWith('/seller-profile/')) {
-      final sellerId = routeName.replaceFirst('/seller-profile/', '');
-      if (sellerId.isNotEmpty) {
-        debugPrint('🏪 Opening seller profile: $sellerId');
-        return _buildRoute(SellerProfileScreen(sellerId: sellerId), settings);
       }
     }
     
@@ -247,13 +236,6 @@ class AppRoutes {
           }
         }
         return _buildErrorRoute('Product ID required', settings);
-
-      case sellerProfile:
-        final sellerId = settings.arguments as String?;
-        if (sellerId != null) {
-          return _buildRoute(SellerProfileScreen(sellerId: sellerId), settings);
-        }
-        return _buildErrorRoute('Seller ID required', settings);
 
       case sellerStore:
         final sellerId = settings.arguments as String?;
