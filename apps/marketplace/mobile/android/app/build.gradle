@@ -122,12 +122,12 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
     // Firebase BOM (use latest in lockstep for plugins)
+    // Phase 1R (R1.4): firebase-analytics-ktx and firebase-messaging-ktx removed — the pub-level
+    // packages backing them (firebase_analytics, firebase_messaging) have zero remaining callers.
     implementation platform('com.google.firebase:firebase-bom:33.3.0')
-    implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx'
-    implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-functions-ktx'
 
     // ML Kit dependencies (base only - add language packs if needed)
