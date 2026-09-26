@@ -21,7 +21,6 @@ import 'auth/buyer_sign_in_wiring.dart';
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/search_provider.dart';
-import 'providers/notification_provider.dart';
 import 'providers/marketplace_ad_provider.dart';
 
 // Routes
@@ -74,10 +73,13 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         
         // Search provider
         ChangeNotifierProvider(create: (_) => SearchProvider()),
-        
-        // Notification provider
-        ChangeNotifierProvider(create: (_) => NotificationProvider()),
-        
+
+        // NotificationProvider retired (R1 corrective, C2): entirely FirebaseFirestore/FirebaseAuth-
+        // backed (userId sourced from FirebaseAuth.instance.currentUser, which canonical "Sign in with
+        // LetBuyy" never populates) with no canonical successor. Its one consumer, notification_screen.dart
+        // at the '/notifications' route, had zero live navigation anywhere in the app (grepped — no
+        // pushNamed, no bell icon); both deleted rather than left wired to a dead identity source.
+
         // Shared providers from services package
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),

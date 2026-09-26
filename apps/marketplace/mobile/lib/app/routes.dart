@@ -20,8 +20,6 @@ import '../screens/chat/ai_chat_screen.dart';
 import '../screens/returns/my_returns_screen.dart';
 import '../screens/returns/return_request_screen.dart';
 import '../screens/returns/return_tracking_screen.dart';
-// Notification Screen
-import '../screens/notifications/notification_screen.dart';
 // Support Chat
 import '../screens/support/support_chat_screen.dart';
 import '../screens/support/support_conversations_screen.dart';
@@ -78,10 +76,7 @@ class AppRoutes {
   static const String aiChat = '/ai-chat';
   static const String supportChat = '/support-chat';
   static const String supportConversations = '/support-conversations';
-  
-  // Notifications
-  static const String notifications = '/notifications';
-   
+
   // Product
   static const String productDetails = '/product-details';
   static const String productDetail = '/product-details';  // Alias
@@ -249,11 +244,7 @@ class AppRoutes {
       case visualSearch:
       case '/visual-search':
         return _buildRoute(const VisualSearchScreen(), settings);
-        
-      case notifications:
-      case '/notifications':
-        return _buildRoute(const NotificationScreen(), settings);
-        
+
       // Handle product details with arguments
       case productDetails:
       case productDetail:
