@@ -4,17 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
-import '../../config/app_config.dart';
-import '../../providers/auth_provider.dart' as app_auth;
-import '../../widgets/auth_gate.dart';
+import '../../auth/buyer_sign_in_controller.dart';
+import '../../auth/buyer_sign_in_wiring.dart';
 import '../../widgets/letbuyy_account_card.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
@@ -40,13 +36,15 @@ class _ProfileScreenState extends State<ProfileScreen>
   late AnimationController _toastAnimationController;
   late Animation<Offset> _toastSlideAnimation;
 
-  bool _notificationsEnabled = true;
-  int _ordersCount = 0;
-  int _wishlistCount = 0;
+  // Phase 1R: orders and wishlist were Firestore-native (per-user collections keyed by the Firebase
+  // uid) with no canonical successor yet. Null means "not available" — shown honestly, never as 0.
+  int? _ordersCount;
+  int? _wishlistCount;
   int _addressesCount = 0;
   bool _isLoadingStats = true;
   bool _isCheckingAuth = true;
-  bool _isSellerAccount = false;
+  BuyerSignInController? _signIn;
+  BuyerSignInStatus? _lastSignInStatus;
 
   bool _showToast = false;
   String _toastMessage = '';
@@ -78,9 +76,12 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
     );
 
-    _checkAuthenticationAndLoadData();
-    _loadNotificationSetting();
-    
+    // BuyerSignInController.start() (main.dart) resolves asynchronously, so `status` may still be
+    // `restoring` here. A listener — not a one-shot check — is what lets a returning signed-in
+    // buyer's stats actually load once restoration finishes.
+    _signIn = context.read<BuyerSignInController>()..addListener(_onSignInChanged);
+    _onSignInChanged();
+
     // Initialize loyalty provider to show points
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<LoyaltyProvider>(context, listen: false).init();
@@ -89,6 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   void dispose() {
+    _signIn?.removeListener(_onSignInChanged);
     _animationController.dispose();
     _toastAnimationController.dispose();
     _toastTimer?.cancel();
@@ -117,153 +119,37 @@ class _ProfileScreenState extends State<ProfileScreen>
     });
   }
 
-  Future<void> _checkAuthenticationAndLoadData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final authProvider =
-        Provider.of<app_auth.AuthProvider>(context, listen: false);
+  void _onSignInChanged() {
+    if (!mounted) return;
+    final status = _signIn!.status;
+    setState(() => _isCheckingAuth = status == BuyerSignInStatus.restoring);
+    if (status == BuyerSignInStatus.signedIn && _lastSignInStatus != BuyerSignInStatus.signedIn) {
+      _animationController.forward();
+      _loadUserStats();
+    }
+    _lastSignInStatus = status;
+  }
 
-    if (user == null || authProvider.currentUser == null) {
-      if (mounted) {
-        setState(() => _isCheckingAuth = false);
-      }
+  // Phase 1R: orders and wishlist were Firestore collections keyed by the Firebase uid, with no
+  // canonical successor yet (R1.1). Addresses has one — BuyerAddressApi, already built by
+  // SUSTAINED-K/L — so only that count is real; the other two stay null (shown as "—", never a
+  // false 0) until a later phase gives them a canonical backend.
+  Future<void> _loadUserStats() async {
+    final token = _signIn?.token;
+    if (token == null) {
+      if (mounted) setState(() => _isLoadingStats = false);
       return;
     }
-
-    await _checkIfSeller(user.uid);
-
-    setState(() => _isCheckingAuth = false);
-    _animationController.forward();
-    _loadUserStats();
-  }
-
-  Future<void> _checkIfSeller(String uid) async {
     try {
-      final sellerDoc = await FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(uid)
-          .get();
-      
+      final addresses = await buildBuyerAddressApi().list(token);
       if (mounted) {
         setState(() {
-          _isSellerAccount = sellerDoc.exists;
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ Error checking seller account: $e');
-    }
-  }
-
-  Future<void> _loadUserStats() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) {
-        if (mounted) setState(() => _isLoadingStats = false);
-        return;
-      }
-
-      final ordersFuture = FirebaseFirestore.instance
-          .collection('orders')
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      final wishlistFuture = FirebaseFirestore.instance
-          .collection('wishlists')
-          .doc(userId)
-          .get();
-
-      final addressesFuture = FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      final results = await Future.wait([
-        ordersFuture,
-        wishlistFuture,
-        addressesFuture,
-      ]);
-
-      final ordersSnapshot = results[0] as QuerySnapshot;
-      final wishlistDoc = results[1] as DocumentSnapshot;
-      final addressesSnapshot = results[2] as QuerySnapshot;
-
-      int wishlistCount = 0;
-      if (wishlistDoc.exists) {
-        final data = wishlistDoc.data() as Map<String, dynamic>?;
-        if (data != null && data.containsKey('productIds')) {
-          wishlistCount = (data['productIds'] as List?)?.length ?? 0;
-        }
-      } else {
-        final itemsSnapshot = await FirebaseFirestore.instance
-            .collection('wishlists')
-            .doc(userId)
-            .collection('items')
-            .get();
-        wishlistCount = itemsSnapshot.docs.length;
-      }
-
-      if (mounted) {
-        setState(() {
-          _ordersCount = ordersSnapshot.docs.length;
-          _wishlistCount = wishlistCount;
-          _addressesCount = addressesSnapshot.docs.length;
+          _addressesCount = addresses.length;
           _isLoadingStats = false;
         });
       }
     } catch (e) {
       if (mounted) setState(() => _isLoadingStats = false);
-    }
-  }
-
-  Future<void> _loadNotificationSetting() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return;
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userDoc.exists && mounted) {
-        final data = userDoc.data() as Map<String, dynamic>;
-        setState(() {
-          _notificationsEnabled = data['notificationsEnabled'] ?? true;
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ Error loading notification: $e');
-    }
-  }
-
-  Future<void> _toggleNotifications(bool value) async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return;
-
-      if (value && !kIsWeb) {
-        final permission = await Permission.notification.request();
-        if (!permission.isGranted) {
-          _showToastMessage('⚠️ Notification permission denied', isSuccess: false);
-          return;
-        }
-      }
-
-      setState(() => _notificationsEnabled = value);
-
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'notificationsEnabled': value,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      if (mounted) {
-        _showToastMessage(
-          value ? '✅ Notifications enabled' : '🔕 Notifications disabled',
-          isSuccess: true,
-        );
-      }
-    } catch (e) {
-      _showToastMessage('Failed to update', isSuccess: false);
-      setState(() => _notificationsEnabled = !value);
     }
   }
 
@@ -370,14 +256,10 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
 
     if (confirmed == true && mounted) {
-      try {
-        await FirebaseAuth.instance.signOut();
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed(AppRoutes.auth);
-        }
-      } catch (e) {
-        _showToastMessage('Logout failed', isSuccess: false);
-      }
+      // The canonical controller's own signOut() clears its state and notifies listeners; this
+      // screen watches it below, so the rebuild alone takes the buyer back to the sign-in prompt —
+      // no separate navigation to a Firebase-era auth route.
+      await context.read<BuyerSignInController>().signOut();
     }
   }
 
@@ -387,22 +269,27 @@ class _ProfileScreenState extends State<ProfileScreen>
     final themeProvider = Provider.of<ThemeProvider>(context);
     final isDark = themeProvider.isDarkMode;
 
-    // Use Consumer to reactively listen to auth changes
-    return Consumer<app_auth.AuthProvider>(
-      builder: (context, authProvider, _) {
-        final user = authProvider.currentUser;
-        final firebaseUser = FirebaseAuth.instance.currentUser;
+    // Phase 1R: canonical "Sign in with LetBuyy" (identity-platform PKCE) is this app's sole sign-in.
+    return Consumer<BuyerSignInController>(
+      builder: (context, controller, _) {
+        final status = controller.status;
 
-        if (_isCheckingAuth) {
+        if (_isCheckingAuth || status == BuyerSignInStatus.restoring) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        if (user == null || firebaseUser == null) {
-          return AuthGatedWidget(
-            actionDescription: 'Please login to view your profile',
-            child: const SizedBox.shrink(),
+        if (status != BuyerSignInStatus.signedIn) {
+          return Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: LetBuyyAccountCard(isDark: isDark),
+                ),
+              ),
+            ),
           );
         }
 
@@ -421,9 +308,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // 🚀 WEB OPTIMIZATION: Skip animations on web
-                  kIsWeb 
-                      ? _buildCompactHeader(firebaseUser, isDark)
-                      : _buildCompactHeader(firebaseUser, isDark).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
+                  kIsWeb
+                      ? _buildCompactHeader(controller.email, isDark)
+                      : _buildCompactHeader(controller.email, isDark).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
                   
                   const SizedBox(height: 12), // Tighter spacing
 
@@ -443,7 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       _buildPremiumMenuTile(
                         icon: Icons.shopping_bag_rounded,
                         title: 'My Orders',
-                        subtitle: '$_ordersCount orders',
+                        subtitle: _ordersCount == null ? 'Not available' : '$_ordersCount orders',
                         iconColor: const Color(0xFF3B82F6),
                         onTap: () => _navigateToRoute(AppRoutes.orders),
                         isDark: isDark,
@@ -452,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       _buildPremiumMenuTile(
                         icon: Icons.favorite_rounded,
                         title: 'Wishlist',
-                        subtitle: '$_wishlistCount items',
+                        subtitle: _wishlistCount == null ? 'Not available' : '$_wishlistCount items',
                         iconColor: const Color(0xFFEF4444),
                         onTap: () => _navigateToRoute(AppRoutes.wishlist),
                         isDark: isDark,
@@ -495,18 +382,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                         isDark: isDark,
                       ),
                       _buildDivider(isDark),
+                      // Phase 1R: the notification-preference toggle was a Firestore write with no
+                      // canonical successor yet (R1.1) — shown honestly disabled, not a toggle that
+                      // silently does nothing.
                       _buildPremiumMenuTile(
                         icon: Icons.notifications_active_rounded,
                         title: 'Notifications',
-                        subtitle: _notificationsEnabled ? 'On' : 'Off',
+                        subtitle: 'Not available yet',
                         iconColor: const Color(0xFFF43F5E),
-                        onTap: () => _toggleNotifications(!_notificationsEnabled),
+                        onTap: () => _showToastMessage('Notifications aren’t available yet', isSuccess: false),
                         isDark: isDark,
                         trailing: Transform.scale(
                           scale: 0.7,
                           child: Switch.adaptive(
-                            value: _notificationsEnabled,
-                            onChanged: _toggleNotifications,
+                            value: false,
+                            onChanged: null,
                             activeColor: AppColors.primary,
                           ),
                         ),
@@ -523,8 +413,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ],
                   ),
 
-                  // APPID-P4d: the buyer's one LetBuyy account, only with LETBUYY_BUYER_SIGN_IN on.
-                  if (AppConfig.buyerSignInEnabled) ...[
+                  // APPID-P4d: the buyer's one LetBuyy account. Reachable here only once already
+                  // signed in (the outer gate above), so this card's own sign-in button never shows —
+                  // it surfaces "Manage profile & addresses" and sign-out instead.
+                  ...[
                     const SizedBox(height: 20),
                     _buildSectionTitle('LetBuyy account', isDark),
                     const SizedBox(height: 8),
@@ -642,7 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   // NEW PREMIUM WIDGETS
   // ---------------------------------------------------------------------------
 
-  Widget _buildCompactHeader(User? user, bool isDark) {
+  Widget _buildCompactHeader(String? email, bool isDark) {
     return Consumer<LoyaltyProvider>(
       builder: (context, loyaltyProvider, _) {
         final tier = loyaltyProvider.currentTier;
@@ -681,10 +573,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                       child: CircleAvatar(
                         radius: 24,
                         backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
-                        backgroundImage: user?.photoURL != null ? NetworkImage(user!.photoURL!) : null,
-                        child: user?.photoURL == null
-                            ? Icon(Icons.person, size: 24, color: tierColor)
-                            : null,
+                        // Phase 1R: the canonical buyer session has no photo (R1.1) — always the
+                        // placeholder icon, never a broken/missing-image state.
+                        child: Icon(Icons.person, size: 24, color: tierColor),
                       ),
                     ),
                   ),
@@ -729,8 +620,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Row(
                   children: [
                     Flexible(
+                      // Phase 1R: the canonical buyer session carries an email, not a separate
+                      // display name (R1.1) — the email itself is shown on the line below, so this
+                      // headline is just a greeting rather than repeating it.
                       child: Text(
-                        user?.displayName ?? 'Welcome',
+                        'Welcome back',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -741,16 +635,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    // Verified Badge
-                    if (user?.emailVerified == true)
-                      Icon(Icons.verified_rounded, color: AppColors.primary, size: 16),
                   ],
                 ),
                 const SizedBox(height: 4),
                 // User Email
                 Text(
-                  user?.email ?? '',
+                  email ?? '',
                   style: TextStyle(
                     fontSize: 12,
                     color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.5),
@@ -1179,7 +1069,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: _buildQuickActionCard(
             icon: Icons.shopping_bag_rounded,
             label: 'Orders',
-            count: _ordersCount,
+            count: _ordersCount ?? 0,
             color: const Color(0xFF3B82F6),
             onTap: () => _navigateToRoute(AppRoutes.orders),
             isDark: isDark,
@@ -1190,7 +1080,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           child: _buildQuickActionCard(
             icon: Icons.favorite_rounded,
             label: 'Wishlist',
-            count: _wishlistCount,
+            count: _wishlistCount ?? 0,
             color: const Color(0xFFEF4444),
             onTap: () => _navigateToRoute(AppRoutes.wishlist),
             isDark: isDark,
