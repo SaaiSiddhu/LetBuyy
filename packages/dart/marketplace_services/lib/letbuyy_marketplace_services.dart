@@ -71,7 +71,7 @@ export 'src/providers/cart_provider.dart';
 export 'src/providers/wishlist_provider.dart';
 export 'src/providers/coupon_provider.dart';
 export 'src/providers/review_provider.dart';
-export 'src/providers/banner_provider.dart';
+// banner_provider.dart retired (Phase 1R, R1.3): entirely Firestore/Storage, no canonical successor.
 export 'src/providers/sponsored_banner_provider.dart';
 export 'src/providers/address_provider.dart';
 export 'src/providers/app_update_provider.dart';

@@ -90,9 +90,6 @@ class _MobileHomeScreenState extends State<MobileHomeScreen>
       // Load from cache (instant) → then refresh from Firestore in background
       productProvider.initializeFromCache();
       categoryProvider.initializeFromCache();
-      
-      // Banners use realtime listener (no cache needed)
-      Provider.of<BannerProvider>(context, listen: false).loadBanners();
     });
   }
 
@@ -243,7 +240,6 @@ class _MobileHomeScreenState extends State<MobileHomeScreen>
     await Future.wait([
       Provider.of<ProductProvider>(context, listen: false).loadProducts(forceReload: true),
       Provider.of<CategoryProvider>(context, listen: false).loadCategories(forceReload: true),
-      Provider.of<BannerProvider>(context, listen: false).loadBanners(),
     ]);
 
     setState(() => _isRefreshing = false);

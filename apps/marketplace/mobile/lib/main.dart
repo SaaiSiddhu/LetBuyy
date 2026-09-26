@@ -113,7 +113,8 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AddressProvider()),
         
         // ✅ ADDED: Missing providers
-        ChangeNotifierProvider(create: (_) => BannerProvider()),
+        // BannerProvider retired (Phase 1R, R1.3): it was entirely FirebaseFirestore/FirebaseStorage,
+        // with no canonical successor. banner_carousel_section.dart now renders a static placeholder.
         ChangeNotifierProvider(create: (_) => SponsoredBannerProvider()),
         ChangeNotifierProvider(create: (_) => CouponProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),

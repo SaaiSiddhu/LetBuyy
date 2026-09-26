@@ -8,7 +8,7 @@ export 'src/address_model.dart';
 export 'src/app_update_model.dart';
 
 // Banner
-export 'src/banner_model.dart';
+// banner_model.dart retired with banner_provider.dart (Phase 1R, R1.3) — its only consumer.
 
 // Cart
 export 'src/cart_item_model.dart';
