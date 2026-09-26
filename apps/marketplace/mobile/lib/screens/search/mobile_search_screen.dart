@@ -239,7 +239,11 @@ class _MobileSearchScreenState extends State<MobileSearchScreen> {
         results = results.where((p) => categories.contains(p.categoryId)).toList();
       }
       if (_filters['inStock'] == true) {
-        results = results.where((p) => p.stock > 0).toList();
+        // C2 corrective (27 September 2026 review, finding 1): "unknown stock is not proven
+        // sold-out" -- an in-stock-only filter must not silently exclude every canonical
+        // feed-level result (stockKnown always false there) just because it can't confirm them;
+        // it excludes only a real, observed zero.
+        results = results.where((p) => !p.stockKnown || p.stock > 0).toList();
       }
     }
 

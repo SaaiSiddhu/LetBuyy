@@ -141,6 +141,19 @@ class ProductModel {
   final String? subCategoryId;
   final List<String> images;
   final int stock;
+  // C2 corrective (27 September 2026 review, finding 1): the canonical marketplace feed has no
+  // stock field at all (only a single listing's own detail carries one), and price can in
+  // principle be absent too -- ProductProvider's canonical adapters used to default both to a
+  // fixed "in stock" / "free" value, which is fabricating a fact the source never supplied
+  // ("listing approval is not evidence of stock quantity... unknown price is not a free price").
+  // These two flags let `stock`/`salePrice` carry a real, honest default (0) for arithmetic
+  // without every reader having to guess whether that default means "actually zero" or "we don't
+  // know" -- true for any source (Firestore-era or canonical) that has a real value for the field,
+  // false only where the adapter that built this ProductModel genuinely has none. See
+  // ProductProvider._productFromFeedItem/_productFromListingDetail and this class's own
+  // isPurchasable getter for how they're used.
+  final bool stockKnown;
+  final bool priceKnown;
   final double rating;
   final int reviewCount;
   final bool isFeatured;
@@ -202,6 +215,8 @@ class ProductModel {
     this.subCategoryId,
     required this.images,
     required this.stock,
+    this.stockKnown = true,
+    this.priceKnown = true,
     this.rating = 0.0,
     this.reviewCount = 0,
     this.isFeatured = false,
@@ -255,6 +270,15 @@ class ProductModel {
   String get category => categoryId;
   bool get inStock => stock > 0;
   String get primaryImage => images.isNotEmpty ? images.first : '';
+
+  // C2 corrective (27 September 2026 review, finding 1): deliberately separate from `inStock`,
+  // which keeps its existing, simpler "stock > 0" meaning everywhere it was already used as a
+  // display signal. This is specifically for gating an action that commits to a price or promises
+  // availability (adding to cart, "Buy Now") -- an unknown price or an unknown stock count must
+  // never let that action proceed as if both were confirmed. `inStock` alone would say yes for a
+  // product whose stock was never actually observed, exactly the fabricated-fact failure mode this
+  // finding is about.
+  bool get isPurchasable => priceKnown && stockKnown && stock > 0;
 
   // ✅ NEW: Approval getters
   bool get isPending => approvalStatus == ProductApprovalStatus.pending;
@@ -454,6 +478,8 @@ class ProductModel {
     String? subCategoryId,
     List<String>? images,
     int? stock,
+    bool? stockKnown,
+    bool? priceKnown,
     double? rating,
     int? reviewCount,
     bool? isFeatured,
@@ -509,6 +535,8 @@ class ProductModel {
       subCategoryId: subCategoryId ?? this.subCategoryId,
       images: images ?? this.images,
       stock: stock ?? this.stock,
+      stockKnown: stockKnown ?? this.stockKnown,
+      priceKnown: priceKnown ?? this.priceKnown,
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       isFeatured: isFeatured ?? this.isFeatured,

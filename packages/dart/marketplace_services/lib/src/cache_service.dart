@@ -102,6 +102,8 @@ class CacheService {
       'subCategoryId': p.subCategoryId,
       'images': p.images,
       'stock': p.stock,
+      'stockKnown': p.stockKnown,
+      'priceKnown': p.priceKnown,
       'rating': p.rating,
       'reviewCount': p.reviewCount,
       'isFeatured': p.isFeatured,
@@ -129,6 +131,11 @@ class CacheService {
       subCategoryId: map['subCategoryId'],
       images: List<String>.from(map['images'] ?? []),
       stock: (map['stock'] as num?)?.toInt() ?? 0,
+      // Defaults to false (unknown), not true -- a cache entry written before this exact fix
+      // landed (already under the v3 key from the version bump) would lack these keys, and
+      // "unknown" is the honest assumption for a value we can't actually confirm, never "true."
+      stockKnown: map['stockKnown'] as bool? ?? false,
+      priceKnown: map['priceKnown'] as bool? ?? false,
       rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: (map['reviewCount'] as num?)?.toInt() ?? 0,
       isFeatured: map['isFeatured'] ?? false,

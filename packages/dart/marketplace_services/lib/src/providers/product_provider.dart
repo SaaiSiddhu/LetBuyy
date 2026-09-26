@@ -340,14 +340,22 @@ class ProductProvider with ChangeNotifier {
   // so they hide cleanly; product_details_screen.dart's rating/review badge did not and was fixed
   // alongside this rewire; filter_drawer.dart's "Rating" filter section was fixed the same way.
   //
-  // `stock` has no equivalent on a feed row (only a single listing's detail carries one) -- a grid
-  // card's "in stock" is therefore an honest "approved and currently listed, not a real-time count"
-  // signal, same as any product list has always been a moment-in-time snapshot. It changes nothing
-  // about correctness: every money/inventory decision is still recomputed server-side at checkout
-  // (the Constitution's server-authoritative-amounts invariant), independent of what a grid card
-  // shows. The detail screen gets the real figure from MarketplaceListingDetail.stock.
+  // C2 corrective (27 September 2026 review, finding 1): `stock: 1` here used to be an outright
+  // fabrication, not an honest default -- "listing approval is not evidence of stock quantity," and
+  // product_card.dart's own "Add to Cart" button is gated directly on `stock == 0`, so this
+  // previously left every canonical grid card's quick-add enabled regardless of real availability.
+  // A feed row has no stock field at all (only a single listing's own detail does), so `stockKnown`
+  // is unconditionally false here; `stock` itself stays 0, a safe, inert value that is never read
+  // as a positive claim once callers check stockKnown/isPurchasable first (see that getter, and the
+  // grid-card fixes in the same commit as this one). Likewise `salePrice: (item.price ?? 0)` used
+  // to collapse "the source never sent a price" into the same value as "this item is free" --
+  // `priceKnown` distinguishes them the same way. `createdAt`/`updatedAt` used to be
+  // DateTime.now(), corrupting sortProducts's "newest" ordering into an unpredictable near-tie
+  // between whatever happened to be mapped microseconds apart in the same request -- approvedAt is
+  // a real, meaningful timestamp the feed already returns (when the gateway approved this listing),
+  // used for both since the feed carries no separate "last updated" signal.
   ProductModel _productFromFeedItem(MarketplaceFeedItem item) {
-    final now = DateTime.now();
+    final approvedAt = DateTime.tryParse(item.approvedAt) ?? DateTime.now();
     return ProductModel(
       id: item.listingId,
       sellerId: item.siteId,
@@ -355,17 +363,20 @@ class ProductProvider with ChangeNotifier {
       name: item.name,
       description: '',
       salePrice: (item.price ?? 0).toDouble(),
+      priceKnown: item.price != null,
       originalPrice: item.comparePrice?.toDouble(),
       categoryId: item.categorySlug ?? '',
       images: item.images,
-      stock: 1,
-      createdAt: now,
-      updatedAt: now,
+      stock: 0,
+      stockKnown: false,
+      createdAt: approvedAt,
+      updatedAt: approvedAt,
     );
   }
 
   ProductModel _productFromListingDetail(MarketplaceListingDetail detail) {
-    final now = DateTime.now();
+    final approvedAt = detail.approvedAt == null ? null : DateTime.tryParse(detail.approvedAt!);
+    final timestamp = approvedAt ?? DateTime.now();
     return ProductModel(
       id: detail.listingId,
       sellerId: detail.siteId,
@@ -373,12 +384,14 @@ class ProductProvider with ChangeNotifier {
       name: detail.name,
       description: detail.description ?? '',
       salePrice: (detail.price ?? 0).toDouble(),
+      priceKnown: detail.price != null,
       originalPrice: detail.comparePrice?.toDouble(),
       categoryId: detail.categorySlug ?? '',
       images: detail.images,
       stock: detail.stock ?? 0,
-      createdAt: now,
-      updatedAt: now,
+      stockKnown: detail.stock != null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
       variantOptions: _variantOptionsFromCanonical(detail.variants),
       variants: detail.variants.map(_variantFromCanonical).toList(),
     );

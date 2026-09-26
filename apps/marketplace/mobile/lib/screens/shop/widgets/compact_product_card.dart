@@ -336,8 +336,9 @@ class _CompactProductCardState extends State<CompactProductCard>
             ),
           ),
 
-          // Out of Stock Overlay
-          if (widget.product.stock == 0)
+          // Out of Stock Overlay -- C2 corrective (27 September 2026 review, finding 1): stockKnown
+          // guards this so unknown (canonical feed-level) stock never renders as a confirmed claim.
+          if (widget.product.stockKnown && widget.product.stock == 0)
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(

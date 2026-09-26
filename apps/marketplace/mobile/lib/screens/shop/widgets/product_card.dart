@@ -372,8 +372,10 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                // Out of Stock Overlay
-                if (widget.product.stock == 0)
+                // Out of Stock Overlay -- C2 corrective (27 September 2026 review, finding 1):
+                // stockKnown guards this so an unknown (canonical feed-level) stock never renders
+                // as a confirmed "OUT OF STOCK" claim; only a real, observed zero does.
+                if (widget.product.stockKnown && widget.product.stock == 0)
                   Positioned.fill(
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.6),
@@ -640,8 +642,8 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                // Out of Stock
-                if (widget.product.stock == 0)
+                // Out of Stock -- see the grid-view overlay above for why this checks stockKnown.
+                if (widget.product.stockKnown && widget.product.stock == 0)
                   Positioned.fill(
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.5),
@@ -825,14 +827,18 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                  // Add to Cart Button
+                  // Add to Cart Button -- C2 corrective (27 September 2026 review, finding 1): was
+                  // gated on `stock == 0` alone, which the canonical feed's fabricated `stock: 1`
+                  // made permanently true (never zero), so this stayed enabled regardless of real
+                  // availability. isPurchasable additionally requires a real, observed stock AND
+                  // price before allowing the commit this button makes.
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: SizedBox(
                       width: double.infinity,
                       height: 34,
                       child: ElevatedButton(
-                        onPressed: widget.product.stock == 0 ? null : () {
+                        onPressed: !widget.product.isPurchasable ? null : () {
                           HapticFeedback.mediumImpact();
                           Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
                           ScaffoldMessenger.of(context).showSnackBar(
