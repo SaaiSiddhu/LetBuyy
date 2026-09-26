@@ -124,14 +124,36 @@ const twoFactorRoute = readFile('services/api-gateway/src/routes/two-factor.ts')
 reporter.assert(twoFactorRoute.includes('env.TOTP_ENCRYPTION_KEY'), 'TOTP encryption must use the dedicated TOTP key');
 reporter.assert(!twoFactorRoute.includes('env.AUTH_SECRET || env.INTERNAL_API_SECRET'), 'TOTP encryption must not share auth/internal secrets');
 
-const consoleAuth = readFile('apps/internal/console/src/lib/console-auth-server.ts');
+// The allowlist/TOTP implementation moved to console-mfa.ts (SUSTAINED-E) so it can run under a
+// plain `node --test` without server-only/Next.js imports; console-auth-server.ts re-exports it as
+// a barrel. Check both: the real logic in console-mfa.ts, and that the barrel still re-exports it
+// (a barrel regression would silently break every existing caller while this file kept passing).
+const consoleMfa = readFile('apps/internal/console/src/lib/console-mfa.ts');
 for (const fragment of [
   'PLATFORM_CONSOLE_TOTP_SECRETS',
   'getConsoleTotpSecretForPrincipal',
   'verifyConsoleTotp(code: string, email: string)',
   '!isProductionConsoleRuntime()',
+  'MFA_MAX_ATTEMPTS',
+  'timingSafeEqual',
 ]) {
-  reporter.assert(consoleAuth.includes(fragment), `platform console per-principal TOTP missing: ${fragment}`);
+  reporter.assert(consoleMfa.includes(fragment), `platform console per-principal TOTP missing: ${fragment}`);
+}
+const consoleAuth = readFile('apps/internal/console/src/lib/console-auth-server.ts');
+for (const fragment of ['getConsoleTotpSecretForPrincipal', 'verifyConsoleTotp']) {
+  reporter.assert(
+    new RegExp(`^\\s*${fragment},?\\s*$`, 'm').test(consoleAuth),
+    `console-auth-server.ts must still re-export ${fragment} from console-mfa.ts`,
+  );
+}
+// SUSTAINED-E closed a real lockout+replay+timing-safety gap; pin that the regression tests proving
+// it stay present, not only the source text that could superficially match without them.
+const consoleMfaTest = readFile('apps/internal/console/src/lib/console-mfa.test.ts');
+for (const fragment of [
+  'REGRESSION CLOSED — replay',
+  'REGRESSION CLOSED — lockout',
+]) {
+  reporter.assert(consoleMfaTest.includes(fragment), `console-mfa.test.ts missing its own regression test: ${fragment}`);
 }
 
 const oidcDisabled = readFile('apps/platform/identity/src/lib/identity-foundation/oidc-disabled.ts');
