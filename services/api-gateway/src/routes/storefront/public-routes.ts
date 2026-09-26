@@ -430,37 +430,59 @@ export function registerStorefrontPublicRoutes(
     // rejects both queries before they run. That fail-closed state is deliberate and unchanged
     // here: making a platform-wide public store directory live is an owner decision (CAP-C60),
     // and getSupabaseAdminUnguarded is not the instrument for it — see its conditions 1 and 3.
+    //
+    // F1.5 (foundation-phase1-closure, 2026-09-26): the guard's rejection used to propagate
+    // uncaught to the global error handler, so an anonymous caller saw an opaque `500
+    // INTERNAL_ERROR` — indistinguishable from a real crash, and logged as one. The catch below
+    // recognizes only that one documented, expected rejection (by the exact message the guard
+    // throws — pinned by __tests__/storefront-directory-exposure.test.ts) and reports it as the
+    // deliberate, named unavailability it is, at 503, matching this file's own house style
+    // (see METAFIELDS_UNAVAILABLE in ../metafields.ts and TENANT_TX_UNAVAILABLE in ../loyalty.ts).
+    // Anything else — a real bug, a genuine DB outage — still falls through to `throw`, unchanged,
+    // so it is still logged and still a 500. No query predicate below changed.
     router.get('/directory', async (c) => {
-        const db = getSupabaseAdmin(c);
+        try {
+            const db = getSupabaseAdmin(c);
 
-        const { data: storesRaw } = await db
-            .from('sites')
-            .select(`
-                store_name,
-                name,
-                logo_url,
-                theme_id,
-                status,
-                site_type,
-                created_at
-            `)
-            .eq('status', 'published')
-            .is('deleted_at', null)
-            .order('created_at', { ascending: false })
-            .limit(12);
+            const { data: storesRaw } = await db
+                .from('sites')
+                .select(`
+                    store_name,
+                    name,
+                    logo_url,
+                    theme_id,
+                    status,
+                    site_type,
+                    created_at
+                `)
+                .eq('status', 'published')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(12);
 
-        const [storesCount, themesCount] = await Promise.all([
-            db.from('sites').select('*', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
-            db.from('online_store_themes').select('*', { count: 'exact', head: true }),
-        ]);
+            const [storesCount, themesCount] = await Promise.all([
+                db.from('sites').select('*', { count: 'exact', head: true }).eq('status', 'published').is('deleted_at', null),
+                db.from('online_store_themes').select('*', { count: 'exact', head: true }),
+            ]);
 
-        return c.json(success({
-            stores: storesRaw || [],
-            stats: {
-                totalStores: storesCount.count || 0,
-                totalThemes: themesCount.count || 0,
-            },
-        }));
+            return c.json(success({
+                stores: storesRaw || [],
+                stats: {
+                    totalStores: storesCount.count || 0,
+                    totalThemes: themesCount.count || 0,
+                },
+            }));
+        } catch (err) {
+            if (err instanceof Error && /Tenant table sites requires a tenant\/owner predicate/.test(err.message)) {
+                return c.json({
+                    error: {
+                        code: 'DIRECTORY_UNAVAILABLE',
+                        message: 'The public store directory is not available yet.',
+                    },
+                }, 503);
+            }
+            throw err;
+        }
     });
 
     // GET /storefront/store/:storeId — Public published store data by immutable ID.
