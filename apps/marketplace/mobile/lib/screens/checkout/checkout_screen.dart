@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -13,6 +13,7 @@ import 'add_address_screen.dart';
 import 'payment_method_screen.dart';
 import 'widgets/checkout_steps.dart';
 import '../../widgets/premium_scaffold.dart';
+import '../../auth/buyer_sign_in_controller.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -37,42 +38,63 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
+  // C3 (Firebase SDK removal): was guarded on safeFirebaseUserId() == null, always true under
+  // canonical auth -- but that guard just `return`ed, without ever setting _isLoadingAddresses to
+  // false, so every real buyer saw this screen's address section spin forever: not merely "no
+  // addresses shown," but stuck loading, permanently, with the "Place Order" button disabled the
+  // entire time (hasAddress in _buildBottomBar can never become true). Now reads through the same
+  // canonical BuyerAddressApi letbuyy_account_screen.dart and address_selection_sheet.dart use,
+  // and resets the loading flag on every path, including "not signed in."
   Future<void> _loadAddresses() async {
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null) {
+      if (mounted) setState(() => _isLoadingAddresses = false);
+      return;
+    }
     try {
-      final userId = safeFirebaseUserId();
-      if (userId == null) return;
-
-      final snapshot = await FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      if (mounted) {
-        setState(() {
-          _addresses = snapshot.docs
-              .map((doc) => AddressModel.fromMap(doc.data()))
-              .toList();
-
-          _addresses.sort((a, b) {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (!mounted) return;
+      setState(() {
+        _addresses = addresses.map(_toAddressModel).toList()
+          ..sort((a, b) {
             if (a.isDefault && !b.isDefault) return -1;
             if (!a.isDefault && b.isDefault) return 1;
             return 0;
           });
 
-          if (_addresses.isNotEmpty) {
-            _selectedAddress = _addresses.firstWhere(
-              (addr) => addr.isDefault,
-              orElse: () => _addresses.first,
-            );
-          }
+        if (_addresses.isNotEmpty) {
+          _selectedAddress = _addresses.firstWhere(
+            (addr) => addr.isDefault,
+            orElse: () => _addresses.first,
+          );
+        }
 
-          _isLoadingAddresses = false;
-        });
-      }
+        _isLoadingAddresses = false;
+      });
     } catch (e) {
       debugPrint('Error loading addresses: $e');
       if (mounted) setState(() => _isLoadingAddresses = false);
     }
+  }
+
+  /// [BuyerAddress] has no photo/lat-long concept of its own -- this is purely a display adapter,
+  /// the same mapping address_selection_sheet.dart's own _addressModelFromBuyerAddress already uses.
+  AddressModel _toAddressModel(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
   }
 
   Future<void> _openInMaps(AddressModel addr) async {
