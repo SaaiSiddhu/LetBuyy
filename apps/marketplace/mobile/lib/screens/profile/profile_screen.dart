@@ -648,40 +648,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 6),
-                // Dynamic Tier Badge from LoyaltyProvider
-                Consumer<LoyaltyProvider>(
-                  builder: (context, loyaltyProvider, _) {
-                    final tier = loyaltyProvider.currentTier;
-                    final tierColor = Color(tier.colorValue);
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [tierColor.withValues(alpha: 0.2), tierColor.withValues(alpha: 0.1)],
-                        ),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: tierColor.withValues(alpha: 0.3)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(_getTierIcon(tier), size: 12, color: tierColor),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${tier.displayName.toUpperCase()} MEMBER',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: tierColor,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                // C3 (Firebase SDK removal, LoyaltyProvider audit): the "TIER MEMBER" badge that
+                // was here is deleted, not just restyled -- it always read LoyaltyProvider.currentTier,
+                // which always defaults to bronze (LoyaltyProvider.init() requires safeFirebaseUserId(),
+                // always null under canonical auth) and can never legitimately change for any real user:
+                // the only code that ever advances a tier, OrderService.awardPointsForOrder, has zero
+                // live callers anywhere in the app (grepped). A permanent, unfalsifiable "BRONZE MEMBER"
+                // label is indistinguishable from a genuine new member with a real, working tier system --
+                // exactly the fabricated-permanent-state failure mode this phase exists to catch, just
+                // surfaced as a UI label rather than a wrong value. The avatar ring color above is left
+                // as-is (purely decorative, makes no textual claim).
               ],
             ),
           ),
@@ -716,45 +692,34 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
+  // C3 (Firebase SDK removal, LoyaltyProvider audit): the "Loyalty Points" quick-action card that
+  // was here is deleted -- it always read LoyaltyProvider.points (always 0, same reasoning as the
+  // tier badge removed from _buildCompactHeader above) and tapped through to a full "rewards"
+  // screen (LoyaltyScreen) that can never show real, changing data for any user. Not just a wrong
+  // number: a real-looking, tappable feature with no live backend behind it anywhere in the app.
   Widget _buildPremiumQuickActions(bool isDark) {
-    return Consumer<LoyaltyProvider>(
-      builder: (context, loyaltyProvider, _) {
-        final points = loyaltyProvider.points;
-        final tier = loyaltyProvider.currentTier;
-        final tierColor = Color(tier.colorValue);
-        
-        return Container(
-          height: 90,
-          padding: const EdgeInsets.symmetric(horizontal: 2),
-          child: Row(
-            children: [
-              Expanded(child: _buildGradientActionCard(
-                'Loyalty\nPoints', 
-                points > 999 ? '${(points/1000).toStringAsFixed(1)}k' : '$points', 
-                Icons.stars_rounded, 
-                [tierColor, tierColor.withValues(alpha: 0.8)], 
-                () => _navigateToRoute(AppRoutes.loyalty),
-              )),
-              const SizedBox(width: 10),
-              Expanded(child: _buildGradientActionCard(
-                'Messages\n& Chat', 
-                 'Chat', 
-                Icons.chat_bubble_rounded, 
-                [const Color(0xFF3B82F6), const Color(0xFF2563EB)], 
-                () => _navigateToRoute(AppRoutes.supportConversations),
-              )),
-              const SizedBox(width: 10),
-              Expanded(child: _buildGradientActionCard(
-                'AI\nAssistant', 
-                'Ask', 
-                Icons.auto_awesome_rounded, 
-                [const Color(0xFF8B5CF6), const Color(0xFF7C3AED)], 
-                () => _navigateToRoute(AppRoutes.aiChat),
-              )),
-            ],
-          ),
-        );
-      },
+    return Container(
+      height: 90,
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Row(
+        children: [
+          Expanded(child: _buildGradientActionCard(
+            'Messages\n& Chat',
+             'Chat',
+            Icons.chat_bubble_rounded,
+            [const Color(0xFF3B82F6), const Color(0xFF2563EB)],
+            () => _navigateToRoute(AppRoutes.supportConversations),
+          )),
+          const SizedBox(width: 10),
+          Expanded(child: _buildGradientActionCard(
+            'AI\nAssistant',
+            'Ask',
+            Icons.auto_awesome_rounded,
+            [const Color(0xFF8B5CF6), const Color(0xFF7C3AED)],
+            () => _navigateToRoute(AppRoutes.aiChat),
+          )),
+        ],
+      ),
     );
   }
 
@@ -1204,21 +1169,6 @@ class _ProfileScreenState extends State<ProfileScreen>
         ),
       ),
     );
-  }
-
-  IconData _getTierIcon(LoyaltyTier tier) {
-    switch (tier) {
-      case LoyaltyTier.bronze:
-        return Icons.shield_rounded;
-      case LoyaltyTier.silver:
-        return Icons.shield_moon_rounded;
-      case LoyaltyTier.gold:
-        return Icons.workspace_premium_rounded;
-      case LoyaltyTier.platinum:
-        return Icons.diamond_rounded;
-      case LoyaltyTier.diamond:
-        return Icons.stars_rounded;
-    }
   }
 
   List<Color> _getTierGradient(LoyaltyTier tier) {
