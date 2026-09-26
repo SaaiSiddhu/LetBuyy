@@ -31,23 +31,9 @@ const { collectStaleArtifactOffenders } = await import('../../scripts/validators
 const { createTrackedPathPredicate, planGeneratedArtifactCleanup } = await import('../../scripts/governance/validator-orchestrator.mjs');
 
 // Each known-red validator, with a rule that must account for EVERY offender it reports.
-const KNOWN_REDS = [
-    {
-        validator: 'environment-validator',
-        why: 'flags tracked files containing secret-like values',
-        classify(path) {
-            // APPID-P2 (2026-09-24): LetBuyy's own Firebase and Maps client keys are now reviewed,
-            // value-bound exceptions (config/governance/secret-scan-exceptions.json), so they no longer
-            // reach this list, and a whole-app prefix rule here would absorb the next real finding in the
-            // same app. What remains is not a LetBuyy key at all: the Marketplace web service worker
-            // initialises Agrimore's agrii-mate Firebase project. A genuine finding, recorded for the owner.
-            if (path === 'apps/marketplace/mobile/web/firebase-messaging-sw.js') {
-                return 'another product\'s Firebase project (agrii-mate) in the Marketplace web service worker: genuine finding, owner action';
-            }
-            return null;
-        },
-    },
-];
+// Empty for now — the sole prior entry (environment-validator) retired below; add the next one here
+// when a real offender needs classifying rather than fixing.
+const KNOWN_REDS = [];
 
 // Validators this register USED to carry and that now pass. Kept so the removal is deliberate rather
 // than forgotten, and so the backlog's stale bullet cannot come back. stale-artifact-validator sat here
@@ -55,6 +41,12 @@ const KNOWN_REDS = [
 // It never did, and the entry failed in every installed worktree; it is classified by method below.
 const RETIRED_REDS = {
     'foundation-antifabrication-gate': 'its sole offender was services/compatibility/firebase_bridge, deleted by FB-1; the gate now passes',
+    // foundation-phase1-closure (2026-09-26) added a reviewed exception for the app's own Firebase/Maps
+    // keys' one remaining sibling finding (a different product's Firebase project, apps/marketplace/
+    // mobile/web/firebase-messaging-sw.js), which made environment-validator pass outright. The
+    // agrimate-branding-cleanup phase then deleted that whole unreferenced Flutter-web build target
+    // (see docs/active/BRANCH_DISPOSITIONS.md), so the finding's file no longer exists either way.
+    'environment-validator': 'its one remaining offender (apps/marketplace/mobile/web/firebase-messaging-sw.js) is reviewed-excepted and then deleted; the validator now passes',
 };
 
 function runValidator(name) {
@@ -185,14 +177,6 @@ test('the by-method classification is specific, not a catch-all', () => {
     assert.deepEqual(genuine, ['topology.txt', 'apps/internal/console/build', 'apps/commerce/web/src/app/page.tsx.broken']);
 });
 
-test('the classifiers are specific, not catch-alls', () => {
-    // A classifier that accepted anything would make the guard decorative. Each must reject a path
-    // that is plainly not its concern.
-    const environment = KNOWN_REDS.find((r) => r.validator === 'environment-validator');
-    assert.equal(environment.classify('services/api-gateway/src/routes/payments.ts'), null);
-    assert.equal(environment.classify('packages/dart/marketplace_services/lib/src/other_service.dart'), null);
-    // The app's reviewed Firebase config is an exception now; a new offender beside it is a finding.
-    assert.equal(environment.classify('apps/marketplace/mobile/lib/firebase_options.dart'), null);
-    // And each must still accept its own.
-    assert.ok(environment.classify('apps/marketplace/mobile/web/firebase-messaging-sw.js'));
-});
+// "the classifiers are specific, not catch-alls" tested environment-validator's classify() function,
+// which retired along with the KNOWN_REDS entry above (environment-validator now passes outright).
+// KNOWN_REDS is empty for now; the next entry added here should bring its own specificity test back.
