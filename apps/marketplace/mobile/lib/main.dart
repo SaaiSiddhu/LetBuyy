@@ -21,7 +21,6 @@ import 'auth/buyer_sign_in_wiring.dart';
 import 'providers/auth_provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/search_provider.dart';
-import 'providers/marketplace_ad_provider.dart';
 
 // Routes
 import 'app/routes.dart';
@@ -102,9 +101,18 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // the active app (grepped) — "Legacy compatibility" per the route's own comment — so both were
         // deleted along with the dead route, rather than left wired to a Firebase-backed provider.
 
-        // ✅ ADDED: Sponsored Products Ads provider
-        ChangeNotifierProvider(create: (_) => MarketplaceAdProvider()),
-        
+        // MarketplaceAdProvider retired (R1 corrective, C2): entirely Firestore-backed
+        // (ad_campaigns/ad_products/products collections) with no canonical successor. Its
+        // consumers in product_card.dart/compact_product_card.dart already guard their
+        // Provider.of<MarketplaceAdProvider> lookups in try/catch (isSponsored -> false,
+        // click tracking -> no-op), so deregistering is safe there; category_screen.dart's
+        // and mobile_shop_screen.dart's ad-merge/loading paths were removed outright, since
+        // both called it unconditionally on every render/initState (a real crash risk once
+        // deregistered, not just dead weight); sponsored_products_section.dart and
+        // sponsored_products_banner.dart (on product_details_screen.dart, the app's most-
+        // visited screen) built raw unguarded FirebaseFirestore streams directly and were
+        // replaced with an honest empty state.
+
         // ✅ ADDED: Loyalty Points provider
         ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
         
