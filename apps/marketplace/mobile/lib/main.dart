@@ -14,6 +14,7 @@ import 'data/canonical_api.dart';
 import 'data/marketplace_repository.dart';
 
 // Sign in with LetBuyy (APPID-P4d), behind LETBUYY_BUYER_SIGN_IN
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'auth/buyer_sign_in_controller.dart';
 import 'auth/buyer_sign_in_wiring.dart';
 import 'config/app_config.dart';
@@ -141,6 +142,14 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
             create: (_) => buildBuyerSignInController()..start(),
             lazy: false,
           ),
+
+        // SUSTAINED-L: the buyer's canonical cross-store profile and address book, reachable once
+        // signed in with LetBuyy. Lazy (unlike the controller above): nothing needs them before a
+        // screen asks.
+        if (AppConfig.buyerSignInEnabled) ...[
+          Provider<BuyerAccountApi>(create: (_) => buildBuyerAccountApi()),
+          Provider<BuyerAddressApi>(create: (_) => buildBuyerAddressApi()),
+        ],
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {

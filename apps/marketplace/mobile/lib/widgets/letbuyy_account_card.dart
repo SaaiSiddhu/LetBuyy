@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace/app/routes.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/buyer_sign_in_controller.dart';
@@ -65,9 +66,16 @@ class LetBuyyAccountCard extends StatelessWidget {
             const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)))
           else if (status == BuyerSignInStatus.waitingForBrowser)
             OutlinedButton(onPressed: controller.cancel, child: const Text('Cancel sign-in'))
-          else if (status == BuyerSignInStatus.signedIn)
-            OutlinedButton(onPressed: controller.signOut, child: const Text('Sign out of LetBuyy on this device'))
-          else
+          else if (status == BuyerSignInStatus.signedIn) ...[
+            // SUSTAINED-L: the canonical profile/address book, only reachable once signed in.
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.letbuyyAccount),
+              child: const Text('Manage profile & addresses'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton(onPressed: controller.signOut, child: const Text('Sign out of LetBuyy on this device')),
+          ] else
             FilledButton(
               style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
               onPressed: controller.signIn,

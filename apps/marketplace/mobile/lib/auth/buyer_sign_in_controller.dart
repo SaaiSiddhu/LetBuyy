@@ -56,6 +56,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
 
   BuyerSignInStatus _status = BuyerSignInStatus.restoring;
   String? _email;
+  String? _token;
   String? _message;
   FirebaseLinkResult? _firebaseLink;
   DateTime? _checkedAt;
@@ -64,6 +65,11 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
 
   BuyerSignInStatus get status => _status;
   String? get email => _email;
+
+  /// The buyer's own session token, for a signed-in screen that needs to call another canonical
+  /// buyer route directly (profile/address management). Null whenever [status] is not `signedIn` —
+  /// callers must not hold onto a stale value across a sign-out.
+  String? get token => _status == BuyerSignInStatus.signedIn ? _token : null;
 
   /// The last thing to tell the buyer, if any. Never contains a token or a code.
   String? get message => _message;
@@ -159,6 +165,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> signOut() async {
     await _store.deleteSession();
     _email = null;
+    _token = null;
     _firebaseLink = null;
     _checkedAt = null;
     _set(BuyerSignInStatus.signedOut, message: 'You’re signed out of LetBuyy on this device.');
@@ -212,6 +219,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
         }
         await _store.writeSession(StoredBuyerSession(token: grant.accessToken, expiresAt: grant.expiresAt));
         _email = null;
+        _token = null;
         _firebaseLink = null;
         await _restoreSession(justSignedIn: true);
     }
@@ -227,12 +235,14 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
     if (session.isExpired(_clock().toUtc())) {
       await _store.deleteSession();
       _email = null;
+      _token = null;
       _set(BuyerSignInStatus.signedOut, message: 'Your LetBuyy sign-in has expired. Sign in again.');
       return;
     }
     try {
       final account = await _accounts.account(session.token);
       _email = account.email;
+      _token = session.token;
       _checkedAt = _clock();
       if (account.email != session.email) await _store.writeSession(session.withEmail(account.email));
       // The card's headline already names the account, so a fresh sign-in clears any older message.
@@ -242,6 +252,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
       if (error.statusCode == 401 || error.statusCode == 403) {
         await _store.deleteSession();
         _email = null;
+        _token = null;
         _set(BuyerSignInStatus.signedOut, message: error.statusCode == 403
             ? 'This LetBuyy account is disabled.'
             : 'Your LetBuyy sign-in has ended. Sign in again.');
@@ -249,6 +260,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
       }
       // The gateway could not answer. The session may be fine; keep it and check again later.
       _email = session.email;
+      _token = session.token;
       _set(BuyerSignInStatus.signedIn, message: 'We couldn’t reach LetBuyy just now. Showing your saved sign-in.');
     }
   }
@@ -270,6 +282,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
       if (error.statusCode == 401) {
         await _store.deleteSession();
         _email = null;
+        _token = null;
         _set(BuyerSignInStatus.signedOut, message: 'Your LetBuyy sign-in has ended. Sign in again.');
       }
     } on Exception {

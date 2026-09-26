@@ -21,3 +21,10 @@ BuyerSignInController buildBuyerSignInController() {
     firebaseIdToken: () async => FirebaseAuth.instance.currentUser?.getIdToken(),
   );
 }
+
+// SUSTAINED-L — the buyer's own canonical, cross-store profile (D1) and address book (D2), for
+// screens that need to call the profile/address routes directly rather than through the sign-in
+// controller (which only ever calls .account()/.linkFirebase()). Each builds its own ApiClient via
+// buildCanonicalApiClient(), the same as buildBuyerSignInController's own BuyerAccountApi above.
+BuyerAccountApi buildBuyerAccountApi() => BuyerAccountApi(buildCanonicalApiClient());
+BuyerAddressApi buildBuyerAddressApi() => BuyerAddressApi(buildCanonicalApiClient());
