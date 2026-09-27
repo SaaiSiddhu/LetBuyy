@@ -306,4 +306,66 @@ void main() {
     expect(find.text('Asha Verma'), findsNothing, reason: 'Buyer A\'s late response must never have been applied');
     expect(find.byType(CircularProgressIndicator), findsNothing, reason: 'recovered, not stuck loading forever');
   });
+
+  // C3 corrective (27 September 2026 review continuation, section 4C) -- a genuinely different
+  // scenario from the one above: no request is in flight at all when identity changes. Before this
+  // screen watched BuyerSignInController, Buyer A's address would simply stay rendered (nothing
+  // would ever re-check) until something else happened to trigger a rebuild. This proves the
+  // reactive path itself (didChangeDependencies), independent of _isStillCurrentBuyer's own
+  // in-flight self-heal, which the test above already covers.
+  testWidgets('Buyer A\'s address is already loaded and idle -- signing out clears it, and Buyer B signing in shows only B\'s', (tester) async {
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    const buyerAToken = sessionToken;
+    const buyerBToken = 'buyer-b-session-token';
+    final gateway = FakeGateway(validToken: buyerAToken, email: 'asha-a@example.com');
+    gateway.otherBuyersByToken[buyerBToken] = {
+      'id': 'buyer-2', 'email': 'bilal-b@example.com', 'email_verified': true, 'full_name': null, 'phone': null,
+    };
+    gateway.addressesByToken[buyerAToken] = [
+      {
+        'id': 'addr-a1', 'label': 'home', 'full_name': 'Asha Verma', 'address_line1': '12 MG Road',
+        'city': 'Bengaluru', 'state': 'Karnataka', 'postal_code': '560001', 'country': 'IN', 'is_default': true,
+      },
+    ];
+    gateway.addressesByToken[buyerBToken] = [
+      {
+        'id': 'addr-b1', 'label': 'home', 'full_name': 'Bilal Baig', 'address_line1': '7 Brigade Road',
+        'city': 'Bengaluru', 'state': 'Karnataka', 'postal_code': '560025', 'country': 'IN', 'is_default': true,
+      },
+    ];
+
+    final client = ApiClient(baseUrl: 'https://gateway.test/v1', dio: gateway.dio(), maxRetries: 0);
+    final accounts = BuyerAccountApi(client);
+    final addresses = BuyerAddressApi(client);
+    final store = _MemoryStore(StoredBuyerSession(token: buyerAToken, expiresAt: DateTime.utc(2100)));
+    final controller = BuyerSignInController(
+      client: BuyerSignInClient(identityBaseUrl: 'https://accounts.letbuyy.test', dio: identityTokenDio(buyerBToken)),
+      accounts: accounts,
+      browser: const _ScriptedBrowser(),
+      store: store,
+    );
+    addTearDown(controller.dispose);
+
+    await tester.runAsync(controller.start);
+    await tester.pumpWidget(wrap(controller, addresses));
+    await tester.pumpAndSettle();
+    expect(find.text('Asha Verma'), findsOneWidget, reason: 'Buyer A\'s address loaded normally, nothing held this time');
+
+    // Buyer A signs out -- no request of any kind is in flight; this screen is simply idle,
+    // already rendered, exactly as a buyer leaving it open while switching accounts elsewhere
+    // would leave it.
+    await tester.runAsync(controller.signOut);
+    await tester.pumpAndSettle();
+    expect(find.text('Asha Verma'), findsNothing, reason: 'a signed-out screen must not keep showing the previous buyer\'s address');
+    expect(find.text('No addresses found'), findsOneWidget);
+
+    // Buyer B signs in, still with nothing in flight beforehand.
+    await tester.runAsync(controller.signIn);
+    await tester.pumpAndSettle();
+    expect(find.text('Bilal Baig'), findsOneWidget, reason: 'Buyer B\'s own address loads once B becomes current');
+    expect(find.text('Asha Verma'), findsNothing);
+  });
 }

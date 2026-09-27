@@ -368,6 +368,50 @@ void main() {
     h.controller.dispose();
   });
 
+  // D-BUYER-SCOPE (27 September 2026 review continuation): CartProvider/WishlistProvider key their
+  // per-buyer local namespace on this canonical id -- never on the session token (rotates per
+  // session) or the email (not the canonical identifier). These tests are its own direct coverage,
+  // independent of anything cart/wishlist-shaped.
+  test('buyerId is the canonical account id, present only while signed in', () async {
+    final h = harness();
+    await h.controller.start();
+    expect(h.controller.buyerId, isNull, reason: 'signed out, nothing to scope local storage to yet');
+
+    await h.controller.signIn();
+    expect(h.controller.buyerId, 'buyer-1', reason: 'the fake gateway account\'s own id');
+
+    await h.controller.signOut();
+    expect(h.controller.buyerId, isNull, reason: 'a signed-out screen must never keep scoping to the old buyer');
+    h.controller.dispose();
+  });
+
+  test('an unreachable gateway still resolves buyerId from the cached session, not just email', () async {
+    final store = MemoryStore()
+      ..session = StoredBuyerSession(
+        token: sessionToken,
+        expiresAt: DateTime.utc(2026, 10, 20),
+        email: 'asha@example.com',
+        buyerId: 'buyer-1',
+      );
+    final h = harness(store: store, servers: Servers(accountStatus: 0));
+    await h.controller.start();
+    expect(h.controller.status, BuyerSignInStatus.signedIn, reason: 'offline is not signed out');
+    expect(h.controller.buyerId, 'buyer-1',
+        reason: 'CartProvider/WishlistProvider need a namespace to read even while the gateway cannot be reached');
+    h.controller.dispose();
+  });
+
+  test('a session saved before buyerId existed restores as a guest-equivalent namespace, not a crash', () async {
+    // No real marketplace users exist to preserve compatibility for (the owner's Firebase-removal
+    // decision) -- this covers a session written by an older build of THIS local dev install.
+    final store = MemoryStore()..session = StoredBuyerSession(token: sessionToken, expiresAt: DateTime.utc(2026, 10, 20));
+    final h = harness(store: store);
+    await h.controller.start();
+    expect(h.controller.status, BuyerSignInStatus.signedIn);
+    expect(h.controller.buyerId, 'buyer-1', reason: 'the gateway is reachable here, so the real account id is fetched fresh');
+    h.controller.dispose();
+  });
+
   test('no message ever carries the session or the code', () async {
     final messages = <String?>[];
     final h = harness();

@@ -43,19 +43,61 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
 
-  /// This screen has no reactive account-change listener (unlike address_selection_sheet.dart or
-  /// letbuyy_account_screen.dart, which stay open across an account switch) -- it loads once, from
-  /// initState, so a generation bump alone never fires here just because a different buyer signed
-  /// in mid-request. Checking the token itself is what actually catches that case: a load started
-  /// for [token] is only ever applied if that buyer is STILL the current one when the response
-  /// arrives, regardless of whether anything else ever triggered a second load.
+  /// Protects a response already in flight: a load started for [token] is only ever applied if
+  /// that buyer is STILL the current one when the response arrives.
   bool _isStillCurrentBuyer(String token) =>
       mounted && context.read<BuyerSignInController>().token == token;
+
+  // C3 corrective (27 September 2026 review continuation, section 4C): _isStillCurrentBuyer alone
+  // only ever protects a response already in flight -- it does nothing if the buyer signs out or a
+  // different buyer signs in on this device while this screen is simply sitting idle with A's
+  // addresses already loaded and rendered (no request pending to catch the change). This screen's
+  // own build() below now watches BuyerSignInController, so didChangeDependencies fires once
+  // Flutter next gives this element a dependency-check pass after that identity actually changes --
+  // matching address_selection_sheet.dart's/home_app_bar.dart's own established pattern, the
+  // previous buyer's records and selection are cleared synchronously, in the same setState, before
+  // a fresh load for whoever is current now even starts.
+  //
+  // That "once Flutter next gives this element a pass" is not necessarily the very next frame: a
+  // widget test proved this can be delayed past several frames, including past the point where
+  // _isStillCurrentBuyer's own in-flight self-heal (above) already independently noticed the exact
+  // same identity change and already re-loaded correctly. Without `_lastLoadStartedForToken`, this
+  // method would not know that, and would redundantly clear the just-corrected screen and start a
+  // second, unnecessary reload race against nothing. Set at the top of _loadAddresses() (by
+  // initState's own first call, this method's own reload, or the in-flight self-heal), it lets
+  // this method recognize "a load for this identity was already started" and stay a no-op then,
+  // regardless of which path started it or in which order they actually ran.
+  bool _hasObservedToken = false;
+  String? _observedToken;
+  String? _lastLoadStartedForToken;
 
   @override
   void initState() {
     super.initState();
     _loadAddresses();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final token = context.read<BuyerSignInController>().token;
+    if (!_hasObservedToken) {
+      // The very first call, right after initState -- initState's own _loadAddresses() call
+      // already covers the initial load for whichever buyer (or guest) is current at that point.
+      _hasObservedToken = true;
+      _observedToken = token;
+      return;
+    }
+    if (token != _observedToken) {
+      _observedToken = token;
+      if (_lastLoadStartedForToken == token) return;
+      setState(() {
+        _addresses = [];
+        _selectedAddress = null;
+        _addressLoadError = null;
+      });
+      _loadAddresses();
+    }
   }
 
   @override
@@ -73,6 +115,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Future<void> _loadAddresses() async {
     final generation = ++_loadGeneration;
     final token = context.read<BuyerSignInController>().token;
+    _lastLoadStartedForToken = token;
     if (token == null) {
       if (_isCurrentGeneration(generation)) {
         setState(() {
@@ -111,6 +154,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             (addr) => addr.isDefault,
             orElse: () => _addresses.first,
           );
+        } else {
+          // C3 corrective (27 September 2026 review continuation): a refreshed, now-empty list
+          // (e.g. the previously selected address was the last one and it was deleted, from
+          // add_address_screen.dart's own "Add New Address" round trip triggering this reload)
+          // used to leave _selectedAddress dangling at its previous, no-longer-listed value.
+          _selectedAddress = null;
         }
 
         _isLoadingAddresses = false;
@@ -209,6 +258,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final accentColor = isDark ? AppColors.primaryLight : AppColors.primary;
     final cardColor = isDark ? AppColors.surfaceDark : AppColors.surface;
     final backgroundColor = isDark ? AppColors.scaffoldDark : AppColors.scaffoldLight;
+
+    // Establishes the dependency didChangeDependencies() above reacts to -- see that method's own
+    // doc comment. The value itself isn't needed here; _loadAddresses() re-reads the token fresh.
+    context.watch<BuyerSignInController>();
 
     final cartProvider = context.watch<CartProvider>();
     final subtotal = cartProvider.subtotal;

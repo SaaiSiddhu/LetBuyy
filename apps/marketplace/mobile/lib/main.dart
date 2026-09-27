@@ -135,8 +135,6 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // that already had a proper "No tracking information yet" empty state. profile_stats.dart
         // and order_history_screen.dart were both already fully orphaned (zero live callers) and
         // deleted outright.
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => WishlistProvider()),
         // AddressProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed via the
         // legacy AuthService/DatabaseService, with no canonical successor wired into its three
         // consumers (web_header.dart's and shop_app_bar.dart's header pills, saved_addresses_screen.dart).
@@ -215,6 +213,24 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         ChangeNotifierProvider<BuyerSignInController>(
           create: (_) => buildBuyerSignInController()..start(),
           lazy: false,
+        ),
+
+        // D-BUYER-SCOPE (27 September 2026 review continuation): Cart/WishlistProvider each keep
+        // a separate local namespace per canonical buyer ID (never per session token or email --
+        // see CartProvider.updateUserId's own doc comment), plus one separate shared guest
+        // namespace, switched by BuyerSignInController.buyerId. ChangeNotifierProxyProvider keeps
+        // the SAME provider instance across a sign-in/sign-out/account-switch notification
+        // (mutating it in place via `previous!..updateUserId(...)`), so every existing widget that
+        // already holds or watches a CartProvider/WishlistProvider reference keeps working
+        // unchanged -- only the data underneath switches. Must be registered after
+        // BuyerSignInController: Provider resolves an ancestor by its position in this list.
+        ChangeNotifierProxyProvider<BuyerSignInController, CartProvider>(
+          create: (_) => CartProvider(),
+          update: (_, auth, previous) => (previous ?? CartProvider())..updateUserId(auth.buyerId),
+        ),
+        ChangeNotifierProxyProvider<BuyerSignInController, WishlistProvider>(
+          create: (_) => WishlistProvider(),
+          update: (_, auth, previous) => (previous ?? WishlistProvider())..updateUserId(auth.buyerId),
         ),
 
         // SUSTAINED-L: the buyer's canonical cross-store profile and address book, reachable once
