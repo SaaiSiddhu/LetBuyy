@@ -1,5 +1,13 @@
 # FINAL CLOSURE (2026-09-27, supersedes everything below) — complete Firebase removal + shipping-semantics correction
 
+**Superseded in turn by a later acceptance pass the same day:**
+[`../phase1r-acceptance-2026-09-27/ACCEPTANCE.md`](../phase1r-acceptance-2026-09-27/ACCEPTANCE.md)
+is the current authoritative status — it corrects one imprecise claim in this section's own ML Kit
+evidence (below), adds fresh device journeys (address create, session restoration, bidirectional
+buyer isolation), an isolated payment-unavailable test, and the integration plan this section does
+not contain. This section's own Firebase-removal and shipping-semantics evidence remains accurate
+and is not restated there.
+
 **This section supersedes every prior status claim in this document, including the "C3 — closed,
 within this app's honest limits" verdict below, which was accurate for what it measured (5 files
 still Firestore-coupled, `firebase_core`/`cloud_firestore` still active dependencies) but was not
