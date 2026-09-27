@@ -1552,7 +1552,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: product.inStock ? () => _addToCart(product) : null,
+                  // C5 corrective (found via this session's own device testing): unlike the Buy
+                  // Now button beside it, this onTap had no !_isAddingToCart guard, so a fast
+                  // double-tap could fire _addToCart twice before the first await returned,
+                  // adding _quantity to the cart twice. _isAddingToCart is set synchronously at
+                  // the top of _addToCart, before any await, so this guard is race-free.
+                  onTap: product.inStock && !_isAddingToCart ? () => _addToCart(product) : null,
                   borderRadius: BorderRadius.circular(10),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),
