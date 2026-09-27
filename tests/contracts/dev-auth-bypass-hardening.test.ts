@@ -15,7 +15,10 @@ const signupRoutePath = join(repoRoot, 'apps/platform/identity/src/app/api/auth/
 const identityDevBypassPath = join(repoRoot, 'apps/platform/identity/src/lib/dev-auth-bypass.ts');
 const identityTurnstilePath = join(repoRoot, 'apps/platform/identity/src/lib/turnstile.ts');
 const turnstileWidgetPath = join(repoRoot, 'apps/platform/identity/src/components/TurnstileWidget.tsx');
-const consoleAuthPath = join(repoRoot, 'apps/internal/console/src/lib/console-auth-server.ts');
+// canUseConsoleDevMfaBypass() and its guard moved to console-mfa.ts (SUSTAINED-E): that module has no
+// `server-only`/Next.js import, so it is exercisable from a plain `node --test` run.
+// console-auth-server.ts now only re-exports it; its own source text no longer contains the function.
+const consoleAuthPath = join(repoRoot, 'apps/internal/console/src/lib/console-mfa.ts');
 const nextTemplatePath = join(repoRoot, 'config/env/templates/next-app.env.example');
 const nextSchemaPath = join(repoRoot, 'config/env/schemas/next-app.schema.json');
 const securityGovernancePath = join(repoRoot, 'docs/governance/security-operations-governance.md');
