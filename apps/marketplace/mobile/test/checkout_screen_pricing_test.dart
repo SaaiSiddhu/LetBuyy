@@ -1,12 +1,16 @@
-// Phase 1R corrective (found via C5 device testing, "checkout total silently drops the shipping
-// fee"): mobile_cart_screen.dart's own total included a real, non-zero shipping fee for a cart;
-// checkout_screen.dart and payment_method_screen.dart both independently recomputed
-// `subtotal - discount`, silently dropping it -- a buyer could see one total on the cart screen
-// and a lower one moments later on the payment screen, for the identical cart. Both screens now
-// share shipping_fee_calculator.dart's calculateShippingFees() instead of each carrying their own
-// copy (or, for payment_method_screen.dart, ignoring the total/shippingFee it was even given).
-// This file guards both halves of that fix. Reuses checkout_screen_address_test.dart's own
-// fake-gateway/harness shape, duplicated rather than shared, per that file's own stated reasoning.
+// Phase 1R shipping-semantics correction (owner-requested completion, same day): this file
+// originally guarded "checkout computes a total that includes the same shipping fee the cart
+// screen would show" -- but the fee it guarded was itself the bug: a fabricated ₹40 fallback for
+// a product whose real shipping price was never provided by the canonical gateway (see
+// shipping_fee_calculator.dart's own header comment). Under the corrected code, the exact same
+// mock-gateway response (no shipping fields at all) now correctly resolves to "unknown", so
+// checkout's total is null and the payment screen shows an honest pending state instead of a
+// confident wrong number. What this file now guards is that honesty -- plus the original,
+// still-valid concern that checkout_screen.dart and payment_method_screen.dart must never
+// silently disagree about the same cart (mobile_cart_screen.dart's own equivalent cases live in
+// shipping_fee_calculator_test.dart, which tests the shared pure logic directly).
+// Reuses checkout_screen_address_test.dart's own fake-gateway/harness shape, duplicated rather
+// than shared, per that file's own stated reasoning.
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -77,10 +81,10 @@ ProductModel _seedProduct() {
 /// Serves /buyer/account, /buyer/addresses (one saved address, so checkout's own "Continue to
 /// Payment" is reachable) and /storefront/marketplace/listings/{id} for _seedProduct() above.
 /// ProductModel._productFromListingDetail() doesn't map any shipping-specific field from that
-/// response, so any valid listing body makes checkout's shipping calculation fall back to the
-/// same standard ₹40 fee the cart screen itself falls back to for a product with no shipping
-/// price set -- this is also today's real behavior against the actual canonical gateway, not a
-/// test-only shortcut (see this session's own evidence document for that finding).
+/// response, so this product's shipping fee is genuinely unknown -- this is today's real behavior
+/// against the actual canonical gateway, not a test-only shortcut (see this session's own evidence
+/// document for that finding), and the corrected code must render that honestly rather than
+/// inventing a number for it.
 Dio _gatewayDio() {
   final dio = Dio();
   dio.interceptors.add(InterceptorsWrapper(onRequest: (o, handler) {
@@ -181,8 +185,8 @@ void main() {
   });
 
   testWidgets(
-    "checkout computes a total that includes the same shipping fee the cart screen would show, and "
-    "carries it through to the payment screen -- not just the bare subtotal",
+    "checkout carries an honest 'shipping unknown' state through to the payment screen instead of "
+    "fabricating a total -- the real canonical gateway never returns shipping data for this product",
     (tester) async {
       // checkout_screen.dart itself never renders a ₹ total anywhere in its own UI (confirmed by
       // reading its build tree -- the "Continue to Payment" button shows no amount); the only way
@@ -205,13 +209,24 @@ void main() {
       await tester.tap(find.text('Continue to Payment'));
       await tester.pumpAndSettle();
 
-      // The real bug this guards against showed exactly this: a payment total equal to the bare
-      // subtotal, silently missing the shipping fee the cart screen had already displayed for
-      // this same cart.
+      // The bug this used to guard against showed a confident ₹540 (subtotal ₹500 + a fabricated
+      // ₹40 shipping fallback) for a product whose shipping price the gateway never actually sent.
+      // The corrected behavior shows neither that number nor the bare subtotal dressed up as the
+      // total -- it shows that the amount genuinely isn't known yet.
+      expect(find.text('Pay ₹540'), findsNothing,
+          reason: 'the old ₹40-fallback total must never reappear');
       expect(find.text('Pay ₹500'), findsNothing,
-          reason: 'the amount actually charged must include shipping, never equal the bare subtotal alone');
-      expect(find.text('Pay ₹540'), findsOneWidget,
-          reason: 'subtotal ₹500 + the ₹40 standard-shipping fallback both screens now share = ₹540');
+          reason: 'the bare subtotal must never silently stand in for a real total, either');
+      expect(find.text('Pay'), findsOneWidget,
+          reason: 'with shipping genuinely unknown, the button must show no amount at all');
+      expect(find.text('Pending'), findsOneWidget,
+          reason: 'the Shipping Fee row must honestly say the fee is not known yet');
+      expect(find.text('Calculated at checkout'), findsOneWidget,
+          reason: 'the Total Amount row must not present a partial or fabricated sum as complete');
+      expect(find.textContaining('business days'), findsNothing,
+          reason: 'no delivery-time promise may be shown when shippingDays was never provided');
+      expect(find.textContaining('2-3'), findsNothing,
+          reason: 'the old fabricated delivery-estimate fallback must never reappear');
     },
   );
 
@@ -259,6 +274,49 @@ void main() {
           reason: 'must show the total it was constructed with, not subtotal(100) - discount(0) = 100');
       expect(find.text('Subtotal'), findsOneWidget,
           reason: 'the Subtotal row legitimately shows the cart\'s own ₹100 -- only Total/Pay must reflect widget.total, not this row');
+    },
+  );
+
+  testWidgets(
+    'PaymentMethodScreen given a null total/shippingFee (shipping not yet known) renders that honestly, never a fabricated amount',
+    (tester) async {
+      final cart = CartProvider();
+      await cart.ready;
+      cart.updateUserId('buyer-1');
+      await cart.ready;
+      await cart.addItem(_seedProduct(), quantity: 1);
+
+      final address = AddressModel(
+        id: 'addr-1',
+        userId: 'buyer-1',
+        name: 'Pricing Buyer',
+        phone: '9999999999',
+        addressLine1: '1 Test Street',
+        addressLine2: '',
+        city: 'Bengaluru',
+        state: 'Karnataka',
+        zipcode: '560001',
+        country: 'IN',
+        isDefault: true,
+        createdAt: DateTime.now(),
+      );
+
+      await tester.pumpWidget(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider<CartProvider>.value(value: cart),
+        ],
+        child: MaterialApp(
+          home: PaymentMethodScreen(selectedAddress: address, total: null, shippingFee: null),
+        ),
+      ));
+      await tester.pump();
+
+      expect(find.text('Pay'), findsOneWidget);
+      expect(find.text('Pending'), findsOneWidget);
+      expect(find.text('Calculated at checkout'), findsOneWidget);
+      expect(find.textContaining('₹null'), findsNothing,
+          reason: 'a null total must never leak into a rendered string via naive interpolation');
     },
   );
 }

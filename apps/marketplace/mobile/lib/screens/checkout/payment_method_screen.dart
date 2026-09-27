@@ -14,8 +14,11 @@ import '../../widgets/premium_scaffold.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   final AddressModel selectedAddress;
-  final double total;
-  final double shippingFee;
+  // Phase 1R shipping-semantics correction (owner-requested completion, same day): both are null
+  // unless checkout_screen.dart had a real, backend-confirmed fee for every cart line -- see
+  // CartShippingSummary.allKnown's own doc comment. Never a partial sum dressed up as complete.
+  final double? total;
+  final double? shippingFee;
 
   const PaymentMethodScreen({
     super.key,
@@ -180,6 +183,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     // `subtotal - discount` independently, silently ignoring widget.total (and the shipping fee
     // baked into it) -- checkout_screen.dart already computed the real total, including shipping,
     // moments earlier on the previous screen; trust it instead of recomputing a different number.
+    // Phase 1R shipping-semantics correction (owner-requested completion, same day): both are
+    // now nullable -- see this widget's own field doc comment.
     final shippingFee = widget.shippingFee;
     final total = widget.total;
 
@@ -559,8 +564,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget _buildOrderSummaryCard({
     required double subtotal,
     required double discount,
-    required double shippingFee,
-    required double total,
+    required double? shippingFee,
+    required double? total,
     required bool isDark,
     required Color cardColor,
     required Color accentColor,
@@ -578,9 +583,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             const SizedBox(height: 10),
             _priceRow("Discount", -discount, isDark, color: AppColors.success),
           ],
-          if (shippingFee > 0) ...[
+          if (shippingFee != null && shippingFee > 0) ...[
             const SizedBox(height: 10),
             _priceRow("Shipping Fee", shippingFee, isDark),
+          ] else if (shippingFee == null) ...[
+            const SizedBox(height: 10),
+            _priceStatusRow("Shipping Fee", "Pending", isDark),
           ],
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -589,7 +597,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               height: 1,
             ),
           ),
-          _priceRow("Total Amount", total, isDark, isTotal: true, color: accentColor),
+          if (total != null)
+            _priceRow("Total Amount", total, isDark, isTotal: true, color: accentColor)
+          else
+            _priceStatusRow("Total Amount", "Calculated at checkout", isDark, isTotal: true, color: accentColor),
 
           // Phase 1R corrective (C2): "Coupon Applied" badge removed. CouponProvider was
           // entirely FirebaseFirestore-backed with no canonical successor; appliedCoupon was
@@ -1034,7 +1045,36 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  Widget _buildBottomBar(double total, bool isDark, Color accentColor, Color cardColor) {
+  // Phase 1R shipping-semantics correction: the text-status counterpart to [_priceRow], for a
+  // line whose value genuinely isn't a number yet -- never a ₹ amount standing in for "we don't
+  // know". Mirrors mobile_cart_screen.dart's own _priceStatusRow so both screens read alike.
+  Widget _priceStatusRow(String title, String status, bool isDark,
+      {Color? color, bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            fontSize: isTotal ? 15 : 14,
+            color: isDark ? (isTotal ? Colors.white : Colors.grey[300]) : (isTotal ? Colors.black87 : Colors.grey[700]),
+          ),
+        ),
+        Text(
+          status,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            fontSize: isTotal ? 15 : 13,
+            fontStyle: FontStyle.italic,
+            color: color ?? (isDark ? Colors.grey[400] : Colors.grey[600]),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomBar(double? total, bool isDark, Color accentColor, Color cardColor) {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
@@ -1097,9 +1137,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    _selectedPaymentMethod == "cod"
-                        ? "Place Order • ₹${total.toStringAsFixed(0)}"
-                        : "Pay ₹${total.toStringAsFixed(0)}",
+                    total != null
+                        ? (_selectedPaymentMethod == "cod"
+                            ? "Place Order • ₹${total.toStringAsFixed(0)}"
+                            : "Pay ₹${total.toStringAsFixed(0)}")
+                        : (_selectedPaymentMethod == "cod" ? "Place Order" : "Pay"),
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
