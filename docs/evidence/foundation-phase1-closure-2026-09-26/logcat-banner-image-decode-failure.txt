@@ -1,0 +1,33 @@
+09-26 17:51:19.433  3149  3149 I flutter : ✅ Approved products: 29 of 30
+09-26 17:51:19.434  3149  3149 I flutter : 💾 CacheService initialized
+09-26 17:51:19.568  3149  3149 I flutter : 💾 Cached 29 products
+09-26 17:51:19.568  3149  3149 I flutter : 📦 Found 29 products
+09-26 17:51:19.618   571  1423 D OomAdjuster: Not killing cached processes
+09-26 17:51:19.750   371  3322 I resolv  : GetAddrInfoHandler::run: {101 101 101 983141 10207 0}
+09-26 17:51:19.750   371  3323 I resolv  : res_nmkquery: (QUERY, IN, A)
+09-26 17:51:19.750   371  3323 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0xb400007e703eed70
+09-26 17:51:19.750   371  3323 I resolv  : doQuery: rcode=0, ancount=8, return value=176
+09-26 17:51:19.754   371  3324 I resolv  : GetAddrInfoHandler::run: {101 101 101 983141 10207 0}
+09-26 17:51:19.754   371  3325 I resolv  : res_nmkquery: (QUERY, IN, A)
+09-26 17:51:19.754   371  3325 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0xb400007e703eed70
+09-26 17:51:19.754   371  3325 I resolv  : doQuery: rcode=0, ancount=8, return value=176
+09-26 17:51:19.793   371  3326 I resolv  : GetAddrInfoHandler::run: {101 101 101 983141 10207 0}
+09-26 17:51:19.794   371  3328 I resolv  : res_nmkquery: (QUERY, IN, AAAA)
+09-26 17:51:19.794   371  3328 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0xb400007de03ed890
+09-26 17:51:19.794   371  3328 I resolv  : doQuery: rcode=0, ancount=8, return value=272
+09-26 17:51:19.796   371  3329 I resolv  : GetAddrInfoHandler::run: {101 101 101 983141 10207 0}
+09-26 17:51:19.797   371  3327 I resolv  : GetAddrInfoHandler::run: {101 101 101 983141 10207 0}
+09-26 17:51:19.797   371  3330 I resolv  : res_nmkquery: (QUERY, IN, AAAA)
+09-26 17:51:19.797   371  3330 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0xb400007de03ed890
+09-26 17:51:19.797   371  3330 I resolv  : doQuery: rcode=0, ancount=8, return value=272
+09-26 17:51:19.798   371  3331 I resolv  : res_nmkquery: (QUERY, IN, A)
+09-26 17:51:19.798   371  3331 I resolv  : resolv_cache_lookup: FOUND IN CACHE entry=0xb400007e703eed70
+09-26 17:51:19.798   371  3331 I resolv  : doQuery: rcode=0, ancount=8, return value=176
+09-26 17:51:19.818  3149  3221 D HWUI    : --- Failed to create image decoder with message 'unimplemented'
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: Failed to decode image
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: android.graphics.ImageDecoder$DecodeException: Failed to create image decoder with message 'unimplemented'Input contained an error.
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: 	at android.graphics.ImageDecoder.nCreate(Native Method)
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: 	at android.graphics.ImageDecoder.-$$Nest$smnCreate(Unknown Source:0)
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: 	at android.graphics.ImageDecoder$ByteBufferSource.createImageDecoder(ImageDecoder.java:254)
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: 	at android.graphics.ImageDecoder.decodeBitmapImpl(ImageDecoder.java:1856)
+09-26 17:51:19.819  3149  3221 E FlutterImageDecoderImplDefault: 	at android.graphics.ImageDecoder.decodeBitmap(ImageDecoder.java:1848)
