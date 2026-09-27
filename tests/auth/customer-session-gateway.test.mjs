@@ -8,6 +8,10 @@ const gatewaySessionMiddleware = readFileSync('services/api-gateway/src/middlewa
 const storefrontRouteSource = readStorefrontRouteSource();
 const storefrontGraphQLSource = readFileSync('services/api-gateway/src/graphql/storefront.ts', 'utf8');
 const storefrontApiClientSource = readFileSync('apps/commerce/web/src/lib/api/client.ts', 'utf8');
+// T4 W4 / CAP-C24 split the internal-only-path allowlist out of client.ts into its own
+// unit-testable module (client.ts imports isStorefrontInternalOnlyPath from it and no longer
+// contains these literals directly).
+const storefrontInternalOnlyPathsSource = readFileSync('apps/commerce/web/src/lib/api/internal-only-paths.ts', 'utf8');
 const storefrontSetPasswordRouteSource = readFileSync('apps/commerce/web/src/app/api/customer/set-password/route.ts', 'utf8');
 const customerResetMigrationSource = readFileSync('database/supabase/migrations/077_customer_reset_tokens.sql', 'utf8');
 
@@ -90,8 +94,8 @@ test('customer-web signs server-only legacy customer lookups', () => {
   assert.match(storefrontApiClientSource, /createLetbuyyInternalAppHeaders/);
   assert.match(storefrontApiClientSource, /app: 'storefront'/);
   assert.match(storefrontApiClientSource, /getLetbuyyInternalAuthSecret/);
-  assert.match(storefrontApiClientSource, /\/storefront\/customer\/by-email/);
-  assert.match(storefrontApiClientSource, /\/storefront\/customer\/status/);
+  assert.match(storefrontInternalOnlyPathsSource, /\/storefront\/customer\/by-email/);
+  assert.match(storefrontInternalOnlyPathsSource, /\/storefront\/customer\/status/);
 });
 
 test('Storefront GraphQL customer and order fields require customer sessions', () => {
