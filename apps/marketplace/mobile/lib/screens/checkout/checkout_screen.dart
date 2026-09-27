@@ -14,6 +14,7 @@ import 'payment_method_screen.dart';
 import 'widgets/checkout_steps.dart';
 import '../../widgets/premium_scaffold.dart';
 import '../../auth/buyer_sign_in_controller.dart';
+import '../../utils/shipping_fee_calculator.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -71,10 +72,40 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String? _observedToken;
   String? _lastLoadStartedForToken;
 
+  // Phase 1R corrective (found via C5 device testing): this screen used to compute its total as
+  // `subtotal - discount`, silently dropping shipping -- the cart screen (whose own shipping
+  // calculation this now shares, via shipping_fee_calculator.dart) showed a real, non-zero
+  // shipping fee for the exact same cart moments earlier. Mirrors mobile_cart_screen.dart's own
+  // _productCache/_loadProductDetails pattern, since shipping fee depends on each cart item's
+  // product (shippingPrice/isFreeDelivery/expressDelivery), which CartProvider itself doesn't carry.
+  final Map<String, ProductModel> _productCache = {};
+
+  Future<void> _loadProductDetails() async {
+    final cartProvider = context.read<CartProvider>();
+    // See mobile_cart_screen.dart's own _loadProductDetails for why this awaits readiness first
+    // -- the same race is possible here, reached this screen quickly after a cold launch.
+    await cartProvider.ready;
+    if (!mounted) return;
+    if (cartProvider.items.isEmpty) return;
+    final productProvider = context.read<ProductProvider>();
+
+    for (final item in cartProvider.items) {
+      if (!_productCache.containsKey(item.productId)) {
+        final product = await productProvider.fetchProductById(item.productId);
+        if (product != null) {
+          _productCache[item.productId] = product;
+        }
+      }
+    }
+
+    if (mounted) setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _loadAddresses();
+    _loadProductDetails();
   }
 
   @override
@@ -269,7 +300,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // entirely FirebaseFirestore-backed with no canonical successor; a coupon could never
     // actually load, so this already always evaluated to 0.
     const discount = 0.0;
-    final total = subtotal - discount;
+    // Phase 1R corrective (found via C5 device testing): shippingFee used to be entirely absent
+    // here, so this screen's total silently undercounted relative to the cart screen's total for
+    // the identical cart. Standard delivery only -- this screen has no express-delivery toggle,
+    // unlike the cart screen, so it always reflects the standard fee.
+    final shippingFee = calculateShippingFees(cartProvider.items, _productCache).totalShippingFee;
+    final total = subtotal - discount + shippingFee;
 
     return PremiumScaffold(
       // backgroundColor handled by PremiumScaffold
@@ -288,7 +324,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
           ),
-          _buildBottomBar(total, isDark, accentColor, cardColor),
+          _buildBottomBar(total, shippingFee, isDark, accentColor, cardColor),
         ],
       ),
     );
@@ -846,7 +882,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildBottomBar(double total, bool isDark, Color accentColor, Color cardColor) {
+  Widget _buildBottomBar(
+      double total, double shippingFee, bool isDark, Color accentColor, Color cardColor) {
     final hasAddress = _selectedAddress != null;
 
     return Container(
@@ -874,6 +911,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     builder: (_) => PaymentMethodScreen(
                       selectedAddress: _selectedAddress!,
                       total: total,
+                      shippingFee: shippingFee,
                     ),
                   ),
                 );

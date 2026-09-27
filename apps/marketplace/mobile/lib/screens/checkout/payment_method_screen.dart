@@ -15,11 +15,13 @@ import '../../widgets/premium_scaffold.dart';
 class PaymentMethodScreen extends StatefulWidget {
   final AddressModel selectedAddress;
   final double total;
+  final double shippingFee;
 
   const PaymentMethodScreen({
     super.key,
     required this.selectedAddress,
     required this.total,
+    required this.shippingFee,
   });
 
   @override
@@ -174,7 +176,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     // could never actually load, so this already always evaluated to 0.
     final subtotal = cart.subtotal;
     const discount = 0.0;
-    final total = subtotal - discount;
+    // Phase 1R corrective (found via C5 device testing): this used to recompute
+    // `subtotal - discount` independently, silently ignoring widget.total (and the shipping fee
+    // baked into it) -- checkout_screen.dart already computed the real total, including shipping,
+    // moments earlier on the previous screen; trust it instead of recomputing a different number.
+    final shippingFee = widget.shippingFee;
+    final total = widget.total;
 
     return PremiumScaffold(
       // resizeToAvoidBottomInset handled internally
@@ -222,7 +229,8 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   _buildOrderSummaryCard(
                     subtotal: subtotal,
                     discount: discount,
-                    total: subtotal - discount,
+                    shippingFee: shippingFee,
+                    total: total,
                     isDark: isDark,
                     cardColor: cardColor,
                     accentColor: accentColor,
@@ -551,6 +559,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   Widget _buildOrderSummaryCard({
     required double subtotal,
     required double discount,
+    required double shippingFee,
     required double total,
     required bool isDark,
     required Color cardColor,
@@ -568,6 +577,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           if (discount > 0) ...[
             const SizedBox(height: 10),
             _priceRow("Discount", -discount, isDark, color: AppColors.success),
+          ],
+          if (shippingFee > 0) ...[
+            const SizedBox(height: 10),
+            _priceRow("Shipping Fee", shippingFee, isDark),
           ],
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),

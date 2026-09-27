@@ -10,35 +10,7 @@ import 'widgets/cart_item_card.dart';
 import 'widgets/empty_cart.dart';
 import '../checkout/checkout_screen.dart';
 import '../../widgets/premium_scaffold.dart';
-
-class ShippingFeeInfo {
-  final double standardFee;
-  final List<String> standardProducts;
-  final Map<String, double> specialFees;
-  final List<String> freeDeliveryProducts;
-  final double? expressDeliveryFee;
-  final List<String> expressAvailableProducts;
-  final Map<String, String> productDeliveryDays;
-  
-  ShippingFeeInfo({
-    required this.standardFee,
-    required this.standardProducts,
-    required this.specialFees,
-    required this.freeDeliveryProducts,
-    this.expressDeliveryFee,
-    required this.expressAvailableProducts,
-    required this.productDeliveryDays,
-  });
-  
-  double get totalShippingFee {
-    double total = standardProducts.isNotEmpty ? standardFee : 0;
-    total += specialFees.values.fold(0.0, (sum, fee) => sum + fee);
-    return total;
-  }
-  
-  bool get hasMixedDelivery => freeDeliveryProducts.isNotEmpty && 
-      (standardProducts.isNotEmpty || specialFees.isNotEmpty);
-}
+import '../../utils/shipping_fee_calculator.dart';
 
 class MobileCartScreen extends StatefulWidget {
   const MobileCartScreen({super.key});
@@ -182,6 +154,16 @@ class _MobileCartScreenState extends State<MobileCartScreen>
 
   Future<void> _loadProductDetails() async {
     final cartProvider = context.read<CartProvider>();
+    // C5 corrective (found via this session's own on-device testing, chasing an apparent
+    // shipping-fee regression that turned out to be this, not the actual fix under test): this
+    // used to read cartProvider.items immediately, racing CartProvider's own constructor-time
+    // load of the persisted cart from SharedPreferences (loadCart() below is a documented no-op --
+    // see its own comment -- CartProvider.ready is the real signal). On a cold app launch
+    // navigated to this screen quickly, items was still empty at this exact synchronous moment,
+    // so shipping silently stayed 0 forever after -- nothing ever re-triggered this method once
+    // the cart itself finished loading a beat later. Awaiting readiness first closes that window.
+    await cartProvider.ready;
+    if (!mounted) return;
     final productProvider = context.read<ProductProvider>();
 
     for (final item in cartProvider.items) {
@@ -196,62 +178,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     }
 
     if (mounted) setState(() {});
-  }
-
-  ShippingFeeInfo _calculateShippingFees(List<CartItemModel> items) {
-    final standardFeeProducts = <String>[];
-    final specialFees = <String, double>{};
-    final freeDeliveryProducts = <String>[];
-    final expressAvailableProducts = <String>[];
-    final productDeliveryDays = <String, String>{};
-    
-    double? commonStandardFee;
-    double? expressDeliveryFee;
-
-    for (final item in items) {
-      if (item.isFreeItem) continue;
-      
-      final product = _productCache[item.productId];
-      if (product == null) continue;
-
-      final shippingDays = product.shippingDays ?? '2-3';
-      productDeliveryDays[item.productName] = shippingDays;
-
-      final isFreeDelivery = product.isFreeDelivery ?? false;
-      if (isFreeDelivery) {
-        freeDeliveryProducts.add(item.productName);
-        continue;
-      }
-
-      final hasExpressDelivery = product.expressDelivery ?? false;
-      if (hasExpressDelivery) {
-        expressAvailableProducts.add(item.productName);
-        expressDeliveryFee ??= (product.shippingPrice?.toDouble() ?? 40.0) + 9.0;
-      }
-
-      final shippingPrice = product.shippingPrice?.toDouble() ?? 40.0;
-
-      if (commonStandardFee == null) {
-        commonStandardFee = shippingPrice;
-        standardFeeProducts.add(item.productName);
-      } else if (shippingPrice == commonStandardFee) {
-        standardFeeProducts.add(item.productName);
-      } else if (shippingPrice > commonStandardFee) {
-        specialFees[item.productName] = shippingPrice;
-      } else {
-        standardFeeProducts.add(item.productName);
-      }
-    }
-
-    return ShippingFeeInfo(
-      standardFee: commonStandardFee ?? 0,
-      standardProducts: standardFeeProducts,
-      specialFees: specialFees,
-      freeDeliveryProducts: freeDeliveryProducts,
-      expressDeliveryFee: expressDeliveryFee,
-      expressAvailableProducts: expressAvailableProducts,
-      productDeliveryDays: productDeliveryDays,
-    );
   }
 
   Future<void> _showClearCartDialog(CartProvider cartProvider) async {
@@ -438,7 +364,7 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     const double flatDiscount = 0;
     const double percentageDiscount = 0;
 
-    final shippingInfo = _calculateShippingFees(cartProvider.items);
+    final shippingInfo = calculateShippingFees(cartProvider.items, _productCache);
     final shippingFee = shippingInfo.totalShippingFee;
     final expressDeliveryFee = _expressDeliverySelected ? (shippingInfo.expressDeliveryFee ?? 0.0) : 0.0;
     
@@ -700,7 +626,7 @@ Widget _buildCartItem({
     Color cardColor,
     Color accentColor,
   ) {
-    final shippingInfo = _calculateShippingFees(items);
+    final shippingInfo = calculateShippingFees(items, _productCache);
     final hasExpressOption = shippingInfo.expressAvailableProducts.isNotEmpty;
 
     return _buildCardSection(
