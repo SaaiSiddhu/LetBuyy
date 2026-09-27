@@ -40,6 +40,7 @@ import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
+import { registerBuyerPrivacyRoutes, type PrivacyRequestRow, type PrivacyRequestType } from './buyer-privacy-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
 import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
@@ -501,6 +502,69 @@ export function registerBuyerRealmRoutes(
                 .select('id, author_type, body, created_at')
                 .maybeSingle();
             return { data: (data || null) as BuyerTicketMessageRow | null, error };
+        },
+    });
+
+    const PRIVACY_REQUEST_COLUMNS = 'id, ticket_ref, status, metadata, created_at, updated_at';
+
+    registerBuyerPrivacyRoutes(router, {
+        findOpenRequest: async (c, buyerAccountId, type) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .eq('topic', 'privacy')
+                .eq('metadata->>privacy_request_type', type)
+                .not('status', 'in', '(resolved,closed)')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+            return { data: (data || null) as PrivacyRequestRow | null, error };
+        },
+        createRequest: async (c, buyerAccountId, type, notes) => {
+            const now = new Date();
+            const subject = type === 'erasure' ? 'Account deletion request' : 'Data access request';
+            const inserted = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .insert({
+                    ticket_ref: generateTicketRef(now),
+                    first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                    resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
+                    site_id: null,
+                    requester_type: 'customer',
+                    requester_user_id: buyerAccountId,
+                    subject,
+                    channel: 'api',
+                    topic: 'privacy',
+                    priority: 'normal',
+                    status: 'open',
+                    metadata: { privacy_request_type: type },
+                })
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .maybeSingle();
+            if (inserted.error || !inserted.data) return { data: null, error: inserted.error };
+            const request = inserted.data as unknown as PrivacyRequestRow;
+            if (notes) {
+                const message = await getSupabaseAdmin(c)
+                    .from('ticket_messages')
+                    .insert({ ticket_id: request.id, author_type: 'requester', visibility: 'public', body: notes });
+                if (message.error) return { data: null, error: message.error };
+            }
+            return { data: request, error: null };
+        },
+        listRequests: async (c, buyerAccountId, limit) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('support_tickets')
+                .select(PRIVACY_REQUEST_COLUMNS)
+                .eq('requester_user_id', buyerAccountId)
+                .eq('requester_type', 'customer')
+                .eq('topic', 'privacy')
+                .is('deleted_at', null)
+                .order('created_at', { ascending: false })
+                .limit(limit);
+            return { data: (data || null) as PrivacyRequestRow[] | null, error };
         },
     });
 
