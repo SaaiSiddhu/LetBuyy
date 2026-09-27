@@ -1,5 +1,14 @@
 # Phase 1R — C3/C4/C5 closure evidence
 
+**Addendum (same day, immediately following):** the owner asked for `task_01e32ab9` (the checkout
+shipping-fee bug this document originally reported as "found, confirmed, flagged out of scope, not
+fixed") to be done now rather than deferred. It has been: see "Bugs found via this pass's own
+on-device testing" below, item 3, now marked **Fixed**, plus the new commit `34d730bb`. **Current
+HEAD is now `34d730bb`, not `bb567828`** — every other claim in this document (measured at
+`bb567828`) is otherwise unchanged and still accurate; only the one item below changed status. The
+fix also surfaced and closed a second, independent, previously-undetected bug (a cart/checkout
+product-fetch race on a cold app launch) — recorded in the same section.
+
 Measured 2026-09-27, single agent, in `/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase1r`,
 branch `letbuyy/phase1r-firebase-free-marketplace`. This document reports what this session measured
 directly (fresh command output, fresh builds, direct process/log/database inspection, real on-device
@@ -43,7 +52,7 @@ later sections supersede earlier status claims where they overlap (each says so 
 | Governance gate | **114/114, 0 failed** (fresh re-run at final HEAD) | see C4 below |
 | C5 Android E2E | **Executed** — emulator recovered, backend confirmed, PKCE sign-in, profile/address CRUD, cart/wishlist persistence, guest transfer, multi-buyer isolation, checkout/address consistency all exercised on-device | see C5 below |
 | Android domain association | **Inspected (read-only, not deployed)** | see C5 below |
-| Bugs found via on-device testing | **2 fixed this pass, 1 found+flagged out-of-scope** | see "Bugs found" below |
+| Bugs found via on-device testing | **4 fixed** (2 this pass + 2 more same day per addendum, including a race found while verifying the 3rd) | see "Bugs found" below |
 
 ## C3 — Firebase SDK/native retirement: **closed**, within this app's honest limits
 
@@ -375,30 +384,53 @@ Per this task's own instruction ("inspect only, never deploy"):
    disprove a race condition — this is disclosed as a source-level fix, not an empirically-reproduced-
    then-fixed bug).
 
-### Found, confirmed, and explicitly flagged out of scope (not fixed this pass)
+### Checkout total silently dropping the shipping fee — found, then fixed same day (addendum)
 
-3. **Checkout total silently drops the shipping fee** — found while inspecting the checkout/payment
-   screens for address consistency. The Cart screen shows Subtotal ₹998 + Shipping Fee ₹40 = Total
-   ₹1038 for a given cart; the Checkout and Payment Method screens, for the exact same cart, both
-   independently recompute `total = subtotal - discount` with no shipping term at all, showing Total
-   ₹998. Traced with a subagent to file:line certainty
-   (`checkout_screen.dart:267/272`, `payment_method_screen.dart:175-177`, ignoring the `total` it's
-   even passed at lines 15-23/874-877; `cart_provider.dart`'s existing `calculateTotal(...
-   deliveryCharge...)` helper at lines 292-298 is never called by either screen). **Confirmed not
-   currently exploitable**: `payment_method_screen.dart`'s `_proceedToConfirm` is an honest stub
-   (shows an "isn't available yet" dialog; no call anywhere in this app to `create_checkout_order` or
-   any other order/payment-creation RPC — grepped, zero hits), so no buyer is actually undercharged
-   today. But it is a real, latent computation bug that will silently undercharge every order with
-   non-zero shipping the moment checkout is wired to a real payment/order-creation flow. **Not fixed
-   this pass**: completing/correcting checkout total computation is explicitly out of Phase 1R's
-   scope (this task's own mandate: "preserve the honest unsupported-checkout boundary," not complete
-   it) — fixing the arithmetic now would mean touching checkout-flow code this phase does not own,
-   and the more correct long-term fix (per the Constitution's "recompute totals server-side, never
-   trust a client total") is to have checkout's total come from a server computation once checkout
-   is actually wired up, not to patch client-side arithmetic in isolation. Flagged as a background
-   task (`task_01e32ab9`, "Fix checkout total silently dropping shipping fee") for whichever future
-   phase wires checkout to a real payment/order-creation endpoint, rather than fixed here or silently
-   left for someone to rediscover from scratch.
+3. **Checkout total silently drops the shipping fee** — **Fixed** (addendum, commit `34d730bb`,
+   superseding this item's original "flagged, not fixed" disposition). Originally found while
+   inspecting the checkout/payment screens for address consistency: the Cart screen showed
+   Subtotal ₹998 + Shipping Fee ₹40 = Total ₹1038 for a given cart; the Checkout and Payment Method
+   screens, for the exact same cart, both independently recomputed `total = subtotal - discount`
+   with no shipping term at all, showing Total ₹998 (`checkout_screen.dart:267/272`,
+   `payment_method_screen.dart:175-177`, the latter ignoring the `total` it was even passed).
+   Confirmed not currently exploitable (`payment_method_screen.dart`'s `_proceedToConfirm` is an
+   honest "isn't available yet" stub; no call anywhere in this app to `create_checkout_order` or any
+   other order/payment-creation RPC), but a real, latent computation bug regardless. Originally
+   flagged as a background task (`task_01e32ab9`) rather than fixed, reasoning it was out of this
+   phase's scope; the owner asked for it to be done now instead, so it was: extracted the shipping
+   calculation (previously private to `mobile_cart_screen.dart`'s own State, unreachable from
+   checkout — the real root cause, not merely "checkout forgot a number") into
+   `lib/utils/shipping_fee_calculator.dart` as a shared, pure, tested function; `checkout_screen.dart`
+   now fetches its own cart items' products (mirroring the cart screen's own pattern — checkout has
+   two real entry points, the cart screen and product-detail's Buy Now, so a constructor-only fix
+   from one caller can't reach both) and computes the same shipping-inclusive total;
+   `payment_method_screen.dart` now trusts the `total`/new `shippingFee` it is given instead of
+   recomputing, and shows its own "Shipping Fee" row for parity with the cart screen. Two new tests
+   in `checkout_screen_pricing_test.dart` guard both halves (checkout's computed total carries
+   shipping through to payment; payment trusts what it's given rather than recomputing from a
+   deliberately-mismatched cart subtotal).
+
+   **A second, independent, previously-undetected bug was found while verifying this fix
+   on-device**, exactly the kind of gap this whole phase's device-testing discipline exists to catch:
+   both `_loadProductDetails()` methods (the pre-existing one in `mobile_cart_screen.dart` and the
+   new one this fix added to `checkout_screen.dart`) read `CartProvider.items` synchronously,
+   racing `CartProvider`'s own constructor-time async load of the persisted cart from
+   SharedPreferences. On a cold app launch navigated straight to Cart or Checkout, `items` was still
+   empty at that exact synchronous moment, so shipping silently stayed ₹0/absent — and nothing ever
+   re-triggered the method once the cart itself finished loading a beat later, so the screen stayed
+   wrong indefinitely, not just for one frame. Neither the pre-existing test suite nor the two new
+   pricing tests above caught this (both explicitly `await cart.ready` before pumping, sidestepping
+   the exact race a real cold launch hits) — only a genuine `am force-stop` + cold relaunch +
+   immediate tab tap on the real device surfaced it, reproduced twice (once confirming the bug,
+   once confirming the fix) before being trusted. Fixed by awaiting `CartProvider.ready` at the top
+   of both methods before reading `.items`. **On-device, post-fix confirmation**: cold force-stop +
+   relaunch + immediate Cart tab tap → "Standard Delivery ₹40" / "Shipping Fee ₹40" / "Total Amount
+   ₹1038" all present immediately, no missing-then-appearing flicker; followed through to Checkout →
+   Payment, which showed the identical "Subtotal ₹998 / Shipping Fee ₹40 / Total Amount ₹1038 /
+   Pay ₹1038" — full agreement, cart through payment, on first render, on a cold real-device launch.
+   `flutter analyze`: clean. `flutter test`: 128/128. Governance gate re-run fresh at the new HEAD:
+   114/114, 0 failed. "Pay ₹1038" was never tapped (no reason to — the fix was already fully
+   confirmed by that point, and tapping it remains outside this phase's scope regardless).
 
 ## Feature disposition — working now vs. deliberately deferred (final)
 
@@ -450,19 +482,18 @@ Per this task's own instruction ("inspect only, never deploy"):
    files onto it (or delete if the capability is judged not needed) — this is the only remaining
    Firebase-shaped surface in the app, and it is correctly blocked on backend work outside this
    phase, not on further client-side effort.
-2. **Checkout total's dropped shipping fee** (`task_01e32ab9`): fix before or alongside whichever
-   future phase wires checkout to a real payment/order-creation flow — see "Bugs found" above for
-   the exact fix needed and why it wasn't done in this phase.
+2. ~~Checkout total's dropped shipping fee~~ — **done** (addendum, commit `34d730bb`); no longer a
+   next-task item.
 3. **Buyer A on-device re-verification**: this pass's on-device multi-buyer testing used freshly
    created Buyer B/C accounts (this pass did not have Buyer A's password, created in an earlier,
    pre-compaction portion of this same overall session); Buyer A's own on-device state was not
    re-touched this pass. No action needed unless a future session specifically wants to re-verify
    that exact account.
-4. **Governance gate / test suite**: both are green at the current HEAD (`c1c9daf2`) as measured
-   fresh by this pass — re-run again only after further code changes, per the repository's own
-   trigger rules.
-5. Only after 1–2 above (3 needs no action, 4 is already current): consider this phase ready for its
-   own merge review.
+4. **Governance gate / test suite**: both re-confirmed green at the final HEAD (`34d730bb`) per the
+   addendum above (114/114 gate, 128/128 tests) — re-run again only after further code changes, per
+   the repository's own trigger rules.
+5. Only after 1 above (2 is done, 3 needs no action, 4 is already current): consider this phase ready
+   for its own merge review.
 
 ## Verdicts (final, supersedes the first pass's verdicts)
 
@@ -498,9 +529,10 @@ Per this task's own instruction ("inspect only, never deploy"):
   task is not authorized to touch).
 - **OVERALL PHASE 1R**: **GO** to close this phase's own scope on this branch. **NO_GO** still stands
   for any merge, Phase 2 advancement, or activating real payments — those remain separate, explicit,
-  owner-gated decisions this document does not make and was not asked to make. The one confirmed,
-  disclosed remaining item (the checkout shipping-fee bug) is correctly scoped to a later phase, not
-  a blocker for this one.
+  owner-gated decisions this document does not make and was not asked to make. The checkout
+  shipping-fee bug originally reported here as a disclosed, deferred remaining item was fixed the
+  same day at the owner's request (addendum above, commit `34d730bb`) — nothing is being carried
+  forward as a known gap from that finding any more.
 
 Execution mode: **NOT single-agent-clean this pass.** The skill's own rule (`.claude/skills/letbuyy/SKILL.md`
 §0.1) is unqualified — "Never use the Task/Agent tool... not in this session, not in any phase
