@@ -11,6 +11,9 @@ import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letb
 
 const router = new Hono<{ Bindings: Env }>();
 
+/** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
+const UNIQUE_VIOLATION = '23505';
+
 // ============================================================
 // STAFF SEAT LIMITS — plan-driven, server-authoritative
 // The merchant's plan caps how many staff (employees, excluding the owner) a
@@ -225,9 +228,31 @@ router.post('/', async (c) => {
         }, 409);
     }
 
+    // Confirmed accepted policy (apps/merchant/web/src/app/accept-invite/page.tsx, Phase N3): there
+    // is no acceptance step. "Ask the store owner to add you as staff directly ... instead of
+    // sending an email invite" is the product's own stated replacement for the retired self-service
+    // invite flow. What that page does not by itself resolve is proof of identity for the link --
+    // an owner types in an email; that alone is not evidence the typed email belongs to whoever the
+    // owner intends. So: link and activate immediately ONLY when the email already belongs to an
+    // EMAIL-VERIFIED account (email_verified stays false for an unclaimed or unconfirmed address,
+    // so an owner cannot grant access to an address nobody has proven control of). An unmatched or
+    // unverified email leaves the row exactly as before this change: user_id null, status
+    // 'invited' -- there is no accept-invite flow left to complete it, so this case remains a named,
+    // narrow limitation (D03-adjacent: closing it fully means deciding how a not-yet-registered
+    // invitee's later signup should reconcile with an existing 'invited' row), not silently hidden.
+    const { data: matchedUser } = await db
+        .from('users_custom')
+        .select('id, email_verified')
+        .eq('email', createPlan.value.email)
+        .maybeSingle();
+
+    const insertValue = matchedUser?.email_verified
+        ? { ...createPlan.value, user_id: matchedUser.id, status: 'active' }
+        : createPlan.value;
+
     const { data, error } = await db
         .from('employees')
-        .insert(createPlan.value)
+        .insert(insertValue)
         .select()
         .single();
 
@@ -241,6 +266,15 @@ router.post('/', async (c) => {
             },
             503
         );
+    }
+
+    // employees.email is unique PLATFORM-WIDE (one person, one staff identity), so re-adding an
+    // email already staffed anywhere -- including a removed or disabled row, which the constraint
+    // does not distinguish -- fails here. Previously fell through to a generic 500 with the raw
+    // Postgres message (constraint name, the email itself, in the response body). A duplicate is
+    // not a server failure; report it as the conflict it is, without repeating the email back.
+    if ((error as { code?: string } | null)?.code === UNIQUE_VIOLATION) {
+        return c.json({ error: { code: 'EMPLOYEE_ALREADY_EXISTS', message: 'This email is already registered as staff.' } }, 409);
     }
 
     if (error) {
