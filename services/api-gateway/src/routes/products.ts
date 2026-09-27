@@ -454,10 +454,13 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         : await listOwnedStoreIds(db, customUser.id, auth.user.storeId);
 
     if (query.store_id) {
-        const ownsStore = await verifyStoreOwnership(db, query.store_id, customUser.id, auth.user.storeId);
-        if (!ownsStore) {
-            return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-        }
+        // Phase 2 / F2.5: verifyStoreOwnership alone is owner-only, so an active staff member with a
+        // real products:read/products:write grant (staff-permission.ts) got 403'd reading the same
+        // catalog they can legitimately write to -- merchant-web's [store]/products page 404/403'd
+        // for every non-owner even after the store-shell fix in stores.ts. assertStaffPermission
+        // already allows the owner (its own ownsStore() check) or an active employees grant.
+        const staffBlock = await assertStaffPermission(c, query.store_id, customUser.id, 'products:read');
+        if (staffBlock) return staffBlock;
     }
 
     if (ownedStoreIds.length === 0) {

@@ -1,7 +1,7 @@
 import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
-import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded, success, paginated } from '../lib/supabase';
 import {
     employeeRemovalPatch,
     planEmployeeStaffCreate,
@@ -409,8 +409,8 @@ router.patch('/:id', async (c) => {
     const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
 
-    const ownsEmployee = await verifyEmployeeOwnership(db, employeeId, auth.user);
-    if (!ownsEmployee) {
+    const ownership = await verifyEmployeeOwnership(db, getSupabaseAdminUnguarded(c), employeeId, auth.user);
+    if (!ownership) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
@@ -424,6 +424,7 @@ router.patch('/:id', async (c) => {
         .from('employees')
         .update(updates)
         .eq('id', employeeId)
+        .eq('store_id', ownership.storeId)
         .select()
         .single();
 
@@ -442,15 +443,16 @@ router.delete('/:id', async (c) => {
     const employeeId = c.req.param('id');
     const db = getSupabaseAdmin(c);
 
-    const ownsEmployee = await verifyEmployeeOwnership(db, employeeId, auth.user);
-    if (!ownsEmployee) {
+    const ownership = await verifyEmployeeOwnership(db, getSupabaseAdminUnguarded(c), employeeId, auth.user);
+    if (!ownership) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
     const { error } = await db
         .from('employees')
         .update(employeeRemovalPatch(new Date().toISOString()))
-        .eq('id', employeeId);
+        .eq('id', employeeId)
+        .eq('store_id', ownership.storeId);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -461,16 +463,28 @@ router.delete('/:id', async (c) => {
     return c.json({ data: { deleted: true } });
 });
 
+// Phase 2 / F2.5: returns the employee's store_id (not just a boolean) so PATCH/DELETE can scope
+// their own mutation to it. `employees` is a registered tenant table (tenant-tables.registry.ts):
+// the tenant guard (tenant-scoped.ts) requires a scopeColumn predicate on any mutation, and
+// .eq('id', employeeId) alone does not name one, so the previous boolean-only shape left both
+// callers building a bare `.eq('id', employeeId)` update/delete that the guard throws 500 on
+// ("Tenant table employees requires a tenant/owner predicate before execution") -- for the owner,
+// not just staff. Reproduced live: DELETE /employees/:id 500s for the real owner session.
 async function verifyEmployeeOwnership(
     db: ReturnType<typeof getSupabaseAdmin>,
+    unguardedDb: ReturnType<typeof getSupabaseAdminUnguarded>,
     employeeId: string,
     authUser: WorkerAuthUser
-) {
+): Promise<{ storeId: string } | null> {
     const customUser = await resolveCustomUser(db, authUser);
-    if (!customUser) return false;
+    if (!customUser) return null;
 
+    // Bootstrap lookup by employeeId (a globally-unique PK) before the store_id -- and therefore any
+    // tenant scope predicate -- is known. Bounded to one row (.single()), and the result is
+    // re-verified via verifySiteOwnership below before it is trusted for anything: matches the
+    // documented getSupabaseAdminUnguarded contract (lib/supabase.ts).
     const buildEmployeeQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
+        const query = unguardedDb
             .from('employees')
             .select('store_id')
             .eq('id', employeeId);
@@ -484,11 +498,12 @@ async function verifyEmployeeOwnership(
         ({ data, error } = await buildEmployeeQuery(false).single());
     }
 
-    if (isMissingEmployeeStoreColumn(error)) return false;
+    if (isMissingEmployeeStoreColumn(error)) return null;
 
     const employee = data as { store_id?: string | null } | null;
-    if (!employee?.store_id) return false;
-    return verifySiteOwnership(db, employee.store_id, customUser.id, authUser.storeId);
+    if (!employee?.store_id) return null;
+    const owns = await verifySiteOwnership(db, employee.store_id, customUser.id, authUser.storeId);
+    return owns ? { storeId: employee.store_id } : null;
 }
 
 async function listOwnedStoreIds(

@@ -49,6 +49,14 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'operator listing-by-id lookup: a channel_listings.id is unique across every site, and the site is not known until the row returns',
         boundedIn: { file: 'routes/operations/marketplace-listings.ts', symbol: 'loadChannelListingById' },
     },
+    // Phase 2 / F2.5: PATCH and DELETE /employees/:id look an employees row up by its globally-unique
+    // id before its store_id -- and therefore any tenant scope predicate -- is known. Same bootstrap
+    // shape as the other entries. The result is re-verified via verifySiteOwnership before either
+    // caller trusts it, and the actual mutation is separately scoped with .eq('store_id', ...).
+    'routes/employee.ts': {
+        why: 'employee-by-id lookup: an employees.id is unique across every store, and the store is not known until the row returns',
+        boundedIn: { file: 'routes/employee.ts', symbol: 'verifyEmployeeOwnership' },
+    },
 };
 
 // Where it is DEFINED, and the test that guards it. Neither is a caller.

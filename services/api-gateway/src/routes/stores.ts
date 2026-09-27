@@ -601,6 +601,45 @@ router.get('/handle/:handle', async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
+    // Phase 2 / F2.5: this ownership-only query is the one gate merchant-web's [store]/layout.tsx
+    // calls for every page under /[store]/* (getStoreForUser -> stores.getByHandle). Without a
+    // staff fallback, a correctly-provisioned active employees row (staff-permission.ts's own
+    // "owner OR active employees row" model) can never reach any store page -- not because a
+    // specific action is denied, but because the store shell itself 404s before any per-route
+    // permission check runs. Mirrors ownsStore()'s pattern: existence only, no permission key --
+    // per-action authorization still runs at each route via assertStaffPermission.
+    if (!data) {
+        const { data: site, error: siteError } = await db
+            .from('sites')
+            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain')
+            .eq('subdomain', handle)
+            .is('deleted_at', null)
+            .maybeSingle();
+
+        if (siteError) {
+            return c.json({ error: { code: 'DB_ERROR', message: siteError.message } }, 500);
+        }
+
+        if (site) {
+            const { data: membership, error: membershipError } = await db
+                .from('employees')
+                .select('id')
+                .eq('store_id', site.id)
+                .eq('user_id', customUser.id)
+                .eq('status', 'active')
+                .is('deleted_at', null)
+                .maybeSingle();
+
+            if (membershipError) {
+                return c.json({ error: { code: 'DB_ERROR', message: membershipError.message } }, 500);
+            }
+
+            if (membership) {
+                data = site;
+            }
+        }
+    }
+
     if (!data) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
