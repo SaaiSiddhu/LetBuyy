@@ -22,15 +22,22 @@ dependencies:
   letbuyy_api_client:
     path: ../api_client
 
-  # Firebase — Phase 1R (R1.4): firebase_messaging and firebase_analytics removed, zero callers
-  # remaining (FCMService/NotificationService/AnalyticsService all deleted). The rest stay: this
-  # package's product/order/return/checkout/chat/reel/seller services have no canonical successor
-  # yet (R1.1).
+  # Firebase — Phase 1R (R1.4) removed firebase_messaging/firebase_analytics (zero callers).
+  # C3 corrective (27 September 2026 review continuation) deleted ~20 more Firebase-coupled
+  # services/providers from this package (auth/database/storage/order/stock/seller/admin/
+  # app-update/ad/fee/invoice/product-stats/loyalty/reels/return-service's own 21 dead methods --
+  # see this package's own barrel-file comments) and firebase_storage entirely (zero remaining
+  # `package:firebase_storage` imports anywhere in this package, grepped).
+  # STILL a real, required dependency, not yet fully retired: custom_checkout_service.dart,
+  # support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart and
+  # seller_analytics_service.dart have no canonical successor yet (R1.1) -- return_service.dart is
+  # already fully Firebase-free (gutted to 4 honest stub methods this same pass). cloud_functions
+  # backs custom_checkout_service.dart specifically (its only remaining importer, grepped). Do not
+  # remove before that remaining work closes.
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
   cloud_functions: ^5.1.3
-  firebase_storage: ^12.3.4
 
   # Networking
   http: ^1.2.2

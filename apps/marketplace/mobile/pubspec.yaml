@@ -31,16 +31,23 @@ dependencies:
   provider: ^6.1.2
   flutter_hooks: ^0.20.5
 
-  # Firebase — Phase 1R (R1.4): firebase_messaging and firebase_analytics removed, zero callers
-  # remaining anywhere in the app (FCMService/NotificationService/AnalyticsService all deleted).
-  # The rest stay: cloud_firestore/firebase_auth back most of the app's product/cart/checkout/chat/
-  # reels/seller surface (R1.1 — no canonical successor exists yet), cloud_functions backs order/
-  # return/checkout logic, firebase_storage backs review/profile/reel image uploads.
+  # Firebase — Phase 1R (R1.4) removed firebase_messaging/firebase_analytics (zero callers).
+  # C3 corrective (27 September 2026 review continuation) removed Firebase entirely from cart,
+  # wishlist, loyalty, reels, deals, orders, returns, and ~20 other services/providers/models --
+  # see marketplace_services'/marketplace_models' own barrel-file comments for the full ledger.
+  # Also removed this same pass: firebase_storage (zero remaining `package:firebase_storage`
+  # imports anywhere, grepped -- its last callers, return_service.dart/reel_service.dart, were
+  # themselves deleted this pass).
+  # STILL a real, required dependency, not yet fully retired: cloud_firestore/firebase_auth still
+  # back custom_checkout_service.dart, support_chat_service.dart, visual_search_service.dart,
+  # category_attribute_service.dart, seller_analytics_service.dart and ~30 remaining models' own
+  # Timestamp-shaped serialization (none of which have a canonical successor yet); cloud_functions
+  # backs custom_checkout_service.dart specifically. Do not remove either before that remaining
+  # work closes -- doing so will not compile.
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
   cloud_functions: ^5.1.3
-  firebase_storage: ^12.3.4
 
   # UI
   cupertino_icons: ^1.0.8
