@@ -35,8 +35,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   late AnimationController _toastAnimationController;
   late Animation<Offset> _toastSlideAnimation;
 
-  // Phase 1R: orders and wishlist were Firestore-native (per-user collections keyed by the Firebase
-  // uid) with no canonical successor yet. Null means "not available" — shown honestly, never as 0.
+  // Phase 1R: orders were Firestore-native (a per-user collection keyed by the Firebase uid) with
+  // no canonical successor yet. Null means "not available" -- shown honestly, never as 0.
+  // Wishlist has since become a real, local, canonical-buyer-scoped provider (D-BUYER-SCOPE) --
+  // its own live count is read directly from WishlistProvider where it's actually displayed
+  // (this field is dead: unassigned, kept only because two other, currently-unreachable widgets
+  // in this file still reference it).
   int? _ordersCount;
   int? _wishlistCount;
   int _addressesCount = 0;
@@ -124,10 +128,12 @@ class _ProfileScreenState extends State<ProfileScreen>
     _lastSignInStatus = status;
   }
 
-  // Phase 1R: orders and wishlist were Firestore collections keyed by the Firebase uid, with no
-  // canonical successor yet (R1.1). Addresses has one — BuyerAddressApi, already built by
-  // SUSTAINED-K/L — so only that count is real; the other two stay null (shown as "—", never a
-  // false 0) until a later phase gives them a canonical backend.
+  // Phase 1R: orders were a Firestore collection keyed by the Firebase uid, with no canonical
+  // successor yet (R1.1). Addresses has one — BuyerAddressApi, already built by SUSTAINED-K/L —
+  // so this method populates that count for real; orders stays null (shown as "—", never a false
+  // 0) until a later phase gives it a canonical backend. Wishlist is no longer this method's
+  // concern: it's read live from WishlistProvider at its one reachable display site instead (see
+  // the C3 corrective comment on that menu tile), so it never needed a slot here.
   Future<void> _loadUserStats() async {
     final token = _signIn?.token;
     if (token == null) {
@@ -333,7 +339,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                       _buildPremiumMenuTile(
                         icon: Icons.favorite_rounded,
                         title: 'Wishlist',
-                        subtitle: _wishlistCount == null ? 'Not available' : '$_wishlistCount items',
+                        // C3 corrective (guest-transfer UI wiring pass, "Complete ALL remaining
+                        // Phase 1R work" task, found via this session's own device testing):
+                        // _wishlistCount was never assigned (dead field, left over from when
+                        // wishlist really did have no canonical successor -- see this class's own
+                        // now-stale doc comment on _loadUserStats), so this always showed "Not
+                        // available" even after WishlistProvider became a real, working local
+                        // wishlist. Reads the live provider directly instead.
+                        subtitle: '${context.watch<WishlistProvider>().itemCount} items',
                         iconColor: const Color(0xFFEF4444),
                         onTap: () => _navigateToRoute(AppRoutes.wishlist),
                         isDark: isDark,
