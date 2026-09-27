@@ -128,8 +128,16 @@ function runSuite(name) {
             clearTimeout(timer);
             docker(['exec', '-i', container, 'psql', '-U', 'postgres', '-d', 'postgres',
                     '-c', `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`], { allowFailure: true });
-            const number = (label) => Number(out.match(new RegExp(`^ℹ ${label} (\\d+)`, 'm'))?.[1] ?? 0);
-            const firstFailure = out.split('\n').find((line) => line.startsWith('✖ ')) ?? '';
+            // Node 22's `node --test` TAP output uses `# <label> <n>` (no `ℹ ` prefix, which was an
+            // older reporter's format this regex was written against) and `not ok <n> - <name>` for a
+            // failing (sub)test (no leading `✖ ` line). Found this phase (F2.2, Phase 2) while trying
+            // to trust this runner's own summary for buyer-authorization-codes-postgres.test.mjs: the
+            // exit `code` below was always correct, but pass/fail/skipped silently read 0/0/0 on every
+            // suite regardless of the real outcome, defeating this file's own stated CAP-C66 purpose
+            // (verified directly: `node --test` on this Node version prints `# pass 10` / `# fail 0`
+            // on the real success case this suite now has, `# pass 0` / `# fail 10` when it does not).
+            const number = (label) => Number(out.match(new RegExp(`^# ${label} (\\d+)`, 'm'))?.[1] ?? 0);
+            const firstFailure = out.split('\n').find((line) => /^not ok \d+ - /.test(line)) ?? '';
             resolve({
                 name: name.replace(/-postgres\.test\.mjs$|\.test\.mjs$/, ''),
                 code: timedOut ? 124 : code,
