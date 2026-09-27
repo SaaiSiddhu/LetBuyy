@@ -18,7 +18,8 @@ export 'src/widgets/empty_state_widget.dart';
 export 'src/widgets/shimmer_loading.dart';
 export 'src/widgets/custom_button.dart';
 export 'src/widgets/custom_text_field.dart';
-export 'src/widgets/update_dialog.dart';
+// update_dialog.dart retired (C3 corrective, 27 September 2026 review continuation): zero live
+// callers -- app_update_model.dart (its only reason to exist) was deleted alongside it.
 export 'src/widgets/glass_container.dart';
 export 'src/widgets/custom_app_bar.dart';
 export 'src/widgets/custom_bottom_nav.dart';

@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'widgets/message_bubble.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
+import 'package:letbuyy_marketplace/auth/buyer_sign_in_controller.dart';
 import 'chat_history_screen.dart';
 
 class AIChatScreen extends HookWidget {
@@ -197,12 +200,16 @@ class _AIChatActions {
     );
   }
 
+  // C3 (Firebase SDK removal): this used to promise "Login to keep your chats" -- there is no
+  // durable chat-history backend for anyone yet (guest or signed in), so that was never true and
+  // is not reintroduced here. Signing in genuinely does unlock profile-aware answers (see
+  // handleUserProfile), which is what this now says.
   void showGuestModeDialog() {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text(
-          'Guest Mode: Chat history won\'t be saved. Login to keep your chats.',
+          'Guest Mode: Sign in for personalized help with your profile.',
           style: TextStyle(color: AppColors.white),
         ),
         backgroundColor: AppColors.warning,
@@ -243,10 +250,13 @@ class _AIChatActions {
           messages.value = history;
         } else {
           // No history, or is guest, so show greeting
+          // C3 (Firebase SDK removal): both greetings used to promise order-tracking and coupons
+          // as available -- neither has a canonical backend yet (see AIChatService's own
+          // handleGetOrders/handleGetCoupons), so this no longer claims they work.
           final greeting = ChatMessage.ai(
             text: isGuest.value
-                ? '**Welcome to LetBuyy!** 🛒\n\nYou are in Guest Mode with limited features.\n\nFeatures available:\n- Browse products\n- View categories\n- Check available coupons\n\n*Login to save chat history and track orders.*'
-                : '**Welcome to LetBuyy!** 🛒\n\nI\'m your smart shopping assistant. How can I help you today?\n\n**What I can do:**\n- 🛍️ Find products for you\n- 📦 Track your orders\n- 🎟️ Show you active coupons\n- 📚 Browse categories\n- ❓ Answer questions',
+                ? '**Welcome to LetBuyy!** 🛒\n\nYou are in Guest Mode with limited features.\n\nFeatures available:\n- Browse products\n- View categories\n\n*Sign in for personalized, profile-aware help.*'
+                : '**Welcome to LetBuyy!** 🛒\n\nI\'m your smart shopping assistant. How can I help you today?\n\n**What I can do:**\n- 🛍️ Find products for you\n- 📚 Browse categories\n- 👤 Answer questions about your profile\n- ❓ Answer general questions',
             sessionId: currentSessionId,
             quickReplies: ['Show all products', 'Best deals', 'Categories'],
             category: 'greeting',
@@ -272,13 +282,24 @@ class _AIChatActions {
   }
 
   // ✅ ADDED THIS FUNCTION BACK (it's crucial for persistence)
+  //
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): "signed in"
+  // is now the canonical buyer session (BuyerSignInController), never
+  // safeFirebaseCurrentUser()/FirebaseAuth -- that check was always true (always "guest") for
+  // every canonical buyer, since canonical "Sign in with LetBuyy" never touches Firebase.
   Future<void> checkAuthAndInitialize() async {
     try {
+      aiService.configure(
+        client: context.read<ApiClient>(),
+        accounts: context.read<BuyerAccountApi>(),
+      );
+      final signIn = context.read<BuyerSignInController>();
+      aiService.updateAuth(sessionToken: signIn.token, email: signIn.email);
+
       // ✅ MUST CALL INITSESSION() FIRST
       await aiService.initSession();
 
-      final user = safeFirebaseCurrentUser();
-      isGuest.value = user == null;
+      isGuest.value = !aiService.isSignedIn;
       if (isGuest.value) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           showGuestModeDialog();
@@ -382,12 +403,12 @@ class _AIChatActions {
     }
   }
 
+  // C3 (Firebase SDK removal): dropped the "Login to access chat history" gate -- there is no
+  // durable chat-history backend for anyone yet (see AIChatService's own doc comments), so
+  // ChatHistoryScreen already shows its own honest empty state regardless of sign-in status;
+  // gating navigation to it behind a fake login requirement was strictly less honest than letting
+  // everyone see that same empty state.
   Future<void> showHistory() async {
-    if (isGuest.value) {
-      showSnack('Login to access chat history', isError: true);
-      return;
-    }
-
     final selectedSession = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (_) => const ChatHistoryScreen()),

@@ -3,36 +3,43 @@
 // ============================================================
 
 import 'dart:developer' as dev;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:uuid/uuid.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 // ✅ 1. IMPORT SHARED_PREFERENCES
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AIChatService {
-  // C3 (Firebase SDK removal, 27 September 2026 review continuation): `auth` and `firestore` used
-  // to be eager `final` field initializers -- for a singleton (`instance` below), that means
-  // FirebaseAuth.instance/FirebaseFirestore.instance were touched, uncaught, the very first time
-  // ANYTHING accessed `AIChatService.instance` (ai_chat_screen.dart's own `useMemoized(() =>
-  // AIChatService.instance)`), which throws synchronously with no Firebase app initialized --
-  // confirmed empirically elsewhere this phase. `firestore` is now a lazy getter instead (same
-  // name, so its 4 existing call sites are unchanged and rely on their own existing try/catch,
-  // exactly as before -- only the crash-at-construction is fixed). `auth.currentUser`'s 7 call
-  // sites are replaced by `_safeCurrentUser()` below, since several of them (saveMessage,
-  // loadSessionHistory, buildSystemPrompt, getAllSessions, deleteSession) read it before their own
-  // try block even starts, unlike the two (handleGetOrders, handleUserProfile) only ever reached
-  // through _executeFunctionCall's own outer try/catch.
-  FirebaseFirestore get firestore => FirebaseFirestore.instance;
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): this service's
+  // Firebase coupling is now fully retired. "Signed in" is the canonical buyer session
+  // (BuyerSignInController, via updateAuth below), never FirebaseAuth.instance.currentUser (which
+  // is never non-null once Firebase.initializeApp() is no longer called -- see this file's own
+  // prior-pass fix history). Product/category tool calls are rewired onto the canonical gateway
+  // (ApiClient); profile onto BuyerAccountApi; orders/coupons have no canonical successor yet and
+  // are explicitly, honestly unavailable rather than silently empty (see handleGetOrders/
+  // handleGetCoupons). Conversation history has no durable backend yet either -- kept in memory
+  // for the running app only (see saveMessage/loadSessionHistory below), never pretending to
+  // reach a server that was never actually written to successfully.
+  ApiClient? _client;
+  BuyerAccountApi? _accounts;
+  String? _sessionToken;
+  String? _buyerEmail;
 
-  User? _safeCurrentUser() {
-    try {
-      return FirebaseAuth.instance.currentUser;
-    } catch (_) {
-      return null;
-    }
+  /// Wires this singleton to the canonical gateway clients. Idempotent; ai_chat_screen.dart calls
+  /// this once per screen entry from its own Provider-scoped context.
+  void configure({required ApiClient client, required BuyerAccountApi accounts}) {
+    _client = client;
+    _accounts = accounts;
   }
+
+  /// Call whenever BuyerSignInController's identity changes (sign in/out/switch).
+  void updateAuth({String? sessionToken, String? email}) {
+    _sessionToken = sessionToken;
+    _buyerEmail = email;
+  }
+
+  bool get isSignedIn => _sessionToken != null;
 
   // ✅ 2. MAKE A SINGLETON
   static final AIChatService instance = AIChatService._();
@@ -127,6 +134,9 @@ class AIChatService {
     ])
   ];
 
+  /// C3: no durable chat-history backend exists yet (see this file's own class-level doc comment)
+  /// -- kept in memory for the lifetime of the running app only. Never silently claims to have
+  /// saved anything it did not.
   Future<void> saveMessage(ChatMessage message) async {
     if (message.text.trim().isEmpty &&
         message.messageType != MessageType.loading) {
@@ -134,66 +144,25 @@ class AIChatService {
     }
 
     context.add(message);
-    final user = _safeCurrentUser();
-    if (user == null) return;
-
-    try {
-      await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('chats')
-          .doc(currentSessionId) // This now uses the persistent getter
-          .collection('messages')
-          .doc(message.id)
-          .set(message.toMap(), SetOptions(merge: true));
-    } catch (e, st) {
-      dev.log('❌ saveMessage error', error: e, stackTrace: st);
-    }
   }
 
-  // ✅ 7. UPDATE LOADSESSIONHISTORY TO SAVE THE LOADED ID
+  /// No durable chat-history store exists yet (see saveMessage's doc comment) -- this always
+  /// returns [], the same as it always effectively did under the old Firebase-gated code (every
+  /// message write silently failed, so there was never anything real to load back). Still switches
+  /// the active session id so a caller resuming a specific session id is honored going forward.
+  /// initializeChat() in ai_chat_screen.dart already treats an empty result as "show the
+  /// greeting", which is the correct, honest behavior here.
   Future<List<ChatMessage>> loadSessionHistory(String sessionId) async {
-    final user = _safeCurrentUser();
-    if (user == null) return [];
-
-    // Make the loaded session the new active session
     _prefs ??= await SharedPreferences.getInstance();
     _currentSessionId = sessionId;
     await _prefs!.setString(_kSessionKey, _currentSessionId!);
     dev.log('🔄 Switched active session to: $sessionId');
 
-    try {
-      final snap = await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('chats')
-          .doc(sessionId)
-          .collection('messages')
-          .orderBy('timestamp')
-          .get();
-
-      final messages = snap.docs.map((d) {
-        try {
-          return ChatMessage.fromFirestore(d);
-        } catch (e) {
-          dev.log('❌ parse error: $e');
-          return ChatMessage.error(
-            text: 'Error loading message',
-            sessionId: sessionId,
-          );
-        }
-      }).toList();
-
-      context.clear();
-      context.addAll(messages);
-      userProfileCache = null;
-      _profileCacheTime = null;
-      await primeCaches();
-      return messages;
-    } catch (e, st) {
-      dev.log('❌ loadSessionHistory error', error: e, stackTrace: st);
-      return [];
-    }
+    context.clear();
+    userProfileCache = null;
+    _profileCacheTime = null;
+    await primeCaches();
+    return [];
   }
 
   // ... (rest of the file is identical) ...
@@ -217,10 +186,9 @@ class AIChatService {
 
   // ✅ FIXED: System prompt with better intent differentiation
   Future<String> buildSystemPrompt() async {
-    final user = _safeCurrentUser();
     String userName = 'Guest';
 
-    if (user != null) {
+    if (isSignedIn) {
       try {
         userProfileCache ??= await handleUserProfile();
         if (userProfileCache != null &&
@@ -275,14 +243,14 @@ class AIChatService {
 
     FUNCTIONS AVAILABLE:
     - searchProducts(query, categoryId?, limit?): Find products
-    - getOrders(limit?, status?): Get user orders
-    - getOrderDetails(orderId): Get specific order
-    - getAvailableCoupons(): Show active coupons
+    - getOrders(limit?, status?): Get user orders (not available in this build yet -- if the result says so, tell the user honestly rather than implying it worked)
+    - getOrderDetails(orderId): Get specific order (same limitation as getOrders)
+    - getAvailableCoupons(): Show active coupons (not available in this build yet -- same limitation)
     - getCategories(): List categories
     - getUserProfile(): Get user info
     - getProductDetails(productId): Get product details
 
-    Remember: Answer informational questions first, THEN offer to search. Call functions for all commercial queries.
+    Remember: Answer informational questions first, THEN offer to search. Call functions for all commercial queries. If a function's result says a feature isn't available yet, say so plainly -- never claim success it did not report.
     ''';
   }
 
@@ -468,116 +436,51 @@ class AIChatService {
     }
   }
 
-  // ✅ ENHANCED: Advanced product search with fuzzy matching
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): rewired onto
+  // the canonical marketplaceFeed/marketplaceListing, which do server-side search/category
+  // filtering themselves -- the old 4-tier keyword/word/prefix/local-filter fallback existed only
+  // to work around Firestore having no real search, and is gone with it. `_client` is null only if
+  // a caller reaches this before configure() -- an integration bug, not an ordinary runtime state
+  // -- so that case returns the same honest failure shape as a genuine transport error.
   Future<Map<String, dynamic>> handleProductSearch(
     String query, {
     String? categoryId,
     int limit = 8,
   }) async {
+    final client = _client;
+    if (client == null) {
+      return {
+        'error': 'Product search is not ready yet',
+        'products': [],
+        'totalCount': 0,
+        'success': false,
+      };
+    }
+
     try {
       dev.log('🔍 Searching products: "$query"');
+      final trimmed = query.trim();
+      final isBrowseAll = trimmed.isEmpty || trimmed.toLowerCase() == 'all';
 
-      List<QueryDocumentSnapshot> results = [];
+      final page = await client.marketplaceFeed(
+        category: (categoryId != null && categoryId.isNotEmpty) ? categoryId : null,
+        search: isBrowseAll ? null : trimmed,
+        limit: limit,
+      );
 
-      // Build base query
-      Query queryRef =
-          firestore.collection('products').where('isActive', isEqualTo: true);
-
-      if (categoryId != null && categoryId.isNotEmpty) {
-        queryRef = queryRef.where('categoryId', isEqualTo: categoryId);
-      }
-
-      // 1️⃣ Try exact match with search keywords
-      if (query.trim().isNotEmpty && query.toLowerCase() != 'all') {
-        final lowerQuery = query.toLowerCase().trim();
-
-        // Try single word search first
-        results = (await queryRef
-                .where('searchKeywords', arrayContains: lowerQuery)
-                .limit(limit)
-                .get())
-            .docs;
-
-        // 2️⃣ If no results, try word-by-word search
-        if (results.isEmpty) {
-          final words =
-              lowerQuery.split(' ').where((w) => w.length > 2).toList();
-
-          for (final word in words) {
-            results = (await queryRef
-                    .where('searchKeywords', arrayContains: word)
-                    .limit(limit)
-                    .get())
-                .docs;
-
-            if (results.isNotEmpty) break;
-          }
-        }
-
-        // 3️⃣ If still no results, try name search (startAt/endAt)
-        if (results.isEmpty) {
-          try {
-            results = (await queryRef
-                    .orderBy('name')
-                    .startAt([lowerQuery])
-                    .endAt(['$lowerQuery\uf8ff'])
-                    .limit(limit)
-                    .get())
-                .docs;
-          } catch (e) {
-            dev.log('⚠️ Name search failed: $e');
-          }
-        }
-
-        // 4️⃣ Last resort: Get all and filter locally
-        if (results.isEmpty) {
-          dev.log('🔄 Fallback: Local search');
-          final allDocs = (await queryRef.limit(50).get()).docs;
-
-          results = allDocs.where((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            final name = (data['name'] as String?)?.toLowerCase() ?? '';
-            final desc = (data['description'] as String?)?.toLowerCase() ?? '';
-
-            // Check if any word matches
-            for (final word in lowerQuery.split(' ')) {
-              if (word.length > 2 &&
-                  (name.contains(word) || desc.contains(word))) {
-                return true;
-              }
-            }
-            return false;
-          }).take(limit).toList();
-        }
-      } else {
-        // Show all products / featured
-        results = (await queryRef
-                .where('isFeatured', isEqualTo: true)
-                .limit(limit)
-                .get())
-            .docs;
-
-        if (results.isEmpty) {
-          results = (await queryRef.limit(limit).get()).docs;
-        }
-      }
-
-      final products = results.map((d) {
-        final data = d.data() as Map<String, dynamic>;
-        final images = data['images'] as List?;
-
+      final products = page.items.map((item) {
         return {
-          'id': d.id,
-          'name': data['name'] ?? 'Unnamed Product',
-          'price': _parsePrice(data['salePrice'] ?? data['price']),
-          'originalPrice': _parsePrice(data['originalPrice'] ?? data['mrp']),
-          'imageUrl': images?.isNotEmpty == true ? images!.first : '',
-          'images': images ?? [],
-          'description': data['description'] ?? '',
-          'inStock': ((data['stock'] as num?)?.toInt() ?? 0) > 0,
-          'stock': (data['stock'] as num?)?.toInt() ?? 0,
-          'rating': (data['rating'] as num?)?.toDouble() ?? 0.0,
-          'isFeatured': data['isFeatured'] ?? false,
+          'id': item.listingId,
+          'name': item.name,
+          'price': (item.price ?? 0).toDouble(),
+          'originalPrice': (item.comparePrice ?? item.price ?? 0).toDouble(),
+          'imageUrl': item.images.isNotEmpty ? item.images.first : '',
+          'images': item.images,
+          'description': '',
+          'inStock': item.price != null,
+          'stock': 0,
+          'rating': 0.0,
+          'isFeatured': false,
         };
       }).toList();
 
@@ -601,29 +504,23 @@ class AIChatService {
     }
   }
 
-  double _parsePrice(dynamic value) {
-    if (value == null) return 0.0;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    if (value is String) return double.tryParse(value) ?? 0.0;
-    return 0.0;
-  }
-
   Future<Map<String, dynamic>> handleProductDetails(String productId) async {
+    final client = _client;
+    if (client == null) return {'error': 'Product details are not ready yet', 'success': false};
+
     try {
       if (productId.isEmpty) return {'error': 'Product ID required'};
 
-      final doc = await firestore.collection('products').doc(productId).get();
-      if (!doc.exists) return {'error': 'Product not found'};
+      final detail = await client.marketplaceListing(productId);
+      if (detail == null) return {'error': 'Product not found'};
 
-      final data = doc.data() as Map<String, dynamic>;
       return {
         'product': {
-          'id': doc.id,
-          'name': data['name'] ?? 'Unnamed',
-          'description': data['description'] ?? '',
-          'price': _parsePrice(data['salePrice'] ?? data['price']),
-          'inStock': ((data['stock'] as num?)?.toInt() ?? 0) > 0,
+          'id': detail.listingId,
+          'name': detail.name,
+          'description': detail.description ?? '',
+          'price': (detail.price ?? 0).toDouble(),
+          'inStock': detail.price != null,
         },
         'success': true,
       };
@@ -632,105 +529,30 @@ class AIChatService {
     }
   }
 
-  // ✅ ENHANCED: Better order retrieval
-  Future<Map<String, dynamic>> handleGetOrders(
-      {int limit = 5, String? status}) async {
-    final user = _safeCurrentUser();
-    if (user == null) {
-      return {
-        'error': 'Please login to view orders',
-        'orders': [],
-        'success': false,
-      };
-    }
-
-    try {
-      dev.log('📦 Fetching orders for: ${user.uid}');
-
-      Query q = firestore
-          .collection('orders')
-          .where('userId', isEqualTo: user.uid)
-          .orderBy('createdAt', descending: true);
-
-      if (status != null && status.isNotEmpty) {
-        q = q.where('orderStatus', isEqualTo: status);
-      }
-
-      final snap = await q.limit(limit).get();
-
-      final orders = snap.docs.map((d) {
-        final data = d.data() as Map<String, dynamic>;
-        return {
-          'id': d.id,
-          'orderNumber': data['orderNumber'] ?? d.id,
-          'status': data['orderStatus'] ?? 'unknown',
-          'total': _parsePrice(data['total']),
-          'createdAt':
-              (data['createdAt'] as Timestamp?)?.toDate().toString() ?? '',
-          'itemCount': (data['items'] as List?)?.length ?? 0,
-        };
-      }).toList();
-
-      dev.log('✅ Found ${orders.length} orders');
-
-      return {
-        'orders': orders,
-        'totalCount': orders.length,
-        'success': true,
-      };
-    } catch (e, st) {
-      dev.log('❌ Orders error', error: e, stackTrace: st);
-      return {
-        'error': 'Failed to fetch orders',
-        'details': e.toString(),
-        'orders': [],
-        'success': false,
-      };
-    }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): order history
+  // has no canonical successor reachable from this app yet (OrderProvider was already retired in
+  // an earlier phase) -- honestly, explicitly unavailable rather than a misleading "please login"
+  // (which used to fire even for a signed-in canonical buyer, since it only ever checked
+  // FirebaseAuth) or a Firestore call that always threw.
+  Future<Map<String, dynamic>> handleGetOrders({int limit = 5, String? status}) async {
+    return {
+      'error': "Order tracking isn't available in this build yet.",
+      'orders': [],
+      'success': false,
+    };
   }
 
   Future<Map<String, dynamic>> handleOrderDetails(String orderId) async {
-    try {
-      if (orderId.isEmpty) return {'error': 'Order ID required'};
-
-      // Try finding by document ID first
-      DocumentSnapshot? doc =
-          await firestore.collection('orders').doc(orderId).get();
-
-      // If not found, try finding by order number
-      if (!doc.exists) {
-        final query = await firestore
-            .collection('orders')
-            .where('orderNumber', isEqualTo: orderId)
-            .limit(1)
-            .get();
-
-        if (query.docs.isEmpty) {
-          return {'error': 'Order not found', 'success': false};
-        }
-        doc = query.docs.first;
-      }
-
-      final data = doc.data() as Map<String, dynamic>;
-      return {
-        'order': {
-          'id': doc.id,
-          'orderNumber': data['orderNumber'] ?? doc.id,
-          'status': data['orderStatus'] ?? 'unknown',
-          'total': _parsePrice(data['total']),
-          'createdAt':
-              (data['createdAt'] as Timestamp?)?.toDate().toString() ?? '',
-        },
-        'success': true,
-      };
-    } catch (e) {
-      return {'error': 'Failed to get order details', 'success': false};
-    }
+    return {
+      'error': "Order tracking isn't available in this build yet.",
+      'success': false,
+    };
   }
 
   Future<Map<String, dynamic>> handleUserProfile() async {
-    final user = _safeCurrentUser();
-    if (user == null) return {'error': 'Not logged in'};
+    final accounts = _accounts;
+    final token = _sessionToken;
+    if (accounts == null || token == null) return {'error': 'Not logged in'};
 
     if (userProfileCache != null && _profileCacheTime != null) {
       if (DateTime.now().difference(_profileCacheTime!).inMinutes < 15) {
@@ -739,14 +561,11 @@ class AIChatService {
     }
 
     try {
-      final doc = await firestore.collection('users').doc(user.uid).get();
-      if (!doc.exists) return {'error': 'Profile not found'};
-
-      final data = doc.data() as Map<String, dynamic>;
+      final account = await accounts.account(token);
       userProfileCache = {
-        'name': data['name'] ?? 'User',
-        'email': data['email'] ?? user.email ?? 'N/A',
-        'phone': data['phone'] ?? 'Not provided',
+        'name': account.fullName ?? _buyerEmail ?? 'User',
+        'email': account.email,
+        'phone': account.phone ?? 'Not provided',
       };
       _profileCacheTime = DateTime.now();
 
@@ -757,23 +576,19 @@ class AIChatService {
   }
 
   Future<Map<String, dynamic>> handleGetCategories() async {
-    try {
-      final snap = await firestore
-          .collection('categories')
-          .where('isActive', isEqualTo: true)
-          .get();
+    final client = _client;
+    if (client == null) {
+      return {'error': 'Categories are not ready yet', 'categories': [], 'success': false};
+    }
 
-      final categories = snap.docs.map((d) {
-        final data = d.data();
-        return {
-          'id': d.id,
-          'name': data['name'] ?? 'Unnamed Category',
-          'description': data['description'] ?? '',
-        };
+    try {
+      final categories = await client.marketplaceCategories();
+      final result = categories.map((c) {
+        return {'id': c.id, 'name': c.name, 'description': ''};
       }).toList();
 
-      dev.log('✅ Found ${categories.length} categories');
-      return {'categories': categories, 'success': true};
+      dev.log('✅ Found ${result.length} categories');
+      return {'categories': result, 'success': true};
     } catch (e) {
       return {
         'error': 'Failed to get categories',
@@ -783,50 +598,16 @@ class AIChatService {
     }
   }
 
-  // ✅ FIXED: Coupons with proper query
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): no canonical
+  // coupons backend exists yet -- CouponProvider was already fully retired in C2 as entirely
+  // Firestore-backed with no canonical successor. Honestly, explicitly unavailable rather than a
+  // Firestore call that always threw and returned an opaque "Failed to get coupons".
   Future<Map<String, dynamic>> handleGetCoupons() async {
-    try {
-      dev.log('🎟️ Fetching coupons...');
-
-      // Simple query without compound index requirement
-      final snap = await firestore
-          .collection('coupons')
-          .where('isActive', isEqualTo: true)
-          .get();
-
-      final now = DateTime.now();
-
-      // Filter in memory
-      final coupons = snap.docs.where((doc) {
-        final data = doc.data();
-        final validTo = (data['validTo'] as Timestamp?)?.toDate();
-        return validTo != null && validTo.isAfter(now);
-      }).map((d) {
-        final data = d.data();
-        return {
-          'code': data['code'] ?? 'N/A',
-          'description': data['description'] ?? 'No description',
-          'discount': (data['discount'] as num?)?.toDouble() ?? 0,
-          'discountType': data['discountType'] ?? 'percent',
-          'minOrderAmount': (data['minOrderAmount'] as num?)?.toDouble() ?? 0,
-          'validTo': (data['validTo'] as Timestamp?)?.toDate().toString() ?? '',
-        };
-      }).toList();
-
-      dev.log('✅ Found ${coupons.length} coupons');
-      return {
-        'coupons': coupons,
-        'totalCount': coupons.length,
-        'success': true,
-      };
-    } catch (e, st) {
-      dev.log('❌ Coupons error', error: e, stackTrace: st);
-      return {
-        'error': 'Failed to get coupons',
-        'coupons': [],
-        'success': false,
-      };
-    }
+    return {
+      'error': "Coupons aren't available in this build yet.",
+      'coupons': [],
+      'success': false,
+    };
   }
 
   List<String> suggestReplies(String functionName, Map<String, dynamic> data) {
@@ -870,40 +651,16 @@ class AIChatService {
     }
   }
 
+  /// No durable per-session store exists yet (see saveMessage/loadSessionHistory's own doc
+  /// comments) -- always [], honestly: chat_history_screen.dart (its only caller) already treats
+  /// an empty result as its own empty state.
   Future<List<Map<String, dynamic>>> getAllSessions() async {
-    final user = _safeCurrentUser();
-    if (user == null) return [];
-
-    try {
-      final snap = await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('chats')
-          .get();
-
-      return snap.docs.map((d) {
-        final data = d.data();
-        data['id'] = d.id;
-        return data;
-      }).toList();
-    } catch (e) {
-      return [];
-    }
+    return [];
   }
 
   Future<void> deleteSession(String id) async {
-    final user = _safeCurrentUser();
-    if (user == null) return;
-
-    try {
-      await firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('chats')
-          .doc(id)
-          .delete();
-    } catch (e) {
-      dev.log('❌ deleteSession error: $e');
+    if (id == _currentSessionId) {
+      context.clear();
     }
   }
 

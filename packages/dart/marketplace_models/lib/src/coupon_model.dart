@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'cart_item_model.dart';
 
 /// Coupon types supported in the system
@@ -47,69 +46,11 @@ class CouponModel {
     required this.createdAt,
   });
 
-  /// Firestore -> Model
-  factory CouponModel.fromMap(Map<String, dynamic> map, String id) {
-    return CouponModel(
-      id: id,
-      code: map['code'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      type: CouponType.values.firstWhere(
-        (e) => e.toString() == 'CouponType.${map['type']}',
-        orElse: () => CouponType.flat,
-      ),
-      discount: (map['discount'] ?? 0).toDouble(),
-      buyProductId: map['buyProductId'],
-      getProductId: map['getProductId'],
-      validFrom: (map['validFrom'] is Timestamp)
-          ? (map['validFrom'] as Timestamp).toDate()
-          : DateTime.now(),
-      validTo: (map['validTo'] is Timestamp)
-          ? (map['validTo'] as Timestamp).toDate()
-          : DateTime.now().add(const Duration(days: 30)),
-      minOrderAmount: (map['minOrderAmount'] ?? 0).toDouble(),
-      maxDiscountAmount: map['maxDiscountAmount'] != null
-          ? (map['maxDiscountAmount'] as num).toDouble()
-          : null,
-      usageLimit: map['usageLimit'] ?? 0,
-      usedCount: map['usedCount'] ?? 0,
-      isActive: map['isActive'] ?? true,
-      applicableCategories: map['applicableCategories'] != null
-          ? List<String>.from(map['applicableCategories'])
-          : null,
-      applicableProducts: map['applicableProducts'] != null
-          ? List<String>.from(map['applicableProducts'])
-          : null,
-      isFirstOrderOnly: map['isFirstOrderOnly'] ?? false,
-      createdAt: (map['createdAt'] is Timestamp)
-          ? (map['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
-    );
-  }
-
-  /// Model -> Firestore
-  Map<String, dynamic> toMap() {
-    return {
-      'code': code,
-      'title': title,
-      'description': description,
-      'type': type.toString().split('.').last,
-      'discount': discount,
-      'buyProductId': buyProductId,
-      'getProductId': getProductId,
-      'validFrom': Timestamp.fromDate(validFrom),
-      'validTo': Timestamp.fromDate(validTo),
-      'minOrderAmount': minOrderAmount,
-      'maxDiscountAmount': maxDiscountAmount,
-      'usageLimit': usageLimit,
-      'usedCount': usedCount,
-      'isActive': isActive,
-      'applicableCategories': applicableCategories,
-      'applicableProducts': applicableProducts,
-      'isFirstOrderOnly': isFirstOrderOnly,
-      'createdAt': Timestamp.fromDate(createdAt),
-    };
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): fromMap(map, id)/toMap()
+  // (Firestore document <-> model) deleted -- zero callers. CouponProvider (their only reason to
+  // exist) was already fully retired in C2 as entirely Firestore-backed with no canonical
+  // successor; the two remaining CouponModel references (product_details_screen.dart,
+  // mobile_cart_screen.dart) only use the type/calculateDiscount below on an always-null value.
 
   /// Determines whether coupon is currently valid
   bool get isValid {

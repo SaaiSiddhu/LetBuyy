@@ -23,21 +23,23 @@ dependencies:
     path: ../api_client
 
   # Firebase — Phase 1R (R1.4) removed firebase_messaging/firebase_analytics (zero callers).
-  # C3 corrective (27 September 2026 review continuation) deleted ~20 more Firebase-coupled
-  # services/providers from this package (auth/database/storage/order/stock/seller/admin/
-  # app-update/ad/fee/invoice/product-stats/loyalty/reels/return-service's own 21 dead methods --
-  # see this package's own barrel-file comments) and firebase_storage entirely (zero remaining
-  # `package:firebase_storage` imports anywhere in this package, grepped).
-  # STILL a real, required dependency, not yet fully retired: custom_checkout_service.dart,
-  # support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart and
-  # seller_analytics_service.dart have no canonical successor yet (R1.1) -- return_service.dart is
-  # already fully Firebase-free (gutted to 4 honest stub methods this same pass). cloud_functions
-  # backs custom_checkout_service.dart specifically (its only remaining importer, grepped). Do not
-  # remove before that remaining work closes.
+  # C3 corrective (27 September 2026 review continuation, second pass) deleted ~30 more
+  # Firebase-coupled services/models/screens from this workspace (loyalty/reels/deals-UI/
+  # seller-analytics/custom-checkout/~19 dead ad-marketplace-and-SaaS models/seller_model.dart/
+  # app_update_model.dart/firebase_safety.dart and more -- see this package's and
+  # marketplace_models' own barrel-file comments) and firebase_auth, firebase_storage and
+  # cloud_functions entirely (zero remaining `package:firebase_auth`/`package:firebase_storage`/
+  # `package:cloud_functions` imports anywhere in this workspace, grepped -- ai_chat_service.dart,
+  # firebase_auth's last real caller, is rewired onto the canonical buyer session; custom_checkout_
+  # service.dart, cloud_functions' one real caller, was itself deleted as unreachable once
+  # payment_method_screen.dart's own honest "not available yet" dialog made its 3 consumer widgets
+  # orphaned).
+  # STILL a real, required dependency, not yet fully retired: support_chat_service.dart,
+  # visual_search_service.dart and category_attribute_service.dart each have no canonical
+  # successor yet (R1.1) and are individually disclosed in their own file-header doc comments --
+  # each already fails safely (no crash, no fabricated data) rather than being a live risk.
   firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
-  cloud_functions: ^5.1.3
 
   # Networking
   http: ^1.2.2

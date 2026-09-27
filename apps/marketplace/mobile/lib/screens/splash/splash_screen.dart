@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../app/routes.dart';
-import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -95,10 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       // 🚀 INSTANT SPLASH: Show UI for minimum 400ms (branding), then navigate
       _updateStatus('Welcome', 0.5);
-      
-      // Check cached user (INSTANT - no network call)
-      final cachedUser = safeFirebaseCurrentUser();
-      
+
       // Small delay just for smooth animation (NOT blocking network calls)
       await Future.delayed(const Duration(milliseconds: 400));
       if (_hasNavigated || !mounted) return;
@@ -109,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
       // Navigate immediately - auth restoration happens AFTER on MainScreen
       if (mounted && !_hasNavigated) {
         _hasNavigated = true;
-        debugPrint('🚀 Splash: Navigating in <600ms (user: ${cachedUser?.email ?? "guest"})');
+        debugPrint('🚀 Splash: Navigating in <600ms (auth restoration happens on MainScreen)');
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       }
       
@@ -125,9 +121,10 @@ class _SplashScreenState extends State<SplashScreen>
   // Phase 1R corrective (C2): _waitForProvidersReady() (Provider.of<AuthProvider>(...)),
   // _waitForAuthState() (FirebaseAuth.instance.authStateChanges()) and _getRoute() were already
   // fully dead -- zero callers, per this same comment's own "no longer needed" -- left behind
-  // when auth restoration moved off the splash screen. The active boot path below already uses
-  // safeFirebaseCurrentUser() safely and never reaches AuthProvider at all. Removed rather than
-  // leave a dead AuthProvider reference standing.
+  // when auth restoration moved off the splash screen. C3 corrective: this screen also dropped its
+  // own safeFirebaseCurrentUser() peek (it only ever fed a debug log; real auth restoration already
+  // happens on MainScreen via BuyerSignInController). Removed rather than leave a dead
+  // AuthProvider/Firebase reference standing.
 
   @override
   Widget build(BuildContext context) {

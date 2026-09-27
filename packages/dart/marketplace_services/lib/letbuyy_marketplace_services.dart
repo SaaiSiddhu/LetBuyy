@@ -6,25 +6,29 @@
 /// analyzes/tests. Do not extend or use as a template — see this package's README.md
 /// and docs/migration/repository_consolidation/18_dart_package_recovery_journal.md.
 ///
-/// Phase 1R (C3, Firebase SDK removal, 27 September 2026 review continuation): the
-/// owner decided to remove Firebase entirely from the active marketplace (no real
-/// users existed to migrate). This sweep is IN PROGRESS, not complete: every export
-/// with no remaining live caller anywhere in the app has been deleted outright
+/// Phase 1R (C3, Firebase SDK removal, 27 September 2026 review continuation, second
+/// pass): the owner decided to remove Firebase entirely from the active marketplace
+/// (no real users existed to migrate). This sweep is IN PROGRESS, not complete: every
+/// export with no remaining live caller anywhere in the app has been deleted outright
 /// (their own removal is recorded in place, below); every export still listed below
 /// either has a live, reachable caller still being traced to its own disposition, or
-/// is already confirmed Firebase-free. `firebase_safety.dart`'s `safeFirebaseUserId`/
-/// `safeFirebaseCurrentUser` remain load-bearing until every one of those remaining
-/// callers is closed — do not delete it first. See CLAUDE.md's Canonical Runtime Map
-/// for why: `firebase_auth`/`cloud_firestore`/`cloud_functions`/`firebase_storage`
-/// stay listed in this package's pubspec until the sweep (and the native/pubspec
-/// cleanup it gates) is finished and independently verified against a built artifact.
+/// is already confirmed Firebase-free. `firebase_safety.dart` (safeFirebaseUserId/
+/// safeFirebaseCurrentUser) is deleted -- its last callers closed this same pass --
+/// and `firebase_auth`/`cloud_functions`/`firebase_storage` are confirmed absent from
+/// this package's pubspec (zero remaining imports anywhere in this workspace, grepped).
+/// `cloud_firestore` remains a real, required dependency: support_chat_service.dart,
+/// visual_search_service.dart and category_attribute_service.dart each have no
+/// canonical successor yet (individually disclosed in their own file-header doc
+/// comments) and a handful of models still carry Timestamp-shaped serialization.
 library;
 
 // Cache Service (for offline-first data loading)
 export 'src/cache_service.dart';
 
-// Authentication
-export 'src/firebase_safety.dart';
+// firebase_safety.dart retired (C3 corrective, 27 September 2026 review continuation, second
+// pass): zero remaining callers -- every safeFirebaseUserId()/safeFirebaseCurrentUser() call site
+// was itself already unreachable dead code (guarded on canonical auth, which never touches
+// Firebase) or has been individually rewired (splash_screen.dart, ai_chat_screen.dart).
 
 // C3 (Firebase SDK removal, 27 September 2026 review continuation): database_service.dart,
 // auth_service.dart, storage_service.dart, order_notification_service.dart, order_service.dart,
@@ -54,7 +58,11 @@ export 'src/location_service.dart';
 // Payment
 export 'src/payment_service.dart';
 export 'src/payment/advanced_razorpay_service.dart';
-export 'src/payment/custom_checkout_service.dart';
+// custom_checkout_service.dart retired (C3 corrective, 27 September 2026 review continuation):
+// zero callers -- its only 3 consumers (custom_payment_sheet.dart, upi_payment_widget.dart,
+// card_payment_widget.dart) were themselves already orphaned by payment_method_screen.dart's own
+// honest "Checkout isn't available yet" dialog (see that screen's own doc comment); all 4 deleted
+// together. cloud_functions has no other importer in this app now.
 
 // Shared Preferences (now in core package)
 // export 'src/shared_preferences_service.dart';
@@ -102,5 +110,8 @@ export 'src/deals/deal_service.dart';
 // Category Attributes (Faceted Search)
 export 'src/category_attribute_service.dart';
 
-// Seller Analytics (for heatmap dashboard)
-export 'src/seller_analytics_service.dart';
+// Seller Analytics retired (C3 corrective, 27 September 2026 review continuation):
+// seller_analytics_service.dart and marketplace_models' analytics_event.dart both deleted -- their
+// only real caller (product_details_screen.dart's view/add-to-cart tracking) never once succeeded
+// (Firestore write with no canonical successor), and every other method on the service was
+// already unreachable. See that screen's own doc comment.

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
@@ -54,10 +53,8 @@ class _MobileCartScreenState extends State<MobileCartScreen>
   late Animation<double> _fabAnimation;
   final ScrollController _scrollController = ScrollController();
   bool _showFab = false;
-  bool _isProcessingBogo = false;
   bool _expressDeliverySelected = false;
-  
-  final Map<String, CartItemModel> _bogoFreeItems = {};
+
   final Map<String, ProductModel> _productCache = {};
 
   @override
@@ -100,24 +97,19 @@ class _MobileCartScreenState extends State<MobileCartScreen>
 
   Future<void> _loadProductDetails() async {
     final cartProvider = context.read<CartProvider>();
-    
+    final productProvider = context.read<ProductProvider>();
+
     for (final item in cartProvider.items) {
       if (!_productCache.containsKey(item.productId)) {
-        try {
-          final doc = await FirebaseFirestore.instance
-              .collection('products')
-              .doc(item.productId)
-              .get();
-          
-          if (doc.exists && doc.data() != null) {
-            _productCache[item.productId] = ProductModel.fromMap(doc.data()!, doc.id);
-          }
-        } catch (e) {
-          debugPrint('❌ Error loading product ${item.productId}: $e');
+        final product = await productProvider.fetchProductById(item.productId);
+        if (product != null) {
+          _productCache[item.productId] = product;
+        } else {
+          debugPrint('❌ Error loading product ${item.productId}: not found or unreachable');
         }
       }
     }
-    
+
     if (mounted) setState(() {});
   }
 
@@ -177,122 +169,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     );
   }
 
-  Future<void> _processBogoCoupon(
-    CouponModel? coupon,
-    CartProvider cartProvider,
-  ) async {
-    if (_isProcessingBogo) return;
-    
-    setState(() => _isProcessingBogo = true);
-
-    try {
-      final hadFreeItems = _bogoFreeItems.isNotEmpty;
-      _bogoFreeItems.clear();
-
-      if (coupon == null || coupon.type != CouponType.buyOneGetOne) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      final buyId = coupon.buyProductId;
-      final getId = coupon.getProductId;
-
-      if (buyId == null) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      CartItemModel? buyItem;
-      try {
-        buyItem = cartProvider.items.firstWhere((item) => item.productId == buyId);
-      } catch (_) {
-        buyItem = null;
-      }
-
-      if (buyItem == null) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      if (getId == null) {
-        final freeItem = CartItemModel(
-          id: '${buyItem.id}_free',
-          productId: buyItem.productId,
-          productName: buyItem.productName,
-          productImage: buyItem.productImage,
-          price: 0,
-          quantity: 1,
-          userId: buyItem.userId,
-          addedAt: DateTime.now(),
-          variant: buyItem.variant,
-          isFreeItem: true,
-          freeItemLabel: 'BOGO Free',
-          linkedBuyItemId: buyItem.id,
-        );
-        _bogoFreeItems[buyItem.productId] = freeItem;
-      } else {
-        try {
-          final getDoc = await FirebaseFirestore.instance
-              .collection('products')
-              .doc(getId)
-              .get();
-
-          if (getDoc.exists && getDoc.data() != null) {
-            final getProduct = ProductModel.fromMap(getDoc.data()!, getDoc.id);
-            final freeItem = CartItemModel(
-              id: '${getId}_free',
-              productId: getId,
-              productName: getProduct.name,
-              productImage: getProduct.imageUrl ?? '',
-              price: 0,
-              quantity: 1,
-              userId: buyItem.userId,
-              addedAt: DateTime.now(),
-              isFreeItem: true,
-              freeItemLabel: 'BOGO Free',
-              linkedBuyItemId: buyItem.id,
-            );
-            _bogoFreeItems[getId] = freeItem;
-          }
-        } catch (e) {
-          debugPrint('❌ Error fetching free product: $e');
-        }
-      }
-
-      if (_bogoFreeItems.isNotEmpty && !hadFreeItems && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            HapticFeedback.lightImpact();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        '🎉 BOGO applied! Free item added to cart',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ BOGO processing error: $e');
-    } finally {
-      if (mounted) setState(() => _isProcessingBogo = false);
-    }
-  }
-
   Future<void> _showClearCartDialog(CartProvider cartProvider) async {
     HapticFeedback.mediumImpact();
 
@@ -341,7 +217,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
 
     if (confirmed == true && mounted) {
       await cartProvider.clearCart();
-      _bogoFreeItems.clear();
       if (mounted) {
         HapticFeedback.heavyImpact();
         SnackbarHelper.showSuccess(context, 'Cart cleared successfully');
@@ -401,7 +276,7 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                           children: [
                             _buildCartItemsSection(
                               cartProvider,
-                              _bogoFreeItems.values.toList(),
+                              const [],
                               isDark,
                               cardColor,
                               accentColor,

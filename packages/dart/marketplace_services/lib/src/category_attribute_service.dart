@@ -1,5 +1,15 @@
 // lib/src/category_attribute_service.dart
 // Service for managing category attribute schemas and pending attribute requests
+//
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): no canonical faceted-search/
+// category-attributes endpoint exists yet, so this stays Firestore-backed and every method here
+// always fails and degrades honestly -- getAllCategorySchemas() (its one live caller,
+// filter_drawer.dart) already catches internally and returns [], which filter_drawer.dart already
+// treats as "no extra attribute filters for this category" (an ordinary empty state: the standard
+// price/rating/discount filters, which do not depend on this service, are unaffected). Genuinely
+// unreachable methods (saveCategorySchema, streamCategorySchema, the pending-attribute-request
+// workflow) are left as-is rather than deleted piecemeal -- they share this file's Firestore
+// wiring and would need the same canonical successor this whole file is waiting on.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';

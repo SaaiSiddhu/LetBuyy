@@ -87,6 +87,12 @@ class VisualAttributes {
 }
 
 /// Visual Search Service using Gemini Vision AI
+///
+/// C3 (Firebase SDK removal, 27 September 2026 review continuation): image analysis (Gemini
+/// Vision, no Firebase involved) still works; _findMatchingProducts' Firestore query has no
+/// canonical successor yet and always fails, but searchByImage's own outer try/catch already
+/// turns that into an honest `VisualSearchResult.error(...)` -- never a crash, never a fabricated
+/// result set. Left Firestore-backed pending a canonical product-search-by-attributes endpoint.
 class VisualSearchService {
   static final VisualSearchService instance = VisualSearchService._();
   VisualSearchService._();

@@ -156,6 +156,25 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  /// Fetches a single product by id from the canonical gateway without touching
+  /// `selectedProduct`/`selectedVariant`/recently-viewed or emitting `notifyListeners()`.
+  ///
+  /// C3 (Firebase retirement continuation): the cart screen and BOGO-coupon resolution used to
+  /// call `FirebaseFirestore.instance.collection('products').doc(id).get()` directly for a
+  /// look-aside fetch of one or more products already in the cart. `loadProductById` is not a
+  /// substitute for that -- it mutates shared selection/recently-viewed state meant for the
+  /// product-details screen, which a cart-screen background loop over N items must not disturb.
+  /// Returns null on a genuine not-found or transport failure; callers must treat that as "unknown
+  /// right now", not as a zero-stock/zero-price product.
+  Future<ProductModel?> fetchProductById(String productId) async {
+    try {
+      final detail = await _client.marketplaceListing(productId);
+      return detail == null ? null : _productFromListingDetail(detail);
+    } catch (_) {
+      return null;
+    }
+  }
+
   void selectVariantOption(String optionName, String optionValue) {
     if (_selectedProduct == null) return;
 

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
@@ -62,90 +61,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final provider = Provider.of<ProductProvider>(context, listen: false);
+      // Recently-viewed tracking already happens inside loadProductById (local, canonical) --
+      // see ProductProvider.addToRecentlyViewed's own call site there.
       provider.loadProductById(widget.productId);
-
-      // Save to recently viewed
-      _saveRecentlyViewed();
-      
-      // ✅ Track product view for seller analytics
-      _incrementViewCount();
     });
   }
 
-  /// Saves this product to the user's recently viewed list in Firestore
-  Future<void> _saveRecentlyViewed() async {
-    try {
-      final userId = safeFirebaseUserId();
-      if (userId == null) return;
-
-      final docRef = FirebaseFirestore.instance
-          .collection('recently_viewed')
-          .doc(userId)
-          .collection('products')
-          .doc(widget.productId);
-
-      await docRef.set({
-        'productId': widget.productId,
-        'viewedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-
-      debugPrint('✅ Saved to recently viewed: ${widget.productId}');
-    } catch (e) {
-      debugPrint('⚠️ Error saving recently viewed: $e');
-    }
-  }
-
-  /// Increments view count for this product in Firestore and tracks seller analytics
-  Future<void> _incrementViewCount() async {
-    try {
-      // Get product to access sellerId
-      final productDoc = await FirebaseFirestore.instance
-          .collection('products')
-          .doc(widget.productId)
-          .get();
-      
-      if (!productDoc.exists) return;
-      
-      final sellerId = productDoc.data()?['sellerId'] as String?;
-      
-      // Increment view count on product
-      await FirebaseFirestore.instance
-          .collection('products')
-          .doc(widget.productId)
-          .update({
-        'viewCount': FieldValue.increment(1),
-      });
-      
-      // Track seller analytics with source attribution
-      if (sellerId != null) {
-        // Get traffic source from route arguments
-        final args = ModalRoute.of(context)?.settings.arguments;
-        TrafficSource source = TrafficSource.organic;
-        String? adCampaignId;
-        
-        debugPrint('🔍 Route args type: ${args.runtimeType}, value: $args');
-        
-        if (args is Map<String, dynamic>) {
-          final sourceStr = args['source'] as String?;
-          adCampaignId = args['adCampaignId'] as String?;
-          debugPrint('🔍 Parsed: sourceStr=$sourceStr, adCampaignId=$adCampaignId');
-          source = AnalyticsEvent.sourceFromString(sourceStr);
-        }
-        
-        await SellerAnalyticsService.trackProductView(
-          sellerId: sellerId,
-          productId: widget.productId,
-          source: source,
-          adCampaignId: adCampaignId,
-          userId: safeFirebaseUserId(),
-        );
-      }
-      
-      debugPrint('📊 View count incremented for: ${widget.productId}');
-    } catch (e) {
-      debugPrint('⚠️ Error incrementing view count: $e');
-    }
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): _saveRecentlyViewed()
+  // (Firestore `recently_viewed` collection) and _incrementViewCount() (Firestore product
+  // view-count increment + SellerAnalyticsService.trackProductView) both deleted. Neither has a
+  // canonical successor -- there is no gateway endpoint for either concern -- and both were
+  // redundant/silently-failing: recently-viewed is already handled locally by ProductProvider
+  // (see _loadProduct above), and the seller-analytics write never once succeeded (see
+  // seller_analytics_service.dart's own deletion, same pass: it was the sole caller-reachable
+  // consumer of AnalyticsEvent, now also deleted).
 
   Future<void> _checkWishlistStatus() async {
     try {
@@ -232,14 +161,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         return;
       }
 
-      // ✅ Track cart add for seller analytics
-      await SellerAnalyticsService.trackAddToCart(
-        sellerId: product.sellerId,
-        productId: product.id,
-        source: TrafficSource.organic,
-        userId: safeFirebaseUserId(),
-        quantity: _quantity,
-      );
+      // C3 (Firebase SDK removal): SellerAnalyticsService.trackAddToCart deleted -- see this
+      // screen's own _loadProduct doc comment; the write never once succeeded.
 
       if (buyNow) {
         Navigator.pushNamed(context, AppRoutes.checkout);

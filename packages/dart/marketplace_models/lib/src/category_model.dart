@@ -1,5 +1,4 @@
 // lib/models/category_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Commission settings for a category
 class CategoryCommission {
@@ -92,42 +91,10 @@ class CategoryModel {
     this.commission = const CategoryCommission(),
   }) : slug = slug ?? id;
 
-  factory CategoryModel.fromMap(Map<String, dynamic> map, String id) {
-    return CategoryModel(
-      id: id,
-      name: map['name'] ?? '',
-      description: map['description'] ?? '',
-      slug: map['slug'],
-      parentId: map['parentId'],
-      level: map['level'] ?? 0,
-      iconImageUrl: map['iconImageUrl'],
-      bannerImageUrl: map['bannerImageUrl'],
-      iconName: map['iconName'],
-      displayOrder: map['displayOrder'] ?? 0,
-      isActive: map['isActive'] ?? true,
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      productCount: map['productCount'] ?? 0,
-      commission: CategoryCommission.fromMap(map['commission'] as Map<String, dynamic>?),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'description': description,
-      'slug': slug,
-      'parentId': parentId,
-      'level': level,
-      'iconImageUrl': iconImageUrl,
-      'bannerImageUrl': bannerImageUrl,
-      'iconName': iconName,
-      'displayOrder': displayOrder,
-      'isActive': isActive,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'productCount': productCount,
-      'commission': commission.toMap(),
-    };
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): fromMap(map, id)/toMap()
+  // (Firestore document <-> model) deleted -- zero callers anywhere in the app or services.
+  // CategoryProvider/cache_service.dart/web_shop_screen.dart all construct CategoryModel directly
+  // from canonical/cached data via the plain constructor above, never through these.
 
   CategoryModel copyWith({
     String? name,
