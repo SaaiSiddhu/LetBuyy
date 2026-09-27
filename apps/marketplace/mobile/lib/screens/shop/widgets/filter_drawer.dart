@@ -62,7 +62,6 @@ class _FilterDrawerState extends State<FilterDrawer> {
   final Map<String, Map<String, int>> _attributeValueCounts = {};
 
   final List<_FilterSection> _sections = [];
-  final CategoryAttributeService _attributeService = CategoryAttributeService();
 
   @override
   void initState() {
@@ -99,8 +98,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
         } catch (_) {}
       }
 
-      // Fetch category schemas from Firestore
-      _allSchemas = await _attributeService.getAllCategorySchemas();
+      // Phase 1R (Firebase removal, final pass): category_attribute_service.dart (Firestore-backed,
+      // no canonical successor) deleted. No canonical faceted-search/category-attributes endpoint
+      // exists yet, so this is decided locally rather than asked from a dead backend -- an honest
+      // "no extra attribute filters yet" rather than a call that could only ever come back empty.
+      _allSchemas = const [];
 
       final attributeMap = <String, AttributeField>{};
       for (final schema in _allSchemas) {

@@ -7,7 +7,10 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.2'
+        // Phase 1R final pass: com.google.gms:google-services removed -- this app requires no
+        // Firebase package any more (see app/build.gradle's own dependencies-block comment), and
+        // this classpath's only purpose was applying that plugin to read google-services.json for
+        // Firebase SDK configuration that no longer exists in the dependency graph.
     }
 }
 

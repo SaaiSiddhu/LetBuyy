@@ -1,7 +1,14 @@
 // lib/src/category_attribute_schema_model.dart
 // Category-based attribute schema for Amazon-style faceted search
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+// Phase 1R (Firebase removal, final pass): category_attribute_service.dart (deleted) was the only
+// writer/reader of these schemas, entirely Firestore-backed, with no canonical successor --
+// filter_drawer.dart (this model's one remaining consumer) now decides locally that zero
+// attribute schemas exist rather than asking a dead backend, so nothing ever calls toMap/fromMap/
+// fromFirestore any more; removed along with the cloud_firestore import and Timestamp coupling.
+// PendingAttributeRequest (the seller-side "propose a new attribute" workflow) had no consumer
+// anywhere outside category_attribute_service.dart even before that service was deleted -- removed
+// as genuinely dead, not merely disconnected.
 
 // ============================================
 // ATTRIBUTE TYPE ENUM
@@ -14,27 +21,6 @@ enum AttributeType {
   boolean_,     // Yes/No toggle
 }
 
-// Helper to parse attribute type
-AttributeType _parseAttributeType(String? type) {
-  switch (type?.toLowerCase()) {
-    case 'enum':
-    case 'enum_':
-      return AttributeType.enum_;
-    case 'multiselect':
-    case 'multi_select':
-      return AttributeType.multiSelect;
-    case 'range':
-      return AttributeType.range;
-    case 'text':
-      return AttributeType.text;
-    case 'boolean':
-    case 'boolean_':
-      return AttributeType.boolean_;
-    default:
-      return AttributeType.enum_;
-  }
-}
-
 // ============================================
 // APPROVAL STATUS ENUM
 // ============================================
@@ -42,19 +28,6 @@ enum AttributeApprovalStatus {
   approved,   // Visible in marketplace filters
   pending,    // Awaiting admin approval (seller added)
   rejected,   // Rejected by admin
-}
-
-AttributeApprovalStatus _parseApprovalStatus(String? status) {
-  switch (status?.toLowerCase()) {
-    case 'approved':
-      return AttributeApprovalStatus.approved;
-    case 'pending':
-      return AttributeApprovalStatus.pending;
-    case 'rejected':
-      return AttributeApprovalStatus.rejected;
-    default:
-      return AttributeApprovalStatus.approved;
-  }
 }
 
 // ============================================
@@ -89,34 +62,6 @@ class AttributeField {
   bool get isPending => status == AttributeApprovalStatus.pending;
   bool get isRejected => status == AttributeApprovalStatus.rejected;
   bool get isSellerAdded => addedBy != null && addedBy!.isNotEmpty;
-
-  /// Convert to Firestore map
-  Map<String, dynamic> toMap() => {
-    'key': key,
-    'label': label,
-    'type': type.name,
-    'options': options,
-    'isFilterable': isFilterable,
-    'isRequired': isRequired,
-    'displayOrder': displayOrder,
-    'status': status.name,
-    'addedBy': addedBy,
-  };
-
-  /// Create from Firestore map
-  factory AttributeField.fromMap(Map<String, dynamic> map) {
-    return AttributeField(
-      key: map['key'] ?? '',
-      label: map['label'] ?? '',
-      type: _parseAttributeType(map['type']),
-      options: List<String>.from(map['options'] ?? []),
-      isFilterable: map['isFilterable'] ?? true,
-      isRequired: map['isRequired'] ?? false,
-      displayOrder: (map['displayOrder'] as num?)?.toInt() ?? 0,
-      status: _parseApprovalStatus(map['status']),
-      addedBy: map['addedBy'],
-    );
-  }
 
   /// Create a copy with modifications
   AttributeField copyWith({
@@ -164,7 +109,7 @@ class CategoryAttributeSchema {
   });
 
   // --- Convenience getters ---
-  
+
   /// Only approved attributes (for marketplace)
   List<AttributeField> get approvedAttributes =>
       attributes.where((a) => a.isApproved).toList();
@@ -188,35 +133,6 @@ class CategoryAttributeSchema {
     return sorted;
   }
 
-  /// Convert to Firestore map
-  Map<String, dynamic> toMap() => {
-    'categoryId': categoryId,
-    'displayName': displayName,
-    'attributes': attributes.map((a) => a.toMap()).toList(),
-    'createdAt': Timestamp.fromDate(createdAt),
-    'updatedAt': Timestamp.fromDate(updatedAt),
-  };
-
-  /// Create from Firestore map
-  factory CategoryAttributeSchema.fromMap(Map<String, dynamic> map, String id) {
-    return CategoryAttributeSchema(
-      categoryId: id,
-      displayName: map['displayName'] ?? '',
-      attributes: (map['attributes'] as List? ?? [])
-          .map((a) => AttributeField.fromMap(a as Map<String, dynamic>))
-          .toList(),
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    );
-  }
-
-  factory CategoryAttributeSchema.fromFirestore(DocumentSnapshot doc) {
-    return CategoryAttributeSchema.fromMap(
-      doc.data() as Map<String, dynamic>,
-      doc.id,
-    );
-  }
-
   /// Create a copy with modifications
   CategoryAttributeSchema copyWith({
     String? categoryId,
@@ -231,90 +147,6 @@ class CategoryAttributeSchema {
       attributes: attributes ?? this.attributes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-}
-
-// ============================================
-// PENDING ATTRIBUTE REQUEST MODEL
-// ============================================
-/// Seller's request to add a new attribute to a category
-class PendingAttributeRequest {
-  final String id;
-  final String categoryId;
-  final String sellerId;
-  final String attributeKey;
-  final String attributeLabel;
-  final AttributeType attributeType;
-  final List<String> suggestedOptions;
-  final String sampleValue;          // Example value from seller's product
-  final String? productId;           // Product where this was first used
-  final AttributeApprovalStatus status;
-  final String? rejectionReason;
-  final DateTime createdAt;
-  final DateTime? reviewedAt;
-  final String? reviewedBy;          // Admin who reviewed
-
-  PendingAttributeRequest({
-    required this.id,
-    required this.categoryId,
-    required this.sellerId,
-    required this.attributeKey,
-    required this.attributeLabel,
-    required this.attributeType,
-    this.suggestedOptions = const [],
-    required this.sampleValue,
-    this.productId,
-    this.status = AttributeApprovalStatus.pending,
-    this.rejectionReason,
-    required this.createdAt,
-    this.reviewedAt,
-    this.reviewedBy,
-  });
-
-  bool get isPending => status == AttributeApprovalStatus.pending;
-  bool get isApproved => status == AttributeApprovalStatus.approved;
-  bool get isRejected => status == AttributeApprovalStatus.rejected;
-
-  Map<String, dynamic> toMap() => {
-    'categoryId': categoryId,
-    'sellerId': sellerId,
-    'attributeKey': attributeKey,
-    'attributeLabel': attributeLabel,
-    'attributeType': attributeType.name,
-    'suggestedOptions': suggestedOptions,
-    'sampleValue': sampleValue,
-    'productId': productId,
-    'status': status.name,
-    'rejectionReason': rejectionReason,
-    'createdAt': Timestamp.fromDate(createdAt),
-    'reviewedAt': reviewedAt != null ? Timestamp.fromDate(reviewedAt!) : null,
-    'reviewedBy': reviewedBy,
-  };
-
-  factory PendingAttributeRequest.fromMap(Map<String, dynamic> map, String id) {
-    return PendingAttributeRequest(
-      id: id,
-      categoryId: map['categoryId'] ?? '',
-      sellerId: map['sellerId'] ?? '',
-      attributeKey: map['attributeKey'] ?? '',
-      attributeLabel: map['attributeLabel'] ?? '',
-      attributeType: _parseAttributeType(map['attributeType']),
-      suggestedOptions: List<String>.from(map['suggestedOptions'] ?? []),
-      sampleValue: map['sampleValue'] ?? '',
-      productId: map['productId'],
-      status: _parseApprovalStatus(map['status']),
-      rejectionReason: map['rejectionReason'],
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      reviewedAt: (map['reviewedAt'] as Timestamp?)?.toDate(),
-      reviewedBy: map['reviewedBy'],
-    );
-  }
-
-  factory PendingAttributeRequest.fromFirestore(DocumentSnapshot doc) {
-    return PendingAttributeRequest.fromMap(
-      doc.data() as Map<String, dynamic>,
-      doc.id,
     );
   }
 }

@@ -16,10 +16,16 @@
 /// safeFirebaseCurrentUser) is deleted -- its last callers closed this same pass --
 /// and `firebase_auth`/`cloud_functions`/`firebase_storage` are confirmed absent from
 /// this package's pubspec (zero remaining imports anywhere in this workspace, grepped).
-/// `cloud_firestore` remains a real, required dependency: support_chat_service.dart,
-/// visual_search_service.dart and category_attribute_service.dart each have no
-/// canonical successor yet (individually disclosed in their own file-header doc
-/// comments) and a handful of models still carry Timestamp-shaped serialization.
+/// Phase 1R final pass (owner-requested completion, same day): support_chat_service.dart,
+/// visual_search_service.dart and category_attribute_service.dart -- the last three
+/// Firestore-backed services, each with no canonical successor -- are deleted outright,
+/// not merely disconnected. Their reachable callers now decide the honest "not available"
+/// state locally (support screens show a static message; the visual-search screen never
+/// starts a fake search; filter_drawer.dart treats zero attribute schemas as the permanent
+/// state) instead of calling a backend that could only ever fail or return empty. Combined
+/// with the eager-crash-class services closed earlier this phase, `cloud_firestore` and
+/// `firebase_core` now have zero remaining importers anywhere in this workspace (grepped) --
+/// see this package's and the app's pubspec.yaml for the corresponding dependency removal.
 library;
 
 // Cache Service (for offline-first data loading)
@@ -89,8 +95,8 @@ export 'src/providers/wishlist_provider.dart';
 // alongside ad_service.dart, rather than left "unused, out of scope" as an earlier pass in this
 // same phase had judged -- that judgment predates this task's mandate to finish the whole sweep.
 
-// Support Chat
-export 'src/support_chat_service.dart';
+// Support Chat retired (Phase 1R final pass): support_chat_service.dart deleted -- see
+// support_chat_screen.dart/support_conversations_screen.dart's own doc comments.
 
 // Reels retired (C3 corrective, 27 September 2026 review continuation): reel_service.dart's
 // constructor touched FirebaseFirestore.instance/FirebaseStorage.instance eagerly (the same crash
@@ -101,14 +107,16 @@ export 'src/support_chat_service.dart';
 // reel_model.dart/reel_stats_model.dart/reel_comment_model.dart (also zero callers once these were
 // gone). Full reel/media commerce remains explicitly owned by its own later phase.
 
-// Visual Search
-export 'src/visual_search_service.dart';
+// Visual Search retired (Phase 1R final pass): visual_search_service.dart deleted -- its Gemini
+// Vision image analysis worked (no Firebase involved) but the product-matching step was
+// Firestore-backed with no canonical successor, so a "search" could never return real results end
+// to end. See visual_search_screen.dart's own doc comment; that screen never starts a search now.
 
 // Deals System
 export 'src/deals/deal_service.dart';
 
-// Category Attributes (Faceted Search)
-export 'src/category_attribute_service.dart';
+// Category Attributes (Faceted Search) retired (Phase 1R final pass):
+// category_attribute_service.dart deleted -- see filter_drawer.dart's own doc comment.
 
 // Seller Analytics retired (C3 corrective, 27 September 2026 review continuation):
 // seller_analytics_service.dart and marketplace_models' analytics_event.dart both deleted -- their

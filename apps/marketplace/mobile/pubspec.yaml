@@ -31,22 +31,16 @@ dependencies:
   provider: ^6.1.2
   flutter_hooks: ^0.20.5
 
-  # Firebase — Phase 1R (R1.4) removed firebase_messaging/firebase_analytics (zero callers).
-  # C3 corrective (27 September 2026 review continuation, second pass) removed Firebase entirely
-  # from cart, wishlist, loyalty, reels, deals-UI, orders, returns, seller-analytics,
-  # custom-checkout, AI chat's own Firebase coupling (rewired onto the canonical buyer session/
-  # gateway) and ~30 more services/screens/models -- see marketplace_services'/
-  # marketplace_models' own barrel-file comments for the full ledger.
-  # Also removed this same pass: firebase_auth, firebase_storage AND cloud_functions entirely
-  # (zero remaining `package:firebase_auth`/`package:firebase_storage`/`package:cloud_functions`
-  # imports anywhere in this workspace, grepped).
-  # STILL a real, required dependency, not yet fully retired: cloud_firestore still backs
-  # support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart (each
-  # individually disclosed in its own file-header doc comment -- none is a live crash/data-
-  # fabrication risk) and a handful of remaining models' own Timestamp-shaped serialization. Do not
-  # remove before that remaining work closes -- doing so will not compile.
-  firebase_core: ^3.6.0
-  cloud_firestore: ^5.4.4
+  # Firebase — Phase 1R final pass (owner-requested completion, same day): firebase_core and
+  # cloud_firestore removed entirely. The last three Firestore-backed services
+  # (support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart) are
+  # deleted, not merely disconnected -- their reachable callers now decide their own honest
+  # "not available" state locally rather than calling a backend that could only ever fail or
+  # return empty. Combined with firebase_auth/firebase_storage/cloud_functions/
+  # firebase_messaging/firebase_analytics removed in earlier passes this same phase, this app now
+  # requires no Firebase package at all (zero `package:firebase_*`/`package:cloud_firestore`/
+  # `package:cloud_functions` imports anywhere in this workspace, grepped fresh). Google Maps
+  # (`google_maps_flutter`, below) is unrelated and unaffected -- it never depended on Firebase.
 
   # UI
   cupertino_icons: ^1.0.8

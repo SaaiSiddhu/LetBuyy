@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
+// com.google.gms.google-services removed, Phase 1R final pass: this app requires no Firebase
+// package any more (see the dependencies block below).
 apply plugin: 'dev.flutter.flutter-gradle-plugin'
 
 def keystoreProperties = new Properties()
@@ -121,24 +122,15 @@ dependencies {
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
-    // Firebase BOM (use latest in lockstep for plugins)
-    // Phase 1R (R1.4): firebase-analytics-ktx and firebase-messaging-ktx removed — the pub-level
-    // packages backing them (firebase_analytics, firebase_messaging) have zero remaining callers.
-    // C3 corrective (27 September 2026 review continuation, second pass): these hand-written
-    // native Gradle lines are declared directly here, entirely separate from the Flutter plugin
-    // system (.flutter-plugins-dependencies) -- removing firebase_auth/cloud_functions/
-    // firebase_storage from pubspec.yaml alone left FirebaseAuthRegistrar/FunctionsRegistrar/
-    // StorageRegistrar (and firebase-auth's own GenericIdpActivity/RecaptchaActivity) packaged
-    // into the APK regardless, confirmed via `aapt dump xmltree AndroidManifest.xml` against a
-    // fully clean rebuild (flutter clean + removed android/.gradle, android/app/build,
-    // android/build) before AND after this edit, ruling out stale Gradle cache as the
-    // explanation. firebase-auth-ktx/firebase-storage-ktx/firebase-functions-ktx removed:
-    // firebase_auth/firebase_storage/cloud_functions all have zero remaining Dart imports
-    // anywhere in this workspace (grepped). firebase-firestore-ktx stays: cloud_firestore is
-    // still a real, required Dart dependency (support_chat_service.dart, visual_search_service.dart,
-    // category_attribute_service.dart -- see pubspec.yaml's own comment).
-    implementation platform('com.google.firebase:firebase-bom:33.3.0')
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+    // Firebase -- removed entirely, Phase 1R final pass (owner-requested completion, same day).
+    // firebase-analytics-ktx/firebase-messaging-ktx/firebase-auth-ktx/firebase-storage-ktx/
+    // firebase-functions-ktx were already removed in earlier passes this phase (see git history
+    // for this block); firebase-bom and firebase-firestore-ktx were the last two, kept only while
+    // cloud_firestore was still a real Dart dependency (support_chat_service.dart,
+    // visual_search_service.dart, category_attribute_service.dart -- all three now deleted, see
+    // pubspec.yaml's own comment). Verified via a fully clean rebuild's own
+    // `aapt dump xmltree AndroidManifest.xml`: zero `io.flutter.plugins.firebase.*` or
+    // `com.google.firebase.*` registrants remain.
 
     // ML Kit dependencies (base only - add language packs if needed)
     implementation 'com.google.mlkit:face-detection:16.1.6'

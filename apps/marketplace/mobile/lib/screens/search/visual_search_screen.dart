@@ -13,6 +13,48 @@ import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../shop/product_details_screen.dart';
 import '../../widgets/premium_scaffold.dart';
 
+// Phase 1R (Firebase removal, final pass): VisualSearchService (deleted) analyzed an image with
+// Gemini Vision -- real, not Firebase-coupled -- but then matched products via a Firestore query
+// with no canonical successor, so a "search" could never return real results end to end; its own
+// outer try/catch just turned that into an honest error, never a crash or a fabricated result set.
+// Per this task's own instruction ("prevent the UI from starting a fake search... do not build a
+// new image-search backend now"), this screen no longer attempts any search at all -- it never
+// pretends to analyze the photo, since the one thing that made that analysis useful (finding
+// matching products) has no canonical backend to do it. These two result classes are kept, trimmed
+// to what this screen's own (now entirely unreachable, harmless, Firebase-free) success-path
+// rendering still references by type; nothing ever constructs a non-null/successful one any more.
+class VisualSearchResult {
+  final bool success;
+  final String? error;
+  final VisualAttributes? attributes;
+  final List<Map<String, dynamic>> products;
+
+  VisualSearchResult({
+    required this.success,
+    this.error,
+    this.attributes,
+    this.products = const [],
+  });
+}
+
+class VisualAttributes {
+  final String category;
+  final String productType;
+  final List<String> colors;
+  final String style;
+  final String? brand;
+  final List<String> keywords;
+
+  VisualAttributes({
+    required this.category,
+    required this.productType,
+    required this.colors,
+    required this.style,
+    this.brand,
+    required this.keywords,
+  });
+}
+
 class VisualSearchScreen extends StatefulWidget {
   const VisualSearchScreen({super.key});
 
@@ -25,7 +67,9 @@ class _VisualSearchScreenState extends State<VisualSearchScreen>
   final ImagePicker _picker = ImagePicker();
   
   Uint8List? _selectedImage;
-  bool _isSearching = false;
+  // Never set true any more: this screen no longer performs a real search -- see
+  // _performVisualSearch's own doc comment.
+  final bool _isSearching = false;
   VisualSearchResult? _result;
   String? _errorMessage;
   
@@ -203,36 +247,19 @@ class _VisualSearchScreenState extends State<VisualSearchScreen>
     }
   }
 
+  // Phase 1R (Firebase removal, final pass): no longer attempts a real search -- see this file's
+  // own header comment. Never shows a "searching..." state (that would imply real analysis is in
+  // progress) and never constructs a success VisualSearchResult; goes straight to an honest
+  // unavailable message for the photo the buyer just picked.
   Future<void> _performVisualSearch() async {
     if (_selectedImage == null) return;
 
-    setState(() {
-      _isSearching = true;
-      _errorMessage = null;
-    });
-
     HapticFeedback.mediumImpact();
 
-    try {
-      final result = await VisualSearchService.instance.searchByImage(_selectedImage!);
-      
-      if (mounted) {
-        setState(() {
-          _result = result;
-          _isSearching = false;
-        });
-
-        if (!result.success) {
-          _errorMessage = result.error;
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isSearching = false;
-          _errorMessage = 'Search failed. Please try again.';
-        });
-      }
+    if (mounted) {
+      setState(() {
+        _errorMessage = "Visual search isn't available in this build yet.";
+      });
     }
   }
 
