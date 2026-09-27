@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class WishlistModel {
   final String id;
   final String userId;
@@ -13,12 +11,17 @@ class WishlistModel {
     required this.updatedAt,
   });
 
+  // C3 (Firebase SDK removal): WishlistProvider is now a local-only (SharedPreferences-backed)
+  // wishlist -- updatedAt round-trips as milliseconds-since-epoch, the same convention
+  // CacheService/CartModel already use for their own local serialization.
   factory WishlistModel.fromMap(Map<String, dynamic> map, String id) {
     return WishlistModel(
       id: id,
       userId: map['userId'] ?? '',
       productIds: List<String>.from(map['productIds'] ?? []),
-      updatedAt: (map['updatedAt'] as Timestamp).toDate(),
+      updatedAt: map['updatedAt'] is int
+          ? DateTime.fromMillisecondsSinceEpoch(map['updatedAt'] as int)
+          : DateTime.now(),
     );
   }
 
@@ -26,7 +29,7 @@ class WishlistModel {
     return {
       'userId': userId,
       'productIds': productIds,
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'updatedAt': updatedAt.millisecondsSinceEpoch,
     };
   }
 

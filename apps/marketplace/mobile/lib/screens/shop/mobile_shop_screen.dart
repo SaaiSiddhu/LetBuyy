@@ -18,7 +18,6 @@ import 'widgets/product_card.dart';
 import '../search/mobile_search_screen.dart';
 import '../../widgets/premium_scaffold.dart';
 import '../../widgets/unified_search_header.dart';
-import '../../providers/marketplace_ad_provider.dart';
 
 class MobileShopScreen extends StatefulWidget {
   final String? categoryId;
@@ -68,10 +67,6 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   StreamSubscription? _productUpdateSubscription;
   final Map<String, bool> _productAvailability = {};
   bool _isRefreshing = false;
-  
-  // Targeted sponsored ads
-  List<SponsoredProductData> _targetedAds = [];
-  bool _isLoadingAds = false;
 
   @override
   void initState() {
@@ -106,43 +101,6 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     _loadData();
     _setupRealTimeUpdates();
     _updateActiveFiltersCount();
-    _loadTargetedAds();
-  }
-
-  /// Load targeted sponsored ads based on category or search query
-  Future<void> _loadTargetedAds() async {
-    setState(() => _isLoadingAds = true);
-    try {
-      final adProvider = context.read<MarketplaceAdProvider>();
-      List<SponsoredProductData> ads = [];
-      
-      // Priority 1: Category-based targeting
-      if (widget.categoryId != null && widget.categoryId!.isNotEmpty) {
-        ads = await adProvider.getAdsForCategory(widget.categoryId!, limit: 3);
-      } 
-      // Priority 2: Search query (widget param or live local search)
-      else if (_searchQuery.isNotEmpty) {
-        ads = await adProvider.getAdsForSearch(_searchQuery, limit: 3);
-      }
-      else if (widget.searchQuery != null && widget.searchQuery!.isNotEmpty) {
-        ads = await adProvider.getAdsForSearch(widget.searchQuery!, limit: 3);
-      }
-      
-      if (mounted) {
-        setState(() {
-          _targetedAds = ads.take(3).toList(); // Limit to max 3 ads
-          _isLoadingAds = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading targeted ads: $e');
-      if (mounted) {
-        setState(() {
-          _targetedAds = [];
-          _isLoadingAds = false;
-        });
-      }
-    }
   }
 
   @override
@@ -262,7 +220,6 @@ class _MobileShopScreenState extends State<MobileShopScreen>
             _searchQuery = query.toLowerCase().trim();
             _isSearching = false;
           });
-          _loadTargetedAds(); // Reload ads for new search context
       }
     });
   }
@@ -291,7 +248,6 @@ class _MobileShopScreenState extends State<MobileShopScreen>
         onApply: (filters) {
           setState(() => _appliedFilters = filters);
           _updateActiveFiltersCount();
-          _loadTargetedAds(); // ✅ Reload sponsored products based on new filter context
           HapticFeedback.heavyImpact();
         },
       ),
@@ -859,8 +815,7 @@ class _MobileShopScreenState extends State<MobileShopScreen>
   // ---------------------------------------------------------------------------
 
   Widget _buildProductContent(ProductProvider provider, bool isDark) {
-    // Wait for BOTH products AND ads to load before showing grid
-    if ((provider.isLoading && !_isRefreshing) || _isSearching || _isLoadingCategory || _isLoadingAds) {
+    if ((provider.isLoading && !_isRefreshing) || _isSearching || _isLoadingCategory) {
        return _buildShimmerLoading(isDark);
     }
 
@@ -894,37 +849,14 @@ class _MobileShopScreenState extends State<MobileShopScreen>
     );
   }
 
+  // Phase 1R corrective (C2): both grid/list builders used to merge in _targetedAds (sponsored
+  // products) ahead of the regular grid, via an unconditional Provider.of<MarketplaceAdProvider>
+  // lookup at the top of each method — a lookup that would throw ProviderNotFoundException on
+  // every single shop-screen render, not just when ads exist, once the provider is deregistered.
+  // MarketplaceAdProvider was entirely Firestore-backed with no canonical successor, so this drops
+  // the ad-merge path and renders products directly (matching what _targetedAds staying empty
+  // already reduced this to in practice).
   Widget _buildMetricsGrid(List<ProductModel> products, bool isDark) {
-    // Use targeted ads loaded in initState (category or search-based)
-    final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-    
-    // Determine placement for tracking
-    final placement = widget.categoryId != null ? AdPlacement.category : AdPlacement.search;
-    
-    // Get IDs of sponsored products to exclude from regular grid
-    final sponsoredProductIds = _targetedAds.map((ad) => ad.product.id).toSet();
-    
-    // Filter out products that are already shown as sponsored ads
-    final nonSponsoredProducts = products.where((p) => !sponsoredProductIds.contains(p.id)).toList();
-    
-    // Build mixed list: sponsored products FIRST (max 3), then regular products
-    // No header or divider - ProductCard handles golden border styling for sponsored
-    final List<dynamic> mixedItems = [];
-    
-    // Add up to 3 sponsored products at the start
-    final sponsoredToShow = _targetedAds.take(3).toList();
-    for (final sponsoredData in sponsoredToShow) {
-      // Record impression
-      adProvider.recordImpression(sponsoredData.product.id, placement);
-      mixedItems.add({'type': 'sponsored', 'data': sponsoredData});
-    }
-    
-    // Add regular products after sponsored
-    for (final product in nonSponsoredProducts) {
-      mixedItems.add({'type': 'product', 'data': product});
-    }
-
-    // Single unified grid - no headers, no dividers
     return SliverGrid(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -934,107 +866,30 @@ class _MobileShopScreenState extends State<MobileShopScreen>
       ),
       delegate: SliverChildBuilderDelegate(
         (context, idx) {
-          final item = mixedItems[idx];
-          
-          if (item['type'] == 'sponsored') {
-            final sponsoredData = item['data'] as SponsoredProductData;
-            return ProductCard(
-              product: sponsoredData.product,
-              isGridView: true,
-              isSponsored: true, // ProductCard handles golden border styling
-              source: 'ads', // Analytics: source attribution
-              adCampaignId: sponsoredData.campaignId, // Analytics: campaign tracking
-              onTap: () {
-                adProvider.recordClickWithPlacement(sponsoredData.product.id, placement);
-              },
-            ).animate(key: ValueKey('sponsored_${sponsoredData.product.id}'), delay: (idx % 6 * 50).ms).fadeIn().slideY(begin: 0.1, end: 0);
-          }
-          
-          // Regular product
-          final product = item['data'] as ProductModel;
+          final product = products[idx];
           return ProductCard(
             product: product,
             isGridView: true,
             source: _searchQuery.isNotEmpty ? 'search' : (widget.categoryId != null ? 'category' : 'organic'), // Analytics: source attribution
           ).animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms).fadeIn().slideY(begin: 0.1, end: 0);
         },
-        childCount: mixedItems.length,
+        childCount: products.length,
       ),
     );
   }
 
-  /// Build a sponsored product card - uses ProductCard's built-in isSponsored styling
-  Widget _buildSponsoredProductCard(SponsoredProductData sponsoredData, bool isDark, int index, AdPlacement placement) {
-    final product = sponsoredData.product;
-    final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-    
-    return ProductCard(
-      product: product,
-      isGridView: true,
-      isSponsored: true, // Uses built-in AD badge styling
-      source: 'ads', // Analytics: source attribution
-      adCampaignId: sponsoredData.campaignId, // Analytics: campaign tracking
-      onTap: () {
-        // Record click with correct placement
-        adProvider.recordClickWithPlacement(
-          product.id, 
-          placement,
-        );
-      },
-    ).animate(key: ValueKey('sponsored_${product.id}'), delay: (index % 6 * 50).ms).fadeIn().slideY(begin: 0.1, end: 0);
-  }
-  
   Widget _buildMetricsList(List<ProductModel> products, bool isDark) {
-    final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-    final placement = widget.categoryId != null ? AdPlacement.category : AdPlacement.search;
-    
-    // Get IDs of sponsored products to exclude from regular list
-    final sponsoredProductIds = _targetedAds.map((ad) => ad.product.id).toSet();
-    final nonSponsoredProducts = products.where((p) => !sponsoredProductIds.contains(p.id)).toList();
-    
-    // Build mixed list: sponsored products FIRST (max 3), then regular products
-    // No header or divider - ProductCard handles golden border styling for sponsored
-    final List<dynamic> mixedItems = [];
-    
-    // Add up to 3 sponsored products at the start
-    final sponsoredToShow = _targetedAds.take(3).toList();
-    for (final sponsoredData in sponsoredToShow) {
-      adProvider.recordImpression(sponsoredData.product.id, placement);
-      mixedItems.add({'type': 'sponsored', 'data': sponsoredData});
-    }
-    
-    // Add regular products after sponsored
-    for (final product in nonSponsoredProducts) {
-      mixedItems.add({'type': 'product', 'data': product});
-    }
-
-    // Single unified list - no headers, no dividers
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, idx) {
-          final item = mixedItems[idx];
-          
-          if (item['type'] == 'sponsored') {
-            final sponsoredData = item['data'] as SponsoredProductData;
-            return ProductCard(
-              product: sponsoredData.product,
-              isGridView: false,
-              isSponsored: true, // ProductCard handles golden border styling
-              source: 'ads', // Analytics: source attribution
-              adCampaignId: sponsoredData.campaignId, // Analytics: campaign tracking
-              onTap: () => adProvider.recordClickWithPlacement(sponsoredData.product.id, placement),
-            ).animate(key: ValueKey('sponsored_${sponsoredData.product.id}'), delay: (idx % 6 * 50).ms).fadeIn().slideX(begin: 0.1, end: 0);
-          }
-          
-          // Regular product
-          final product = item['data'] as ProductModel;
+          final product = products[idx];
           return ProductCard(
             product: product,
             isGridView: false,
             source: _searchQuery.isNotEmpty ? 'search' : (widget.categoryId != null ? 'category' : 'organic'), // Analytics: source attribution
           ).animate(key: ValueKey(product.id), delay: (idx % 6 * 50).ms).fadeIn().slideX(begin: 0.1, end: 0);
         },
-        childCount: mixedItems.length,
+        childCount: products.length,
       ),
     );
   }

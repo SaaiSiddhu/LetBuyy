@@ -184,15 +184,14 @@ test('GET /directory returns a deliberate 503 DIRECTORY_UNAVAILABLE, not an opaq
     assert.match(body.error.message, /not available/i);
 });
 
-test('the 503 is still produced by the tenant guard, not by skipping it — the isolation boundary', () => {
+test('the 503 is still produced by the tenant guard, not by skipping it — the isolation boundary', async () => {
     // If a future edit routed around getSupabaseAdmin (e.g. swapped in getSupabaseAdminUnguarded,
     // or added a site_id/tenant predicate that let the query through), this route would start
     // returning 200 with real store rows instead of 503. That is exactly the regression this test
     // exists to catch — CAP-C60 stays an owner decision, never an accidental side effect of an
     // error-handling change.
-    return publicApp()
-        .request('/directory', undefined, workingEnv())
-        .then((res) => assert.equal(res.status, 503, 'a 200 here means the tenant guard no longer blocks the unscoped sites read'));
+    const res = await publicApp().request('/directory', undefined, workingEnv());
+    assert.equal(res.status, 503, 'a 200 here means the tenant guard no longer blocks the unscoped sites read');
 });
 
 test('a genuinely different failure is NOT reported as DIRECTORY_UNAVAILABLE', async () => {

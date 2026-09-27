@@ -11,6 +11,7 @@
   "honestyContract": [
     "com.letbuyy.letbuyy (customer_app) is a SHIPPED Play Store production identity. Its signingConfig references a real release keystore (apps/marketplace/mobile/android/key.properties, untracked, storeFile=key.jks). This is the one value in this file that cannot be changed and re-issued if it is ever lost or altered.",
     "com.letbuyy.admin (admin_app) is a RETIRED identity, recorded under retiredApps below rather than apps. It was never a shipped identity: its release signingConfig pointed at debug.keystore. apps/reserved/operator-mobile's Flutter/Firestore implementation, including its whole android/ tree, was deleted in phase FB-1 (2026-09-05) under the owner's decision to retire Firebase completely, so there is no longer a Gradle file to check. The identity is kept on record so it can never be silently reused: the validator now fails if ANY tracked Gradle script in the repository declares a retired applicationId.",
+    "com.letbuyy.letbuyy (customer_app) lost its google-services.json and its google-services Gradle plugin/firebase-bom dependencies in a later Phase 1R pass, extending the owner's 2026-09-05 Firebase-retirement decision from admin_app to this app too. Its googleServicesJson field is null for the same reason merchant_app's already was -- see that app's own entry -- not because this identity is retired: customer_app remains the shipped Play Store production app.",
     "com.letbuyy.store (merchant_app) is declared in Kotlin DSL (build.gradle.kts), not Groovy — this is the only one of the three apps that is. A check that assumes Groovy syntax will silently pass merchant_app while verifying nothing.",
     "namespace and applicationId are independent Gradle/AGP concerns and may legitimately differ. This was recorded for admin_app, whose namespace was com.letbuyy.letbuyy while its applicationId was com.letbuyy.admin — documented scaffolding leftover, not a defect. That app's Gradle tree was deleted in FB-1; the principle is kept because it still governs the remaining apps and the next reader would otherwise 'fix' a legitimate divergence.",
     "This registry does not declare versionCode or versionName. Those change on every release by design; asserting an exact value here would need editing on every release cycle and would be a worse validator than none.",
@@ -24,7 +25,8 @@
       "namespace": "com.letbuyy.letbuyy",
       "shipped": true,
       "shippedNote": "Play Store production identity. Real release signingConfig (not debug).",
-      "googleServicesJson": "apps/marketplace/mobile/android/app/google-services.json",
+      "googleServicesJson": null,
+      "googleServicesJsonNote": "Was apps/marketplace/mobile/android/app/google-services.json; deleted in this Phase 1R pass (owner decision 2026-09-05 to retire Firebase completely, extended here from apps/reserved/operator-mobile to this app -- see packages/dart/marketplace_services/letbuyy_marketplace_services.dart's barrel-file comment for the full Firebase-removal trail). Unlike admin_app, this identity is NOT retired -- customer_app stays the shipped Play Store production app; only its Firebase/Firestore dependency is gone. The google-services Gradle plugin and firebase-bom/firebase-firestore-ktx dependencies were removed from this app's build.gradle files in the same pass.",
       "measuredAt": "apps/marketplace/mobile/android/app/build.gradle:13,32 (HEAD ba0de035)"
     },
     "merchant_app": {

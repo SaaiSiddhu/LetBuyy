@@ -2,44 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'widgets/cart_item_card.dart';
 import 'widgets/empty_cart.dart';
-import 'coupon_selection_screen.dart';
 import '../checkout/checkout_screen.dart';
 import '../../widgets/premium_scaffold.dart';
+import '../../utils/shipping_fee_calculator.dart';
 
-class ShippingFeeInfo {
-  final double standardFee;
-  final List<String> standardProducts;
-  final Map<String, double> specialFees;
-  final List<String> freeDeliveryProducts;
-  final double? expressDeliveryFee;
-  final List<String> expressAvailableProducts;
-  final Map<String, String> productDeliveryDays;
-  
-  ShippingFeeInfo({
-    required this.standardFee,
-    required this.standardProducts,
-    required this.specialFees,
-    required this.freeDeliveryProducts,
-    this.expressDeliveryFee,
-    required this.expressAvailableProducts,
-    required this.productDeliveryDays,
-  });
-  
-  double get totalShippingFee {
-    double total = standardProducts.isNotEmpty ? standardFee : 0;
-    total += specialFees.values.fold(0.0, (sum, fee) => sum + fee);
-    return total;
-  }
-  
-  bool get hasMixedDelivery => freeDeliveryProducts.isNotEmpty && 
-      (standardProducts.isNotEmpty || specialFees.isNotEmpty);
+/// Phase 1R shipping-semantics correction: [finalTotal] is deliberately nullable. See
+/// CartShippingSummary.allKnown's own doc comment for why a partial/loading/failed shipping
+/// state must never be summed into a number presented as the complete payable total.
+class _CartPricing {
+  final double subtotal;
+  final CartShippingSummary shipping;
+  const _CartPricing({required this.subtotal, required this.shipping});
+
+  double? get finalTotal =>
+      shipping.allKnown ? subtotal + shipping.knownSoFar : null;
 }
 
 class MobileCartScreen extends StatefulWidget {
@@ -55,11 +37,10 @@ class _MobileCartScreenState extends State<MobileCartScreen>
   late Animation<double> _fabAnimation;
   final ScrollController _scrollController = ScrollController();
   bool _showFab = false;
-  bool _isProcessingBogo = false;
-  bool _expressDeliverySelected = false;
-  
-  final Map<String, CartItemModel> _bogoFreeItems = {};
-  final Map<String, ProductModel> _productCache = {};
+  bool _hasGuestCartToTransfer = false;
+  bool _isTransferringGuestCart = false;
+
+  final Map<String, ProductLookup> _productCache = {};
 
   @override
   void initState() {
@@ -79,7 +60,90 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CartProvider>().loadCart();
       _loadProductDetails();
+      _checkGuestCartTransfer();
     });
+  }
+
+  // D-BUYER-SCOPE (guest-transfer UI wiring, "Complete ALL remaining Phase 1R work" task):
+  // CartScreen wraps this whole screen in AuthGatedWidget, so a guest can never see this screen
+  // at all -- only a signed-in buyer reaches here, meaning this is exactly where "items you added
+  // before signing in" should be offered, once, explicitly.
+  Future<void> _checkGuestCartTransfer() async {
+    final hasGuestCart = await context.read<CartProvider>().hasGuestCartToTransfer();
+    if (mounted) setState(() => _hasGuestCartToTransfer = hasGuestCart);
+  }
+
+  Future<void> _transferGuestCart() async {
+    if (_isTransferringGuestCart) return;
+    setState(() => _isTransferringGuestCart = true);
+    HapticFeedback.mediumImpact();
+
+    final cartProvider = context.read<CartProvider>();
+    final succeeded = await cartProvider.transferGuestCartToBuyer();
+    final stillPending = !succeeded && await cartProvider.hasGuestCartToTransfer();
+
+    if (!mounted) return;
+    setState(() {
+      _isTransferringGuestCart = false;
+      // A failed attempt may still have durably completed part of the work (see
+      // CartProvider.transferGuestCartToBuyer's own doc comment) -- re-check honestly rather than
+      // assume "failed" means "nothing happened," so the banner only stays up while something
+      // genuinely remains to finish.
+      _hasGuestCartToTransfer = stillPending;
+    });
+
+    if (succeeded) {
+      SnackbarHelper.showSuccess(context, 'Moved your items from before you signed in');
+    } else {
+      SnackbarHelper.showError(
+        context,
+        stillPending
+            ? 'Could not finish moving your items on this device -- tap to try again'
+            : 'Could not move your items on this device',
+      );
+    }
+  }
+
+  Widget _buildGuestTransferBanner(bool isDark, Color accentColor) {
+    if (!_hasGuestCartToTransfer) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: isDark ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.move_to_inbox_rounded, color: accentColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'You have items from before you signed in.',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _isTransferringGuestCart
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: accentColor),
+                )
+              : TextButton(
+                  onPressed: _transferGuestCart,
+                  style: TextButton.styleFrom(foregroundColor: accentColor),
+                  child: const Text('Move to my cart', style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+        ],
+      ),
+    );
   }
 
   void _scrollListener() {
@@ -101,197 +165,35 @@ class _MobileCartScreenState extends State<MobileCartScreen>
 
   Future<void> _loadProductDetails() async {
     final cartProvider = context.read<CartProvider>();
-    
+    // C5 corrective (found via this session's own on-device testing, chasing an apparent
+    // shipping-fee regression that turned out to be this, not the actual fix under test): this
+    // used to read cartProvider.items immediately, racing CartProvider's own constructor-time
+    // load of the persisted cart from SharedPreferences (loadCart() below is a documented no-op --
+    // see its own comment -- CartProvider.ready is the real signal). On a cold app launch
+    // navigated to this screen quickly, items was still empty at this exact synchronous moment,
+    // so shipping silently stayed 0 forever after -- nothing ever re-triggered this method once
+    // the cart itself finished loading a beat later. Awaiting readiness first closes that window.
+    await cartProvider.ready;
+    if (!mounted) return;
+    final productProvider = context.read<ProductProvider>();
+
     for (final item in cartProvider.items) {
       if (!_productCache.containsKey(item.productId)) {
-        try {
-          final doc = await FirebaseFirestore.instance
-              .collection('products')
-              .doc(item.productId)
-              .get();
-          
-          if (doc.exists && doc.data() != null) {
-            _productCache[item.productId] = ProductModel.fromMap(doc.data()!, doc.id);
-          }
-        } catch (e) {
-          debugPrint('❌ Error loading product ${item.productId}: $e');
+        final product = await productProvider.fetchProductById(item.productId);
+        // Phase 1R shipping-semantics correction: a failed/empty lookup now records an explicit
+        // ProductLookupFailed entry instead of leaving the key absent. cartShippingFees()
+        // (shipping_fee_calculator.dart) treats "absent" as still-loading -- if a failure left no
+        // entry, this item would look permanently "loading" forever rather than honestly failed,
+        // and its shipping would never settle into any displayable state.
+        _productCache[item.productId] =
+            product != null ? ProductLoaded(product) : const ProductLookupFailed();
+        if (product == null) {
+          debugPrint('❌ Error loading product ${item.productId}: not found or unreachable');
         }
       }
     }
-    
+
     if (mounted) setState(() {});
-  }
-
-  ShippingFeeInfo _calculateShippingFees(List<CartItemModel> items) {
-    final standardFeeProducts = <String>[];
-    final specialFees = <String, double>{};
-    final freeDeliveryProducts = <String>[];
-    final expressAvailableProducts = <String>[];
-    final productDeliveryDays = <String, String>{};
-    
-    double? commonStandardFee;
-    double? expressDeliveryFee;
-
-    for (final item in items) {
-      if (item.isFreeItem) continue;
-      
-      final product = _productCache[item.productId];
-      if (product == null) continue;
-
-      final shippingDays = product.shippingDays ?? '2-3';
-      productDeliveryDays[item.productName] = shippingDays;
-
-      final isFreeDelivery = product.isFreeDelivery ?? false;
-      if (isFreeDelivery) {
-        freeDeliveryProducts.add(item.productName);
-        continue;
-      }
-
-      final hasExpressDelivery = product.expressDelivery ?? false;
-      if (hasExpressDelivery) {
-        expressAvailableProducts.add(item.productName);
-        expressDeliveryFee ??= (product.shippingPrice?.toDouble() ?? 40.0) + 9.0;
-      }
-
-      final shippingPrice = product.shippingPrice?.toDouble() ?? 40.0;
-
-      if (commonStandardFee == null) {
-        commonStandardFee = shippingPrice;
-        standardFeeProducts.add(item.productName);
-      } else if (shippingPrice == commonStandardFee) {
-        standardFeeProducts.add(item.productName);
-      } else if (shippingPrice > commonStandardFee) {
-        specialFees[item.productName] = shippingPrice;
-      } else {
-        standardFeeProducts.add(item.productName);
-      }
-    }
-
-    return ShippingFeeInfo(
-      standardFee: commonStandardFee ?? 0,
-      standardProducts: standardFeeProducts,
-      specialFees: specialFees,
-      freeDeliveryProducts: freeDeliveryProducts,
-      expressDeliveryFee: expressDeliveryFee,
-      expressAvailableProducts: expressAvailableProducts,
-      productDeliveryDays: productDeliveryDays,
-    );
-  }
-
-  Future<void> _processBogoCoupon(
-    CouponModel? coupon,
-    CartProvider cartProvider,
-  ) async {
-    if (_isProcessingBogo) return;
-    
-    setState(() => _isProcessingBogo = true);
-
-    try {
-      final hadFreeItems = _bogoFreeItems.isNotEmpty;
-      _bogoFreeItems.clear();
-
-      if (coupon == null || coupon.type != CouponType.buyOneGetOne) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      final buyId = coupon.buyProductId;
-      final getId = coupon.getProductId;
-
-      if (buyId == null) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      CartItemModel? buyItem;
-      try {
-        buyItem = cartProvider.items.firstWhere((item) => item.productId == buyId);
-      } catch (_) {
-        buyItem = null;
-      }
-
-      if (buyItem == null) {
-        setState(() => _isProcessingBogo = false);
-        return;
-      }
-
-      if (getId == null) {
-        final freeItem = CartItemModel(
-          id: '${buyItem.id}_free',
-          productId: buyItem.productId,
-          productName: buyItem.productName,
-          productImage: buyItem.productImage,
-          price: 0,
-          quantity: 1,
-          userId: buyItem.userId,
-          addedAt: DateTime.now(),
-          variant: buyItem.variant,
-          isFreeItem: true,
-          freeItemLabel: 'BOGO Free',
-          linkedBuyItemId: buyItem.id,
-        );
-        _bogoFreeItems[buyItem.productId] = freeItem;
-      } else {
-        try {
-          final getDoc = await FirebaseFirestore.instance
-              .collection('products')
-              .doc(getId)
-              .get();
-
-          if (getDoc.exists && getDoc.data() != null) {
-            final getProduct = ProductModel.fromMap(getDoc.data()!, getDoc.id);
-            final freeItem = CartItemModel(
-              id: '${getId}_free',
-              productId: getId,
-              productName: getProduct.name,
-              productImage: getProduct.imageUrl ?? '',
-              price: 0,
-              quantity: 1,
-              userId: buyItem.userId,
-              addedAt: DateTime.now(),
-              isFreeItem: true,
-              freeItemLabel: 'BOGO Free',
-              linkedBuyItemId: buyItem.id,
-            );
-            _bogoFreeItems[getId] = freeItem;
-          }
-        } catch (e) {
-          debugPrint('❌ Error fetching free product: $e');
-        }
-      }
-
-      if (_bogoFreeItems.isNotEmpty && !hadFreeItems && mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            HapticFeedback.lightImpact();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Text(
-                        '🎉 BOGO applied! Free item added to cart',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ BOGO processing error: $e');
-    } finally {
-      if (mounted) setState(() => _isProcessingBogo = false);
-    }
   }
 
   Future<void> _showClearCartDialog(CartProvider cartProvider) async {
@@ -342,7 +244,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
 
     if (confirmed == true && mounted) {
       await cartProvider.clearCart();
-      _bogoFreeItems.clear();
       if (mounted) {
         HapticFeedback.heavyImpact();
         SnackbarHelper.showSuccess(context, 'Cart cleared successfully');
@@ -360,31 +261,35 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     return PremiumScaffold(
       // backgroundColor handled by PremiumScaffold
       appBar: _buildAppBar(isDark, cardColor),
-      body: Consumer2<CartProvider, CouponProvider>(
-        builder: (context, cartProvider, couponProvider, child) {
+      // Phase 1R corrective (C2): was Consumer2<CartProvider, CouponProvider>. CouponProvider
+      // was entirely FirebaseFirestore-backed with no canonical successor; appliedCoupon was
+      // already always null (coupons could never load), so the BOGO auto-apply trigger below
+      // never fired and _calculateAdvancedPricing's coupon branch never ran.
+      body: Consumer<CartProvider>(
+        builder: (context, cartProvider, child) {
           if (cartProvider.isLoading) {
             return _buildLoadingState(accentColor, isDark);
           }
 
           if (cartProvider.isEmpty) {
+            if (_hasGuestCartToTransfer) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: _buildGuestTransferBanner(isDark, accentColor),
+                  ),
+                  Expanded(child: EmptyCart(onStartShopping: () => Navigator.pop(context))),
+                ],
+              );
+            }
             return EmptyCart(
               onStartShopping: () => Navigator.pop(context),
             );
           }
 
-          final currentCoupon = couponProvider.appliedCoupon;
-          if (currentCoupon != null && 
-              currentCoupon.type == CouponType.buyOneGetOne &&
-              _bogoFreeItems.isEmpty && 
-              !_isProcessingBogo) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _processBogoCoupon(currentCoupon, cartProvider);
-            });
-          }
-
           final pricingData = _calculateAdvancedPricing(
             cartProvider,
-            couponProvider,
           );
 
           return Stack(
@@ -407,23 +312,16 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: Column(
                           children: [
+                            _buildGuestTransferBanner(isDark, accentColor),
                             _buildCartItemsSection(
                               cartProvider,
-                              _bogoFreeItems.values.toList(),
+                              const [],
                               isDark,
                               cardColor,
                               accentColor,
                             ),
                             const SizedBox(height: 12),
-                            
-                            _buildCouponSection(
-                              couponProvider,
-                              isDark,
-                              cardColor,
-                              accentColor,
-                            ),
-                            const SizedBox(height: 12),
-                            
+
                             _buildDeliverySection(
                               cartProvider.items,
                               isDark,
@@ -434,7 +332,6 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                             
                             _buildAdvancedPriceSummary(
                               pricingData,
-                              couponProvider,
                               isDark,
                               cardColor,
                               accentColor,
@@ -454,7 +351,7 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                 left: 0,
                 right: 0,
                 child: _buildCheckoutButton(
-                  pricingData['finalTotal']!,
+                  pricingData.finalTotal,
                   isDark,
                   accentColor,
                   cardColor,
@@ -468,53 +365,25 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     );
   }
 
-  Map<String, double> _calculateAdvancedPricing(
+  // Phase 1R corrective (C2): CouponProvider was entirely FirebaseFirestore-backed with no
+  // canonical successor, and coupons could never actually be fetched or applied (Firestore
+  // unreachable) -- appliedCoupon was already always null, so couponDiscount/bogoValue/
+  // flatDiscount/percentageDiscount already always evaluated to 0. This computes the same
+  // always-true result directly instead of depending on the provider being in the tree.
+  //
+  // Phase 1R shipping-semantics correction (owner-requested completion, same day): 'finalTotal'
+  // is now nullable. Every line's shipping fee must be a real, backend-confirmed KnownFee before
+  // this screen will show one combined "Total Amount" -- see CartShippingSummary.allKnown's own
+  // doc comment. When any line is still loading, failed, or genuinely has no shipping data, there
+  // is no honest single number to show, so this returns null and _buildAdvancedPriceSummary/
+  // _buildCheckoutButton render an explicit "shipping pending" state instead of a partial sum
+  // dressed up as a complete payable total.
+  _CartPricing _calculateAdvancedPricing(
     CartProvider cartProvider,
-    CouponProvider couponProvider,
   ) {
     final subtotal = cartProvider.subtotal;
-    final coupon = couponProvider.appliedCoupon;
-    
-    double couponDiscount = 0;
-    double bogoValue = 0;
-    double flatDiscount = 0;
-    double percentageDiscount = 0;
-
-    if (coupon != null) {
-      couponDiscount = couponProvider.calculateDiscount(
-        orderAmount: subtotal,
-        items: cartProvider.items,
-      );
-
-      switch (coupon.type) {
-        case CouponType.flat:
-          flatDiscount = couponDiscount;
-          break;
-        case CouponType.percentage:
-          percentageDiscount = couponDiscount;
-          break;
-        case CouponType.buyOneGetOne:
-          bogoValue = couponDiscount;
-          break;
-      }
-    }
-
-    final shippingInfo = _calculateShippingFees(cartProvider.items);
-    final shippingFee = shippingInfo.totalShippingFee;
-    final expressDeliveryFee = _expressDeliverySelected ? (shippingInfo.expressDeliveryFee ?? 0.0) : 0.0;
-    
-    final finalTotal = subtotal - couponDiscount + shippingFee + expressDeliveryFee;
-
-    return {
-      'subtotal': subtotal,
-      'couponDiscount': couponDiscount,
-      'bogoValue': bogoValue,
-      'flatDiscount': flatDiscount,
-      'percentageDiscount': percentageDiscount,
-      'shippingFee': shippingFee,
-      'expressDeliveryFee': expressDeliveryFee,
-      'finalTotal': finalTotal,
-    };
+    final shipping = CartShippingSummary.compute(cartProvider.items, _productCache);
+    return _CartPricing(subtotal: subtotal, shipping: shipping);
   }
 
   PreferredSizeWidget _buildAppBar(bool isDark, Color cardColor) {
@@ -647,7 +516,8 @@ class _MobileCartScreenState extends State<MobileCartScreen>
             itemBuilder: (context, index) {
               final item = allItems[index];
               final isFree = item.isFreeItem;
-              final product = _productCache[item.productId];
+              final lookup = _productCache[item.productId];
+              final product = lookup is ProductLoaded ? lookup.product : null;
               
               return _buildCartItem(
                 item: item,
@@ -748,451 +618,172 @@ Widget _buildCartItem({
 }
 
 
-  Widget _buildCouponSection(
-    CouponProvider couponProvider,
-    bool isDark,
-    Color cardColor,
-    Color accentColor,
-  ) {
-    final hasAppliedCoupon = couponProvider.appliedCoupon != null;
-    final isBogo = hasAppliedCoupon && couponProvider.appliedCoupon!.type == CouponType.buyOneGetOne;
+  // Phase 1R corrective (C2): "Apply Coupon" card removed outright (not just disconnected).
+  // CouponProvider was entirely FirebaseFirestore-backed with no canonical successor, so
+  // appliedCoupon was already always null -- this card was always in its "no coupon, tap to
+  // browse" state -- and tapping it opened coupon_selection_screen.dart, itself deleted this
+  // same pass as fully orphaned (coupons could never actually load). Offering a tap target to
+  // a screen that no longer exists would be worse than removing it from active navigation.
 
-    return _buildCardSection(
-      isDark: isDark,
-      cardColor: cardColor,
-      title: 'Apply Coupon',
-      icon: Icons.local_offer_rounded,
-      accentColor: accentColor,
-      child: GestureDetector(
-        onTap: () async {
-          HapticFeedback.selectionClick();
-          await showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => const CouponSelectionScreen(),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: hasAppliedCoupon
-                ? (isBogo ? AppColors.accent.withValues(alpha: isDark ? 0.15 : 0.08) : AppColors.success.withValues(alpha: isDark ? 0.15 : 0.08))
-                : (isDark ? Colors.grey[850] : Colors.grey[50]),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: hasAppliedCoupon
-                  ? (isBogo ? AppColors.accent.withValues(alpha: 0.3) : AppColors.success.withValues(alpha: 0.3))
-                  : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
-            ),
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: hasAppliedCoupon
-                          ? (isBogo ? AppColors.accent.withValues(alpha: 0.2) : AppColors.success.withValues(alpha: 0.2))
-                          : accentColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: FaIcon(
-                      hasAppliedCoupon ? (isBogo ? FontAwesomeIcons.gift : FontAwesomeIcons.circleCheck) : FontAwesomeIcons.ticket,
-                      color: hasAppliedCoupon ? (isBogo ? AppColors.accent : AppColors.success) : accentColor,
-                      size: 16,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          hasAppliedCoupon ? couponProvider.appliedCoupon!.code : 'Select or enter coupon code',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: hasAppliedCoupon
-                                ? (isBogo ? AppColors.accent : AppColors.success)
-                                : (isDark ? Colors.white : Colors.black87),
-                          ),
-                        ),
-                        if (hasAppliedCoupon) ...[
-                          const SizedBox(height: 3),
-                          Text(
-                            isBogo ? '🎁 Buy 1 Get 1 Free Applied' : 'Coupon applied successfully',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (hasAppliedCoupon)
-                    IconButton(
-                      icon: Icon(Icons.close_rounded, size: 18, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                      onPressed: () {
-                        HapticFeedback.selectionClick();
-                        couponProvider.removeCoupon();
-                        _bogoFreeItems.clear();
-                        setState(() {});
-                        SnackbarHelper.showInfo(context, 'Coupon removed');
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    )
-                  else
-                    Icon(Icons.arrow_forward_ios_rounded, size: 14, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                ],
-              ),
-              
-              if (isBogo && _bogoFreeItems.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.accentDark.withValues(alpha: 0.2) : AppColors.accentLight.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Row(
-                    children: [
-                      const FaIcon(FontAwesomeIcons.wandMagicSparkles, size: 12, color: AppColors.accent),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Free item automatically added to your cart',
-                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? AppColors.accentLight : AppColors.accentDark),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
+  // Phase 1R shipping-semantics correction (owner-requested completion, same day): this section
+  // used to derive "Free Standard Delivery" / "Standard Delivery" / "Special Delivery" / an
+  // Express Delivery toggle from calculateShippingFees()'s ShippingFeeInfo -- a function and type
+  // that no longer exist, because their defaults (missing price -> Rs.40, missing days -> "2-3",
+  // express -> +Rs.9 on top of that) were exactly the fabrication this correction removes. There
+  // is also no express-PRICE field anywhere in ProductModel, so an express option can never have
+  // an honest fee with today's data model regardless of defaults -- it is dropped here, not
+  // reworked. What replaces all of it is one honest status row driven by CartShippingSummary:
+  // a real amount only when every line has a backend-confirmed fee (KnownFee, including a
+  // confirmed Rs.0), and an explicit loading/failed/unknown state otherwise -- never a delivery
+  // -days promise, since today's canonical gateway never actually returns shippingDays for any
+  // real product (see product_provider.dart's _productFromListingDetail).
   Widget _buildDeliverySection(
     List<CartItemModel> items,
     bool isDark,
     Color cardColor,
     Color accentColor,
   ) {
-    final shippingInfo = _calculateShippingFees(items);
-    final hasExpressOption = shippingInfo.expressAvailableProducts.isNotEmpty;
+    final shipping = CartShippingSummary.compute(items, _productCache);
+    if (shipping.isEmpty) return const SizedBox.shrink();
+
+    Widget statusRow;
+    if (shipping.anyFailed) {
+      statusRow = _buildDeliveryStatusRow(
+        icon: FontAwesomeIcons.triangleExclamation,
+        color: AppColors.warning,
+        isDark: isDark,
+        title: "Couldn't calculate delivery charge",
+        subtitle: 'Pull down to refresh and try again',
+      );
+    } else if (shipping.anyLoading) {
+      statusRow = _buildDeliveryStatusRow(
+        icon: FontAwesomeIcons.truck,
+        color: isDark ? Colors.grey[400]! : Colors.grey[600]!,
+        isDark: isDark,
+        title: 'Calculating delivery charge…',
+      );
+    } else if (shipping.allKnown) {
+      final total = shipping.knownSoFar;
+      statusRow = _buildDeliveryStatusRow(
+        icon: FontAwesomeIcons.truck,
+        color: total == 0 ? AppColors.success : AppColors.info,
+        isDark: isDark,
+        title: total == 0 ? 'Free delivery' : 'Delivery charge',
+        trailing: total == 0
+            ? _buildFreeBadge()
+            : Text(
+                '₹${total.toStringAsFixed(0)}',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
+              ),
+      );
+    } else {
+      // shipping.anyUnknown, with nothing loading or failed: fetched successfully, but the
+      // backend genuinely carried no shipping data for at least one line.
+      statusRow = _buildDeliveryStatusRow(
+        icon: FontAwesomeIcons.truck,
+        color: isDark ? Colors.grey[400]! : Colors.grey[600]!,
+        isDark: isDark,
+        title: 'Delivery charge will be confirmed at checkout',
+      );
+    }
 
     return _buildCardSection(
       isDark: isDark,
       cardColor: cardColor,
-      title: 'Delivery Options',
+      title: 'Delivery',
       icon: Icons.local_shipping_outlined,
       accentColor: accentColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Free Delivery Products (Standard Format)
-          if (shippingInfo.freeDeliveryProducts.isNotEmpty) ...[
-            _buildDeliveryOption(
-              title: 'Free Standard Delivery',
-              subtitle: 'Delivery in ${_getDeliveryDaysRange(shippingInfo.productDeliveryDays)} business days',
-              fee: null,
-              products: shippingInfo.freeDeliveryProducts,
-              icon: FontAwesomeIcons.truck,
-              color: AppColors.success,
-              isDark: isDark,
-              isFree: true,
-            ),
-            if (shippingInfo.standardProducts.isNotEmpty || shippingInfo.specialFees.isNotEmpty)
-              const SizedBox(height: 12),
-          ],
-
-          // Standard Delivery (Paid)
-          if (shippingInfo.standardProducts.isNotEmpty) ...[
-            _buildDeliveryOption(
-              title: 'Standard Delivery',
-              subtitle: 'Delivery in ${_getDeliveryDaysRange(shippingInfo.productDeliveryDays)} business days',
-              fee: shippingInfo.standardFee,
-              products: shippingInfo.standardProducts,
-              icon: FontAwesomeIcons.truck,
-              color: AppColors.info,
-              isDark: isDark,
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          // Special Delivery Fees
-          if (shippingInfo.specialFees.isNotEmpty) ...[
-            ...shippingInfo.specialFees.entries.map((entry) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildDeliveryOption(
-                title: 'Special Delivery',
-                subtitle: 'Higher shipping for: ${entry.key}',
-                fee: entry.value,
-                products: [entry.key],
-                icon: FontAwesomeIcons.truckFast,
-                color: AppColors.warning,
-                isDark: isDark,
-              ),
-            )),
-          ],
-
-          // Mixed Delivery Notice
-          if (shippingInfo.hasMixedDelivery) ...[
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.info.withValues(alpha: isDark ? 0.15 : 0.08),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.info.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: FaIcon(FontAwesomeIcons.circleInfo, size: 14, color: AppColors.infoDark),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Mixed Delivery Fees',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Some items have free delivery, others have shipping charges',
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          // Express Delivery Option
-          if (hasExpressOption) ...[
-            GestureDetector(
-              onTap: () {
-                setState(() => _expressDeliverySelected = !_expressDeliverySelected);
-                HapticFeedback.selectionClick();
-              },
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _expressDeliverySelected
-                      ? AppColors.accent.withValues(alpha: isDark ? 0.15 : 0.08)
-                      : (isDark ? AppColors.surfaceDarkVariant : AppColors.background),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _expressDeliverySelected
-                        ? AppColors.accent.withValues(alpha: 0.5)
-                        : (isDark ? AppColors.borderDark : AppColors.border),
-                    width: _expressDeliverySelected ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.accent.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: FaIcon(FontAwesomeIcons.boltLightning, size: 16, color: AppColors.accent),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Express Delivery',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            'Delivery in 1-2 business days',
-                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                          ),
-                          if (shippingInfo.expressAvailableProducts.isNotEmpty) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              'For: ${shippingInfo.expressAvailableProducts.take(2).join(', ')}${shippingInfo.expressAvailableProducts.length > 2 ? '...' : ''}',
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[500] : Colors.grey[500]),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '+₹${shippingInfo.expressDeliveryFee?.toStringAsFixed(0) ?? '0'}',
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.accent),
-                        ),
-                        Container(
-                          width: 20,
-                          height: 20,
-                          margin: const EdgeInsets.only(top: 4),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _expressDeliverySelected ? AppColors.accent : (isDark ? Colors.grey[600]! : Colors.grey[400]!),
-                              width: 2,
-                            ),
-                            color: _expressDeliverySelected ? AppColors.accent : Colors.transparent,
-                          ),
-                          child: _expressDeliverySelected ? const Icon(Icons.check, color: Colors.white, size: 14) : null,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
+      child: statusRow,
     );
   }
 
-  String _getDeliveryDaysRange(Map<String, String> deliveryDays) {
-    if (deliveryDays.isEmpty) return '2-3';
-    return deliveryDays.values.first;
-  }
-
-  Widget _buildDeliveryOption({
-    required String title,
-    required String subtitle,
-    required double? fee,
-    required List<String> products,
+  Widget _buildDeliveryStatusRow({
     required FaIconData icon,
     required Color color,
     required bool isDark,
-    bool isFree = false,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isFree
-            ? (isDark ? AppColors.successDark.withValues(alpha: 0.2) : AppColors.successLight.withValues(alpha: 0.3))
-            : (isDark ? Colors.grey[850] : Colors.grey[50]),
+        color: isDark ? Colors.grey[850] : Colors.grey[50],
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isFree
-              ? AppColors.success.withValues(alpha: 0.4)
-              : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
-        ),
+        border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: FaIcon(icon, size: 16, color: color),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              if (isFree)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [AppColors.success, AppColors.successLight]),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Text(
-                    'FREE',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.5),
-                  ),
-                )
-              else
-                Text(
-                  '₹${fee?.toStringAsFixed(0) ?? '0'}',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
-                ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: FaIcon(icon, size: 16, color: color),
           ),
-          if (products.length > 1) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[800] : Colors.white,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Row(
-                children: [
-                  FaIcon(FontAwesomeIcons.boxOpen, size: 12, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '${products.length} products: ${products.take(2).join(', ')}${products.length > 2 ? '...' : ''}',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black87),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isDark ? Colors.grey[400] : Colors.grey[600]),
                   ),
                 ],
-              ),
+              ],
             ),
-          ],
+          ),
+          if (trailing != null) trailing,
         ],
       ),
     );
   }
 
+  Widget _buildFreeBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [AppColors.success, AppColors.successLight]),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Text(
+        'FREE',
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.5),
+      ),
+    );
+  }
+
+  // Phase 1R shipping-semantics correction (owner-requested completion, same day): 'pricing' is
+  // now the _CartPricing object computed above, not a Map -- see its own doc comment for why
+  // 'finalTotal' is nullable. couponDiscount/bogoValue/flatDiscount/percentageDiscount stay
+  // hardcoded to 0 here (unchanged behaviour from the prior C2 corrective, which established
+  // CouponProvider has no reachable Firestore-backed data and never will inside this phase) --
+  // only shippingFee/expressDeliveryFee/total change shape in this pass.
   Widget _buildAdvancedPriceSummary(
-    Map<String, double> pricing,
-    CouponProvider couponProvider,
+    _CartPricing pricing,
     bool isDark,
     Color cardColor,
     Color accentColor,
   ) {
-    final subtotal = pricing['subtotal']!;
-    final couponDiscount = pricing['couponDiscount']!;
-    final bogoValue = pricing['bogoValue']!;
-    final flatDiscount = pricing['flatDiscount']!;
-    final percentageDiscount = pricing['percentageDiscount']!;
-    final shippingFee = pricing['shippingFee']!;
-    final expressDeliveryFee = pricing['expressDeliveryFee']!;
-    final total = pricing['finalTotal']!;
-    final coupon = couponProvider.appliedCoupon;
+    final subtotal = pricing.subtotal;
+    const couponDiscount = 0.0;
+    const bogoValue = 0.0;
+    const flatDiscount = 0.0;
+    const percentageDiscount = 0.0;
+    final shipping = pricing.shipping;
+    final total = pricing.finalTotal;
+    // couponDiscount is always 0 (see above), so the savings banner below never renders and
+    // never reads this -- kept as a typed null rather than removed, since the banner's text
+    // still references `coupon` structurally.
+    const CouponModel? coupon = null;
 
     return _buildCardSection(
       isDark: isDark,
@@ -1219,22 +810,28 @@ Widget _buildCartItem({
             _priceRow('BOGO Free Item Value', -bogoValue, isDark, color: AppColors.accent, icon: FontAwesomeIcons.gift),
           ],
 
-          if (shippingFee > 0) ...[
+          if (shipping.allKnown && shipping.knownSoFar > 0) ...[
             const SizedBox(height: 10),
-            _priceRow('Shipping Fee', shippingFee, isDark, color: AppColors.infoDark, icon: FontAwesomeIcons.truck),
+            _priceRow('Shipping Fee', shipping.knownSoFar, isDark, color: AppColors.infoDark, icon: FontAwesomeIcons.truck),
+          ] else if (!shipping.allKnown) ...[
+            const SizedBox(height: 10),
+            _priceStatusRow(
+              'Shipping Fee',
+              shipping.anyFailed ? 'Failed to load' : (shipping.anyLoading ? 'Calculating…' : 'Pending'),
+              isDark,
+              icon: FontAwesomeIcons.truck,
+            ),
           ],
 
-          if (expressDeliveryFee > 0) ...[
-            const SizedBox(height: 10),
-            _priceRow('Express Delivery', expressDeliveryFee, isDark, color: AppColors.accent, icon: FontAwesomeIcons.boltLightning),
-          ],
-          
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Divider(color: isDark ? Colors.grey[800] : Colors.grey[200], height: 1),
           ),
-          
-          _priceRow('Total Amount', total, isDark, isTotal: true, color: accentColor),
+
+          if (total != null)
+            _priceRow('Total Amount', total, isDark, isTotal: true, color: accentColor)
+          else
+            _priceStatusRow('Total Amount', 'Calculated at checkout', isDark, isTotal: true, color: accentColor),
           
           if (couponDiscount > 0) ...[
             const SizedBox(height: 14),
@@ -1397,6 +994,42 @@ Widget _buildCartItem({
     );
   }
 
+  // Phase 1R shipping-semantics correction: the text-status counterpart to [_priceRow], for a
+  // line whose value genuinely isn't a number yet (loading/failed/pending) -- never a ₹ amount
+  // standing in for "we don't know".
+  Widget _priceStatusRow(String title, String status, bool isDark, {Color? color, bool isTotal = false, FaIconData? icon}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            if (icon != null) ...[
+              FaIcon(icon, size: 12, color: color ?? (isDark ? Colors.grey[400] : Colors.grey[600])),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+                fontSize: isTotal ? 15 : 14,
+                color: isDark ? (isTotal ? Colors.white : Colors.grey[300]) : (isTotal ? Colors.black87 : Colors.grey[700]),
+              ),
+            ),
+          ],
+        ),
+        Text(
+          status,
+          style: TextStyle(
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            fontSize: isTotal ? 15 : 13,
+            fontStyle: FontStyle.italic,
+            color: color ?? (isDark ? Colors.grey[400] : Colors.grey[600]),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLoadingState(Color accentColor, bool isDark) {
     return Center(
       child: Column(
@@ -1410,7 +1043,7 @@ Widget _buildCartItem({
     );
   }
 
-  Widget _buildCheckoutButton(double total, bool isDark, Color accentColor, Color cardColor) {
+  Widget _buildCheckoutButton(double? total, bool isDark, Color accentColor, Color cardColor) {
     return Container(
       padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
@@ -1436,7 +1069,10 @@ Widget _buildCartItem({
           children: [
             FaIcon(FontAwesomeIcons.arrowRight, size: 20),
             const SizedBox(width: 10),
-            Text('Continue to Checkout • ₹${total.toStringAsFixed(0)}', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+            Text(
+              total != null ? 'Continue to Checkout • ₹${total.toStringAsFixed(0)}' : 'Continue to Checkout',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.3),
+            ),
           ],
         ),
       ),

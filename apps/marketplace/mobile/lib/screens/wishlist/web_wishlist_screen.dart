@@ -284,16 +284,25 @@ class _WebWishlistScreenState extends State<WebWishlistScreen> {
 
     HapticFeedback.mediumImpact();
 
+    // Only a product that actually made it into the cart leaves the wishlist -- addItem can
+    // genuinely fail now (a real device storage error), and clearing the whole wishlist
+    // regardless used to silently lose any product whose add failed: gone from the wishlist,
+    // never in the cart either.
+    var movedCount = 0;
     for (var product in products) {
-      await cartProvider.addItem(product, quantity: 1);
+      final added = await cartProvider.addItem(product, quantity: 1);
+      if (added) {
+        movedCount++;
+        await wishlistProvider.removeItem(product.id);
+      }
     }
 
-    await wishlistProvider.clearWishlist();
+    if (!mounted) return;
 
-    if (mounted) {
+    if (movedCount == products.length) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${products.length} items moved to cart'),
+          content: Text('$movedCount items moved to cart'),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
           action: SnackBarAction(
@@ -303,6 +312,16 @@ class _WebWishlistScreenState extends State<WebWishlistScreen> {
               AppRoutes.navigateTo(context, AppRoutes.cart);
             },
           ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(movedCount == 0
+              ? 'Could not move items to cart'
+              : '$movedCount of ${products.length} items moved to cart'),
+          backgroundColor: movedCount == 0 ? AppColors.error : AppColors.warning,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

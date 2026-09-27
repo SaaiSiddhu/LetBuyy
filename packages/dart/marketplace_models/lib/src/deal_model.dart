@@ -1,5 +1,4 @@
 // Deal Model - For seller promotional deals
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Status of a deal in the approval/lifecycle process
 enum DealStatus {
@@ -147,69 +146,10 @@ class DealModel {
     return originalPrice - dealPrice;
   }
 
-  // ============ Factory Methods ============
-
-  factory DealModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return DealModel.fromMap(data, doc.id);
-  }
-
-  factory DealModel.fromMap(Map<String, dynamic> data, String id) {
-    return DealModel(
-      id: id,
-      sellerId: data['sellerId'] ?? '',
-      productId: data['productId'] ?? '',
-      title: data['title'] ?? 'Special Deal',
-      description: data['description'],
-      discountType: _parseDiscountType(data['discountType']),
-      discountValue: _parseDouble(data['discountValue']),
-      maxDiscountAmount: data['maxDiscountAmount'] != null 
-          ? _parseDouble(data['maxDiscountAmount']) 
-          : null,
-      originalPrice: _parseDouble(data['originalPrice']),
-      dealPrice: _parseDouble(data['dealPrice']),
-      startDate: _parseDateTime(data['startDate']) ?? DateTime.now(),
-      endDate: _parseDateTime(data['endDate']) ?? DateTime.now().add(const Duration(days: 1)),
-      stockLimit: data['stockLimit'] as int?,
-      stockSold: data['stockSold'] as int? ?? 0,
-      status: _parseStatus(data['status']),
-      rejectionReason: data['rejectionReason'],
-      approvedAt: _parseDateTime(data['approvedAt']),
-      approvedBy: data['approvedBy'],
-      productName: data['productName'] ?? '',
-      productImage: data['productImage'] ?? '',
-      sellerName: data['sellerName'] ?? '',
-      createdAt: _parseDateTime(data['createdAt']) ?? DateTime.now(),
-      updatedAt: _parseDateTime(data['updatedAt']),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'sellerId': sellerId,
-      'productId': productId,
-      'title': title,
-      'description': description,
-      'discountType': discountType.name,
-      'discountValue': discountValue,
-      'maxDiscountAmount': maxDiscountAmount,
-      'originalPrice': originalPrice,
-      'dealPrice': dealPrice,
-      'startDate': Timestamp.fromDate(startDate),
-      'endDate': Timestamp.fromDate(endDate),
-      'stockLimit': stockLimit,
-      'stockSold': stockSold,
-      'status': status.name,
-      'rejectionReason': rejectionReason,
-      'approvedAt': approvedAt != null ? Timestamp.fromDate(approvedAt!) : null,
-      'approvedBy': approvedBy,
-      'productName': productName,
-      'productImage': productImage,
-      'sellerName': sellerName,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
-    };
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): fromFirestore(doc)/
+  // fromMap(data, id)/toMap() all deleted -- zero callers. deal_service.dart (their only reason to
+  // exist) was already gutted to a single honest `Future<DealModel?> getActiveDealForProduct(...)
+  // async => null;` stub in an earlier C3 pass; no canonical deals backend exists yet.
 
   // ============ Copy With ============
 
@@ -263,40 +203,6 @@ class DealModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
-  }
-
-  // ============ Parsing Helpers ============
-
-  static DealStatus _parseStatus(dynamic value) {
-    if (value == null) return DealStatus.pending;
-    final str = value.toString().toLowerCase();
-    return DealStatus.values.firstWhere(
-      (s) => s.name.toLowerCase() == str,
-      orElse: () => DealStatus.pending,
-    );
-  }
-
-  static DealDiscountType _parseDiscountType(dynamic value) {
-    if (value == null) return DealDiscountType.percentage;
-    final str = value.toString().toLowerCase();
-    return DealDiscountType.values.firstWhere(
-      (s) => s.name.toLowerCase() == str,
-      orElse: () => DealDiscountType.percentage,
-    );
-  }
-
-  static double _parseDouble(dynamic value, [double defaultValue = 0.0]) {
-    if (value == null) return defaultValue;
-    if (value is double) return value;
-    if (value is int) return value.toDouble();
-    return double.tryParse(value.toString()) ?? defaultValue;
-  }
-
-  static DateTime? _parseDateTime(dynamic value) {
-    if (value == null) return null;
-    if (value is Timestamp) return value.toDate();
-    if (value is DateTime) return value;
-    return null;
   }
 
   @override

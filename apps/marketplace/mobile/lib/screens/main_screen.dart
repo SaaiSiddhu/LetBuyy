@@ -6,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 
 // --- Theme & Routes ---
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -24,8 +21,6 @@ import 'shop/shop_screen.dart';
 import 'category/category_screen.dart';
 import 'cart/cart_screen.dart';
 import 'profile/profile_screen.dart';
-
-import '../widgets/mandatory_update_dialog.dart';
 
 // Note: WebHeader import removed to prevent duplication as screens handle it internally
 
@@ -112,51 +107,14 @@ class _MainScreenState extends State<MainScreen>
         // 🚀 PERFORMANCE FIX: Removed ReelsPreloadProvider().initialize()
         // Video preloading is now deferred to ReelsFeedScreen.initState()
         // This eliminates blocking startup delay from MediaCodec initialization
-        
-        // 🔄 Check for app updates (mandatory popup for testing team)
-        _checkForAppUpdates();
       } catch (e) {
         debugPrint('❌ Error initializing data: $e');
       }
     });
   }
-  
-  /// Check for app updates and show mandatory dialog if needed
-  Future<void> _checkForAppUpdates() async {
-    if (!mounted) return;
-    if (kIsWeb) return; // Skip on web
-    
-    try {
-      // Use the new premium MandatoryUpdateDialog directly
-      final snapshot = await FirebaseFirestore.instance
-          .collection('app_updates')
-          .where('isActive', isEqualTo: true)
-          .orderBy('versionCode', descending: true)
-          .limit(1)
-          .get();
-      
-      if (snapshot.docs.isEmpty) {
-        debugPrint('ℹ️ No active updates found.');
-        return;
-      }
-      
-      final data = snapshot.docs.first;
-      final update = AppUpdateModel.fromMap(data.id, data.data());
-      
-      final info = await PackageInfo.fromPlatform();
-      final currentVersionCode = int.tryParse(info.buildNumber) ?? 0;
-      
-      debugPrint('🔥 Current VersionCode: $currentVersionCode');
-      debugPrint('🔥 Latest VersionCode: ${update.versionCode}');
-      
-      if (update.versionCode > currentVersionCode && mounted) {
-        // Show the new premium dialog
-        MandatoryUpdateDialog.show(context, update, info.version);
-      }
-    } catch (e) {
-      debugPrint('⚠️ Update check error: $e');
-    }
-  }
+  // Phase 1R (R1 corrective, C2): the mandatory-update check was a direct FirebaseFirestore.instance
+  // read with no canonical successor (R1.1) — removed rather than left as a try/caught no-op, since
+  // "no update check happens" needs no honest-unavailable UI the way a missing cart does.
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -261,9 +219,17 @@ class _MainScreenState extends State<MainScreen>
         ),
         // 🌐 WEB FIX: No bottom nav on web (use sidebar instead)
         // Only show bottom nav for native mobile apps
-        bottomNavigationBar: kIsWeb 
+        //
+        // C2 corrective (27 September 2026 review, finding 4): the Reels tab used to hide this bar
+        // for an immersive, TikTok-style full-screen video feed. Phase 1R replaced that feed with a
+        // plain "coming soon" placeholder (reels_feed_screen.dart) that has no app bar, no button,
+        // and nothing left to be immersive about -- hiding the ordinary way back out of a tab
+        // destination made it a dead end for anyone who doesn't know the OS back gesture already
+        // routes Home from here (_handleBackNavigation, below). Kept visible on every tab now,
+        // including Reels, until real reel media (Phase 7) brings back a reason to hide it.
+        bottomNavigationBar: kIsWeb
             ? null  // Web uses sidebar navigation
-            : (isOnReelsTab ? null : _buildPremiumFixedNavBar(isDark)),
+            : _buildPremiumFixedNavBar(isDark),
       ),
     );
   }

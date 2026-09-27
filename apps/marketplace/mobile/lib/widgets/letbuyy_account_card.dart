@@ -1,10 +1,8 @@
 // APPID-P4d — the profile screen's "LetBuyy account" card. Shown only when LETBUYY_BUYER_SIGN_IN is
 // on (see profile_screen.dart); it signs the app in to the buyer's one LetBuyy account in the system
-// browser, and says, in words, what happened: signed in, cancelled, expired, offline, and whether the
-// app's existing account was linked.
+// browser, and says, in words, what happened: signed in, cancelled, expired, offline.
 
 import 'package:flutter/material.dart';
-import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import 'package:provider/provider.dart';
@@ -16,24 +14,12 @@ class LetBuyyAccountCard extends StatelessWidget {
 
   final bool isDark;
 
-  static String? linkMessage(FirebaseLinkResult? result) => switch (result) {
-        null => null,
-        FirebaseLinkResult.linked || FirebaseLinkResult.alreadyLinked => 'Your existing LetBuyy app account is linked to it.',
-        FirebaseLinkResult.notVerified => 'Verify your email address with LetBuyy to link your existing app account.',
-        FirebaseLinkResult.emailMismatch => 'Your existing app account uses a different email address, so it wasn’t linked.',
-        FirebaseLinkResult.conflict => 'Your existing app account is already linked to another LetBuyy account.',
-        FirebaseLinkResult.noVerifiedFirebaseEmail => 'Your existing app account has no verified email address, so it wasn’t linked yet.',
-        FirebaseLinkResult.unavailable => 'We couldn’t link your existing app account just now. We’ll try again next time.',
-        FirebaseLinkResult.refused => 'We couldn’t link your existing app account. Sign in to it again, then retry.',
-      };
-
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<BuyerSignInController>();
     final status = controller.status;
     final busy = status == BuyerSignInStatus.restoring || status == BuyerSignInStatus.completing;
     final muted = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.6);
-    final link = status == BuyerSignInStatus.signedIn ? linkMessage(controller.firebaseLink) : null;
 
     final String headline = switch (status) {
       BuyerSignInStatus.signedIn => controller.email == null ? 'Signed in' : 'Signed in as ${controller.email}',
@@ -56,10 +42,6 @@ class LetBuyyAccountCard extends StatelessWidget {
           if (controller.message != null) ...[
             const SizedBox(height: 6),
             Semantics(liveRegion: true, child: Text(controller.message!, style: TextStyle(fontSize: 13, color: muted))),
-          ],
-          if (link != null) ...[
-            const SizedBox(height: 6),
-            Text(link, style: TextStyle(fontSize: 13, color: muted)),
           ],
           const SizedBox(height: 12),
           if (busy)

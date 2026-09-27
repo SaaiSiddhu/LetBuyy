@@ -12,10 +12,10 @@
 //   * an ended session (expiry, password reset, "sign out everywhere", a disabled account) is found
 //     when the app starts or resumes, and signs the app out.
 //
-// Firebase is untouched (Firebase-era screens still read the Firebase uid until FB-4 moves each one).
-// After signing in, the app asks the gateway to record which Firebase user this buyer is, which only
-// happens when both prove the same verified email address (migration 259). That mapping is all the
-// bridge does: it creates no account and grants no access.
+// Phase 1R (2026-09-26): the owner authorized removing Firebase entirely — no real marketplace users
+// exist to preserve, so there is no legacy Firebase account left to link. The Firebase-linking bridge
+// this controller used to drive (recording which Firebase user a buyer was, migration 259) is gone;
+// this is now the app's only sign-in.
 
 import 'dart:async';
 
@@ -34,21 +34,18 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
     required BuyerAccountApi accounts,
     required BuyerSignInBrowser browser,
     required BuyerSessionStore store,
-    Future<String?> Function()? firebaseIdToken,
     DateTime Function()? clock,
     this.recheckAfter = const Duration(minutes: 15),
   })  : _client = client,
         _accounts = accounts,
         _browser = browser,
         _store = store,
-        _firebaseIdToken = firebaseIdToken,
         _clock = clock ?? DateTime.now;
 
   final BuyerSignInClient _client;
   final BuyerAccountApi _accounts;
   final BuyerSignInBrowser _browser;
   final BuyerSessionStore _store;
-  final Future<String?> Function()? _firebaseIdToken;
   final DateTime Function() _clock;
 
   /// How long a signed-in state is trusted before the app asks the gateway again on resume.
@@ -57,8 +54,8 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
   BuyerSignInStatus _status = BuyerSignInStatus.restoring;
   String? _email;
   String? _token;
+  String? _buyerId;
   String? _message;
-  FirebaseLinkResult? _firebaseLink;
   DateTime? _checkedAt;
   bool _started = false;
   bool _disposed = false;
@@ -71,18 +68,17 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
   /// callers must not hold onto a stale value across a sign-out.
   String? get token => _status == BuyerSignInStatus.signedIn ? _token : null;
 
+  /// The canonical `buyer_accounts.id` (D-BUYER-SCOPE, 27 September 2026 review continuation) --
+  /// CartProvider/WishlistProvider key their per-buyer local namespace on this, never on [token]
+  /// (rotates per session) or [email] (not the canonical identifier and the review's own explicit
+  /// instruction). Null whenever [status] is not `signedIn`, same lifetime as [token].
+  String? get buyerId => _status == BuyerSignInStatus.signedIn ? _buyerId : null;
+
   /// The last thing to tell the buyer, if any. Never contains a token or a code.
   String? get message => _message;
-  FirebaseLinkResult? get firebaseLink => _firebaseLink;
 
   /// Where a failed or abandoned attempt leaves the app: still signed in if it was.
   BuyerSignInStatus get _settled => _email != null ? BuyerSignInStatus.signedIn : BuyerSignInStatus.signedOut;
-
-  Future<void>? _linkTask;
-
-  /// The Firebase link started by the last successful sign-in or restore, for tests to await.
-  @visibleForTesting
-  Future<void> get linking => _linkTask ?? Future<void>.value();
 
   void _set(BuyerSignInStatus status, {String? message, bool keepMessage = false}) {
     _status = status;
@@ -166,7 +162,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
     await _store.deleteSession();
     _email = null;
     _token = null;
-    _firebaseLink = null;
+    _buyerId = null;
     _checkedAt = null;
     _set(BuyerSignInStatus.signedOut, message: 'You’re signed out of LetBuyy on this device.');
   }
@@ -220,7 +216,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
         await _store.writeSession(StoredBuyerSession(token: grant.accessToken, expiresAt: grant.expiresAt));
         _email = null;
         _token = null;
-        _firebaseLink = null;
+        _buyerId = null;
         await _restoreSession(justSignedIn: true);
     }
   }
@@ -236,6 +232,7 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
       await _store.deleteSession();
       _email = null;
       _token = null;
+      _buyerId = null;
       _set(BuyerSignInStatus.signedOut, message: 'Your LetBuyy sign-in has expired. Sign in again.');
       return;
     }
@@ -243,52 +240,31 @@ class BuyerSignInController extends ChangeNotifier with WidgetsBindingObserver {
       final account = await _accounts.account(session.token);
       _email = account.email;
       _token = session.token;
+      _buyerId = account.id;
       _checkedAt = _clock();
-      if (account.email != session.email) await _store.writeSession(session.withEmail(account.email));
+      if (account.email != session.email || account.id != session.buyerId) {
+        await _store.writeSession(session.withAccount(email: account.email, buyerId: account.id));
+      }
       // The card's headline already names the account, so a fresh sign-in clears any older message.
       _set(BuyerSignInStatus.signedIn, keepMessage: !justSignedIn);
-      _linkTask = _linkFirebase(session.token);
     } on ApiException catch (error) {
       if (error.statusCode == 401 || error.statusCode == 403) {
         await _store.deleteSession();
         _email = null;
         _token = null;
+        _buyerId = null;
         _set(BuyerSignInStatus.signedOut, message: error.statusCode == 403
             ? 'This LetBuyy account is disabled.'
             : 'Your LetBuyy sign-in has ended. Sign in again.');
         return;
       }
-      // The gateway could not answer. The session may be fine; keep it and check again later.
+      // The gateway could not answer. The session may be fine; keep it and check again later --
+      // including buyerId, cached on the session precisely for this path (CartProvider/
+      // WishlistProvider still need a namespace to read while offline).
       _email = session.email;
       _token = session.token;
+      _buyerId = session.buyerId;
       _set(BuyerSignInStatus.signedIn, message: 'We couldn’t reach LetBuyy just now. Showing your saved sign-in.');
-    }
-  }
-
-  bool _linking = false;
-
-  Future<void> _linkFirebase(String token) async {
-    final idToken = _firebaseIdToken;
-    final settled = _firebaseLink;
-    if (idToken == null || _linking) return;
-    if (settled == FirebaseLinkResult.linked || settled == FirebaseLinkResult.alreadyLinked || settled == FirebaseLinkResult.conflict) return;
-    _linking = true;
-    try {
-      final firebaseToken = await idToken();
-      if (firebaseToken == null) return;
-      _firebaseLink = await _accounts.linkFirebase(token, firebaseToken);
-      if (!_disposed) notifyListeners();
-    } on ApiException catch (error) {
-      if (error.statusCode == 401) {
-        await _store.deleteSession();
-        _email = null;
-        _token = null;
-        _set(BuyerSignInStatus.signedOut, message: 'Your LetBuyy sign-in has ended. Sign in again.');
-      }
-    } on Exception {
-      // Firebase could not produce a token (offline, signed out). Linking is tried again next time.
-    } finally {
-      _linking = false;
     }
   }
 }

@@ -26,12 +26,13 @@ class AppConfig {
     defaultValue: 'https://accounts.letbuyy.com',
   );
 
-  /// "Sign in with LetBuyy" (APPID-P4d, D-ONE-IDENTITY). Off until the Firebase cutover's gates are
-  /// met (FB-4). While off, the feature is not compiled into any screen. It only decides whether the
-  /// entry point is shown: the server trusts nothing the app says about it.
+  /// "Sign in with LetBuyy" (APPID-P4d, D-ONE-IDENTITY). Phase 1R (2026-09-26): FB-4's gate is met —
+  /// the owner authorized removing Firebase entirely, so this is now the app's sole, normal sign-in,
+  /// on by default. The flag stays as a build-time override, never a security boundary: the server
+  /// trusts nothing the app says about it.
   static const bool buyerSignInEnabled = bool.fromEnvironment(
     'LETBUYY_BUYER_SIGN_IN',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   /// Deployment environment label, for diagnostics only. Never used to gate behaviour: a client

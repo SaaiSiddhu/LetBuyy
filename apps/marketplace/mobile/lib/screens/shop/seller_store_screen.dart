@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
@@ -26,7 +25,13 @@ class SellerStoreScreen extends StatefulWidget {
 }
 
 class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTickerProviderStateMixin {
-  SellerModel? _seller;
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): SellerModel/the Firestore
+  // `sellers` collection are gone -- there is no canonical "get seller profile by id" endpoint yet
+  // (only /storefront/marketplace/sellers/:siteId/follower-count exists server-side), so this
+  // screen no longer claims a seller profile (business info, verification, join date) it cannot
+  // honestly back. storeName is derived from this seller's own canonical products below.
+  String? _storeName;
+  bool _sellerFound = false;
   List<ProductModel> _products = [];
   List<Map<String, dynamic>> _reels = [];
   bool _isLoading = true;
@@ -70,32 +75,21 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
 
   Future<void> _loadSellerData() async {
     try {
-      // Load seller info
-      final sellerDoc = await FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(widget.sellerId)
-          .get();
+      final productProvider = context.read<ProductProvider>();
+      await productProvider.loadProducts();
 
-      if (sellerDoc.exists) {
-        _seller = SellerModel.fromMap(
-          sellerDoc.data() as Map<String, dynamic>,
-          widget.sellerId,
-        );
-      }
-
-      // Load seller products
-      final productsQuery = await FirebaseFirestore.instance
-          .collection('products')
-          .where('sellerId', isEqualTo: widget.sellerId)
-          .where('isActive', isEqualTo: true)
-          .get();
-
-      _products = productsQuery.docs
-          .map((doc) => ProductModel.fromMap(doc.data(), doc.id))
+      // C3 (Firebase SDK removal): the canonical marketplaceFeed has no per-seller filter yet, so
+      // this filters the already-loaded canonical feed page client-side -- same truthful-pagination
+      // caveat as ProductProvider.hasMore elsewhere (a seller with listings outside the loaded page
+      // will show fewer products here than they actually have, honestly, not silently show zero).
+      _products = productProvider.products
+          .where((p) => p.sellerId == widget.sellerId)
           .toList();
 
-      // Calculate average rating from all products
       if (_products.isNotEmpty) {
+        _storeName = _products.first.storeName;
+        _sellerFound = true;
+
         double totalRating = 0;
         int totalReviews = 0;
         for (var product in _products) {
@@ -107,23 +101,11 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
           _totalReviews = totalReviews;
         }
       }
-      
-      // Load seller reels
-      try {
-        final reelsQuery = await FirebaseFirestore.instance
-            .collection('reels')
-            .where('sellerId', isEqualTo: widget.sellerId)
-            .orderBy('createdAt', descending: true)
-            .limit(20)
-            .get();
-        
-        _reels = reelsQuery.docs.map((doc) => {
-          ...doc.data(),
-          'id': doc.id,
-        }).toList();
-      } catch (e) {
-        debugPrint('Error loading reels: $e');
-      }
+
+      // Reels: explicitly deferred (this phase's reels placeholder policy) -- no canonical reels
+      // backend exists, so this stays honestly empty rather than querying a retired Firestore
+      // collection. The Reels tab itself stays visible (see _buildReelsTab's empty state).
+      _reels = [];
 
       if (mounted) {
         setState(() => _isLoading = false);
@@ -160,7 +142,7 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
     );
   }
 
-    if (_seller == null) {
+    if (!_sellerFound) {
     return PremiumScaffold(
       // resizeToAvoidBottomInset handled internally
       // backgroundColor handled internally
@@ -188,7 +170,7 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
           // 1️⃣ Sticky Search Header
           UnifiedSearchHeader(
             showBackButton: true,
-            searchHint: 'Search in ${_seller!.storeName}...',
+            searchHint: 'Search in ${_storeName ?? "this store"}...',
           ),
           
           // 2️⃣ Main Content
@@ -324,27 +306,16 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
                               ],
                             ),
                             child: ClipOval(
-                              child: _seller!.photoUrl != null
-                                  ? CachedNetworkImage(
-                                      imageUrl: _seller!.photoUrl!,
-                                      fit: BoxFit.cover,
-                                      placeholder: (_, __) => Container(
-                                        color: accentColor.withValues(alpha: 0.2),
-                                        child: Icon(Icons.store, color: accentColor, size: 32),
-                                      ),
-                                      errorWidget: (_, __, ___) => Container(
-                                        color: accentColor.withValues(alpha: 0.2),
-                                        child: Icon(Icons.store, color: accentColor, size: 32),
-                                      ),
-                                    )
-                                  : Container(
-                                      color: accentColor.withValues(alpha: 0.2),
-                                      child: Icon(Icons.store, color: accentColor, size: 32),
-                                    ),
+                              // C3 (Firebase SDK removal): no canonical seller-photo source exists
+                              // (see this screen's own doc comment) -- always the store fallback icon.
+                              child: Container(
+                                color: accentColor.withValues(alpha: 0.2),
+                                child: Icon(Icons.store, color: accentColor, size: 32),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 14),
-                          
+
                           // Info
                           Expanded(
                             child: Column(
@@ -354,7 +325,7 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
                                   children: [
                                     Flexible(
                                       child: Text(
-                                        _seller!.storeName,
+                                        _storeName ?? 'Store',
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -364,10 +335,9 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    if (_seller!.isVerified) ...[
-                                      const SizedBox(width: 6),
-                                      Icon(Icons.verified, color: Colors.blue, size: 18),
-                                    ],
+                                    // C3: the verified badge had no canonical successor (no
+                                    // seller-profile/verification endpoint exists yet) -- dropped
+                                    // rather than shown unconditionally or fabricated.
                                   ],
                                 ),
                                 const SizedBox(height: 4),
@@ -491,8 +461,8 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
           _buildStat('$_totalReviews', 'Reviews', Icons.star_outline_rounded, isDark),
           _buildStatDivider(),
           _buildStat('${_reels.length}', 'Reels', Icons.play_circle_outline_rounded, isDark),
-          _buildStatDivider(),
-          _buildStat(_formatJoinDate(), 'Joined', Icons.calendar_today_outlined, isDark),
+          // C3 (Firebase SDK removal): the "Joined" stat had no canonical successor (no
+          // seller-profile endpoint carries a join date yet) -- dropped rather than fabricated.
         ],
       ),
     );
@@ -538,15 +508,6 @@ class _SellerStoreScreenState extends State<SellerStoreScreen> with SingleTicker
     );
   }
   
-  String _formatJoinDate() {
-    if (_seller == null) return '-';
-    final year = _seller!.createdAt.year;
-    final now = DateTime.now().year;
-    if (year == now) {
-      return 'This Year';
-    }
-    return '$year';
-  }
 
   // ============================================================
   // PRODUCTS TAB

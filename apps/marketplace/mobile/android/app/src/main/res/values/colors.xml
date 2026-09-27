@@ -13,16 +13,7 @@
          Used for adaptive icon on Android 8.0+
          ======================================== -->
     <color name="ic_launcher_background">#002c35</color>
-    
-    <!-- ========================================
-         AGRIMATE BRAND COLORS
-         ======================================== -->
-    <color name="primaryGreen">#2E7D32</color>
-    <color name="darkGreen">#1B5E20</color>
-    <color name="lightGreen">#4CAF50</color>
-    <color name="mintGreen">#81C784</color>
-    <color name="paleGreen">#C8E6C9</color>
-    
+
     <!-- ========================================
          STATUS COLORS
          ======================================== -->

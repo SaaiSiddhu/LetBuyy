@@ -7,13 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-
-import '../../../providers/marketplace_ad_provider.dart';
 
 /// Ultra-Professional Product Card with Deal Support
 /// - Grid View: Flipkart-inspired compact card
@@ -96,8 +93,7 @@ class _ProductCardState extends State<ProductCard>
 
   void _onTap() {
     HapticFeedback.lightImpact();
-    _trackSponsoredClick();
-    
+
     // Call onTap callback if provided (for extra actions like ad click tracking)
     widget.onTap?.call();
     
@@ -114,27 +110,6 @@ class _ProductCardState extends State<ProductCard>
         if (widget.adCampaignId != null) 'adCampaignId': widget.adCampaignId,
       },
     );
-  }
-
-  void _trackSponsoredClick() {
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      if (adProvider.isSponsored(widget.product.id)) {
-        final userId = FirebaseAuth.instance.currentUser?.uid;
-        adProvider.recordClick(widget.product.id, userId: userId);
-      }
-    } catch (_) {}
-  }
-
-  bool _isSponsored() {
-    // Use widget param first, fallback to checking ad provider
-    if (widget.isSponsored) return true;
-    try {
-      final adProvider = Provider.of<MarketplaceAdProvider>(context, listen: false);
-      return adProvider.isSponsored(widget.product.id);
-    } catch (_) {
-      return false;
-    }
   }
 
   bool get _hasDeal => _deal != null && _deal!.isActive;
@@ -177,7 +152,7 @@ class _ProductCardState extends State<ProductCard>
   // ---------------------------------------------------------------------------
   Widget _buildGridCard(bool isDark, bool isInWishlist, WishlistProvider wishlistProvider) {
     final discount = widget.product.discount;
-    final isSponsored = _isSponsored();
+    final isSponsored = widget.isSponsored;
     final hasDiscount = widget.product.originalPrice != null &&
         widget.product.originalPrice! > widget.product.price;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
@@ -373,8 +348,10 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                // Out of Stock Overlay
-                if (widget.product.stock == 0)
+                // Out of Stock Overlay -- C2 corrective (27 September 2026 review, finding 1):
+                // stockKnown guards this so an unknown (canonical feed-level) stock never renders
+                // as a confirmed "OUT OF STOCK" claim; only a real, observed zero does.
+                if (widget.product.stockKnown && widget.product.stock == 0)
                   Positioned.fill(
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.6),
@@ -521,7 +498,7 @@ class _ProductCardState extends State<ProductCard>
     final hasDiscount = widget.product.originalPrice != null &&
         widget.product.originalPrice! > widget.product.price;
     final isFreeDelivery = widget.product.isFreeDelivery ?? false;
-    final isSponsored = _isSponsored();
+    final isSponsored = widget.isSponsored;
     
     // Deal-specific colors (RED theme)
     final dealBorderColor = _hasDeal 
@@ -641,8 +618,8 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                // Out of Stock
-                if (widget.product.stock == 0)
+                // Out of Stock -- see the grid-view overlay above for why this checks stockKnown.
+                if (widget.product.stockKnown && widget.product.stock == 0)
                   Positioned.fill(
                     child: Container(
                       color: Colors.black.withValues(alpha: 0.5),
@@ -826,19 +803,30 @@ class _ProductCardState extends State<ProductCard>
                     ),
                   ),
 
-                  // Add to Cart Button
+                  // Add to Cart Button -- C2 corrective (27 September 2026 review, finding 1): was
+                  // gated on `stock == 0` alone, which the canonical feed's fabricated `stock: 1`
+                  // made permanently true (never zero), so this stayed enabled regardless of real
+                  // availability. isPurchasable additionally requires a real, observed stock AND
+                  // price before allowing the commit this button makes.
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: SizedBox(
                       width: double.infinity,
                       height: 34,
                       child: ElevatedButton(
-                        onPressed: widget.product.stock == 0 ? null : () {
+                        // C3 (Firebase SDK removal, 27 September 2026 review finding 5): was a
+                        // fire-and-forget `addItem(...)` call (not even awaited) followed by an
+                        // unconditional "Added to cart" snackbar -- back when CartProvider always
+                        // failed (no userId ever available), this claimed success on every tap
+                        // regardless. CartProvider is now a real local cart, so this awaits and
+                        // checks addItem's actual result.
+                        onPressed: !widget.product.isPurchasable ? null : () async {
                           HapticFeedback.mediumImpact();
-                          Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
+                          final added = await Provider.of<CartProvider>(context, listen: false).addItem(widget.product);
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: const Text('Added to cart'),
+                              content: Text(added ? 'Added to cart' : 'Could not add to cart'),
                               duration: const Duration(seconds: 1),
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

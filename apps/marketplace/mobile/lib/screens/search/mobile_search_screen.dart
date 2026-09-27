@@ -8,7 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -240,7 +239,11 @@ class _MobileSearchScreenState extends State<MobileSearchScreen> {
         results = results.where((p) => categories.contains(p.categoryId)).toList();
       }
       if (_filters['inStock'] == true) {
-        results = results.where((p) => p.stock > 0).toList();
+        // C2 corrective (27 September 2026 review, finding 1): "unknown stock is not proven
+        // sold-out" -- an in-stock-only filter must not silently exclude every canonical
+        // feed-level result (stockKnown always false there) just because it can't confirm them;
+        // it excludes only a real, observed zero.
+        results = results.where((p) => !p.stockKnown || p.stock > 0).toList();
       }
     }
 
@@ -655,80 +658,16 @@ class _MobileSearchScreenState extends State<MobileSearchScreen> {
     );
   }
 
-  /// Trending searches from Firestore (admin-managed)
+  // C2 (canonical rewire fallout): built a raw, unguarded FirebaseFirestore.instance().snapshots()
+  // as a StreamBuilder's `stream:` argument -- evaluated synchronously during build(), unconditionally,
+  // since _buildEmptyState (the Search screen's default view, before a user has typed anything)
+  // rendered this with no guard at all. FirebaseFirestore.instance throws synchronously with no
+  // Firebase app initialized (confirmed empirically elsewhere this phase), so opening the Search
+  // screen crashed immediately, on every visit. "Trending searches" is an admin-curated Firestore
+  // collection with no canonical successor -- a named later-phase capability, same as Reels --
+  // so this now shows nothing rather than a fabricated or crashing "trending" section.
   Widget _buildTrendingSearchesSection(bool isDark) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('trending_searches')
-          .where('isActive', isEqualTo: true)
-          .orderBy('priority')
-          .limit(10)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return const SizedBox.shrink();
-        }
-        
-        final trendingSearches = snapshot.data!.docs
-            .map((doc) => TrendingSearchModel.fromFirestore(doc))
-            .toList();
-        
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.trending_up,
-                    size: 20,
-                    color: isDark ? AppColors.primaryLight : AppColors.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Trending Searches',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ...trendingSearches.map((trending) => ListTile(
-              leading: trending.imageUrl != null
-                  ? CircleAvatar(
-                      radius: 16,
-                      backgroundImage: NetworkImage(trending.imageUrl!),
-                      backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
-                    )
-                  : Icon(
-                      Icons.search,
-                      color: isDark ? Colors.white54 : Colors.grey[600],
-                      size: 20,
-                    ),
-              title: Text(
-                trending.text,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontSize: 15,
-                ),
-              ),
-              onTap: () {
-                if (trending.appRoute != null && trending.appRoute!.isNotEmpty) {
-                  Navigator.pushNamed(context, trending.appRoute!);
-                } else {
-                  _searchController.text = trending.text;
-                  _submitSearch(trending.text);
-                }
-              },
-            )),
-          ],
-        );
-      },
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildPopularCategoriesSection(bool isDark) {

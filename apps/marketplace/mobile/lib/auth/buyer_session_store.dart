@@ -13,7 +13,7 @@ import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 
 /// A platform buyer session identity-platform minted for this app.
 class StoredBuyerSession {
-  const StoredBuyerSession({required this.token, required this.expiresAt, this.email});
+  const StoredBuyerSession({required this.token, required this.expiresAt, this.email, this.buyerId});
 
   final String token;
   final DateTime expiresAt;
@@ -21,11 +21,20 @@ class StoredBuyerSession {
   /// Shown while the app cannot reach the gateway; never used to decide anything.
   final String? email;
 
+  /// D-BUYER-SCOPE (27 September 2026 review continuation): the canonical `buyer_accounts.id`,
+  /// cached alongside [email] so CartProvider/WishlistProvider can resolve the right per-buyer
+  /// local storage namespace even in the offline "gateway unreachable, trust the saved session"
+  /// path in BuyerSignInController._restoreSession, which never calls the gateway at all. Never
+  /// used to decide identity/authorization -- only which local device namespace to read.
+  final String? buyerId;
+
   bool isExpired(DateTime now) => !now.isBefore(expiresAt);
 
-  StoredBuyerSession withEmail(String? value) => StoredBuyerSession(token: token, expiresAt: expiresAt, email: value);
+  StoredBuyerSession withAccount({String? email, String? buyerId}) =>
+      StoredBuyerSession(token: token, expiresAt: expiresAt, email: email, buyerId: buyerId);
 
-  Map<String, Object?> toJson() => {'v': 1, 'token': token, 'expires_at': expiresAt.toUtc().toIso8601String(), 'email': email};
+  Map<String, Object?> toJson() =>
+      {'v': 1, 'token': token, 'expires_at': expiresAt.toUtc().toIso8601String(), 'email': email, 'buyer_id': buyerId};
 
   static StoredBuyerSession? fromJson(Object? json) {
     if (json is! Map || json['v'] != 1) return null;
@@ -33,7 +42,16 @@ class StoredBuyerSession {
     final expiresAt = json['expires_at'] is String ? DateTime.tryParse(json['expires_at'] as String) : null;
     if (token is! String || token.isEmpty || expiresAt == null) return null;
     final email = json['email'];
-    return StoredBuyerSession(token: token, expiresAt: expiresAt, email: email is String ? email : null);
+    final buyerId = json['buyer_id'];
+    return StoredBuyerSession(
+      token: token,
+      expiresAt: expiresAt,
+      email: email is String ? email : null,
+      // Absent on a session written before this field existed (there are no real marketplace
+      // users to preserve compatibility for, per the owner's Firebase-removal decision) -- read
+      // back as null, same as never having signed in for namespace purposes, not a parse failure.
+      buyerId: buyerId is String ? buyerId : null,
+    );
   }
 }
 

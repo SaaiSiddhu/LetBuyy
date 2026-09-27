@@ -1,7 +1,6 @@
-// APPID-P4d — builds the app's "Sign in with LetBuyy" controller from its real parts. Only reached
-// when AppConfig.buyerSignInEnabled is on; with it off, main.dart never calls this.
+// APPID-P4d — builds the app's "Sign in with LetBuyy" controller from its real parts. main.dart
+// always calls this (Phase 1R): it's the app's sole sign-in, with no Firebase fallback.
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 
 import '../config/app_config.dart';
@@ -16,9 +15,6 @@ BuyerSignInController buildBuyerSignInController() {
     accounts: BuyerAccountApi(buildCanonicalApiClient()),
     browser: platformBuyerSignInBrowser(),
     store: SecureBuyerSessionStore(),
-    // The Firebase user still signed in to this app, if any: its ID token is what lets the gateway
-    // record which Firebase user this buyer is. Firebase stays the app's sign-in until FB-4.
-    firebaseIdToken: () async => FirebaseAuth.instance.currentUser?.getIdToken(),
   );
 }
 

@@ -1,5 +1,4 @@
 // lib/models/chat_message.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 enum MessageType { user, ai, system, loading, error }
@@ -127,14 +126,16 @@ class ChatMessage {
 
   String get formattedTime => DateFormat('hh:mm a').format(timestamp);
 
-  // Firestore conversion
+  /// Plain-map serialization, used for local persistence (see AIChatService's own doc comments --
+  /// there is no canonical chat-history backend yet, so this is not a wire contract with any
+  /// server).
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'text': text,
       'sessionId': sessionId,
       'messageType': messageType.name,
-      'timestamp': Timestamp.fromDate(timestamp),
+      'timestamp': timestamp.toIso8601String(),
       'products': products,
       'orders': orders,
       'quickReplies': quickReplies,
@@ -149,18 +150,23 @@ class ChatMessage {
     };
   }
 
-  factory ChatMessage.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): replaces
+  // fromFirestore(DocumentSnapshot) (its only caller, AIChatService.loadSessionHistory, is itself
+  // being retired the same pass -- see that file's own doc comments). Duck-types a `.toDate()`
+  // timestamp the same way product_model.dart's _parseTimestamp does, in case a real Firestore
+  // Timestamp value is ever handed in, while also accepting the ISO-8601 string toMap() above
+  // produces and a raw epoch-millisecond int. An unparseable or missing timestamp falls back to
+  // "now" for a message being decoded right now, never to a silently fabricated past date.
+  factory ChatMessage.fromMap(Map<String, dynamic> data, {String? id}) {
     return ChatMessage(
-      id: data['id'] ?? doc.id,
+      id: data['id'] ?? id ?? '',
       text: data['text'] ?? '',
       sessionId: data['sessionId'] ?? '',
       messageType: MessageType.values.firstWhere(
         (e) => e.name == data['messageType'],
         orElse: () => MessageType.system,
       ),
-      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp: _parseTimestamp(data['timestamp']),
       products: (data['products'] as List?)?.cast<Map<String, dynamic>>(),
       orders: (data['orders'] as List?)?.cast<Map<String, dynamic>>(),
       quickReplies: (data['quickReplies'] as List?)?.cast<String>(),
@@ -175,6 +181,18 @@ class ChatMessage {
       ),
       errorMessage: data['errorMessage'],
     );
+  }
+
+  static DateTime _parseTimestamp(Object? value) {
+    if (value == null) return DateTime.now();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+    try {
+      return (value as dynamic).toDate() as DateTime;
+    } catch (_) {
+      return DateTime.now();
+    }
   }
 
   ChatMessage copyWith({

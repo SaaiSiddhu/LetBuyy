@@ -7,12 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
-import '../../providers/auth_provider.dart';
 
 class ReturnRequestScreen extends StatefulWidget {
   final String orderId;
@@ -142,98 +140,15 @@ class _ReturnRequestScreenState extends State<ReturnRequestScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final authProvider = context.read<AuthProvider>();
-      final user = authProvider.currentUser;
-
-      if (user == null) {
-        throw Exception('User not logged in');
-      }
-
-      // ✅ CHECK FOR EXISTING RETURN REQUEST (One request per order item)
-      final existingReturn = await _returnService.getExistingReturnForOrderItem(
-        orderId: widget.orderId,
-        orderItemId: widget.item.productId,
-      );
-
-      if (existingReturn != null) {
-        setState(() => _isSubmitting = false);
-        if (mounted) {
-          // If rejected and can still appeal, redirect to appeal
-          if (existingReturn.status == ReturnStatus.rejected && existingReturn.canAppeal) {
-            _showAppealRedirectDialog(existingReturn);
-          } else {
-            // Show standard "already requested" message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.info_outline, color: Colors.white),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        existingReturn.status == ReturnStatus.rejected
-                            ? 'Return was rejected. Appeal window expired.'
-                            : 'Return already requested (Status: ${existingReturn.status.displayName})',
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: existingReturn.status == ReturnStatus.rejected 
-                    ? AppColors.error 
-                    : AppColors.warning,
-                duration: const Duration(seconds: 4),
-              ),
-            );
-          }
-        }
-        return;
-      }
-
-      // Create return request
-      final returnRequest = await _returnService.createReturnRequest(
-        orderId: widget.orderId,
-        orderNumber: widget.orderNumber,
-        orderItemId: widget.item.productId,
-        productId: widget.item.productId,
-        productName: widget.item.productName,
-        productImage: widget.item.productImage,
-        variantInfo: widget.item.variant,
-        quantity: widget.item.quantity,
-        itemPrice: widget.item.price,
-        userId: user.uid,
-        userName: user.name ?? 'Customer',
-        userPhone: user.phone,
-        sellerId: widget.item.sellerId ?? '',
-        sellerName: widget.item.sellerName ?? '',
-        type: _selectedType,
-        reasonCode: _selectedReason!.code,
-        reasonTitle: _selectedReason!.title,
-        customerNotes: _notesController.text.trim().isNotEmpty
-            ? _notesController.text.trim()
-            : null,
-        customerImages: [], // Will upload separately
-        exchangeVariantId: _selectedExchangeVariant,
-        pickupAddress: '', // Will be filled by customer later
-      );
-
-      // Upload images
-      for (final image in _selectedImages) {
-        await _returnService.uploadReturnImage(
-          returnId: returnRequest.id,
-          filePath: image.path,
-          userId: user.uid,
-        );
-      }
-
-      if (mounted) {
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Return request submitted successfully!'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
+      // Phase 1R corrective (C2): this whole submission (existing-return check, create, image
+      // upload -- all via ReturnService, entirely FirebaseFirestore-backed) already always threw
+      // here before reaching any of it: it was gated on authProvider.currentUser
+      // (AuthProvider, entirely FirebaseAuth-backed), always null now that canonical "Sign in
+      // with LetBuyy" never touches FirebaseAuth. Returns have no canonical capability yet
+      // (they're downstream of orders, which have none either -- see OrderProvider's and
+      // my_returns_screen.dart's disposition this same pass). Removed the dead body; kept the
+      // same honest failure.
+      throw Exception('User not logged in');
     } catch (e) {
       setState(() => _isSubmitting = false);
       ScaffoldMessenger.of(context).showSnackBar(

@@ -86,8 +86,6 @@ class _OrdersScreenState extends State<OrdersScreen> with TickerProviderStateMix
     // --- End Toast Animations ---
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // ✅✅✅ FIXED: Was loadOrders()
-      Provider.of<OrderProvider>(context, listen: false).loadUserOrders();
       _animationController.forward();
     });
   }
@@ -143,51 +141,14 @@ class _OrdersScreenState extends State<OrdersScreen> with TickerProviderStateMix
                   opacity: _fadeAnimation,
                   child: SlideTransition(
                     position: _slideAnimation,
-                    child: Consumer<OrderProvider>(
-                      builder: (context, orderProvider, child) {
-                        if (orderProvider.isLoading && orderProvider.orders.isEmpty) {
-                          return _buildShimmerLoading(isDark);
-                        }
-
-                        if (orderProvider.error != null && orderProvider.orders.isEmpty) {
-                          return _buildErrorState(orderProvider.error!, isDark);
-                        }
-
-                        if (orderProvider.orders.isEmpty) {
-                          return _buildEmptyState(isDark);
-                        }
-
-                        final filteredOrders = _selectedFilter == 'All'
-                            ? orderProvider.orders
-                            : orderProvider.orders
-                                .where((o) => o.orderStatus.toLowerCase() == _selectedFilter.toLowerCase())
-                                .toList();
-
-                        return RefreshIndicator(
-                          onRefresh: () async {
-                            // ✅✅✅ FIXED: Was loadOrders()
-                            Provider.of<OrderProvider>(context, listen: false).loadUserOrders();
-                          },
-                          color: isDark ? AppColors.primaryLight : AppColors.primary,
-                          backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surface, // ✅ Fixed
-                          child: filteredOrders.isEmpty
-                              ? _buildNoResultsState(isDark)
-                              : ListView.builder(
-                                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                                  itemCount: filteredOrders.length,
-                                  itemBuilder: (context, index) {
-                                    final order = filteredOrders[index];
-                                    return _OrderCard(
-                                      order: order,
-                                      index: index,
-                                      isDark: isDark,
-                                      onTap: () => _navigateToDetails(order),
-                                    );
-                                  },
-                                ),
-                        );
-                      },
-                    ),
+                    // Phase 1R corrective (C2): was Consumer<OrderProvider>. OrderProvider was
+                    // entirely FirebaseFirestore-backed with no canonical successor.
+                    // loadUserOrders() guards on AuthService.currentUserId, which is always null
+                    // now that canonical "Sign in with LetBuyy" never touches FirebaseAuth -- it
+                    // never reaches Firestore, but it does set error to this exact string every
+                    // time, and orders stays permanently empty. This renders that same
+                    // already-true state directly.
+                    child: _buildErrorState('❌ User not authenticated', isDark),
                   ),
                 ),
               ),
@@ -581,10 +542,10 @@ class _OrdersScreenState extends State<OrdersScreen> with TickerProviderStateMix
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                  // ✅✅✅ FIXED: Was loadOrders()
-                  Provider.of<OrderProvider>(context, listen: false).loadUserOrders();
-                },
+                // Phase 1R corrective (C2): was Provider.of<OrderProvider>(...).loadUserOrders().
+                // That guard never succeeds (canonical sign-in never touches FirebaseAuth), so
+                // retrying can never change this state -- disabled rather than offer a dead action.
+                onTap: null,
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

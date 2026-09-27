@@ -1,14 +1,14 @@
-// packages/models/lib/src/return_request_model.dart
-// 📦 Return/Exchange Request Model
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'return_status.dart';
-import 'return_qc_model.dart';
 
-/// Main model for return and exchange requests
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): fromMap/toMap (and the
+// Firestore Timestamp/FieldValue.serverTimestamp parsing they used) deleted outright -- grepping
+// every real caller anywhere in the app found none: ReturnService's stream/lookup methods (its
+// only real constructors of this type) are now plain empty/null stubs. The qcResult field (and
+// return_qc_model.dart's ReturnQCModel it referenced) is deleted alongside them -- `.qcResult` had
+// zero readers anywhere in the app either.
 class ReturnRequestModel {
   final String id;
-  
+
   // Order & Item Info
   final String orderId;
   final String orderNumber;
@@ -19,30 +19,30 @@ class ReturnRequestModel {
   final String? variantInfo; // e.g., "Size: L, Color: Blue"
   final int quantity;
   final double itemPrice;
-  
+
   // Parties
   final String userId;
   final String userName;
   final String? userPhone;
   final String sellerId;
   final String sellerName;
-  
+
   // Request Details
   final ReturnType type;
   final ReturnStatus status;
   final String reasonCode;
   final String reasonTitle;
   final String? customerNotes;
-  
+
   // Evidence
   final List<String> customerImages;
   final String? customerVideo;
-  
+
   // For Exchange
   final String? exchangeVariantId;
   final String? exchangeVariantInfo;
   final String? exchangeOrderId;
-  
+
   // Pickup Info
   final DateTime? pickupScheduledAt;
   final String? pickupSlot; // e.g., "10 AM - 12 PM"
@@ -50,10 +50,7 @@ class ReturnRequestModel {
   final String? pickupAgentName;
   final String? pickupAgentPhone;
   final DateTime? pickupCompletedAt;
-  
-  // QC Result (embedded or reference)
-  final ReturnQCModel? qcResult;
-  
+
   // Refund Info
   final double refundAmount;
   final String? refundMethod; // 'original_source', 'bank', 'upi'
@@ -61,22 +58,22 @@ class ReturnRequestModel {
   final String? refundTransactionId;
   final DateTime? refundInitiatedAt;
   final DateTime? refundCompletedAt;
-  
+
   // Seller Response
   final String? sellerNotes;
   final String? sellerRejectionReason;
   final DateTime? sellerRespondedAt;
-  
+
   // Admin Override
   final bool isAdminOverride;
   final String? adminNotes;
   final String? adminId;
-  
+
   // Appeal System (one appeal allowed, 24hr window after rejection)
   final bool hasAppealed;
   final DateTime? appealedAt;
   final String? appealChatId; // Link to support chat for appeal
-  
+
   // Timestamps
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -114,7 +111,6 @@ class ReturnRequestModel {
     this.pickupAgentName,
     this.pickupAgentPhone,
     this.pickupCompletedAt,
-    this.qcResult,
     this.refundAmount = 0,
     this.refundMethod,
     this.refundAccountDetails,
@@ -134,143 +130,6 @@ class ReturnRequestModel {
     this.updatedAt,
     this.closedAt,
   }) : createdAt = createdAt ?? DateTime.now();
-
-  // ══════════════════════════════════════════════════════════════
-  // FACTORY CONSTRUCTORS
-  // ══════════════════════════════════════════════════════════════
-
-  factory ReturnRequestModel.fromMap(Map<String, dynamic> map, String id) {
-    return ReturnRequestModel(
-      id: id,
-      orderId: map['orderId'] ?? '',
-      orderNumber: map['orderNumber'] ?? '',
-      orderItemId: map['orderItemId'] ?? '',
-      productId: map['productId'] ?? '',
-      productName: map['productName'] ?? '',
-      productImage: map['productImage'],
-      variantInfo: map['variantInfo'],
-      quantity: map['quantity'] ?? 1,
-      itemPrice: (map['itemPrice'] as num?)?.toDouble() ?? 0.0,
-      userId: map['userId'] ?? '',
-      userName: map['userName'] ?? '',
-      userPhone: map['userPhone'],
-      sellerId: map['sellerId'] ?? '',
-      sellerName: map['sellerName'] ?? '',
-      type: ReturnTypeExtension.fromJson(map['type'] ?? 'refund'),
-      status: ReturnStatusExtension.fromJson(map['status'] ?? 'requested'),
-      reasonCode: map['reasonCode'] ?? '',
-      reasonTitle: map['reasonTitle'] ?? '',
-      customerNotes: map['customerNotes'],
-      customerImages: List<String>.from(map['customerImages'] ?? []),
-      customerVideo: map['customerVideo'],
-      exchangeVariantId: map['exchangeVariantId'],
-      exchangeVariantInfo: map['exchangeVariantInfo'],
-      exchangeOrderId: map['exchangeOrderId'],
-      pickupScheduledAt: _parseDateTime(map['pickupScheduledAt']),
-      pickupSlot: map['pickupSlot'],
-      pickupAddress: map['pickupAddress'],
-      pickupAgentName: map['pickupAgentName'],
-      pickupAgentPhone: map['pickupAgentPhone'],
-      pickupCompletedAt: _parseDateTime(map['pickupCompletedAt']),
-      qcResult: map['qcResult'] != null
-          ? ReturnQCModel.fromMap(map['qcResult'] as Map<String, dynamic>, '')
-          : null,
-      refundAmount: (map['refundAmount'] as num?)?.toDouble() ?? 0.0,
-      refundMethod: map['refundMethod'],
-      refundAccountDetails: map['refundAccountDetails'],
-      refundTransactionId: map['refundTransactionId'],
-      refundInitiatedAt: _parseDateTime(map['refundInitiatedAt']),
-      refundCompletedAt: _parseDateTime(map['refundCompletedAt']),
-      sellerNotes: map['sellerNotes'],
-      sellerRejectionReason: map['sellerRejectionReason'],
-      sellerRespondedAt: _parseDateTime(map['sellerRespondedAt']),
-      isAdminOverride: map['isAdminOverride'] ?? false,
-      adminNotes: map['adminNotes'],
-      adminId: map['adminId'],
-      hasAppealed: map['hasAppealed'] ?? false,
-      appealedAt: _parseDateTime(map['appealedAt']),
-      appealChatId: map['appealChatId'],
-      createdAt: _parseDateTime(map['createdAt']) ?? DateTime.now(),
-      updatedAt: _parseDateTime(map['updatedAt']),
-      closedAt: _parseDateTime(map['closedAt']),
-    );
-  }
-
-  static DateTime? _parseDateTime(dynamic value) {
-    if (value == null) return null;
-    if (value is Timestamp) return value.toDate();
-    if (value is DateTime) return value;
-    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
-    return null;
-  }
-
-  // ══════════════════════════════════════════════════════════════
-  // TO MAP
-  // ══════════════════════════════════════════════════════════════
-
-  Map<String, dynamic> toMap() {
-    return {
-      'orderId': orderId,
-      'orderNumber': orderNumber,
-      'orderItemId': orderItemId,
-      'productId': productId,
-      'productName': productName,
-      'productImage': productImage,
-      'variantInfo': variantInfo,
-      'quantity': quantity,
-      'itemPrice': itemPrice,
-      'userId': userId,
-      'userName': userName,
-      'userPhone': userPhone,
-      'sellerId': sellerId,
-      'sellerName': sellerName,
-      'type': type.toJson(),
-      'status': status.toJson(),
-      'reasonCode': reasonCode,
-      'reasonTitle': reasonTitle,
-      'customerNotes': customerNotes,
-      'customerImages': customerImages,
-      'customerVideo': customerVideo,
-      'exchangeVariantId': exchangeVariantId,
-      'exchangeVariantInfo': exchangeVariantInfo,
-      'exchangeOrderId': exchangeOrderId,
-      'pickupScheduledAt': pickupScheduledAt != null
-          ? Timestamp.fromDate(pickupScheduledAt!)
-          : null,
-      'pickupSlot': pickupSlot,
-      'pickupAddress': pickupAddress,
-      'pickupAgentName': pickupAgentName,
-      'pickupAgentPhone': pickupAgentPhone,
-      'pickupCompletedAt': pickupCompletedAt != null
-          ? Timestamp.fromDate(pickupCompletedAt!)
-          : null,
-      'qcResult': qcResult?.toMap(),
-      'refundAmount': refundAmount,
-      'refundMethod': refundMethod,
-      'refundAccountDetails': refundAccountDetails,
-      'refundTransactionId': refundTransactionId,
-      'refundInitiatedAt': refundInitiatedAt != null
-          ? Timestamp.fromDate(refundInitiatedAt!)
-          : null,
-      'refundCompletedAt': refundCompletedAt != null
-          ? Timestamp.fromDate(refundCompletedAt!)
-          : null,
-      'sellerNotes': sellerNotes,
-      'sellerRejectionReason': sellerRejectionReason,
-      'sellerRespondedAt': sellerRespondedAt != null
-          ? Timestamp.fromDate(sellerRespondedAt!)
-          : null,
-      'isAdminOverride': isAdminOverride,
-      'adminNotes': adminNotes,
-      'adminId': adminId,
-      'hasAppealed': hasAppealed,
-      'appealedAt': appealedAt != null ? Timestamp.fromDate(appealedAt!) : null,
-      'appealChatId': appealChatId,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'closedAt': closedAt != null ? Timestamp.fromDate(closedAt!) : null,
-    };
-  }
 
   // ══════════════════════════════════════════════════════════════
   // COMPUTED PROPERTIES
@@ -314,9 +173,9 @@ class ReturnRequestModel {
   bool get isAppealExpired => hoursSinceRejection > 24;
 
   /// Whether user can still appeal (rejected, within 24hrs, hasn't appealed yet)
-  bool get canAppeal => 
-      status == ReturnStatus.rejected && 
-      !hasAppealed && 
+  bool get canAppeal =>
+      status == ReturnStatus.rejected &&
+      !hasAppealed &&
       !isAppealExpired;
 
   /// Remaining hours to appeal
@@ -367,7 +226,6 @@ class ReturnRequestModel {
     String? pickupAgentName,
     String? pickupAgentPhone,
     DateTime? pickupCompletedAt,
-    ReturnQCModel? qcResult,
     double? refundAmount,
     String? refundMethod,
     String? refundAccountDetails,
@@ -419,7 +277,6 @@ class ReturnRequestModel {
       pickupAgentName: pickupAgentName ?? this.pickupAgentName,
       pickupAgentPhone: pickupAgentPhone ?? this.pickupAgentPhone,
       pickupCompletedAt: pickupCompletedAt ?? this.pickupCompletedAt,
-      qcResult: qcResult ?? this.qcResult,
       refundAmount: refundAmount ?? this.refundAmount,
       refundMethod: refundMethod ?? this.refundMethod,
       refundAccountDetails: refundAccountDetails ?? this.refundAccountDetails,

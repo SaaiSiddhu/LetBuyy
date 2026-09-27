@@ -15,8 +15,19 @@ class CacheService {
   SharedPreferences? _prefs;
   
   // Cache keys
-  static const String _productsKey = 'cache_products_v2';
-  static const String _categoriesKey = 'cache_categories_v2';
+  //
+  // C2 corrective (27 September 2026 review, finding 2): bumped v2 -> v3. ProductProvider/
+  // CategoryProvider's canonical rewire changed what these keys hold -- a listing id instead of a
+  // Firestore document id, a category slug instead of its Firestore doc id, no rating/review/
+  // specification data -- without changing the key itself, so a device that had already cached
+  // real v2 data from before that rewire would silently keep reading it forever: getCachedProducts
+  // has no way to tell "old-shaped data under this key" from "new-shaped data," and
+  // initializeFromCache populating a non-empty list is exactly what made loadProducts's own
+  // dedup guard skip the real canonical fetch (see that fix, same commit). The version bump is a
+  // clean, unambiguous cutover -- old data is simply never read under the new key -- rather than
+  // an attempt to detect or migrate an old shape in place.
+  static const String _productsKey = 'cache_products_v3';
+  static const String _categoriesKey = 'cache_categories_v3';
   static const String _cacheTimestampKey = 'cache_timestamp';
   
   // Cache expiry: 24 hours
@@ -82,6 +93,7 @@ class CacheService {
     return {
       'id': p.id,
       'sellerId': p.sellerId,
+      'storeName': p.storeName,
       'name': p.name,
       'description': p.description,
       'salePrice': p.salePrice,
@@ -90,6 +102,8 @@ class CacheService {
       'subCategoryId': p.subCategoryId,
       'images': p.images,
       'stock': p.stock,
+      'stockKnown': p.stockKnown,
+      'priceKnown': p.priceKnown,
       'rating': p.rating,
       'reviewCount': p.reviewCount,
       'isFeatured': p.isFeatured,
@@ -108,6 +122,7 @@ class CacheService {
     return ProductModel(
       id: map['id'] ?? '',
       sellerId: map['sellerId'] ?? '',
+      storeName: map['storeName'],
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       salePrice: (map['salePrice'] as num?)?.toDouble() ?? 0.0,
@@ -116,6 +131,11 @@ class CacheService {
       subCategoryId: map['subCategoryId'],
       images: List<String>.from(map['images'] ?? []),
       stock: (map['stock'] as num?)?.toInt() ?? 0,
+      // Defaults to false (unknown), not true -- a cache entry written before this exact fix
+      // landed (already under the v3 key from the version bump) would lack these keys, and
+      // "unknown" is the honest assumption for a value we can't actually confirm, never "true."
+      stockKnown: map['stockKnown'] as bool? ?? false,
+      priceKnown: map['priceKnown'] as bool? ?? false,
       rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
       reviewCount: (map['reviewCount'] as num?)?.toInt() ?? 0,
       isFeatured: map['isFeatured'] ?? false,
@@ -168,6 +188,7 @@ class CacheService {
   Map<String, dynamic> _categoryToCache(CategoryModel c) {
     return {
       'id': c.id,
+      'slug': c.slug,
       'name': c.name,
       'description': c.description,
       'parentId': c.parentId,
@@ -186,6 +207,7 @@ class CacheService {
   CategoryModel _categoryFromCache(Map<String, dynamic> map) {
     return CategoryModel(
       id: map['id'] ?? '',
+      slug: map['slug'],
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       parentId: map['parentId'],

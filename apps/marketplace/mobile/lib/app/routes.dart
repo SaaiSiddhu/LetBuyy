@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 // Splash screen removed - app starts directly
 import '../screens/onboarding/onboarding_screen.dart';
-import '../screens/auth/auth_screen.dart';
 import '../screens/main_screen.dart';
 import '../screens/web_main_screen.dart';
 import '../screens/shop/product_details_screen.dart';
 import '../screens/shop/seller_store_screen.dart'; // NEW
 import '../screens/wishlist/wishlist_screen.dart';
 import '../screens/profile/edit_profile_screen.dart';
-import '../screens/profile/saved_addresses_screen.dart';
 import '../screens/profile/letbuyy_account_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/chat/ai_chat_screen.dart';
@@ -20,19 +18,14 @@ import '../screens/chat/ai_chat_screen.dart';
 import '../screens/returns/my_returns_screen.dart';
 import '../screens/returns/return_request_screen.dart';
 import '../screens/returns/return_tracking_screen.dart';
-// Notification Screen
-import '../screens/notifications/notification_screen.dart';
 // Support Chat
 import '../screens/support/support_chat_screen.dart';
 import '../screens/support/support_conversations_screen.dart';
 // Reels
 import '../screens/reels/reels_feed_screen.dart';
-import '../screens/reels/saved_reels_screen.dart'; // ✅ NEW
-import '../screens/shop/seller_profile_screen.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/search/visual_search_screen.dart';
-import '../screens/loyalty/loyalty_screen.dart';
 // Checkout
 import '../screens/checkout/checkout_screen.dart';
 import '../screens/checkout/order_success_screen.dart';
@@ -40,8 +33,6 @@ import '../screens/checkout/add_address_screen.dart';
 // Order Screens
 import '../screens/orders/order_details_screen.dart';
 import '../screens/orders/order_tracking_screen.dart';
-// Downloads
-import '../screens/downloads/download_screen.dart';
 
 class AppRoutes {
   static const String baseUrl = 'https://letbuyy.com';
@@ -50,9 +41,6 @@ class AppRoutes {
   // Root routes
   static const String splash = '/';
   static const String onboarding = '/onboarding';
-  static const String auth = '/auth';
-  static const String login = '/login';
-  static const String register = '/register';
 
   // Main navigation
   static const String main = '/main';
@@ -80,10 +68,7 @@ class AppRoutes {
   static const String aiChat = '/ai-chat';
   static const String supportChat = '/support-chat';
   static const String supportConversations = '/support-conversations';
-  
-  // Notifications
-  static const String notifications = '/notifications';
-   
+
   // Product
   static const String productDetails = '/product-details';
   static const String productDetail = '/product-details';  // Alias
@@ -92,7 +77,6 @@ class AppRoutes {
   static const String recentlyViewed = '/recently-viewed';
   
   // Seller Profile
-  static const String sellerProfile = '/seller-profile';
   static const String sellerStore = '/seller-store';
   
   // Checkout
@@ -106,20 +90,13 @@ class AppRoutes {
   
   // Reels
   static const String reels = '/reels';
-  static const String savedReels = '/saved-reels'; // ✅ NEW
-  
-  // Loyalty
-  static const String loyalty = '/loyalty';
-  
+
   // Order Details & Tracking
   static const String orderDetails = '/order-details';
   static const String orderTracking = '/order-tracking';
   
   // Add Address
   static const String addAddress = '/add-address';
-  
-  // Downloads
-  static const String download = '/download';
 
   // Route generator
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -156,15 +133,6 @@ class AppRoutes {
       }
     }
     
-    // ✅ Handle /seller-profile/:id routes
-    if (routeName.startsWith('/seller-profile/')) {
-      final sellerId = routeName.replaceFirst('/seller-profile/', '');
-      if (sellerId.isNotEmpty) {
-        debugPrint('🏪 Opening seller profile: $sellerId');
-        return _buildRoute(SellerProfileScreen(sellerId: sellerId), settings);
-      }
-    }
-    
     // ✅ Handle /orders/:id routes for deep linking to order details
     if (routeName.startsWith('/orders/')) {
       final orderId = routeName.replaceFirst('/orders/', '');
@@ -197,11 +165,6 @@ class AppRoutes {
 
       case onboarding:
         return _buildRoute(const OnboardingScreen(), settings);
-
-      case auth:
-      case login:
-      case register:
-        return _buildRoute(const AuthScreen(), settings);
 
       case main:
         final args = settings.arguments as Map<String, dynamic>?;
@@ -236,10 +199,11 @@ class AppRoutes {
       case myOrders:
         return _buildRoute(const OrdersScreen(), settings);
         
+      // C3 corrective: was SavedAddressesScreen (a redundant duplicate case label of the same
+      // route constant, plus a screen C2 had already disconnected to an unconditional empty
+      // state with no canonical successor). Both addresses and letbuyyAccount now land on the
+      // one real, BuyerAddressApi-backed address book.
       case addresses:
-      case '/profile/addresses':
-        return _buildRoute(const SavedAddressesScreen(), settings);
-
       case letbuyyAccount:
         return _buildRoute(const LetBuyyAccountScreen(), settings);
 
@@ -254,11 +218,7 @@ class AppRoutes {
       case visualSearch:
       case '/visual-search':
         return _buildRoute(const VisualSearchScreen(), settings);
-        
-      case notifications:
-      case '/notifications':
-        return _buildRoute(const NotificationScreen(), settings);
-        
+
       // Handle product details with arguments
       case productDetails:
       case productDetail:
@@ -273,13 +233,6 @@ class AppRoutes {
         }
         return _buildErrorRoute('Product ID required', settings);
 
-      case sellerProfile:
-        final sellerId = settings.arguments as String?;
-        if (sellerId != null) {
-          return _buildRoute(SellerProfileScreen(sellerId: sellerId), settings);
-        }
-        return _buildErrorRoute('Seller ID required', settings);
-
       case sellerStore:
         final sellerId = settings.arguments as String?;
         if (sellerId != null) {
@@ -290,14 +243,7 @@ class AppRoutes {
       // Return & Exchange routes
       case myReturns:
         return _buildRoute(const MyReturnsScreen(), settings);
-        
-      // ✅ Saved Reels
-      case savedReels:
-        return _buildRoute(const SavedReelsScreen(), settings);
-      
-      case loyalty:
-        return _buildRoute(const LoyaltyScreen(), settings);
-        
+
       case returnRequest:
         final args = settings.arguments as Map<String, dynamic>?;
         if (args != null) {
@@ -389,11 +335,6 @@ class AppRoutes {
       // ✅ Add Address
       case addAddress:
         return _buildRoute(const AddAddressScreen(), settings);
-
-      // ✅ Downloads
-      case download:
-      case '/downloads': // Legacy compatibility
-        return _buildRoute(const DownloadScreen(), settings);
 
       default:
         return _buildErrorRoute('Route not found: ${settings.name}', settings);

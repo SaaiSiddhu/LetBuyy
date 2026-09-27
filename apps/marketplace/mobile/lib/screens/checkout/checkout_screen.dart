@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -14,6 +13,8 @@ import 'add_address_screen.dart';
 import 'payment_method_screen.dart';
 import 'widgets/checkout_steps.dart';
 import '../../widgets/premium_scaffold.dart';
+import '../../auth/buyer_sign_in_controller.dart';
+import '../../utils/shipping_fee_calculator.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -26,11 +27,107 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   AddressModel? _selectedAddress;
   bool _isLoadingAddresses = true;
   List<AddressModel> _addresses = [];
+  String? _addressLoadError;
+
+  // C3 corrective (27 September 2026 review, finding 4): a monotonic generation counter, the same
+  // pattern already established in address_selection_sheet.dart/home_app_bar.dart/
+  // web_mobile_header.dart (see address_selection_sheet.dart's own doc comment for why a raw
+  // token comparison isn't enough). _loadAddresses() used to check only `mounted` before applying
+  // its result -- if the buyer's session ended or a different buyer signed in on this device while
+  // the request was in flight, a late response would populate this still-mounted screen with
+  // another buyer's addresses. Bumping the generation on every call and checking it's still current
+  // before any setState closes that window, and also fixes the silent-failure gap next to it: a
+  // failed load used to just stop the spinner, falling through to the same "No addresses found"
+  // text a genuinely-empty account shows -- indistinguishable from "you have no addresses" when
+  // the real story was "the request failed."
+  int _loadGeneration = 0;
+
+  bool _isCurrentGeneration(int generation) => mounted && generation == _loadGeneration;
+
+  /// Protects a response already in flight: a load started for [token] is only ever applied if
+  /// that buyer is STILL the current one when the response arrives.
+  bool _isStillCurrentBuyer(String token) =>
+      mounted && context.read<BuyerSignInController>().token == token;
+
+  // C3 corrective (27 September 2026 review continuation, section 4C): _isStillCurrentBuyer alone
+  // only ever protects a response already in flight -- it does nothing if the buyer signs out or a
+  // different buyer signs in on this device while this screen is simply sitting idle with A's
+  // addresses already loaded and rendered (no request pending to catch the change). This screen's
+  // own build() below now watches BuyerSignInController, so didChangeDependencies fires once
+  // Flutter next gives this element a dependency-check pass after that identity actually changes --
+  // matching address_selection_sheet.dart's/home_app_bar.dart's own established pattern, the
+  // previous buyer's records and selection are cleared synchronously, in the same setState, before
+  // a fresh load for whoever is current now even starts.
+  //
+  // That "once Flutter next gives this element a pass" is not necessarily the very next frame: a
+  // widget test proved this can be delayed past several frames, including past the point where
+  // _isStillCurrentBuyer's own in-flight self-heal (above) already independently noticed the exact
+  // same identity change and already re-loaded correctly. Without `_lastLoadStartedForToken`, this
+  // method would not know that, and would redundantly clear the just-corrected screen and start a
+  // second, unnecessary reload race against nothing. Set at the top of _loadAddresses() (by
+  // initState's own first call, this method's own reload, or the in-flight self-heal), it lets
+  // this method recognize "a load for this identity was already started" and stay a no-op then,
+  // regardless of which path started it or in which order they actually ran.
+  bool _hasObservedToken = false;
+  String? _observedToken;
+  String? _lastLoadStartedForToken;
+
+  // Phase 1R shipping-semantics correction (owner-requested completion, same day): this screen
+  // shares mobile_cart_screen.dart's own CartShippingSummary/_productCache pattern (see
+  // shipping_fee_calculator.dart's header comment for why), so both screens agree on the same
+  // honest known/loading/failed/unknown state for the identical cart -- never two independently
+  // -computed numbers for the same order. A failed product fetch is recorded as ProductLookupFailed
+  // rather than silently left absent from the map (indistinguishable from "still loading").
+  final Map<String, ProductLookup> _productCache = {};
+
+  Future<void> _loadProductDetails() async {
+    final cartProvider = context.read<CartProvider>();
+    // See mobile_cart_screen.dart's own _loadProductDetails for why this awaits readiness first
+    // -- the same race is possible here, reached this screen quickly after a cold launch.
+    await cartProvider.ready;
+    if (!mounted) return;
+    if (cartProvider.items.isEmpty) return;
+    final productProvider = context.read<ProductProvider>();
+
+    for (final item in cartProvider.items) {
+      if (!_productCache.containsKey(item.productId)) {
+        final product = await productProvider.fetchProductById(item.productId);
+        _productCache[item.productId] =
+            product != null ? ProductLoaded(product) : const ProductLookupFailed();
+      }
+    }
+
+    if (mounted) setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     _loadAddresses();
+    _loadProductDetails();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final token = context.read<BuyerSignInController>().token;
+    if (!_hasObservedToken) {
+      // The very first call, right after initState -- initState's own _loadAddresses() call
+      // already covers the initial load for whichever buyer (or guest) is current at that point.
+      _hasObservedToken = true;
+      _observedToken = token;
+      return;
+    }
+    if (token != _observedToken) {
+      _observedToken = token;
+      if (_lastLoadStartedForToken == token) return;
+      setState(() {
+        _addresses = [];
+        _selectedAddress = null;
+        _addressLoadError = null;
+      });
+      _loadAddresses();
+    }
   }
 
   @override
@@ -38,42 +135,97 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.dispose();
   }
 
+  // C3 (Firebase SDK removal): was guarded on safeFirebaseUserId() == null, always true under
+  // canonical auth -- but that guard just `return`ed, without ever setting _isLoadingAddresses to
+  // false, so every real buyer saw this screen's address section spin forever: not merely "no
+  // addresses shown," but stuck loading, permanently, with the "Place Order" button disabled the
+  // entire time (hasAddress in _buildBottomBar can never become true). Now reads through the same
+  // canonical BuyerAddressApi letbuyy_account_screen.dart and address_selection_sheet.dart use,
+  // and resets the loading flag on every path, including "not signed in."
   Future<void> _loadAddresses() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return;
-
-      final snapshot = await FirebaseFirestore.instance
-          .collection('addresses')
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      if (mounted) {
+    final generation = ++_loadGeneration;
+    final token = context.read<BuyerSignInController>().token;
+    _lastLoadStartedForToken = token;
+    if (token == null) {
+      if (_isCurrentGeneration(generation)) {
         setState(() {
-          _addresses = snapshot.docs
-              .map((doc) => AddressModel.fromMap(doc.data()))
-              .toList();
-
-          _addresses.sort((a, b) {
+          _isLoadingAddresses = false;
+          _addressLoadError = null;
+        });
+      }
+      return;
+    }
+    setState(() {
+      _isLoadingAddresses = true;
+      _addressLoadError = null;
+    });
+    try {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (!_isCurrentGeneration(generation)) return;
+      if (!_isStillCurrentBuyer(token)) {
+        // A different buyer is current now than the one this request was made for -- this result
+        // belongs to nobody looking at the screen any more. Rather than apply it (another buyer's
+        // addresses) or leave this screen stuck on its pre-switch state (a spinner nothing will
+        // ever clear, since only this one load was ever in flight), start a fresh load for
+        // whoever is actually current -- self-healing rather than a second "stuck loading" bug.
+        _loadAddresses();
+        return;
+      }
+      setState(() {
+        _addresses = addresses.map(_toAddressModel).toList()
+          ..sort((a, b) {
             if (a.isDefault && !b.isDefault) return -1;
             if (!a.isDefault && b.isDefault) return 1;
             return 0;
           });
 
-          if (_addresses.isNotEmpty) {
-            _selectedAddress = _addresses.firstWhere(
-              (addr) => addr.isDefault,
-              orElse: () => _addresses.first,
-            );
-          }
+        if (_addresses.isNotEmpty) {
+          _selectedAddress = _addresses.firstWhere(
+            (addr) => addr.isDefault,
+            orElse: () => _addresses.first,
+          );
+        } else {
+          // C3 corrective (27 September 2026 review continuation): a refreshed, now-empty list
+          // (e.g. the previously selected address was the last one and it was deleted, from
+          // add_address_screen.dart's own "Add New Address" round trip triggering this reload)
+          // used to leave _selectedAddress dangling at its previous, no-longer-listed value.
+          _selectedAddress = null;
+        }
 
-          _isLoadingAddresses = false;
-        });
-      }
+        _isLoadingAddresses = false;
+      });
     } catch (e) {
       debugPrint('Error loading addresses: $e');
-      if (mounted) setState(() => _isLoadingAddresses = false);
+      if (!_isCurrentGeneration(generation)) return;
+      if (!_isStillCurrentBuyer(token)) {
+        _loadAddresses();
+        return;
+      }
+      setState(() {
+        _isLoadingAddresses = false;
+        _addressLoadError = 'We couldn’t load your addresses right now.';
+      });
     }
+  }
+
+  /// [BuyerAddress] has no photo/lat-long concept of its own -- this is purely a display adapter,
+  /// the same mapping address_selection_sheet.dart's own _addressModelFromBuyerAddress already uses.
+  AddressModel _toAddressModel(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
   }
 
   Future<void> _openInMaps(AddressModel addr) async {
@@ -137,11 +289,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final cardColor = isDark ? AppColors.surfaceDark : AppColors.surface;
     final backgroundColor = isDark ? AppColors.scaffoldDark : AppColors.scaffoldLight;
 
+    // Establishes the dependency didChangeDependencies() above reacts to -- see that method's own
+    // doc comment. The value itself isn't needed here; _loadAddresses() re-reads the token fresh.
+    context.watch<BuyerSignInController>();
+
     final cartProvider = context.watch<CartProvider>();
-    final couponProvider = context.watch<CouponProvider>();
     final subtotal = cartProvider.subtotal;
-    final discount = couponProvider.calculateDiscount();
-    final total = subtotal - discount;
+    // Phase 1R corrective (C2): was couponProvider.calculateDiscount(). CouponProvider was
+    // entirely FirebaseFirestore-backed with no canonical successor; a coupon could never
+    // actually load, so this already always evaluated to 0.
+    const discount = 0.0;
+    // Phase 1R shipping-semantics correction (owner-requested completion, same day): both
+    // shippingFee and total are now nullable, and both are null unless every cart line has a
+    // real, backend-confirmed fee -- see CartShippingSummary.allKnown's own doc comment. A
+    // partial sum was never a safe stand-in for the complete shipping cost.
+    final shipping = CartShippingSummary.compute(cartProvider.items, _productCache);
+    final shippingFee = shipping.allKnown ? shipping.knownSoFar : null;
+    final total = shipping.allKnown ? subtotal - discount + shipping.knownSoFar : null;
 
     return PremiumScaffold(
       // backgroundColor handled by PremiumScaffold
@@ -160,7 +324,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             ),
           ),
-          _buildBottomBar(total, isDark, accentColor, cardColor),
+          _buildBottomBar(total, shippingFee, isDark, accentColor, cardColor),
         ],
       ),
     );
@@ -217,6 +381,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   strokeWidth: 2.5,
                 ),
               ),
+            )
+          else if (_addressLoadError != null)
+            Column(
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 48,
+                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _addressLoadError!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.grey[400] : Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: _loadAddresses,
+                  child: const Text('Retry'),
+                ),
+                const SizedBox(height: 16),
+              ],
             )
           else if (_addresses.isEmpty)
             Column(
@@ -692,7 +882,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _buildBottomBar(double total, bool isDark, Color accentColor, Color cardColor) {
+  Widget _buildBottomBar(
+      double? total, double? shippingFee, bool isDark, Color accentColor, Color cardColor) {
     final hasAddress = _selectedAddress != null;
 
     return Container(
@@ -720,6 +911,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     builder: (_) => PaymentMethodScreen(
                       selectedAddress: _selectedAddress!,
                       total: total,
+                      shippingFee: shippingFee,
                     ),
                   ),
                 );

@@ -6,13 +6,10 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../app/routes.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import '../../providers/auth_provider.dart' as app_auth;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -97,10 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       // 🚀 INSTANT SPLASH: Show UI for minimum 400ms (branding), then navigate
       _updateStatus('Welcome', 0.5);
-      
-      // Check cached user (INSTANT - no network call)
-      final cachedUser = FirebaseAuth.instance.currentUser;
-      
+
       // Small delay just for smooth animation (NOT blocking network calls)
       await Future.delayed(const Duration(milliseconds: 400));
       if (_hasNavigated || !mounted) return;
@@ -111,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen>
       // Navigate immediately - auth restoration happens AFTER on MainScreen
       if (mounted && !_hasNavigated) {
         _hasNavigated = true;
-        debugPrint('🚀 Splash: Navigating in <600ms (user: ${cachedUser?.email ?? "guest"})');
+        debugPrint('🚀 Splash: Navigating in <600ms (auth restoration happens on MainScreen)');
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       }
       
@@ -124,62 +118,13 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  // 🚀 REMOVED: These blocking methods are no longer needed
-  // Auth restoration now happens in AuthProvider AFTER navigation
-
-  Future<void> _waitForProvidersReady() async {
-    final authProvider = Provider.of<app_auth.AuthProvider>(context, listen: false);
-    int attempts = 0;
-    const maxAttempts = 20;
-    
-    while (authProvider.isInitializing && attempts < maxAttempts) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      attempts++;
-    }
-  }
-
-  Future<User?> _waitForAuthState() async {
-    final completer = Completer<User?>();
-    StreamSubscription<User?>? subscription;
-    Timer? timeout;
-    
-    timeout = Timer(const Duration(seconds: 5), () {
-      if (!completer.isCompleted) {
-        subscription?.cancel();
-        completer.complete(FirebaseAuth.instance.currentUser);
-      }
-    });
-    
-    subscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (!completer.isCompleted) {
-        timeout?.cancel();
-        subscription?.cancel();
-        completer.complete(user);
-      }
-    });
-    
-    return completer.future;
-  }
-
-  Future<String> _getRoute(User? user) async {
-    try {
-      // Guest mode enabled - always go to main screen
-      // Users can browse without login, auth required only for actions
-      if (user != null) {
-        try {
-          await user.getIdToken(true);
-        } catch (e) {
-          debugPrint('⚠️ Token refresh failed, continuing as guest: $e');
-        }
-      }
-      
-      return AppRoutes.main;
-      
-    } catch (e) {
-      debugPrint('❌ Route error: $e');
-      return AppRoutes.main;
-    }
-  }
+  // Phase 1R corrective (C2): _waitForProvidersReady() (Provider.of<AuthProvider>(...)),
+  // _waitForAuthState() (FirebaseAuth.instance.authStateChanges()) and _getRoute() were already
+  // fully dead -- zero callers, per this same comment's own "no longer needed" -- left behind
+  // when auth restoration moved off the splash screen. C3 corrective: this screen also dropped its
+  // own safeFirebaseCurrentUser() peek (it only ever fed a debug log; real auth restoration already
+  // happens on MainScreen via BuyerSignInController). Removed rather than leave a dead
+  // AuthProvider/Firebase reference standing.
 
   @override
   Widget build(BuildContext context) {

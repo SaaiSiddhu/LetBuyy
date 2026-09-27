@@ -1,5 +1,4 @@
 // lib/models/category_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Commission settings for a category
 class CategoryCommission {
@@ -48,6 +47,15 @@ class CategoryModel {
   final String name;
   final String description;
 
+  // C2 (canonical rewire): the live platform taxonomy identifies a category by slug for feed
+  // filtering (marketplace_feed's `category` param is a slug) and by id for hierarchy (parent_id
+  // is the categories table's own id, a different keyspace). `id` above carries the slug end to
+  // end -- it is the value every screen already uses to select/filter/compare categories, and the
+  // feed filter needs a slug -- so `slug` here is the same value as `id` for a canonical category,
+  // kept as a distinct field only so a caller that specifically needs "the slug" never has to
+  // wonder whether `id` happens to be one.
+  final String slug;
+
   // Hierarchy fields
   final String? parentId;
   final int level;  // 0 = main, 1 = sub, 2 = sub-sub
@@ -70,6 +78,7 @@ class CategoryModel {
     required this.id,
     required this.name,
     required this.description,
+    String? slug,
     this.parentId,
     this.level = 0,
     this.iconImageUrl,
@@ -80,46 +89,17 @@ class CategoryModel {
     required this.createdAt,
     this.productCount = 0,
     this.commission = const CategoryCommission(),
-  });
+  }) : slug = slug ?? id;
 
-  factory CategoryModel.fromMap(Map<String, dynamic> map, String id) {
-    return CategoryModel(
-      id: id,
-      name: map['name'] ?? '',
-      description: map['description'] ?? '',
-      parentId: map['parentId'],
-      level: map['level'] ?? 0,
-      iconImageUrl: map['iconImageUrl'],
-      bannerImageUrl: map['bannerImageUrl'],
-      iconName: map['iconName'],
-      displayOrder: map['displayOrder'] ?? 0,
-      isActive: map['isActive'] ?? true,
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      productCount: map['productCount'] ?? 0,
-      commission: CategoryCommission.fromMap(map['commission'] as Map<String, dynamic>?),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'description': description,
-      'parentId': parentId,
-      'level': level,
-      'iconImageUrl': iconImageUrl,
-      'bannerImageUrl': bannerImageUrl,
-      'iconName': iconName,
-      'displayOrder': displayOrder,
-      'isActive': isActive,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'productCount': productCount,
-      'commission': commission.toMap(),
-    };
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): fromMap(map, id)/toMap()
+  // (Firestore document <-> model) deleted -- zero callers anywhere in the app or services.
+  // CategoryProvider/cache_service.dart/web_shop_screen.dart all construct CategoryModel directly
+  // from canonical/cached data via the plain constructor above, never through these.
 
   CategoryModel copyWith({
     String? name,
     String? description,
+    String? slug,
     String? parentId,
     int? level,
     String? iconImageUrl,
@@ -134,6 +114,7 @@ class CategoryModel {
       id: id,
       name: name ?? this.name,
       description: description ?? this.description,
+      slug: slug ?? this.slug,
       parentId: parentId ?? this.parentId,
       level: level ?? this.level,
       iconImageUrl: iconImageUrl ?? this.iconImageUrl,

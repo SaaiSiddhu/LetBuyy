@@ -95,26 +95,20 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     );
     // --- End Toast Animations ---
 
+    // Phase 1R corrective (C2): was Provider.of<OrderProvider>(...).loadOrderById(widget.orderId).
+    // OrderProvider was entirely FirebaseFirestore-backed with no canonical successor; this
+    // screen's build() already always renders _buildErrorState() regardless (see there), so
+    // fetching an order to populate has no observable effect either way.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-      orderProvider.loadOrderById(widget.orderId).then((_) {
-        if (mounted) {
-          _animationController.forward();
-        }
-      });
+      if (mounted) {
+        _animationController.forward();
+      }
     });
 
     _tabController.addListener(_onTabChanged);
   }
 
-  void _onTabChanged() {
-    if (_tabController.index == 1) {
-      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
-      if (orderProvider.selectedOrder != null) {
-        orderProvider.loadOrderById(orderProvider.selectedOrder!.id);
-      }
-    }
-  }
+  void _onTabChanged() {}
 
   @override
   void dispose() {
@@ -370,62 +364,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
       // backgroundColor handled by PremiumScaffold
       body: Stack(
         children: [
-          Consumer<OrderProvider>(
-            builder: (context, orderProvider, child) {
-              if (orderProvider.isLoading && orderProvider.selectedOrder == null) {
-                return _buildLoadingState(isDark);
-              }
+          // Phase 1R corrective (C2): was Consumer<OrderProvider>. OrderProvider was entirely
+          // FirebaseFirestore-backed with no canonical successor. loadOrderById() has no userId
+          // guard (unlike loadUserOrders()), so it genuinely attempted a real Firestore fetch
+          // here -- but selectedOrder was already always null regardless of outcome (this screen
+          // is only ever reached with an orderId, never a full order, and nothing in the app can
+          // currently produce a real order to fetch), so the Consumer already always rendered
+          // this exact error state. The whole tabbed items/tracking/payment content below it was
+          // already unreachable.
+          _buildErrorState(isDark),
 
-              if (orderProvider.selectedOrder == null) {
-                return _buildErrorState(isDark);
-              }
-
-              final order = orderProvider.selectedOrder!;
-
-              return Column(
-                children: [
-                  _buildHeader(isDark, order.orderNumber),
-                  if (_isInitialized)
-                    _buildTabBar(isDark, accentColor),
-                  Expanded(
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: SlideTransition(
-                        position: _slideAnimation,
-                        child: _isInitialized
-                            ? TabBarView(
-                                controller: _tabController,
-                                children: [
-                                  SingleChildScrollView(
-                                    physics: const BouncingScrollPhysics(),
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                                    child: _buildItemsTabContent(order, isDark),
-                                  ),
-                                  SingleChildScrollView(
-                                    physics: const BouncingScrollPhysics(),
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                                    child: _buildTrackingTabContent(
-                                      order,
-                                      orderProvider.selectedOrderTimeline ?? [],
-                                      isDark,
-                                    ),
-                                  ),
-                                  SingleChildScrollView(
-                                    physics: const BouncingScrollPhysics(),
-                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                                    child: _buildPaymentTabContent(order, isDark),
-                                  ),
-                                ],
-                              )
-                            : const SizedBox.shrink(),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          
           // ============================================
           // TOAST NOTIFICATION
           // ============================================
@@ -1802,9 +1750,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                            return;
                           }
                           Navigator.pop(context);
-                          final success = await Provider.of<OrderProvider>(context,
-                                  listen: false)
-                              .cancelOrder(order.id, reason);
+                          // Phase 1R corrective (C2): was Provider.of<OrderProvider>(...)
+                          // .cancelOrder(order.id, reason). OrderProvider was entirely
+                          // FirebaseFirestore-backed with no canonical successor; this dialog is
+                          // itself only reachable from the tabbed order content in build(), which
+                          // is already unreachable (selectedOrder is always null), so this can
+                          // never actually run.
+                          const success = false;
                           if (success && mounted) {
                             _showToastMessage('✅ Order cancelled successfully');
                             Navigator.pop(context);

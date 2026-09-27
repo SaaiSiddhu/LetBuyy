@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
 enum OrderStatus {
   pending,
   confirmed,
@@ -32,70 +29,10 @@ class OrderTimelineModel {
     this.updatedBy,
   });
 
-  factory OrderTimelineModel.fromMap(Map<String, dynamic> map) {
-    try {
-      // ✅ Parse timestamp safely
-      DateTime parsedTimestamp = DateTime.now();
-      try {
-        final tsValue = map['timestamp'];
-        if (tsValue is Timestamp) {
-          parsedTimestamp = tsValue.toDate();
-        } else if (tsValue is DateTime) {
-          parsedTimestamp = tsValue;
-        } else if (tsValue is int) {
-          parsedTimestamp = DateTime.fromMillisecondsSinceEpoch(tsValue);
-        } else if (tsValue != null &&
-            tsValue.runtimeType.toString().contains('Timestamp')) {
-          parsedTimestamp = tsValue.toDate();
-        }
-      } catch (e) {
-        debugPrint('⚠️ Error parsing timeline timestamp: $e');
-        parsedTimestamp = DateTime.now();
-      }
-
-      // ✅ Parse status safely
-      OrderStatus parsedStatus = OrderStatus.pending;
-      try {
-        final statusStr = map['status'] ?? 'pending';
-        parsedStatus = OrderStatus.values.firstWhere(
-          (e) => e.toString().split('.').last == statusStr,
-          orElse: () => OrderStatus.pending,
-        );
-      } catch (e) {
-        debugPrint('⚠️ Error parsing timeline status: $e');
-      }
-
-      return OrderTimelineModel(
-        status: parsedStatus,
-        title: map['title'] ?? 'Order Updated',
-        description: map['description'] ?? '',
-        timestamp: parsedTimestamp,
-        trackingNumber: map['trackingNumber'] as String?, // ✅ ADDED
-        location: map['location'] as String?, // ✅ ADDED
-        updatedBy: map['updatedBy'] as String?, // ✅ ADDED
-      );
-    } catch (e) {
-      debugPrint('❌ Error parsing OrderTimelineModel: $e');
-      return OrderTimelineModel(
-        status: OrderStatus.pending,
-        title: 'Order Updated',
-        description: '',
-        timestamp: DateTime.now(),
-      );
-    }
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'status': status.toString().split('.').last,
-      'title': title,
-      'description': description,
-      'timestamp': Timestamp.fromDate(timestamp),
-      'trackingNumber': trackingNumber, // ✅ ADDED
-      'location': location, // ✅ ADDED
-      'updatedBy': updatedBy, // ✅ ADDED
-    };
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): fromMap(map)/toMap()
+  // (Firestore document <-> model) deleted -- zero callers. order_details_screen.dart and
+  // order_tracking_screen.dart both build OrderTimelineModel client-side from an already-loaded
+  // OrderModel via the plain constructor above, never through these.
 
   // Get status display name
   String get statusDisplayName {

@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
@@ -63,93 +61,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final provider = Provider.of<ProductProvider>(context, listen: false);
+      // Recently-viewed tracking already happens inside loadProductById (local, canonical) --
+      // see ProductProvider.addToRecentlyViewed's own call site there.
       provider.loadProductById(widget.productId);
-      
-      // Load coupons
-      Provider.of<CouponProvider>(context, listen: false).fetchAvailableCoupons();
-      
-      // Save to recently viewed
-      _saveRecentlyViewed();
-      
-      // ✅ Track product view for seller analytics
-      _incrementViewCount();
     });
   }
 
-  /// Saves this product to the user's recently viewed list in Firestore
-  Future<void> _saveRecentlyViewed() async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return;
-
-      final docRef = FirebaseFirestore.instance
-          .collection('recently_viewed')
-          .doc(userId)
-          .collection('products')
-          .doc(widget.productId);
-
-      await docRef.set({
-        'productId': widget.productId,
-        'viewedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-
-      debugPrint('✅ Saved to recently viewed: ${widget.productId}');
-    } catch (e) {
-      debugPrint('⚠️ Error saving recently viewed: $e');
-    }
-  }
-
-  /// Increments view count for this product in Firestore and tracks seller analytics
-  Future<void> _incrementViewCount() async {
-    try {
-      // Get product to access sellerId
-      final productDoc = await FirebaseFirestore.instance
-          .collection('products')
-          .doc(widget.productId)
-          .get();
-      
-      if (!productDoc.exists) return;
-      
-      final sellerId = productDoc.data()?['sellerId'] as String?;
-      
-      // Increment view count on product
-      await FirebaseFirestore.instance
-          .collection('products')
-          .doc(widget.productId)
-          .update({
-        'viewCount': FieldValue.increment(1),
-      });
-      
-      // Track seller analytics with source attribution
-      if (sellerId != null) {
-        // Get traffic source from route arguments
-        final args = ModalRoute.of(context)?.settings.arguments;
-        TrafficSource source = TrafficSource.organic;
-        String? adCampaignId;
-        
-        debugPrint('🔍 Route args type: ${args.runtimeType}, value: $args');
-        
-        if (args is Map<String, dynamic>) {
-          final sourceStr = args['source'] as String?;
-          adCampaignId = args['adCampaignId'] as String?;
-          debugPrint('🔍 Parsed: sourceStr=$sourceStr, adCampaignId=$adCampaignId');
-          source = AnalyticsEvent.sourceFromString(sourceStr);
-        }
-        
-        await SellerAnalyticsService.trackProductView(
-          sellerId: sellerId,
-          productId: widget.productId,
-          source: source,
-          adCampaignId: adCampaignId,
-          userId: FirebaseAuth.instance.currentUser?.uid,
-        );
-      }
-      
-      debugPrint('📊 View count incremented for: ${widget.productId}');
-    } catch (e) {
-      debugPrint('⚠️ Error incrementing view count: $e');
-    }
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): _saveRecentlyViewed()
+  // (Firestore `recently_viewed` collection) and _incrementViewCount() (Firestore product
+  // view-count increment + SellerAnalyticsService.trackProductView) both deleted. Neither has a
+  // canonical successor -- there is no gateway endpoint for either concern -- and both were
+  // redundant/silently-failing: recently-viewed is already handled locally by ProductProvider
+  // (see _loadProduct above), and the seller-analytics write never once succeeded (see
+  // seller_analytics_service.dart's own deletion, same pass: it was the sole caller-reachable
+  // consumer of AnalyticsEvent, now also deleted).
 
   Future<void> _checkWishlistStatus() async {
     try {
@@ -224,16 +149,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         await cartProvider.clearCart();
       }
 
-      await cartProvider.addToCart(product, quantity: _quantity, variant: variantString);
-      
-      // ✅ Track cart add for seller analytics
-      await SellerAnalyticsService.trackAddToCart(
-        sellerId: product.sellerId,
-        productId: product.id,
-        source: TrafficSource.organic,
-        userId: FirebaseAuth.instance.currentUser?.uid,
-        quantity: _quantity,
-      );
+      // C3 (Firebase SDK removal, 27 September 2026 review finding 5): was
+      // `await cartProvider.addToCart(...)` with the result discarded, then an unconditional
+      // success/navigation below -- back when CartProvider always failed (no userId ever
+      // available), this showed "Added to cart!" and, for Buy Now, opened checkout on an empty
+      // cart every single time. CartProvider is now a real local cart, so this checks addItem's
+      // actual result rather than assuming it.
+      final added = await cartProvider.addItem(product, quantity: _quantity, variant: variantString);
+      if (!added) {
+        _showSnackBar('Could not add to cart', isError: true);
+        return;
+      }
+
+      // C3 (Firebase SDK removal): SellerAnalyticsService.trackAddToCart deleted -- see this
+      // screen's own _loadProduct doc comment; the write never once succeeded.
 
       if (buyNow) {
         Navigator.pushNamed(context, AppRoutes.checkout);
@@ -391,26 +320,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 icon: Icons.store_outlined,
                                 iconColor: const Color(0xFFFF9800),
                                 isDark: isDark,
-                                child: _buildSellerSection(product.sellerId, isDark),
+                                child: _buildSellerSection(product.sellerId, product.storeName, isDark),
                               ),
 
                               const SizedBox(height: 12),
 
                               // 3. PRODUCT DESCRIPTION
-                              _buildSectionCard(
-                                title: 'Product Description',
-                                icon: Icons.description_outlined,
-                                iconColor: const Color(0xFF2196F3),
-                                isDark: isDark,
-                                child: Text(
-                                  product.description,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    height: 1.6,
-                                    color: isDark ? Colors.grey[300] : Colors.grey[700],
+                              if (product.description.isNotEmpty)
+                                _buildSectionCard(
+                                  title: 'Product Description',
+                                  icon: Icons.description_outlined,
+                                  iconColor: const Color(0xFF2196F3),
+                                  isDark: isDark,
+                                  child: Text(
+                                    product.description,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      height: 1.6,
+                                      color: isDark ? Colors.grey[300] : Colors.grey[700],
+                                    ),
                                   ),
                                 ),
-                              ),
 
                               const SizedBox(height: 12),
 
@@ -430,8 +360,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               const SizedBox(height: 12),
 
                               // 5. CUSTOMER REVIEWS
+                              // C2 (canonical rewire): reviewCount has no canonical successor yet
+                              // (see ProductProvider's doc comment) and stays at its honest default
+                              // of 0 -- dropped from this heading rather than shown as "(0)" next to
+                              // ReviewsSection's own "reviews aren't available yet" empty state.
                               _buildSectionCard(
-                                title: 'Customer Reviews (${product.reviewCount})',
+                                title: 'Customer Reviews',
                                 icon: Icons.star_outline_rounded,
                                 iconColor: const Color(0xFFFFC107),
                                 isDark: isDark,
@@ -619,39 +553,43 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                 child: Row(
                   children: [
-                    _buildStoreVisitLink(product.sellerId, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!),
+                    _buildStoreVisitLink(product.sellerId, product.storeName, isDark, isDark ? Colors.grey[400]! : Colors.grey[600]!),
                     const Spacer(),
-                    // Rating Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: _getRatingColor(product.rating).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating)),
-                          const SizedBox(width: 4),
-                          Text(
-                            product.rating.toStringAsFixed(1),
-                            style: TextStyle(
-                              color: _getRatingColor(product.rating),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                    // Rating Badge -- C2 (canonical rewire): rating has no canonical successor yet
+                    // and stays at ProductModel's honest default of 0.0 (see ProductProvider's doc
+                    // comment); hidden rather than shown as "★ 0.0 (0)" on every product, matching
+                    // product_card.dart's existing `if (product.rating > 0)` guard.
+                    if (product.rating > 0)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getRatingColor(product.rating).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.star_rounded, size: 16, color: _getRatingColor(product.rating)),
+                            const SizedBox(width: 4),
+                            Text(
+                              product.rating.toStringAsFixed(1),
+                              style: TextStyle(
+                                color: _getRatingColor(product.rating),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '(${product.reviewCount})',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey[500] : Colors.grey[600],
+                            const SizedBox(width: 4),
+                            Text(
+                              '(${product.reviewCount})',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? Colors.grey[500] : Colors.grey[600],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -804,56 +742,50 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildStoreVisitLink(String sellerId, bool isDark, Color accentColor) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('sellers').doc(sellerId).get(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox.shrink();
-        }
+  // C2 (canonical rewire): the same raw, unguarded FirebaseFirestore.instance().get() as
+  // _buildSellerSection above, at a second call site -- see that method's doc comment for why this
+  // was a live, unconditional crash risk. Replaced the same way, with product.storeName.
+  Widget _buildStoreVisitLink(String sellerId, String? storeName, bool isDark, Color accentColor) {
+    if (storeName == null || storeName.isEmpty) return const SizedBox.shrink();
 
-        final seller = SellerModel.fromMap(snapshot.data!.data() as Map<String, dynamic>, sellerId);
-
-        return GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
-          },
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Visit the ',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: accentColor,
-                    ),
-                  ),
-                  TextSpan(
-                    text: seller.storeName,
-                    style: TextStyle(
-                      fontSize: 14, // Slightly larger
-                      fontWeight: FontWeight.w800, // Extra bold
-                      color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700], // Distinct link color
-                      decoration: TextDecoration.underline, // Underline to indicate link
-                      decorationColor: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700],
-                    ),
-                  ),
-                  TextSpan(
-                    text: ' Store',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: accentColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
       },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: 'Visit the ',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: accentColor,
+                ),
+              ),
+              TextSpan(
+                text: storeName,
+                style: TextStyle(
+                  fontSize: 14, // Slightly larger
+                  fontWeight: FontWeight.w800, // Extra bold
+                  color: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700], // Distinct link color
+                  decoration: TextDecoration.underline, // Underline to indicate link
+                  decorationColor: MediaQuery.of(context).platformBrightness == Brightness.dark ? Colors.blue[300] : Colors.blue[700],
+                ),
+              ),
+              TextSpan(
+                text: ' Store',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: accentColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1031,31 +963,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
           const SizedBox(height: 16),
 
-          // Rating & Stock Row
+          // Rating & Stock Row -- C2 (canonical rewire): rating/reviewCount have no canonical
+          // successor yet and stay at ProductModel's honest defaults (see ProductProvider's doc
+          // comment); hidden rather than shown as "0.0 ★" / "0 Reviews" on every product.
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: _getRatingColor(product.rating),
-                  borderRadius: BorderRadius.circular(6),
+              if (product.rating > 0) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _getRatingColor(product.rating),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        product.rating.toStringAsFixed(1),
+                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.star_rounded, color: Colors.white, size: 14),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Text(
-                      product.rating.toStringAsFixed(1),
-                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.star_rounded, color: Colors.white, size: 14),
-                  ],
+                const SizedBox(width: 12),
+                Text(
+                  '${product.reviewCount} Reviews',
+                  style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                '${product.reviewCount} Reviews',
-                style: TextStyle(fontSize: 14, color: isDark ? AppColors.textLightHint : AppColors.textHint),
-              ),
+              ],
               const Spacer(),
               if (product.inStock)
                 Row(
@@ -1144,49 +1080,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  // REAL COUPONS SECTION
+  // Phase 1R corrective (C2): was Consumer<CouponProvider>. CouponProvider was entirely
+  // FirebaseFirestore-backed with no canonical successor; availableCoupons was already always
+  // empty (fetchAvailableCoupons() could never load anything, Firestore unreachable), so this
+  // section already always rendered nothing.
   Widget _buildCouponsSection(bool isDark) {
-    return Consumer<CouponProvider>(
-      builder: (context, couponProvider, _) {
-        final coupons = couponProvider.availableCoupons;
-        
-        if (coupons.isEmpty) return const SizedBox.shrink();
-
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? AppColors.borderDark : AppColors.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF6B35).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.local_offer_rounded, color: Color(0xFFFF6B35), size: 18),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Available Coupons',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? AppColors.textLight : AppColors.textPrimary),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ...coupons.take(3).map((coupon) => _buildCouponItem(coupon, isDark)),
-            ],
-          ),
-        );
-      },
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildCouponItem(CouponModel coupon, bool isDark) {
@@ -1342,78 +1241,69 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  Widget _buildSellerSection(String sellerId, bool isDark) {
-    return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('sellers').doc(sellerId).get(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const SizedBox.shrink();
-        }
+  // C2 (canonical rewire): this built a raw, unguarded FirebaseFirestore.instance().get() as a
+  // FutureBuilder's `future:` argument -- evaluated synchronously during build(), unconditionally,
+  // on this screen's always-rendered "Seller Information" card. FirebaseFirestore.instance throws
+  // synchronously with no Firebase app initialized (confirmed empirically elsewhere this phase),
+  // so this threw on every visit to any product's detail page, this app's most-visited screen --
+  // not contained by a try/catch the way an async method's Firestore call would be, since nothing
+  // here was inside one. Replaced with product.storeName, which the canonical marketplace feed/
+  // listing endpoints already hand back directly (see ProductProvider's doc comments) -- no photo
+  // or seller-verified flag exists on that canonical shape yet, so this card now shows a generic
+  // store icon and no verified badge rather than inventing either.
+  Widget _buildSellerSection(String sellerId, String? storeName, bool isDark) {
+    if (storeName == null || storeName.isEmpty) return const SizedBox.shrink();
 
-        final seller = SellerModel.fromMap(snapshot.data!.data() as Map<String, dynamic>, sellerId);
-
-        return GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF2A2A2A) : Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                // Avatar
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                  ),
-                  child: ClipOval(
-                    child: seller.photoUrl != null
-                        ? CachedNetworkImage(imageUrl: seller.photoUrl!, fit: BoxFit.cover)
-                        : Icon(Icons.store, color: AppColors.primary),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            seller.storeName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: isDark ? Colors.white : Colors.black87,
-                            ),
-                          ),
-                          if (seller.isVerified) ...[
-                            const SizedBox(width: 6),
-                            const Icon(Icons.verified, size: 16, color: AppColors.success),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Tap to view store',
-                        style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400]),
-              ],
-            ),
-          ),
-        );
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.pushNamed(context, AppRoutes.sellerStore, arguments: sellerId);
       },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2A2A2A) : Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
+              child: ClipOval(
+                child: Icon(Icons.store, color: AppColors.primary),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    storeName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tap to view store',
+                    style: TextStyle(fontSize: 12, color: isDark ? Colors.grey[500] : Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: isDark ? Colors.grey[500] : Colors.grey[400]),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1536,14 +1426,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12),
-                        const SizedBox(width: 4),
-                        Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600])),
-                      ],
-                    ),
+                    // C2 (canonical rewire): rating has no canonical successor yet (see
+                    // ProductProvider's doc comment); hidden rather than shown as "★ 0.0".
+                    if (product.rating > 0) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 12),
+                          const SizedBox(width: 4),
+                          Text(product.rating.toStringAsFixed(1), style: TextStyle(fontSize: 11, color: isDark ? Colors.grey[400] : Colors.grey[600])),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -1658,7 +1552,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: product.inStock ? () => _addToCart(product) : null,
+                  // C5 corrective (found via this session's own device testing): unlike the Buy
+                  // Now button beside it, this onTap had no !_isAddingToCart guard, so a fast
+                  // double-tap could fire _addToCart twice before the first await returned,
+                  // adding _quantity to the cart twice. _isAddingToCart is set synchronously at
+                  // the top of _addToCart, before any await, so this guard is race-free.
+                  onTap: product.inStock && !_isAddingToCart ? () => _addToCart(product) : null,
                   borderRadius: BorderRadius.circular(10),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),

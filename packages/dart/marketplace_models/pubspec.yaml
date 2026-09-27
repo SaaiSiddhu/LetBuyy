@@ -15,10 +15,13 @@ dependencies:
   # Core package
   letbuyy_marketplace_core:
     path: ../marketplace_core
-  
-  # Firebase (for Firestore types)
-  cloud_firestore: ^5.4.4
-  
+
+  # Firebase (for Firestore types) -- removed, Phase 1R final pass: support_chat_model.dart and
+  # category_attribute_schema_model.dart were this package's last two Firestore-Timestamp-coupled
+  # files; both trimmed to plain data classes once their owning services were deleted (see
+  # marketplace_services' barrel-file comment). Zero `package:cloud_firestore` imports remain
+  # anywhere in this package (grepped fresh).
+
   # Utilities
   equatable: ^2.0.7
   intl: ^0.20.2

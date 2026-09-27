@@ -31,15 +31,17 @@ dependencies:
   provider: ^6.1.2
   flutter_hooks: ^0.20.5
 
-  # Firebase
-  firebase_core: ^3.6.0
-  firebase_auth: ^5.3.1
-  cloud_firestore: ^5.4.4
-  cloud_functions: ^5.1.3
-  firebase_storage: ^12.3.4
-  firebase_messaging: ^15.1.3
-  firebase_analytics: ^11.3.3
-  
+  # Firebase — Phase 1R final pass (owner-requested completion, same day): firebase_core and
+  # cloud_firestore removed entirely. The last three Firestore-backed services
+  # (support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart) are
+  # deleted, not merely disconnected -- their reachable callers now decide their own honest
+  # "not available" state locally rather than calling a backend that could only ever fail or
+  # return empty. Combined with firebase_auth/firebase_storage/cloud_functions/
+  # firebase_messaging/firebase_analytics removed in earlier passes this same phase, this app now
+  # requires no Firebase package at all (zero `package:firebase_*`/`package:cloud_firestore`/
+  # `package:cloud_functions` imports anywhere in this workspace, grepped fresh). Google Maps
+  # (`google_maps_flutter`, below) is unrelated and unaffected -- it never depended on Firebase.
+
   # UI
   cupertino_icons: ^1.0.8
   cached_network_image: ^3.4.1
@@ -116,6 +118,10 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.2
+  # For a controllable SharedPreferencesStorePlatform.instance in tests (injecting a disk-write
+  # failure to prove CartProvider/WishlistProvider's honest-persistence contract) -- an existing
+  # transitive dependency of shared_preferences, declared directly rather than relied on undeclared.
+  shared_preferences_platform_interface: ^2.4.1
 
 flutter:
   uses-material-design: true

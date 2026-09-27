@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 // --- Providers & Themes ---
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -20,11 +19,10 @@ import '../../shop/shop_screen.dart';
 import '../../cart/cart_screen.dart';
 import '../../wishlist/wishlist_screen.dart';
 import '../../profile/profile_screen.dart';
-import '../../profile/saved_addresses_screen.dart';
+import '../../profile/letbuyy_account_screen.dart';
 import '../../orders/orders_screen.dart';
 import '../../category/category_screen.dart';
 import '../../chat/ai_chat_screen.dart';
-import '../../checkout/add_address_screen.dart';
 
 class WebHeader extends StatefulWidget implements PreferredSizeWidget {
   const WebHeader({super.key});
@@ -67,17 +65,6 @@ class _WebHeaderState extends State<WebHeader> {
       }
     });
 
-    // Load addresses safely
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-        if (addressProvider.addresses.isEmpty) {
-          addressProvider.loadAddresses();
-        }
-      } catch (e) {
-        debugPrint("Address Load Error: $e");
-      }
-    });
   }
 
   @override
@@ -174,48 +161,6 @@ class _WebHeaderState extends State<WebHeader> {
     }
   }
 
-  // --- Address Popup Logic ---
-
-  Future<void> _showAddressSelectorPopup() async {
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    
-    await showGeneralDialog(
-      context: context,
-      barrierLabel: "Select Delivery Address",
-      barrierDismissible: true,
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 280),
-      pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        final curved = Curves.easeOut.transform(animation.value);
-        return Opacity(
-          opacity: animation.value,
-          child: Transform.scale(
-            scale: 0.9 + (0.1 * curved),
-            child: Center(
-              child: _AddressPopupCard(
-                onAddAddress: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AddAddressScreen()));
-                },
-                onManageAddresses: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SavedAddressesScreen()));
-                },
-                onSelectAndClose: (AddressModel? selected) {
-                  if (selected != null) {
-                    addressProvider.selectAddress(selected); // Assuming selectAddress exists, or use setDefaultAddress
-                  }
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   // --- MAIN BUILD ---
 
   @override
@@ -308,33 +253,30 @@ class _WebHeaderState extends State<WebHeader> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
-                // Dynamic Address Display
-                Consumer<AddressProvider>(
-                  builder: (context, addressProvider, _) {
-                    final hasAddresses = addressProvider.addresses.isNotEmpty;
-                    final defaultAddress = addressProvider.defaultAddress;
-
-                    String displayText = "Add delivery address";
-                    if (hasAddresses && defaultAddress != null) {
-                      displayText = "${defaultAddress.city}, ${defaultAddress.zipcode}";
-                    } else if (hasAddresses) {
-                      displayText = "Select Address";
-                    }
-
-                    return GestureDetector(
-                      onTap: _showAddressSelectorPopup, // ✅ FIXED: Method now exists
-                      child: Row(
-                        children: [
-                          Icon(FontAwesomeIcons.locationDot.data, size: 13, color: colors.subText),
-                          const SizedBox(width: 6),
-                          Text(
-                            "Deliver to: $displayText",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: colors.subText),
-                          ),
-                        ],
+                // Phase 1R corrective (C2): AddressProvider was entirely FirebaseFirestore-backed
+                // via the legacy AuthService/DatabaseService, with no canonical successor wired
+                // here. Its own read path never populated addresses (canonical sign-in never
+                // touches FirebaseAuth), so this pill already always showed "Add delivery address";
+                // this drops the Consumer and the broken in-page popup.
+                // C3 corrective: the tap target was SavedAddressesScreen, itself disconnected to
+                // an unconditional empty state with no canonical successor -- now points at
+                // letbuyy_account_screen.dart, the real, BuyerAddressApi-backed address book (see
+                // address_selection_sheet.dart's own identical redirection for "Add"/"Edit").
+                // The pill text itself still always reads "Add delivery address" regardless of a
+                // real saved address -- the same bug already fixed for home_app_bar.dart and
+                // web_mobile_header.dart, not yet ported to this file; separately scoped.
+                GestureDetector(
+                  onTap: () => _navigate(context, const LetBuyyAccountScreen()),
+                  child: Row(
+                    children: [
+                      Icon(FontAwesomeIcons.locationDot.data, size: 13, color: colors.subText),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Deliver to: Add delivery address",
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: colors.subText),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 ),
                 const Spacer(),
                 _HeaderLink(
@@ -693,152 +635,6 @@ class _WebHeaderState extends State<WebHeader> {
               const SizedBox(width: 12),
               Expanded(child: Text(text, style: TextStyle(color: textColor, fontSize: 14))),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Address Popup Card
-// ---------------------------------------------------------------------------
-class _AddressPopupCard extends StatefulWidget {
-  final VoidCallback onAddAddress;
-  final VoidCallback onManageAddresses;
-  final void Function(AddressModel? selected) onSelectAndClose;
-
-  const _AddressPopupCard({
-    required this.onAddAddress,
-    required this.onManageAddresses,
-    required this.onSelectAndClose,
-  });
-
-  @override
-  State<_AddressPopupCard> createState() => _AddressPopupCardState();
-}
-
-class _AddressPopupCardState extends State<_AddressPopupCard> {
-  AddressModel? _localSelected;
-
-  @override
-  void initState() {
-    super.initState();
-    final addressProvider = Provider.of<AddressProvider>(context, listen: false);
-    _localSelected = addressProvider.defaultAddress ?? (addressProvider.addresses.isNotEmpty ? addressProvider.addresses.first : null);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
-    final addressProvider = Provider.of<AddressProvider>(context);
-    final addresses = addressProvider.addresses;
-
-    return Material(
-      color: Colors.transparent,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720, maxHeight: 520),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.surfaceDark : AppColors.surface,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.6 : 0.12),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Choose Delivery Address',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: isDark ? AppColors.textLight : AppColors.textPrimary),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.close, color: isDark ? AppColors.textLight : AppColors.textHint),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Divider(color: isDark ? AppColors.borderDark : AppColors.border),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: addresses.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text('No saved addresses yet'),
-                              const SizedBox(height: 12),
-                              ElevatedButton(onPressed: widget.onAddAddress, child: const Text("Add Address")),
-                            ],
-                          ),
-                        )
-                      : ListView.separated(
-                          itemCount: addresses.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 8),
-                          itemBuilder: (context, idx) {
-                            final addr = addresses[idx];
-                            final selected = _localSelected?.id == addr.id;
-                            return InkWell(
-                              onTap: () => setState(() => _localSelected = addr),
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: selected ? AppColors.surfaceVariant : Colors.transparent,
-                                  border: Border.all(color: selected ? AppColors.primary : AppColors.border),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(addr.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                          Text("${addr.city}, ${addr.zipcode}", style: const TextStyle(fontSize: 12)),
-                                        ],
-                                      ),
-                                    ),
-                                    if (addr.isDefault)
-                                      const Chip(label: Text("Default", style: TextStyle(fontSize: 10))),
-                                    
-                                    // Map Icon - fixed LaunchUrl error
-                                    if (addr.latitude != null && addr.longitude != null)
-                                      IconButton(
-                                        icon: const Icon(Icons.map),
-                                        onPressed: () {
-                                            final String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=${addr.latitude},${addr.longitude}';
-                                            // ✅ FIXED: Using launchUrl correctly
-                                            launchUrl(Uri.parse(googleMapsUrl), mode: LaunchMode.externalApplication); 
-                                        },
-                                      )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(child: OutlinedButton(onPressed: widget.onAddAddress, child: const Text("Add New"))),
-                    const SizedBox(width: 12),
-                    Expanded(child: ElevatedButton(onPressed: () => widget.onSelectAndClose(_localSelected), child: const Text("Deliver Here"))),
-                  ],
-                )
-              ],
-            ),
           ),
         ),
       ),

@@ -33,7 +33,7 @@ class PaymentService {
       final options = {
         'key': 'YOUR_RAZORPAY_KEY_ID', // Replace with your key
         'amount': (amount * 100).toInt(), // Amount in paise
-        'name': 'Agrimate',
+        'name': 'LetBuyy',
         'order_id': orderId,
         'description': description ?? 'Payment for order $orderId',
         'timeout': 300, // 5 minutes in seconds

@@ -7,31 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import '../providers/auth_provider.dart';
-import 'auth_bottom_sheet.dart';
-
-/// Shows auth bottom sheet if user is not logged in
-/// Returns true if user is authenticated, false otherwise
-Future<bool> requireAuth(BuildContext context, {String? action}) async {
-  final authProvider = Provider.of<AuthProvider>(context, listen: false);
-  
-  // Already logged in
-  if (authProvider.isLoggedIn) {
-    return true;
-  }
-  
-  // Show auth bottom sheet
-  final result = await showModalBottomSheet<bool>(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    builder: (context) => AuthBottomSheet(
-      actionDescription: action,
-    ),
-  );
-  
-  return result ?? false;
-}
+import '../auth/buyer_sign_in_controller.dart';
+import '../app/routes.dart';
 
 /// 💎 Premium Widget wrapper that requires auth before showing content
 /// Features: Glassmorphic design, dark mode support, and smooth animations
@@ -49,12 +26,16 @@ class AuthGatedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AuthProvider>(
-      builder: (context, authProvider, _) {
-        if (authProvider.isLoggedIn) {
+    // Phase 1R corrective (C2): was Consumer<AuthProvider>, checking authProvider.isLoggedIn --
+    // AuthProvider is entirely FirebaseAuth-backed, and canonical "Sign in with LetBuyy" never
+    // touches FirebaseAuth, so this always showed the login prompt even for a signed-in buyer.
+    // Checks the canonical status instead.
+    return Consumer<BuyerSignInController>(
+      builder: (context, signIn, _) {
+        if (signIn.status == BuyerSignInStatus.signedIn) {
           return child;
         }
-        
+
         return placeholder ?? _buildPremiumLoginPrompt(context);
       },
     );
@@ -199,7 +180,13 @@ class AuthGatedWidget extends StatelessWidget {
                               width: double.infinity,
                               height: 54,
                               child: ElevatedButton(
-                                onPressed: () => requireAuth(context, action: actionDescription),
+                                // Phase 1R corrective (C2): was requireAuth(context, ...), which
+                                // opened the legacy Firebase email/password/Google sign-in bottom
+                                // sheet. Routes to the canonical "Sign in with LetBuyy" prompt
+                                // instead (profile_screen.dart already shows it whenever not
+                                // signed in).
+                                onPressed: () =>
+                                    Navigator.pushNamed(context, AppRoutes.profile),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,

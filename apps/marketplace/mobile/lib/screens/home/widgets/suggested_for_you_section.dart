@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
@@ -108,35 +106,15 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
     );
   }
 
+  // C3 (Firebase SDK removal): was guarded on safeFirebaseUserId() == null, which is always true
+  // under canonical auth -- so _getSuggestedProducts()'s raw FirebaseFirestore reads (a
+  // 'recently_viewed' lookup, then per-category product queries) were already provably
+  // unreachable dead code, never a live crash risk, and this method already always fell through
+  // to _buildPopularProducts (the real, canonical-data path used elsewhere in this file). Calling
+  // it directly removes the dead branch and the cloud_firestore import with it -- no behavior
+  // change, since the FutureBuilder branch could never actually run.
   Widget _buildSuggestedProducts(bool isDark, BuildContext context) {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-
-    if (userId == null) {
-      return _buildPopularProducts(isDark, context);
-    }
-
-    return FutureBuilder<List<ProductModel>>(
-      future: _getSuggestedProducts(userId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return _buildPopularProducts(isDark, context);
-        }
-
-        final products = snapshot.data!;
-
-        return SizedBox(
-          height: 240,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              return _buildSuggestedCard(products[index], isDark, context);
-            },
-          ),
-        );
-      },
-    );
+    return _buildPopularProducts(isDark, context);
   }
 
   Widget _buildPopularProducts(bool isDark, BuildContext context) {
@@ -180,66 +158,6 @@ class _SuggestedForYouSectionState extends State<SuggestedForYouSection> {
         );
       },
     );
-  }
-
-  Future<List<ProductModel>> _getSuggestedProducts(String userId) async {
-    try {
-      final recentlyViewed = await FirebaseFirestore.instance
-          .collection('recently_viewed')
-          .doc(userId)
-          .collection('products')
-          .orderBy('viewedAt', descending: true)
-          .limit(10)
-          .get();
-
-      if (recentlyViewed.docs.isEmpty) {
-        return [];
-      }
-
-      final productIds = recentlyViewed.docs
-          .map((doc) => (doc.data())['productId'] as String?)
-          .where((id) => id != null)
-          .cast<String>()
-          .toList();
-
-      final Set<String> userCategories = {};
-      for (final id in productIds.take(5)) {
-        final doc = await FirebaseFirestore.instance
-            .collection('products')
-            .doc(id)
-            .get();
-        if (doc.exists) {
-          final product = ProductModel.fromFirestore(doc);
-          userCategories.add(product.categoryId);
-        }
-      }
-
-      if (userCategories.isEmpty) return [];
-
-      final suggestions = <ProductModel>[];
-      for (final categoryId in userCategories.take(3)) {
-        final categoryProducts = await FirebaseFirestore.instance
-            .collection('products')
-            .where('categoryId', isEqualTo: categoryId)
-            .where('approvalStatus', isEqualTo: 'approved')
-            .where('inStock', isEqualTo: true)
-            .orderBy('rating', descending: true)
-            .limit(5)
-            .get();
-
-        for (final doc in categoryProducts.docs) {
-          final product = ProductModel.fromFirestore(doc);
-          if (!productIds.contains(product.id)) {
-            suggestions.add(product);
-          }
-        }
-      }
-
-      return suggestions.take(10).toList();
-    } catch (e) {
-      debugPrint('Error getting suggestions: $e');
-      return [];
-    }
   }
 
   Widget _buildSuggestedCard(ProductModel product, bool isDark, BuildContext context) {

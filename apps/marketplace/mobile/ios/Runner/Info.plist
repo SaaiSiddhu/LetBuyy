@@ -44,16 +44,8 @@
 					<string>letbuyy</string>
 				</array>
 			</dict>
-			<dict>
-				<key>CFBundleTypeRole</key>
-				<string>Editor</string>
-				<key>CFBundleURLName</key>
-				<string>Firebase-Deep-Links</string>
-				<key>CFBundleURLSchemes</key>
-				<array>
-					<string>letbuy-y</string>
-				</array>
-			</dict>
+			<!-- Firebase-Deep-Links URL scheme (letbuy-y) removed, Phase 1R final pass: this app
+			     requires no Firebase package any more. -->
 			<dict>
 				<key>CFBundleTypeRole</key>
 				<string>Editor</string>
@@ -67,8 +59,6 @@
 		</array>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>FirebaseAppDelegateProxyEnabled</key>
-		<false/>
 		<key>GIDClientID</key>
 		<string>468123057306-h0ct8knmj7osp5p7kq2u8vb8qj9r3q4p.apps.googleusercontent.com</string>
 		<key>LSApplicationQueriesSchemes</key>
@@ -96,20 +86,8 @@
 			<false/>
 			<key>NSExceptionDomains</key>
 			<dict>
-				<key>firebase.google.com</key>
-				<dict>
-					<key>NSIncludesSubdomains</key>
-					<true/>
-					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-					<false/>
-				</dict>
-				<key>firebaseio.com</key>
-				<dict>
-					<key>NSIncludesSubdomains</key>
-					<true/>
-					<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-					<false/>
-				</dict>
+				<!-- firebase.google.com / firebaseio.com ATS exceptions removed, Phase 1R final
+				     pass: this app requires no Firebase package any more. -->
 				<key>localhost</key>
 				<dict>
 					<key>NSIncludesSubdomains</key>

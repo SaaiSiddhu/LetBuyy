@@ -3,8 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
@@ -12,6 +11,7 @@ import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
+import '../../auth/buyer_sign_in_controller.dart';
 
 class AddAddressScreen extends StatefulWidget {
   final AddressModel? existingAddress;
@@ -92,7 +92,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     _addressLine2Controller.text = address.addressLine2;
     _landmarkController.text = address.landmark ?? '';
     _pincodeController.text = address.zipcode;
-    _selectedAddressType = address.addressType ?? 'Home';
+    // Reverses _saveAddress's own home/work/other -> Home/Office/Other mapping, so re-opening an
+    // address saved through the canonical BuyerAddressApi shows the matching chip selected instead
+    // of none of the three (address.addressType round-trips lowercase; the chips compare against
+    // the capitalized values below).
+    _selectedAddressType = switch (address.addressType) {
+      'home' => 'Home',
+      'work' => 'Office',
+      _ => 'Other',
+    };
     _isDefault = address.isDefault;
 
     if (IndiaLocations.allStates.contains(address.state)) {
@@ -647,64 +655,114 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       finalCity = _selectedCity!;
     }
 
+    final token = context.read<BuyerSignInController>().token;
+    if (token == null) {
+      _showSnackBar('Please sign in to save an address', isError: true);
+      return;
+    }
+
     setState(() => _isSaving = true);
 
+    // C3 (Firebase SDK removal): was a raw FirebaseFirestore.instance.collection('addresses')
+    // write, guarded only by safeFirebaseUserId() == null -- always true under canonical auth, so
+    // this always threw "User not logged in" and no address was ever actually saved, silently
+    // (caught below, shown as a generic "Error: ..." snackbar). Now goes through the same
+    // canonical BuyerAddressApi.create()/.update() letbuyy_account_screen.dart's own address
+    // editor and address_selection_sheet.dart already use.
+    //
+    // The manual "query every address, unset isDefault on each" loop that used to sit here is
+    // gone, not replaced -- letbuyy_account_screen.dart's _setDefault/_openAddressEditor never do
+    // this either, only ever updating the ONE address being changed. The gateway's PATCH/POST
+    // /storefront/buyer/addresses route enforces "at most one default per buyer" itself.
+    final buyerAddress = BuyerAddress(
+      id: widget.existingAddress?.id ?? '',
+      // letbuyy_account_screen.dart's own canonical label vocabulary is home/work/other (its
+      // _labelText() switch defaults anything else to "Other") -- this screen's own chips say
+      // "Office," not "Work," so this maps rather than lowercases directly, keeping the same
+      // address consistently labelled everywhere it's shown, not just here.
+      label: switch (_selectedAddressType) {
+        'Home' => 'home',
+        'Office' => 'work',
+        _ => 'other',
+      },
+      fullName: _nameController.text.trim(),
+      phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+      addressLine1: _addressLine1Controller.text.trim(),
+      addressLine2: _addressLine2Controller.text.trim().isEmpty ? null : _addressLine2Controller.text.trim(),
+      city: finalCity,
+      state: finalState,
+      postalCode: _pincodeController.text.trim(),
+      country: 'IN',
+      landmark: _landmarkController.text.trim().isEmpty ? null : _landmarkController.text.trim(),
+      isDefault: _isDefault,
+    );
+
     try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) throw Exception('User not logged in');
+      final addressApi = context.read<BuyerAddressApi>();
+      final saved = widget.existingAddress == null
+          ? await addressApi.create(token, buyerAddress)
+          : await addressApi.update(token, widget.existingAddress!.id, buyerAddress);
 
-      final addressId = widget.existingAddress?.id ??
-          FirebaseFirestore.instance.collection('addresses').doc().id;
-
-      final address = AddressModel(
-        id: addressId,
-        userId: userId,
-        name: _nameController.text.trim(),
-        phone: _phoneController.text.trim(),
-        addressLine1: _addressLine1Controller.text.trim(),
-        addressLine2: _addressLine2Controller.text.trim(),
-        city: finalCity,
-        state: finalState,
-        zipcode: _pincodeController.text.trim(),
-        country: 'India',
-        latitude: _currentPosition.latitude,
-        longitude: _currentPosition.longitude,
-        isDefault: _isDefault,
-        addressType: _selectedAddressType,
-        landmark: _landmarkController.text.trim(),
-      );
-
-      if (_isDefault) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection('addresses')
-            .where('userId', isEqualTo: userId)
-            .where('isDefault', isEqualTo: true)
-            .get();
-
-        for (var doc in querySnapshot.docs) {
-          await doc.reference.update({'isDefault': false});
-        }
+      // C3 corrective (27 September 2026 review, finding 4): was only `if (!mounted) return;` --
+      // the address is genuinely saved for whichever buyer `token` belonged to (correct, since
+      // that's the token the request actually carried), but if a DIFFERENT buyer has since signed
+      // in on this device while this request was in flight, this screen must not present that
+      // save as ITS current viewer's success. Popping with null rather than the saved address:
+      // the one live caller (checkout_screen.dart) doesn't read the popped value anyway, only
+      // triggers its own reload, and no future caller should be handed an address that belongs to
+      // whoever was signed in a moment ago, not to whoever is signed in now.
+      if (!mounted) return;
+      if (context.read<BuyerSignInController>().token != token) {
+        Navigator.pop(context, null);
+        return;
       }
-
-      await FirebaseFirestore.instance
-          .collection('addresses')
-          .doc(addressId)
-          .set(address.toMap());
-
+      HapticFeedback.heavyImpact();
+      _showSnackBar('Address saved!');
+      await Future.delayed(const Duration(milliseconds: 600));
+      if (!mounted) return;
+      if (context.read<BuyerSignInController>().token != token) {
+        Navigator.pop(context, null);
+        return;
+      }
+      Navigator.pop(context, _toAddressModel(saved));
+    } on ApiException catch (error) {
       if (mounted) {
-        HapticFeedback.heavyImpact();
-        _showSnackBar('Address saved!');
-        await Future.delayed(const Duration(milliseconds: 600));
-        if (mounted) {
-          Navigator.pop(context, address);
-        }
+        _showSnackBar(
+          error.statusCode == 404
+              ? 'That address no longer exists.'
+              : 'We couldn’t save that address just now.',
+          isError: true,
+        );
       }
-    } catch (e) {
-      debugPrint('Error: $e');
-      if (mounted) _showSnackBar('Error: ${e.toString()}', isError: true);
+    } catch (_) {
+      if (mounted) _showSnackBar('You seem to be offline. Try again.', isError: true);
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  /// [BuyerAddress] has no photo/lat-long concept of its own -- this is purely a display adapter
+  /// for the Navigator.pop(context, ...) contract this screen's callers already expect, the same
+  /// mapping address_selection_sheet.dart's own _addressModelFromBuyerAddress already uses. Not
+  /// carrying over _currentPosition's lat/long here deliberately: a caller re-reading this address
+  /// later (via BuyerAddressApi.list()) will never see a lat/long either, so a value that could
+  /// only ever exist for one frame right after saving would be misleading, not helpful.
+  AddressModel _toAddressModel(BuyerAddress address) {
+    return AddressModel(
+      id: address.id,
+      userId: '',
+      name: address.fullName,
+      phone: address.phone ?? '',
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 ?? '',
+      city: address.city,
+      state: address.state,
+      zipcode: address.postalCode,
+      country: address.country,
+      isDefault: address.isDefault,
+      addressType: address.label,
+      landmark: address.landmark,
+    );
   }
 
   void _showSnackBar(String message, {bool isError = false}) {

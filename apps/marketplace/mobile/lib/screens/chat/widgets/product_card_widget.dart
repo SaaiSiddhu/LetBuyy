@@ -354,14 +354,15 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                                             ? null
                                             : () async {
                                                 HapticFeedback.mediumImpact();
-                                                await cartProvider.addItem(
+                                                final added = await cartProvider.addItem(
                                                   product,
                                                   quantity: 1,
                                                 );
                                                 if (mounted) {
                                                   _showSnackBar(
                                                     context,
-                                                    'Added to cart! 🛒',
+                                                    added ? 'Added to cart! 🛒' : 'Could not add to cart',
+                                                    isError: !added,
                                                   );
                                                 }
                                               })
@@ -402,10 +403,20 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
                                         ? () async {
                                             HapticFeedback.mediumImpact();
                                             if (!isInCart) {
-                                              await cartProvider.addItem(
+                                              final added = await cartProvider.addItem(
                                                 product,
                                                 quantity: 1,
                                               );
+                                              if (!added) {
+                                                if (mounted) {
+                                                  _showSnackBar(
+                                                    context,
+                                                    'Could not add to cart',
+                                                    isError: true,
+                                                  );
+                                                }
+                                                return;
+                                              }
                                             }
                                             if (mounted) {
                                               AppRoutes.navigateTo(
@@ -465,17 +476,21 @@ class _ProductCardWidgetState extends State<ProductCardWidget>
     );
   }
 
-  void _showSnackBar(BuildContext context, String message) {
+  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            Icon(
+              isError ? Icons.error_outline : Icons.check_circle,
+              color: Colors.white,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: AppColors.success,
+        backgroundColor: isError ? AppColors.error : AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

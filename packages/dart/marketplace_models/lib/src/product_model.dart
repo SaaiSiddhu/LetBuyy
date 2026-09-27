@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 // ============================================
 // PRODUCT APPROVAL STATUS
 // ============================================
@@ -18,10 +15,15 @@ ProductApprovalStatus _parseApprovalStatus(String? status) {
   }
 }
 
-// Helper to safely parse timestamps (handles Firestore Timestamp and String)
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): was `if (value is Timestamp)`
+// (cloud_firestore's own type) -- ProductModel.fromMap now only ever parses the canonical gateway's
+// own JSON (ProductProvider's rewire, R1 corrective C2), which serializes dates as ISO 8601
+// strings, not Firestore Timestamps; duck-typing .toDate() (rather than importing cloud_firestore
+// just for the static type) keeps this working unchanged for a real Timestamp too, if one is ever
+// handed to it, without the import.
 DateTime? _parseTimestamp(dynamic value) {
   if (value == null) return null;
-  if (value is Timestamp) return value.toDate();
+  if (value is DateTime) return value;
   if (value is String) {
     try {
       return DateTime.parse(value);
@@ -29,8 +31,11 @@ DateTime? _parseTimestamp(dynamic value) {
       return null;
     }
   }
-  if (value is DateTime) return value;
-  return null;
+  try {
+    return (value as dynamic).toDate() as DateTime;
+  } catch (_) {
+    return null;
+  }
 }
 
 
@@ -128,6 +133,11 @@ class VariantOption {
 class ProductModel {
   final String id;
   final String sellerId;
+  // C2 (canonical rewire): the marketplace feed/listing endpoints hand back the seller's display
+  // name directly on every row (no separate seller-document fetch needed) -- see
+  // ProductProvider._productFromFeedItem/_productFromListingDetail. Null for a product built from
+  // any other source that doesn't carry it.
+  final String? storeName;
   final String name;
   final String description;
   final double salePrice;
@@ -136,6 +146,19 @@ class ProductModel {
   final String? subCategoryId;
   final List<String> images;
   final int stock;
+  // C2 corrective (27 September 2026 review, finding 1): the canonical marketplace feed has no
+  // stock field at all (only a single listing's own detail carries one), and price can in
+  // principle be absent too -- ProductProvider's canonical adapters used to default both to a
+  // fixed "in stock" / "free" value, which is fabricating a fact the source never supplied
+  // ("listing approval is not evidence of stock quantity... unknown price is not a free price").
+  // These two flags let `stock`/`salePrice` carry a real, honest default (0) for arithmetic
+  // without every reader having to guess whether that default means "actually zero" or "we don't
+  // know" -- true for any source (Firestore-era or canonical) that has a real value for the field,
+  // false only where the adapter that built this ProductModel genuinely has none. See
+  // ProductProvider._productFromFeedItem/_productFromListingDetail and this class's own
+  // isPurchasable getter for how they're used.
+  final bool stockKnown;
+  final bool priceKnown;
   final double rating;
   final int reviewCount;
   final bool isFeatured;
@@ -188,6 +211,7 @@ class ProductModel {
   ProductModel({
     required this.id,
     required this.sellerId,
+    this.storeName,
     required this.name,
     required this.description,
     required this.salePrice,
@@ -196,6 +220,8 @@ class ProductModel {
     this.subCategoryId,
     required this.images,
     required this.stock,
+    this.stockKnown = true,
+    this.priceKnown = true,
     this.rating = 0.0,
     this.reviewCount = 0,
     this.isFeatured = false,
@@ -250,6 +276,15 @@ class ProductModel {
   bool get inStock => stock > 0;
   String get primaryImage => images.isNotEmpty ? images.first : '';
 
+  // C2 corrective (27 September 2026 review, finding 1): deliberately separate from `inStock`,
+  // which keeps its existing, simpler "stock > 0" meaning everywhere it was already used as a
+  // display signal. This is specifically for gating an action that commits to a price or promises
+  // availability (adding to cart, "Buy Now") -- an unknown price or an unknown stock count must
+  // never let that action proceed as if both were confirmed. `inStock` alone would say yes for a
+  // product whose stock was never actually observed, exactly the fabricated-fact failure mode this
+  // finding is about.
+  bool get isPurchasable => priceKnown && stockKnown && stock > 0;
+
   // ✅ NEW: Approval getters
   bool get isPending => approvalStatus == ProductApprovalStatus.pending;
   bool get isApproved => approvalStatus == ProductApprovalStatus.approved;
@@ -285,72 +320,11 @@ class ProductModel {
 
 
 
-  // ============================================
-  // TO MAP
-  // ============================================
-  Map<String, dynamic> toMap() {
-    return {
-      'sellerId': sellerId,
-      'name': name,
-      'description': description,
-      'salePrice': salePrice,
-      'originalPrice': originalPrice,
-      'categoryId': categoryId,
-      'subCategoryId': subCategoryId,
-      'images': images,
-      'stock': stock,
-      'rating': rating,
-      'reviewCount': reviewCount,
-      'isFeatured': isFeatured,
-      'isActive': isActive,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
-      'unit': unit,
-      'minOrderQuantity': minOrderQuantity,
-      'maxOrderQuantity': maxOrderQuantity,
-      'isNew': isNew,
-      'isVerified': isVerified,
-      'isTrending': isTrending,
-      'specifications': specifications,
-      'shippingDays': shippingDays,
-      'shippingPrice': shippingPrice,
-      'freeShippingAbove': freeShippingAbove,
-      'isFreeDelivery': isFreeDelivery,
-      'expressDelivery': expressDelivery,
-      'expressDeliveryDays': expressDeliveryDays,
-      'variantOptions': variantOptions.map((e) => e.toMap()).toList(),
-      'variants': variants.map((e) => e.toMap()).toList(),
-      'relatedProductIds': relatedProductIds,
-      'keywords': keywords,
-      // ✅ NEW: Category Attributes
-      'attributes': attributes,
-      'pendingAttributes': pendingAttributes,
-      // ✅ NEW: Approval fields
-      'approvalStatus': approvalStatus.toString().split('.').last,
-      'rejectionReason': rejectionReason,
-      'approvedAt': approvedAt != null ? Timestamp.fromDate(approvedAt!) : null,
-      'approvedBy': approvedBy,
-      'addedBy': addedBy,
-      'submittedForApprovalAt': submittedForApprovalAt != null 
-          ? Timestamp.fromDate(submittedForApprovalAt!) 
-          : null,
-      // ✅ NEW: Shipping fields
-      'weight': weight,
-      'length': length,
-      'width': width,
-      'height': height,
-      // ✅ NEW: Product Statistics
-      'viewCount': viewCount,
-      'totalOrders': totalOrders,
-      'totalRevenue': totalRevenue,
-    };
-  }
-
-
-  // REQUIRED FOR YOUR ADMIN SERVICE
-  Map<String, dynamic> toJson() => toMap();
-
-
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): toMap()/toJson() (Firestore-
+  // shaped, via Timestamp.fromDate) deleted outright -- grepping every real caller anywhere in the
+  // app found none. Nothing ever writes a ProductModel back to Firestore or serializes one to JSON
+  // any more; cache_service.dart's own product caching uses its own bespoke, already-Firebase-free
+  // _productToCache/_productFromCache helpers, not this type's methods.
 
   // ============================================
   // FROM MAP
@@ -427,11 +401,7 @@ class ProductModel {
     return ProductModel.fromMap(json, id);
   }
 
-
-  factory ProductModel.fromFirestore(DocumentSnapshot doc) {
-    return ProductModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-  }
-
+  // fromFirestore(DocumentSnapshot) deleted alongside toMap()/toJson() above -- zero callers.
 
   // ============================================
   // COPY-WITH (Updated with approval fields)
@@ -439,6 +409,7 @@ class ProductModel {
   ProductModel copyWith({
     String? id,
     String? sellerId,
+    String? storeName,
     String? name,
     String? description,
     double? salePrice,
@@ -447,6 +418,8 @@ class ProductModel {
     String? subCategoryId,
     List<String>? images,
     int? stock,
+    bool? stockKnown,
+    bool? priceKnown,
     double? rating,
     int? reviewCount,
     bool? isFeatured,
@@ -493,6 +466,7 @@ class ProductModel {
     return ProductModel(
       id: id ?? this.id,
       sellerId: sellerId ?? this.sellerId,
+      storeName: storeName ?? this.storeName,
       name: name ?? this.name,
       description: description ?? this.description,
       salePrice: salePrice ?? this.salePrice,
@@ -501,6 +475,8 @@ class ProductModel {
       subCategoryId: subCategoryId ?? this.subCategoryId,
       images: images ?? this.images,
       stock: stock ?? this.stock,
+      stockKnown: stockKnown ?? this.stockKnown,
+      priceKnown: priceKnown ?? this.priceKnown,
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       isFeatured: isFeatured ?? this.isFeatured,

@@ -210,8 +210,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> with TickerProvider
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(StorageConstants.keyOnboardingCompleted, true);
     if (mounted) {
+      // Phase 1R corrective (C2): was AppRoutes.auth (the legacy Firebase email/password/Google
+      // sign-in screen), sending every new user there immediately post-onboarding. Canonical
+      // "Sign in with LetBuyy" is optional/deferred elsewhere in this app (browsing as a guest is
+      // the norm; AuthGatedWidget's own prompt says "Browse freely, login when ready to buy") --
+      // routing to a screen that behaves like a mandatory gate here would be inconsistent with
+      // that. Goes straight to the app; the buyer signs in from Profile when they want to.
       Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.auth,
+        AppRoutes.main,
         (route) => false,
       );
     }

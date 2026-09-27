@@ -11,7 +11,6 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../shop/mobile_shop_screen.dart';
 import '../../widgets/unified_search_header.dart';
-import '../../providers/marketplace_ad_provider.dart';
 import '../../widgets/premium_scaffold.dart';
 import '../../app/routes.dart';
 
@@ -38,10 +37,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   CategoryModel? _selectedCategory;
   int _selectedIndex = 0;
   bool _isLoading = true;
-  
-  // Sponsored products for current category
-  List<SponsoredProductData> _sponsoredProducts = [];
-  bool _isLoadingAds = false;
 
   // Icon mapping
   static const Map<String, IconData> _iconMap = {
@@ -147,31 +142,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
       _selectedCategory = category;
       _selectedIndex = index;
     });
-    // Load sponsored products for this category
-    _loadSponsoredProducts(category.id);
-  }
-
-  /// Load sponsored ads for the selected category
-  Future<void> _loadSponsoredProducts(String categoryId) async {
-    setState(() => _isLoadingAds = true);
-    try {
-      final adProvider = context.read<MarketplaceAdProvider>();
-      final ads = await adProvider.getAdsForCategory(categoryId, limit: 4);
-      if (mounted) {
-        setState(() {
-          _sponsoredProducts = ads;
-          _isLoadingAds = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading sponsored products: $e');
-      if (mounted) {
-        setState(() {
-          _sponsoredProducts = [];
-          _isLoadingAds = false;
-        });
-      }
-    }
   }
 
   void _navigateToShop(CategoryModel category) {
@@ -410,12 +380,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ),
         ),
         
-        // 🔥 Sponsored Products Section
-        if (_sponsoredProducts.isNotEmpty)
-          SliverToBoxAdapter(
-            child: _buildSponsoredSection(isDark, accentColor),
-          ),
-        
         // Subcategories Header
         if (subcategories.isNotEmpty)
           SliverToBoxAdapter(
@@ -546,181 +510,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  /// Build sponsored products horizontal carousel
-  Widget _buildSponsoredSection(bool isDark, Color accentColor) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section Header
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Row(
-            children: [
-              Icon(Icons.campaign_rounded, size: 16, color: accentColor),
-              const SizedBox(width: 6),
-              Text(
-                'Sponsored',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-        
-        // Horizontal Scrollable Products
-        SizedBox(
-          height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: _sponsoredProducts.length,
-            itemBuilder: (context, index) {
-              final sponsoredData = _sponsoredProducts[index];
-              return _buildSponsoredProductCard(sponsoredData, isDark, accentColor, index);
-            },
-          ),
-        ),
-        
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-
-  /// Individual sponsored product card with Ad badge
-  Widget _buildSponsoredProductCard(SponsoredProductData data, bool isDark, Color accentColor, int index) {
-    final product = data.product;
-    
-    // Record impression when card is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<MarketplaceAdProvider>().recordImpression(
-        product.id,
-        AdPlacement.category,
-      );
-    });
-    
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        // Record click
-        context.read<MarketplaceAdProvider>().recordClickWithPlacement(
-          product.id,
-          AdPlacement.category,
-        );
-        // Navigate to product with ads source for analytics
-        Navigator.pushNamed(
-          context,
-          '/product/${product.id}',
-          arguments: {
-            'source': 'ads',
-            'adCampaignId': data.campaignId,
-          },
-        );
-      },
-      child: Container(
-        width: 130,
-        margin: EdgeInsets.only(right: index < _sponsoredProducts.length - 1 ? 10 : 0),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.grey[200]!,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image with Ad Badge
-            Expanded(
-              flex: 6,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                    child: CachedNetworkImage(
-                      imageUrl: product.images.isNotEmpty ? product.images.first : '',
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: isDark ? Colors.grey[800] : Colors.grey[100],
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: isDark ? Colors.grey[800] : Colors.grey[100],
-                        child: Icon(Icons.image, color: Colors.grey[400], size: 32),
-                      ),
-                    ),
-                  ),
-                  // Ad Badge
-                  Positioned(
-                    top: 6,
-                    left: 6,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.amber[700],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'Ad',
-                        style: TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Product Info
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      product.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : Colors.black87,
-                        height: 1.2,
-                      ),
-                    ),
-                    Text(
-                      '₹${product.salePrice.toStringAsFixed(0)}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

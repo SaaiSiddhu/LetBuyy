@@ -983,26 +983,29 @@ class _ProductCardState extends State<_ProductCard> {
                         ),
                         SizedBox(height: widget.isCompact ? 6 : 8),
 
-                        // Rating
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
-                          child: Row(
-                            children: [
-                              Icon(Icons.star, size: 14, color: Colors.amber[700]),
-                              const SizedBox(width: 4),
-                              Text(
-                                widget.product.rating.toStringAsFixed(1),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: widget.isDark
-                                      ? Colors.grey[400]
-                                      : AppColors.textSecondary,
+                        // Rating -- C2 (canonical rewire): no canonical successor yet, stays at
+                        // ProductModel's honest default of 0.0 (see ProductProvider's doc comment);
+                        // hidden rather than shown as "★ 0.0".
+                        if (widget.product.rating > 0)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(
+                              children: [
+                                Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                                const SizedBox(width: 4),
+                                Text(
+                                  widget.product.rating.toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: widget.isDark
+                                        ? Colors.grey[400]
+                                        : AppColors.textSecondary,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
 
                         // Price
                         Row(

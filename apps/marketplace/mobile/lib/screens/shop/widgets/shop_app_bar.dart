@@ -7,7 +7,7 @@ import 'package:geocoding/geocoding.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import '../../profile/saved_addresses_screen.dart';
+import '../../profile/letbuyy_account_screen.dart';
 import 'sort_bottom_sheet.dart';
 
 const double kAppBarHeight = 172; // Adjusted height for 3 rows
@@ -369,20 +369,16 @@ class _ShopAppBarState extends State<ShopAppBar>
     );
   }
 
+  // Phase 1R corrective (C2): AddressProvider was entirely FirebaseFirestore-backed via the
+  // legacy AuthService/DatabaseService, with no canonical successor wired into this widget.
+  // Its own read path already never populated addresses (canonical sign-in never touches
+  // FirebaseAuth, so AddressProvider's userId guard always short-circuited), so this drops the
+  // Consumer and uses the existing _currentLocationText fallback directly -- the exact value
+  // this already rendered.
   Widget _buildLocationLine(BuildContext context, bool isDark) {
-    return Consumer<AddressProvider>(
-      builder: (context, addressProvider, _) {
-        final address = addressProvider.addresses.isNotEmpty
-            ? addressProvider.addresses.firstWhere(
-                (a) => a.isDefault,
-                orElse: () => addressProvider.addresses.first,
-              )
-            : null;
-        final displayLoc = address != null
-            ? '${address.city}, ${address.state}'
-            : _currentLocationText;
+    final displayLoc = _currentLocationText;
 
-        return Container(
+    return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: isDark
@@ -432,15 +428,14 @@ class _ShopAppBarState extends State<ShopAppBar>
                 child: InkWell(
                   onTap: () {
                     HapticFeedback.lightImpact();
+                    // C3 corrective: was SavedAddressesScreen, disconnected to an unconditional
+                    // empty state with no canonical successor -- now points at
+                    // letbuyy_account_screen.dart, the real, BuyerAddressApi-backed address book.
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const SavedAddressesScreen()),
-                    ).then((result) {
-                      if (result == true) {
-                        addressProvider.loadAddresses();
-                      }
-                    });
+                          builder: (context) => const LetBuyyAccountScreen()),
+                    );
                   },
                   borderRadius: BorderRadius.circular(4),
                   child: Container(
@@ -469,8 +464,6 @@ class _ShopAppBarState extends State<ShopAppBar>
             ],
           ),
         );
-      },
-    );
   }
 
   Widget _buildIconButton(

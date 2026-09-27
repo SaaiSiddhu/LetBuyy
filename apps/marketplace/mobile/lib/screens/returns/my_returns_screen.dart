@@ -5,11 +5,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import '../../providers/auth_provider.dart';
 import 'return_tracking_screen.dart';
 
 class MyReturnsScreen extends StatefulWidget {
@@ -41,8 +39,15 @@ class _MyReturnsScreenState extends State<MyReturnsScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final authProvider = context.watch<AuthProvider>();
-    final userId = authProvider.currentUser?.uid;
+    // Phase 1R corrective (C2): was authProvider.currentUser?.uid (AuthProvider, entirely
+    // FirebaseAuth-backed) -- always null now, since canonical "Sign in with LetBuyy" never
+    // touches FirebaseAuth. This screen is only reachable from profile_screen.dart's signed-in-
+    // only menu, so the buyer genuinely is signed in by the time they get here; there's just no
+    // canonical returns capability yet to fetch with (ReturnService is itself entirely
+    // FirebaseFirestore-backed, matching OrderProvider's disposition -- returns are downstream of
+    // orders, which have no canonical backend yet either). Renders the honest "not available"
+    // state directly instead of a misleading "please login".
+    const String? userId = null;
 
     return Scaffold(
       resizeToAvoidBottomInset: false, // 🔥 KEYBOARD FIX
@@ -196,9 +201,9 @@ class _MyReturnsScreenState extends State<MyReturnsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.lock_outline, size: 64, color: Colors.grey[400]),
+          Icon(Icons.assignment_return_outlined, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          const Text('Please login to view your returns'),
+          const Text('Returns aren\'t available yet'),
         ],
       ),
     );

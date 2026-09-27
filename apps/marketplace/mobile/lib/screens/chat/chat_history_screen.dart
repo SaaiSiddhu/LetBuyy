@@ -2,9 +2,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import '../../widgets/premium_scaffold.dart'; 
+import '../../widgets/premium_scaffold.dart';
+
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): AIChatService.getAllSessions()
+// always returns [] now (it requires a signed-in Firebase user, which never exists under canonical
+// auth -- see that method's own doc comment), so 'lastTimestamp' is never actually populated with a
+// real Firestore Timestamp any more. Duck-typing .toDate() (rather than importing cloud_firestore
+// just for the static type) keeps this working unchanged if that ever changes, without the import.
+DateTime? _asDateTime(Object? value) {
+  if (value == null) return null;
+  if (value is DateTime) return value;
+  try {
+    return (value as dynamic).toDate() as DateTime;
+  } catch (_) {
+    return null;
+  }
+}
 
 class ChatHistoryScreen extends StatefulWidget {
   const ChatHistoryScreen({super.key});
@@ -31,8 +45,8 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
 
     // Sort by timestamp, most recent first
     sessions.sort((a, b) {
-      final dateA = (a['lastTimestamp'] as Timestamp?)?.toDate();
-      final dateB = (b['lastTimestamp'] as Timestamp?)?.toDate();
+      final dateA = _asDateTime(a['lastTimestamp']);
+      final dateB = _asDateTime(b['lastTimestamp']);
       return (dateB ?? DateTime(0)).compareTo(dateA ?? DateTime(0));
     });
 
@@ -115,7 +129,7 @@ class _ChatHistoryScreenState extends State<ChatHistoryScreen> {
   Widget _buildSessionCard(Map<String, dynamic> session) {
     // This data will now be available thanks to our fix in saveMessage
     final lastMessage = session['lastMessage'] as String? ?? 'No messages yet';
-    final lastTimestamp = (session['lastTimestamp'] as Timestamp?)?.toDate();
+    final lastTimestamp = _asDateTime(session['lastTimestamp']);
     final messageCount = session['messageCount'] as int? ?? 0;
     final sessionId = session['id'] as String; // 'id' from getAllSessions
 

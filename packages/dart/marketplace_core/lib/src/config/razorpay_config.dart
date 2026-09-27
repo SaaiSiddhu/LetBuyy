@@ -6,11 +6,11 @@ class RazorpayConfig {
   static const String keyId = String.fromEnvironment('RAZORPAY_KEY_ID');
   static const String keySecret = String.fromEnvironment('RAZORPAY_KEY_SECRET');
   
-  static const String appName = 'AgriMate';
+  static const String appName = 'LetBuyy';
   static const String currency = 'INR';
   static const int paymentTimeoutSeconds = 300;
   static const int maxRetries = 2;
-  static const String themeColor = '#2E7D32';
+  static const String themeColor = '#00B3B3'; // AppColors.primary (marketplace_ui_kit)
   
   static bool get isLiveMode => keyId.startsWith('rzp_live_');
   static String get paymentMode => isLiveMode ? '🔴 LIVE' : '🟡 TEST';
