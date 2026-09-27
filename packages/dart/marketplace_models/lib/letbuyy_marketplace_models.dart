@@ -70,10 +70,9 @@ export 'src/keyword_bid_model.dart';
 // Support Chat
 export 'src/support_chat_model.dart';
 
-// Reels (Short-form Video)
-export 'src/reel_model.dart';
-export 'src/reel_stats_model.dart';
-export 'src/reel_comment_model.dart';
+// Reels (Short-form Video) retired (C3 corrective, 27 September 2026 review continuation):
+// reel_model.dart/reel_stats_model.dart/reel_comment_model.dart deleted alongside
+// marketplace_services' ReelService/ReelsPreloadProvider -- see that package's own barrel comment.
 
 // Loyalty System retired (C3 corrective, 27 September 2026 review continuation): loyalty_model.dart
 // deleted alongside LoyaltyProvider/LoyaltyService -- see main.dart's own doc comment.

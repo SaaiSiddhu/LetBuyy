@@ -84,9 +84,14 @@ export 'src/providers/wishlist_provider.dart';
 // Support Chat
 export 'src/support_chat_service.dart';
 
-// Reels
-export 'src/reel_service.dart';
-export 'src/reels_preload_provider.dart';
+// Reels retired (C3 corrective, 27 September 2026 review continuation): reel_service.dart's
+// constructor touched FirebaseFirestore.instance/FirebaseStorage.instance eagerly (the same crash
+// class as AIChatService's own fields, fixed separately this same pass) -- confirmed already fixed
+// at both real call sites in an earlier commit this phase (reels_feed_screen.dart/
+// sponsored_products_banner.dart, see their own doc comments), leaving ReelService and
+// ReelsPreloadProvider with zero real (non-comment) callers anywhere. Deleted outright, along with
+// reel_model.dart/reel_stats_model.dart/reel_comment_model.dart (also zero callers once these were
+// gone). Full reel/media commerce remains explicitly owned by its own later phase.
 
 // Visual Search
 export 'src/visual_search_service.dart';
