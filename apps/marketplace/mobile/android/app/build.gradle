@@ -122,29 +122,13 @@ dependencies {
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
-    // Firebase PLATFORM dependencies -- removed entirely, Phase 1R final pass (owner-requested
-    // completion, same day). firebase-analytics-ktx/firebase-messaging-ktx/firebase-auth-ktx/
-    // firebase-storage-ktx/firebase-functions-ktx were already removed in earlier passes this
-    // phase (see git history for this block); firebase-bom and firebase-firestore-ktx were the
-    // last two, kept only while cloud_firestore was still a real Dart dependency
-    // (support_chat_service.dart, visual_search_service.dart, category_attribute_service.dart --
-    // all three now deleted, see pubspec.yaml's own comment). Verified via a fully clean
-    // rebuild's own `aapt dump xmltree AndroidManifest.xml`: zero `io.flutter.plugins.firebase.*`
-    // registrants, and no FirebaseInitProvider/FirebaseAuthRegistrar/FirestoreRegistrar/
-    // FunctionsRegistrar/StorageRegistrar/AnalyticsRegistrar/MessagingRegistrar/
-    // GenericIdpActivity/RecaptchaActivity anywhere -- i.e. no live Firebase project ever
-    // bootstraps. CORRECTION (same rebuild, same pass): an EARLIER version of this comment
-    // additionally claimed "zero com.google.firebase.* registrants remain" -- that was wrong.
-    // The ML Kit dependencies immediately below (pre-existing, unrelated to this removal, used
-    // for the KYC live-selfie/document-scan feature) transitively pull in small Google-internal
-    // plumbing jars literally named com.google.firebase:firebase-components/firebase-encoders/
-    // firebase-encoders-json, which register 4 `com.google.firebase.components:...Registrar`
-    // meta-data entries (com.google.mlkit.vision.face/text/common.internal.*Registrar). These
-    // are Google's shared component-discovery naming convention, not a Firebase product, have no
-    // Firebase project association, and never run without FirebaseInitProvider bootstrapping
-    // them -- confirmed absent above. Out of this phase's removal scope (ML Kit is an on-device
-    // vision SDK, not one of the Firebase backend services this phase replaces), but the earlier
-    // absolute wording was inaccurate and is corrected here rather than left standing.
+    // Firebase PLATFORM dependencies -- removed entirely (Phase 1R). No FirebaseApp/Auth/
+    // Firestore/Functions/Storage/Analytics/Messaging class or registrant remains, verified at
+    // the manifest and compiled-class level (see docs/evidence/ for the full trail). The ML Kit
+    // dependencies below are unrelated and pre-existing (KYC live-selfie/document-scan); they
+    // transitively use Google's shared, non-Firebase-project component-discovery library, which
+    // is real code that runs on its own but never touches a Firebase project -- distinguishing
+    // "shares a library with Firebase" from "depends on Firebase" is deliberate, not an oversight.
 
     // ML Kit dependencies (base only - add language packs if needed)
     implementation 'com.google.mlkit:face-detection:16.1.6'
