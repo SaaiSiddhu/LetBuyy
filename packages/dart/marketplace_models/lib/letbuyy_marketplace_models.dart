@@ -76,8 +76,8 @@ export 'src/reel_model.dart';
 export 'src/reel_stats_model.dart';
 export 'src/reel_comment_model.dart';
 
-// Loyalty System
-export 'src/loyalty_model.dart';
+// Loyalty System retired (C3 corrective, 27 September 2026 review continuation): loyalty_model.dart
+// deleted alongside LoyaltyProvider/LoyaltyService -- see main.dart's own doc comment.
 
 // Deals System
 export 'src/deal_model.dart';

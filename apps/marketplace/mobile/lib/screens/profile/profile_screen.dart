@@ -13,7 +13,6 @@ import '../../auth/buyer_sign_in_controller.dart';
 import '../../auth/buyer_sign_in_wiring.dart';
 import '../../widgets/letbuyy_account_card.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
-import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../../widgets/premium_scaffold.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -81,11 +80,6 @@ class _ProfileScreenState extends State<ProfileScreen>
     // buyer's stats actually load once restoration finishes.
     _signIn = context.read<BuyerSignInController>()..addListener(_onSignInChanged);
     _onSignInChanged();
-
-    // Initialize loyalty provider to show points
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<LoyaltyProvider>(context, listen: false).init();
-    });
   }
 
   @override
@@ -540,83 +534,59 @@ class _ProfileScreenState extends State<ProfileScreen>
   // NEW PREMIUM WIDGETS
   // ---------------------------------------------------------------------------
 
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): was Consumer<LoyaltyProvider>,
+  // reading currentTier/colorValue/a per-tier gradient, plus a crown overlay for gold-and-above
+  // tiers. LoyaltyProvider and the whole Firestore-backed loyalty subsystem behind it are retired
+  // this same pass (see main.dart's own doc comment; LoyaltyScreen and its home_app_bar.dart badge
+  // -- the reachable, real-looking-but-permanently-fake surfaces -- are deleted outright).
+  // currentTier could never legitimately be anything but its default, LoyaltyTier.bronze
+  // (LoyaltyProvider.init() required safeFirebaseUserId(), always null under canonical auth, and
+  // the only code that ever advanced a tier, OrderService.awardPointsForOrder, had zero live
+  // callers anywhere in the app), so this avatar ring was already permanently, unfalsifiably bronze
+  // -- and showCrown (gold-and-above only) was already permanently false -- for every buyer.
+  // Inlining that one reachable appearance changes nothing observable. The tier BADGE/card already
+  // removed elsewhere in this file made a textual claim and was deleted outright; this ring is
+  // purely decorative and was deliberately kept as-is then -- unaffected now, just no longer routed
+  // through a provider that could only ever answer with this one constant.
   Widget _buildCompactHeader(String? email, bool isDark) {
-    return Consumer<LoyaltyProvider>(
-      builder: (context, loyaltyProvider, _) {
-        final tier = loyaltyProvider.currentTier;
-        final tierColor = Color(tier.colorValue);
-        final showCrown = tier.index >= LoyaltyTier.gold.index; // Gold and above
-        
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-          child: Row(
-            children: [
-              // Avatar with Dynamic Tier Ring + Crown
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Ring Container
-                  Container(
-                    padding: const EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: _getTierGradient(tier),
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: tierColor.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      radius: 26,
-                      backgroundColor: isDark ? Colors.black : Colors.white,
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
-                        // Phase 1R: the canonical buyer session has no photo (R1.1) — always the
-                        // placeholder icon, never a broken/missing-image state.
-                        child: Icon(Icons.person, size: 24, color: tierColor),
-                      ),
-                    ),
-                  ),
-                  
-                  // Crown for Gold+ tiers
-                  if (showCrown)
-                    Positioned(
-                      top: -8,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: tierColor.withValues(alpha: 0.3),
-                                blurRadius: 6,
-                                spreadRadius: 1,
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.auto_awesome_rounded,
-                            size: tier == LoyaltyTier.diamond ? 14 : 12,
-                            color: tierColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
+    const tierColor = Color(0xFFCD7F32);
+    const tierGradient = [Color(0xFFCD7F32), Color(0xFF8B4513)];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+      child: Row(
+        children: [
+          // Avatar with tier ring (bronze; see this method's own doc comment)
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: tierGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-              const SizedBox(width: 14),
+              boxShadow: [
+                BoxShadow(
+                  color: tierColor.withValues(alpha: 0.4),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              radius: 26,
+              backgroundColor: isDark ? Colors.black : Colors.white,
+              child: CircleAvatar(
+                radius: 24,
+                backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.grey[100],
+                // Phase 1R: the canonical buyer session has no photo (R1.1) — always the
+                // placeholder icon, never a broken/missing-image state.
+                child: const Icon(Icons.person, size: 24, color: tierColor),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
 
           // User Info & Badge
           Expanded(
@@ -654,26 +624,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                // C3 (Firebase SDK removal, LoyaltyProvider audit): the "TIER MEMBER" badge that
-                // was here is deleted, not just restyled -- it always read LoyaltyProvider.currentTier,
-                // which always defaults to bronze (LoyaltyProvider.init() requires safeFirebaseUserId(),
-                // always null under canonical auth) and can never legitimately change for any real user:
-                // the only code that ever advances a tier, OrderService.awardPointsForOrder, has zero
-                // live callers anywhere in the app (grepped). A permanent, unfalsifiable "BRONZE MEMBER"
-                // label is indistinguishable from a genuine new member with a real, working tier system --
-                // exactly the fabricated-permanent-state failure mode this phase exists to catch, just
-                // surfaced as a UI label rather than a wrong value. The avatar ring color above is left
-                // as-is (purely decorative, makes no textual claim).
               ],
             ),
           ),
 
-              // Edit Button (Icon only)
-              _buildEditButton(isDark),
-            ],
-          ),
-        );
-      },
+          // Edit Button (Icon only)
+          _buildEditButton(isDark),
+        ],
+      ),
     );
   }
 
@@ -1177,18 +1135,4 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  List<Color> _getTierGradient(LoyaltyTier tier) {
-    switch (tier) {
-      case LoyaltyTier.bronze:
-        return [const Color(0xFFCD7F32), const Color(0xFF8B4513)];
-      case LoyaltyTier.silver:
-        return [const Color(0xFFC0C0C0), const Color(0xFF808080)];
-      case LoyaltyTier.gold:
-        return [const Color(0xFFFFD700), const Color(0xFFDAA520)];
-      case LoyaltyTier.platinum:
-        return [const Color(0xFFE5E4E2), const Color(0xFF9E9E9E)];
-      case LoyaltyTier.diamond:
-        return [AppColors.infoLight.withValues(alpha: 0.3), AppColors.primaryLight];
-    }
-  }
 }

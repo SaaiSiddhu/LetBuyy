@@ -26,7 +26,6 @@ import '../screens/reels/reels_feed_screen.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import '../screens/search/search_screen.dart';
 import '../screens/search/visual_search_screen.dart';
-import '../screens/loyalty/loyalty_screen.dart';
 // Checkout
 import '../screens/checkout/checkout_screen.dart';
 import '../screens/checkout/order_success_screen.dart';
@@ -92,9 +91,6 @@ class AppRoutes {
   // Reels
   static const String reels = '/reels';
 
-  // Loyalty
-  static const String loyalty = '/loyalty';
-  
   // Order Details & Tracking
   static const String orderDetails = '/order-details';
   static const String orderTracking = '/order-tracking';
@@ -247,10 +243,7 @@ class AppRoutes {
       // Return & Exchange routes
       case myReturns:
         return _buildRoute(const MyReturnsScreen(), settings);
-        
-      case loyalty:
-        return _buildRoute(const LoyaltyScreen(), settings);
-        
+
       case returnRequest:
         final args = settings.arguments as Map<String, dynamic>?;
         if (args != null) {

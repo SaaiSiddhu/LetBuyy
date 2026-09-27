@@ -13,7 +13,6 @@ import 'widgets/banner_carousel_section.dart';
 import 'widgets/rate_your_purchases_section.dart';
 import 'widgets/sponsored_products_section.dart';
 import 'widgets/deal_cards_section.dart';
-import 'widgets/deals_section.dart';
 import 'widgets/suggested_for_you_section.dart';
 import 'widgets/all_products_grid.dart';
 import 'widgets/address_selection_sheet.dart';
@@ -149,12 +148,15 @@ class _MobileHomeScreenState extends State<MobileHomeScreen>
                     : const RateYourPurchasesSection().animate().fadeIn(duration: 600.ms, delay: 300.ms),
               ),
 
-              // 2.5 Hot Deals Section (Seller Promotional Deals)
-              SliverToBoxAdapter(
-                child: kIsWeb 
-                    ? const DealsSection()
-                    : const DealsSection().animate().fadeIn(duration: 600.ms, delay: 350.ms),
-              ),
+              // C3 (Firebase SDK removal, 27 September 2026 review continuation): "2.5 Hot Deals
+              // Section" (DealsSection, deals_section.dart) deleted outright, not just hidden --
+              // it built a raw Firestore stream (DealService.getActiveDeals()) directly and
+              // unguarded in initState, a real crash risk (the same pattern already fixed for
+              // sponsored_products_section.dart/sponsored_products_banner.dart elsewhere this
+              // phase), and it duplicated "4. Deal Cards" below (DealCardsSection,
+              // deal_cards_section.dart), which is already canonical-feed-based, tested
+              // (deal_cards_section_test.dart) and working -- both rendered the same "discounted
+              // listings" concept on this same screen.
 
               // 3. Sponsored Products - LAZY LOADED
               if (_showSponsoredProducts)

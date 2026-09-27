@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
@@ -92,67 +91,19 @@ class HomeAppBar extends StatelessWidget {
           
           // Address Text
           const Expanded(child: _HomeDeliveryAddressBar()),
-          
-          // Loyalty Points Badge
-          _buildLoyaltyBadge(context),
         ],
       ),
     );
   }
 
-  Widget _buildLoyaltyBadge(BuildContext context) {
-    final userId = safeFirebaseUserId();
-    if (userId == null) return const SizedBox.shrink();
-
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('loyalty').doc(userId).snapshots(),
-      builder: (context, snapshot) {
-        int points = 0;
-        if (snapshot.hasData && snapshot.data!.exists) {
-          final data = snapshot.data!.data() as Map<String, dynamic>?;
-          points = (data?['points'] ?? 0) as int;
-        }
-
-        return GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.pushNamed(context, '/loyalty');
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFD700), Color(0xFFFFA000)],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.warning.withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.bolt_rounded, color: Colors.white, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  '$points',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): _buildLoyaltyBadge deleted
+  // outright, not just hidden -- it read FirebaseFirestore.instance.collection('loyalty') behind a
+  // safeFirebaseUserId() == null guard that is always true under canonical auth, so it already
+  // rendered nothing (SizedBox.shrink()) for every real buyer; deleting it changes nothing
+  // observable. Its own tap target, the '/loyalty' route (LoyaltyScreen), is retired in this same
+  // pass -- profile_screen.dart's own doc comment already found LoyaltyScreen "can never show
+  // real, changing data for any user" and removed its OTHER entry point; this was the one it
+  // missed. See main.dart's own doc comment for the full disposition.
 
   Widget _buildSearchBar(BuildContext context, bool isDark) {
     return Padding(

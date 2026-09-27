@@ -149,8 +149,8 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // now renders SizedBox.shrink() unconditionally (matching its own prior empty state) instead of
         // opening a FirebaseFirestore realtime listener with no canonical successor.
         // CouponProvider retired (R1 corrective, C2): entirely FirebaseFirestore-backed with no
-        // canonical successor. Its methods had no userId guard (unlike LoyaltyProvider, kept
-        // registered), so they genuinely attempted Firestore queries whenever invoked --
+        // canonical successor. Its methods had no userId guard, so they genuinely attempted
+        // Firestore queries whenever invoked --
         // product_details_screen.dart called fetchAvailableCoupons() unconditionally on every
         // view. Deeply embedded across checkout_screen.dart, payment_method_screen.dart (4 sites,
         // including two order-placement code paths already unreachable since they sit behind an
@@ -185,8 +185,19 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         // visited screen) built raw unguarded FirebaseFirestore streams directly and were
         // replaced with an honest empty state.
 
-        // ✅ ADDED: Loyalty Points provider
-        ChangeNotifierProvider(create: (_) => LoyaltyProvider()),
+        // LoyaltyProvider retired (C3 corrective, 27 September 2026 review continuation): entirely
+        // Firestore-backed (LoyaltyService) with no canonical successor. init() guarded on a userId
+        // that's always null under canonical auth, so it always resolved to an empty, unfalsifiable
+        // "Bronze tier, 0 points" state -- profile_screen.dart's own doc comment had already found
+        // and removed the resulting fabricated-permanent-state "TIER MEMBER" badge and "Loyalty
+        // Points" quick-action card; this pass traced the two entry points that comment named but
+        // didn't yet close (home_app_bar.dart's badge, the '/loyalty' route/LoyaltyScreen it opened)
+        // and the payment_method_screen.dart redemption card (never reachable: points/
+        // canRedeemPoints could never be nonzero), then removed the whole subsystem --
+        // LoyaltyProvider, LoyaltyService, LoyaltyScreen (+ its desktop/web wrappers), loyalty_card.dart,
+        // LoyaltyModel -- rather than leave it registered with nothing left to serve. The one
+        // decorative, non-Firebase-dependent remnant (profile_screen.dart's permanently-bronze avatar
+        // ring) is inlined as a constant there; see that file's own doc comment.
 
         // Firebase SDK removal pass (27 September 2026 review, finding 5): AuthService/
         // DatabaseService were registered "for reviews," but ReviewProvider itself (Firestore-
