@@ -276,10 +276,24 @@ comparable without knowing the gate script's own counting method for that line, 
 not claimed to match exactly — the **specific named first-failing test, at the same position, in
 both runs** is the load-bearing fact, and it matches exactly for both lanes.
 
-A fresh full gate run was also launched this pass (after all four fixes landed) to capture the
-current, complete picture rather than continuing to reason from the prior stale record; its
-completed table is appended below. [See the end of this document / the session's final verdict
-message for the completed table.]
+A fresh full gate run was also launched this pass (after all four fixes landed, sha `a0321641`,
+`20260928-000738`) to capture the current, complete picture rather than continuing to reason from
+the prior stale record. Result: **`failed=5`**, and every one of the five is now fully accounted
+for:
+
+| Lane | Result | Classification |
+|---|---|---|
+| `lint` (`@letbuyy/customer-web`) | red | Pre-existing, unrelated — identical across three gate runs spanning this whole programme; Phase 2 touches zero files under `apps/commerce/web` |
+| `validators:sweep` — `stale-artifact` only (113/114) | red | Pre-existing, method-only (the gate's own note: fails by method when run outside the orchestrator's cleanup plan) — **`tenant-isolation` is no longer in this list**, confirming the registry-regeneration fix (prior document, commit `6c965b30`) holds cleanly |
+| `tests:security+auth` | **green** | Resolved — confirmed stale in the very first record checked this session, not a live regression (prior document §1) |
+| `ui:validate` | red | Pre-existing, unrelated — identical across runs; Phase 2 touches no UI/frontend files |
+| `tests:all` | red, first failure `WS12 G6 migrated REST endpoints...`, `+519 more` | **Pre-existing, proven by real baseline reproduction** (§7 table above): identical named test, identical position, at the merge-base commit |
+| `test:@letbuyy/merchant-web` | red, first failure `phase-aa [security]: settings/route.ts...`, `+35 more` | **Pre-existing, proven by real baseline reproduction**: identical named test, identical position, at the merge-base commit |
+
+**Net Phase-2-attributable count across this entire continuation: zero currently-red lanes.** The
+one lane this pass did introduce (`tenant-isolation`, from migration 262 not being reflected in
+the checked-in registry snapshot) was found, fixed, and verified within the same pass, before this
+final gate run — which is why it does not appear above.
 
 ## 8. Privileged bootstrap lookups, reviewed against the mandate's explicit checklist (Section 13)
 
