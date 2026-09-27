@@ -8,7 +8,9 @@ const reporter = createReporter("Dev auth bypass validator");
 const signupRoute = readFile("apps/platform/identity/src/app/api/auth/signup/route.ts");
 const identityTurnstile = readFile("apps/platform/identity/src/lib/turnstile.ts");
 const turnstileWidget = readFile("apps/platform/identity/src/components/TurnstileWidget.tsx");
-const consoleAuth = readFile("apps/internal/console/src/lib/console-auth-server.ts");
+// The dev-MFA-bypass gate lives in console-mfa.ts (SUSTAINED-E); console-auth-server.ts only
+// re-exports it. Check the real file, not the barrel that no longer contains this logic.
+const consoleAuth = readFile("apps/internal/console/src/lib/console-mfa.ts");
 const envTemplate = readFile("config/env/templates/next-app.env.example");
 const envSchema = readFile("config/env/schemas/next-app.schema.json");
 

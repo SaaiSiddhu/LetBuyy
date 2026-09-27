@@ -19,7 +19,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
+import { Hono } from 'hono';
 import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
+import { registerStorefrontPublicRoutes } from '../routes/storefront/public-routes';
+import type { Env } from '../index';
 
 const srcRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -142,4 +145,59 @@ test('status is not an accepted scope column for sites — the reason the route 
         async () => db.from('sites').select('store_name').eq('status', 'published'),
         /requires a tenant\/owner predicate/,
     );
+});
+
+// ── the graceful-unavailable half (F1.5, foundation-phase1-closure, 2026-09-26) ────────────────
+//
+// Before this phase, the guard's rejection above propagated uncaught out of the route handler to
+// the gateway's global error handler, so a real anonymous caller saw an opaque `500
+// INTERNAL_ERROR` — logged and reported identically to a genuine crash. The route now catches
+// exactly that one documented rejection and reports it as the deliberate unavailability it is.
+// These tests exercise the REAL route through a real Hono app (not the fake-client stand-in
+// above), so what is asserted is the wire contract a caller actually receives.
+
+type PublicDeps = Parameters<typeof registerStorefrontPublicRoutes>[1];
+
+function publicApp() {
+    const app = new Hono<{ Bindings: Env }>();
+    // `/directory` calls the module-level getSupabaseAdmin() directly, not an injected dependency —
+    // an empty deps object is sufficient to register every route; only `/directory` is invoked below.
+    registerStorefrontPublicRoutes(
+        app as unknown as Parameters<typeof registerStorefrontPublicRoutes>[0],
+        {} as unknown as PublicDeps,
+    );
+    return app;
+}
+
+// Plausible but unreachable — createClient() never validates reachability at construction time,
+// and the guard rejects the query chain before any network call would happen (proved above).
+const workingEnv = () => ({
+    SUPABASE_URL: 'https://example.test',
+    SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
+} as unknown as Env);
+
+test('GET /directory returns a deliberate 503 DIRECTORY_UNAVAILABLE, not an opaque 500', async () => {
+    const res = await publicApp().request('/directory', undefined, workingEnv());
+    assert.equal(res.status, 503);
+    const body = (await res.json()) as { error: { code: string; message: string } };
+    assert.equal(body.error.code, 'DIRECTORY_UNAVAILABLE');
+    assert.match(body.error.message, /not available/i);
+});
+
+test('the 503 is still produced by the tenant guard, not by skipping it — the isolation boundary', () => {
+    // If a future edit routed around getSupabaseAdmin (e.g. swapped in getSupabaseAdminUnguarded,
+    // or added a site_id/tenant predicate that let the query through), this route would start
+    // returning 200 with real store rows instead of 503. That is exactly the regression this test
+    // exists to catch — CAP-C60 stays an owner decision, never an accidental side effect of an
+    // error-handling change.
+    return publicApp()
+        .request('/directory', undefined, workingEnv())
+        .then((res) => assert.equal(res.status, 503, 'a 200 here means the tenant guard no longer blocks the unscoped sites read'));
+});
+
+test('a genuinely different failure is NOT reported as DIRECTORY_UNAVAILABLE', async () => {
+    // No SUPABASE_URL/KEY makes createClient() throw synchronously with an unrelated message,
+    // proving the catch block recognizes only the one documented guard rejection, never everything.
+    const res = await publicApp().request('/directory', undefined, {} as unknown as Env);
+    assert.notEqual(res.status, 503, 'an unrelated construction failure must not be reported as the directory being deliberately unavailable');
 });

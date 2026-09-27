@@ -69,10 +69,21 @@ class BannerProvider with ChangeNotifier {
           notifyListeners();
         }
       }, onError: (err) {
+        // foundation-phase1-closure (2026-09-26): this used to only debugPrint, so a real listener
+        // failure (offline, permission change, stream error) left `_error`/`isLoading` exactly as
+        // they were and never called notifyListeners() -- any UI built on this provider's `error`
+        // getter could never distinguish "genuinely no banners" from "the listener is broken",
+        // because this path never actually reached that state. `_banners` is deliberately left as
+        // whatever was last known-good rather than cleared, so a transient error does not blank out
+        // a carousel that was already rendering correctly.
+        _error = err.toString();
         debugPrint('Banner realtime listener error: $err');
+        notifyListeners();
       });
     } catch (e) {
+      _error = e.toString();
       debugPrint('Failed to start banner realtime listener: $e');
+      notifyListeners();
     }
   }
 
