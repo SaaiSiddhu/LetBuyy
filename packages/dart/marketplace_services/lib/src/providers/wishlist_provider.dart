@@ -23,6 +23,18 @@ class WishlistProvider with ChangeNotifier {
   static const _guestPrefsKey = 'local_wishlist_v1';
   static const _localWishlistId = 'local-device-wishlist';
 
+  // C3 corrective ("Complete ALL remaining Phase 1R work" task, guest-transfer durability): see
+  // CartProvider's own top-of-class doc comment for the full account of the bug this closes (a
+  // blind second write -- clearing the guest basket -- that could be lost or duplicated across a
+  // retry). This provider's merge is a set union (WishlistModel.contains-based), which is already
+  // naturally idempotent -- re-writing the same union twice is a genuine no-op, no snapshot of the
+  // buyer's own wishlist needs to be frozen the way CartProvider must freeze quantities. Only the
+  // guest-side clear needs a durable receipt: it must remove exactly the transferred product ids,
+  // not blindly clear the whole guest wishlist (which would lose an id the guest added after the
+  // snapshot was taken), and set difference is idempotent by construction -- no completion marker
+  // is needed the way CartProvider's quantity subtraction requires one.
+  static const _transferReceiptKey = 'local_wishlist_v1:transfer_receipt';
+
   WishlistModel _wishlist = _empty();
   bool _isLoading = true;
   String? _error;
@@ -202,9 +214,9 @@ class WishlistProvider with ChangeNotifier {
   }
 
   /// D-BUYER-SCOPE explicit guest -> buyer transfer -- see CartProvider.transferGuestCartToBuyer's
-  /// own doc comment for the full reasoning. Merges using product-ID identity (a Set union): the
-  /// wishlist's own canonical existing dedup rule (WishlistModel.contains), not a new one invented
-  /// for this path.
+  /// own doc comment and this file's own top-of-class doc comment for the full reasoning. Merges
+  /// using product-ID identity (a Set union): the wishlist's own canonical existing dedup rule
+  /// (WishlistModel.contains), not a new one invented for this path. Retry-safe and restart-safe.
   Future<bool> transferGuestWishlistToBuyer() {
     final requestedBuyerId = _activeBuyerId;
     if (requestedBuyerId == null) return Future.value(false);
@@ -212,29 +224,32 @@ class WishlistProvider with ChangeNotifier {
       if (_activeBuyerId != requestedBuyerId) return false;
       try {
         final prefs = await SharedPreferences.getInstance();
-        final guestJson = prefs.getString(_guestPrefsKey);
-        if (guestJson == null) return true;
-        final guestWishlist = WishlistModel.fromMap(jsonDecode(guestJson) as Map<String, dynamic>, _localWishlistId);
-        if (guestWishlist.isEmpty) return true;
 
-        final mergedIds = <String>{..._wishlist.productIds, ...guestWishlist.productIds}.toList();
-        final merged = _wishlist.copyWith(productIds: mergedIds, updatedAt: DateTime.now());
-        final persisted = await prefs.setString(_keyFor(requestedBuyerId), jsonEncode(merged.toMap()));
-        if (!persisted) {
-          _error = 'Could not move your guest wishlist to your account on this device.';
-          _notify();
-          return false;
+        var receipt = _readReceipt(prefs);
+        if (receipt != null && receipt.buyerId != requestedBuyerId) {
+          // A previous buyer's transfer never finished before this buyer signed in. Finish IT,
+          // for its own buyer -- never silently apply a stale receipt to this one.
+          await _completeReceipt(prefs, receipt);
+          receipt = null;
         }
-        _wishlist = merged;
-        final guestCleared = await prefs.setString(_guestPrefsKey, jsonEncode(_empty().toMap()));
-        if (!guestCleared) {
-          _error = 'Your guest wishlist was moved, but couldn’t be cleared on this device.';
-          _notify();
-          return false;
+
+        if (receipt == null) {
+          final guestWishlist = await _readWishlist(prefs, _guestPrefsKey);
+          if (guestWishlist.isEmpty) return true;
+
+          receipt = _TransferReceipt(transferId: '', buyerId: requestedBuyerId, guestSnapshot: guestWishlist.productIds);
+          final written = await prefs.setString(_transferReceiptKey, jsonEncode(receipt.toMap()));
+          if (!written) {
+            _error = 'Could not start moving your guest wishlist on this device.';
+            _notify();
+            return false;
+          }
         }
-        _error = null;
+
+        final done = await _completeReceipt(prefs, receipt);
+        _error = done ? null : 'Your guest wishlist is being moved -- try again to finish.';
         _notify();
-        return true;
+        return done;
       } catch (e) {
         debugPrint('❌ WishlistProvider: error transferring guest wishlist: $e');
         _error = e.toString();
@@ -244,17 +259,92 @@ class WishlistProvider with ChangeNotifier {
     });
   }
 
-  /// Whether the shared guest wishlist currently has anything worth offering to transfer.
+  _TransferReceipt? _readReceipt(SharedPreferences prefs) {
+    final json = prefs.getString(_transferReceiptKey);
+    if (json == null) return null;
+    try {
+      return _TransferReceipt.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (e) {
+      debugPrint('❌ WishlistProvider: corrupt transfer receipt, dropping: $e');
+      return null;
+    }
+  }
+
+  Future<WishlistModel> _readWishlist(SharedPreferences prefs, String key) async {
+    final json = prefs.getString(key);
+    if (json == null) return _empty();
+    try {
+      return WishlistModel.fromMap(jsonDecode(json) as Map<String, dynamic>, _localWishlistId);
+    } catch (e) {
+      debugPrint('❌ WishlistProvider: corrupt wishlist at $key, treating as empty: $e');
+      return _empty();
+    }
+  }
+
+  /// Resumes (or completes, for the first time) [receipt] to its own buyer -- never
+  /// `_activeBuyerId` blindly. Both phases are idempotent by construction (set union, set
+  /// difference), so no completion marker is needed -- see this file's own top-of-class doc
+  /// comment.
+  Future<bool> _completeReceipt(SharedPreferences prefs, _TransferReceipt receipt) async {
+    final buyerWishlist = await _readWishlist(prefs, _keyFor(receipt.buyerId));
+    final mergedIds = <String>{...buyerWishlist.productIds, ...receipt.guestSnapshot}.toList();
+    final merged = buyerWishlist.copyWith(productIds: mergedIds, updatedAt: DateTime.now());
+    final buyerWritten = await prefs.setString(_keyFor(receipt.buyerId), jsonEncode(merged.toMap()));
+    if (!buyerWritten) return false;
+    if (receipt.buyerId == _activeBuyerId) {
+      _wishlist = merged;
+      _notify();
+    }
+
+    final currentGuestWishlist = await _readWishlist(prefs, _guestPrefsKey);
+    final remainingIds = currentGuestWishlist.productIds
+        .where((id) => !receipt.guestSnapshot.contains(id))
+        .toList();
+    final newGuestWishlist = currentGuestWishlist.copyWith(productIds: remainingIds, updatedAt: DateTime.now());
+    final guestWritten = await prefs.setString(_guestPrefsKey, jsonEncode(newGuestWishlist.toMap()));
+    if (!guestWritten) return false;
+
+    await prefs.remove(_transferReceiptKey);
+    return true;
+  }
+
+  /// Whether the shared guest wishlist has anything worth offering to transfer, OR a previous
+  /// transfer never finished.
   Future<bool> hasGuestWishlistToTransfer() async {
     if (_activeBuyerId == null) return false;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final guestJson = prefs.getString(_guestPrefsKey);
-      if (guestJson == null) return false;
-      final guestWishlist = WishlistModel.fromMap(jsonDecode(guestJson) as Map<String, dynamic>, _localWishlistId);
+      final receipt = _readReceipt(prefs);
+      if (receipt != null && receipt.buyerId == _activeBuyerId) return true;
+      final guestWishlist = await _readWishlist(prefs, _guestPrefsKey);
       return !guestWishlist.isEmpty;
     } catch (_) {
       return false;
     }
+  }
+}
+
+/// A frozen, durable record of one in-flight guest -> buyer transfer -- see WishlistProvider's own
+/// top-of-class doc comment. `transferId` is unused here (both phases are idempotent without one)
+/// but kept for shape-symmetry with CartProvider's own receipt.
+class _TransferReceipt {
+  _TransferReceipt({required this.transferId, required this.buyerId, required this.guestSnapshot});
+
+  final String transferId;
+  final String buyerId;
+  final List<String> guestSnapshot;
+
+  Map<String, dynamic> toMap() => {
+        'transferId': transferId,
+        'buyerId': buyerId,
+        'guestSnapshot': guestSnapshot,
+      };
+
+  factory _TransferReceipt.fromMap(Map<String, dynamic> map) {
+    return _TransferReceipt(
+      transferId: map['transferId'] as String? ?? '',
+      buyerId: map['buyerId'] as String,
+      guestSnapshot: (map['guestSnapshot'] as List).cast<String>(),
+    );
   }
 }

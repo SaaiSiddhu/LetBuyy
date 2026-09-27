@@ -40,12 +40,30 @@ ProductModel _product(String id, {double price = 499}) {
 /// Fails exactly one write to the key containing [failOnKeyContaining], once. The same minimal
 /// seam cart_wishlist_persistence_honesty_test.dart uses, scoped here to target one buyer's own
 /// key without disturbing the guest key's own write during the same transfer operation.
+///
+/// [failOnBareGuestKey] is a separate, single-shot trigger for exactly the guest cart/wishlist's
+/// own key ('local_cart_v1'/'local_wishlist_v1') -- needed because that key is a strict prefix of
+/// every other transfer-related key (the receipt, the per-buyer cart, the subtraction marker: all
+/// 'local_cart_v1:...'), so a plain substring match on it would also catch those. This matches a
+/// key that contains [failOnBareGuestKey] but not immediately followed by ':' -- robust to
+/// whatever internal prefix the platform channel itself may add to every key, since it only
+/// inspects what comes right after the substring, not what (if anything) comes before it.
 class _FlakyStore extends InMemorySharedPreferencesStore {
   _FlakyStore.empty() : super.empty();
   String? failOnKeyContaining;
+  String? failOnBareGuestKey;
 
   @override
   Future<bool> setValue(String valueType, String key, Object value) async {
+    final bareGuestKey = failOnBareGuestKey;
+    if (bareGuestKey != null) {
+      final i = key.indexOf(bareGuestKey);
+      final isBareKey = i != -1 && (i + bareGuestKey.length == key.length || key[i + bareGuestKey.length] != ':');
+      if (isBareKey) {
+        failOnBareGuestKey = null;
+        return false;
+      }
+    }
     if (failOnKeyContaining != null && key.contains(failOnKeyContaining!)) {
       failOnKeyContaining = null;
       return false;
@@ -202,6 +220,128 @@ void main() {
       await provider.transferGuestCartToBuyer();
       expect(await provider.hasGuestCartToTransfer(), isFalse);
     });
+
+    // The 4 tests below exercise the receipt/snapshot recovery design directly -- they compile
+    // unmodified against the OLD (pre-receipt) transferGuestCartToBuyer and genuinely FAIL there:
+    // the old version had no notion of a resumable transfer at all, so a guest-clear failure left
+    // nothing for a retry to find except "guest basket already has less than the buyer got," and a
+    // second call would re-merge the SAME guest quantities a second time (a real, reproducible
+    // double-count, not a hypothetical one -- confirmed by temporarily reverting this file's own
+    // production source and watching these exact assertions fail on the duplicated quantity).
+
+    test('guest cleanup failing after a successful merge does not lose or duplicate the item on retry', () async {
+      final provider = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('guest-item'), quantity: 2);
+      provider.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_cart_v1';
+      final firstAttempt = await provider.transferGuestCartToBuyer();
+      expect(firstAttempt, isFalse, reason: 'the guest-side cleanup write was made to fail');
+      expect(provider.getItemQuantity('guest-item'), 2, reason: 'the buyer cart must already show the merge -- it is durably saved even though cleanup is still pending');
+
+      // Forces the next SharedPreferences.getInstance() to genuinely re-read from the store
+      // (this test's own _FlakyStore) rather than the legacy SharedPreferences API's own
+      // in-memory _preferenceCache, which optimistically records every setString() call's
+      // intended value regardless of whether the underlying platform write actually succeeded --
+      // without this, a "failed" write would still read back as applied for the rest of this
+      // process, masking exactly the bug this test exists to catch.
+      SharedPreferences.resetStatic();
+      final secondAttempt = await provider.transferGuestCartToBuyer();
+      expect(secondAttempt, isTrue, reason: 'a retry must finish the pending cleanup, not fail forever');
+      expect(provider.getItemQuantity('guest-item'), 2, reason: 'the retry must not re-merge the same 2 units a second time (would show 4 under the old bug)');
+
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.isEmpty, isTrue, reason: 'the guest basket must end up cleared once the retry actually completes');
+    });
+
+    test('a fresh provider instance (simulating an app restart) resumes an interrupted transfer correctly', () async {
+      final firstRun = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      await firstRun.addItem(_product('guest-item'), quantity: 3);
+      firstRun.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_cart_v1';
+      expect(await firstRun.transferGuestCartToBuyer(), isFalse);
+      // The app "restarts" here -- a brand new provider instance, reading the same durable store,
+      // with no in-memory knowledge of the interrupted transfer above. resetStatic() forces the
+      // legacy SharedPreferences singleton to genuinely re-read from the store too -- see the
+      // sibling test above for why that matters.
+      SharedPreferences.resetStatic();
+
+      final afterRestart = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      afterRestart.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+      expect(afterRestart.getItemQuantity('guest-item'), 3, reason: 'the merge from before the restart is already durably visible');
+
+      expect(await afterRestart.transferGuestCartToBuyer(), isTrue, reason: 'the fresh instance must resume and finish the same pending transfer from disk');
+      expect(afterRestart.getItemQuantity('guest-item'), 3, reason: 'resuming after a restart must not duplicate the quantity either');
+
+      afterRestart.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(afterRestart.isEmpty, isTrue);
+    });
+
+    test('an item the guest adds while cleanup is still pending survives the retry untouched', () async {
+      final provider = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('being-transferred'), quantity: 1);
+      provider.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_cart_v1';
+      expect(await provider.transferGuestCartToBuyer(), isFalse);
+      SharedPreferences.resetStatic();
+
+      // The guest (this same device, still signed out in another tab/flow) adds something new
+      // while the earlier transfer's cleanup is still pending.
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('added-after-snapshot'), quantity: 1);
+
+      provider.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+      expect(await provider.transferGuestCartToBuyer(), isTrue);
+      expect(provider.getItemQuantity('being-transferred'), 1, reason: 'the originally-snapshotted item must not be duplicated');
+
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.isInCart('added-after-snapshot'), isTrue, reason: 'an item added after the snapshot was taken must never be silently discarded by a blind clear');
+      expect(provider.isInCart('being-transferred'), isFalse, reason: 'the originally-snapshotted item must still be removed from the guest basket once cleanup actually completes');
+    });
+
+    test('a stale receipt left by a buyer who signed out mid-transfer is completed for its own buyer, never applied to whoever signs in next', () async {
+      final provider = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('a-item'), quantity: 5);
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_cart_v1';
+      expect(await provider.transferGuestCartToBuyer(), isFalse, reason: 'buyer-a\'s cleanup is left pending');
+      SharedPreferences.resetStatic();
+
+      // buyer-a signs out without ever retrying; buyer-b signs in and adds their own guest-style
+      // flow (a fresh guest item, then their own transfer).
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('b-item'), quantity: 1);
+      provider.updateUserId('buyer-b');
+      await Future<void>.delayed(Duration.zero);
+
+      final resultForB = await provider.transferGuestCartToBuyer();
+      expect(resultForB, isTrue);
+      expect(provider.isInCart('b-item'), isTrue, reason: 'buyer-b\'s own transfer must still succeed');
+      expect(provider.isInCart('a-item'), isFalse, reason: 'buyer-a\'s stale pending transfer must never leak into buyer-b\'s cart');
+
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.getItemQuantity('a-item'), 5, reason: 'buyer-a\'s own transfer must have been completed (for buyer-a), not discarded, while resolving the stale receipt');
+    });
   });
 
   group('WishlistProvider buyer/guest namespace isolation', () {
@@ -265,6 +405,56 @@ void main() {
       provider.updateUserId(null);
       await Future<void>.delayed(Duration.zero);
       expect(provider.isInWishlist('guest-item'), isTrue);
+    });
+
+    test('guest cleanup failing after a successful merge does not lose or re-duplicate the id on retry', () async {
+      final provider = WishlistProvider();
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('guest-item'));
+      provider.updateUserId('buyer-1');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_wishlist_v1';
+      expect(await provider.transferGuestWishlistToBuyer(), isFalse);
+      expect(provider.isInWishlist('guest-item'), isTrue, reason: 'the merge is already durably saved even though cleanup is still pending');
+      // Unlike CartProvider's quantity-sum, a set union is idempotent even against the OLD design
+      // (re-merging the same id twice is a no-op) -- resetStatic() (see CartProvider's own sibling
+      // test for why it is needed) makes this genuinely re-read the still-uncleared guest wishlist
+      // rather than the legacy SharedPreferences cache's optimistic "already cleared" view, so this
+      // exercises a real retry, even though this particular assertion would hold either way.
+      SharedPreferences.resetStatic();
+
+      expect(await provider.transferGuestWishlistToBuyer(), isTrue, reason: 'a retry must finish the pending cleanup');
+
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.isEmpty, isTrue, reason: 'the guest wishlist must end up cleared once the retry actually completes');
+    });
+
+    test('a stale receipt left by a buyer who signed out mid-transfer is completed for its own buyer, never applied to whoever signs in next', () async {
+      final provider = WishlistProvider();
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('a-item'));
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+
+      store.failOnBareGuestKey = 'local_wishlist_v1';
+      expect(await provider.transferGuestWishlistToBuyer(), isFalse);
+      SharedPreferences.resetStatic();
+
+      provider.updateUserId(null);
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('b-item'));
+      provider.updateUserId('buyer-b');
+      await Future<void>.delayed(Duration.zero);
+
+      expect(await provider.transferGuestWishlistToBuyer(), isTrue);
+      expect(provider.isInWishlist('b-item'), isTrue);
+      expect(provider.isInWishlist('a-item'), isFalse, reason: 'buyer-a\'s stale pending transfer must never leak into buyer-b\'s wishlist');
+
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.isInWishlist('a-item'), isTrue, reason: 'buyer-a\'s own transfer must have been completed for buyer-a, not discarded');
     });
   });
 }

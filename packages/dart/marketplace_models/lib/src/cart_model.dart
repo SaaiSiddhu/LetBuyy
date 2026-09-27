@@ -148,6 +148,25 @@ class CartModel {
     );
   }
 
+  /// Removes exactly the quantities in [snapshot] from this cart, item by item, never going below
+  /// zero and never touching an item this cart doesn't have (e.g. it was already removed, or its
+  /// variant changed, since the snapshot was taken). Used to complete a guest-to-buyer transfer
+  /// without blindly clearing the whole guest basket -- see
+  /// CartProvider.transferGuestCartToBuyer's own doc comment for why a blind clear is unsafe if
+  /// the guest added something new while the transfer was in flight.
+  CartModel subtractSnapshot(List<CartItemModel> snapshot) {
+    var result = this;
+    for (final snapshotItem in snapshot) {
+      final current = result.getItemByProductId(snapshotItem.productId, variant: snapshotItem.variant);
+      if (current == null) continue;
+      final remaining = current.quantity - snapshotItem.quantity;
+      result = remaining > 0
+          ? result.updateItemQuantity(snapshotItem.productId, remaining, variant: snapshotItem.variant)
+          : result.removeItem(snapshotItem.productId, variant: snapshotItem.variant);
+    }
+    return result;
+  }
+
   // Clear all items
   CartModel clearCart() {
     return copyWith(

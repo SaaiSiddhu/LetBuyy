@@ -46,6 +46,29 @@ class CartProvider with ChangeNotifier {
   static const _guestPrefsKey = 'local_cart_v1';
   static const _localCartId = 'local-device-cart';
 
+  // C3 corrective ("Complete ALL remaining Phase 1R work" task, guest-transfer durability):
+  // the previous transferGuestCartToBuyer wrote the merged buyer cart, then cleared the guest
+  // basket as a second, independent write -- if the clear failed, or execution stopped between
+  // the two writes (a killed app, not just a caught exception), a retry re-merged the SAME guest
+  // quantities into the buyer cart a second time, silently double-counting them. That contradicted
+  // the method's own idempotency claim.
+  //
+  // This version records a durable receipt BEFORE either destination write: {transferId, buyerId,
+  // guestSnapshot, buyerSnapshot}, where both snapshots are frozen at receipt-creation time. Phase
+  // B (merge into the buyer's cart) is then a PURE function of those two frozen snapshots --
+  // `buyerSnapshot.addItems(guestSnapshot)` -- so writing that same computed value again on any
+  // retry is a genuine no-op in effect, never a second application. Phase C (removing exactly the
+  // transferred quantities from the CURRENT guest cart, which may have gained new items since the
+  // snapshot was taken) is guarded by its own completion marker so a retry never subtracts twice.
+  // The one residual, disclosed risk: if phase C's subtraction write itself succeeds but the
+  // marker write immediately after it fails or the process dies in that exact window, AND the
+  // guest independently re-adds the identical product+variant in that same narrow window, a
+  // resumed transfer could subtract it again. This is a deliberately bounded receipt/state-machine
+  // design, not a distributed transaction -- accepting that narrow, disclosed window is
+  // appropriate for a local on-device cart; eliminating it entirely is not.
+  static const _transferReceiptKey = 'local_cart_v1:transfer_receipt';
+  static const _guestSubtractionMarkerKey = 'local_cart_v1:transfer_subtracted';
+
   final Uuid _uuid = const Uuid();
 
   CartModel _cart = _empty();
@@ -307,13 +330,9 @@ class CartProvider with ChangeNotifier {
   /// namespace is active). This is the one path that does merge, and only when a caller invokes it
   /// explicitly (a UI action the buyer chooses), while a buyer is the active namespace.
   ///
-  /// Merges using CartModel.addItem's own existing (productId, variant) identity and quantity-sum
-  /// behavior -- the same canonical merge every other mutation already relies on, not a new dedup
-  /// rule invented for this one path. Idempotent and failure-safe: the guest basket is read but
-  /// left completely untouched unless the merged result is confirmed durably saved under the
-  /// buyer's own key first, so a destination save failure never loses guest items, and calling
-  /// this again after a success finds nothing left to transfer (reports true having changed
-  /// nothing).
+  /// Retry-safe and restart-safe: see this file's own top-of-class doc comment for the full
+  /// receipt/snapshot design. A caller can call this repeatedly (after a failure, after an app
+  /// restart, or just to be sure) without ever double-applying an already-merged quantity.
   Future<bool> transferGuestCartToBuyer() {
     final requestedBuyerId = _activeBuyerId;
     if (requestedBuyerId == null) return Future.value(false);
@@ -324,36 +343,39 @@ class CartProvider with ChangeNotifier {
       if (_activeBuyerId != requestedBuyerId) return false;
       try {
         final prefs = await SharedPreferences.getInstance();
-        final guestJson = prefs.getString(_guestPrefsKey);
-        if (guestJson == null) return true;
-        final guestCart = CartModel.fromMap(jsonDecode(guestJson) as Map<String, dynamic>, _localCartId);
-        if (guestCart.isEmpty) return true;
 
-        var merged = _cart;
-        for (final item in guestCart.items) {
-          merged = merged.addItem(item);
+        var receipt = await _readReceipt(prefs);
+        if (receipt != null && receipt.buyerId != requestedBuyerId) {
+          // A previous buyer's transfer never finished (they signed out mid-transfer, or the app
+          // died) before this buyer signed in. Finish IT, for its own buyer, honoring D-BUYER-SCOPE
+          // -- never silently apply a stale receipt meant for a different buyer to this one.
+          await _completeReceipt(prefs, receipt);
+          receipt = null;
         }
-        final persisted = await prefs.setString(_keyFor(requestedBuyerId), jsonEncode(merged.toMap()));
-        if (!persisted) {
-          _error = 'Could not move your guest cart to your account on this device.';
-          _notify();
-          return false;
+
+        if (receipt == null) {
+          final guestCart = await _readCart(prefs, _guestPrefsKey);
+          if (guestCart.isEmpty) return true;
+
+          final buyerCart = await _readCart(prefs, _keyFor(requestedBuyerId));
+          receipt = _TransferReceipt(
+            transferId: _uuid.v4(),
+            buyerId: requestedBuyerId,
+            guestSnapshot: guestCart.items,
+            buyerSnapshot: buyerCart.items,
+          );
+          final written = await prefs.setString(_transferReceiptKey, jsonEncode(receipt.toMap()));
+          if (!written) {
+            _error = 'Could not start moving your guest cart on this device.';
+            _notify();
+            return false;
+          }
         }
-        _cart = merged;
-        // Only cleared now that the merge is confirmed durably saved under the buyer's own key.
-        final guestCleared = await prefs.setString(_guestPrefsKey, jsonEncode(_empty().toMap()));
-        if (!guestCleared) {
-          // The merge itself is visible to the buyer and durably saved; the guest basket failing
-          // to clear only risks a future transfer re-merging already-merged items, which
-          // CartModel.addItem's own quantity-sum would double-count -- a disclosed, narrow risk,
-          // not silent data loss, so it is reported honestly rather than as a full success.
-          _error = 'Your guest cart was moved, but couldn’t be cleared on this device.';
-          _notify();
-          return false;
-        }
-        _error = null;
+
+        final done = await _completeReceipt(prefs, receipt);
+        _error = done ? null : 'Your guest cart is being moved -- try again to finish.';
         _notify();
-        return true;
+        return done;
       } catch (e) {
         debugPrint('❌ CartProvider: error transferring guest cart: $e');
         _error = e.toString();
@@ -363,19 +385,120 @@ class CartProvider with ChangeNotifier {
     });
   }
 
-  /// Whether the shared guest basket currently has anything worth offering to transfer, for a UI
-  /// entry point to decide whether to show that action at all. Reads storage directly rather than
-  /// `_cart` (which holds whichever namespace is currently ACTIVE, not necessarily the guest one).
+  Future<_TransferReceipt?> _readReceipt(SharedPreferences prefs) async {
+    final json = prefs.getString(_transferReceiptKey);
+    if (json == null) return null;
+    try {
+      return _TransferReceipt.fromMap(jsonDecode(json) as Map<String, dynamic>);
+    } catch (e) {
+      // A corrupt receipt is not safe to act on in either direction (resuming it could replay an
+      // unknown operation; ignoring it could strand a real pending transfer). Drop it and let a
+      // fresh transferGuestCartToBuyer() call start clean rather than get stuck forever.
+      debugPrint('❌ CartProvider: corrupt transfer receipt, dropping: $e');
+      await prefs.remove(_transferReceiptKey);
+      return null;
+    }
+  }
+
+  Future<CartModel> _readCart(SharedPreferences prefs, String key) async {
+    final json = prefs.getString(key);
+    if (json == null) return _empty();
+    try {
+      return CartModel.fromMap(jsonDecode(json) as Map<String, dynamic>, _localCartId);
+    } catch (e) {
+      debugPrint('❌ CartProvider: corrupt cart at $key, treating as empty: $e');
+      return _empty();
+    }
+  }
+
+  /// Resumes (or completes, for the first time) [receipt] to its own buyer -- never
+  /// `_activeBuyerId` blindly, since a stale receipt may belong to a buyer who has since signed
+  /// out. Phase B (merge) is a pure function of the receipt's two frozen snapshots, so it is safe
+  /// to recompute and rewrite on every call. Phase C (guest subtraction) is guarded by its own
+  /// completion marker so it only ever runs once per transferId.
+  Future<bool> _completeReceipt(SharedPreferences prefs, _TransferReceipt receipt) async {
+    var merged = CartModel(
+      id: _localCartId,
+      userId: _localCartId,
+      items: receipt.buyerSnapshot,
+      updatedAt: DateTime.now(),
+    );
+    for (final item in receipt.guestSnapshot) {
+      merged = merged.addItem(item);
+    }
+    final buyerWritten = await prefs.setString(_keyFor(receipt.buyerId), jsonEncode(merged.toMap()));
+    if (!buyerWritten) return false;
+    if (receipt.buyerId == _activeBuyerId) {
+      _cart = merged;
+      _notify();
+    }
+
+    final subtractionMarker = prefs.getString(_guestSubtractionMarkerKey);
+    if (subtractionMarker != receipt.transferId) {
+      final currentGuestCart = await _readCart(prefs, _guestPrefsKey);
+      final newGuestCart = currentGuestCart.subtractSnapshot(receipt.guestSnapshot);
+      final guestWritten = await prefs.setString(_guestPrefsKey, jsonEncode(newGuestCart.toMap()));
+      if (!guestWritten) return false;
+      final markerWritten = await prefs.setString(_guestSubtractionMarkerKey, receipt.transferId);
+      if (!markerWritten) return false;
+    }
+
+    // Both phases confirmed done for this transferId -- best-effort cleanup; if this fails, the
+    // next call resumes here (marker already matches, so it just retries this removal).
+    await prefs.remove(_transferReceiptKey);
+    return true;
+  }
+
+  /// Whether the shared guest basket has anything worth offering to transfer, OR a previous
+  /// transfer never finished, for a UI entry point to decide whether to show that action at all.
+  /// Reads storage directly rather than `_cart` (which holds whichever namespace is currently
+  /// ACTIVE, not necessarily the guest one).
   Future<bool> hasGuestCartToTransfer() async {
     if (_activeBuyerId == null) return false;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final guestJson = prefs.getString(_guestPrefsKey);
-      if (guestJson == null) return false;
-      final guestCart = CartModel.fromMap(jsonDecode(guestJson) as Map<String, dynamic>, _localCartId);
+      final receipt = await _readReceipt(prefs);
+      if (receipt != null && receipt.buyerId == _activeBuyerId) return true;
+      final guestCart = await _readCart(prefs, _guestPrefsKey);
       return guestCart.isNotEmpty;
     } catch (_) {
       return false;
     }
+  }
+}
+
+/// A frozen, durable record of one in-flight guest -> buyer transfer -- see CartProvider's own
+/// top-of-class doc comment for the full design this exists to support.
+class _TransferReceipt {
+  _TransferReceipt({
+    required this.transferId,
+    required this.buyerId,
+    required this.guestSnapshot,
+    required this.buyerSnapshot,
+  });
+
+  final String transferId;
+  final String buyerId;
+  final List<CartItemModel> guestSnapshot;
+  final List<CartItemModel> buyerSnapshot;
+
+  Map<String, dynamic> toMap() => {
+        'transferId': transferId,
+        'buyerId': buyerId,
+        'guestSnapshot': guestSnapshot.map((i) => i.toMap()).toList(),
+        'buyerSnapshot': buyerSnapshot.map((i) => i.toMap()).toList(),
+      };
+
+  factory _TransferReceipt.fromMap(Map<String, dynamic> map) {
+    return _TransferReceipt(
+      transferId: map['transferId'] as String,
+      buyerId: map['buyerId'] as String,
+      guestSnapshot: (map['guestSnapshot'] as List)
+          .map((m) => CartItemModel.fromMap(m as Map<String, dynamic>))
+          .toList(),
+      buyerSnapshot: (map['buyerSnapshot'] as List)
+          .map((m) => CartItemModel.fromMap(m as Map<String, dynamic>))
+          .toList(),
+    );
   }
 }
