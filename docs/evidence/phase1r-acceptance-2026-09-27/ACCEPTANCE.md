@@ -15,6 +15,15 @@ Agent/Task tool twice (read-only fact-finding). This pass, and the one immediate
 zero Agent/Task calls — every command, edit, build, and device interaction below was performed
 directly, single agent throughout.
 
+**Superseded for integration status only, 2026-09-27 (later the same day):** this document's own
+recommended-merge-mechanics section was executed. The merge landed as `ba2d2d95` (branch tip
+`7e23760a`), verified from the now-integrated **primary** checkout. See
+[`../phase1r-integration-2026-09-27/INTEGRATION.md`](../phase1r-integration-2026-09-27/INTEGRATION.md)
+for the integration record, the fresh post-merge verification results, the Android smoke test against a
+newly built artifact, and the Phase 2 handoff. This document's own acceptance findings (the ML Kit
+correction, the device-journey record, the payment-unavailable test, the conflict pre-characterization)
+remain the authoritative record of that work and are unchanged.
+
 ## Scope and acceptance criteria
 
 Per the mandate: (1) independently verified Firebase product-SDK retirement, (2) verified canonical
