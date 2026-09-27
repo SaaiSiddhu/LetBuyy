@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-
 // ============================================
 // PRODUCT APPROVAL STATUS
 // ============================================
@@ -18,10 +15,15 @@ ProductApprovalStatus _parseApprovalStatus(String? status) {
   }
 }
 
-// Helper to safely parse timestamps (handles Firestore Timestamp and String)
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): was `if (value is Timestamp)`
+// (cloud_firestore's own type) -- ProductModel.fromMap now only ever parses the canonical gateway's
+// own JSON (ProductProvider's rewire, R1 corrective C2), which serializes dates as ISO 8601
+// strings, not Firestore Timestamps; duck-typing .toDate() (rather than importing cloud_firestore
+// just for the static type) keeps this working unchanged for a real Timestamp too, if one is ever
+// handed to it, without the import.
 DateTime? _parseTimestamp(dynamic value) {
   if (value == null) return null;
-  if (value is Timestamp) return value.toDate();
+  if (value is DateTime) return value;
   if (value is String) {
     try {
       return DateTime.parse(value);
@@ -29,8 +31,11 @@ DateTime? _parseTimestamp(dynamic value) {
       return null;
     }
   }
-  if (value is DateTime) return value;
-  return null;
+  try {
+    return (value as dynamic).toDate() as DateTime;
+  } catch (_) {
+    return null;
+  }
 }
 
 
@@ -315,72 +320,11 @@ class ProductModel {
 
 
 
-  // ============================================
-  // TO MAP
-  // ============================================
-  Map<String, dynamic> toMap() {
-    return {
-      'sellerId': sellerId,
-      'name': name,
-      'description': description,
-      'salePrice': salePrice,
-      'originalPrice': originalPrice,
-      'categoryId': categoryId,
-      'subCategoryId': subCategoryId,
-      'images': images,
-      'stock': stock,
-      'rating': rating,
-      'reviewCount': reviewCount,
-      'isFeatured': isFeatured,
-      'isActive': isActive,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
-      'unit': unit,
-      'minOrderQuantity': minOrderQuantity,
-      'maxOrderQuantity': maxOrderQuantity,
-      'isNew': isNew,
-      'isVerified': isVerified,
-      'isTrending': isTrending,
-      'specifications': specifications,
-      'shippingDays': shippingDays,
-      'shippingPrice': shippingPrice,
-      'freeShippingAbove': freeShippingAbove,
-      'isFreeDelivery': isFreeDelivery,
-      'expressDelivery': expressDelivery,
-      'expressDeliveryDays': expressDeliveryDays,
-      'variantOptions': variantOptions.map((e) => e.toMap()).toList(),
-      'variants': variants.map((e) => e.toMap()).toList(),
-      'relatedProductIds': relatedProductIds,
-      'keywords': keywords,
-      // ✅ NEW: Category Attributes
-      'attributes': attributes,
-      'pendingAttributes': pendingAttributes,
-      // ✅ NEW: Approval fields
-      'approvalStatus': approvalStatus.toString().split('.').last,
-      'rejectionReason': rejectionReason,
-      'approvedAt': approvedAt != null ? Timestamp.fromDate(approvedAt!) : null,
-      'approvedBy': approvedBy,
-      'addedBy': addedBy,
-      'submittedForApprovalAt': submittedForApprovalAt != null 
-          ? Timestamp.fromDate(submittedForApprovalAt!) 
-          : null,
-      // ✅ NEW: Shipping fields
-      'weight': weight,
-      'length': length,
-      'width': width,
-      'height': height,
-      // ✅ NEW: Product Statistics
-      'viewCount': viewCount,
-      'totalOrders': totalOrders,
-      'totalRevenue': totalRevenue,
-    };
-  }
-
-
-  // REQUIRED FOR YOUR ADMIN SERVICE
-  Map<String, dynamic> toJson() => toMap();
-
-
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): toMap()/toJson() (Firestore-
+  // shaped, via Timestamp.fromDate) deleted outright -- grepping every real caller anywhere in the
+  // app found none. Nothing ever writes a ProductModel back to Firestore or serializes one to JSON
+  // any more; cache_service.dart's own product caching uses its own bespoke, already-Firebase-free
+  // _productToCache/_productFromCache helpers, not this type's methods.
 
   // ============================================
   // FROM MAP
@@ -457,11 +401,7 @@ class ProductModel {
     return ProductModel.fromMap(json, id);
   }
 
-
-  factory ProductModel.fromFirestore(DocumentSnapshot doc) {
-    return ProductModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-  }
-
+  // fromFirestore(DocumentSnapshot) deleted alongside toMap()/toJson() above -- zero callers.
 
   // ============================================
   // COPY-WITH (Updated with approval fields)
