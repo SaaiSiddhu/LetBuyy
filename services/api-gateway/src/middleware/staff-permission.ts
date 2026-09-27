@@ -54,7 +54,8 @@ export function staffRbacMode(env: Env): StaffRbacMode {
 /**
  * Pure decision function — no I/O, exhaustively unit-tested.
  * Owners always pass. Otherwise the required key must be present in `granted`
- * directly, via the `*` super-grant, or via a `prefix:*` wildcard.
+ * directly, via the `*` super-grant, via a `prefix:*` wildcard, or via the matching
+ * `<resource>:write` grant when the requirement is `<resource>:read` (see below).
  */
 export function evaluateStaffPermission(input: {
     isOwner: boolean;
@@ -66,9 +67,21 @@ export function evaluateStaffPermission(input: {
     if (!Array.isArray(granted) || granted.length === 0) {
         return { allowed: false, reason: 'no-grants' };
     }
+    // Phase 2 / F2.5: every "write" role in the staff role catalog (merchant-web's roles.ts --
+    // manager, editor, fulfillment, marketing, support) grants <resource>:write WITHOUT the
+    // matching <resource>:read, on the evident assumption that write access includes the ability
+    // to view what you can edit -- only the read-only "viewer" role lists :read keys explicitly.
+    // Reproduced live: a real Manager, added through the real product UI, was refused reading the
+    // product list (products:read required) despite holding products:write. This widens ONLY a
+    // `:read` requirement to also accept the matching `:write` grant -- a `:write` requirement is
+    // never satisfied by a `:read` grant, and no other implication is added.
+    const impliedByWrite = requiredKey.endsWith(':read') ? `${requiredKey.slice(0, -':read'.length)}:write` : null;
     for (const g of granted) {
         if (g === '*' || g === requiredKey) return { allowed: true, reason: `grant:${g}` };
         if (g.endsWith(':*') && requiredKey.startsWith(g.slice(0, -1))) {
+            return { allowed: true, reason: `grant:${g}` };
+        }
+        if (impliedByWrite && g === impliedByWrite) {
             return { allowed: true, reason: `grant:${g}` };
         }
     }

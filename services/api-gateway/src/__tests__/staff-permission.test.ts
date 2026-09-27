@@ -32,6 +32,27 @@ test('a manager (has the write grant) is allowed', () => {
     assert.equal(evaluateStaffPermission({ isOwner: false, granted: manager, requiredKey: 'products:write' }).allowed, true);
 });
 
+// Phase 2 / F2.5: reproduced live -- the real Manager role (merchant-web's roles.ts) grants
+// products:write but not products:read; the product list route requires products:read.
+test('a :write grant also satisfies the matching :read requirement (write implies read)', () => {
+    const manager = ['products:write', 'orders:write', 'customers:write'];
+    const d = evaluateStaffPermission({ isOwner: false, granted: manager, requiredKey: 'products:read' });
+    assert.equal(d.allowed, true);
+    assert.equal(d.reason, 'grant:products:write');
+});
+
+test('a :read requirement for a DIFFERENT resource is not satisfied by an unrelated :write grant', () => {
+    const manager = ['products:write'];
+    assert.equal(evaluateStaffPermission({ isOwner: false, granted: manager, requiredKey: 'orders:read' }).allowed, false);
+});
+
+test('the implication runs only one way: a :read grant never satisfies a :write requirement', () => {
+    const viewer = ['products:read'];
+    const d = evaluateStaffPermission({ isOwner: false, granted: viewer, requiredKey: 'products:write' });
+    assert.equal(d.allowed, false);
+    assert.match(d.reason, /^missing:products:write$/);
+});
+
 test('the "*" super-grant allows anything', () => {
     assert.equal(evaluateStaffPermission({ isOwner: false, granted: ['*'], requiredKey: 'settings:write' }).allowed, true);
 });

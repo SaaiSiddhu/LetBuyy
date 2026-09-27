@@ -488,6 +488,7 @@ export interface EmployeeStaffCreateInsert {
   status: 'invited';
   is_active: true;
   created_by: string;
+  permissions?: { granted: string[] };
 }
 
 export interface EmployeeInviteInsert {
@@ -1550,6 +1551,22 @@ function isStoreStaffRole(value: unknown): value is (typeof LETBUYY_STORE_STAFF_
   return typeof value === 'string' && (LETBUYY_STORE_STAFF_ROLES as readonly string[]).includes(value);
 }
 
+// Shared by planEmployeeStaffCreate and planEmployeeUpdate: { granted: [...] }, store permission
+// keys only, no extra properties on the wrapper object. Absent (undefined) is a valid "no opinion"
+// signal for create (falls to the employees.permissions column default, {}); the caller decides
+// whether that is acceptable for its own route.
+function parseStaffPermissions(body: Record<string, unknown>): AuthPlanResult<{ granted: string[] } | undefined> {
+  if (body.permissions === undefined) return { ok: true, value: undefined };
+  const permissions = body.permissions as { granted?: unknown } | null;
+  const granted = permissions && typeof permissions === 'object' && !Array.isArray(permissions) ? permissions.granted : undefined;
+  const onlyGranted = permissions && typeof permissions === 'object' && Object.keys(permissions).every((key) => key === 'granted');
+  if (!onlyGranted || !Array.isArray(granted)
+    || granted.some((key) => typeof key !== 'string' || !(LETBUYY_STORE_STAFF_PERMISSIONS as readonly string[]).includes(key))) {
+    return { ok: false, message: 'permissions must be { granted: [...] } with store permission keys only' };
+  }
+  return { ok: true, value: { granted: [...new Set(granted as string[])] } };
+}
+
 export function planEmployeeStaffCreate(
   body: Record<string, unknown>,
   createdBy: string,
@@ -1566,6 +1583,15 @@ export function planEmployeeStaffCreate(
   }
   const role = isStoreStaffRole(body.role) ? body.role : 'editor';
 
+  // Phase 2 / F2.5: the merchant-web create form already computes and sends
+  // permissions: permissionsForRole(role) -- this was silently dropped here, so every staff member
+  // ever created through the real product UI got employees.permissions = {} (the column default)
+  // regardless of the role chosen, making the fail-closed RBAC gate (staff-permission.ts) refuse
+  // every action for every new hire. Validated with the identical rule planEmployeeUpdate already
+  // enforces, not a looser one for create.
+  const permissionsResult = parseStaffPermissions(body);
+  if (!permissionsResult.ok) return permissionsResult;
+
   return {
     ok: true,
     value: {
@@ -1576,6 +1602,7 @@ export function planEmployeeStaffCreate(
       status: 'invited',
       is_active: true,
       created_by: createdBy,
+      ...(permissionsResult.value ? { permissions: permissionsResult.value } : {}),
     },
   };
 }
@@ -1617,14 +1644,9 @@ export function planEmployeeUpdate(body: Record<string, unknown>): AuthPlanResul
     updates.role = body.role;
   }
   if (body.permissions !== undefined) {
-    const permissions = body.permissions as { granted?: unknown } | null;
-    const granted = permissions && typeof permissions === 'object' && !Array.isArray(permissions) ? permissions.granted : undefined;
-    const onlyGranted = permissions && typeof permissions === 'object' && Object.keys(permissions).every((key) => key === 'granted');
-    if (!onlyGranted || !Array.isArray(granted)
-      || granted.some((key) => typeof key !== 'string' || !(LETBUYY_STORE_STAFF_PERMISSIONS as readonly string[]).includes(key))) {
-      return { ok: false, message: 'permissions must be { granted: [...] } with store permission keys only' };
-    }
-    updates.permissions = { granted: [...new Set(granted as string[])] };
+    const permissionsResult = parseStaffPermissions(body);
+    if (!permissionsResult.ok) return permissionsResult;
+    updates.permissions = permissionsResult.value;
   }
   if (Object.keys(updates).length === 0) {
     return { ok: false, message: 'role or permissions required' };
