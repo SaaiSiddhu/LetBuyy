@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
+import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../shop/widgets/product_card.dart';
@@ -24,6 +25,8 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
   bool get wantKeepAlive => true;
   
   late AnimationController _animationController;
+  bool _hasGuestWishlistToTransfer = false;
+  bool _isTransferringGuestWishlist = false;
 
   @override
   void initState() {
@@ -34,6 +37,7 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
     );
     _animationController.forward();
     _loadWishlist();
+    _checkGuestWishlistTransfer();
   }
 
   void _loadWishlist() {
@@ -42,6 +46,83 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
       final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
       wishlistProvider.loadWishlist();
     });
+  }
+
+  // D-BUYER-SCOPE (guest-transfer UI wiring, "Complete ALL remaining Phase 1R work" task) --
+  // see mobile_cart_screen.dart's own doc comment on _checkGuestCartTransfer for the full
+  // reasoning; this screen is behind the identical AuthGatedWidget, so only a signed-in buyer
+  // ever reaches here.
+  Future<void> _checkGuestWishlistTransfer() async {
+    final hasGuestWishlist = await context.read<WishlistProvider>().hasGuestWishlistToTransfer();
+    if (mounted) setState(() => _hasGuestWishlistToTransfer = hasGuestWishlist);
+  }
+
+  Future<void> _transferGuestWishlist() async {
+    if (_isTransferringGuestWishlist) return;
+    setState(() => _isTransferringGuestWishlist = true);
+    HapticFeedback.mediumImpact();
+
+    final wishlistProvider = context.read<WishlistProvider>();
+    final succeeded = await wishlistProvider.transferGuestWishlistToBuyer();
+    final stillPending = !succeeded && await wishlistProvider.hasGuestWishlistToTransfer();
+
+    if (!mounted) return;
+    setState(() {
+      _isTransferringGuestWishlist = false;
+      _hasGuestWishlistToTransfer = stillPending;
+    });
+
+    if (succeeded) {
+      SnackbarHelper.showSuccess(context, 'Moved your items from before you signed in');
+    } else {
+      SnackbarHelper.showError(
+        context,
+        stillPending
+            ? 'Could not finish moving your items on this device -- tap to try again'
+            : 'Could not move your items on this device',
+      );
+    }
+  }
+
+  Widget _buildGuestTransferBanner(bool isDark, Color accentColor) {
+    if (!_hasGuestWishlistToTransfer) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: isDark ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.move_to_inbox_rounded, color: accentColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'You have wishlist items from before you signed in.',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _isTransferringGuestWishlist
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: accentColor),
+                )
+              : TextButton(
+                  onPressed: _transferGuestWishlist,
+                  style: TextButton.styleFrom(foregroundColor: accentColor),
+                  child: const Text('Move to my wishlist', style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -70,6 +151,17 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
           }
 
           if (wishlistProvider.isEmpty) {
+            if (_hasGuestWishlistToTransfer) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: _buildGuestTransferBanner(isDark, accentColor),
+                  ),
+                  const Expanded(child: EmptyWishlist()),
+                ],
+              );
+            }
             return const EmptyWishlist();
           }
 
@@ -88,6 +180,13 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),
               slivers: [
+                if (_hasGuestWishlistToTransfer)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      child: _buildGuestTransferBanner(isDark, accentColor),
+                    ),
+                  ),
                 // Header Stats Card
                 SliverToBoxAdapter(
                   child: Padding(

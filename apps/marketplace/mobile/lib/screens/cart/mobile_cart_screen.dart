@@ -54,6 +54,8 @@ class _MobileCartScreenState extends State<MobileCartScreen>
   final ScrollController _scrollController = ScrollController();
   bool _showFab = false;
   bool _expressDeliverySelected = false;
+  bool _hasGuestCartToTransfer = false;
+  bool _isTransferringGuestCart = false;
 
   final Map<String, ProductModel> _productCache = {};
 
@@ -75,7 +77,90 @@ class _MobileCartScreenState extends State<MobileCartScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CartProvider>().loadCart();
       _loadProductDetails();
+      _checkGuestCartTransfer();
     });
+  }
+
+  // D-BUYER-SCOPE (guest-transfer UI wiring, "Complete ALL remaining Phase 1R work" task):
+  // CartScreen wraps this whole screen in AuthGatedWidget, so a guest can never see this screen
+  // at all -- only a signed-in buyer reaches here, meaning this is exactly where "items you added
+  // before signing in" should be offered, once, explicitly.
+  Future<void> _checkGuestCartTransfer() async {
+    final hasGuestCart = await context.read<CartProvider>().hasGuestCartToTransfer();
+    if (mounted) setState(() => _hasGuestCartToTransfer = hasGuestCart);
+  }
+
+  Future<void> _transferGuestCart() async {
+    if (_isTransferringGuestCart) return;
+    setState(() => _isTransferringGuestCart = true);
+    HapticFeedback.mediumImpact();
+
+    final cartProvider = context.read<CartProvider>();
+    final succeeded = await cartProvider.transferGuestCartToBuyer();
+    final stillPending = !succeeded && await cartProvider.hasGuestCartToTransfer();
+
+    if (!mounted) return;
+    setState(() {
+      _isTransferringGuestCart = false;
+      // A failed attempt may still have durably completed part of the work (see
+      // CartProvider.transferGuestCartToBuyer's own doc comment) -- re-check honestly rather than
+      // assume "failed" means "nothing happened," so the banner only stays up while something
+      // genuinely remains to finish.
+      _hasGuestCartToTransfer = stillPending;
+    });
+
+    if (succeeded) {
+      SnackbarHelper.showSuccess(context, 'Moved your items from before you signed in');
+    } else {
+      SnackbarHelper.showError(
+        context,
+        stillPending
+            ? 'Could not finish moving your items on this device -- tap to try again'
+            : 'Could not move your items on this device',
+      );
+    }
+  }
+
+  Widget _buildGuestTransferBanner(bool isDark, Color accentColor) {
+    if (!_hasGuestCartToTransfer) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: accentColor.withValues(alpha: isDark ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.move_to_inbox_rounded, color: accentColor, size: 22),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'You have items from before you signed in.',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          _isTransferringGuestCart
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: accentColor),
+                )
+              : TextButton(
+                  onPressed: _transferGuestCart,
+                  style: TextButton.styleFrom(foregroundColor: accentColor),
+                  child: const Text('Move to my cart', style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+        ],
+      ),
+    );
   }
 
   void _scrollListener() {
@@ -245,6 +330,17 @@ class _MobileCartScreenState extends State<MobileCartScreen>
           }
 
           if (cartProvider.isEmpty) {
+            if (_hasGuestCartToTransfer) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: _buildGuestTransferBanner(isDark, accentColor),
+                  ),
+                  Expanded(child: EmptyCart(onStartShopping: () => Navigator.pop(context))),
+                ],
+              );
+            }
             return EmptyCart(
               onStartShopping: () => Navigator.pop(context),
             );
@@ -274,6 +370,7 @@ class _MobileCartScreenState extends State<MobileCartScreen>
                         physics: const AlwaysScrollableScrollPhysics(),
                         child: Column(
                           children: [
+                            _buildGuestTransferBanner(isDark, accentColor),
                             _buildCartItemsSection(
                               cartProvider,
                               const [],
