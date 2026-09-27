@@ -1,6 +1,12 @@
 // lib/models/order_model.dart
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+//
+// C3 (Firebase SDK removal, 27 September 2026 review continuation): fromJson/fromMap/toMap/toJson
+// (and the Timestamp/FieldValue.serverTimestamp parsing they used) deleted outright -- grepping
+// every real caller anywhere in the app found none. OrderModel is still a live plain value type
+// (orders_screen.dart, order_details_screen.dart, order_tracking_screen.dart, order_card.dart,
+// order_success_screen.dart all hold/render one), but nothing constructs it from raw Firestore/JSON
+// data any more: OrderProvider, the only thing that ever called OrderModel.fromMap, was itself
+// retired in R1 corrective C2 (entirely FirebaseFirestore-backed, no canonical successor).
 import 'cart_item_model.dart';
 import 'address_model.dart';
 
@@ -73,172 +79,6 @@ class OrderModel {
     this.exchangeOrderId,
     this.returnRequestIds,
   }) : createdAt = createdAt ?? DateTime.now();
-
-  // ============================================
-  // HELPER: Convert Timestamp/DateTime to DateTime
-  // ============================================
-  static DateTime _parseDateTime(dynamic value) {
-    try {
-      if (value == null) return DateTime.now();
-
-      if (value is Timestamp) {
-        return value.toDate();
-      }
-
-      if (value is DateTime) {
-        return value;
-      }
-
-      if (value.runtimeType.toString().contains('Timestamp')) {
-        try {
-          return value.toDate();
-        } catch (_) {}
-      }
-
-      if (value is int) {
-        if (value > 10000000000) {
-          return DateTime.fromMillisecondsSinceEpoch(value);
-        }
-        return DateTime.fromMillisecondsSinceEpoch(value * 1000);
-      }
-
-      if (value is double) {
-        return DateTime.fromMillisecondsSinceEpoch((value * 1000).toInt());
-      }
-
-      return DateTime.now();
-    } catch (e) {
-      debugPrint('⚠️ DateTime parse failed for value: $value, error: $e');
-      return DateTime.now();
-    }
-  }
-
-  // ============================================
-  // FROM JSON/MAP FACTORY
-  // ============================================
-  factory OrderModel.fromJson(Map<String, dynamic> json) {
-    return OrderModel.fromMap(json, json['id'] ?? '');
-  }
-
-  factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
-    try {
-      debugPrint('🔍 Parsing OrderModel: $id');
-
-      // Parse items safely
-      List<CartItemModel> parsedItems = [];
-      try {
-        if (map['items'] != null && map['items'] is List) {
-          parsedItems = (map['items'] as List<dynamic>)
-              .map((item) {
-                try {
-                  return CartItemModel.fromMap(item as Map<String, dynamic>);
-                } catch (e) {
-                  debugPrint('⚠️ Error parsing item: $e');
-                  return null;
-                }
-              })
-              .whereType<CartItemModel>()
-              .toList();
-        }
-      } catch (e) {
-        debugPrint('⚠️ Error parsing items list: $e');
-      }
-
-      // Parse delivery address safely
-      AddressModel deliveryAddress = AddressModel.fromMap({});
-      try {
-        if (map['deliveryAddress'] != null &&
-            map['deliveryAddress'] is Map<String, dynamic>) {
-          deliveryAddress =
-              AddressModel.fromMap(map['deliveryAddress'] as Map<String, dynamic>);
-        }
-      } catch (e) {
-        debugPrint('⚠️ Error parsing delivery address: $e');
-      }
-
-      final order = OrderModel(
-        id: id,
-        userId: map['userId'] ?? '',
-        sellerId: map['sellerId'] as String?,
-        sellerName: map['sellerName'] as String?,
-        orderNumber: map['orderNumber'] ?? 'ORD${DateTime.now().millisecondsSinceEpoch}',
-        items: parsedItems,
-        deliveryAddress: deliveryAddress,
-        subtotal: (map['subtotal'] as num?)?.toDouble() ?? 0.0,
-        discount: (map['discount'] as num?)?.toDouble() ?? 0.0,
-        deliveryCharge: (map['deliveryCharge'] as num?)?.toDouble() ?? 0.0,
-        tax: (map['tax'] as num?)?.toDouble() ?? 0.0,
-        total: (map['total'] as num?)?.toDouble() ?? 0.0,
-        paymentMethod: map['paymentMethod'] ?? 'cod',
-        paymentStatus: map['paymentStatus'] ?? 'pending',
-        orderStatus: map['orderStatus'] ?? 'pending',
-        razorpayOrderId: map['razorpayOrderId'] as String?,
-        razorpayPaymentId: map['razorpayPaymentId'] as String?,
-        razorpaySignature: map['razorpaySignature'] as String?,
-        couponCode: map['couponCode'] as String?,
-        notes: map['notes'] as String?,
-        createdAt: _parseDateTime(map['createdAt']),
-        updatedAt: map['updatedAt'] != null ? _parseDateTime(map['updatedAt']) : null,
-        deliveryDate: map['deliveryDate'] != null ? _parseDateTime(map['deliveryDate']) : null,
-        // Return/Exchange fields
-        hasReturnRequest: map['hasReturnRequest'] ?? false,
-        hasExchangeRequest: map['hasExchangeRequest'] ?? false,
-        returnRequestId: map['returnRequestId'] as String?,
-        returnStatus: map['returnStatus'] as String?,
-        returnType: map['returnType'] as String?,
-        exchangeOrderId: map['exchangeOrderId'] as String?,
-        returnRequestIds: map['returnRequestIds'] != null 
-            ? List<String>.from(map['returnRequestIds']) 
-            : null,
-      );
-
-      debugPrint('✅ OrderModel parsed: ${order.orderNumber}, sellerId: ${order.sellerId}, items: ${order.items.length}');
-      return order;
-    } catch (e) {
-      debugPrint('❌ Error parsing OrderModel: $e');
-      rethrow;
-    }
-  }
-
-  // ============================================
-  // TO MAP/JSON
-  // ============================================
-  Map<String, dynamic> toMap() {
-    return {
-      'userId': userId,
-      'sellerId': sellerId,
-      'sellerName': sellerName,
-      'orderNumber': orderNumber,
-      'items': items.map((item) => item.toMap()).toList(),
-      'deliveryAddress': deliveryAddress.toMap(),
-      'subtotal': subtotal,
-      'discount': discount,
-      'deliveryCharge': deliveryCharge,
-      'tax': tax,
-      'total': total,
-      'paymentMethod': paymentMethod,
-      'paymentStatus': paymentStatus,
-      'orderStatus': orderStatus,
-      'razorpayOrderId': razorpayOrderId,
-      'razorpayPaymentId': razorpayPaymentId,
-      'razorpaySignature': razorpaySignature,
-      'couponCode': couponCode,
-      'notes': notes,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'deliveryDate': deliveryDate?.millisecondsSinceEpoch,
-      // Return/Exchange fields
-      'hasReturnRequest': hasReturnRequest,
-      'hasExchangeRequest': hasExchangeRequest,
-      'returnRequestId': returnRequestId,
-      'returnStatus': returnStatus,
-      'returnType': returnType,
-      'exchangeOrderId': exchangeOrderId,
-      'returnRequestIds': returnRequestIds,
-    };
-  }
-
-  Map<String, dynamic> toJson() => toMap();
 
   // ============================================
   // GETTERS & UTILITIES

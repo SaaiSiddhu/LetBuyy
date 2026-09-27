@@ -58,7 +58,6 @@ export 'src/wishlist_model.dart';
 // Returns & Exchange
 export 'src/return_status.dart';
 export 'src/return_reason_model.dart';
-export 'src/return_qc_model.dart';
 export 'src/return_request_model.dart';
 
 // Sponsored Ads System
