@@ -57,6 +57,13 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'employee-by-id lookup: an employees.id is unique across every store, and the store is not known until the row returns',
         boundedIn: { file: 'routes/employee.ts', symbol: 'verifyEmployeeOwnership' },
     },
+    // Phase 2 / F2.5: GET /products/:id looks a product up by its globally-unique id before its
+    // store_id is known. Same bootstrap shape. The result is re-verified via verifyStoreOwnership
+    // or assertStaffPermission before the route trusts it for anything.
+    'routes/products.ts': {
+        why: 'product-by-id lookup: a products.id is unique across every store, and the store is not known until the row returns',
+        boundedIn: { file: 'routes/products.ts', symbol: 'loadProductByIdUnguarded' },
+    },
 };
 
 // Where it is DEFINED, and the test that guards it. Neither is a caller.

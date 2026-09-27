@@ -35,7 +35,11 @@ test('products are isolated by owned store for read, update, and delete paths', 
     assert.match(routeSource, /\.in\('store_id',\s*ownedStoreIds\)/);
     assert.match(routeSource, /verifyStoreOwnership\(db,\s*query\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    // Phase 2 / F2.5: owner passes via verifyStoreOwnership on the product's own store_id; a
+    // non-owner falls through to assertStaffPermission on that same store_id.
+    assert.match(routeSource, /const storeId = String\(product\.store_id\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /assertStaffPermission\(c,\s*storeId,\s*customUser\.id,\s*'products:read'\)/);
     assert.match(routeSource, /service\.updateProduct\(productId,\s*customUser\.id,\s*body as Record<string, unknown>,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(adapterSource, /private async getOwnedProduct/);

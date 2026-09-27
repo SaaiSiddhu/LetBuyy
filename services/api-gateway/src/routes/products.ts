@@ -1,7 +1,7 @@
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, getSupabaseAdminUnguarded, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
@@ -1064,6 +1064,33 @@ router.post('/sample', validate('json', StoreScopedQuerySchema), async (c) => {
 });
 
 // GET /products/:id
+// Phase 2 / F2.5: products is a registered tenant table; `.eq('id', productId)` alone (no
+// store_id) is not a scope predicate, so GET /products/:id 500'd via the tenant guard for every
+// caller -- reproduced live. Bootstrap lookup by the product's own globally-unique id, before its
+// store_id is known: bounded to one row (.single()), and the caller (below) re-verifies the
+// result's own store_id via ownership/staff-permission before trusting it for anything -- the same
+// documented shape as the other getSupabaseAdminUnguarded call sites.
+async function loadProductByIdUnguarded(
+    c: Context<{ Bindings: Env }>,
+    productId: string,
+): Promise<{ product: Record<string, unknown> | null; error: unknown }> {
+    const unguardedDb = getSupabaseAdminUnguarded(c);
+    const buildProductQuery = (includeDeletedAtFilter: boolean) => {
+        const query = unguardedDb
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
+            .eq('id', productId);
+
+        return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
+    };
+
+    let { data, error } = await buildProductQuery(true);
+    if (isMissingDeletedAtError(error)) {
+        ({ data, error } = await buildProductQuery(false));
+    }
+    return { product: data as unknown as Record<string, unknown> | null, error };
+}
+
 router.get('/:id', async (c) => {
     const auth = c.get('auth');
     const productId = c.req.param('id');
@@ -1074,25 +1101,21 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const buildProductQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('products')
-            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
-            .eq('id', productId);
+    const { product, error } = await loadProductByIdUnguarded(c, productId);
 
-        return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
-    };
-
-    let { data, error } = await buildProductQuery(true);
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error } = await buildProductQuery(false));
+    if (error || !product) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    const product = data as unknown as Record<string, unknown> | null;
-
-    if (error || !product || !(await verifyStoreOwnership(db, String(product.store_id), customUser.id, auth.user.storeId))) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    // Re-verified against the product's OWN store_id (never a client-supplied value): the owner
+    // passes, or an active staff member holding products:read/products:write at that store --
+    // verifyStoreOwnership alone denied a real Manager with products:write reading a product they
+    // could otherwise edit, the same gap fixed for the list route (assertStaffPermission).
+    const storeId = String(product.store_id);
+    const isOwner = await verifyStoreOwnership(db, storeId, customUser.id, auth.user.storeId);
+    if (!isOwner) {
+        const staffBlock = await assertStaffPermission(c, storeId, customUser.id, 'products:read');
+        if (staffBlock) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
     const rows = productVariantRelationalReadsEnabled(c.env)

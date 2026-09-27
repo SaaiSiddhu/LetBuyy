@@ -35,7 +35,13 @@ test('product reads are scoped to owned sites and cross-site access is hidden', 
 
     assert.match(routeSource, /router\.get\('\/:id'/);
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
-    assert.match(routeSource, /verifyStoreOwnership\(db,\s*String\(product\.store_id\),\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    // Phase 2 / F2.5: owner passes via verifyStoreOwnership on the product's OWN store_id (never
+    // client-supplied); a non-owner falls through to assertStaffPermission on that same store_id --
+    // an active staff member holding products:read/products:write can read it, anyone else (a
+    // stranger, or staff at a DIFFERENT store) gets the identical NOT_FOUND, never a 500.
+    assert.match(routeSource, /const storeId = String\(product\.store_id\)/);
+    assert.match(routeSource, /verifyStoreOwnership\(db,\s*storeId,\s*customUser\.id,\s*auth\.user\.storeId\)/);
+    assert.match(routeSource, /assertStaffPermission\(c,\s*storeId,\s*customUser\.id,\s*'products:read'\)/);
     assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
     assert.match(routeSource, /query\.status === 'active'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*true\)/);
     assert.match(routeSource, /query\.status === 'inactive'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*false\)/);

@@ -33,6 +33,7 @@ const STAFF_NO_GRANT = '55555555-0000-4000-8000-0000000000b3';
 const STAFF_OTHER_SITE = '55555555-0000-4000-8000-0000000000b4';
 const OUTSIDER = '55555555-0000-4000-8000-0000000000b5';
 const EMPLOYEE_ROW = 'cccccccc-0000-4000-8000-0000000000d1';
+const PRODUCT = 'cccccccc-0000-4000-8000-0000000000e1';
 
 type Row = Record<string, unknown>;
 
@@ -124,7 +125,9 @@ function baseTables(): Record<string, Row[]> {
             { id: 'emp-no-grant', store_id: SITE, user_id: STAFF_NO_GRANT, email: 'staff-no-grant@shop.test', role: 'viewer', role_id: null, status: 'active', is_active: true, deleted_at: null, permissions: { granted: [] } },
             { id: 'emp-other-site', store_id: OTHER_SITE, user_id: STAFF_OTHER_SITE, email: 'staff-other@shop.test', role: 'manager', role_id: null, status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['products:read', 'products:write'] } },
         ],
-        products: [],
+        products: [
+            { id: PRODUCT, store_id: SITE, name: 'Test Product', price: 100, deleted_at: null },
+        ],
     };
 }
 
@@ -182,6 +185,34 @@ test('GET /products?store_id= allows a products:read-granted staff member and re
 
     const staffOtherSite = await appWithAuth(STAFF_OTHER_SITE, productsRouter, '/products').request(`/products?store_id=${SITE}`);
     assert.equal(staffOtherSite.status, 403, 'staff at a different site cannot list this one by naming its store_id');
+});
+
+// ---------------------------------------------------------------------------------------------------
+// 2b. GET /products/:id -- the SAME owner-only gap, one layer deeper: this route bootstraps by the
+//     product's own globally-unique id (products is a registered tenant table; `.eq('id', ...)`
+//     alone is not a scope predicate, so this 500'd via the tenant guard for every caller before
+//     this fix), then re-verifies via ownership OR staff permission -- never trusting the bootstrap
+//     read as authorization by itself.
+// ---------------------------------------------------------------------------------------------------
+
+test('GET /products/:id: bootstraps without 500ing, then is denied to a staff member with no grant and to staff at another site', async (t) => {
+    const fake = installFakePostgrest(baseTables());
+    t.after(fake.restore);
+
+    const owner = await appWithAuth(OWNER, productsRouter, '/products').request(`/products/${PRODUCT}`);
+    assert.equal(owner.status, 200, `owner should read the product, not be refused by the tenant guard: ${await owner.text()}`);
+
+    const staffRead = await appWithAuth(STAFF_READ, productsRouter, '/products').request(`/products/${PRODUCT}`);
+    assert.equal(staffRead.status, 200, 'a staff member holding products:read/products:write at this store can read it');
+
+    const staffNoGrant = await appWithAuth(STAFF_NO_GRANT, productsRouter, '/products').request(`/products/${PRODUCT}`);
+    assert.equal(staffNoGrant.status, 404, 'a staff member with no grant at this store gets the same not-found as a stranger, not a 500');
+
+    const staffOtherSite = await appWithAuth(STAFF_OTHER_SITE, productsRouter, '/products').request(`/products/${PRODUCT}`);
+    assert.equal(staffOtherSite.status, 404, 'staff holding the grant at a DIFFERENT site cannot read this product by knowing its id');
+
+    const outsider = await appWithAuth(OUTSIDER, productsRouter, '/products').request(`/products/${PRODUCT}`);
+    assert.equal(outsider.status, 404, 'a stranger with no relationship to this store cannot read it by guessing the id');
 });
 
 // ---------------------------------------------------------------------------------------------------
