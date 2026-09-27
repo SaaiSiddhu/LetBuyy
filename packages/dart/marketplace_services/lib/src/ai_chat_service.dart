@@ -12,8 +12,27 @@ import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AIChatService {
-  final auth = FirebaseAuth.instance;
-  final firestore = FirebaseFirestore.instance;
+  // C3 (Firebase SDK removal, 27 September 2026 review continuation): `auth` and `firestore` used
+  // to be eager `final` field initializers -- for a singleton (`instance` below), that means
+  // FirebaseAuth.instance/FirebaseFirestore.instance were touched, uncaught, the very first time
+  // ANYTHING accessed `AIChatService.instance` (ai_chat_screen.dart's own `useMemoized(() =>
+  // AIChatService.instance)`), which throws synchronously with no Firebase app initialized --
+  // confirmed empirically elsewhere this phase. `firestore` is now a lazy getter instead (same
+  // name, so its 4 existing call sites are unchanged and rely on their own existing try/catch,
+  // exactly as before -- only the crash-at-construction is fixed). `auth.currentUser`'s 7 call
+  // sites are replaced by `_safeCurrentUser()` below, since several of them (saveMessage,
+  // loadSessionHistory, buildSystemPrompt, getAllSessions, deleteSession) read it before their own
+  // try block even starts, unlike the two (handleGetOrders, handleUserProfile) only ever reached
+  // through _executeFunctionCall's own outer try/catch.
+  FirebaseFirestore get firestore => FirebaseFirestore.instance;
+
+  User? _safeCurrentUser() {
+    try {
+      return FirebaseAuth.instance.currentUser;
+    } catch (_) {
+      return null;
+    }
+  }
 
   // ✅ 2. MAKE A SINGLETON
   static final AIChatService instance = AIChatService._();
@@ -115,7 +134,7 @@ class AIChatService {
     }
 
     context.add(message);
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) return;
 
     try {
@@ -134,7 +153,7 @@ class AIChatService {
 
   // ✅ 7. UPDATE LOADSESSIONHISTORY TO SAVE THE LOADED ID
   Future<List<ChatMessage>> loadSessionHistory(String sessionId) async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) return [];
 
     // Make the loaded session the new active session
@@ -198,7 +217,7 @@ class AIChatService {
 
   // ✅ FIXED: System prompt with better intent differentiation
   Future<String> buildSystemPrompt() async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     String userName = 'Guest';
 
     if (user != null) {
@@ -616,7 +635,7 @@ class AIChatService {
   // ✅ ENHANCED: Better order retrieval
   Future<Map<String, dynamic>> handleGetOrders(
       {int limit = 5, String? status}) async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) {
       return {
         'error': 'Please login to view orders',
@@ -710,7 +729,7 @@ class AIChatService {
   }
 
   Future<Map<String, dynamic>> handleUserProfile() async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) return {'error': 'Not logged in'};
 
     if (userProfileCache != null && _profileCacheTime != null) {
@@ -852,7 +871,7 @@ class AIChatService {
   }
 
   Future<List<Map<String, dynamic>>> getAllSessions() async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) return [];
 
     try {
@@ -873,7 +892,7 @@ class AIChatService {
   }
 
   Future<void> deleteSession(String id) async {
-    final user = auth.currentUser;
+    final user = _safeCurrentUser();
     if (user == null) return;
 
     try {
