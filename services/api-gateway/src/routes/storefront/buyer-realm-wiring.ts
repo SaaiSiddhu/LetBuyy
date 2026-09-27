@@ -49,6 +49,9 @@ import { addBusinessDays, generateTicketRef } from '../operations/support';
 import { SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS } from '@letbuyy/shared-types';
 import type { AppContext } from './customer-engagement-routes';
 
+/** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
+const UNIQUE_VIOLATION = '23505';
+
 export interface BuyerRealmRoutesDeps {
     normalizeEmail: (email: string) => string;
 }
@@ -523,10 +526,18 @@ export function registerBuyerRealmRoutes(
                 .maybeSingle();
             return { data: (data || null) as PrivacyRequestRow | null, error };
         },
+        // The database, not this check-then-insert, is what makes concurrent identical requests
+        // safe: migration 262's partial unique index on (requester_user_id,
+        // metadata->>'privacy_request_type') WHERE topic='privacy' AND status NOT IN
+        // (resolved,closed) makes a second concurrent insert for the same (buyer, type) fail with
+        // SQLSTATE 23505. That is caught here, specifically -- not "any error" -- and resolved by
+        // re-reading the row the other request created, exactly the pattern contact-public.ts
+        // already uses for its own idempotency (client_token unique violation -> re-query).
         createRequest: async (c, buyerAccountId, type, notes) => {
+            const db = getSupabaseAdmin(c);
             const now = new Date();
             const subject = type === 'erasure' ? 'Account deletion request' : 'Data access request';
-            const inserted = await getSupabaseAdmin(c)
+            const inserted = await db
                 .from('support_tickets')
                 .insert({
                     ticket_ref: generateTicketRef(now),
@@ -544,15 +555,36 @@ export function registerBuyerRealmRoutes(
                 })
                 .select(PRIVACY_REQUEST_COLUMNS)
                 .maybeSingle();
-            if (inserted.error || !inserted.data) return { data: null, error: inserted.error };
+
+            if (inserted.error || !inserted.data) {
+                const sqlState = (inserted.error as { code?: string } | null)?.code;
+                if (sqlState === UNIQUE_VIOLATION) {
+                    const { data: existing, error: reReadError } = await db
+                        .from('support_tickets')
+                        .select(PRIVACY_REQUEST_COLUMNS)
+                        .eq('requester_user_id', buyerAccountId)
+                        .eq('requester_type', 'customer')
+                        .eq('topic', 'privacy')
+                        .eq('metadata->>privacy_request_type', type)
+                        .not('status', 'in', '(resolved,closed)')
+                        .is('deleted_at', null)
+                        .order('created_at', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                    if (reReadError || !existing) return { data: null, error: reReadError ?? inserted.error, created: false };
+                    return { data: existing as unknown as PrivacyRequestRow, error: null, created: false };
+                }
+                return { data: null, error: inserted.error, created: false };
+            }
+
             const request = inserted.data as unknown as PrivacyRequestRow;
             if (notes) {
-                const message = await getSupabaseAdmin(c)
+                const message = await db
                     .from('ticket_messages')
                     .insert({ ticket_id: request.id, author_type: 'requester', visibility: 'public', body: notes });
-                if (message.error) return { data: null, error: message.error };
+                if (message.error) return { data: null, error: message.error, created: false };
             }
-            return { data: request, error: null };
+            return { data: request, error: null, created: true };
         },
         listRequests: async (c, buyerAccountId, limit) => {
             const { data, error } = await getSupabaseAdmin(c)

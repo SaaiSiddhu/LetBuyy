@@ -339,18 +339,31 @@ router.get('/tickets', async (c) => {
     // Verify employee
     const { data: employee } = await db
         .from('employees')
-        .select('id, role')
+        .select('id, role, store_id')
         .eq('user_id', auth.user.id)
         .eq('status', 'active')
         .single();
 
-    if (!employee) {
+    if (!employee?.store_id) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Employee access required' } }, 403);
     }
 
+    // Phase 2 / F2.7: support_tickets is a registered tenant table (scopeColumns: site_id,
+    // requester_user_id); this query had neither, so it already 500'd via the tenant guard for
+    // every caller ("Tenant table support_tickets requires a tenant/owner predicate before
+    // execution") -- silently reported to the caller as a misleading 503 "schema unavailable" by
+    // the unconditional catch below. Scoping by the caller's OWN store both fixes that (this
+    // endpoint returned no ticket to any employee before this change) and closes what would
+    // otherwise become a real cross-tenant leak the moment someone "fixes" the 500 by reaching for
+    // an unguarded client instead of a real predicate: without site scoping, ANY active employee of
+    // ANY store could read every ticket platform-wide, including buyer privacy requests
+    // (buyer-privacy-routes.ts), which are platform-level (site_id IS NULL) and therefore -- as a
+    // direct structural consequence of this exact filter, not a special case -- excluded here too:
+    // NULL never satisfies `= <a specific site_id>`.
     const { data, error, count } = await db
         .from('support_tickets')
         .select('id, ticket_ref, site_id, requester_email, subject, status, priority, assignee_id, first_response_due_at, resolution_due_at, created_at, updated_at', { count: 'exact' })
+        .eq('site_id', employee.store_id)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
         .range(from, to);
