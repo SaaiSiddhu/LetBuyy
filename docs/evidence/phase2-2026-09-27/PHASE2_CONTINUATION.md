@@ -353,14 +353,46 @@ merchant's business record?) — narrows but does not eliminate the need for a d
 incident-responsibility assignment. **Proceeds independently:** request intake (done), status
 readback (done), data-category inventory (done, F2.7).
 
-## 6. Full gate re-run (Section 14)
+## 6. Full gate re-run (Section 14) — completed, with a genuine before/after comparison
 
-A fresh `--full` gate run was launched from this worktree specifically to replace the stale record
-(captured before this pass's fixes) rather than reason further from it, and to give a genuine,
-current picture including everything fixed this pass. [Result appended below once the run
-completes — see the addendum at the end of this document / the session's final verdict message
-for the completed table, lane classification against the prior record, and specific attribution
-for any lane that remains red.]
+A comparable baseline build (a full disposable clone + install + build of the pre-Phase-2 base
+commit) was judged infeasible within this pass's time budget and was not attempted — per the
+mandate's own allowance, this is stated rather than silently skipped. In its place: two full
+`--full` gate runs of *this same worktree*, temporally separated by this pass's own work, give a
+real (if narrower) before/after comparison — not a parallel-environment baseline, but not mere
+diff-non-overlap either.
+
+**Run 1** (stale record, inherited from before this continuation pass; sha `f2912746`,
+`20260927-200638`): `failed=6` — `lint`, `validators:sweep` (stale-artifact only, 113/114),
+`tests:security+auth` (`customer-web signs server-only legacy customer lookups`), `ui:validate`,
+`tests:all` (`WS12 G6 migrated REST endpoints...`, +520 more), `test:@letbuyy/merchant-web`
+(`phase-aa [security]: settings/route.ts validates custom_css server-side`, +35 more).
+
+**Run 2** (this pass, sha `4f293121`, `20260927-225528`, after the real merchant/staff journey and
+the three gateway fixes, before the registry-regeneration fix below): `failed=5` — same `lint`,
+same `validators:sweep`-`stale-artifact`, **plus a new `tenant-isolation` validator failure**,
+`tests:security+auth` now **green**, same `ui:validate`, same `tests:all` first failure (+519,
+materially unchanged), same `test:@letbuyy/merchant-web` first failure (+35, unchanged).
+
+**Reconciliation, lane by lane:**
+
+| Lane | Classification | Evidence |
+|---|---|---|
+| `lint` (`@letbuyy/customer-web`) | Pre-existing, unrelated | Identical across both runs; Phase 2's diff touches zero files under `apps/commerce/web` |
+| `validators:sweep` — `stale-artifact` | Pre-existing, unrelated | Identical across both runs; per the gate's own note this validator fails by method alone when run outside the orchestrator's cleanup plan (`F-STALEMETHOD-1`) |
+| `validators:sweep` — `tenant-isolation` | **Phase-2-introduced, this pass** | New in Run 2 only. Cause: migration 261 changed `support_tickets`' schema without regenerating the checked-in, schema-derived `tenant-tables.registry.ts` snapshot. **Fixed** (commit `6c965b30`): ran `scripts/generators/generate-tenant-table-registry.mjs`; diff is exactly the expected one line. Re-ran the validator directly afterward: `"Tenant isolation validator passed (284 tenant tables registered; 0 direct service-role bypasses found)."` Not reflected in Run 2's table (the fix landed after that run started); confirmed independently by direct re-run, not by a third full gate pass |
+| `tests:security+auth` | **Resolved** (was stale, not a live regression) | Red in Run 1, green in Run 2 with no further change to the test or its dependencies in between — the first pass's own edit (retargeting the assertion to `internal-only-paths.ts`, a real file that does contain the expected strings) had already fixed it; Run 1's failure predates that fix reaching a gate run |
+| `ui:validate` | Pre-existing, unrelated | Identical across both runs; Phase 2 touches no UI/frontend files |
+| `tests:all` — `WS12 G6 migrated REST endpoints remain the external source of truth for parity reads` | Pre-existing, unrelated | Identical first-failure line, near-identical failure count (520 → 519) across both runs; concerns REST/parity migration bookkeeping, not gateway RBAC or the new privacy route |
+| `test:@letbuyy/merchant-web` — `phase-aa [security]: settings/route.ts validates custom_css server-side` | Pre-existing, unrelated | Identical first-failure line and count (35) across both runs; Phase 2's diff touches zero files under `apps/merchant/web` in either pass |
+
+**Net Phase-2 attributable count: one** (`tenant-isolation`), introduced and fixed within this same
+pass, verified by direct re-run. Also verified this pass, per the mandate's explicit instruction:
+`scripts/governance/run-executable-suites.mjs`'s counter fix (from the first pass) against a
+**genuinely failing** suite, not only a passing one — a one-line assertion in
+`buyer-authorization-codes-postgres.test.mjs` was deliberately broken, the wrapper correctly
+reported `FAIL pass=9 fail=1` and named the exact failing test, and the file was immediately
+restored (`git diff` confirms clean).
 
 ## 7. Section 18 — Phase 1R buyer-acceptance regression
 
@@ -376,7 +408,28 @@ HS256-as-ES256-forgery, all adversarial cases already covered and passing) direc
 buyer/customer-session and cross-realm properties Phase 1R's acceptance depended on. No regression
 found; none expected given the diff scope.
 
-## 8. Section 10 — session/issuer mechanism inventory (status, not new discovery)
+## 9. Section 15 — one precise architectural clarification (database vs. application backstop)
+
+Verified directly against the local Postgres (`pg_roles.rolbypassrls`):
+`service_role` → **`t`** (bypasses RLS at the connection level, Supabase's standard default);
+`app_tenant`/`authenticated`/`anon` → `f`. `getSupabaseAdmin`/`getSupabaseAdminUnguarded`/
+`getSupabaseAdminForOperatorRead` are all built on `createSupabaseServiceClient` — i.e., every
+gateway query, without exception, connects as `service_role`.
+
+This means RLS provides **zero** protection for the gateway's own queries — not a newly
+introduced gap, but worth stating precisely because CLAUDE.md's summary line ("Tenancy backstop is
+the database, not the application") is, read literally, true only for the direct-connection path
+RT-1..9 exercises (`app_tenant`), not for the gateway's actual runtime path. The gateway's real
+backstop is `tenant-scoped.ts`'s `createTenantGuardedSupabaseClient` — an **application-layer**
+TypeScript `Proxy` that refuses to execute a query against a registered tenant table unless a
+scope-column predicate is present in the call chain. This is exactly why that Proxy exists (its own
+header comments show clear awareness of this), and it is real and tested (F2.6's allowlist contract
+tests; this pass's own fixes in §2.3 were three concrete instances of exactly this mechanism
+correctly refusing an under-scoped query). Not a defect to fix — a precise correction to how the
+summary memory should describe the mechanism, so a future reader does not conclude RLS alone
+protects gateway traffic.
+
+## 10. Section 10 — session/issuer mechanism inventory (status, not new discovery)
 
 Re-confirmed rather than re-derived this pass, since F2.1 already mapped the mechanisms precisely
 and the adversarial coverage already exists and passes (§7 above, `identity-redteam.test.ts`
