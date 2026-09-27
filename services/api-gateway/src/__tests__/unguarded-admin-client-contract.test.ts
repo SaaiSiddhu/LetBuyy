@@ -42,6 +42,13 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'callback host -> site bootstrap for buyer sign-in: the store is not known until the callback host resolves',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
     },
+    // F2.6 (Phase 2): the operator moderation route's GET /:id and decide() actions look a listing up
+    // by its globally-unique id before its site is known -- the same bootstrap shape as the other
+    // three entries, just for a different resource.
+    'routes/operations/marketplace-listings.ts': {
+        why: 'operator listing-by-id lookup: a channel_listings.id is unique across every site, and the site is not known until the row returns',
+        boundedIn: { file: 'routes/operations/marketplace-listings.ts', symbol: 'loadChannelListingById' },
+    },
 };
 
 // Where it is DEFINED, and the test that guards it. Neither is a caller.

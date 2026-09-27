@@ -46,6 +46,39 @@ export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): Supaba
 }
 
 /**
+ * The service-role client WITHOUT the tenant query guard, for a route that already verified a
+ * specific operator review/moderation PERMISSION via `requirePermission` before this function is
+ * ever called (F2.6, D-ONE-IDENTITY's delegation of "how an operator reads across tenants" to
+ * technical design under ART-08/SEC-R9: no blanket service_role, audited, narrow).
+ *
+ * This is a DIFFERENT shape of exception from `getSupabaseAdminUnguarded` above, not a relaxation
+ * of it: that one bounds a read to a single row because the caller does not yet know which tenant
+ * it wants. An operator moderation QUEUE is the opposite case — the tenant is deliberately unknown
+ * because the operator's job is to see pending items from every site, and narrowing to one site_id
+ * would not be a safety fix, it would silently hide every other site's queue from review. The
+ * boundary here is not row count; it is that only a route holding a verified, table-appropriate
+ * operator scope may ever construct this client, and every call site is enumerated by
+ * `services/api-gateway/src/__tests__/operator-scoped-admin-client-contract.test.ts`, which also
+ * asserts the named permission scope is required on the exact route before this function runs.
+ *
+ * Conditions every call site must meet:
+ *   1. mounted behind `requirePermission(<scope>)` for the specific route handler, not merely
+ *      somewhere earlier in the file — the allowlist test greps the route registration itself;
+ *   2. reads only — every state transition for the same resource goes through its own
+ *      `SECURITY DEFINER` RPC (e.g. `transition_channel_listing`), which takes an explicit
+ *      `p_site_id` and is where mutation-level tenant enforcement actually happens;
+ *   3. the query's own request schema caps page size (no unbounded `SELECT *` across a table with
+ *      no ceiling) — the allowlist test reads the validated schema's `limit` bound;
+ *   4. never used to decide authorization by itself — the permission check already happened.
+ *
+ * Anything that does not meet all four uses `getSupabaseAdmin` (single tenant) or
+ * `getSupabaseAdminUnguarded` (single-row bootstrap lookup) instead.
+ */
+export function getSupabaseAdminForOperatorRead(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return createSupabaseServiceClient(c.env);
+}
+
+/**
  * Create a Supabase client scoped to the authenticated user (respects RLS)
  */
 export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): SupabaseClient {

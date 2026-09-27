@@ -9,13 +9,25 @@
 //
 // Two invariants of 217's realm fence are honoured by construction: an operator never acts inside a
 // tenant transaction (this file imports neither withResolvedTenantTx nor resolveOwnedStoreScope), and
-// the call runs through the admin client, whose PostgREST role is service_role with no tenant GUC.
-// Cross-site reads are the operator realm's purpose, exactly as the existing operations routes do.
+// every call runs through the service-role client. `channel_listings`/`channel_listing_moderation_
+// events` ARE registered tenant tables (unlike the sibling operations routes' own tables), so
+// service_role alone does not exempt a query from the tenant guard (services/api-gateway/src/tenant/
+// tenant-scoped.ts wraps getSupabaseAdmin regardless of role) -- reads here go through one of two
+// narrow, allowlisted, documented exceptions instead: getSupabaseAdminUnguarded for the single-row
+// bootstrap lookup (loadChannelListingById) and getSupabaseAdminForOperatorRead for the permission-
+// gated cross-site queue (listListings). See both functions' doc comments in lib/supabase.ts.
 
 import { Hono, type Context } from 'hono';
 import type { Env } from '../../index';
 import { AppError, NotFoundError, ValidationError, formatAppError } from '../../lib/errors';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
+import {
+    getSupabaseAdmin,
+    getSupabaseAdminForOperatorRead,
+    getSupabaseAdminUnguarded,
+    paginated,
+    shouldReturnEmptyForMissingLocalSchema,
+    success,
+} from '../../lib/supabase';
 import { validate } from '../../middleware/validation';
 import { requirePermission, validateSensitiveReason } from '../../middleware/rbac';
 import { mapChannelListingDatabaseError, TRANSITION_CHANNEL_LISTING_RPC } from '../channel-listings';
@@ -65,7 +77,7 @@ export interface MarketplaceListingsOperationsDependencies {
     actor: (c: AppContext) => OperatorActor;
     listListings: (c: AppContext, query: OperatorListingListInput) => Promise<{ rows: ListingRow[]; total: number }>;
     loadListing: (c: AppContext, id: string) => Promise<ListingRow | null>;
-    loadListingEvents: (c: AppContext, id: string) => Promise<JsonRecord[]>;
+    loadListingEvents: (c: AppContext, id: string, siteId: string) => Promise<JsonRecord[]>;
     transition: (c: AppContext, params: TransitionParams) => Promise<TransitionResult>;
     writeAudit: (c: AppContext, input: AuditInput) => Promise<void>;
     // Injectable only so unit tests can bypass the permission lookup; production always uses rbac's.
@@ -87,6 +99,17 @@ function operatorActorId(actor: OperatorActor): string {
     return actor.id;
 }
 
+// Bounded, single-row, globally-unique-key lookup with the site not yet known — exactly
+// getSupabaseAdminUnguarded's documented bootstrap shape (lib/supabase.ts), not a new exception.
+// A top-level declaration (not an inline arrow) so the allowlist contract test
+// (__tests__/unguarded-admin-client-contract.test.ts) can find and bound it by name.
+async function loadChannelListingById(c: AppContext, id: string): Promise<ListingRow | null> {
+    const db = getSupabaseAdminUnguarded(c);
+    const { data, error } = await db.from('channel_listings').select(OPERATOR_LISTING_COLUMNS).eq('id', id).maybeSingle();
+    if (error) throw error;
+    return (data as unknown as ListingRow | null) ?? null;
+}
+
 function respond(c: AppContext, error: unknown): Response {
     const appError = error instanceof AppError ? error : mapChannelListingDatabaseError(error);
     if (!appError) throw error;
@@ -96,8 +119,11 @@ function respond(c: AppContext, error: unknown): Response {
 
 export const defaultMarketplaceListingsOperationsDependencies: MarketplaceListingsOperationsDependencies = {
     actor: (c) => ({ id: c.get('auth').user.id, email: c.get('auth').user.email || null }),
+    // Cross-site by design: an operator queue lists pending items from every site (the request
+    // schema OperatorListingListQuery caps `limit` at 100), gated by requirePermission('review:view')
+    // on the route below before this ever runs. See getSupabaseAdminForOperatorRead's doc comment.
     listListings: async (c, query) => {
-        const db = getSupabaseAdmin(c);
+        const db = getSupabaseAdminForOperatorRead(c);
         const from = (query.page - 1) * query.limit;
         let request = db
             .from('channel_listings')
@@ -115,18 +141,16 @@ export const defaultMarketplaceListingsOperationsDependencies: MarketplaceListin
         }
         return { rows: (data || []) as unknown as ListingRow[], total: count ?? (data?.length || 0) };
     },
-    loadListing: async (c, id) => {
-        const db = getSupabaseAdmin(c);
-        const { data, error } = await db.from('channel_listings').select(OPERATOR_LISTING_COLUMNS).eq('id', id).maybeSingle();
-        if (error) throw error;
-        return (data as unknown as ListingRow | null) ?? null;
-    },
-    loadListingEvents: async (c, id) => {
+    loadListing: loadChannelListingById,
+    // The listing's site_id is already known by every caller (loadListing ran first), so this reads
+    // as an ordinary single-tenant query through the DEFAULT guarded client — no bypass needed here.
+    loadListingEvents: async (c, id, siteId) => {
         const db = getSupabaseAdmin(c);
         const { data, error } = await db
             .from('channel_listing_moderation_events')
             .select(OPERATOR_EVENT_COLUMNS)
             .eq('listing_id', id)
+            .eq('site_id', siteId)
             .order('created_at', { ascending: false })
             .limit(100);
         if (error) throw error;
@@ -179,7 +203,7 @@ export function createMarketplaceListingsOperationsRouter(
             const id = listingIdParam(c);
             const listing = await deps.loadListing(c, id);
             if (!listing) throw new NotFoundError('Listing not found');
-            const events = await deps.loadListingEvents(c, id);
+            const events = await deps.loadListingEvents(c, id, listing.site_id);
             return c.json(success({ listing, events }));
         } catch (error) {
             return respond(c, error);

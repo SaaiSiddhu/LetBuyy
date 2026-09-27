@@ -11,10 +11,13 @@
 //   * the console's shared bearer token, a buyer token, no credentials, and a merchant identity cannot
 //     approve anything — correct, and must stay so under every operator-identity option;
 //   * an identity holding only review:view cannot decide;
-//   * an identity holding review:decide gets PAST auth and RBAC and is then refused by the tenant query
-//     guard, because channel_listings is a registered tenant table and the operator route reads it with
-//     no site_id (break #5 of F-ADM4-1). The intended approve is kept below as a TODO test with its real
-//     assertions: it is blocked on the operator read-path decision, not forgotten.
+//   * an identity holding review:decide gets past auth and RBAC and, as of F2.6 (Phase 2), reaches
+//     channel_listings for real: the route now reads it through getSupabaseAdminUnguarded (the listing
+//     lookup, a bounded single-row bootstrap by globally-unique id) and getSupabaseAdminForOperatorRead
+//     (the cross-site queue list, permission-gated and page-capped) instead of the tenant-guarded
+//     default client. Both are narrow, allowlisted exceptions — see their doc comments in
+//     lib/supabase.ts and the two ALLOWED_CALLERS contract tests that enforce the allowlists. Fixed,
+//     was F-ADM4-1 break #5 ("KNOWN BREAK #5" below is now a fixed-regression guard, not an open break).
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -164,24 +167,24 @@ test('an operator holding only review:view cannot decide', async (t) => {
     assert.equal(postgrest.touched('rpc/transition_channel_listing'), false);
 });
 
-test('KNOWN BREAK #5: a review:decide operator passes auth and RBAC, then the tenant guard refuses the cross-site read', async (t) => {
-    const postgrest = installFakePostgrest({ employees: EMPLOYEES, channel_listings: LISTINGS });
+test('FIXED (F2.6): a review:decide operator passes auth and RBAC, and the listing read now reaches channel_listings', async (t) => {
+    const postgrest = installFakePostgrest(
+        { employees: EMPLOYEES, channel_listings: LISTINGS },
+        { transition_channel_listing: [{ listing_id: LISTING, from_status: 'pending_review', to_status: 'approved', event_id: 'ev-1', replayed: false }] },
+    );
     t.after(() => postgrest.restore());
 
     const response = await approve(await identityHeaders(MODERATOR, 'moderator@letbuyy.test'));
 
     // Auth and RBAC both let the moderator through — the permission lookup ran …
     assert.equal(postgrest.touched('employees'), true, 'requirePermission resolved the moderator\'s scopes');
-    // … and the refusal is the tenant query guard: channel_listings is registered with scope site_id,
-    // loadListing filters by id only, so the guard rejects before the query is ever sent.
-    assert.equal(response.status, 500);
-    assert.equal(postgrest.touched('channel_listings'), false, 'the guard refused before any request left');
-    assert.equal(postgrest.touched('rpc/transition_channel_listing'), false);
+    // … and the read now succeeds: loadChannelListingById (getSupabaseAdminUnguarded) reaches the
+    // table instead of being refused by the tenant guard before any request left.
+    assert.equal(postgrest.touched('channel_listings'), true, 'the bounded single-row lookup reached the table');
+    assert.equal(response.status, 200);
 });
 
-test('an authorized operator approves a pending listing, recorded as the operator realm', {
-    todo: 'blocked on the operator read-path decision — the tenant guard refuses cross-site channel_listings reads (F-ADM4-1 break #5); flip KNOWN BREAK #5 when this passes',
-}, async (t) => {
+test('an authorized operator approves a pending listing, recorded as the operator realm', async (t) => {
     const postgrest = installFakePostgrest(
         { employees: EMPLOYEES, channel_listings: LISTINGS },
         { transition_channel_listing: [{ listing_id: LISTING, from_status: 'pending_review', to_status: 'approved', event_id: 'ev-1', replayed: false }] },
