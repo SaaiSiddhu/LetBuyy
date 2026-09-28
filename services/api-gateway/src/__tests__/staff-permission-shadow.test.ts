@@ -45,12 +45,20 @@ function matches(row: Row, params: URLSearchParams): boolean {
     return true;
 }
 
-function installFakePostgrest(tablesData: Record<string, Row[]>) {
+// `fault` lets a specific table's query throw (simulating a dropped connection) or resolve late
+// (simulating a slow query), instead of always answering from `tablesData` -- used below to measure
+// the shadow path's actual failure/latency behavior against real fetch semantics, rather than only
+// asserting it "should" be safe.
+function installFakePostgrest(tablesData: Record<string, Row[]>, fault?: { throwOnTable?: string; delayMsOnTable?: readonly [string, number] }) {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url);
         assert.equal(url.origin, POSTGREST, 'only the fake PostgREST is reachable');
         const table = url.pathname.replace('/rest/v1/', '');
+        if (fault?.throwOnTable === table) throw new Error(`simulated connection failure querying "${table}"`);
+        if (fault?.delayMsOnTable && fault.delayMsOnTable[0] === table) {
+            await new Promise((resolve) => setTimeout(resolve, fault.delayMsOnTable![1]));
+        }
         const rows = tablesData[table] ?? (tablesData[table] = []);
         const matched = rows.filter((row) => matches(row, url.searchParams));
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -260,6 +268,44 @@ test('no uncaught rejection from the shadow path escapes to the caller', async (
     const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
     fake.restore();
     assert.equal(res.status, 200, 'no unexpected 500 -- nothing escaped runShadowComparisonSafely\'s try/catch');
+});
+
+// D03 permission equivalence (auth hardening follow-up, Section 12, 2026-09-28): "exceptions are
+// caught" is not the same claim as "failure is bounded" -- these two tests measure each independently
+// against real fetch/rejection/delay semantics rather than asserting the property from reading the
+// source.
+
+test('BOUNDED FAILURE: a target-store connection failure (thrown fetch, not a well-formed error response) still logs TARGET_LOOKUP_ERROR and leaves the real response untouched', async () => {
+    const fake = installFakePostgrest(tables(), { throwOnTable: 'principals' });
+    const lines = await warnLines(async () => {
+        const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200, 'the real, legacy-authoritative decision must be completely unaffected by the target store being unreachable');
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line, 'a thrown fetch must still produce a shadow log line, not silently vanish');
+    assert.equal(line.outcome, 'TARGET_LOOKUP_ERROR');
+    assert.equal(line.target_allowed, false, 'an unreachable target store must never be reported as an allow');
+});
+
+test('LATENCY (measured, not asserted): a slow target-store query is NOT currently bounded by an independent timeout -- the real request waits for it', async () => {
+    // This test intentionally documents a real gap rather than a guarantee: `runShadowComparisonSafely`
+    // is `await`ed inline in `evaluateStaffRequest` with no `Promise.race`/timeout around it (confirmed
+    // by reading middleware/staff-permission.ts -- the only safety net is the try/catch around thrown
+    // exceptions, which a merely-slow-but-eventually-resolving query never trips). A production target
+    // store running slow today would add its full latency to every real request in shadow mode, not
+    // just to the diagnostic log line. Recorded here as a measured finding and a concrete follow-up
+    // recommendation (see the D03 evidence doc), not fixed in this pass -- request-hot-path middleware
+    // changes deserve their own dedicated review rather than a rushed addition alongside this phase's
+    // permission-mapping and rehearsal work.
+    const ARTIFICIAL_DELAY_MS = 120;
+    const fake = installFakePostgrest(tables(), { delayMsOnTable: ['principals', ARTIFICIAL_DELAY_MS] });
+    const startedAt = Date.now();
+    const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    const elapsedMs = Date.now() - startedAt;
+    fake.restore();
+    assert.equal(res.status, 200, 'the real decision is unaffected either way -- this test is about latency, not correctness');
+    assert.ok(elapsedMs >= ARTIFICIAL_DELAY_MS, `expected the real request to have waited out the full artificial delay (no independent timeout exists yet): elapsed ${elapsedMs}ms, delay ${ARTIFICIAL_DELAY_MS}ms`);
 });
 
 // ============================================================================

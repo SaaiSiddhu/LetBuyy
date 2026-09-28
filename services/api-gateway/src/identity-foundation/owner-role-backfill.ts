@@ -21,6 +21,19 @@
 // Migration/reconciliation (this file) reads legacy ownership (sites.custom_user_id / user_id) to
 // populate the target representation. Target EVALUATION (target-shadow-comparison.ts) never reads
 // `sites` at all -- it only ever reads what this file already wrote into store_memberships.
+//
+// CLIENT CONTRACT, verified against the real tenant guard (not assumed): `site_roles` IS a registered
+// tenant table (scopeColumns: ["site_id"]), and the guard does not recognize `.is(column, null)` as a
+// scoping call -- only `.eq`/`.in`/safe `.filter`/`.match`/`.or`. The global owner role's lookup
+// (site_id IS NULL, a genuinely tenant-less bootstrap row keyed by its own unique slug index) is
+// exactly `getSupabaseAdminUnguarded`'s documented shape (globally-unique key; tenant unknown/not
+// applicable; bounded -- this function itself throws on more than one match; result implicitly
+// re-verified by that same check) -- ensureOwnerRole MUST be called with an unguarded client.
+// executeSiteOwnerMembershipBackfill, in contrast, operates entirely on real, site-scoped
+// store_memberships rows (already `.eq('store_id', ...)`-scoped throughout) and MUST be called with
+// the regular tenant-guarded client, exactly like executeMerchantPrincipalBackfill /
+// executeStoreMembershipBackfill in backfill-executor.ts. site_role_permissions is not a registered
+// tenant table (scoped only by role_id, not site_id), so either client reaches it identically.
 
 import type { BackfillExecutorDb, BackfillOutcome, BackfillDetail } from './backfill-executor';
 
@@ -68,31 +81,49 @@ function record(outcome: BackfillOutcome, detail: BackfillDetail): void {
  * to accepted current behavior (see module header), not an unreviewed broadening: the set this
  * reconciles TO is the same literal constant this file declares and this pass's evidence names
  * explicitly, never whatever a catalog happens to contain at call time from an unrelated change.
+ *
+ * MUST be called with an UNGUARDED client (getSupabaseAdminUnguarded) -- see the module header's
+ * "CLIENT CONTRACT" note for why the tenant guard cannot be satisfied for this genuinely global,
+ * site_id-IS-NULL row.
  */
-export async function ensureOwnerRole(db: BackfillExecutorDb): Promise<{ roleId: string; created: boolean; permissionsAdded: number; permissionsRemoved: number }> {
+/**
+ * The ONLY part of the owner-role bootstrap that must run on the unguarded client (site_roles is a
+ * registered tenant table; this row's site_id IS NULL, which the tenant guard's `.is()` handling does
+ * not recognize as a scoping predicate -- see the module header's "CLIENT CONTRACT" note). Kept as its
+ * own narrow, top-level function -- not inlined into ensureOwnerRole -- specifically so the
+ * unguarded-admin-client-contract test's boundedness check has a precise, honest target: this
+ * function's one site_roles read is genuinely bounded (.limit(2), the tightest bound that still lets
+ * the ambiguity check below see the difference between "exactly 1" and "more than 1"); ensureOwnerRole
+ * itself also reads site_role_permissions without a limit, which is correct (a full-set reconciliation
+ * diff needs every row) and unrelated to the tenant-guard risk this bypass exists to review --
+ * site_role_permissions is not a registered tenant table at all (scoped only by role_id).
+ */
+async function findOrCreateOwnerRoleId(db: BackfillExecutorDb): Promise<{ roleId: string; created: boolean }> {
   const { data: existingRoles, error: roleLookupError } = await db
     .from('site_roles')
     .select('id')
     .eq('slug', OWNER_ROLE_SLUG)
-    .is('site_id', null);
+    .is('site_id', null)
+    .limit(2);
   if (roleLookupError) throw new Error(`owner role lookup failed: ${roleLookupError.message ?? roleLookupError.code}`);
 
-  let roleId: string;
-  let created = false;
   if (existingRoles && existingRoles.length === 1) {
-    roleId = String(existingRoles[0].id);
-  } else if (existingRoles && existingRoles.length > 1) {
-    throw new Error(`ambiguous: ${existingRoles.length} global roles already share the slug "${OWNER_ROLE_SLUG}"`);
-  } else {
-    const { data: inserted, error: insertError } = await db
-      .from('site_roles')
-      .insert({ slug: OWNER_ROLE_SLUG, name: 'Site Owner', is_system: true, site_id: null })
-      .select('id')
-      .single();
-    if (insertError || !inserted) throw new Error(`owner role creation failed: ${insertError?.message ?? insertError?.code}`);
-    roleId = String(inserted.id);
-    created = true;
+    return { roleId: String(existingRoles[0].id), created: false };
   }
+  if (existingRoles && existingRoles.length > 1) {
+    throw new Error(`ambiguous: ${existingRoles.length} global roles already share the slug "${OWNER_ROLE_SLUG}"`);
+  }
+  const { data: inserted, error: insertError } = await db
+    .from('site_roles')
+    .insert({ slug: OWNER_ROLE_SLUG, name: 'Site Owner', is_system: true, site_id: null })
+    .select('id')
+    .single();
+  if (insertError || !inserted) throw new Error(`owner role creation failed: ${insertError?.message ?? insertError?.code}`);
+  return { roleId: String(inserted.id), created: true };
+}
+
+export async function ensureOwnerRole(db: BackfillExecutorDb): Promise<{ roleId: string; created: boolean; permissionsAdded: number; permissionsRemoved: number }> {
+  const { roleId, created } = await findOrCreateOwnerRoleId(db);
 
   const { data: existingPermissionRows, error: permLookupError } = await db
     .from('site_role_permissions')

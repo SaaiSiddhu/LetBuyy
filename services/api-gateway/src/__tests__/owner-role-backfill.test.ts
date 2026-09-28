@@ -26,6 +26,10 @@ function fakeDb(tables: Record<string, Row[]>): BackfillExecutorDb {
                 filtered = filtered.filter((r) => r[column] === value);
                 return chain;
             },
+            limit(n: number) {
+                filtered = filtered.slice(0, n);
+                return chain;
+            },
             then<T>(onFulfilled: (result: { data: Row[] | null; error: null }) => T): Promise<T> {
                 return Promise.resolve(onFulfilled({ data: filtered, error: null }));
             },

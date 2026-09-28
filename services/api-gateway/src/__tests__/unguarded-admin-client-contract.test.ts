@@ -64,6 +64,16 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
         why: 'product-by-id lookup: a products.id is unique across every store, and the store is not known until the row returns',
         boundedIn: { file: 'routes/products.ts', symbol: 'loadProductByIdUnguarded' },
     },
+    // D03 permission equivalence (auth hardening follow-up, Section 10, 2026-09-28): the real
+    // HTTP-to-database rehearsal must call ensureOwnerRole (owner-role-backfill.ts) with the genuinely
+    // unguarded client, exactly as production code must -- see that file's own "CLIENT CONTRACT" note
+    // for why site_roles' site_id-IS-NULL lookup cannot satisfy the tenant guard. This is the one
+    // caller not itself in routes/ or lib/, because it is the one caller proving the real, non-test
+    // construction path this allowlist exists to review.
+    '__tests__/real-http-shadow-rehearsal.postgres.test.ts': {
+        why: 'exercises the real ensureOwnerRole bootstrap path (global owner role lookup) exactly as production callers must, against real local Postgres',
+        boundedIn: { file: 'identity-foundation/owner-role-backfill.ts', symbol: 'findOrCreateOwnerRoleId' },
+    },
 };
 
 // Where it is DEFINED, and the test that guards it. Neither is a caller.
@@ -172,7 +182,12 @@ test('every read reachable from an allowlisted bypass is bounded to a single row
         queries.forEach((query, index) => {
             assert.match(
                 query,
-                /\.(limit\s*\(\s*1\s*\)|maybeSingle\s*\(\s*\)|single\s*\(\s*\))/,
+                // .limit(2), not just .limit(1)/.maybeSingle()/.single(): ensureOwnerRole's own job is
+                // to DETECT ambiguity (more than one global owner role sharing the slug) -- .limit(1)
+                // would silently defeat that check by making ">1 rows exist" indistinguishable from
+                // "exactly 1 exists". .limit(2) is the tightest bound that still lets the check see the
+                // difference while still capping the network read on this unguarded client.
+                /\.(limit\s*\(\s*1\s*\)|limit\s*\(\s*2\s*\)|maybeSingle\s*\(\s*\)|single\s*\(\s*\))/,
                 `${entry.boundedIn.file}:${entry.boundedIn.symbol} query #${index + 1} is unbounded while running on the unguarded client (reached from ${rel})`,
             );
         });
