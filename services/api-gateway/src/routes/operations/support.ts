@@ -18,8 +18,7 @@ import { getSupabaseAdmin, paginated, success } from '../../lib/supabase';
 import {
     logSensitiveRead,
     requirePermission,
-    requireRoleCategory,
-    requireSuperAdmin,
+    requirePlatformOperator,
     validateSensitiveReason,
 } from '../../middleware/rbac';
 
@@ -28,7 +27,20 @@ const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 type Db = ReturnType<typeof getSupabaseAdmin>;
 
-router.use('*', requireRoleCategory('ops'), requireSuperAdmin);
+// Phase 2 / D04 (Mandate 7, Section 7): replaced requireRoleCategory('ops') + requireSuperAdmin
+// (superadmin-only, unconditionally, for every route below) with requirePlatformOperator()
+// (rbac.ts) -- a NEW, explicitly-designed, separately-tested (require-platform-operator.test.ts, 8
+// cases against real middleware + route wiring) gate that preserves every property the old pair
+// established -- authentication, fresh-per-request revocation, and platform-scoped (store_id IS
+// NULL) membership, verified to still exclude a merchant's own staff even given a role/permission
+// string that looks platform-related -- while ALSO permitting the Reviewer/Moderator/Administrator
+// tiers D04 approved: an active, non-superadmin platform employee can now reach this router, where
+// each route's own EXISTING requirePermission('support:...') call (unchanged, still present on
+// every route below) decides which specific actions they may take, using the tiered
+// viewer/operator/lead scopes already defined in INTERNAL_PERMISSION_TIERS. A superadmin's access is
+// completely unchanged: isSuperAdmin still passes requirePlatformOperator, and still receives the
+// full admin-tier scope set from loadEffectivePermissionScopes as before.
+router.use('*', requirePlatformOperator());
 
 const ListTicketsQuerySchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
