@@ -131,24 +131,41 @@ to do with reconciliation. Fixed by restoring the owner's genuine owner-role ass
 before scenario 9, so the scenario tests what it claims to test. This was a bug in my own test
 sequencing, not in `executeSiteOwnerMembershipBackfill`.
 
-**Routing note — a real, unrelated, out-of-scope discovery, not fixed in this pass:** scenarios 3, 4,
-7, and 8 use `POST /products` (create) rather than `PATCH /products/:id` (update), and scenario 3/8 use
-the OWNER rather than a staff member, for a reason discovered while building this rehearsal, not by
-preference. `PATCH`/`DELETE /products/:id` resolve the target's store via
-`ProductExecutionAdapter.ownedProductStoreId` → `resolveOwnedStoreIds`, a lookup against
+**Routing note — a real, unrelated discovery, FIXED in a same-day follow-up (commit `81dc8e94`):**
+scenarios 3, 4, 7, and 8 originally used `POST /products` (create) rather than `PATCH /products/:id`
+(update), and scenario 3/8 originally used the OWNER rather than a staff member, for a reason discovered
+while building this rehearsal, not by preference. `PATCH`/`DELETE /products/:id` resolved the target's
+store via `ProductExecutionAdapter.ownedProductStoreId` → `resolveOwnedStoreIds`, a lookup against
 `sites.custom_user_id`/`user_id` ONLY — confirmed by first running this scenario against `PATCH` and
 observing `ForbiddenError: Not authorized for this product` thrown from `ownedProductStoreId`, BEFORE
-`assertStaffPermission` ever runs. `POST /products` reaches `assertStaffPermission` first (which
-correctly allows a permitted staff member through), but `createProduct` then calls its own
+`assertStaffPermission` ever ran. `POST /products` reached `assertStaffPermission` first (which
+correctly allowed a permitted staff member through), but `createProduct` then called its own
 `assertStoreOwnership` (`verifySiteOwnership`, the same `sites`-only check) — confirmed by observing
 `ForbiddenError: You do not own this store` for a permitted staff member immediately after their
 `assertStaffPermission` check had already passed. **No non-owner staff member, however permissioned,
-can currently complete ANY product mutation (create, update, or delete) through this router.** `GET
-/:id` already received the equivalent owner-OR-staff fix (see the comment at `routes/products.ts:1110`);
-`POST`/`PATCH`/`DELETE` did not. This is a real, pre-existing, systemic gap in a DIFFERENT subsystem
-(product mutation authorization) than D03's shadow/target permission work, discovered only because this
-rehearsal insisted on real routes rather than a diagnostic-only comparator call. Not fixed here — see
-Section F. A `spawn_task` follow-up has been filed.
+could complete ANY product mutation (create, update, or delete) through this router.** `GET
+/:id` already had the equivalent owner-OR-staff fix (see the comment at `routes/products.ts:1110`);
+`POST`/`PATCH`/`DELETE` had not received it. This was a real, pre-existing, systemic gap in a DIFFERENT
+subsystem (product mutation authorization) than D03's shadow/target permission work, discovered only
+because this rehearsal insisted on real routes rather than a diagnostic-only comparator call. Flagged
+via `spawn_task`, then fixed the same day (commit `81dc8e94`, `fix(gateway): a permitted staff member
+can now create, update, and delete products`): `PATCH`/`DELETE` now resolve the product's real store via
+`loadProductByIdUnguarded` (the same pattern `GET /:id` already used) before checking owner-OR-staff;
+`createProduct`/`bulkAction` gained an explicit `alreadyAuthorized` parameter, set only by the routes
+that already call `assertStaffPermission` first, leaving every other existing caller (the `/sample`
+route's own deliberate owner-only check; `routes/export.ts`'s background CSV-import job, which has no
+live request to re-check against) unchanged. A full project gate run against `81dc8e94` confirms it
+clean: `typecheck exit=0`, `test:unit:gateway exit=0`, `failed=5` — the exact same 5 pre-existing,
+unrelated lanes as every prior run in this document (customer-web lint, the known stale-artifact
+method-only false positive, a `@letbuyy/ui` component test, the REST-shim-parity suite, merchant-web's
+custom_css validation), with `theme-engine` passing clean again. Regression-tested in
+`product-tenant-guard.test.ts`'s section 5 (a permitted staff member succeeds, a read-only one is still denied, for all three routes) and
+re-verified in this rehearsal: scenario 3 below now uses the originally-intended shape (a real, permitted
+staff member via `PATCH`, not the owner via `POST`) and passes against real Postgres. Scenarios 4, 7 and
+8 are left on `POST` deliberately, not because they still need to route around anything -- `PATCH` would
+now work identically for each -- but because `POST` already isolates the exact property each one proves
+(the real `assertStaffPermission` gate denying correctly; the same gate denying a cross-site actor; the
+owner's legacy decision being independent of `role_ids`) without any further change adding evidence.
 
 **Cleanup, and a second real discovery:** the rehearsal's first real run left 3 products, their
 `inventory_adjustments`/`inventory_levels`/`product_variants`/`product_options` rows, 2 sites, 5
@@ -285,10 +302,11 @@ Not re-asking already-approved decisions (local merchant/staff transition, opera
 initial restricted export scope — all recorded in `references/decisions.md` / `PHASE2_DECISIONS.md`).
 Concrete, independently actionable items surfaced by this pass:
 
-1. **Fix the product-mutation owner-only gap** (Section D's routing note): give `POST`/`PATCH`/`DELETE
-   /products/:id` the same owner-OR-staff pattern `GET /:id` already has, so a real
-   `products:write`-permitted staff member can actually create/update/delete products. Independently
-   actionable now; does not depend on any open decision. Flagged via `spawn_task`.
+1. ~~Fix the product-mutation owner-only gap~~ — **DONE, same day, commit `81dc8e94`.** `POST`/`PATCH`/
+   `DELETE /products/:id` now use the same owner-OR-staff pattern `GET /:id` already had, so a real
+   `products:write`-permitted staff member can actually create/update/delete products. See Section D's
+   routing note for the fix detail and `product-tenant-guard.test.ts`'s section 5 for its regression
+   coverage.
 2. **Add a bounded timeout around the shadow-comparison call** (Section E): a small,
    `Promise.race`-based guard in `runShadowComparisonSafely`'s caller, with its own slow-target test.
    Independently actionable now.
@@ -358,9 +376,10 @@ production/staging activation attempted or possible from this pass). The full pr
 twice, genuinely observed both times (not asserted): the first run caught two real typecheck errors of
 this pass's own making, both fixed and re-verified; the second run shows `failed=5`, matching the
 pre-existing baseline exactly, with zero file-path overlap between any of the 5 remaining lanes and
-anything this pass (or this session) touched. Remaining open items (arbitrary custom-role mapping, the
-product-mutation routing gap, the shadow-path timeout gap, session revocation) are named precisely, are
-each independently actionable, and are not claimed resolved.
+anything this pass (or this session) touched. The product-mutation routing gap named in Section D was
+fixed the same day (commit `81dc8e94`) and is no longer open. Remaining open items (arbitrary
+custom-role mapping, the shadow-path timeout gap, session revocation) are named precisely, are each
+independently actionable, and are not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
 sent, no real payment or order, no buyer data exported, nothing irreversibly erased. `.dev.vars`,
