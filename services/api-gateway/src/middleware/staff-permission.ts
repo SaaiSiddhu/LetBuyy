@@ -25,6 +25,7 @@ import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { compareStaffPermissionDecision } from '../identity-foundation/shadow-permission-comparison';
 
 type AppContext = Context<{ Bindings: Env }>;
 
@@ -49,6 +50,69 @@ export function staffRbacMode(env: Env): StaffRbacMode {
         .trim();
     const production = String(env.ENVIRONMENT || '').toLowerCase().trim() === 'production';
     return raw === 'dryrun' && !production ? 'dryrun' : 'enforce';
+}
+
+// Phase 2 / D03 (auth hardening mandate, Section 9) -- runtime shadow evaluation. Disabled by
+// default; opt in ONLY outside production, mirroring staffRbacMode's own dry-run gate exactly (a
+// hosted environment can never activate this no matter what STAFF_PERMISSION_SHADOW env value is
+// set, since `production` short-circuits to false first). This function decides ELIGIBILITY only --
+// it never changes what evaluateStaffRequest returns to its caller.
+export function staffPermissionShadowEnabled(env: Env): boolean {
+    const raw = String((env as unknown as { STAFF_PERMISSION_SHADOW?: string }).STAFF_PERMISSION_SHADOW || '')
+        .toLowerCase()
+        .trim();
+    const production = String(env.ENVIRONMENT || '').toLowerCase().trim() === 'production';
+    return raw === 'on' && !production;
+}
+
+/** Bounded, redacted: outcome categories and the two UUIDs already logged by logDecision for the
+ *  real decision (established precedent in this file) -- never an email, a raw permission-VALUE
+ *  array, or anything from compareStaffPermissionDecision's free-text `detail` beyond its length. */
+function logShadowComparison(
+    siteId: string | null | undefined,
+    userId: string | null | undefined,
+    result: Awaited<ReturnType<typeof compareStaffPermissionDecision>> | { outcome: 'SHADOW_EVALUATION_ERROR'; legacyKey: string; canonicalAction: null; legacyAllowed: null; newAllowed: null },
+): void {
+    console.warn(JSON.stringify({
+        level: 'info',
+        event: 'staff_permission_shadow_comparison',
+        comparator: 'compareStaffPermissionDecision@identity-foundation/shadow-permission-comparison.ts',
+        site_id: siteId ?? null,
+        user_id: userId ?? null,
+        legacy_key: result.legacyKey,
+        canonical_action: result.canonicalAction,
+        legacy_allowed: result.legacyAllowed,
+        new_allowed: result.newAllowed,
+        outcome: result.outcome,
+    }));
+}
+
+/** Never throws, never blocks, never influences the real decision -- a defect in the shadow model
+ *  itself must not become an outage or a denial for a real request. */
+async function runShadowComparisonSafely(
+    env: Env,
+    siteId: string | null | undefined,
+    userId: string | null | undefined,
+    input: { isOwner: boolean; granted: readonly string[]; requiredKey: string },
+): Promise<void> {
+    if (!staffPermissionShadowEnabled(env)) return;
+    try {
+        const result = await compareStaffPermissionDecision(input);
+        logShadowComparison(siteId, userId, result);
+    } catch (err) {
+        logShadowComparison(siteId, userId, {
+            outcome: 'SHADOW_EVALUATION_ERROR',
+            legacyKey: input.requiredKey,
+            canonicalAction: null,
+            legacyAllowed: null,
+            newAllowed: null,
+        });
+        console.error(JSON.stringify({
+            level: 'error',
+            event: 'staff_permission_shadow_error',
+            message: err instanceof Error ? err.message : String(err),
+        }));
+    }
 }
 
 /**
@@ -190,6 +254,16 @@ export async function evaluateStaffRequest(
 
         const decision = evaluateStaffPermission({ isOwner, granted, requiredKey: key });
         logDecision(mode, key, decision, siteId, userId, found);
+
+        // D03 runtime shadow evaluation (Section 9): compute the target-model decision for the SAME
+        // input, compare, log -- awaited so the comparison is guaranteed to have run before this
+        // function returns (useful for tests and for not racing the request's own completion), but
+        // its result is discarded below; `decision.allowed` from the line above is the only thing
+        // that reaches `return`. runShadowComparisonSafely can neither throw into this function nor
+        // change what is returned -- a shadow denial can never turn this into a block, and a shadow
+        // error can never turn this into an allow, because neither is ever read past this point.
+        await runShadowComparisonSafely(c.env, siteId, userId, { isOwner, granted, requiredKey: key });
+
         return decision.allowed ? { block: false } : refuse(403);
     } catch (err) {
         console.error(JSON.stringify({
