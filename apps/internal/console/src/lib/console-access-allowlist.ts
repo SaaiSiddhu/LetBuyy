@@ -2,9 +2,9 @@
 // Zero imports, deliberately: proxy.ts (this app's real Next.js middleware entry -- Next.js renamed
 // `middleware.ts` to `proxy.ts`, see tests/launch/lb1-storefront-middleware.test.mjs) must re-check
 // this allowlist on every request, and middleware may run in a runtime that cannot load
-// console-mfa.ts's `node:crypto` (createHmac/timingSafeEqual, used only by its TOTP verification --
-// unrelated to this check). Keeping this predicate in its own file with no further imports means
-// proxy.ts can depend on it directly without pulling in TOTP/crypto code at all.
+// console-mfa.ts's node:crypto-based TOTP verification code (unrelated to this check). Keeping this
+// predicate in its own file with no further imports means proxy.ts can depend on it directly without
+// pulling in any TOTP/crypto code at all.
 //
 // console-mfa.ts re-exports these three so every existing caller of it is unaffected.
 
