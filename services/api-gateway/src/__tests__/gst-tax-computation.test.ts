@@ -100,11 +100,17 @@ test(
         `);
 
         // Requires snaz to already carry a real GSTIN/state and an active 18% default +
-        // HSN-6109 12% rate (configured this phase via the real gateway endpoints this test's
-        // sibling checks confirm are read, not seeded rows bypassing them).
+        // HSN-6109 12% rate. Snaz-fixture follow-up (2026-09-28): seeded by
+        // scripts/dev/seed-snaz-fixture.mjs (idempotent -- run it once against a fresh local
+        // database, or any time this check fails). Both the rate rows AND the GSTIN/state could be
+        // set through real gateway endpoints instead (routes/shipping-tax.ts's `POST /taxes` for
+        // rates; a merchant settings endpoint for GSTIN/state) -- seeded directly here for speed and
+        // determinism, matching how every other piece of this fixture (products, orders, inventory)
+        // is seeded. The seed script's own header comment explains why it only fills in
+        // gstin/gst_state_code when still NULL, never overwriting a real, later-configured value.
         const site = psql(`SELECT gstin, gst_state_code FROM sites WHERE id = '${STORE_ID}';`);
         if (!site || site.split('|')[0] === '') {
-            assert.fail('snaz has no GSTIN configured -- run T13 W2 configuration before this test');
+            assert.fail('snaz has no GSTIN configured -- run: node scripts/dev/seed-snaz-fixture.mjs');
         }
 
         // Intra-state: CGST + SGST split.

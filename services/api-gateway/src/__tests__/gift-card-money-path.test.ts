@@ -30,6 +30,8 @@ const migration215Source = readFileSync(
 );
 
 const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
+// Both snaz and its cross-tenant fixture are seeded by scripts/dev/seed-snaz-fixture.mjs
+// (idempotent -- run it once against a fresh local database).
 const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz
 const OTHER_STORE_ID = '18f06a39-9f1d-418f-b582-c339a0193dcd'; // a second, unrelated tenant
 const LOCATION_ID = '69db8dab-95c7-43bd-b105-3b9d2c2dbf90'; // snaz default location

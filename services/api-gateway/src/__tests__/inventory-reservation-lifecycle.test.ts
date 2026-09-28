@@ -40,6 +40,8 @@ const releaseFixSource = readFileSync(
 );
 
 const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
+// snaz and its default location are seeded by scripts/dev/seed-snaz-fixture.mjs (idempotent --
+// run it once against a fresh local database).
 const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz
 const LOCATION_ID = '69db8dab-95c7-43bd-b105-3b9d2c2dbf90'; // snaz default location
 
@@ -143,8 +145,17 @@ test('a committed razorpay reservation past its grace period is released automat
     const released = psql(`SELECT expire_unpaid_committed_reservations(100, 60, 't12-autotest-sweep-${suffix}');`);
     assert.ok(Number(released) >= 1, `expected at least the razorpay order to be released, got ${released}`);
 
+    // Snaz-fixture follow-up (2026-09-28): this assertion and its comment described a real gap at
+    // the time this test was written (migrations 211/212) -- committed_quantity was incremented by
+    // commit_inventory_reservation and decremented by no release path, so it only ever grew. Migration
+    // 246 (CAP-C47, "a released commitment stops counting as committed") fixed exactly this in
+    // release_order_inventory, which expire_unpaid_committed_reservations calls via
+    // release_order_inventory_with_ledger. This test never ran against that fix until now (it was
+    // silently skipping on a stale docker container name, not exercising real Postgres at all) --
+    // updated to the correct, current, intentional behavior: the released unit's commitment is
+    // subtracted too, not just restored to available.
     const afterSweep = psql(`SELECT available, committed_quantity FROM inventory_levels WHERE product_id = '${productId}';`);
-    assert.equal(afterSweep, '4|2', 'the razorpay unit must be restored to available; committed_quantity is a separate, pre-existing counter not decremented by any release path (filed, not fixed, this phase)');
+    assert.equal(afterSweep, '4|1', 'the razorpay unit must be restored to available, AND its commitment subtracted (migration 246, CAP-C47) -- the COD unit\'s commitment (1) is untouched');
 
     const razorpayStatusAfter = psql(`SELECT status, release_reason FROM inventory_reservations WHERE order_id = '${razorpayOrderId}';`);
     assert.equal(razorpayStatusAfter, 'released|ttl_expired_unpaid');

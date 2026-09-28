@@ -103,9 +103,11 @@ test(
     'a real order produces an invoice matching its order to the paisa, numbering is unique under genuine concurrency, and immutability is refused for real',
     { skip: !dbAvailable() && 'local Supabase Postgres container not reachable' },
     async () => {
+        // Snaz-fixture follow-up (2026-09-28): seeded by scripts/dev/seed-snaz-fixture.mjs
+        // (idempotent -- run it once against a fresh local database, or any time this check fails).
         const site = psql(`SELECT gstin, gst_state_code FROM sites WHERE id = '${STORE_ID}';`);
         if (!site || site.split('|')[0] === '') {
-            assert.fail('snaz has no GSTIN configured -- T14 W2 configuration must run before this test');
+            assert.fail('snaz has no GSTIN configured -- run: node scripts/dev/seed-snaz-fixture.mjs');
         }
 
         const suffix = Date.now().toString(36);

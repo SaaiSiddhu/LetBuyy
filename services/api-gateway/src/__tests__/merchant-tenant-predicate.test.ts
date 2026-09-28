@@ -22,7 +22,11 @@ import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
 // Guarded: skips (not fails) if the local Supabase Postgres container is not reachable.
 
 const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
-const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz -- 65 real orders, used read-only
+// Snaz-fixture follow-up (2026-09-28): snaz is seeded by scripts/dev/seed-snaz-fixture.mjs
+// (idempotent -- run it once against a fresh local database). It carries at least one real order,
+// used read-only below -- this file's own assertions only ever check `.length > 0`, never an exact
+// count, so the historical "65 real orders" this comment once described is not required to hold.
+const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz -- real orders exist, used read-only
 
 function dbAvailable(): boolean {
     try {
