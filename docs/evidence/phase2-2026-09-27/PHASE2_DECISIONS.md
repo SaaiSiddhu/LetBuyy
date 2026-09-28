@@ -1,215 +1,302 @@
-# Phase 2 — Decision Package (D03 / D04 / D05), Mandate 5 format
+# Phase 2 — Decision Package (D03 / D04 / D05), corrected (Mandate 6)
 
-Companion to `SECURITY_ACCEPTANCE.md`. Every option below is a **PROPOSAL** — none is an
-`OWNER_DECISION` until the owner answers it. This document does not infer an answer from the fact
-that it was asked to be written.
+Companion to `SECURITY_ACCEPTANCE.md` and `PHASE2_TRANSITION_PLAN.md`. Every option below is a
+**PROPOSAL** — none is an `OWNER_DECISION` until the owner answers it. This document does not infer
+an answer from the fact that it was asked to be written, and does not treat silence as approval.
 
----
+**Corrections from the prior version of this document**, made because Mandate 6 identified them
+precisely and they were confirmed against the repository, not merely restated:
 
-## D03 — Canonical identity/organization model: complete now, or accept a staged milestone?
-
-### Current (`CURRENT_IMPLEMENTATION`, verified this pass and the prior one)
-
-- Merchant staff live in the **`employees`** table (`store_id`, `user_id`, `role`,
-  `permissions: {granted: [...]}`, `status`). Fail-closed RBAC (`staff-permission.ts`), fresh per
-  request, no caching — revocation is structurally immediate (proven, §9 of `SECURITY_ACCEPTANCE.md`).
-- `identity-platform` is the **sole session issuer** for the merchant and buyer realms
-  (asymmetric ES256/EdDSA, verified via `LETBUYY_IDENTITY_PUBLIC_JWKS`). Buyer sessions additionally
-  check a live `session_epoch` against `buyer_accounts` on every request (immediate global
-  revocation, e.g. "sign out everywhere").
-- **17-file `identity-foundation` scaffold** (`services/api-gateway/src/identity-foundation/`) plus
-  15 feature flags (all default `false`) name a **target** principal/org-graph model. Its
-  `createDormantPrincipalRepository()` and sibling factories are literally named dormant —
-  `findById()` returns `null` unconditionally. 22 named future tables all exist in the database with
-  zero rows. The scaffold's pure planning functions (`planPrincipalBackfill`,
-  `planOrgGraphBackfill`, etc.) are genuinely usable today for dry-run validation — they are the one
-  part of the scaffold with real, callable logic.
-- The platform-operator realm has its own, **third**, separate authorization system
-  (`middleware/rbac.ts`'s `loadEffectivePermissionScopes` + an explicit ops allowlist table) —
-  confirmed independent of both the merchant-staff and buyer systems (§6 of
-  `SECURITY_ACCEPTANCE.md`).
-
-So today there are **three realms, three separate authorization mechanisms**, cleanly isolated
-from each other (verified, not assumed) but not unified under one canonical principal/org model.
-
-### Target (`TARGET_IMPLEMENTATION`)
-
-One canonical principal/organization graph (the dormant tables + feature flags already name it)
-replacing all three realm-specific mechanisms, with a real backfill from `employees`/`buyer_accounts`/
-the ops allowlist into the new tables, cut over behind the existing feature flags, then the legacy
-tables retired.
-
-### Option A — Complete the bounded Phase 2 transition now
-
-- **Scope:** activate the `identity-foundation` scaffold for the merchant-staff realm only (not
-  buyer, not operator); implement the currently-dormant `PrincipalRepository` and
-  `ShadowPermissionEngine` against the already-existing 22 tables; run `planPrincipalBackfill`/
-  `planOrgGraphBackfill` for real against a copy of `employees`; flip the relevant feature flags in
-  a local/staging environment only.
-- **Dependencies:** none blocking — the tables exist, the planning functions exist and are pure.
-  Genuinely new work: the repository/engine implementations themselves (currently `null`-returning
-  stubs) and a real backfill script with a rollback path.
-- **Compatibility implications:** `staff-permission.ts` would need a shadow-read/shadow-write phase
-  (compute both the old and new answer, compare, alert on divergence) before cutover — not built
-  today.
-- **Risk:** medium. The merchant-staff realm is the one this pass most thoroughly re-verified
-  (§§2–4 of `SECURITY_ACCEPTANCE.md`); replacing its authorization primitive is exactly the kind of
-  change that could silently reintroduce a gap this pass just closed, unless the shadow-comparison
-  phase is built first and run long enough to be trusted.
-- **Local verification:** fully possible without any hosted dependency — everything named above
-  runs against the owned local Supabase instance.
-- **Hosted-cutover excluded from this option's scope** — flipping a feature flag in staging/
-  production is a separate, later, owner-approved step.
-- **What remains incomplete even if Option A is taken:** the buyer and operator realms stay on
-  their own separate mechanisms; this option unifies one of three.
-
-### Option B — Explicitly accept a staged milestone; defer the transition
-
-- **Scope:** declare the current three-realm-but-cleanly-isolated state (verified this pass) as the
-  accepted Phase 2 target. Keep the `identity-foundation` scaffold dormant and the feature flags at
-  `false`. Revisit only when a **named trigger** (e.g., a fourth realm, a cross-realm feature
-  requirement) creates measured pressure.
-- **Dependencies:** none — this is a decision not to build something yet.
-- **Compatibility implications:** none; nothing changes.
-- **Risk:** low technically (nothing new is built); the accepted risk is carrying three parallel
-  authorization mechanisms indefinitely, which is a real (if currently well-managed) maintenance
-  and audit surface.
-- **Local verification:** N/A.
-- **What remains incomplete:** the target model stays entirely unbuilt, by design, until re-opened.
-
-### Recommendation (a recommendation, not a decision)
-
-**Option B.** The three realms are verified, this pass and the last, to be cleanly separated with
-no cross-contamination risk (§6 of `SECURITY_ACCEPTANCE.md`) — the problem the unified model would
-solve is not currently manifesting as a bug. Building the shadow-comparison infrastructure Option A
-needs, safely, is itself a multi-phase effort disproportionate to a "bounded" pass, and Mandate 5
-explicitly warns against expanding scope after the actual defects are already closed. Recommend
-revisiting D03 only when a concrete fourth realm or cross-realm requirement appears.
+- **A.** The prior D03 implied that having three separate realm authorization systems was itself a
+  defect calling for unification. It is not — see D03 below for what is actually proposed to unify
+  (principal identity / account linking / token issuance / session lifecycle / org membership), and
+  what stays intentionally separate (audiences, tenant scopes, permissions, step-up, admin
+  authority).
+- **B.** The prior D03 Option A said "flip the relevant feature flags in a local/staging
+  environment" — a contradiction with its own "hosted-cutover excluded" line. Corrected: this task
+  and every option below are **local only**. No staging activation is proposed or implied anywhere
+  in this document.
+- **C.** The prior document said the scaffold's planning functions "are the one part... with real,
+  callable logic" without classifying each component. Corrected below with an explicit
+  per-component table (`IMPLEMENTED` / `PLANNER ONLY` / `ADAPTER MISSING` / `STUB` / `UNSUPPORTED
+  ASSUMPTION`), matching the status vocabulary already accepted in
+  `foundation-programme-2026-09-26/DECISIONS_AND_ACCEPTANCE.md`.
+- **D.** The prior D05 table asserted categorically that `risk_scores`/`ts_cases` "cannot contain
+  the buyer's personal data." That is an overclaim — a risk score's own inputs may well be derived
+  from buyer behavior or buyer-supplied data. Corrected: the export-scope table below states
+  exclusions as **proposed technical/security policy** (a decision about what the access right
+  discloses, not a factual claim about what data a table contains), and separates secret/security
+  material, third-party data, mixed records, internal operational data, and legal
+  access/exemption questions as distinct categories.
+- **E.** The prior requirement matrix cited "server-side recompute of totals/tax/shipping" and "the
+  RLS/tenant backstop" as established by this review — they were not; they are pre-existing facts
+  from other work, unrelated to what Mandate 5/6 actually reviewed. Removed from the matrix below.
+  Gate status is stated using the accepted PLANNED / IMPLEMENTED / LOCAL VERIFIED / BLOCKED
+  vocabulary, and "full gate green" is never used as a stand-in for "feature implemented."
 
 ---
 
-## D04 — Operator permission matrix (proposal) and 8 discrete decisions
+## D03 — Identity unification vs. authorization unification (these are separate questions)
 
-All rows below name an **existing** endpoint in `routes/operations/support.ts` /
-`routes/internal-console.ts`. "Current enforcement" is what the code does today, cited from source,
-not inferred. "Proposed" is a suggestion the owner may accept, reject, or amend — the table's
-existence does not pre-select an answer.
+### What is actually proposed to unify — and what is NOT a defect
 
-| Existing action | Endpoint | Current enforcement | Proposed tier | Audited today? | Step-up if accepted? |
-|---|---|---|---|---|---|
-| View ticket queue/detail | `GET /tickets`, `GET /tickets/:id` | `requirePermission('support:view')` | Reviewer (read-only) | Yes — `logSensitiveRead` | No |
-| Reply / internal note | `POST /tickets/:id/messages` | `requirePermission('support:reply')` | Moderator | Yes — `writeAudit` | No |
-| Create ticket | `POST /tickets` | `requirePermission('support:reply')` | Moderator | Yes | No |
-| Assign ticket | `PATCH /tickets/:id/assign` | `requirePermission('support:manage')` | Moderator | Yes | No |
-| Escalate (incl. Trust & Safety case open) | `POST /tickets/:id/escalate` | `requirePermission('support:reply')` | Moderator | Yes | No |
-| Resolve ticket | `POST /tickets/:id/resolve` | `requirePermission('support:reply')` | Moderator | Yes | No |
-| Record CSAT | `POST /tickets/:id/csat` | `requirePermission('support:reply')` | Moderator | Yes | No |
-| Create/manage macros | `POST /macros` | `requirePermission('support:manage')` | Administrator | Yes | No |
-| Merchant detail view (cross-domain: orders, risk, T&S cases) | `internal-console.ts` merchant-view route | `requireRoleCategory('ops')` + `requireSuperAdmin` (every route in this file) | **High-risk** — reads payment/risk data across every merchant | Yes — `writeConsoleAudit` | **Proposed: yes**, given it exposes commerce + risk data platform-wide |
-| Console own-account MFA enrollment/rotation | not yet a route (TOTP secrets are env-configured, not self-service) | N/A | — | — | — |
+The three realms (buyer, merchant/staff, platform-operator) having **distinct** audiences, tenant
+scopes, permission vocabularies, step-up requirements, and administrative authority is the intended
+design (Constitution: "realm privileges strictly separated") — not something D03 proposes to
+change. Confirmed structurally separate this pass and the last: merchant-staff permissions
+(`employees.permissions`) and platform-operator permissions
+(`loadEffectivePermissionScopes`/`super_admin_allowlist`) are resolved from entirely different
+tables by entirely different functions (`SECURITY_ACCEPTANCE.md` §3); no shared string or claim
+lets one satisfy the other.
 
-**Note on today's actual tier structure:** every route in `operations/support.ts` already requires
-`requireSuperAdmin` in addition to its specific `support:*` scope (`router.use('*',
-requireRoleCategory('ops'), requireSuperAdmin)`) — there is **no reviewer/moderator/administrator
-tier distinction in the code today**; every operator who can reach this router at all is already a
-superadmin. The table above is a **proposal to introduce** that tier distinction, not a description
-of an existing one.
+What the dormant `identity-foundation` scaffold actually names as its target is narrower than "one
+permission system": **one canonical principal/organization graph** underneath the existing,
+separate realm-specific authorization layers — specifically:
 
-### The 8 discrete decisions
+- **Principal identity** — one durable identifier per real person, instead of a person's merchant
+  identity (`users_custom`), buyer identity (`buyer_accounts`), and any future operator identity
+  being three unrelated rows with no structural link between them today.
+- **Account linking** — a real answer to "is the person behind this `employees.user_id` the same
+  person as this `buyer_accounts.id`," which today has no representation at all (they are looked up
+  by email coincidence, never joined).
+- **Token issuance** — already unified in practice (`identity-platform` is the sole issuer for
+  merchant and buyer realms); D03 does not need to change this.
+- **Session lifecycle** — merchant and buyer sessions already have independent, working revocation
+  mechanisms (fresh-per-request `employees` check; `session_epoch` check). D03 would let a org-graph
+  model represent both under one principal without merging their revocation semantics.
+- **Organization membership** — replacing `employees`' flat `(store_id, user_id, role)` rows with a
+  graph that can express one principal holding several distinct memberships (see the reconciliation
+  findings below — this already happens today and is invisible to the current model).
 
-1. **Role capabilities** — accept the Reviewer/Moderator/Administrator/High-risk split above, or a
-   different one? (Today: one undifferentiated superadmin tier.)
-2. **Who may assign roles** — if tiers are introduced, who grants them? No such assignment route
-   exists today; `PLATFORM_CONSOLE_ALLOWED_EMAILS` is a flat allowlist with no role concept.
-3. **Bootstrap authority** — who adds the *first* operator to a fresh environment? Not implemented
-   today; would need an explicit, owner-approved bootstrap path (not a generic self-registration
-   endpoint).
-4. **Recovery approver/mechanism** — if an operator loses their TOTP device, who re-provisions them?
-   Not implemented today (`PLATFORM_CONSOLE_TOTP_SECRETS` is env-configured, not self-service, so
-   recovery today means an environment-variable change by whoever controls the deploy config — this
-   is itself worth an explicit decision on who that should be).
-5. **MFA enrollment/rotation** — self-service, or admin-provisioned? Today: admin/deploy-config
-   provisioned only (env var), confirmed per-principal in production (§11 of
-   `SECURITY_ACCEPTANCE.md`).
-6. **High-risk approval (dual control)** — is the merchant-detail cross-domain view (which already
-   surfaces payment/risk data for any merchant) sensitive enough to require a second approver, or is
-   single-superadmin access with audit logging (today's state) sufficient? This pass makes no
-   recommendation — it is a business-risk judgment, not an engineering one.
-7. **Canonical identity transition** — see D03 above; restated here because D04's tiers would need
-   to be re-implemented if D03's Option A were later taken.
-8. **Delivery/provider activation** — see §11 of `SECURITY_ACCEPTANCE.md`: an adapter
-   (`packages/infrastructure/resend-adapter`) already exists and is reusable; this decision is
-   specifically about (a) whether to wire the console's magic-link route to it, (b) what sender
-   address/copy to use, and (c) who owns delivery-failure alerts — three separable questions, not
-   one.
+### Current (`CURRENT_IMPLEMENTATION`, verified this pass)
 
-**This pass does not invent a human approver for item 6, and does not bundle these eight behind one
-"D04 blocked" label** — each is independently answerable and independently unlocks its own next
-implementation step (named in the requirement matrix below).
+Real row counts against the owned local database, checked this pass (not carried over from
+memory): `employees` — 0 rows; `site_memberships` — 0 rows; `site_roles` — 0 rows; `sites` — 2 rows;
+`users_custom` — 1 row. The merchant-staff realm's live data is currently empty in this environment
+— the reconciliation tool built this pass (below) is demonstrated against synthetic fixtures, not
+against a populated real dataset, and this is stated plainly rather than implied otherwise.
 
----
+### Scaffold component classification (correcting overclaim C)
 
-## D05 — Data-rights export scope and retention (proposal), from the actual schema
-
-### Field-level export scope proposal
-
-Built from the real schema (read via `\d` against the owned local Postgres, this pass), not from
-memory of the data model.
-
-| Category | Tables / fields | Proposed for export? | Reason |
+| Component | File | Classification | Evidence |
 |---|---|---|---|
-| Buyer profile | `buyer_accounts`: `email`, `full_name`, `phone`, `status`, `created_at` | **Yes** | Directly the buyer's own identity data. |
-| Buyer profile — credentials/security material | `buyer_accounts.password_hash`, `session_epoch`; `buyer_authorization_codes`; `buyer_email_challenges`; `buyer_firebase_links` | **No** | Security material, not personal data the access right is meant to disclose — exporting a password hash or an active auth code would itself be a security risk, not a compliance benefit. |
-| Buyer addresses | `buyer_addresses` (all columns except nothing — the whole row is the buyer's own shipping data) | **Yes** | Entirely buyer-authored. |
-| Buyer-authored request content | `support_tickets` rows they are the `requester_user_id` of; `ticket_messages` they authored (`author_type='requester'`) | **Yes**, their own authored text only | Never another party's messages on the same thread (an agent's internal note, `visibility='internal'`, is the platform's operational data, not the buyer's). |
-| Buyer-visible order info | Orders reachable via `buyer_order_links` → `orders`/`order_items` for **their own** orders only | **Yes**, commerce fields only (items, amounts, status, dates) | Never another buyer's order on the same merchant, never the merchant's internal notes on the order. |
-| Buyer behavioral/engagement data | `buyer_notifications`, `loyalty_accounts` + ledger, `seller_follows`, `buyer_product_views` | **Proposed yes**, but flagged for an explicit decision — `buyer_product_views` in particular is browsing history a buyer may not expect to be able to export/see itemized. |
-| Merchant-internal info about the buyer | `risk_scores`, `ts_cases`/`ts_evidence` (Trust & Safety), ticket `assignee_id`, internal-visibility ticket notes | **No** | This is the platform's/merchant's own operational risk assessment, not the buyer's personal data — exporting it would disclose the platform's fraud-detection reasoning. |
-| Other people's personal data incidentally present | An agent's name/email on a ticket thread; another buyer's data on a shared resource (none currently identified, but the principle applies) | **No** | The access right is to the requester's own data, never a third party's. |
+| `IdentityReconciliationReport`/`Finding` types | `migration-scaffold.ts` | **STUB (types only)** — no function populated `findings` before this pass | Confirmed by reading every export; `createEmptyIdentityReconciliationReport()` is the only constructor and it is permanently empty |
+| `reconcileMerchantStaffIdentities` | `reconciliation-report.ts` (**new this pass**) | **IMPLEMENTED, LOCAL VERIFIED** | 12 tests against synthetic fixtures (all named scenarios); one real run against the owned local Postgres (read-only, 0 rows found, matching the table's real state) |
+| `planPrincipalBackfill` / `planCustomerPrincipalBackfill` | `migration-scaffold.ts` | **IMPLEMENTED (pure mapping only)** — does not detect duplicates/ambiguity; blindly maps 1:1 | Read in full; confirmed by test in `identity-reconciliation-report.test.ts` |
+| `planOrgGraphBackfill` | `migration-scaffold.ts` | **ADAPTER MISSING (until this pass)** — accepts `LegacySiteMembershipRow` (id/site_id/user_id/**role_id**), modeled after `site_memberships` (a table with zero rows in every environment inspected), not `employees` (the table that actually holds staff data, whose `role` is a free-text string with no foreign-key partner in active use) | `employeeMembershipToLegacySiteMembership` (new this pass) is the adapter; confirmed by a direct test that a real-shaped `employees` row now reaches this function unmodified |
+| `createDormantPrincipalRepository`, `ShadowPermissionEngine` and siblings | `repository-implementations.ts` | **STUB** — `findById()` and equivalents return `null` unconditionally, by design and by name | Read in full this pass and the last; unchanged |
+| 15 `IDENTITY_FOUNDATION_FEATURE_FLAGS` | `packages/auth-core/src/feature-flags.ts` | **UNSUPPORTED ASSUMPTION if flipped today** — nothing behind any flag has a real implementation to activate | All default `false`; confirmed no flag has a corresponding non-stub repository |
+| `buyer-export-contract.ts`, `console-magic-link-delivery.ts` | new this pass, D05/D04 | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** — deliberately disconnected from any route | See D05/D04 below |
 
-**No compliance duration is invented here** — the table above is a technical classification of
-*what exists and what it is*, not a legal retention period.
+No component in this table is "ready to activate" as a whole. The reconciliation report and the
+adapter are the two genuinely new, real capabilities this pass adds; everything else in the scaffold
+remains exactly as dormant as previously found.
 
-### The 8 separate decisions
+### Option A — Continue the original Phase 2 target through a LOCAL merchant/staff transition first
 
-1. **Export scope** — accept the classification above, amend it, or replace it?
-2. **Requester verification/step-up** — what proves the person asking for their own export *is*
-   that buyer, beyond an already-authenticated session? (E.g., re-authentication, a cooling-off
-   period before release.) Not decided or implemented.
-3. **Release/download protection** — how is an export delivered — signed URL with expiry,
-   password-protected, in-app only? Not decided or implemented.
-4. **Retention categories** — which of the tables above have a defined retention window at all
-   today? None do; every table above retains indefinitely unless explicitly deleted.
-5. **Deletion exceptions** — which categories must survive an erasure request regardless (e.g.,
-   financial records for tax/audit purposes, fraud-investigation evidence)? Not decided.
-6. **Legal hold** — is there a mechanism to pause deletion for a specific buyer under active dispute
-   or investigation? Not implemented.
-7. **Deletion approval** — does erasure execute automatically once approved-scope is met, or does
-   it require a human sign-off step per request? Not decided.
-8. **Incident ownership** — if an export or erasure is executed incorrectly (wrong buyer, incomplete
-   scope), who is the accountable owner for remediation? Not decided.
+- **Builds:** the currently-stub `PrincipalRepository`/permission-representation for the
+  merchant-staff realm only (not buyer, not operator); a real backfill run (using
+  `reconcileMerchantStaffIdentities` + `planPrincipalBackfill`/`planOrgGraphBackfill`, now that the
+  adapter exists) against a **copy** of `employees`; a shadow-evaluation phase comparing the
+  existing `staff-permission.ts` answer against the new model's answer for every real request,
+  logging (never enforcing on) divergence.
+- **What stays unchanged:** the buyer and operator realms, their own session mechanisms, their own
+  permission vocabularies — completely untouched by this option. Merchant-staff's OWN existing
+  authorization (`staff-permission.ts`) also stays the enforced path throughout the shadow phase;
+  nothing user-facing changes until shadow comparison passes for a sustained period and a **separate
+  future decision** approves cutover.
+- **What still remains incomplete after Option A:** buyer and operator realms are not touched at
+  all; this is one of three realms, not "identity unified." Real single-use enforcement for any
+  session/token model is a separate, unrelated question (see D04 below — the console magic-link
+  token's own single-use gap is unrelated to D03).
+- **Why a flag flip alone is insufficient:** every flag in `feature-flags.ts` gates a currently
+  `null`-returning stub. Flipping one without first replacing the stub with a real, shadow-verified
+  implementation would not activate a new authorization path — it would silently make every
+  permission check behind that flag fail (or, if the stub fails open rather than closed, silently
+  grant nothing correctly), because there is no real logic behind the flag today.
+- **Local verification:** entirely possible against the owned local Postgres; no hosted dependency.
+- **Dependencies:** none blocking. Genuinely new work: the repository/engine implementation itself,
+  the shadow-comparison harness, and a rollback plan for the backfill.
+- **Risk:** medium — touches the merchant-staff realm this pass's own security work most thoroughly
+  verified. The shadow-comparison phase exists specifically to catch a regression before it can
+  reach real enforcement.
 
-**Deletion execution remains unimplemented until these are answered** — this is unchanged from the
-prior pass's conclusion and is restated, not silently dropped, per Mandate 5's explicit instruction.
-A safe technical contract (e.g., a typed `ExportRequest`/`ErasureRequest` interface with the fields
-above as its shape) or a local synthetic export-generation test **could** proceed once export scope
-(#1) alone is accepted, without waiting on retention (#4–8) — but no such contract was built in this
-pass, since #1 itself remains a proposal, not yet an `OWNER_DECISION`.
+### Option B — Explicitly accept the current implementation as a staged milestone; defer named items
+
+- **Scope:** declare the current three-realm, cleanly-separated state as the accepted milestone.
+  Keep the scaffold dormant. Revisit when a named trigger (a fourth realm; a concrete cross-realm
+  feature requirement) creates measured pressure.
+- **What remains incomplete:** the target principal/org graph stays entirely unbuilt, by explicit
+  choice, not by oversight — recorded here so it is never later silently reinterpreted as "not part
+  of Phase 2's scope."
+
+### Recommendation
+
+**Option A, bounded to its exact stated scope (merchant-staff realm, local only, shadow-compare
+before any cutover)** — not the full historical D03 target, and not Option B's indefinite deferral.
+The reconciliation tool and the adapter this pass built are real, tested, zero-risk first steps
+already in that direction; taking Option A means continuing them into a real repository
+implementation and a shadow-comparison harness, still entirely local, still with the existing
+`staff-permission.ts` as the only enforced path until a separate future decision approves cutover.
+Option B remains available if the owner prefers not to invest further here; it is not silently
+selected by proceeding with independent preparation, per Mandate 6's explicit instruction.
+
+---
+
+## D04 — Operator access: a minimal permission matrix, tied to real endpoints and two real
+authorization architectures
+
+### Two structurally different operator-surface authorization models exist today (a new, precise
+finding this pass — not previously documented at this level of detail)
+
+| | `routes/operations/support.ts` | `routes/internal-console.ts` |
+|---|---|---|
+| Gate | `requireRoleCategory('ops')` + `requireSuperAdmin`, per route, plus a granular `support:*` scope | A single shared bearer token (`PLATFORM_CONSOLE_API_TOKEN`), checked once for the whole router |
+| Per-person identity at the API layer | Yes — `hasOpsAllowlistEntry` checks `super_admin_allowlist` fresh, per request | **No** — the gateway layer has no concept of which person is calling; `actor_id`/`actor_email` in request bodies are self-reported by the caller |
+| Revocation | Immediate — `is_active=false` on the DB row takes effect on the very next request | N/A at this layer — see below |
+| Real per-person, MFA-gated check | Happens here, at the gateway | Happens **upstream**, in the console app's own `(dashboard)/layout.tsx` (`requireConsoleSession({mfa:true})`), confirmed this pass to wrap every page that could call this router; no other caller of `PLATFORM_CONSOLE_API_TOKEN` was found anywhere in the repository |
+
+This is a legitimate design (a service-to-service credential, with real authorization happening in
+the calling application) **as long as nothing else ever calls this router with the static token**.
+That holds today (confirmed by an exhaustive search this pass). It is named explicitly here because
+it is exactly the kind of "places where UI and API authority differ" fact D04 needs to be decided
+against, not discovered later.
+
+### Console-side session revocation is bounded but not immediate (new, precise finding)
+
+`PLATFORM_CONSOLE_ALLOWED_EMAILS` (env var) is checked **only at login**
+(`isConsoleEmailAllowed`, called from the login route; never called again from
+`readConsoleSession`/`requireConsoleSession`). Removing an operator from this list blocks new
+logins immediately but does **not** invalidate an existing session cookie, which remains valid for
+up to `LETBUYY_PLATFORM_SESSION_TTL_SECONDS` = **8 hours** after issuance. This is a bounded, real
+gap (not immediate revocation, unlike `operations/support.ts`'s DB-checked model) — stated precisely
+so D04.4 (recovery/revocation) is answered against the actual number, not an assumption.
+
+### Console magic-link tokens are not single-use (new, characterized this pass, not fixed)
+
+Confirmed empirically (`packages/auth-core/test/platform-magic-link.test.ts`): the identical
+magic-link token verifies successfully more than once within its 15-minute TTL — there is no
+nonce/jti and no consumed-token tracking. TTL expiry itself works correctly. Not fixed this pass
+(real single-use tracking needs a persistence decision beyond bounded local preparation) — a
+demonstrated fact for D04.5/D04.8, not an assumption in either direction.
+
+### A concrete defect found and fixed this pass (not merely proposed)
+
+The login route (`apps/internal/console/src/app/api/console-auth/login/route.ts`) checked allowlist
+membership *before* the production/delivery-configured gate. Since every production submission
+today ends at `magic_link_delivery_not_configured` (no delivery is wired), checking the allowlist
+first meant an **allowed** email got a different error than a **disallowed** one — letting any
+caller learn, one guess at a time, which candidate emails are real operator accounts. Fixed by
+reordering (production check first) and pulling the decision into a pure, independently-tested
+function, `resolveConsoleLoginOutcome` (`console-mfa.ts`). Verified: 2 new tests, full console test
+suite green, typecheck clean.
+
+### Concrete action-to-enforcement table
+
+| Action | Endpoint | Current authentication | Current authorization | Data sensitivity | Audited today? | Decision needed |
+|---|---|---|---|---|---|---|
+| View ticket queue/detail | `GET /tickets`, `/tickets/:id` | Real per-request session → `requireRoleCategory`/`requirePermission` | `support:view` scope | Low-medium (support content) | Yes (`logSensitiveRead`) | Tier: Reviewer |
+| Reply/note/create/assign/escalate/resolve/CSAT ticket | `operations/support.ts` various | Same | `support:reply`/`support:manage` | Low-medium | Yes (`writeAudit`) | Tier: Moderator |
+| Macros | `POST /macros` | Same | `support:manage` | Low | Yes | Tier: Administrator |
+| Merchant detail (orders/risk/T&S/subscriptions cross-domain) | `internal-console.ts` merchant-view | Static token (console-app-issued, upstream MFA) | None at API layer beyond the static token | **High** — payment/risk data, any merchant | Yes (`writeConsoleAudit`, self-reported actor) | Explicit permission + step-up? |
+| Merchant suspend/restore | `internal-console.ts` moderation (`MerchantModerationSchema`, requires `secondary_approver_id`) | Static token | None at API layer; **dual-approval already required by the request schema itself** (`secondary_approver_id`) | **High** | Presumed yes (not independently verified this pass — no console UI consumer of this route was found) | Confirm this route has a real UI path and real second-approver verification, not just a schema field |
+| Merchant impersonation | `internal-console.ts` (`MerchantImpersonationStartSchema`, `ttl_minutes`) | Static token | None at API layer | **Highest** — assumes a merchant's own session | Not independently verified — **no console UI consumer of this route was found this pass either** | Verify who calls this today, if anyone, before any further decision |
+| Console own-account MFA | Not a route — TOTP secrets are env-configured | N/A | N/A | — | — | D04.5 |
+
+**Flagged for the owner's attention, not resolved here:** the merchant moderation and impersonation
+routes exist, are schema-validated, and (for moderation) already encode a dual-approval field — but
+this pass found **no caller of either route anywhere in the repository**, console or otherwise. That
+could mean the console UI for them has not been built yet, or that they are reached by a tool
+outside this repository. This is a fact worth the owner's attention before any D04 decision is
+finalized, not a gap this pass can resolve by more reading.
+
+### The 8 discrete decisions (unchanged in number, updated with this pass's findings)
+
+1. **Role capabilities** — accept the Reviewer/Moderator/Administrator/High-risk split above? Today
+   `operations/support.ts` has no tier distinction in the code (every caller is already a
+   superadmin) — this is a proposal to introduce one, not a description of an existing one.
+2. **Who may assign roles** — no assignment route exists today for either authorization model.
+3. **Bootstrap authority** — who adds the first operator to a fresh environment? Not implemented.
+4. **Recovery approver/mechanism** — for `super_admin_allowlist`: a DB update, by whom? For the
+   console's own env-var allowlist + TOTP secrets: a deploy-config change, by whom, and should the
+   8-hour existing-session gap above be closed (e.g., a live session check) as part of this answer?
+5. **MFA enrollment/rotation** — self-service or admin-provisioned? Today: admin/deploy-config only.
+6. **High-risk approval (dual control)** — is single-superadmin + audit logging sufficient for the
+   merchant detail view, or does it need a second approver (as moderation already schemas-in but
+   this pass could not confirm is actually wired to a real UI)? Business-risk judgment, not
+   engineering — no recommendation made.
+7. **Canonical identity transition** — see D03; D04's tiers would need re-implementing if D03
+   Option A is later taken.
+8. **Delivery/provider activation** — `packages/infrastructure/resend-adapter` exists and is
+   reusable; `console-magic-link-delivery.ts` (new this pass) is the wiring **boundary**, not the
+   wiring itself — `getConfiguredConsoleMagicLinkDeliveryAdapter()` returns `null` until this is
+   answered. Separately: (a) wire the adapter, (b) choose a sender address/copy, (c) decide who owns
+   delivery-failure alerts — three separable sub-questions.
+
+No human approver is invented for item 6. No hosted provisioning is implied anywhere above.
+
+---
+
+## D05 — Buyer export: an initial restricted scope, proposed as policy (not asserted as fact)
+
+### Field-level contract (now implemented and tested, not merely described — `buyer-export-contract.ts`)
+
+Every field below names its own real source column (never `SELECT *`); every exclusion states its
+**proposed** rationale as a policy choice, not a claim about what the underlying table can contain.
+
+| Section | Included (proposed) | Excluded (proposed policy, with reason) |
+|---|---|---|
+| Profile | `buyer_accounts.email`, `.full_name`, `.phone`, `.status`, `.created_at` | `.password_hash`, `.session_epoch` — **secret/security material**, not disclosed by an access right regardless of who requests it |
+| Addresses | Every `buyer_addresses` column for the requester's own rows | — |
+| Buyer-authored request content | The requester's own `support_tickets`/`ticket_messages` (`author_type='requester'`) | Agent-authored notes on the same thread — **mixed record**: the thread contains both the buyer's own words and the platform's internal operational content; only the buyer's own portion is proposed for inclusion, as a disclosure-scope choice, not because the agent's notes are somehow not "in" the same table |
+| Orders | The requester's own orders via `buyer_order_links`, commerce fields only | Merchant-internal order notes (if such a field exists) — **internal operational data**, proposed excluded as a disclosure-scope choice |
+| (Flagged, not yet classified as included or excluded) | `buyer_notifications`, `loyalty_accounts`+ledger, `seller_follows`, `buyer_product_views` | Needs an explicit decision — `buyer_product_views` in particular is browsing history a buyer may not expect to see itemized back to them |
+| (Explicitly out of this proposal's scope) | Platform risk/fraud assessment (`risk_scores`, `ts_cases`/`ts_evidence`) | **Not asserted to be free of buyer-derived data** — a risk score's own inputs may include buyer behavior. Proposed exclusion is a policy decision about disclosing the platform's fraud-detection reasoning and methodology, separate from any question about what data it is computed from. This needs its own explicit legal/policy sign-off if ever revisited, not a technical default. |
+
+Implementation facts (not policy): `BUYER_EXPORT_GENERATION_AVAILABLE` is hardcoded `false`; nothing
+imports the generator from any route; 11 tests confirm Buyer A never receives Buyer B's rows even
+when both are present in the same synthetic source, that credentials are never emittable regardless
+of contract changes elsewhere, that a partial match is reported `complete: false` rather than
+silently omitted, and that serialization is deterministic.
+
+### The 8 separate decisions (unchanged in number and substance from the prior pass)
+
+1. **Export scope** — accept the table above, amend it, or replace it?
+2. **Requester verification/step-up** — beyond an authenticated session, what proves the requester
+   is who they claim? Not decided.
+3. **Release/download protection** — signed URL with expiry, password-protected, in-app only? Not
+   decided.
+4. **Retention categories** — no table above has a defined retention window today; every one retains
+   indefinitely unless explicitly deleted.
+5. **Deletion exceptions** — which categories must survive an erasure request regardless (financial/
+   audit records, fraud-investigation evidence)? Not decided.
+6. **Legal hold** — a mechanism to pause deletion for a buyer under active dispute? Not implemented.
+7. **Deletion approval** — automatic once scope is met, or a human sign-off per request? Not
+   decided.
+8. **Incident ownership** — who is accountable if an export/erasure executes incorrectly? Not
+   decided.
+
+**Deletion execution remains unimplemented until these are answered.** Export generation is
+technically demonstrable today (against synthetic fixtures) but stays unavailable to any real user
+until #1 is genuinely accepted — a synthetic fixture passing its own tests is not, and must never be
+described as, a completed buyer export journey.
 
 ---
 
 ## Concise owner answer form
 
 ```
-D03: [ ] Option A (complete transition now)   [ ] Option B (accept staged milestone) — recommended
+D03: [ ] Option A (local merchant-staff transition, bounded, shadow-compare before cutover) — recommended
+     [ ] Option B (accept current state as a staged milestone; defer)
 D04.1 role capabilities:        [ ] as proposed   [ ] amended: __________
 D04.2 who assigns roles:        __________
 D04.3 bootstrap authority:      __________
-D04.4 recovery approver:        __________
+D04.4 recovery approver + 8-hour session gap: __________
 D04.5 MFA enrollment model:     [ ] admin-provisioned (current)   [ ] self-service
 D04.6 high-risk dual approval:  [ ] required   [ ] not required (audit log sufficient)
 D04.7 canonical identity:       (follows D03)
-D04.8 delivery/provider:        [ ] wire resend-adapter now   [ ] defer
+D04.8 delivery/provider:        [ ] wire resend-adapter now (needs sender + ownership answers)   [ ] defer
+D04.9 (new) moderation/impersonation routes: [ ] confirm real caller exists   [ ] investigate further   [ ] deprecate if unused
 D05.1 export scope:             [ ] as proposed   [ ] amended: __________
 D05.2 requester verification:   __________
 D05.3 release protection:       __________
@@ -222,23 +309,29 @@ D05.8 incident ownership:       __________
 
 ---
 
-## Phase requirement matrix (Mandate 5 §18C)
+## Updated requirement matrix
+
+Status vocabulary matches `foundation-programme-2026-09-26/DECISIONS_AND_ACCEPTANCE.md` (PLANNED /
+IMPLEMENTED / LOCAL VERIFIED / BLOCKED / CLOSED), not an invented scale. Rows outside what Mandate
+5/6 actually reviewed are not included — correcting overclaim E.
 
 | Capability | Status |
 |---|---|
-| Server-side recompute of totals/tax/shipping/entitlements | implemented-and-verified (pre-existing, unchanged by Phase 2) |
-| Tenant isolation backstop (RLS + FORCE + GUC) | implemented-and-verified (pre-existing; `service_role` bypasses RLS at the DB level as documented — the app-layer tenant guard is the real backstop for gateway traffic, a documented architectural fact) |
-| Staff RBAC fail-closed, revocation-immediate | **implemented-and-verified this pass** (§2–3, §9 of `SECURITY_ACCEPTANCE.md`) |
-| Staff provisioning (verified-email direct-add) | **implemented-and-verified this pass** (§2) |
-| Write-implies-read permission primitive | **implemented-and-verified this pass** (§3) |
-| Privacy request intake (honest status, real idempotency) | **implemented-and-verified this pass** (§4–5) |
-| Cross-tenant ticket leak (employee `/tickets`) | **fixed and verified this pass's predecessor, re-confirmed this pass** (§4, §7) |
-| `GET /products/:id` tenant-guard 500 + staff recognition | **implemented-and-verified this pass** (§6 of prior pass, re-confirmed here) |
-| Sole-issuer/session model unification (D03) | not-implemented — blocked on D03 owner decision |
-| Organization-model convergence (identity-foundation activation) | not-implemented — dormant scaffold, blocked on D03 |
-| Console authorization tiers (D04.1–3) | not-implemented — blocked on D04 owner decisions |
-| Operator bootstrap/recovery (D04.3–4) | not-implemented — blocked on D04 owner decisions |
-| Console magic-link production delivery | not-implemented — external-activation-requirement (adapter exists, wiring + provider config + policy all pending D04.8) |
-| Data export execution (D05) | not-implemented — blocked on D05 owner decisions (scope proposal only) |
-| Data deletion/retention execution (D05) | not-implemented — blocked on D05 owner decisions |
-| Full local gate green | **not-implemented** — 5 lanes red; 3 fully attributed to pre-existing/unrelated causes, 1 (`merchant-web`) majority-attributed, 1 (`tests:all`) attributed for its first failure only (see §9 of `SECURITY_ACCEPTANCE.md`) |
+| Staff RBAC fail-closed, revocation-immediate | **LOCAL VERIFIED** (`SECURITY_ACCEPTANCE.md` §2-3, §9) |
+| Staff provisioning (verified-email direct-add) | **LOCAL VERIFIED** |
+| Write-implies-read permission primitive | **LOCAL VERIFIED** |
+| Privacy request intake (honest status, real idempotency) | **LOCAL VERIFIED**, including a real-Postgres concurrent-HTTP proof |
+| Cross-tenant ticket leak (employee `/tickets`) | **LOCAL VERIFIED** |
+| `GET /products/:id` tenant-guard fix + staff recognition | **LOCAL VERIFIED** |
+| Console login account-enumeration ordering | **LOCAL VERIFIED** (fixed and tested this pass) |
+| D03 merchant-staff identity reconciliation (dry-run) | **IMPLEMENTED, LOCAL VERIFIED** — real tool, run against real (currently empty) data + synthetic fixtures |
+| D03 principal/org-graph activation | **BLOCKED** on D03 owner decision |
+| D04 operator role tiers | **BLOCKED** on D04 decisions 1-2 |
+| D04 operator bootstrap/recovery | **BLOCKED** on D04 decisions 3-4 |
+| D04 console magic-link single-use enforcement | **PLANNED** — characterized as absent, not built (needs a persistence decision) |
+| D04.8 console delivery boundary | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (adapter interface + capture transport; no sender chosen, no provider wired) |
+| D04.9 moderation/impersonation route callers | **BLOCKED** on the owner confirming whether a real caller exists |
+| D05 export field contract | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (`BUYER_EXPORT_GENERATION_AVAILABLE = false`) |
+| D05 export execution against real requests | **BLOCKED** on D05 decisions 1-3 |
+| D05 deletion/retention execution | **BLOCKED** on D05 decisions 4-8 |
+| Full local gate | **BLOCKED** (partially) / **not CLOSED** — 5 lanes red; attribution confidence varies by lane (`SECURITY_ACCEPTANCE.md` §9); explicitly not described as fully green |
