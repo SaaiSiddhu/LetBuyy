@@ -120,7 +120,6 @@ test('D03 real-database acceptance: principal insertion, mapping stability, memb
         // ---- 4. Role/permission resolution: the target-backed comparator must resolve the REAL
         // role_ids -> site_role_permissions chain against actual Postgres. ----
         const grantedResult = await compareStaffPermissionDecisionAgainstTargetData(db(), {
-            isOwner: false,
             legacyUserId: STAFF,
             siteId: SITE,
             requiredKey: 'products:read',
@@ -136,7 +135,6 @@ test('D03 real-database acceptance: principal insertion, mapping stability, memb
         // to today -- recorded precisely, not glossed over). ----
         psql(`UPDATE store_memberships SET role_ids = ARRAY['${ROLE_DOWNGRADED}']::uuid[] WHERE store_id = '${SITE}' AND principal_id = '${idFirst}';`);
         const downgradedResult = await compareStaffPermissionDecisionAgainstTargetData(db(), {
-            isOwner: false,
             legacyUserId: STAFF,
             siteId: SITE,
             requiredKey: 'products:read',

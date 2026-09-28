@@ -19,7 +19,6 @@ export type TargetShadowOutcome =
   | 'MATCH'
   | 'DIVERGE_LEGACY_ALLOWS_TARGET_DENIES'
   | 'DIVERGE_LEGACY_DENIES_TARGET_ALLOWS'
-  | 'OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL'
   | 'UNMAPPED_NO_CANONICAL_ALIAS'
   | 'TARGET_PRINCIPAL_NOT_BACKFILLED'
   | 'TARGET_PRINCIPAL_AMBIGUOUS'
@@ -74,22 +73,21 @@ function neverGrant(
  * 6. Compare outcomes.
  * 7. (done by the caller) return only the existing authoritative decision -- this function's result
  *    is a comparison record, never itself consulted for enforcement.
+ *
+ * No `isOwner` parameter, deliberately (D03 permission equivalence, Section 7, 2026-09-28 follow-up):
+ * owner authority is now represented as an ORDINARY role-based grant (owner-role-backfill.ts's global
+ * 'owner' site_roles row, referenced from the owner's own store_memberships.role_ids at exactly the
+ * sites they own) -- it resolves through the identical principal -> membership -> role -> permission
+ * chain below as any staff member's permission, with no special-cased bypass branch. A not-yet-
+ * backfilled owner correctly falls through to TARGET_PRINCIPAL_NOT_BACKFILLED /
+ * TARGET_MEMBERSHIP_NOT_BACKFILLED like anyone else -- "missing/ambiguous ownership fails safely" by
+ * the same never-grant-on-missing-data guarantee already proven for every other case, not a new one.
  */
 export async function compareStaffPermissionDecisionAgainstTargetData(
   db: TargetShadowDb,
-  input: { isOwner: boolean; legacyUserId: string; siteId: string; requiredKey: string; legacyAllowed: boolean },
+  input: { legacyUserId: string; siteId: string; requiredKey: string; legacyAllowed: boolean },
 ): Promise<TargetShadowResult> {
   const canonicalAction = canonicalActionFor(input.requiredKey);
-
-  // The target model has no owner-bypass concept, exactly like the legacy-translated comparator --
-  // named and returned before any lookup, never conflated with a "not backfilled" finding.
-  if (input.isOwner) {
-    return neverGrant(
-      { ...input, canonicalAction },
-      'OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL',
-      'store-owner authority is not represented as a principal/membership/role fact in the target model yet',
-    );
-  }
 
   if (!canonicalAction) {
     return neverGrant(

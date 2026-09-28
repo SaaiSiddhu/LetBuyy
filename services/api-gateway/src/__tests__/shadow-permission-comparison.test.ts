@@ -36,12 +36,24 @@ test('write-implies-read: the legacy model allows via the implication; the new m
   assert.match(result.detail, /write-implies-read/i);
 });
 
-test('a staff permission key with no declared canonical alias (e.g. customers:read) is UNMAPPED, not silently assumed equivalent to anything', async () => {
-  const result = await compareStaffPermissionDecision({ isOwner: false, granted: ['customers:read'], requiredKey: 'customers:read' });
+test('a staff permission key with no declared canonical alias (e.g. a not-yet-declared "legal:read") is UNMAPPED, not silently assumed equivalent to anything', async () => {
+  // D03 permission equivalence (auth hardening follow-up, 2026-09-28) mapped every key currently
+  // declared in StaffPermissionKey (including customers:read, this test's PRIOR example) --
+  // superseded, not broadened: LEGACY_PERMISSION_ALIASES now names a canonical action for all 11
+  // real StaffPermissionKey values. This still proves the UNMAPPED path is real, using a plausible
+  // future key that genuinely has no alias -- requiredKey is a plain string here (not the strict
+  // union), so this is a legitimate exercise of the same code path, not a contrived one.
+  const result = await compareStaffPermissionDecision({ isOwner: false, granted: ['legal:read'], requiredKey: 'legal:read' });
   assert.equal(result.outcome, 'UNMAPPED_NO_CANONICAL_ALIAS');
   assert.equal(result.canonicalAction, null);
   assert.equal(result.newAllowed, null);
   assert.equal(result.legacyAllowed, true, 'the legacy decision is still computed and reported even when the new model has no opinion');
+});
+
+test('customers:read (mapped by D03 permission equivalence, 2026-09-28) now resolves through the real alias instead of UNMAPPED', async () => {
+  const result = await compareStaffPermissionDecision({ isOwner: false, granted: ['customers:read'], requiredKey: 'customers:read' });
+  assert.equal(result.canonicalAction, 'customer.read');
+  assert.notEqual(result.outcome, 'UNMAPPED_NO_CANONICAL_ALIAS');
 });
 
 test('absent/malformed permissions (empty granted array): both models deny (MATCH)', async () => {

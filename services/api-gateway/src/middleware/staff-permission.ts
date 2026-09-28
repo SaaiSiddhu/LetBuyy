@@ -148,7 +148,6 @@ async function runShadowComparisonSafely(
     if (!userId || !siteId || legacyAllowed === null) return;
     try {
         const targetResult = await compareStaffPermissionDecisionAgainstTargetData(db, {
-            isOwner: input.isOwner,
             legacyUserId: userId,
             siteId,
             requiredKey: input.requiredKey,

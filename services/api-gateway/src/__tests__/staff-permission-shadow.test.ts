@@ -64,6 +64,8 @@ function installFakePostgrest(tablesData: Record<string, Row[]>) {
 }
 
 const MANAGER_PRINCIPAL = 'principal-manager';
+const OWNER_PRINCIPAL = 'principal-owner';
+const OWNER_ROLE = 'role-owner';
 
 function tables(): Record<string, Row[]> {
     return {
@@ -76,18 +78,23 @@ function tables(): Record<string, Row[]> {
             // no row existing at all. This is the "revoked membership" case from Section 9's matrix.
             { store_id: 'store-1', user_id: 'revoked-user', status: 'removed', deleted_at: null, permissions: { granted: ['products:write'] }, role: 'manager' },
         ],
-        // Target-model fixtures (auth hardening follow-up, Section 6): a real backfilled principal
-        // and an active membership WITH a role that actually grants product.read, so the
-        // target-backed comparator has real data to resolve rather than always hitting a
-        // not-backfilled outcome.
+        // Target-model fixtures (auth hardening follow-up, Section 6): real backfilled principals and
+        // active memberships WITH roles that actually grant permissions, so the target-backed
+        // comparator has real data to resolve rather than always hitting a not-backfilled outcome.
+        // owner-user is backfilled exactly like D03 permission equivalence (Section 7, 2026-09-28)
+        // describes: a normal store_membership carrying the global 'owner' role -- no special-cased
+        // bypass, the same lookup path as any staff member.
         principals: [
             { id: MANAGER_PRINCIPAL, realm: 'merchant', legacy_user_id: 'manager-user', deleted_at: null },
+            { id: OWNER_PRINCIPAL, realm: 'merchant', legacy_user_id: 'owner-user', deleted_at: null },
         ],
         store_memberships: [
             { id: 'membership-1', store_id: 'store-1', principal_id: MANAGER_PRINCIPAL, status: 'active', role_ids: ['role-manager'], deleted_at: null },
+            { id: 'membership-owner', store_id: 'store-1', principal_id: OWNER_PRINCIPAL, status: 'active', role_ids: [OWNER_ROLE], deleted_at: null },
         ],
         site_role_permissions: [
             { role_id: 'role-manager', permission: 'product.read', effect: 'allow', deleted_at: null },
+            { role_id: OWNER_ROLE, permission: 'product.read', effect: 'allow', deleted_at: null },
         ],
     };
 }
@@ -294,16 +301,33 @@ test('target-backed shadow: a legacy-only staff member (never backfilled) logs T
     assert.equal(line.target_allowed, false, 'missing target data must never be reported as an allow');
 });
 
-test('target-backed shadow: an owner request logs OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL', async () => {
+test('target-backed shadow: a BACKFILLED owner resolves through the normal role chain -- MATCH, no special-case bypass', async () => {
     const fake = installFakePostgrest(tables());
     const lines = await warnLines(async () => {
-        await requestOne('store-1', 'owner-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        const res = await requestOne('store-1', 'owner-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200, 'the real decision is still owner-bypass -- unaffected by this test');
     });
     fake.restore();
     const line = targetShadowLine(lines);
     assert.ok(line);
-    assert.equal(line.outcome, 'OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL');
-    assert.equal(line.target_allowed, false);
+    assert.equal(line.outcome, 'MATCH', 'a backfilled owner with the owner role must resolve via the same lookup path as any staff member, not a special case');
+    assert.equal(line.target_allowed, true);
+});
+
+test('target-backed shadow: an owner NOT YET backfilled fails safely (TARGET_PRINCIPAL_NOT_BACKFILLED), never a silent allow', async () => {
+    const data = tables();
+    data.principals = data.principals.filter((p) => p.id !== OWNER_PRINCIPAL);
+    data.store_memberships = data.store_memberships.filter((m) => m.principal_id !== OWNER_PRINCIPAL);
+    const fake = installFakePostgrest(data);
+    const lines = await warnLines(async () => {
+        const res = await requestOne('store-1', 'owner-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200, 'the real legacy decision is unaffected by target backfill state');
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line);
+    assert.equal(line.outcome, 'TARGET_PRINCIPAL_NOT_BACKFILLED');
+    assert.equal(line.target_allowed, false, 'a not-yet-backfilled owner must never be reported as allowed');
 });
 
 test('SHADOW INDEPENDENCE: mutating ONLY the target fixture produces a measured divergence, and the real HTTP result is unchanged', async () => {
@@ -398,4 +422,19 @@ test('environment eligibility: the flag off never qualifies, even in a genuinely
 
 test('environment eligibility: an unset SUPABASE_URL does not silently qualify a non-production ENVIRONMENT', () => {
     assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development' } as unknown as Env), false);
+});
+
+test('environment eligibility: a misleading hostname containing a local-looking substring never qualifies -- this is a real, parsed-hostname check, not a raw string match', () => {
+    // D03 permission equivalence (Section 13, 2026-09-28): isLocalSupabaseEnvironment previously did
+    // `url.includes('localhost')`, a substring match against the WHOLE url. A hostname like this one
+    // contains that substring but is not actually localhost at all.
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development', SUPABASE_URL: 'https://evil-localhost-lookalike.attacker.example' } as unknown as Env), false);
+});
+
+test('environment eligibility: a malformed SUPABASE_URL fails closed (never local), not thrown or silently qualified', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development', SUPABASE_URL: 'not a url at all' } as unknown as Env), false);
+});
+
+test('environment eligibility: a genuine *.localhost subdomain still qualifies (the reserved local TLD, not a substring coincidence)', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development', SUPABASE_URL: 'http://my-project.localhost:54321' } as unknown as Env), true);
 });
