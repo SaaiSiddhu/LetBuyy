@@ -45,6 +45,7 @@ interface UpdateQuery {
 interface BackfillListQuery {
   eq(column: string, value: string): BackfillListQuery;
   is(column: string, value: null): BackfillListQuery;
+  limit(n: number): BackfillListQuery;
   then<T>(onFulfilled: (result: { data: Record<string, unknown>[] | null; error: { message?: string; code?: string } | null }) => T): Promise<T>;
 }
 

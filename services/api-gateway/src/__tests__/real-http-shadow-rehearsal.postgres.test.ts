@@ -219,7 +219,7 @@ test('D03 real HTTP-to-database shadow rehearsal', async (t) => {
         // is used below instead, which genuinely passes both gates, so this rehearsal can still exercise
         // a real, successful, shadow-observed mutation end to end.
         {
-            const { result: res, lines } = await capturingWarnLines(() =>
+            const { result: res, lines } = await capturingWarnLines(async () =>
                 appAs(OWNER).request(`/products`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -289,7 +289,7 @@ test('D03 real HTTP-to-database shadow rehearsal', async (t) => {
             psql(`UPDATE store_memberships SET role_ids = ARRAY['${downgradedRoleId}']::uuid[] WHERE store_id = '${SITE_A}' AND principal_id = (SELECT id FROM principals WHERE legacy_user_id = '${OWNER}');`);
             // Legacy side (the `sites.custom_user_id` row itself) is untouched -- this proves the
             // TARGET side's downgrade independently.
-            const { result: res, lines } = await capturingWarnLines(() =>
+            const { result: res, lines } = await capturingWarnLines(async () =>
                 appAs(OWNER).request(`/products`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -319,13 +319,13 @@ test('D03 real HTTP-to-database shadow rehearsal', async (t) => {
 
             // The legacy owner check (staff-permission.ts's own ownsStore) is driven by `sites` directly,
             // so it reflects the transfer immediately -- the OLD owner is no longer recognized as owner.
-            const { result: oldOwnerRes, lines: oldOwnerLines } = await capturingWarnLines(() =>
+            const { result: oldOwnerRes, lines: oldOwnerLines } = await capturingWarnLines(async () =>
                 appAs(OWNER).request(`/products?store_id=${SITE_A}`, {}, env()));
             assert.equal(oldOwnerRes.status, 403, 'the former owner must lose access once ownership transfers');
             const oldOwnerTargetLine = oldOwnerLines.find((l) => l.event === 'staff_permission_target_shadow_comparison');
             assert.equal(oldOwnerTargetLine!.target_allowed, false, `reconciliation must have revoked the former owner's TARGET-side owner role, not just left the real response to be decided by sites.custom_user_id: ${JSON.stringify(oldOwnerTargetLine)}`);
 
-            const { result: newOwnerRes, lines: newOwnerLines } = await capturingWarnLines(() =>
+            const { result: newOwnerRes, lines: newOwnerLines } = await capturingWarnLines(async () =>
                 appAs(STAFF_READONLY).request(`/products?store_id=${SITE_A}`, {}, env()));
             assert.equal(newOwnerRes.status, 200, 'the new owner must gain access');
             const newOwnerTargetLine = newOwnerLines.find((l) => l.event === 'staff_permission_target_shadow_comparison');
