@@ -24,23 +24,16 @@
 import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import { getSupabaseAdmin } from '../lib/supabase';
+import { getSupabaseAdmin, isLocalSupabaseEnvironment } from '../lib/supabase';
 import { compareStaffPermissionDecision } from '../identity-foundation/shadow-permission-comparison';
+import { compareStaffPermissionDecisionAgainstTargetData, type TargetShadowDb } from '../identity-foundation/target-shadow-comparison';
+// Pure decision primitive lives in lib/ (no imports of its own) specifically so this file and every
+// shadow comparator can depend on it without depending on EACH OTHER -- see
+// lib/staff-permission-decision.ts's own header for the circular-import history this replaced.
+import { evaluateStaffPermission, type StaffPermissionKey } from '../lib/staff-permission-decision';
+export { evaluateStaffPermission, type StaffPermissionKey };
 
 type AppContext = Context<{ Bindings: Env }>;
-
-export type StaffPermissionKey =
-    | 'products:read'
-    | 'products:write'
-    | 'orders:read'
-    | 'orders:write'
-    | 'customers:read'
-    | 'customers:write'
-    | 'marketing:write'
-    | 'shipping:write'
-    | 'returns:write'
-    | 'settings:write'
-    | 'content:write';
 
 export type StaffRbacMode = 'dryrun' | 'enforce';
 
@@ -52,17 +45,27 @@ export function staffRbacMode(env: Env): StaffRbacMode {
     return raw === 'dryrun' && !production ? 'dryrun' : 'enforce';
 }
 
-// Phase 2 / D03 (auth hardening mandate, Section 9) -- runtime shadow evaluation. Disabled by
-// default; opt in ONLY outside production, mirroring staffRbacMode's own dry-run gate exactly (a
-// hosted environment can never activate this no matter what STAFF_PERMISSION_SHADOW env value is
-// set, since `production` short-circuits to false first). This function decides ELIGIBILITY only --
-// it never changes what evaluateStaffRequest returns to its caller.
+// Phase 2 / D03 (auth hardening mandate, Section 9; tightened by Section 7 of the 2026-09-28
+// follow-up) -- runtime shadow evaluation. Disabled by default.
+//
+// `ENVIRONMENT !== 'production'` alone is NOT "local only" -- it silently qualifies staging, preview,
+// an unset ENVIRONMENT, or a typo'd value nobody meant to be treated as safe. This now requires BOTH
+// independent signals to agree, matching this repository's own established convention for "is this
+// genuinely a local instance" (isLocalSupabaseEnvironment, lib/supabase.ts -- already used the same
+// way for the local-schema-missing dev fallback in routes/auth.ts): (1) ENVIRONMENT is not the
+// literal string "production", AND (2) SUPABASE_URL itself points at localhost/127.0.0.1, a fact a
+// staging/preview deploy's real connection string cannot satisfy no matter how its ENVIRONMENT var is
+// labeled. An unset, empty, or malformed ENVIRONMENT value fails the first check only by accident of
+// string comparison -- it is the SUPABASE_URL check that is load-bearing against an unknown/mislabeled
+// environment, since a hosted deployment's connection string will never contain "localhost".
 export function staffPermissionShadowEnabled(env: Env): boolean {
     const raw = String((env as unknown as { STAFF_PERMISSION_SHADOW?: string }).STAFF_PERMISSION_SHADOW || '')
         .toLowerCase()
         .trim();
+    if (raw !== 'on') return false;
     const production = String(env.ENVIRONMENT || '').toLowerCase().trim() === 'production';
-    return raw === 'on' && !production;
+    if (production) return false;
+    return isLocalSupabaseEnvironment(env);
 }
 
 /** Bounded, redacted: outcome categories and the two UUIDs already logged by logDecision for the
@@ -87,17 +90,45 @@ function logShadowComparison(
     }));
 }
 
+/** Bounded, redacted, same discipline as logShadowComparison above: outcome categories and the two
+ *  UUIDs already logged for the real decision, never a raw target role id list. */
+function logTargetShadowComparison(
+    siteId: string | null | undefined,
+    userId: string | null | undefined,
+    result: Awaited<ReturnType<typeof compareStaffPermissionDecisionAgainstTargetData>> | { outcome: 'TARGET_SHADOW_EVALUATION_ERROR'; legacyKey: string; canonicalAction: null; legacyAllowed: boolean | null; targetAllowed: null },
+): void {
+    console.warn(JSON.stringify({
+        level: 'info',
+        event: 'staff_permission_target_shadow_comparison',
+        comparator: 'compareStaffPermissionDecisionAgainstTargetData@identity-foundation/target-shadow-comparison.ts',
+        site_id: siteId ?? null,
+        user_id: userId ?? null,
+        legacy_key: result.legacyKey,
+        canonical_action: result.canonicalAction,
+        legacy_allowed: result.legacyAllowed,
+        target_allowed: result.targetAllowed,
+        outcome: result.outcome,
+    }));
+}
+
 /** Never throws, never blocks, never influences the real decision -- a defect in the shadow model
- *  itself must not become an outage or a denial for a real request. */
+ *  itself must not become an outage or a denial for a real request. Runs BOTH shadow dimensions:
+ *  the legacy-translated comparison (permission-translation correctness) and the target-backed
+ *  comparison (does a real backfilled principal/membership/role exist and agree) -- they test
+ *  different things and a divergence in one says nothing about the other. */
 async function runShadowComparisonSafely(
     env: Env,
+    db: TargetShadowDb,
     siteId: string | null | undefined,
     userId: string | null | undefined,
     input: { isOwner: boolean; granted: readonly string[]; requiredKey: string },
 ): Promise<void> {
     if (!staffPermissionShadowEnabled(env)) return;
+
+    let legacyAllowed: boolean | null = null;
     try {
         const result = await compareStaffPermissionDecision(input);
+        legacyAllowed = result.legacyAllowed;
         logShadowComparison(siteId, userId, result);
     } catch (err) {
         logShadowComparison(siteId, userId, {
@@ -113,43 +144,31 @@ async function runShadowComparisonSafely(
             message: err instanceof Error ? err.message : String(err),
         }));
     }
-}
 
-/**
- * Pure decision function — no I/O, exhaustively unit-tested.
- * Owners always pass. Otherwise the required key must be present in `granted`
- * directly, via the `*` super-grant, via a `prefix:*` wildcard, or via the matching
- * `<resource>:write` grant when the requirement is `<resource>:read` (see below).
- */
-export function evaluateStaffPermission(input: {
-    isOwner: boolean;
-    granted: string[];
-    requiredKey: string;
-}): { allowed: boolean; reason: string } {
-    const { isOwner, granted, requiredKey } = input;
-    if (isOwner) return { allowed: true, reason: 'owner' };
-    if (!Array.isArray(granted) || granted.length === 0) {
-        return { allowed: false, reason: 'no-grants' };
+    if (!userId || !siteId || legacyAllowed === null) return;
+    try {
+        const targetResult = await compareStaffPermissionDecisionAgainstTargetData(db, {
+            isOwner: input.isOwner,
+            legacyUserId: userId,
+            siteId,
+            requiredKey: input.requiredKey,
+            legacyAllowed,
+        });
+        logTargetShadowComparison(siteId, userId, targetResult);
+    } catch (err) {
+        logTargetShadowComparison(siteId, userId, {
+            outcome: 'TARGET_SHADOW_EVALUATION_ERROR',
+            legacyKey: input.requiredKey,
+            canonicalAction: null,
+            legacyAllowed,
+            targetAllowed: null,
+        });
+        console.error(JSON.stringify({
+            level: 'error',
+            event: 'staff_permission_target_shadow_error',
+            message: err instanceof Error ? err.message : String(err),
+        }));
     }
-    // Phase 2 / F2.5: every "write" role in the staff role catalog (merchant-web's roles.ts --
-    // manager, editor, fulfillment, marketing, support) grants <resource>:write WITHOUT the
-    // matching <resource>:read, on the evident assumption that write access includes the ability
-    // to view what you can edit -- only the read-only "viewer" role lists :read keys explicitly.
-    // Reproduced live: a real Manager, added through the real product UI, was refused reading the
-    // product list (products:read required) despite holding products:write. This widens ONLY a
-    // `:read` requirement to also accept the matching `:write` grant -- a `:write` requirement is
-    // never satisfied by a `:read` grant, and no other implication is added.
-    const impliedByWrite = requiredKey.endsWith(':read') ? `${requiredKey.slice(0, -':read'.length)}:write` : null;
-    for (const g of granted) {
-        if (g === '*' || g === requiredKey) return { allowed: true, reason: `grant:${g}` };
-        if (g.endsWith(':*') && requiredKey.startsWith(g.slice(0, -1))) {
-            return { allowed: true, reason: `grant:${g}` };
-        }
-        if (impliedByWrite && g === impliedByWrite) {
-            return { allowed: true, reason: `grant:${g}` };
-        }
-    }
-    return { allowed: false, reason: `missing:${requiredKey}` };
 }
 
 interface StaffEmployeeRow {
@@ -262,7 +281,7 @@ export async function evaluateStaffRequest(
         // that reaches `return`. runShadowComparisonSafely can neither throw into this function nor
         // change what is returned -- a shadow denial can never turn this into a block, and a shadow
         // error can never turn this into an allow, because neither is ever read past this point.
-        await runShadowComparisonSafely(c.env, siteId, userId, { isOwner, granted, requiredKey: key });
+        await runShadowComparisonSafely(c.env, db as unknown as TargetShadowDb, siteId, userId, { isOwner, granted, requiredKey: key });
 
         return decision.allowed ? { block: false } : refuse(403);
     } catch (err) {

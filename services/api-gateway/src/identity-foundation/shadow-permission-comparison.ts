@@ -3,16 +3,24 @@
 // (permission-engine.ts's createShadowPermissionEngine -- itself a real, working decision function,
 // not a stub; only its surrounding repository layer is dormant) would decide for the same input.
 //
-// This file changes NOTHING about active authorization. Nothing in the gateway calls it from a real
-// request path. It exists to be run against synthetic and (later, separately) real-shaped inputs so
-// that divergence between the two models is a measured fact before any cutover decision, per the
-// explicit instruction: "Shadow mode must never turn a denial into an allow" -- guaranteed here not
-// by any runtime check but by the simple fact that this function's result is never consulted by any
-// enforcement path.
+// This translates LEGACY GRANTS into a synthetic actor -- it tests permission-translation
+// correctness, not whether real target data (a backfilled principal, a real store_memberships row)
+// exists or agrees. For that, see target-shadow-comparison.ts, which reads actual target tables and
+// never falls back to legacy grants.
+//
+// As of the auth hardening mandate (2026-09-28), this comparator DOES have a real runtime caller --
+// middleware/staff-permission.ts's evaluateStaffRequest, gated behind STAFF_PERMISSION_SHADOW=on and
+// disabled in production -- superseding this file's own prior claim that "nothing in the gateway
+// calls it." "Shadow mode must never turn a denial into an allow" is enforced there by evaluateStaffRequest
+// discarding this function's result after logging it, not by anything in this file.
+//
+// evaluateStaffPermission is imported from lib/staff-permission-decision.ts (not from
+// middleware/staff-permission.ts directly) specifically to avoid a circular import now that
+// staff-permission.ts also imports FROM this file.
 
-import { evaluateStaffPermission } from '../middleware/staff-permission';
+import { evaluateStaffPermission } from '../lib/staff-permission-decision';
 import { createShadowPermissionEngine } from './permission-engine';
-import { LEGACY_PERMISSION_ALIASES } from '@letbuyy/permission-core';
+import { canonicalActionFor } from './shadow-alias-lookup';
 import type { ActorIdentity, Permission } from '@letbuyy/auth-core';
 
 export type ShadowComparisonOutcome =
@@ -29,10 +37,6 @@ export interface ShadowComparisonResult {
   newAllowed: boolean | null;
   outcome: ShadowComparisonOutcome;
   detail: string;
-}
-
-function canonicalActionFor(legacyKey: string): string | null {
-  return LEGACY_PERMISSION_ALIASES.find((alias) => alias.legacy === legacyKey)?.canonical ?? null;
 }
 
 /**

@@ -14,14 +14,20 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Hono } from 'hono';
 import type { Env } from '../index';
-import { assertStaffPermission } from '../middleware/staff-permission';
+import { assertStaffPermission, staffPermissionShadowEnabled } from '../middleware/staff-permission';
 
-const POSTGREST = 'https://staff-permission-shadow.fake-postgrest.test';
+// A localhost-shaped origin, deliberately: staffPermissionShadowEnabled now requires
+// isLocalSupabaseEnvironment(env) (SUPABASE_URL contains localhost/127.0.0.1) as an independent
+// signal alongside ENVIRONMENT !== 'production' -- this fake must look like a genuinely local
+// instance for the "shadow mode ON" tests below to exercise the path they intend to. A dedicated test
+// further down uses a NON-local URL to prove that guard dimension independently.
+const POSTGREST = 'http://localhost:54321';
 type Row = Record<string, unknown>;
 
 function test1(value: unknown, expression: string): boolean {
     if (expression.startsWith('eq.')) return value !== null && value !== undefined && String(value) === expression.slice(3);
     if (expression === 'is.null') return value === null || value === undefined;
+    if (expression.startsWith('in.(')) return expression.slice(4, -1).split(',').includes(String(value));
     throw new Error(`fake PostgREST does not model "${expression}"`);
 }
 function matches(row: Row, params: URLSearchParams): boolean {
@@ -41,18 +47,23 @@ function matches(row: Row, params: URLSearchParams): boolean {
 
 function installFakePostgrest(tablesData: Record<string, Row[]>) {
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = (async (input: RequestInfo | URL) => {
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url);
         assert.equal(url.origin, POSTGREST, 'only the fake PostgREST is reachable');
         const table = url.pathname.replace('/rest/v1/', '');
         const rows = tablesData[table] ?? (tablesData[table] = []);
         const matched = rows.filter((row) => matches(row, url.searchParams));
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
-        // Every query in staff-permission.ts ends in .maybeSingle().
-        return matched.length <= 1 ? json(matched[0] ?? null) : json({ code: 'PGRST116', message: 'multiple rows' }, 406);
+        const single = new Headers(init?.headers).get('accept') === 'application/vnd.pgrst.object+json';
+        if (single) {
+            return matched.length <= 1 ? json(matched[0] ?? null) : json({ code: 'PGRST116', message: 'multiple rows' }, 406);
+        }
+        return json(matched);
     }) as typeof globalThis.fetch;
     return { restore: () => { globalThis.fetch = originalFetch; } };
 }
+
+const MANAGER_PRINCIPAL = 'principal-manager';
 
 function tables(): Record<string, Row[]> {
     return {
@@ -64,6 +75,19 @@ function tables(): Record<string, Row[]> {
             // own .eq('status','active') filter excludes it -- found:false, granted:[], exactly like
             // no row existing at all. This is the "revoked membership" case from Section 9's matrix.
             { store_id: 'store-1', user_id: 'revoked-user', status: 'removed', deleted_at: null, permissions: { granted: ['products:write'] }, role: 'manager' },
+        ],
+        // Target-model fixtures (auth hardening follow-up, Section 6): a real backfilled principal
+        // and an active membership WITH a role that actually grants product.read, so the
+        // target-backed comparator has real data to resolve rather than always hitting a
+        // not-backfilled outcome.
+        principals: [
+            { id: MANAGER_PRINCIPAL, realm: 'merchant', legacy_user_id: 'manager-user', deleted_at: null },
+        ],
+        store_memberships: [
+            { id: 'membership-1', store_id: 'store-1', principal_id: MANAGER_PRINCIPAL, status: 'active', role_ids: ['role-manager'], deleted_at: null },
+        ],
+        site_role_permissions: [
+            { role_id: 'role-manager', permission: 'product.read', effect: 'allow', deleted_at: null },
         ],
     };
 }
@@ -229,4 +253,149 @@ test('no uncaught rejection from the shadow path escapes to the caller', async (
     const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
     fake.restore();
     assert.equal(res.status, 200, 'no unexpected 500 -- nothing escaped runShadowComparisonSafely\'s try/catch');
+});
+
+// ============================================================================
+// Target-backed shadow comparison (auth hardening follow-up, Section 6): reads REAL
+// principals/store_memberships/site_role_permissions rows, never legacy grants. The fixture's
+// manager-user principal is backfilled with an active membership holding a role that genuinely
+// grants product.read -- so these tests prove the resolution mechanism works end to end, not just
+// that it never crashes.
+// ============================================================================
+
+function targetShadowLine(lines: string[]) {
+    return lines.map((l) => JSON.parse(l)).find((l) => l.event === 'staff_permission_target_shadow_comparison');
+}
+
+test('target-backed shadow: a real backfilled principal with a granting role logs MATCH, target_allowed true', async () => {
+    const fake = installFakePostgrest(tables());
+    const lines = await warnLines(async () => {
+        const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200);
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line, 'expected a target-backed shadow comparison log line');
+    assert.equal(line.canonical_action, 'product.read');
+    assert.equal(line.legacy_allowed, true);
+    assert.equal(line.target_allowed, true);
+    assert.equal(line.outcome, 'MATCH');
+});
+
+test('target-backed shadow: a legacy-only staff member (never backfilled) logs TARGET_PRINCIPAL_NOT_BACKFILLED, never grants', async () => {
+    const fake = installFakePostgrest(tables());
+    const lines = await warnLines(async () => {
+        await requestOne('store-1', 'viewer-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line);
+    assert.equal(line.outcome, 'TARGET_PRINCIPAL_NOT_BACKFILLED');
+    assert.equal(line.target_allowed, false, 'missing target data must never be reported as an allow');
+});
+
+test('target-backed shadow: an owner request logs OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL', async () => {
+    const fake = installFakePostgrest(tables());
+    const lines = await warnLines(async () => {
+        await requestOne('store-1', 'owner-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line);
+    assert.equal(line.outcome, 'OWNER_BYPASS_NOT_REPRESENTED_IN_TARGET_MODEL');
+    assert.equal(line.target_allowed, false);
+});
+
+test('SHADOW INDEPENDENCE: mutating ONLY the target fixture produces a measured divergence, and the real HTTP result is unchanged', async () => {
+    // Step 1-2: backfilled manager-user, legacy and target both currently allow (MATCH) -- proven by
+    // the "MATCH, target_allowed true" test above.
+    // Step 3: change ONLY the target data -- revoke the target membership, touching nothing in
+    // `employees` (the legacy source) at all.
+    const data = tables();
+    (data.store_memberships[0] as Row).status = 'suspended';
+
+    const fake = installFakePostgrest(data);
+    const lines = await warnLines(async () => {
+        // Step 5: the real HTTP authorization result must remain exactly what it was before the
+        // target-only mutation (200 -- legacy still grants via products:write).
+        const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200, 'the real request must be completely unaffected by a target-only fixture change');
+    });
+    fake.restore();
+
+    // Step 4: confirm the divergence is observed.
+    const line = targetShadowLine(lines);
+    assert.ok(line);
+    assert.equal(line.legacy_allowed, true, 'the legacy decision is untouched');
+    assert.equal(line.target_allowed, false, 'the target decision must reflect the real, mutated membership status');
+    assert.equal(line.outcome, 'TARGET_MEMBERSHIP_INACTIVE');
+
+    // Step 6-7: restore the target fixture and confirm matching decisions return.
+    const restored = tables();
+    const fake2 = installFakePostgrest(restored);
+    const lines2 = await warnLines(async () => {
+        await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    });
+    fake2.restore();
+    const line2 = targetShadowLine(lines2);
+    assert.equal(line2.outcome, 'MATCH', 'reconciling the target fixture must restore agreement');
+});
+
+test('SHADOW INDEPENDENCE (opposite direction): a target role that would allow more than legacy does not affect the real, still-forbidden result', async () => {
+    // viewer-user is legacy-denied for products:read (only holds orders:read). Backfill a principal
+    // and an active membership for viewer-user with a role that DOES grant product.read in the
+    // target model -- the real HTTP request must still be 403.
+    const data = tables();
+    data.principals.push({ id: 'principal-viewer', realm: 'merchant', legacy_user_id: 'viewer-user', deleted_at: null });
+    data.store_memberships.push({ id: 'membership-2', store_id: 'store-1', principal_id: 'principal-viewer', status: 'active', role_ids: ['role-viewer-plus'], deleted_at: null });
+    data.site_role_permissions.push({ role_id: 'role-viewer-plus', permission: 'product.read', effect: 'allow', deleted_at: null });
+
+    const fake = installFakePostgrest(data);
+    const lines = await warnLines(async () => {
+        const res = await requestOne('store-1', 'viewer-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 403, 'legacy still denies -- the target model granting more must never leak into the real result');
+    });
+    fake.restore();
+
+    const line = targetShadowLine(lines);
+    assert.ok(line);
+    assert.equal(line.legacy_allowed, false);
+    assert.equal(line.target_allowed, true);
+    assert.equal(line.outcome, 'DIVERGE_LEGACY_DENIES_TARGET_ALLOWS');
+});
+
+// ============================================================================
+// Environment eligibility matrix (Section 7 of the follow-up: "ENVIRONMENT !== 'production' is not
+// identical to 'local only'"). Pure, fast tests of staffPermissionShadowEnabled directly -- no fake
+// PostgREST needed since eligibility never reaches the database.
+// ============================================================================
+
+test('environment eligibility: approved local development (non-production ENVIRONMENT + localhost SUPABASE_URL) qualifies', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development', SUPABASE_URL: 'http://localhost:54321' } as unknown as Env), true);
+});
+
+test('environment eligibility: production never qualifies, even with a localhost-shaped SUPABASE_URL', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'production', SUPABASE_URL: 'http://localhost:54321' } as unknown as Env), false);
+});
+
+test('environment eligibility: a staging/preview-shaped SUPABASE_URL never qualifies, regardless of the ENVIRONMENT label', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'staging', SUPABASE_URL: 'https://staging-project.supabase.co' } as unknown as Env), false);
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'preview', SUPABASE_URL: 'https://preview-project.supabase.co' } as unknown as Env), false);
+});
+
+test('environment eligibility: an unset ENVIRONMENT does not silently qualify a non-local SUPABASE_URL', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', SUPABASE_URL: 'https://real-project.supabase.co' } as unknown as Env), false);
+});
+
+test('environment eligibility: a malformed/unrecognized ENVIRONMENT value does not silently qualify a non-local SUPABASE_URL', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'Prod-uction!! typo', SUPABASE_URL: 'https://real-project.supabase.co' } as unknown as Env), false);
+});
+
+test('environment eligibility: the flag off never qualifies, even in a genuinely local environment', () => {
+    assert.equal(staffPermissionShadowEnabled({ ENVIRONMENT: 'development', SUPABASE_URL: 'http://localhost:54321' } as unknown as Env), false);
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'off', ENVIRONMENT: 'development', SUPABASE_URL: 'http://localhost:54321' } as unknown as Env), false);
+});
+
+test('environment eligibility: an unset SUPABASE_URL does not silently qualify a non-production ENVIRONMENT', () => {
+    assert.equal(staffPermissionShadowEnabled({ STAFF_PERMISSION_SHADOW: 'on', ENVIRONMENT: 'development' } as unknown as Env), false);
 });
