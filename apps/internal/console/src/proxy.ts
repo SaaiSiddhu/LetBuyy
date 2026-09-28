@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './lib/console-session';
+import { isConsoleEmailAllowed } from './lib/console-access-allowlist';
 
 const protectedPrefixes = [
     '/dashboard',
@@ -49,16 +50,31 @@ function getAccountsUrl(requestUrl: string): string {
     return `${requestOrigin.protocol}//accounts.${platformRoot}`;
 }
 
+// Phase 2 auth hardening (Section 6): the session JWT's signature and `exp` are self-contained and
+// say nothing about whether this email is STILL on the allowlist right now. Without this re-check, an
+// operator removed from PLATFORM_CONSOLE_ALLOWED_EMAILS keeps full console access with their existing
+// cookie until it naturally expires (CONSOLE_SESSION_MAX_AGE_SECONDS = 8 hours) -- this is the
+// confirmed defect this mandate names. isConsoleEmailAllowed reads the CURRENT env value on every
+// call, so revocation takes effect on the very next request after redeploy, regardless of how old the
+// session cookie is. This function clears the cookie on the way out so the browser stops resending a
+// dead credential; the check itself does not depend on that cleanup succeeding.
+function redirectRevoked(request: NextRequest, destination: string) {
+    const response = NextResponse.redirect(new URL(destination, request.url));
+    response.cookies.delete(CONSOLE_SESSION_COOKIE);
+    return response;
+}
+
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
+    const sessionRevoked = session !== null && !isConsoleEmailAllowed(session.email);
     const merchantSession = verifyLetbuyySessionCookieValue(
         'merchant',
         request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
     );
 
     if (pathname === '/login') {
-        if (session?.mfaVerified) {
+        if (session?.mfaVerified && !sessionRevoked) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
 
@@ -68,6 +84,10 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/mfa') {
         if (!session) {
             return NextResponse.redirect(new URL('/login', request.url));
+        }
+
+        if (sessionRevoked) {
+            return redirectRevoked(request, '/login?error=access_revoked');
         }
 
         if (session.mfaVerified) {
@@ -89,6 +109,10 @@ export async function proxy(request: NextRequest) {
         }
 
         return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    if (sessionRevoked) {
+        return redirectRevoked(request, '/login?error=access_revoked');
     }
 
     if (!session.mfaVerified) {

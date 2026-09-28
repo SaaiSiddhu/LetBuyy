@@ -26,7 +26,7 @@ export {
     type MfaVerificationResult,
     type ConsoleLoginOutcome,
 } from './console-mfa';
-import { normalizeConsoleEmail } from './console-mfa';
+import { normalizeConsoleEmail, isConsoleEmailAllowed } from './console-mfa';
 
 type ConsoleAuditAction =
     | 'platform_console_login_magic_sent'
@@ -83,6 +83,16 @@ export async function requireConsoleSession(options: { mfa?: boolean } = {}) {
 
     if (!session) {
         redirect('/login');
+    }
+
+    // Phase 2 auth hardening (Section 6), second layer: proxy.ts (this app's middleware) already
+    // re-checks the allowlist per request, but a server component/action must not rely solely on
+    // middleware having run -- see F-ADM4-1's comment in proxy.ts for why this app deliberately keeps
+    // both layers. Same fresh, per-request check, same fail-closed default (an empty allowlist denies
+    // everyone) as isConsoleEmailAllowed already provides.
+    if (!isConsoleEmailAllowed(session.email)) {
+        await clearConsoleSessionCookie();
+        redirect('/login?error=access_revoked');
     }
 
     if (options.mfa && !session.mfaVerified) {

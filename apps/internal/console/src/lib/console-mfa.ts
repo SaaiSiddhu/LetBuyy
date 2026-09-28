@@ -2,8 +2,14 @@
 // `server-only` guard, so it is importable from a plain `node --test` run and not only from inside
 // a Next.js Server Component. console-auth-server.ts re-exports everything here for its own
 // callers; nothing about the split changes behavior.
+//
+// The allowlist predicate itself (normalizeConsoleEmail/getAllowedConsoleEmails/isConsoleEmailAllowed)
+// now lives in console-access-allowlist.ts, re-exported below unchanged, so proxy.ts (this app's
+// middleware) can depend on it without also importing this file's node:crypto TOTP code.
 
 import { createHmac, timingSafeEqual } from 'node:crypto';
+export { normalizeConsoleEmail, getAllowedConsoleEmails, isConsoleEmailAllowed } from './console-access-allowlist';
+import { normalizeConsoleEmail } from './console-access-allowlist';
 
 const textEncoder = new TextEncoder();
 
@@ -12,23 +18,6 @@ function configured(value: string | undefined): value is string {
     if (value.includes('replace-with')) return false;
     if (value.startsWith('dev-only-placeholder')) return false;
     return true;
-}
-
-export function normalizeConsoleEmail(email: string) {
-    return email.trim().toLowerCase();
-}
-
-export function getAllowedConsoleEmails() {
-    return (process.env.PLATFORM_CONSOLE_ALLOWED_EMAILS || '')
-        .split(',')
-        .map((email) => normalizeConsoleEmail(email))
-        .filter(Boolean);
-}
-
-export function isConsoleEmailAllowed(email: string) {
-    const allowedEmails = getAllowedConsoleEmails();
-    if (allowedEmails.length === 0) return false;
-    return allowedEmails.includes(normalizeConsoleEmail(email));
 }
 
 export type ConsoleLoginOutcome =
