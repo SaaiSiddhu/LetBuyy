@@ -14,6 +14,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   createLetbuyyPlatformMagicLinkToken,
+  createLetbuyyPlatformSessionToken,
   verifyLetbuyyPlatformMagicLinkToken,
 } from '../src/index';
 
@@ -72,4 +73,23 @@ test('a token verified against the wrong secret is rejected', async () => {
 test('token creation fails closed (returns null) when no secret is configured, never signing with an empty/undefined secret', async () => {
   const token = await createLetbuyyPlatformMagicLinkToken('operator@example.test', null);
   assert.equal(token, null);
+});
+
+// Purpose binding (Mandate 7 follow-up, Section 6): the console session token and the magic-link
+// token are both signed with the SAME secret (getConsoleSessionSecret() in console-session.ts feeds
+// both). A correctly-signed, unexpired, real session token for the SAME email must still be refused
+// here -- if it were accepted, an attacker who obtained a live session token (e.g. from a leaked
+// cookie) could replay it against the magic-link callback and mint an independent second session,
+// entirely bypassing the jti-keyed consumption layer (which only ever sees magic-link tokens).
+// isPlatformMagicLinkPayload's `type === 'platform_magic_link'` check is what this test proves is
+// load-bearing, not merely present.
+test('a valid platform SESSION token (same secret, same email, unexpired) is never accepted as a magic-link token -- purpose binding, not signature alone, decides acceptance', async () => {
+  const sessionToken = await createLetbuyyPlatformSessionToken(
+    { email: 'operator@example.test', userId: 'user-1', mfaVerified: true },
+    SECRET,
+  );
+  assert.ok(sessionToken, 'precondition: the session token itself must have been created');
+  const result = await verifyLetbuyyPlatformMagicLinkToken(sessionToken, SECRET);
+  assert.equal(result.accepted, false, 'a platform_session-typed payload must never verify as a platform_magic_link');
+  assert.equal(result.payload, undefined);
 });

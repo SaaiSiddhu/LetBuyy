@@ -82,6 +82,7 @@ function installFakePostgrest(tablesData: Record<string, Row[]>) {
 
 const VIEWER = 'user-viewer-tier';
 const MODERATOR = 'user-moderator-tier';
+const ADMINISTRATOR = 'user-administrator-tier';
 const MERCHANT_LOOKALIKE = 'user-merchant-lookalike';
 const SUPERADMIN = 'user-superadmin-control';
 const TICKET_A = 'ticket-a-11111111-1111-1111-1111-111111111111';
@@ -95,6 +96,12 @@ function tables(): Record<string, Row[]> {
             { id: 'plat-viewer', user_id: VIEWER, store_id: null, role: 'viewer', status: 'active', deleted_at: null, role_id: null, permissions: {} },
             { id: 'plat-moderator', user_id: MODERATOR, store_id: null, role: 'support', status: 'active', deleted_at: null, role_id: null, permissions: {} },
             { id: 'merch-lookalike', user_id: MERCHANT_LOOKALIKE, store_id: 'a-real-store', role: 'support', status: 'active', deleted_at: null, role_id: null, permissions: { granted: ['support:manage'] } },
+            // role: 'manager' -> INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS['manager'] === 'lead', the tier
+            // D04's "Administrator" product role maps to (PHASE2_DECISIONS.md's mapping table). This
+            // identity holds NO super_admin_allowlist entry -- its support:manage must come from
+            // role-derived tier resolution alone, proving the lead tier works independently of the
+            // superadmin-allowlist bypass path, which every other support:manage test here exercises.
+            { id: 'plat-administrator', user_id: ADMINISTRATOR, store_id: null, role: 'manager', status: 'active', deleted_at: null, role_id: null, permissions: {} },
         ],
         employee_permissions: [],
         break_glass_grants: [],
@@ -182,6 +189,20 @@ test('PATCH /tickets/:id/assign: a superadmin (support:manage via the admin tier
     });
     const body = await res.json() as { data?: { ticket?: { status: string } } };
     assert.equal(res.status, 200, JSON.stringify(body));
+    assert.equal(body.data?.ticket?.status, 'pending_internal');
+});
+
+test('PATCH /tickets/:id/assign: a lead-tier employee (D04\'s approved "Administrator", role-derived support:manage, NOT superadmin) successfully assigns the real ticket', async (t) => {
+    const data = tables();
+    const fake = installFakePostgrest(data);
+    t.after(fake.restore);
+    const res = await appAs(ADMINISTRATOR).request(`/operations/support/tickets/${TICKET_A}/assign`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignee_id: null, reason: 'reassigning for testing' }),
+    });
+    const body = await res.json() as { data?: { ticket?: { status: string } } };
+    assert.equal(res.status, 200, `lead tier must grant support:manage via role resolution alone, no allowlist entry involved: ${JSON.stringify(body)}`);
     assert.equal(body.data?.ticket?.status, 'pending_internal');
 });
 
