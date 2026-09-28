@@ -207,9 +207,26 @@ export function dbFailureBody(message = DATABASE_ERROR_MESSAGE) {
     return failureBody('DB_ERROR', message);
 }
 
+// D03 permission equivalence (auth hardening follow-up, Section 13, 2026-09-28): the previous
+// substring check (`url.includes('localhost')`) matched ANYWHERE in the raw URL string, so a hostname
+// like "evil-localhost-lookalike.attacker.example" would false-positive as local -- a misleading
+// hostname containing a local-looking substring is exactly the case this must not be fooled by. Now
+// parses the URL and checks the ACTUAL hostname against an exact allowlist (localhost / 127.0.0.1 /
+// ::1) or a genuine `.localhost` subdomain suffix (the reserved local TLD, RFC 6761) -- a strict
+// refinement, never a weakening: every URL this previously called local is still local; the only
+// behavior change is no longer being fooled by a lookalike. A malformed URL fails closed (false),
+// never treated as local. This is the one canonical "is this genuinely local" helper in the
+// repository (used here and by middleware/auth.ts, lib/buyer-email-code.ts, routes/auth.ts,
+// middleware/staff-permission.ts) -- fixed in place rather than duplicated.
 export function isLocalSupabaseEnvironment(env: Env): boolean {
     const url = env.SUPABASE_URL || '';
-    return url.includes('localhost') || url.includes('127.0.0.1');
+    let hostname: string;
+    try {
+        hostname = new URL(url).hostname.toLowerCase();
+    } catch {
+        return false;
+    }
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname.endsWith('.localhost');
 }
 
 export function isMissingSchemaError(error: unknown): boolean {
