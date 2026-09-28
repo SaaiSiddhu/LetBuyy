@@ -259,17 +259,23 @@ test('D03 real HTTP-to-database shadow rehearsal', async (t) => {
 
         // ---- PERMISSION DOWNGRADE, real: the owner's TARGET role is swapped for a lesser one ----
         //
-        // Uses the owner (not a staff member) for the same reason as the "allowed reversible mutation"
-        // scenario above: only the owner can currently complete a real product mutation through this
-        // router, so only the owner can demonstrate "the real response stays legacy-authoritative
-        // regardless of a target-only change." The owner's LEGACY decision (`evaluateStaffPermission`'s
-        // `isOwner` bypass, staff-permission.ts) never consults `role_ids` at all, so replacing the
-        // owner's target-side role with the read-only `downgradedRoleId` (product.read only, no
-        // product.update) cannot and does not change the real response -- while the TARGET comparator
+        // Correction (D03 staff-mutation/shadow-runtime completion, 2026-09-28): this scenario used to
+        // say "only the owner can currently complete a real product mutation through this router" --
+        // that was true when this scenario was written, but false by the time the "Allowed reversible
+        // mutation: full staff" scenario above landed in this same file (a real STAFF_FULL PATCH already
+        // succeeds there). Kept on the OWNER anyway, deliberately, because it now demonstrates a
+        // DIFFERENT independence property than the staff-side proof does: the owner's LEGACY decision
+        // (`evaluateStaffPermission`'s `isOwner` bypass, staff-permission.ts) never consults `role_ids`
+        // at all -- a structurally different code path from staff's `resolveGrants` path -- so replacing
+        // the owner's target-side role with the read-only `downgradedRoleId` (product.read only, no
+        // product.update) cannot and does not change the real response, while the TARGET comparator
         // (which resolves the owner through the ordinary principal -> membership -> role -> permission
         // chain, no special case) independently sees the same real row and correctly reports the
-        // product.update grant is gone. This is the same independence property Section 11 asks for,
-        // demonstrated with the one actor this router currently lets reach a real mutation.
+        // product.update grant is gone. The equivalent proof for a real STAFF member -- through the
+        // `resolveGrants` path, using a real employee created via POST /employees and a real target role
+        // built by staff-role-backfill.ts -- now lives in real-staff-product-journey.postgres.test.ts
+        // ("The decisive independence proof"), which also corrects the historical framing that any
+        // rehearsal proving this pattern had to substitute the owner for a permitted staff mutation.
         {
             psql(`UPDATE store_memberships SET role_ids = ARRAY['${downgradedRoleId}']::uuid[] WHERE store_id = '${SITE_A}' AND principal_id = (SELECT id FROM principals WHERE legacy_user_id = '${OWNER}');`);
             // Legacy side (the `sites.custom_user_id` row itself) is untouched -- this proves the
