@@ -381,14 +381,25 @@ HTTP-to-database rehearsal is complete (9 scenarios, all real, all passing); the
 target-allow/legacy-deny escalation path (every "target allows more" case is inert by construction —
 never consulted for enforcement); cutover is disabled (`STAFF_PERMISSION_SHADOW` defaults off; no
 production/staging activation attempted or possible from this pass). The full project gate was run
-twice, genuinely observed both times (not asserted): the first run caught two real typecheck errors of
-this pass's own making, both fixed and re-verified; the second run shows `failed=5`, matching the
-pre-existing baseline exactly, with zero file-path overlap between any of the 5 remaining lanes and
-anything this pass (or this session) touched. The product-mutation routing gap named in Section D
-(commit `81dc8e94`), the stale local-Postgres container name (commit `8226f5ad`), and the shadow-path
-timeout gap (commit `3a75bcee`) were all fixed the same day and are no longer open. Remaining open
-items (arbitrary custom-role mapping; session revocation; seeding, or redesigning the fixture for, the
-shared "snaz" store the container-name fix unmasked) are named precisely, are each independently
+four times total across this pass and its two same-day follow-ups, genuinely observed every time (not
+asserted): run 1 caught two real typecheck errors of this pass's own making, fixed and re-verified in
+run 2 (`failed=5`, matching the pre-existing baseline exactly); run 3, against the product-mutation fix,
+was clean at the same `failed=5`; **run 4, against the container-name and shadow-timeout fixes, shows
+`failed=7`** — a real change from 5, fully explained, not a regression in either fix's own logic:
+`test:unit:gateway` (previously `exit=0`) now correctly shows `exit=1`, surfacing exactly the 8
+already-diagnosed, already-flagged "snaz"-fixture failures (confirmed line-for-line against the gate's
+own captured log) — this is the container-name fix's INTENDED effect: the gate no longer sees a false
+green through a masking skip. `test:@letbuyy/theme-engine` (previously passing twice in a row) failed
+again on its one already-documented flake (`Urban Kicks fixture renders N=25 times within 30000ms
+budget`), with the host's load average re-measured at 25–29 and the same concurrent, protected, unrelated
+Edynox processes still running at the time — consistent with, not proof of, the same contention
+explanation given earlier in this document, not a new cause. Neither of `staff-permission.ts` or the 5
+container-name files touches theme rendering or checkout/order money-path logic at all. The
+product-mutation routing gap named in Section D (commit `81dc8e94`), the stale local-Postgres container
+name (commit `8226f5ad`), and the shadow-path timeout gap (commit `3a75bcee`) were all fixed the same day
+and are no longer open. Remaining open items (arbitrary custom-role mapping; session revocation; seeding,
+or redesigning the fixture for, the shared "snaz" store the container-name fix unmasked) are named
+precisely, are each independently
 actionable, and are not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
