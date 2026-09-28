@@ -1140,7 +1140,7 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const data = await service.createProduct(body, customUser.id, auth.user.storeId);
+    const data = await service.createProduct(body, customUser.id, auth.user.storeId, true);
     await emitProductEvent(db, {
         eventType: 'product.created',
         product: data,
@@ -1164,13 +1164,20 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = createProductExecutionAdapter(db, c.env);
     // The staff check needs the product's own store; a session usually carries none (APPID-P5b).
-    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
+    // Resolved the same way GET /:id resolves it (loadProductByIdUnguarded, never an ownership
+    // derivation) -- the product's real store is looked up first, then owner-OR-staff is checked
+    // against it, so a real, permitted staff member (not just the literal owner) can reach this.
+    const { product, error: lookupError } = await loadProductByIdUnguarded(c, productId);
+    if (lookupError || !product) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    }
+    const productStoreId = String(product.store_id);
     const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
+    const service = createProductExecutionAdapter(db, c.env);
+    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>);
     await emitProductEvent(db, {
         eventType: 'product.updated',
         product: data,
@@ -1196,7 +1203,7 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
+    const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId, true);
     const eventType = body.action === 'delete' ? 'product.deleted' : 'product.updated';
     const requestId = c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
 
@@ -1223,12 +1230,16 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = createProductExecutionAdapter(db, c.env);
-    const productStoreId = await service.ownedProductStoreId(productId, customUser.id, auth.user.storeId);
+    const { product, error: lookupError } = await loadProductByIdUnguarded(c, productId);
+    if (lookupError || !product) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    }
+    const productStoreId = String(product.store_id);
     const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
     if (staffBlock) return staffBlock;
 
-    const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
+    const service = createProductExecutionAdapter(db, c.env);
+    const result = await service.softDelete(productId, productStoreId, customUser.id);
     await emitProductEvent(db, {
         eventType: 'product.deleted',
         product: result,

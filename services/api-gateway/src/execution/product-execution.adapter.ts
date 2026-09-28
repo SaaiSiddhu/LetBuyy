@@ -135,9 +135,21 @@ export class ProductExecutionAdapter {
     /**
      * Create a product with store ownership verification.
      * Generates a URL-safe slug from the product name.
+     *
+     * `alreadyAuthorized`: set by a caller that has ALREADY verified write access to `input.store_id`
+     * through a different, equally-real check (e.g. routes/products.ts's `POST /` calls
+     * `assertStaffPermission(c, body.store_id, customUser.id, 'products:write')` first, which correctly
+     * allows a permitted staff member, not just the literal owner -- this method's own
+     * `assertStoreOwnership` re-check was stricter and ran regardless, silently rejecting that staff
+     * member's already-authorized request). Defaults to `false` so every OTHER existing caller (the
+     * `/sample` route, which does its own separate owner-only `verifyStoreOwnership` check by design;
+     * `routes/export.ts`'s background CSV-import job, which has no live request/session to re-check
+     * against) keeps its exact current, unchanged, owner-only behavior.
      */
-    async createProduct(input: CreateProductCommand, userId: string, sessionStoreId?: string) {
-        await this.assertStoreOwnership(input.store_id, userId, sessionStoreId, 'You do not own this store');
+    async createProduct(input: CreateProductCommand, userId: string, sessionStoreId?: string, alreadyAuthorized = false) {
+        if (!alreadyAuthorized) {
+            await this.assertStoreOwnership(input.store_id, userId, sessionStoreId, 'You do not own this store');
+        }
         await this.assertProductQuota(input.store_id);
 
         const createPlan = planProductCreate(input);
@@ -158,16 +170,24 @@ export class ProductExecutionAdapter {
     }
 
     /**
-     * Update a product with ownership verification.
-     * Only allows updating fields in the allowlist.
+     * Update a product. Only allows updating fields in the allowlist.
+     *
+     * `storeId` is the product's real store, ALREADY VERIFIED by the caller (routes/products.ts's
+     * `PATCH /:id` resolves it from the product row itself via `loadProductByIdUnguarded`, then checks
+     * owner-OR-staff via `assertStaffPermission`, the same pattern `GET /:id` already used) -- this
+     * method no longer re-derives it through an owner-only lookup (the former `getOwnedProduct`, which
+     * silently rejected a real, permitted staff member's already-authorized request). `storeId` still
+     * scopes every query below, which is what the tenant guard requires and what actually prevents a
+     * cross-store write -- authorization (who may act on this store) and scoping (which store this
+     * write is confined to) are two different questions, and only the first one changed here.
      */
     async updateProduct(
         productId: string,
+        storeId: string,
         userId: string,
         updates: Record<string, unknown>,
-        sessionStoreId?: string
     ) {
-        const ownedProduct = await this.getOwnedProduct(productId, userId, sessionStoreId);
+        const ownedProduct = await this.loadProductScopedToStore(productId, storeId);
 
         const updatePlan = planProductUpdate(updates);
         if (Object.keys(updatePlan.safeUpdates).length === 0 && !updatePlan.hasOptionUpdates) {
@@ -225,11 +245,11 @@ export class ProductExecutionAdapter {
     }
 
     /**
-     * Soft delete a product using deleted_at timestamp.
-     * Also sets is_active = false for backward compat.
+     * Soft delete a product using deleted_at timestamp. Also sets is_active = false for backward
+     * compat. `storeId`: see updateProduct's docstring -- the same already-verified-by-the-caller shape.
      */
-    async softDelete(productId: string, userId: string, sessionStoreId?: string) {
-        const ownedProduct = await this.getOwnedProduct(productId, userId, sessionStoreId);
+    async softDelete(productId: string, storeId: string, userId: string) {
+        const ownedProduct = await this.loadProductScopedToStore(productId, storeId);
 
         const { error } = await this.db
             .from('products')
@@ -247,15 +267,20 @@ export class ProductExecutionAdapter {
 
     /**
      * Bulk operations on products with store ownership verification.
+     *
+     * `alreadyAuthorized`: see createProduct's docstring -- the same shape. `routes/products.ts`'s
+     * `POST /bulk` already calls `assertStaffPermission(c, body.store_id, ..., 'products:write')`
+     * before this runs, so it passes `true`; any other/future caller keeps today's owner-only default.
      */
     async bulkAction(
         storeId: string | undefined,
         productIds: string[],
         action: 'activate' | 'deactivate' | 'delete',
         userId: string,
-        sessionStoreId?: string
+        sessionStoreId?: string,
+        alreadyAuthorized = false,
     ) {
-        if (storeId) {
+        if (storeId && !alreadyAuthorized) {
             await this.assertStoreOwnership(storeId, userId, sessionStoreId, 'Not authorized for this store');
         }
 
@@ -355,44 +380,20 @@ export class ProductExecutionAdapter {
     }
 
     /**
-     * The store a product belongs to, found among the caller's OWN stores (NotFound or Forbidden
-     * otherwise). Routes that know only the product use it to give the staff permission check the real
-     * store (APPID-P5b): a session usually carries none. It asks the ownership question in the query
-     * itself, with the store predicates the tenant query guard requires; a product id alone names no store.
+     * The product row, scoped to a store the CALLER has already verified authorization for (see
+     * updateProduct's docstring) -- never an ownership derivation of its own. `.eq('store_id', storeId)`
+     * is what the tenant query guard requires (a product id alone never satisfies it) and what actually
+     * confines this read/write to one store; it is a scope predicate, not an authorization check.
+     * Replaces the former `getOwnedProduct` (owner-only, via `resolveOwnedStoreIds`) and
+     * `ownedProductStoreId` (same owner-only shape, used by the route to resolve a product's store
+     * BEFORE the staff-permission check could run at all -- the actual bug this replacement fixes).
      */
-    async ownedProductStoreId(productId: string, userId: string, sessionStoreId?: string): Promise<string> {
-        const storeIds = await this.resolveOwnedStoreIds(userId, sessionStoreId);
-        if (storeIds.length === 0) throw new ForbiddenError('Not authorized for this product');
-
-        const { data: product, error } = await this.db
-            .from('products')
-            .select('id, store_id')
-            .eq('id', productId)
-            .in('store_id', storeIds)
-            .is('deleted_at', null)
-            .maybeSingle();
-        if (error) throw new Error(`Product lookup failed: ${error.message}`);
-        if (!product) throw new NotFoundError('Product not found');
-        return (product as { store_id: string }).store_id;
-    }
-
-    /**
-     * APPID-FIX2: was `.eq('id', productId)` alone, then a separate `assertStoreOwnership` call on
-     * the row it returned — a query the tenant guard refuses outright ("products requires a
-     * tenant/owner predicate before execution"), which is why `PATCH`/`DELETE /v1/products/:id` 500'd
-     * even after the staff check (APPID-P5b's `ownedProductStoreId`) had already resolved and cleared
-     * the product's real store. Ownership is now asked in the same scoped shape `ownedProductStoreId`
-     * already uses: a product id alone never satisfies the guard, so it never leaves this store.
-     */
-    private async getOwnedProduct(productId: string, userId: string, sessionStoreId?: string): Promise<OwnedProductRow> {
-        const storeIds = await this.resolveOwnedStoreIds(userId, sessionStoreId);
-        if (storeIds.length === 0) throw new ForbiddenError('Not authorized for this product');
-
+    private async loadProductScopedToStore(productId: string, storeId: string): Promise<OwnedProductRow> {
         const { data: product, error } = await this.db
             .from('products')
             .select('id, store_id, price')
             .eq('id', productId)
-            .in('store_id', storeIds)
+            .eq('store_id', storeId)
             .is('deleted_at', null)
             .maybeSingle();
 

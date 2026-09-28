@@ -187,51 +187,36 @@ test('D03 real HTTP-to-database shadow rehearsal', async (t) => {
             assert.equal(res.status, 200, `staff read: ${await res.text()}`);
         }
 
-        // ---- Allowed reversible mutation: the owner creates a product, with shadow logging captured ----
+        // ---- Allowed reversible mutation: full staff updates the product, with shadow logging captured ----
         //
-        // Real, unrelated, pre-existing discovery made while building this rehearsal, stated precisely:
-        // a real, non-owner staff member with genuine products:write CANNOT complete any product
-        // mutation through this router today -- not PATCH/DELETE, and not even POST (create), despite
-        // the route-level `assertStaffPermission('products:write')` check correctly allowing them
-        // through first. Two independent internal gates cause this, both stricter than and redundant
-        // with the route-level check they sit behind:
-        //   1. PATCH/DELETE /products/:id resolve the target's store via
-        //      `ProductExecutionAdapter.ownedProductStoreId` -> `resolveOwnedStoreIds`, a lookup against
-        //      `sites.custom_user_id`/`user_id` ONLY (product-execution.adapter.ts:345-355) -- confirmed
-        //      by first running this scenario against PATCH and observing
-        //      `ForbiddenError: Not authorized for this product` thrown from `ownedProductStoreId`
-        //      (product-execution.adapter.ts:365), BEFORE `assertStaffPermission` ever runs.
-        //   2. POST / (create) reaches `assertStaffPermission` first (it correctly allows a permitted
-        //      staff member through), but `ProductExecutionAdapter.createProduct` then calls its own
-        //      `assertStoreOwnership` (product-execution.adapter.ts:140), a literal-owner-only recheck
-        //      via `verifySiteOwnership` (lib/auth-user.ts:58-76, the same helper `sites`-only check
-        //      used everywhere else) -- confirmed by observing
-        //      `ForbiddenError: You do not own this store` thrown from `assertStoreOwnership` for
-        //      STAFF_FULL immediately after their `assertStaffPermission` check had already passed.
-        // GET /:id is the one route already fixed for this exact gap class (owner-OR-staff, see
-        // the comment at routes/products.ts:1110-1113: "assertStaffPermission alone denied a real
-        // Manager... the same gap fixed for the list route") -- POST/PATCH/DELETE never received the
-        // equivalent fix, so `products:write` is currently INERT for every non-owner. This is a real,
-        // pre-existing, out-of-scope gap in product mutation authorization (not a shadow/target-permission
-        // defect) -- reported separately (see the evidence doc and the spawned follow-up task), not
-        // fixed inline here, since fixing it would touch routes/products.ts and
-        // product-execution.adapter.ts, outside this phase's D03 permission-equivalence scope. The owner
-        // is used below instead, which genuinely passes both gates, so this rehearsal can still exercise
-        // a real, successful, shadow-observed mutation end to end.
+        // A real, non-owner staff member with genuine products:write now completes a real PATCH mutation
+        // -- this exact scenario is what first surfaced a real, unrelated, pre-existing bug: PATCH/DELETE
+        // /products/:id used to resolve the target's store via `ProductExecutionAdapter.ownedProductStoreId`
+        // -> `resolveOwnedStoreIds`, a lookup against `sites.custom_user_id`/`user_id` ONLY, which threw
+        // `ForbiddenError: Not authorized for this product` for STAFF_FULL BEFORE `assertStaffPermission`
+        // ever ran; and `createProduct` separately called its own `assertStoreOwnership` (the same
+        // `sites`-only check) AFTER the route's `assertStaffPermission` had already correctly allowed a
+        // permitted staff member through. GET /:id was the one route already fixed for this exact gap
+        // class (owner-OR-staff, see the comment at routes/products.ts:1110-1113); PATCH/DELETE/POST have
+        // since received the equivalent fix (routes/products.ts now resolves the product's real store via
+        // `loadProductByIdUnguarded`, the same pattern GET /:id uses, before checking owner-OR-staff; and
+        // createProduct/bulkAction take an explicit `alreadyAuthorized` flag the route sets once it has
+        // already verified access, instead of redundantly re-running a stricter, owner-only check) -- see
+        // docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md and
+        // product-tenant-guard.test.ts's section 5 for the fix's own dedicated regression coverage.
         {
             const { result: res, lines } = await capturingWarnLines(async () =>
-                appAs(OWNER).request(`/products`, {
-                    method: 'POST',
+                appAs(STAFF_FULL).request(`/products/${PRODUCT_A}`, {
+                    method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ store_id: SITE_A, name: `Rehearsal Create ${RUN}`, price: 9.99 }),
+                    body: JSON.stringify({ name: `Rehearsal Product ${RUN} (updated by staff)` }),
                 }, env()));
-            const body = await readJson(res) as { data?: { id?: string; name?: string } };
-            assert.equal(res.status, 201, `owner mutation: ${JSON.stringify(body)}`);
-            assert.equal(body.data?.name, `Rehearsal Create ${RUN}`);
-            if (body.data?.id) createdProductIds.push(body.data.id);
+            const body = await readJson(res) as { data?: { name?: string } };
+            assert.equal(res.status, 200, `staff mutation: ${JSON.stringify(body)}`);
+            assert.equal(body.data?.name, `Rehearsal Product ${RUN} (updated by staff)`);
             const targetLine = lines.find((l) => l.event === 'staff_permission_target_shadow_comparison');
             assert.ok(targetLine, 'a real target-shadow comparison must have been logged for this real mutation');
-            assert.equal(targetLine!.outcome, 'MATCH', `expected the real, backfilled owner role to agree with the legacy owner-bypass decision: ${JSON.stringify(targetLine)}`);
+            assert.equal(targetLine!.outcome, 'MATCH', `expected the real, seeded target role to agree with the legacy decision: ${JSON.stringify(targetLine)}`);
         }
 
         // ---- Forbidden mutation: read-only staff ----

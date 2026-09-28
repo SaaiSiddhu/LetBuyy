@@ -276,9 +276,16 @@ test('an owner deletes a product from a session that names no store: the staff c
         const res = await productGateway(OWNER).request(`/products/${PRODUCT}`, init);
         const body = await res.text();
         assert.ok(!body.includes('STAFF_PERMISSION'), `${method}: the owner is not refused by the staff check: ${res.status} ${body.slice(0, 160)}`);
+        // D03 permission equivalence follow-up (2026-09-28): PATCH/DELETE now resolve the product's own
+        // store the same way GET /:id already did (loadProductByIdUnguarded -- an id-only bootstrap
+        // lookup on the unguarded client, re-verified by assertStaffPermission next), not by searching
+        // the caller's OWNED stores first (the former `resolveOwnedStoreIds` -> `.in('store_id', ...)`
+        // shape, which threw for a real, permitted staff member before assertStaffPermission ever ran --
+        // see routes/products.ts's "routing note" and
+        // docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md Section D).
         const lookups = fake.requests.slice(before).filter((r) => r.method === 'GET' && r.table === 'products').map((r) => r.query);
-        assert.ok(lookups.some((q) => q.includes(`id=eq.${PRODUCT}`) && /store_id=in\./.test(q)),
-            `${method}: the staff check was given the product's own store, found among the caller's stores`);
+        assert.ok(lookups.some((q) => q.includes(`id=eq.${PRODUCT}`)),
+            `${method}: the staff check was given the product's own store, resolved from the product row itself`);
     }
     // What the adapter does next is not this phase's: its own lookup and write by product id alone are
     // refused by the tenant query guard on develop too (APPID-P5b evidence, fixed in its own phase).
