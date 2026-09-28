@@ -21,7 +21,7 @@ import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
 //
 // Guarded: skips (not fails) if the local Supabase Postgres container is not reachable.
 
-const CONTAINER = 'supabase_db_supabase';
+const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
 const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz -- 65 real orders, used read-only
 
 function dbAvailable(): boolean {

@@ -13,7 +13,7 @@ import test from 'node:test';
 // actually reserving, committing, sweeping and observing inventory_levels
 // change, against the real local Supabase Postgres this repo's dev
 // environment already runs (the same one every manual verification this
-// session used). These tests shell out to `docker exec supabase_db_supabase
+// session used). These tests shell out to `docker exec <local supabase db container>
 // psql` rather than adding a new `pg` dependency or the heavier
 // ephemeral-Postgres harness (scripts/governance/foundation-ephemeral-postgres.mjs)
 // -- reusing the container already required for local development.
@@ -39,7 +39,7 @@ const releaseFixSource = readFileSync(
     'utf8',
 );
 
-const CONTAINER = 'supabase_db_supabase';
+const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
 const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz
 const LOCATION_ID = '69db8dab-95c7-43bd-b105-3b9d2c2dbf90'; // snaz default location
 

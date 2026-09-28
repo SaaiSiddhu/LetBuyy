@@ -29,7 +29,7 @@ const checkoutRouteSource = readFileSync(
     'utf8',
 );
 
-const CONTAINER = 'supabase_db_supabase';
+const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
 const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz
 const LOCATION_ID = '69db8dab-95c7-43bd-b105-3b9d2c2dbf90'; // snaz default location
 
