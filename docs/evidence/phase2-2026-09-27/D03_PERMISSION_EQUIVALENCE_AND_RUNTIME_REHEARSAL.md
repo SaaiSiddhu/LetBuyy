@@ -3,9 +3,11 @@
 **Mandate:** "FINISH D03 PERMISSION EQUIVALENCE AND RUN A REAL LOCAL MIGRATION REHEARSAL" (2026-09-28
 follow-up to the auth-hardening / D03 target-data-shadow mandate).
 **Branch:** `letbuyy/phase2-shared-buyer-identity`. **Starting HEAD:** `f91f3fa5116be413ac59adab9be7a42c08214118`
-(the prior mandate's final commit). **This pass's work lands as new commits on top of `2ba2cb3b`**
-(`fix(gateway): rigorous local-environment hostname check; explicit wildcard/deny coverage` — the
-in-window commit made before compaction, itself on top of `f91f3fa5`).
+(the prior mandate's final commit), via `2ba2cb3b` (`fix(gateway): rigorous local-environment hostname
+check; explicit wildcard/deny coverage` — the in-window commit made before compaction). **This pass's
+work lands as commits `1889dbdf`** (feat: the permission-mapping/rehearsal/owner-role work this document
+describes) **and `e2a02a26`** (fix: two real typecheck errors the first full gate run caught, detailed
+in the gate-accounting section below).
 **Execution mode:** SINGLE AGENT · Subagents invoked: NO · Agent/Task delegation: NO · Background
 agents: NO · Parallel worktree agents: NO · Workflow orchestration: NO.
 **Target model remains NON-AUTHORITATIVE throughout.** No merge, push, deploy, hosted change, external
@@ -241,6 +243,42 @@ This pass's own new/changed tests, run individually against real Postgres and co
 (10 tests), `unguarded-admin-client-contract.test.ts` (5 tests), `target-shadow-wildcard-deny.test.ts`
 (9 tests, prior mandate, re-confirmed still passing), `staff-permission-shadow.test.ts` (29 tests).
 
+### Full project gate (`gate.sh --full`), run twice, genuine — not asserted
+
+First run (SHA `2ba2cb3b`, before the typecheck fix below): `failed=7`. Two of those seven were real,
+own-caused errors — `typecheck exit=2`, first failure at `real-http-shadow-rehearsal.postgres.test.ts`
+(a non-`async` arrow function passed where `capturingWarnLines` required a real `Promise`-returning
+one, in four places) and `owner-role-backfill.ts` (`.limit(2)` called against an interface that didn't
+declare `limit`, even though the real Supabase/PostgREST client supports it — `tsx --test`'s
+transpile-only mode never caught this; `tsc --noEmit`, the gate's real typecheck lane, did). **Both
+fixed** (commit `e2a02a26`): the four arrow functions made `async`; `limit(n: number)` added to
+`BackfillListQuery` in `backfill-executor.ts`. Re-confirmed with a direct `tsc --noEmit` run (clean) and
+a full re-run of every touched test file against real Postgres (all still passing, confirming the fix
+changed types only, not runtime behavior).
+
+Second run (SHA `e2a02a26`, after the fix): **`failed=5`.** `typecheck` now `exit=0`. The
+previously-failing `theme-engine` lane (Section E's flake discussion) **passed** this run
+(`exit=0`, 21s) — consistent with, not proof of, the contention explanation already given; the same test
+was not modified and the timing threshold was not touched. The remaining 5 failing lanes, checked for
+file-path overlap with every file this session touched (`services/api-gateway/src/{identity-foundation,
+middleware/staff-permission.ts,lib/supabase.ts,__tests__}`, `packages/permission-core`,
+`docs/evidence/phase2-2026-09-27/*`) — **none overlap**:
+
+| Lane | First failure | File surface |
+|---|---|---|
+| `lint` | `@letbuyy/customer-web:lint` command failure | `apps/commerce/web` — untouched this session |
+| `validators:sweep` | `stale-artifact` | the gate's own note: "fails by method when run individually (no orchestrator cleanup)" — a known, named method-only false positive, not a real governance violation |
+| `ui:validate` | `packages/typescript/ui`'s `foundation.test.tsx`: cannot find an accessible "Open" button in a `PageHeader`/`SaveBar`/`Table`/`Pagination` smoke test | `@letbuyy/ui` component library — untouched this session |
+| `tests:all` | `tests/api-graphql/rest-shim-parity.test.mjs`: "storefront REST parity routes is missing body: success(product)" (+520 more) | a REST/GraphQL parity shim suite — untouched this session |
+| `test:@letbuyy/merchant-web` | `settings/route.ts validates custom_css server-side` (+35 more) | `apps/merchant/web` — untouched this session |
+
+This `failed=5` figure matches the baseline already established and accepted in the prior (third)
+mandate before this pass's work began. The large failure counts on `tests:all` (520+) and
+`test:merchant-web` (35+) were not individually triaged — clear file-path non-overlap with everything
+this pass changed, and the cost of a full historical bisect against the pre-session parent commit,
+made that disproportionate to this mandate's scope. This is reported as strong, not absolute, evidence
+of non-regression: a full bisect re-run was not performed.
+
 ## F. Concrete next-step decisions for the remaining Phase 2 scope
 
 Not re-asking already-approved decisions (local merchant/staff transition, operator capability tiers,
@@ -316,9 +354,13 @@ response is provably unaffected, in both directions (downgrade and ownership tra
 HTTP-to-database rehearsal is complete (9 scenarios, all real, all passing); there is no unresolved
 target-allow/legacy-deny escalation path (every "target allows more" case is inert by construction —
 never consulted for enforcement); cutover is disabled (`STAFF_PERMISSION_SHADOW` defaults off; no
-production/staging activation attempted or possible from this pass). Remaining open items (arbitrary
-custom-role mapping, the product-mutation routing gap, the shadow-path timeout gap, session revocation)
-are named precisely, are each independently actionable, and are not claimed resolved.
+production/staging activation attempted or possible from this pass). The full project gate was run
+twice, genuinely observed both times (not asserted): the first run caught two real typecheck errors of
+this pass's own making, both fixed and re-verified; the second run shows `failed=5`, matching the
+pre-existing baseline exactly, with zero file-path overlap between any of the 5 remaining lanes and
+anything this pass (or this session) touched. Remaining open items (arbitrary custom-role mapping, the
+product-mutation routing gap, the shadow-path timeout gap, session revocation) are named precisely, are
+each independently actionable, and are not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
 sent, no real payment or order, no buyer data exported, nothing irreversibly erased. `.dev.vars`,
