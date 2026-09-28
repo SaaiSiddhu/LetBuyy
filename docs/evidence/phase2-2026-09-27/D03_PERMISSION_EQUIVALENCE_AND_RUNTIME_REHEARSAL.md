@@ -316,9 +316,8 @@ Concrete, independently actionable items surfaced by this pass:
    the updated "Bounded shadow-path failure behavior" section above.
 3. ~~Fix the stale local-Postgres container name~~ — **DONE, same day, commit `8226f5ad`.** All 9
    previously-skipping tests across 5 files now genuinely run against real Postgres (skip count 9 → 0).
-   8 of them then revealed a SEPARATE, genuine, pre-existing gap (a missing shared fixture store, "snaz")
-   — not fixed (would mean guessing at fixture shape across 5 files without reading each test's exact
-   assertions first), flagged as its own follow-up task.
+   8 of them then revealed a SEPARATE, genuine, pre-existing gap (a missing shared fixture store,
+   "snaz") — flagged as its own follow-up task, then also fixed the same day (item 6, below).
 4. **A legacy `employees.role` → target role id mapping for arbitrary custom staff roles** remains
    genuinely open (Section A/B) — only the owner role has a defined target representation today. This
    is a real design decision (how many built-in role tiers, whether merchants can define custom roles
@@ -326,8 +325,14 @@ Concrete, independently actionable items surfaced by this pass:
    invent, consistent with the standing instruction not to invent policy-shaped decisions.
 5. **Canonical session-revocation design** (Section G, below): a concrete, scoped recommendation is
    given; implementing it is a separate, dedicated piece of work.
-6. **Seed (or redesign the fixture for) the shared "snaz" store** the 8 newly-unmasked tests depend on
-   (item 3, above) — flagged as its own follow-up task, not attempted here.
+6. ~~Seed (or redesign the fixture for) the shared "snaz" store~~ — **DONE, same day, commit
+   `449fb1b4`.** A reusable, idempotent seed script (`scripts/dev/seed-snaz-fixture.{sql,mjs}`)
+   creates snaz's site, its default inventory location, its two GST tax-rate rows, a cross-tenant
+   fixture site, and one real seed order — every value read from the 5 tests' own exact
+   assertions, not guessed. Investigating the result also surfaced and fixed one further stale
+   test assertion (`inventory-reservation-lifecycle.test.ts`'s `committed_quantity` expectation,
+   which migration 246 had already, deliberately made obsolete before this test ever ran against
+   it). All 5 files: 19/19 pass, 0 skip.
 
 ## G. Session-revocation design recommendation (concise, not implemented this pass)
 
@@ -396,11 +401,11 @@ Edynox processes still running at the time — consistent with, not proof of, th
 explanation given earlier in this document, not a new cause. Neither of `staff-permission.ts` or the 5
 container-name files touches theme rendering or checkout/order money-path logic at all. The
 product-mutation routing gap named in Section D (commit `81dc8e94`), the stale local-Postgres container
-name (commit `8226f5ad`), and the shadow-path timeout gap (commit `3a75bcee`) were all fixed the same day
-and are no longer open. Remaining open items (arbitrary custom-role mapping; session revocation; seeding,
-or redesigning the fixture for, the shared "snaz" store the container-name fix unmasked) are named
-precisely, are each independently
-actionable, and are not claimed resolved.
+name (commit `8226f5ad`), the shadow-path timeout gap (commit `3a75bcee`), and the missing shared "snaz"
+fixture the container-name fix unmasked (commit `449fb1b4`, which also fixed one further stale test
+assertion migration 246 had already made obsolete) were all fixed the same day and are no longer open.
+Remaining open items (arbitrary custom-role mapping; session revocation) are named precisely, are each
+independently actionable, and are not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
 sent, no real payment or order, no buyer data exported, nothing irreversibly erased. `.dev.vars`,
