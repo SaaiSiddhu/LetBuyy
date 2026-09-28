@@ -63,6 +63,21 @@ function fakeDb(tables: Record<string, Row[]>): BackfillExecutorDb {
           else rows.push({ id: `generated-${table}-${rows.length + 1}`, deleted_at: null, ...row });
           return { data: null, error: null };
         },
+        update(patch: Row) {
+          let targetId: string | undefined;
+          const chain = {
+            eq(column: string, value: string) {
+              if (column === 'id') targetId = value;
+              return chain;
+            },
+            then<T>(onFulfilled: (result: { data: unknown; error: null }) => T): Promise<T> {
+              const row2 = rows.find((r) => r.id === targetId);
+              if (row2) Object.assign(row2, patch);
+              return Promise.resolve(onFulfilled({ data: null, error: null }));
+            },
+          };
+          return chain as never;
+        },
       };
     },
   };
@@ -133,7 +148,7 @@ test('revoked staff: a non-active legacy membership is blocked, never backfilled
   const result = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-revoked', 'removed')]);
   assert.equal(result.blocked, 1);
   assert.equal(result.inserted, 0);
-  assert.match(result.details[0].reason, /not "active"/);
+  assert.match(result.details[0].reason, /not active/);
 });
 
 test('multiple memberships: one principal can hold real memberships at two different stores', async () => {
@@ -183,4 +198,64 @@ test('re-running the membership backfill on an already-migrated row reports upda
   assert.equal(second.details[0].outcome, 'updated');
   assert.equal(second.updated, 1, 'a re-upsert of the identical membership is counted as updated, distinct from inserted');
   assert.equal(second.inserted, 0, 'must not double-count an update as a fresh insert');
+});
+
+// ============================================================================
+// Reconciliation (auth hardening follow-up, Section 9): "a revoked legacy row being skipped on a
+// fresh run is not sufficient" -- a previously-backfilled ACTIVE target membership must actively lose
+// authority when the legacy source is later revoked, not merely be left untouched.
+// ============================================================================
+
+test('RECONCILIATION: an active membership, later revoked at the source, loses active authority in the target on the next run', async () => {
+  const db = fakeDb({});
+  await executeMerchantPrincipalBackfill(db, [merchant('staff-1', 'staff@example.test')]);
+
+  // 1. Active legacy membership is backfilled.
+  const initial = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'active')]);
+  assert.equal(initial.details[0].outcome, 'inserted');
+
+  // 2-3. That membership is later revoked at the source; reconciliation runs again with the updated
+  // legacy row.
+  const reconciled = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'removed')]);
+
+  // 4. The existing target membership must lose active authority.
+  assert.equal(reconciled.details[0].outcome, 'reconciled_revoked');
+  assert.equal(reconciled.reconciled, 1);
+  assert.equal(reconciled.blocked, 0, 'this is an active reconciliation action, not a block');
+});
+
+test('RECONCILIATION: re-running reconciliation on an already-revoked target membership is idempotent (skipped, not re-revoked)', async () => {
+  const db = fakeDb({});
+  await executeMerchantPrincipalBackfill(db, [merchant('staff-1', 'staff@example.test')]);
+  await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'active')]);
+  const first = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'removed')]);
+  const second = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'removed')]);
+  assert.equal(first.details[0].outcome, 'reconciled_revoked');
+  assert.equal(second.details[0].outcome, 'skipped_already_exists', 'reconciling an already-revoked membership a second time must not error or re-report a revoke');
+});
+
+test('RECONCILIATION: a soft-deleted legacy membership also reconciles an existing active target membership', async () => {
+  const db = fakeDb({});
+  await executeMerchantPrincipalBackfill(db, [merchant('staff-1', 'staff@example.test')]);
+  await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'active')]);
+  const deletedRow: LegacyEmployeeMembershipRow = { ...membership('m1', 'store-1', 'staff-1', 'active'), deleted_at: '2026-09-28T00:00:00Z' };
+  const result = await executeStoreMembershipBackfill(db, [deletedRow]);
+  assert.equal(result.details[0].outcome, 'reconciled_revoked');
+});
+
+test('RECONCILIATION: a non-active legacy row with no prior target membership blocks -- there is nothing to reconcile when nothing was ever written', async () => {
+  const db = fakeDb({});
+  await executeMerchantPrincipalBackfill(db, [merchant('staff-1', 'staff@example.test')]);
+  const result = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'removed')]);
+  assert.equal(result.details[0].outcome, 'blocked_missing_data');
+  assert.equal(result.reconciled, 0);
+});
+
+test('RECONCILIATION: re-approving a revoked staff member (legacy flips back to active) restores active authority in the target', async () => {
+  const db = fakeDb({});
+  await executeMerchantPrincipalBackfill(db, [merchant('staff-1', 'staff@example.test')]);
+  await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'active')]);
+  await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'removed')]);
+  const restored = await executeStoreMembershipBackfill(db, [membership('m1', 'store-1', 'staff-1', 'active')]);
+  assert.equal(restored.details[0].outcome, 'updated', 're-approval upserts the membership back to active');
 });

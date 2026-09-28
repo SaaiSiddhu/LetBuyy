@@ -35,7 +35,12 @@ export interface BackfillExecutorDb {
       select(columns: string): { single(): Promise<{ data: Record<string, unknown> | null; error: { message?: string; code?: string } | null }> };
     };
     upsert(row: Record<string, unknown>, opts: { onConflict: string }): Promise<{ data: unknown; error: { message?: string; code?: string } | null }>;
+    update(row: Record<string, unknown>): UpdateQuery;
   };
+}
+interface UpdateQuery {
+  eq(column: string, value: string): UpdateQuery;
+  then<T>(onFulfilled: (result: { data: unknown; error: { message?: string; code?: string } | null }) => T): Promise<T>;
 }
 interface BackfillListQuery {
   eq(column: string, value: string): BackfillListQuery;
@@ -43,7 +48,7 @@ interface BackfillListQuery {
   then<T>(onFulfilled: (result: { data: Record<string, unknown>[] | null; error: { message?: string; code?: string } | null }) => T): Promise<T>;
 }
 
-export type BackfillRowOutcome = 'inserted' | 'updated' | 'skipped_already_exists' | 'blocked_ambiguous' | 'blocked_missing_data' | 'blocked_missing_prerequisite';
+export type BackfillRowOutcome = 'inserted' | 'updated' | 'reconciled_revoked' | 'skipped_already_exists' | 'blocked_ambiguous' | 'blocked_missing_data' | 'blocked_missing_prerequisite';
 
 export interface BackfillDetail {
   legacyId: string;
@@ -54,19 +59,21 @@ export interface BackfillDetail {
 export interface BackfillOutcome {
   inserted: number;
   updated: number;
+  reconciled: number;
   skipped: number;
   blocked: number;
   details: BackfillDetail[];
 }
 
 function emptyOutcome(): BackfillOutcome {
-  return { inserted: 0, updated: 0, skipped: 0, blocked: 0, details: [] };
+  return { inserted: 0, updated: 0, reconciled: 0, skipped: 0, blocked: 0, details: [] };
 }
 
 function record(outcome: BackfillOutcome, detail: BackfillDetail): void {
   outcome.details.push(detail);
   if (detail.outcome === 'inserted') outcome.inserted++;
   else if (detail.outcome === 'updated') outcome.updated++;
+  else if (detail.outcome === 'reconciled_revoked') outcome.reconciled++;
   else if (detail.outcome === 'skipped_already_exists') outcome.skipped++;
   else outcome.blocked++;
 }
@@ -145,13 +152,17 @@ export async function executeMerchantPrincipalBackfill(
 }
 
 /**
- * Backfills `store_memberships` from `employees`. Requires the referenced principal to already
- * exist (executeMerchantPrincipalBackfill must run first for the same legacy_user_id) -- a missing
- * principal blocks with blocked_missing_prerequisite rather than being silently skipped or granting
- * a membership to nothing. Preserves revocation: a legacy row whose status is not 'active' is never
- * written as an active membership (or written at all, in this pass) -- see the module header for why
- * that is the deliberately conservative choice rather than mirroring a 'removed' row into the target
- * table.
+ * Backfills AND RECONCILES `store_memberships` from `employees`. Requires the referenced principal to
+ * already exist (executeMerchantPrincipalBackfill must run first for the same legacy_user_id) -- a
+ * missing principal blocks with blocked_missing_prerequisite rather than being silently skipped or
+ * granting a membership to nothing.
+ *
+ * Reconciliation (auth hardening follow-up, Section 9): a revoked legacy row being SKIPPED on a fresh
+ * run is not sufficient -- if a membership was backfilled while active and the legacy source later
+ * says it no longer is, an already-existing ACTIVE target row must have its authority actively
+ * removed (status -> 'removed'), not merely be left alone. A non-active legacy row with NO existing
+ * target row still results in blocked_missing_data (never backfilled as a fresh row) -- there is
+ * nothing to reconcile when nothing was ever written.
  */
 export async function executeStoreMembershipBackfill(
   db: BackfillExecutorDb,
@@ -162,14 +173,6 @@ export async function executeStoreMembershipBackfill(
   for (const row of rows) {
     if (!row.store_id || !row.user_id) {
       record(outcome, { legacyId: row.id, outcome: 'blocked_missing_data', reason: 'legacy row is missing store_id or user_id' });
-      continue;
-    }
-    if (row.deleted_at) {
-      record(outcome, { legacyId: row.id, outcome: 'blocked_missing_data', reason: 'legacy row is soft-deleted -- not backfilled' });
-      continue;
-    }
-    if (row.status !== 'active') {
-      record(outcome, { legacyId: row.id, outcome: 'blocked_missing_data', reason: `legacy status is "${row.status}", not "active" -- a revoked/pending membership is never backfilled as active, and this pass does not mirror non-active history into the target table` });
       continue;
     }
 
@@ -193,9 +196,9 @@ export async function executeStoreMembershipBackfill(
     }
     const principalId = String(principalRows[0].id);
 
-    const { data: existingMembership, error: membershipLookupError } = await db
+    const { data: existingMembershipRows, error: membershipLookupError } = await db
       .from('store_memberships')
-      .select('id')
+      .select('id, status')
       .eq('store_id', row.store_id)
       .eq('principal_id', principalId)
       .is('deleted_at', null);
@@ -203,8 +206,32 @@ export async function executeStoreMembershipBackfill(
       record(outcome, { legacyId: row.id, outcome: 'blocked_missing_prerequisite', reason: `membership lookup failed: ${membershipLookupError.message ?? membershipLookupError.code}` });
       continue;
     }
-    const alreadyExisted = Boolean(existingMembership && existingMembership.length > 0);
+    const existing = (existingMembershipRows ?? [])[0] as { id: string; status: string } | undefined;
 
+    const legacyActive = !row.deleted_at && row.status === 'active';
+
+    if (!legacyActive) {
+      if (!existing) {
+        record(outcome, { legacyId: row.id, outcome: 'blocked_missing_data', reason: `legacy status is "${row.status}"${row.deleted_at ? ' (soft-deleted)' : ''}, not active, and no target membership exists yet -- nothing to reconcile` });
+        continue;
+      }
+      if (existing.status !== 'active') {
+        record(outcome, { legacyId: row.id, outcome: 'skipped_already_exists', reason: `target membership already reflects a non-active status ("${existing.status}")` });
+        continue;
+      }
+      // .eq('store_id', ...) here is not only the tenant guard's own requirement for this registered
+      // tenant table -- it is a genuine extra correctness guarantee: this update can only ever touch
+      // the row already resolved for EXACTLY this store+principal, never a same-id row elsewhere.
+      const { error: revokeError } = await db.from('store_memberships').update({ status: 'removed' }).eq('id', existing.id).eq('store_id', row.store_id);
+      if (revokeError) {
+        record(outcome, { legacyId: row.id, outcome: 'blocked_missing_prerequisite', reason: `reconciliation revoke failed: ${revokeError.message ?? revokeError.code}` });
+        continue;
+      }
+      record(outcome, { legacyId: row.id, outcome: 'reconciled_revoked', reason: `legacy status is now "${row.status}"${row.deleted_at ? ' (soft-deleted)' : ''} -- the previously-active target membership was revoked to match` });
+      continue;
+    }
+
+    const alreadyExisted = Boolean(existing);
     const { error: upsertError } = await db.from('store_memberships').upsert(
       {
         store_id: row.store_id,
