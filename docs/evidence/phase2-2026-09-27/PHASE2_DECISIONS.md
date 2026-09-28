@@ -36,6 +36,24 @@ precisely and they were confirmed against the repository, not merely restated:
 
 ---
 
+## Recovered owner decisions (Mandate 7, Section 2)
+
+Recorded exactly as given, not paraphrased into something broader. Source: this session's own
+`AskUserQuestion` tool call and its literal returned answers (verifiable in this session's own
+transcript) — not a claim that this document itself was ever the approval record.
+
+| Decision | Exact answer given | Scope (from the option's own text) | Local/hosted boundary | Sub-decisions this does NOT answer |
+|---|---|---|---|---|
+| D03 | "Local merchant-staff transition (Recommended)" | Build the real principal repository + a shadow-comparison phase for the merchant-staff realm only, against the local database; `staff-permission.ts` stays the only enforced path until shadow-verified equivalence is shown; buyer/operator realms untouched | Explicitly local-only; "No staging/production activation at any point" (the option's own text) | Cutover itself (a separate future decision); buyer/operator realm transitions |
+| D04 | "Approve the proposed Reviewer/Moderator/Administrator tiers (Recommended)" | Introduces the 3-tier split for `operations/support.ts`; keeps the existing per-request, immediately-revocable DB allowlist | Local implementation; no hosted flag, no provisioning | Explicitly excluded by the option's own text: "Bootstrap authority, recovery mechanism, MFA model, and high-risk dual-approval are each decided separately afterward, not bundled into this one yes" — i.e. D04.2, D04.3, D04.4, D04.5, D04.6 remain open |
+| D05 | "Approve the initial restricted scope (Recommended)" | Approves WHAT fields are in scope (profile/addresses/own authored requests/own orders), already built and tested field-by-field | Local only; explicitly: "Does NOT yet expose any real route to real buyers" | D05.2 (requester verification/step-up) and D05.3 (release/download protection) explicitly named as still needing separate answers before any real route |
+
+Per Mandate 7's own explicit instruction, none of the above is read as approving: production bootstrap
+authority, a recovery approver, a production provider/sender, any hosted cutover, an export release
+policy, or any deletion/retention policy. Each remains a distinct, unanswered item below.
+
+---
+
 ## D03 — Identity unification vs. authorization unification (these are separate questions)
 
 ### What is actually proposed to unify — and what is NOT a defect
@@ -210,11 +228,49 @@ could mean the console UI for them has not been built yet, or that they are reac
 outside this repository. This is a fact worth the owner's attention before any D04 decision is
 finalized, not a gap this pass can resolve by more reading.
 
+### Implemented this pass: `requirePlatformOperator()`, replacing the router-level superadmin-only gate
+
+`operations/support.ts`'s blanket `requireRoleCategory('ops')` + `requireSuperAdmin` (every route,
+superadmin only) is now `requirePlatformOperator()` (`middleware/rbac.ts`) — a new, separately
+designed and tested gate preserving every property the old pair established (authenticated principal;
+fresh-per-request revocation; platform-scoped membership, i.e. `store_id IS NULL` on `employees`,
+the exact same query `activeEmployeeForUser` already used elsewhere, which itself exists because of a
+named prior bug, APPID-P5b, where a store-scoped employee's role was once misread as platform-scoped)
+while additionally letting a non-superadmin active platform employee reach the router at all. Each
+route's own, unchanged `requirePermission('support:...')` call is what still decides which specific
+action they may take. 19 tests total across three files prove this (8 isolated middleware tests, 2
+end-to-end router tests, plus the pre-existing suite's 0 regressions) — see `SECURITY_ACCEPTANCE.md`-
+style evidence in the commit history (`667b16c8`, `35146bbf`).
+
+**Found, not fixed, while verifying this:** `GET /overview`'s own `support_tickets` count query has
+no site_id predicate, so the real tenant guard throws for every caller today, superadmin included —
+confirmed pre-existing (reproduced identically for a superadmin control case) and unrelated to this
+change (the diff touches only the import list and the `router.use` line). Flagged as a separate
+follow-up task, not fixed in this pass.
+
+### Product role → existing tier mapping (Mandate 7, Section 8 — explicit, not assumed equivalent)
+
+| Product role (what D04 approved) | Existing tier (`INTERNAL_PERMISSION_TIERS`) | Exact scopes granted | Excluded actions | Assignment authority |
+|---|---|---|---|---|
+| Reviewer | `viewer` | `audit:read, risk:view, ts:view, support:view, merchant:view, review:view, incident:view, payout:view, exec:view, compliance:view, developer:view` — for `operations/support.ts` specifically, only `support:view` is ever checked by any route today | Every `support:reply`/`support:manage` route (reply, create, assign, escalate, resolve, CSAT, macros) | Not implemented — no assignment route exists (D04.2, open) |
+| Moderator | `operator` | Adds `support:reply`, `risk:decide`, `merchant:pii` to the viewer set — again, only `support:view`+`support:reply` are ever checked by this specific router today | `support:manage` (macros); role/config administration | Not implemented (D04.2, open) |
+| Administrator | `lead` | Adds `support:manage`, `ts:enforce`, `ts:appeal`, `merchant:impersonate`, `merchant:suspend`, `review:decide`, `incident:command`, `developer:manage` to the operator set | Nothing within `support:*` — `lead` is a superset. **Note:** `lead` is a cross-domain tier (risk/ts/merchant/review/incident), broader than "support administrator" — approving "Administrator" for support does not, by this mapping, also approve using `lead`'s other scopes for non-support actions; that would need its own explicit decision if a route ever checks e.g. `merchant:suspend` via this same tier system | Not implemented (D04.2, open) |
+| (no equivalent approved) | `admin` | Every scope (`InternalPermissionScopeSchema.options` in full) | — | Left unassigned, per Mandate 7's explicit instruction not to invent an equivalence for a tier the product roles never named. `admin` is what `isSuperAdmin` already grants via `super_admin_allowlist`, unchanged by this pass. |
+
+**Checked, not assumed:** scope inheritance is a flat per-tier array (no runtime inheritance
+mechanism to audit — each tier's scope list is written out in full in `INTERNAL_PERMISSION_TIERS`,
+confirmed by reading the constant directly); wildcard behavior (`scopeMatches`'s `g.endsWith(':*')`)
+is unrelated to and untouched by this tier system; `break_glass_grants` (time-limited elevated
+grants) are additive and already existed, unrelated to this change; a conflict between inline
+`employees.permissions` and role-derived scopes cannot arise for a platform employee specifically
+because platform `employees` rows are not the ones this pass's write-implies-read/permission-parsing
+work (Mandate 4) touched — that work was scoped to store-level `employees` rows.
+
 ### The 8 discrete decisions (unchanged in number, updated with this pass's findings)
 
-1. **Role capabilities** — accept the Reviewer/Moderator/Administrator/High-risk split above? Today
-   `operations/support.ts` has no tier distinction in the code (every caller is already a
-   superadmin) — this is a proposal to introduce one, not a description of an existing one.
+1. **Role capabilities** — **APPROVED and IMPLEMENTED this pass** (see mapping table above and
+   `requirePlatformOperator()`). The High-risk tier (item 6 below) remains a separate, unanswered
+   sub-decision — approving the three named tiers did not also approve a specific high-risk design.
 2. **Who may assign roles** — no assignment route exists today for either authorization model.
 3. **Bootstrap authority** — who adds the first operator to a fresh environment? Not implemented.
 4. **Recovery approver/mechanism** — for `super_admin_allowlist`: a DB update, by whom? For the
@@ -325,13 +381,17 @@ IMPLEMENTED / LOCAL VERIFIED / BLOCKED / CLOSED), not an invented scale. Rows ou
 | `GET /products/:id` tenant-guard fix + staff recognition | **LOCAL VERIFIED** |
 | Console login account-enumeration ordering | **LOCAL VERIFIED** (fixed and tested this pass) |
 | D03 merchant-staff identity reconciliation (dry-run) | **IMPLEMENTED, LOCAL VERIFIED** — real tool, run against real (currently empty) data + synthetic fixtures |
-| D03 principal/org-graph activation | **BLOCKED** on D03 owner decision |
-| D04 operator role tiers | **BLOCKED** on D04 decisions 1-2 |
-| D04 operator bootstrap/recovery | **BLOCKED** on D04 decisions 3-4 |
-| D04 console magic-link single-use enforcement | **PLANNED** — characterized as absent, not built (needs a persistence decision) |
+| D03 real `PrincipalRepository` (findById/findByLegacyRef/linkAccount) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — 8 fake-postgrest tests + one real-Postgres round-trip; not wired into any live route |
+| D03 shadow permission comparison (legacy vs. new model) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — 9 tests; concretely finds the new model has no owner-bypass concept and no write-implies-read rule, and that only 5 of the real staff permission keys have a canonical alias at all; consulted by nothing enforcing |
+| D03 real backfill run + full cutover | **BLOCKED** — genuinely new work (repository wiring into a real backfill script, a sustained shadow-observation period) beyond this pass's bounded scope; not attempted |
+| D04 operator role tiers (Reviewer/Moderator/Administrator) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — `requirePlatformOperator()` wired into `operations/support.ts`; 19 tests (8 middleware, 2 end-to-end, 9 pre-existing unaffected) |
+| D04 operator bootstrap/recovery | **BLOCKED** on D04 decisions 2-4 (who assigns roles; bootstrap authority; recovery approver + the newly-quantified 8-hour console session gap) |
+| D04 console magic-link single-use enforcement | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — real, previously absent; atomic consume proven via real-Postgres concurrency (one 200, one 409, exactly one row) |
 | D04.8 console delivery boundary | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (adapter interface + capture transport; no sender chosen, no provider wired) |
 | D04.9 moderation/impersonation route callers | **BLOCKED** on the owner confirming whether a real caller exists |
-| D05 export field contract | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (`BUYER_EXPORT_GENERATION_AVAILABLE = false`) |
-| D05 export execution against real requests | **BLOCKED** on D05 decisions 1-3 |
+| D05 export field contract | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (`BUYER_EXPORT_GENERATION_AVAILABLE = false`) — corrected against the real schema this pass (orders.total, not the never-existent total_minor) |
+| D05 real query wiring (read-only, against actual tables) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — 4 tests against two real synthetic buyer accounts in the owned local Postgres; still not wired into any route |
+| D05 export execution against real requests / route exposure | **BLOCKED** on D05 decisions 2-3 (requester verification; release/download protection) — explicitly excluded from the D05 approval's own scope |
 | D05 deletion/retention execution | **BLOCKED** on D05 decisions 4-8 |
-| Full local gate | **BLOCKED** (partially) / **not CLOSED** — 5 lanes red; attribution confidence varies by lane (`SECURITY_ACCEPTANCE.md` §9); explicitly not described as fully green |
+| Full local gate | **BLOCKED** (partially) / **not CLOSED** — 5 lanes red before this pass; re-run after this pass's commits, see `SECURITY_ACCEPTANCE.md`/this pass's final report for the current table; explicitly not described as fully green |
+| (new, found this pass) `GET /overview` tenant-guard 500 | **BLOCKED** — pre-existing, unrelated to Phase 2, confirmed universal (not tier-specific); flagged as a separate follow-up task, not fixed |
