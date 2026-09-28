@@ -53,8 +53,8 @@ test('Buyer A receives only Buyer A\'s data -- Buyer B\'s rows in the same sourc
       { buyer_account_id: BUYER_B, label: 'home', full_name: 'Buyer B', address_line1: '1 B St', city: 'Delhi', state: 'DL', postal_code: '110001', country: 'IN', is_default: true },
     ],
     orders: [
-      { buyer_account_id: BUYER_A, order_number: 'ORD-A-1', status: 'paid', total_minor: 10000, created_at: '2026-01-02T00:00:00Z', items: [] },
-      { buyer_account_id: BUYER_B, order_number: 'ORD-B-1', status: 'paid', total_minor: 20000, created_at: '2026-01-03T00:00:00Z', items: [] },
+      { buyer_account_id: BUYER_A, order_number: 'ORD-A-1', status: 'paid', total: 100.00, currency: 'INR', created_at: '2026-01-02T00:00:00Z', items: [] },
+      { buyer_account_id: BUYER_B, order_number: 'ORD-B-1', status: 'paid', total: 200.00, currency: 'INR', created_at: '2026-01-03T00:00:00Z', items: [] },
     ],
   };
   const result = generateBuyerExport({ requestingBuyerAccountId: BUYER_A, requestId: 'req-1' }, source);
@@ -62,6 +62,7 @@ test('Buyer A receives only Buyer A\'s data -- Buyer B\'s rows in the same sourc
   assert.equal(result.sections.addresses[0].city, 'Mumbai');
   assert.equal(result.sections.orders.length, 1);
   assert.equal(result.sections.orders[0].order_reference, 'ORD-A-1');
+  assert.equal(result.sections.orders[0].total, 100.00, 'the real orders.total column, not the never-existent total_minor this contract incorrectly named before this pass');
 });
 
 test('a mismatched profile row (belongs to someone else) is excluded and marked incomplete, never silently substituted', () => {

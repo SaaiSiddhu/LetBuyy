@@ -86,14 +86,20 @@ export const BUYER_EXPORT_CONTRACT: readonly ExportSectionSpec[] = [
     ],
   },
   {
+    // Corrected against the REAL orders/order_items schema (Mandate 7, Section 12) -- the v1 draft
+    // above guessed `total_minor`/`product_name`/`price_minor`, none of which exist. orders stores
+    // money as `total numeric(12,2)` (decimal rupees, not a *_minor bigint -- a pre-canonicalization
+    // column, not this contract's concern to fix) and order_items uses `name`/`price`/`quantity`.
     section: 'orders',
     fields: [
       { field: 'order_reference', canonicalSource: 'orders.order_number', ownershipPredicate: 'orders.id IN (SELECT order_id FROM buyer_order_links WHERE buyer_account_id = :buyerAccountId)', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
       { field: 'status', canonicalSource: 'orders.status', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'total_minor', canonicalSource: 'orders.total_minor', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'total', canonicalSource: 'orders.total', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'currency', canonicalSource: 'orders.currency', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
       { field: 'created_at', canonicalSource: 'orders.created_at', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'items', canonicalSource: 'order_items (product_name, quantity, price_minor) WHERE order_id = orders.id', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'merchant_internal_notes', canonicalSource: 'orders.internal_notes (if such a column exists)', ownershipPredicate: 'n/a', transformation: 'omitted', rationale: 'merchant-internal operational data about the order, not the buyer\'s own authored or commerce data', nullBehavior: 'omit_key', since: V1 },
+      { field: 'items', canonicalSource: 'order_items (name, quantity, price, total) WHERE order_id = orders.id', ownershipPredicate: 'same as order_reference', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'notes', canonicalSource: 'orders.notes', ownershipPredicate: 'n/a', transformation: 'omitted', rationale: 'a real, free-text merchant-internal notes column on the order itself -- merchant-internal operational data, not the buyer\'s own authored or commerce data', nullBehavior: 'omit_key', since: V1 },
+      { field: 'payment_id', canonicalSource: 'orders.payment_id', ownershipPredicate: 'n/a', transformation: 'omitted', rationale: 'a provider-side payment reference; treated as security-adjacent operational data pending an explicit decision, not the buyer\'s own authored content', nullBehavior: 'omit_key', since: V1 },
     ],
   },
 ];
