@@ -17,50 +17,20 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFileSync, existsSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { Hono } from 'hono';
 import { hmacSha256Hex, internalAppSigningPayload } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import authRouter from '../routes/auth';
+import { readLocalSupabaseConfig, resolveLocalSupabaseContainer, isLocalPostgresReachable, psql as psqlOn } from './local-postgres-support';
 
-const devVarsPath = new URL('../../.dev.vars', import.meta.url);
 const INTERNAL_API_SECRET = 'test-internal-secret-for-verification-token-redemption-postgres';
 
-function readLocalSupabaseConfig(): { url: string; serviceRoleKey: string } | null {
-    if (!existsSync(devVarsPath)) return null;
-    const devVars = readFileSync(devVarsPath, 'utf8');
-    const url = devVars.match(/^SUPABASE_URL=(.*)$/m)?.[1]?.trim();
-    const serviceRoleKey = devVars.match(/^SUPABASE_SERVICE_ROLE_KEY=(.*)$/m)?.[1]?.trim();
-    if (!url || !serviceRoleKey) return null;
-    // Refuse anything that isn't unmistakably a local instance -- this file must never run its
-    // seed/delete cycle against a real, hosted, or shared database.
-    let hostname = '';
-    try { hostname = new URL(url).hostname.toLowerCase(); } catch { return null; }
-    const isLocal = ['localhost', '127.0.0.1', '::1'].includes(hostname);
-    return isLocal ? { url, serviceRoleKey } : null;
-}
-
-function dbContainerName(): string {
-    return process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
-}
-
+const config = readLocalSupabaseConfig(new URL('../../.dev.vars', import.meta.url));
+const container = resolveLocalSupabaseContainer();
+const dockerAvailable = isLocalPostgresReachable(container);
 function psql(sql: string): string | null {
-    try {
-        return execFileSync(
-            'docker',
-            ['exec', '-i', dbContainerName(), 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-qAt'],
-            { input: sql, encoding: 'utf8' },
-        ).trim();
-    } catch {
-        return null;
-    }
+    return psqlOn(container, sql);
 }
-
-const config = readLocalSupabaseConfig();
-const dockerAvailable = (() => {
-    try { execFileSync('docker', ['exec', dbContainerName(), 'true']); return true; } catch { return false; }
-})();
 
 function env(): Env {
     return {

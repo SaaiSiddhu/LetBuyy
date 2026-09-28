@@ -18,40 +18,18 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFileSync, existsSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { getSupabaseAdmin } from '../lib/supabase';
 import { executeMerchantPrincipalBackfill, executeStoreMembershipBackfill, type BackfillExecutorDb } from '../identity-foundation/backfill-executor';
 import { compareStaffPermissionDecisionAgainstTargetData, type TargetShadowDb } from '../identity-foundation/target-shadow-comparison';
 import type { Env } from '../index';
+import { readLocalSupabaseConfig, resolveLocalSupabaseContainer, isLocalPostgresReachable, psql as psqlOn } from './local-postgres-support';
 
-const devVarsPath = new URL('../../.dev.vars', import.meta.url);
-function readLocalSupabaseConfig(): { url: string; serviceRoleKey: string } | null {
-    if (!existsSync(devVarsPath)) return null;
-    const devVars = readFileSync(devVarsPath, 'utf8');
-    const url = devVars.match(/^SUPABASE_URL=(.*)$/m)?.[1]?.trim();
-    const serviceRoleKey = devVars.match(/^SUPABASE_SERVICE_ROLE_KEY=(.*)$/m)?.[1]?.trim();
-    if (!url || !serviceRoleKey) return null;
-    let hostname = '';
-    try { hostname = new URL(url).hostname.toLowerCase(); } catch { return null; }
-    return ['localhost', '127.0.0.1', '::1'].includes(hostname) ? { url, serviceRoleKey } : null;
-}
-
-function dbContainerName(): string {
-    return process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
-}
+const config = readLocalSupabaseConfig(new URL('../../.dev.vars', import.meta.url));
+const container = resolveLocalSupabaseContainer();
+const dockerAvailable = isLocalPostgresReachable(container);
 function psql(sql: string): string | null {
-    try {
-        return execFileSync('docker', ['exec', '-i', dbContainerName(), 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-qAt'], { input: sql, encoding: 'utf8' }).trim();
-    } catch {
-        return null;
-    }
+    return psqlOn(container, sql);
 }
-
-const config = readLocalSupabaseConfig();
-const dockerAvailable = (() => {
-    try { execFileSync('docker', ['exec', dbContainerName(), 'true']); return true; } catch { return false; }
-})();
 
 function db(): BackfillExecutorDb & TargetShadowDb {
     const env = { SUPABASE_URL: config!.url, SUPABASE_SERVICE_ROLE_KEY: config!.serviceRoleKey, ENVIRONMENT: 'test' } as unknown as Env;
