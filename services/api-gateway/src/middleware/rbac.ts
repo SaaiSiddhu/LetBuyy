@@ -579,3 +579,72 @@ export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
         await next();
     }
 );
+
+/**
+ * Phase 2 / D04 (Mandate 7, Section 7) -- a NEW, explicit platform-operator eligibility gate. Not a
+ * replacement for requireSuperAdmin (still used wherever superadmin-only is the actual requirement,
+ * e.g. internal-console.ts's static-token router upstream of MFA); this exists for routers like
+ * operations/support.ts where the goal is "any active platform operator, at whatever tier their own
+ * per-route requirePermission(...) call recognizes" -- today that is only ever a superadmin in
+ * practice (see the test suite for why), but this function is what makes a non-superadmin platform
+ * operator ABLE to reach a route's permission check at all, rather than being blocked before ever
+ * getting there.
+ *
+ * Preserves every property the router-level requireRoleCategory('ops') + requireSuperAdmin pair
+ * established, and adds nothing that widens who can pass beyond "a real platform operator":
+ *
+ *  1. Authenticated canonical principal -- 401 if no auth.user at all, checked here explicitly
+ *     rather than assumed (requireSuperAdmin above dereferences auth.user without this check, relying
+ *     on it always running after session middleware; this function does not make that assumption).
+ *  2 + 4. Active platform-operator eligibility, revocation-fresh -- hasOpsAllowlistEntry and
+ *     activeEmployeeForUser both query the database on THIS request, not a cache, matching every
+ *     other fail-closed-per-request pattern in this codebase (staff-permission.ts, this same file's
+ *     requireRoleCategory/requireSuperAdmin).
+ *  3. Platform-scoped role/membership, not a merchant one -- activeEmployeeForUser reads through
+ *     platformEmployeeRows, whose OWN query filters `store_id IS NULL` at the database level (see
+ *     its doc comment: APPID-P5b fixed the exact bug of a store-scoped employee's role/permissions
+ *     being read as if platform-scoped). A merchant's own employees row -- whatever its role string,
+ *     whatever support:*-shaped permission keys it happens to hold, even a "*" wildcard, even if some
+ *     future bug ever left its store_id null in a client-supplied payload (store_id here is never
+ *     read from anything the client sends; activeEmployeeForUser takes only a server-derived userId)
+ *     -- is structurally never returned by this query if its store_id is not null. This is the
+ *     authoritative membership model this codebase already established and already fixed a real bug
+ *     in once; this function reuses it rather than inventing a second one.
+ *  5. Required permission for the endpoint -- deliberately NOT this function's job. Every route in
+ *     operations/support.ts already carries its own requirePermission('support:...') call; this
+ *     function only decides whether the caller is a platform operator AT ALL, never which action
+ *     they may take. Removing this function would not remove that check -- it lives on each route,
+ *     unchanged.
+ *  6. Step-up/MFA for high-risk actions -- NOT implemented by this function, and not invented here.
+ *     D04.6 (whether the merchant-detail cross-domain view or any support action needs dual control)
+ *     remains an open, unanswered decision; nothing in this router currently requires step-up, and
+ *     this change does not add or imply one.
+ *  7. Audit actor identity -- unchanged; every route's own writeAudit/logSensitiveRead call already
+ *     derives the actor from `auth.user.id` (via actorUserId(c)), never from anything client-supplied.
+ */
+export function requirePlatformOperator() {
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        const auth = c.get('auth');
+        if (!auth?.user) {
+            return c.json(
+                { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+                401
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const [isSuperAdmin, employee] = await Promise.all([
+            hasOpsAllowlistEntry(db, auth.user.id, auth.user.email),
+            activeEmployeeForUser(db, auth.user.id),
+        ]);
+
+        if (!isSuperAdmin && !employee) {
+            return c.json(
+                { error: { code: 'FORBIDDEN', message: 'Platform operator access required' } },
+                403
+            );
+        }
+
+        await next();
+    });
+}
