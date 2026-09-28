@@ -288,16 +288,14 @@ test('BOUNDED FAILURE: a target-store connection failure (thrown fetch, not a we
     assert.equal(line.target_allowed, false, 'an unreachable target store must never be reported as an allow');
 });
 
-test('LATENCY (measured, not asserted): a slow target-store query is NOT currently bounded by an independent timeout -- the real request waits for it', async () => {
-    // This test intentionally documents a real gap rather than a guarantee: `runShadowComparisonSafely`
-    // is `await`ed inline in `evaluateStaffRequest` with no `Promise.race`/timeout around it (confirmed
-    // by reading middleware/staff-permission.ts -- the only safety net is the try/catch around thrown
-    // exceptions, which a merely-slow-but-eventually-resolving query never trips). A production target
-    // store running slow today would add its full latency to every real request in shadow mode, not
-    // just to the diagnostic log line. Recorded here as a measured finding and a concrete follow-up
-    // recommendation (see the D03 evidence doc), not fixed in this pass -- request-hot-path middleware
-    // changes deserve their own dedicated review rather than a rushed addition alongside this phase's
-    // permission-mapping and rehearsal work.
+test('LATENCY (measured, not asserted): a slow-but-still-under-budget target-store query is unaffected by the new timeout -- the real request still just waits for it', async () => {
+    // A real gap was measured here, then fixed (D03 permission equivalence follow-up, 2026-09-28):
+    // `runShadowComparisonSafely`'s two comparisons are now each raced against
+    // SHADOW_COMPARISON_TIMEOUT_MS (middleware/staff-permission.ts, 800ms) -- a merely-slow-but-
+    // eventually-resolving query is no longer unbounded. This test's own 120ms artificial delay stays
+    // well under that budget, so the real request still simply waits it out (exactly as before the
+    // fix) -- proving the new timeout does not fire spuriously for a genuinely-fine, if unhurried,
+    // target store. See the next test for proof the bound actually caps a much slower one.
     const ARTIFICIAL_DELAY_MS = 120;
     const fake = installFakePostgrest(tables(), { delayMsOnTable: ['principals', ARTIFICIAL_DELAY_MS] });
     const startedAt = Date.now();
@@ -305,7 +303,31 @@ test('LATENCY (measured, not asserted): a slow target-store query is NOT current
     const elapsedMs = Date.now() - startedAt;
     fake.restore();
     assert.equal(res.status, 200, 'the real decision is unaffected either way -- this test is about latency, not correctness');
-    assert.ok(elapsedMs >= ARTIFICIAL_DELAY_MS, `expected the real request to have waited out the full artificial delay (no independent timeout exists yet): elapsed ${elapsedMs}ms, delay ${ARTIFICIAL_DELAY_MS}ms`);
+    assert.ok(elapsedMs >= ARTIFICIAL_DELAY_MS, `expected the real request to have waited out the full artificial delay (well under the timeout budget): elapsed ${elapsedMs}ms, delay ${ARTIFICIAL_DELAY_MS}ms`);
+});
+
+test('LATENCY, BOUNDED (measured, not asserted): a target-store query far slower than the timeout budget no longer adds its full delay to the real request', async () => {
+    // The actual fix, proven: push the artificial delay well past SHADOW_COMPARISON_TIMEOUT_MS
+    // (800ms) and confirm the real response returns close to the timeout bound, not anywhere near the
+    // full artificial delay -- the shadow path is genuinely raced against a timer now, not merely
+    // wrapped in a try/catch that only a thrown exception could trip.
+    const ARTIFICIAL_DELAY_MS = 2000;
+    const fake = installFakePostgrest(tables(), { delayMsOnTable: ['principals', ARTIFICIAL_DELAY_MS] });
+    const lines = await warnLines(async () => {
+        const startedAt = Date.now();
+        const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        const elapsedMs = Date.now() - startedAt;
+        assert.equal(res.status, 200, 'the real, legacy-authoritative decision must be completely unaffected by the target store timing out');
+        assert.ok(
+            elapsedMs < ARTIFICIAL_DELAY_MS / 2,
+            `expected the real request to return well before the full ${ARTIFICIAL_DELAY_MS}ms artificial delay (bounded by the ~800ms timeout instead): elapsed ${elapsedMs}ms`,
+        );
+    });
+    fake.restore();
+    const line = targetShadowLine(lines);
+    assert.ok(line, 'a timed-out comparison must still produce a shadow log line, not silently vanish');
+    assert.equal(line.outcome, 'TARGET_SHADOW_EVALUATION_TIMEOUT');
+    assert.equal(line.target_allowed, null, 'a timed-out comparison must never be reported as an allow (or a deny) -- it never ran to completion');
 });
 
 // ============================================================================

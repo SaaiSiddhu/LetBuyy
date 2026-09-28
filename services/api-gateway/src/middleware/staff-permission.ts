@@ -74,7 +74,7 @@ export function staffPermissionShadowEnabled(env: Env): boolean {
 function logShadowComparison(
     siteId: string | null | undefined,
     userId: string | null | undefined,
-    result: Awaited<ReturnType<typeof compareStaffPermissionDecision>> | { outcome: 'SHADOW_EVALUATION_ERROR'; legacyKey: string; canonicalAction: null; legacyAllowed: null; newAllowed: null },
+    result: Awaited<ReturnType<typeof compareStaffPermissionDecision>> | { outcome: 'SHADOW_EVALUATION_ERROR' | 'SHADOW_EVALUATION_TIMEOUT'; legacyKey: string; canonicalAction: null; legacyAllowed: null; newAllowed: null },
 ): void {
     console.warn(JSON.stringify({
         level: 'info',
@@ -95,7 +95,7 @@ function logShadowComparison(
 function logTargetShadowComparison(
     siteId: string | null | undefined,
     userId: string | null | undefined,
-    result: Awaited<ReturnType<typeof compareStaffPermissionDecisionAgainstTargetData>> | { outcome: 'TARGET_SHADOW_EVALUATION_ERROR'; legacyKey: string; canonicalAction: null; legacyAllowed: boolean | null; targetAllowed: null },
+    result: Awaited<ReturnType<typeof compareStaffPermissionDecisionAgainstTargetData>> | { outcome: 'TARGET_SHADOW_EVALUATION_ERROR' | 'TARGET_SHADOW_EVALUATION_TIMEOUT'; legacyKey: string; canonicalAction: null; legacyAllowed: boolean | null; targetAllowed: null },
 ): void {
     console.warn(JSON.stringify({
         level: 'info',
@@ -111,11 +111,49 @@ function logTargetShadowComparison(
     }));
 }
 
+// D03 permission equivalence follow-up (2026-09-28): a real, measured gap -- the try/catch blocks
+// below only ever protected against a THROWN exception. A merely-slow-but-eventually-resolving
+// target-store query never trips them, so its full latency was added to every real request while
+// shadow mode is on (`evaluateStaffRequest` awaits this function inline, before returning the real
+// decision). Proven with a real test: an artificially delayed fake fetch made the real HTTP response
+// measurably wait out the full delay (staff-permission-shadow.test.ts, the "LATENCY" test).
+//
+// SHADOW_COMPARISON_TIMEOUT_MS is a diagnostic-only internal safety bound, not a claimed production
+// SLO: chosen generously above realistic real-Postgres latency for the 1-3 sequential lookups either
+// comparator performs, specifically so it almost never fires under normal conditions -- its only job
+// is to stop a genuinely stuck/degraded target store from adding unbounded latency to a real request.
+const SHADOW_COMPARISON_TIMEOUT_MS = 800;
+
+function shadowComparisonTimeoutError(label: string): Error {
+    const error = new Error(`${label} exceeded ${SHADOW_COMPARISON_TIMEOUT_MS}ms`);
+    error.name = 'SHADOW_COMPARISON_TIMEOUT';
+    return error;
+}
+
+function isShadowComparisonTimeout(err: unknown): boolean {
+    return err instanceof Error && err.name === 'SHADOW_COMPARISON_TIMEOUT';
+}
+
+async function withShadowComparisonTimeout<T>(work: Promise<T>, label: string): Promise<T> {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const timer = new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(shadowComparisonTimeoutError(label)), SHADOW_COMPARISON_TIMEOUT_MS);
+    });
+    try {
+        return await Promise.race([work, timer]);
+    } finally {
+        if (timeout) clearTimeout(timeout);
+    }
+}
+
 /** Never throws, never blocks, never influences the real decision -- a defect in the shadow model
  *  itself must not become an outage or a denial for a real request. Runs BOTH shadow dimensions:
  *  the legacy-translated comparison (permission-translation correctness) and the target-backed
  *  comparison (does a real backfilled principal/membership/role exist and agree) -- they test
- *  different things and a divergence in one says nothing about the other. */
+ *  different things and a divergence in one says nothing about the other. Each is also bounded by
+ *  SHADOW_COMPARISON_TIMEOUT_MS: a timeout is caught exactly like a thrown exception (logged with its
+ *  own distinct outcome, never affecting the real decision below), so a slow-but-not-throwing target
+ *  store can no longer add unbounded latency to the real request either. */
 async function runShadowComparisonSafely(
     env: Env,
     db: TargetShadowDb,
@@ -127,12 +165,13 @@ async function runShadowComparisonSafely(
 
     let legacyAllowed: boolean | null = null;
     try {
-        const result = await compareStaffPermissionDecision(input);
+        const result = await withShadowComparisonTimeout(compareStaffPermissionDecision(input), 'legacy shadow comparison');
         legacyAllowed = result.legacyAllowed;
         logShadowComparison(siteId, userId, result);
     } catch (err) {
+        const timedOut = isShadowComparisonTimeout(err);
         logShadowComparison(siteId, userId, {
-            outcome: 'SHADOW_EVALUATION_ERROR',
+            outcome: timedOut ? 'SHADOW_EVALUATION_TIMEOUT' : 'SHADOW_EVALUATION_ERROR',
             legacyKey: input.requiredKey,
             canonicalAction: null,
             legacyAllowed: null,
@@ -140,23 +179,27 @@ async function runShadowComparisonSafely(
         });
         console.error(JSON.stringify({
             level: 'error',
-            event: 'staff_permission_shadow_error',
+            event: timedOut ? 'staff_permission_shadow_timeout' : 'staff_permission_shadow_error',
             message: err instanceof Error ? err.message : String(err),
         }));
     }
 
     if (!userId || !siteId || legacyAllowed === null) return;
     try {
-        const targetResult = await compareStaffPermissionDecisionAgainstTargetData(db, {
-            legacyUserId: userId,
-            siteId,
-            requiredKey: input.requiredKey,
-            legacyAllowed,
-        });
+        const targetResult = await withShadowComparisonTimeout(
+            compareStaffPermissionDecisionAgainstTargetData(db, {
+                legacyUserId: userId,
+                siteId,
+                requiredKey: input.requiredKey,
+                legacyAllowed,
+            }),
+            'target shadow comparison',
+        );
         logTargetShadowComparison(siteId, userId, targetResult);
     } catch (err) {
+        const timedOut = isShadowComparisonTimeout(err);
         logTargetShadowComparison(siteId, userId, {
-            outcome: 'TARGET_SHADOW_EVALUATION_ERROR',
+            outcome: timedOut ? 'TARGET_SHADOW_EVALUATION_TIMEOUT' : 'TARGET_SHADOW_EVALUATION_ERROR',
             legacyKey: input.requiredKey,
             canonicalAction: null,
             legacyAllowed,
@@ -164,7 +207,7 @@ async function runShadowComparisonSafely(
         });
         console.error(JSON.stringify({
             level: 'error',
-            event: 'staff_permission_target_shadow_error',
+            event: timedOut ? 'staff_permission_target_shadow_timeout' : 'staff_permission_target_shadow_error',
             message: err instanceof Error ? err.message : String(err),
         }));
     }
