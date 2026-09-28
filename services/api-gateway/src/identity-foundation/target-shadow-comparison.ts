@@ -45,7 +45,21 @@ interface TargetShadowQuery {
   eq(column: string, value: string): TargetShadowQuery;
   in(column: string, values: readonly string[]): TargetShadowQuery;
   is(column: string, value: null): TargetShadowQuery;
+  // Optional (not every caller's db needs to support it, and every existing fake test double
+  // predates this) so real cancellation is additive, never a breaking requirement on the interface.
+  // The real Supabase/PostgREST client supports this natively (postgrest-js's
+  // PostgrestBuilder#abortSignal, confirmed against the installed @supabase/postgrest-js@2.95.3
+  // type definitions before relying on it -- D03 permission equivalence follow-up, Section 8,
+  // 2026-09-28: "do not claim Promise.race cancels an underlying database request if it does not").
+  abortSignal?(signal: AbortSignal): TargetShadowQuery;
   then<T>(onFulfilled: (result: { data: Record<string, unknown>[] | null; error: { message?: string; code?: string } | null }) => T): Promise<T>;
+}
+
+// Attaches the signal only when both a signal was given AND this particular query object actually
+// implements the optional method -- never throws on a fake/db that predates this capability.
+function withAbortSignal<Q extends { abortSignal?(signal: AbortSignal): Q }>(query: Q, signal: AbortSignal | undefined): Q {
+  if (signal && typeof query.abortSignal === 'function') return query.abortSignal(signal);
+  return query;
 }
 
 function neverGrant(
@@ -86,6 +100,7 @@ function neverGrant(
 export async function compareStaffPermissionDecisionAgainstTargetData(
   db: TargetShadowDb,
   input: { legacyUserId: string; siteId: string; requiredKey: string; legacyAllowed: boolean },
+  signal?: AbortSignal,
 ): Promise<TargetShadowResult> {
   const canonicalAction = canonicalActionFor(input.requiredKey);
 
@@ -97,12 +112,12 @@ export async function compareStaffPermissionDecisionAgainstTargetData(
     );
   }
 
-  const { data: principalRows, error: principalError } = await db
+  const { data: principalRows, error: principalError } = await withAbortSignal(db
     .from('principals')
     .select('id')
     .eq('realm', 'merchant')
     .eq('legacy_user_id', input.legacyUserId)
-    .is('deleted_at', null);
+    .is('deleted_at', null), signal);
   if (principalError) {
     return neverGrant({ ...input, canonicalAction }, 'TARGET_LOOKUP_ERROR', `principal lookup failed: ${principalError.message ?? principalError.code}`);
   }
@@ -114,12 +129,12 @@ export async function compareStaffPermissionDecisionAgainstTargetData(
   }
   const principalId = String(principalRows[0].id);
 
-  const { data: membershipRows, error: membershipError } = await db
+  const { data: membershipRows, error: membershipError } = await withAbortSignal(db
     .from('store_memberships')
     .select('id, status, role_ids')
     .eq('store_id', input.siteId)
     .eq('principal_id', principalId)
-    .is('deleted_at', null);
+    .is('deleted_at', null), signal);
   if (membershipError) {
     return neverGrant({ ...input, canonicalAction }, 'TARGET_LOOKUP_ERROR', `membership lookup failed: ${membershipError.message ?? membershipError.code}`);
   }
@@ -136,11 +151,11 @@ export async function compareStaffPermissionDecisionAgainstTargetData(
     return neverGrant({ ...input, canonicalAction }, 'TARGET_NO_ROLES_ASSIGNED', 'the membership is active but role_ids is empty -- no role has been assigned in the target model, so it grants nothing');
   }
 
-  const { data: permissionRows, error: permissionError } = await db
+  const { data: permissionRows, error: permissionError } = await withAbortSignal(db
     .from('site_role_permissions')
     .select('permission, effect')
     .in('role_id', roleIds)
-    .is('deleted_at', null);
+    .is('deleted_at', null), signal);
   if (permissionError) {
     return neverGrant({ ...input, canonicalAction }, 'TARGET_LOOKUP_ERROR', `role permission lookup failed: ${permissionError.message ?? permissionError.code}`);
   }

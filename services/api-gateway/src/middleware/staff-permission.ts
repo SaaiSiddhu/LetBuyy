@@ -134,10 +134,19 @@ function isShadowComparisonTimeout(err: unknown): boolean {
     return err instanceof Error && err.name === 'SHADOW_COMPARISON_TIMEOUT';
 }
 
-async function withShadowComparisonTimeout<T>(work: Promise<T>, label: string): Promise<T> {
+// `onTimeout` (real cancellation, when the caller has one to offer) and the Promise.race below (the
+// unconditional bound) fire from the exact same setTimeout callback, deliberately: real cancellation
+// is a best-effort OPTIMIZATION on top of the guarantee, never a substitute for it. If `work`'s own
+// implementation does not honor the cancellation (or has none to offer), this function still returns
+// within SHADOW_COMPARISON_TIMEOUT_MS regardless -- the bound must never silently depend on the
+// callee's cooperation.
+async function withShadowComparisonTimeout<T>(work: Promise<T>, label: string, onTimeout?: () => void): Promise<T> {
     let timeout: ReturnType<typeof setTimeout> | undefined;
     const timer = new Promise<never>((_, reject) => {
-        timeout = setTimeout(() => reject(shadowComparisonTimeoutError(label)), SHADOW_COMPARISON_TIMEOUT_MS);
+        timeout = setTimeout(() => {
+            onTimeout?.();
+            reject(shadowComparisonTimeoutError(label));
+        }, SHADOW_COMPARISON_TIMEOUT_MS);
     });
     try {
         return await Promise.race([work, timer]);
@@ -150,11 +159,20 @@ async function withShadowComparisonTimeout<T>(work: Promise<T>, label: string): 
  *  itself must not become an outage or a denial for a real request. Runs BOTH shadow dimensions:
  *  the legacy-translated comparison (permission-translation correctness) and the target-backed
  *  comparison (does a real backfilled principal/membership/role exist and agree) -- they test
- *  different things and a divergence in one says nothing about the other. Each is also bounded by
- *  SHADOW_COMPARISON_TIMEOUT_MS: a timeout is caught exactly like a thrown exception (logged with its
- *  own distinct outcome, never affecting the real decision below), so a slow-but-not-throwing target
- *  store can no longer add unbounded latency to the real request either. */
-async function runShadowComparisonSafely(
+ *  different things and a divergence in one says nothing about the other.
+ *
+ *  Bounded differently, deliberately, per dimension (D03 permission equivalence follow-up, Section 8,
+ *  2026-09-28 -- "do not claim Promise.race cancels an underlying database request if it does not"):
+ *   - The legacy comparison is pure computation (no db parameter, no I/O) -- there is nothing to
+ *     cancel, so a plain Promise.race timeout is both correct and the only meaningful bound; it is
+ *     kept for defensive symmetry against a future change making this comparator do I/O, not because
+ *     it can genuinely hang today.
+ *   - The target comparison performs real HTTP requests, so it gets REAL cancellation: an
+ *     AbortController whose signal is threaded into every one of its queries (confirmed supported by
+ *     the real @supabase/postgrest-js client -- target-shadow-comparison.ts's own module comment).
+ *     On timeout the in-flight request is actually interrupted, not merely abandoned while it keeps
+ *     running unobserved. */
+async function runShadowComparisonInner(
     env: Env,
     db: TargetShadowDb,
     siteId: string | null | undefined,
@@ -185,6 +203,15 @@ async function runShadowComparisonSafely(
     }
 
     if (!userId || !siteId || legacyAllowed === null) return;
+
+    // Belt and suspenders, deliberately: `controller` gives a real db that supports abortSignal (the
+    // production Supabase client does -- confirmed in target-shadow-comparison.ts's own module
+    // comment) genuine cancellation, actually interrupting the in-flight request. The
+    // withShadowComparisonTimeout race is the UNCONDITIONAL bound underneath it -- if some future or
+    // test `db` does not implement abortSignal, `controller.abort()` still fires (harmlessly, on
+    // nothing) but the race's own timer still rejects on schedule regardless, so this function's
+    // total runtime can never come to depend on a callee choosing to cooperate.
+    const controller = new AbortController();
     try {
         const targetResult = await withShadowComparisonTimeout(
             compareStaffPermissionDecisionAgainstTargetData(db, {
@@ -192,12 +219,32 @@ async function runShadowComparisonSafely(
                 siteId,
                 requiredKey: input.requiredKey,
                 legacyAllowed,
-            }),
+            }, controller.signal),
             'target shadow comparison',
+            () => controller.abort(shadowComparisonTimeoutError('target shadow comparison')),
         );
-        logTargetShadowComparison(siteId, userId, targetResult);
+        // A real cancellation can surface as a normal, non-throwing {data:null,error} query result
+        // inside the comparator (matching the Supabase client's own convention) rather than as a
+        // rejection reaching this function -- checked explicitly so a real timeout is still labeled
+        // TIMEOUT, not folded into whichever generic error outcome the comparator happened to return.
+        if (controller.signal.aborted) {
+            logTargetShadowComparison(siteId, userId, {
+                outcome: 'TARGET_SHADOW_EVALUATION_TIMEOUT',
+                legacyKey: input.requiredKey,
+                canonicalAction: null,
+                legacyAllowed,
+                targetAllowed: null,
+            });
+        } else {
+            logTargetShadowComparison(siteId, userId, targetResult);
+        }
     } catch (err) {
-        const timedOut = isShadowComparisonTimeout(err);
+        // `controller.signal.aborted` (set synchronously, unconditionally, the instant the shared
+        // timer fires) is the reliable signal here, deliberately not `isShadowComparisonTimeout(err)`
+        // alone -- the rejection this catch actually observes can be either the race's own timeout
+        // error OR the db's real AbortError, depending on microtask ordering between them, and both
+        // mean exactly the same thing: this comparison hit the bound, not some independent failure.
+        const timedOut = controller.signal.aborted || isShadowComparisonTimeout(err);
         logTargetShadowComparison(siteId, userId, {
             outcome: timedOut ? 'TARGET_SHADOW_EVALUATION_TIMEOUT' : 'TARGET_SHADOW_EVALUATION_ERROR',
             legacyKey: input.requiredKey,
@@ -210,6 +257,32 @@ async function runShadowComparisonSafely(
             event: timedOut ? 'staff_permission_target_shadow_timeout' : 'staff_permission_target_shadow_error',
             message: err instanceof Error ? err.message : String(err),
         }));
+    }
+}
+
+// A final, outer safety net -- distinct from the two try/catch blocks above, which each handle their
+// OWN comparison's failure but assumed the logging calls themselves (console.warn/console.error)
+// never throw. If they did (a broken console, a circular-reference JSON.stringify, anything else
+// unanticipated), that exception would previously have propagated out of this function, up through
+// evaluateStaffRequest's own `await runShadowComparisonSafely(...)` call, and into ITS catch block --
+// which refuses the REAL request with a 503. That would make a logging failure deny a currently
+// permitted request, violating this function's own "never influences the real decision" contract.
+// Swallowed here, with a last-resort log attempt of its own (itself guarded, in case even that
+// throws) so the failure is not silently invisible either.
+async function runShadowComparisonSafely(...args: Parameters<typeof runShadowComparisonInner>): Promise<void> {
+    try {
+        await runShadowComparisonInner(...args);
+    } catch (err) {
+        try {
+            console.error(JSON.stringify({
+                level: 'error',
+                event: 'staff_permission_shadow_outer_failure',
+                message: err instanceof Error ? err.message : String(err),
+            }));
+        } catch {
+            // Logging itself failed too -- there is nothing further this function can safely do
+            // except still return normally, which is the one guarantee that actually matters here.
+        }
     }
 }
 
@@ -255,6 +328,13 @@ async function resolveGrants(
     return { found: true, granted };
 }
 
+// D03 staff-mutation/shadow-runtime completion (2026-09-28): guarded, discovered via a real test
+// (staff-permission-shadow.test.ts's LOGGING FAILURE case) that a broken console.warn here -- called
+// for the REAL, authoritative decision, unconditionally, before any shadow work even starts --
+// propagated out of evaluateStaffRequest's own try block into its catch, which refuses the request
+// with a 503. That makes a logging failure deny an otherwise-permitted request, the exact class of
+// bug this pass's shadow-safety work exists to close, just one call earlier than the shadow path
+// itself. Audit logging must never become an authorization outcome.
 function logDecision(
     mode: StaffRbacMode,
     key: string,
@@ -263,17 +343,21 @@ function logDecision(
     userId: string | null | undefined,
     employeeFound: boolean,
 ): void {
-    console.warn(JSON.stringify({
-        level: decision.allowed ? 'info' : 'warn',
-        event: 'staff_rbac_decision',
-        mode,
-        required: key,
-        allowed: decision.allowed,
-        reason: decision.reason,
-        site_id: siteId ?? null,
-        user_id: userId ?? null,
-        employee_found: employeeFound,
-    }));
+    try {
+        console.warn(JSON.stringify({
+            level: decision.allowed ? 'info' : 'warn',
+            event: 'staff_rbac_decision',
+            mode,
+            required: key,
+            allowed: decision.allowed,
+            reason: decision.reason,
+            site_id: siteId ?? null,
+            user_id: userId ?? null,
+            employee_found: employeeFound,
+        }));
+    } catch {
+        // Never let a broken logger turn a real decision into a 503 -- see the comment above.
+    }
 }
 
 export type StaffDecision = { block: false } | { block: true; status: 403 | 503 };

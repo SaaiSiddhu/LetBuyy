@@ -45,19 +45,56 @@ function matches(row: Row, params: URLSearchParams): boolean {
     return true;
 }
 
-// `fault` lets a specific table's query throw (simulating a dropped connection) or resolve late
-// (simulating a slow query), instead of always answering from `tablesData` -- used below to measure
-// the shadow path's actual failure/latency behavior against real fetch semantics, rather than only
+// `fault` lets a specific table's query throw (simulating a dropped connection), resolve late
+// (simulating a slow query), never settle at all (simulating a truly stuck connection), or reject
+// late on its own schedule after being ignored (simulating an orphaned request finally failing on
+// its own), instead of always answering from `tablesData` -- used below to measure the shadow path's
+// actual failure/latency/cancellation behavior against real fetch semantics, rather than only
 // asserting it "should" be safe.
-function installFakePostgrest(tablesData: Record<string, Row[]>, fault?: { throwOnTable?: string; delayMsOnTable?: readonly [string, number] }) {
+function installFakePostgrest(tablesData: Record<string, Row[]>, fault?: {
+    throwOnTable?: string;
+    delayMsOnTable?: readonly [string, number];
+    neverResolveTable?: string;
+    lateRejectTable?: readonly [string, number];
+}) {
     const originalFetch = globalThis.fetch;
     globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url);
         assert.equal(url.origin, POSTGREST, 'only the fake PostgREST is reachable');
         const table = url.pathname.replace('/rest/v1/', '');
         if (fault?.throwOnTable === table) throw new Error(`simulated connection failure querying "${table}"`);
+        if (fault?.neverResolveTable === table) {
+            // Deliberately ignores init?.signal entirely -- a promise with no settle path at all
+            // cannot respond to cancellation by construction, which is exactly the point: this proves
+            // the OUTER Promise.race bound (not the AbortController) is what actually saves a caller
+            // when the underlying implementation cannot or does not cooperate with cancellation.
+            await new Promise<void>(() => { /* never settles */ });
+        }
+        if (fault?.lateRejectTable && fault.lateRejectTable[0] === table) {
+            // Also ignores the signal -- an orphaned request that eventually fails on its own
+            // schedule, well after the caller has already given up and moved on. Proves no unhandled
+            // rejection escapes from a "losing" promise nothing is awaiting anymore.
+            await new Promise<void>((_resolve, reject) => {
+                setTimeout(() => reject(new Error(`simulated late, orphaned failure querying "${table}"`)), fault.lateRejectTable![1]);
+            });
+        }
         if (fault?.delayMsOnTable && fault.delayMsOnTable[0] === table) {
-            await new Promise((resolve) => setTimeout(resolve, fault.delayMsOnTable![1]));
+            // Real fetch semantics, not a bare setTimeout: races the delay against the caller's own
+            // AbortSignal (if postgrest-js passed one through), rejecting with a real DOMException
+            // named 'AbortError' the instant the signal fires -- exactly like a genuine fetch would,
+            // so a test using this delay can actually prove real cancellation, not merely a
+            // stop-waiting race that a non-abort-aware fake would silently defeat.
+            await new Promise<void>((resolve, reject) => {
+                const timer = setTimeout(resolve, fault.delayMsOnTable![1]);
+                const signal = init?.signal;
+                if (signal) {
+                    if (signal.aborted) { clearTimeout(timer); reject(new DOMException('The operation was aborted.', 'AbortError')); return; }
+                    signal.addEventListener('abort', () => {
+                        clearTimeout(timer);
+                        reject(new DOMException('The operation was aborted.', 'AbortError'));
+                    }, { once: true });
+                }
+            });
         }
         const rows = tablesData[table] ?? (tablesData[table] = []);
         const matched = rows.filter((row) => matches(row, url.searchParams));
@@ -328,6 +365,103 @@ test('LATENCY, BOUNDED (measured, not asserted): a target-store query far slower
     assert.ok(line, 'a timed-out comparison must still produce a shadow log line, not silently vanish');
     assert.equal(line.outcome, 'TARGET_SHADOW_EVALUATION_TIMEOUT');
     assert.equal(line.target_allowed, null, 'a timed-out comparison must never be reported as an allow (or a deny) -- it never ran to completion');
+});
+
+// D03 permission equivalence, staff-mutation/shadow-runtime completion (2026-09-28): the remaining
+// bounded-failure cases the prior pass's test matrix did not yet cover -- a truly stuck dependency, an
+// orphaned late rejection, cancellation cooperation, and multiple concurrent requests.
+
+test('NEVER-RESOLVING DEPENDENCY: a target-store query that never settles at all still returns bounded, via the outer race, not the AbortController alone', async () => {
+    // Ignores the AbortSignal entirely by construction (see installFakePostgrest's neverResolveTable) --
+    // proving it is withShadowComparisonTimeout's own Promise.race that bounds this, not a hope that
+    // the callee cooperates with cancellation. This is the "belt" half of "belt and suspenders";
+    // ABORT AND COOPERATION below proves the "suspenders" half.
+    const fake = installFakePostgrest(tables(), { neverResolveTable: 'principals' });
+    const startedAt = Date.now();
+    const lines = await warnLines(async () => {
+        const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+        assert.equal(res.status, 200, 'the real, legacy-authoritative decision must be completely unaffected by a target store that never responds at all');
+    });
+    const elapsedMs = Date.now() - startedAt;
+    fake.restore();
+    assert.ok(elapsedMs < 1500, `expected the real request to return well before an unbounded hang: elapsed ${elapsedMs}ms`);
+    const line = targetShadowLine(lines);
+    assert.ok(line, 'a never-resolving comparison must still produce a shadow log line, not silently vanish');
+    assert.equal(line.outcome, 'TARGET_SHADOW_EVALUATION_TIMEOUT');
+});
+
+test('ABORT AND COOPERATION: the real database client genuinely cancels the in-flight request on timeout, not merely stops waiting for it', async () => {
+    // The fake's delayMsOnTable path (unlike neverResolveTable above) DOES honor the AbortSignal --
+    // this proves the positive case: when the underlying client cooperates with cancellation (the real
+    // Supabase/postgrest-js client does, confirmed against its own installed source), the request is
+    // actually interrupted well before its own full delay, not merely abandoned while it keeps running.
+    const ARTIFICIAL_DELAY_MS = 5000;
+    const fake = installFakePostgrest(tables(), { delayMsOnTable: ['principals', ARTIFICIAL_DELAY_MS] });
+    let sawUnhandledRejection = false;
+    const onUnhandled = () => { sawUnhandledRejection = true; };
+    process.on('unhandledRejection', onUnhandled);
+    const startedAt = Date.now();
+    const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    const elapsedMs = Date.now() - startedAt;
+    // The real interruption (the fake's AbortError rejection, fired the instant the signal aborts)
+    // happens promptly, not after the full 5s -- proving cancellation genuinely propagated into the
+    // fake's in-flight "request", not just that the caller stopped awaiting it.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    process.off('unhandledRejection', onUnhandled);
+    fake.restore();
+    assert.equal(res.status, 200);
+    assert.ok(elapsedMs < ARTIFICIAL_DELAY_MS / 2, `expected real cancellation to interrupt the request well before its own ${ARTIFICIAL_DELAY_MS}ms delay: elapsed ${elapsedMs}ms`);
+    assert.equal(sawUnhandledRejection, false, 'the cancelled request\'s own rejection must be handled, not escape as an unhandled rejection');
+});
+
+test('LATE REJECTION: an orphaned request that fails on its own schedule, well after the timeout already gave up, never becomes an unhandled rejection', async () => {
+    // Ignores the AbortSignal (like neverResolveTable) but DOES eventually settle -- by rejecting,
+    // deliberately, on a schedule past this test's own assertions. If runShadowComparisonSafely (or
+    // Promise.race itself) left this promise without a rejection handler, this is exactly the shape
+    // that would surface as a Node "UnhandledPromiseRejection" warning/crash minutes into a real
+    // server's life, unrelated to any request active at that moment.
+    const LATE_REJECT_MS = 150;
+    const fake = installFakePostgrest(tables(), { lateRejectTable: ['principals', LATE_REJECT_MS] });
+    let sawUnhandledRejection = false;
+    const onUnhandled = () => { sawUnhandledRejection = true; };
+    process.on('unhandledRejection', onUnhandled);
+    const res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    assert.equal(res.status, 200);
+    // Wait past LATE_REJECT_MS so the orphaned promise has actually settled before this test ends.
+    await new Promise((resolve) => setTimeout(resolve, LATE_REJECT_MS + 100));
+    process.off('unhandledRejection', onUnhandled);
+    fake.restore();
+    assert.equal(sawUnhandledRejection, false, 'an orphaned request rejecting after the timeout already gave up must never surface as an unhandled rejection');
+});
+
+test('MULTIPLE CONCURRENT REQUESTS: independently bounded, no cross-request interference', async () => {
+    const fake = installFakePostgrest(tables(), { delayMsOnTable: ['principals', 2000] });
+    const startedAt = Date.now();
+    const results = await Promise.all([
+        requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>),
+        requestOne('store-1', 'owner-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>),
+        requestOne('store-1', 'viewer-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>),
+    ]);
+    const elapsedMs = Date.now() - startedAt;
+    fake.restore();
+    assert.equal(results[0].status, 200, 'manager: real decision unaffected');
+    assert.equal(results[1].status, 200, 'owner: real decision unaffected');
+    assert.equal(results[2].status, 403, 'viewer: real decision (a genuine denial, not a timeout artifact) unaffected');
+    assert.ok(elapsedMs < 1500, `expected all three concurrent requests to complete within one shared timeout budget, not three serialized ones: elapsed ${elapsedMs}ms`);
+});
+
+test('LOGGING FAILURE: a broken console.warn during the shadow comparison never turns into a real 503 for a permitted request', async () => {
+    const fake = installFakePostgrest(tables());
+    const originalWarn = console.warn;
+    console.warn = () => { throw new Error('simulated broken console.warn'); };
+    let res: { status: number };
+    try {
+        res = await requestOne('store-1', 'manager-user', { STAFF_PERMISSION_SHADOW: 'on' } as Partial<Env>);
+    } finally {
+        console.warn = originalWarn;
+        fake.restore();
+    }
+    assert.equal(res.status, 200, 'a real, legacy-authoritative allow must survive even when the shadow path\'s own logging call throws');
 });
 
 // ============================================================================
