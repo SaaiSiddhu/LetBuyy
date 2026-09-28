@@ -404,8 +404,14 @@ product-mutation routing gap named in Section D (commit `81dc8e94`), the stale l
 name (commit `8226f5ad`), the shadow-path timeout gap (commit `3a75bcee`), and the missing shared "snaz"
 fixture the container-name fix unmasked (commit `449fb1b4`, which also fixed one further stale test
 assertion migration 246 had already made obsolete) were all fixed the same day and are no longer open.
-Remaining open items (arbitrary custom-role mapping; session revocation) are named precisely, are each
-independently actionable, and are not claimed resolved.
+
+**A fifth and final gate run, against `99c819d5`, closes this document: `failed=5`, back at the exact
+pre-existing baseline, with `typecheck`, `test:unit:gateway`, AND `test:@letbuyy/theme-engine` all
+`exit=0`.** `test:unit:gateway` is now genuinely green rather than merely unchanged — this is the gate's
+own full-suite run independently confirming the snaz-fixture fix, matching this document's own manual
+`pnpm run test:unit` results (1301 pass, 0 fail, 0 skip) exactly. Remaining open items (arbitrary
+custom-role mapping; session revocation) are named precisely, are each independently actionable, and are
+not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
 sent, no real payment or order, no buyer data exported, nothing irreversibly erased. `.dev.vars`,
