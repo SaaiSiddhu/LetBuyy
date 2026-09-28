@@ -343,6 +343,56 @@ export async function generateImpersonationToken(): Promise<{ token: string; tok
         token_hash: await sha256Hex(token),
     };
 }
+const MagicLinkConsumeSchema = z.object({
+    jti: z.string().min(16).max(200),
+    email: z.string().email(),
+    expires_at: z.string().datetime({ offset: true }).or(z.string().datetime()),
+});
+
+// Phase 2 / Mandate 7, Section 6: atomic single-use consumption for the console's magic-link login
+// token. Called once, by apps/internal/console's own callback route, immediately after it verifies
+// the token's signature and expiry locally (console-session.ts) and BEFORE any session cookie is
+// issued -- so a token that fails to consume here never reaches session creation at all. The PRIMARY
+// KEY on jti (migration 263) is the actual atomicity guarantee: this route does not SELECT-then-
+// UPDATE (a real, exploitable TOCTOU race for concurrent redemption -- see migration 263's own
+// comment on the pre-existing verification_tokens table's race), it attempts the INSERT directly and
+// treats a 23505 unique-violation as "already consumed", the identical pattern already proven
+// correct for privacy-request idempotency (migration 262).
+router.post('/magic-link/consume', async (c) => {
+    const parsed = MagicLinkConsumeSchema.safeParse(await c.req.json().catch(() => null));
+    if (!parsed.success) {
+        return c.json({ error: { code: 'VALIDATION', message: 'jti, email and expires_at are required' } }, 400);
+    }
+    const { jti, email, expires_at: expiresAt } = parsed.data;
+
+    // Fails closed on its own terms: an already-expired token must never be recorded as freshly
+    // consumed (that would let a NEW, different attacker-supplied jti/email/expires_at combination
+    // manufacture a "consumed" row without ever having held a token the signature check accepted;
+    // the console app is trusted to pass through only the exp claim from a token it already
+    // verified, but this route does not assume that trust extends to accepting an already-elapsed
+    // expiry as if it were still redeemable).
+    if (new Date(expiresAt).getTime() <= Date.now()) {
+        return c.json({ error: { code: 'EXPIRED', message: 'Token already expired' } }, 409);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { error } = await db
+        .from('console_magic_link_consumptions')
+        .insert({ jti, email: email.toLowerCase().trim(), expires_at: expiresAt });
+
+    if (error) {
+        const sqlState = (error as { code?: string } | null)?.code;
+        if (sqlState === '23505') {
+            return c.json({ error: { code: 'ALREADY_CONSUMED', message: 'This login link has already been used.' } }, 409);
+        }
+        // Storage failure fails closed: never report success when the durable record could not be
+        // written, and never fall back to treating the token as valid anyway.
+        return c.json({ error: { code: 'DB_ERROR', message: 'Could not record token consumption' } }, 500);
+    }
+
+    return c.json(success({ consumed: true }));
+});
+
 router.get('/summary', async (c) => {
     const db = getSupabaseAdmin(c);
 

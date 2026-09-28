@@ -352,6 +352,12 @@ export interface LetbuyyPlatformMagicLinkPayload {
   type: 'platform_magic_link';
   email: string;
   exp: number;
+  /** Unpredictable per-token identity (Phase 2 / Mandate 7, Section 6). Not a duplicate of `email`:
+   *  this is what a single-use consumption table keys on, so replaying the SAME token twice is
+   *  detected even though every field otherwise verifies -- the whole reason single-use enforcement
+   *  needs its own identity, not the coarser (email, type) pair, which a legitimate second login
+   *  attempt would also share. */
+  jti: string;
 }
 
 export interface LetbuyyPlatformSessionTokenOptions {
@@ -1051,7 +1057,7 @@ export async function verifyLetbuyyPlatformSessionToken(
 export async function createLetbuyyPlatformMagicLinkToken(
   email: string,
   secret: string | null | undefined,
-  options: LetbuyyPlatformSessionTokenOptions = {},
+  options: LetbuyyPlatformSessionTokenOptions & { jti?: string } = {},
 ): Promise<string | null> {
   if (!secret) return null;
   const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
@@ -1061,6 +1067,7 @@ export async function createLetbuyyPlatformMagicLinkToken(
       type: 'platform_magic_link',
       email: normalizeAuthEmail(email),
       exp: nowSeconds + ttlSeconds,
+      jti: options.jti ?? crypto.randomUUID(),
     } satisfies LetbuyyPlatformMagicLinkPayload,
     secret,
   );
@@ -1404,7 +1411,9 @@ function isPlatformMagicLinkPayload(value: unknown): value is LetbuyyPlatformMag
     payload &&
     payload.type === 'platform_magic_link' &&
     isSafeAuthEmail(payload.email) &&
-    Number.isFinite(payload.exp),
+    Number.isFinite(payload.exp) &&
+    typeof payload.jti === 'string' &&
+    payload.jti.length >= 16,
   );
 }
 

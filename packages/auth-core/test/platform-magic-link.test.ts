@@ -1,8 +1,14 @@
-// Phase 2 / D04 independent preparation (Mandate 6, Section 10) -- characterization tests for the
-// EXISTING platform (console) magic-link token, not a new feature. Confirms what already works
-// (TTL-based expiry) and honestly documents what does not (single-use enforcement), so D04's
-// decision about whether to invest in single-use tracking is made against a demonstrated fact,
-// not an assumption either way.
+// Phase 2 / D04 independent preparation (Mandate 6, Section 10), updated by Mandate 7 Section 6 --
+// characterization tests for the platform (console) magic-link TOKEN's own verify function.
+//
+// UPDATE (Mandate 7): single-use IS now enforced for the overall login flow -- but deliberately NOT
+// inside verifyLetbuyyPlatformMagicLinkToken itself. That function stays a pure, stateless signature
+// + expiry check (consistent with every other token verifier in this file); the actual consumption
+// tracking lives in a separate, durable layer (console_magic_link_consumptions, migration 263,
+// enforced by services/api-gateway's POST /internal/console/magic-link/consume), called once by the
+// console app's callback route BEFORE any session is issued. The test below still correctly shows
+// that THIS function alone accepts a token twice -- that is by design, not a residual gap, because
+// the token's own jti (added this pass) is what the separate consumption layer keys on.
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -29,18 +35,25 @@ test('an expired magic-link token is rejected -- TTL enforcement works', async (
   assert.equal(result.accepted, false);
 });
 
-test('CHARACTERIZATION (not a guarantee): the identical magic-link token verifies successfully MORE THAN ONCE within its TTL', async () => {
-  // This documents a real, currently-existing gap: the token carries no nonce/jti and nothing
-  // records it as consumed anywhere, so it is a bearer credential for its whole 15-minute window,
-  // not a true single-use link. If this assertion ever starts failing, single-use enforcement has
-  // been added -- update this test to assert the NEW, safer behavior instead of treating the
-  // failure as a regression.
+test('CHARACTERIZATION: this function ALONE verifies the identical token more than once -- single-use is enforced by a separate consumption layer, not here', async () => {
+  // Deliberate: this function has no side effects and no persistence, so it cannot itself be the
+  // single-use guarantee. See console-magic-link-consume.test.ts for the layer that is.
   const token = await createLetbuyyPlatformMagicLinkToken('operator@example.test', SECRET, { ttlSeconds: 900 });
   assert.ok(token);
   const first = await verifyLetbuyyPlatformMagicLinkToken(token, SECRET);
   const second = await verifyLetbuyyPlatformMagicLinkToken(token, SECRET);
   assert.equal(first.accepted, true);
-  assert.equal(second.accepted, true, 'documents that reuse is NOT currently prevented -- see D04.5/D04.8');
+  assert.equal(second.accepted, true, 'by design -- verify is idempotent; consumption tracking is a separate, stateful layer');
+});
+
+test('every created token carries a distinct, sufficiently long jti -- the identity the consumption layer keys on', async () => {
+  const tokenA = await createLetbuyyPlatformMagicLinkToken('operator@example.test', SECRET);
+  const tokenB = await createLetbuyyPlatformMagicLinkToken('operator@example.test', SECRET);
+  const resultA = await verifyLetbuyyPlatformMagicLinkToken(tokenA, SECRET);
+  const resultB = await verifyLetbuyyPlatformMagicLinkToken(tokenB, SECRET);
+  assert.ok(resultA.payload?.jti && resultA.payload.jti.length >= 16);
+  assert.ok(resultB.payload?.jti && resultB.payload.jti.length >= 16);
+  assert.notEqual(resultA.payload?.jti, resultB.payload?.jti, 'two independently created tokens for the SAME email must not share a jti');
 });
 
 test('a token signed for one email is never accepted as if it were for a different email', async () => {
