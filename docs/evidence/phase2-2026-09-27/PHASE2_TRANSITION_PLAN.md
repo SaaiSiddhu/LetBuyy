@@ -20,20 +20,35 @@ out of scope for this entire document, not merely deferred.
   revoked membership, missing canonical account, conflicting role, cross-tenant membership) produces
   a distinct, correctly-counted finding; rerun is idempotent; no raw PII appears in any finding.
 
-### Slice 2 — Principal repository implementation
+### Slice 2 — Principal repository implementation (DONE, Mandate 7)
 
-- **What:** replace `createDormantPrincipalRepository()`'s `null`-returning stub with a real
-  implementation reading/writing the already-existing `principals` table (22 tables total,
-  currently zero rows).
-- **Dependencies:** Slice 1 (done). Genuinely new code: the repository class itself.
-- **Acceptance criteria:** a principal created for a synthetic `employees` row round-trips
-  (`create` → `findById` → matches input); a principal is never created for a row already flagged
-  `revoked_membership` or `conflicting_role_mapping` by Slice 1's reconciliation without an explicit
-  resolution recorded first.
+- **What:** `principal-repository.ts`'s `createSupabasePrincipalRepository` — real `findById`/
+  `findByLegacyRef`/`linkAccount` against the actual `principals`/`account_links` tables. Does not
+  replace `createDormantPrincipalRepository`; passed as that factory's own `overrides` parameter
+  when/if ever wired in.
+- **Status:** IMPLEMENTED, LOCAL VERIFIED. 8 fake-postgrest tests + one real-Postgres round-trip
+  (insert a synthetic principal, `findById`/`findByLegacyRef`/`linkAccount` all confirmed, deleted
+  after). `findByLegacyRef` fails closed on a ref naming none of the three legacy id fields.
+- **Acceptance criteria (met):** a principal created for a synthetic `employees`-shaped ref
+  round-trips; `linkAccount` throws on a database failure rather than fabricating success.
 - **Compatibility:** purely additive — writes to new, currently-unused tables; `employees` and
-  `staff-permission.ts` are not touched or read from by this slice.
-- **Rollback:** `TRUNCATE principals` (and the tables it wrote); no legacy table is ever touched, so
-  rollback here is unconditionally safe.
+  `staff-permission.ts` are not touched or read from by this slice. Not wired into any live route.
+- **Rollback:** `TRUNCATE principals` (and the tables it wrote); no legacy table is ever touched.
+
+### Slice 3.5 — Shadow permission comparison (DONE, Mandate 7 — done ahead of the full Slice 3/4 sequence below, since it needed no backfill to be useful)
+
+- **What:** `shadow-permission-comparison.ts`'s `compareStaffPermissionDecision` — compares
+  `staff-permission.ts`'s real decision against what `permission-engine.ts`'s
+  `createShadowPermissionEngine` (itself real, working, non-stub logic) would decide for the same
+  input, using the already-existing `LEGACY_PERMISSION_ALIASES` table.
+- **Status:** IMPLEMENTED, LOCAL VERIFIED, consulted by nothing enforcing. 9 tests.
+- **Findings this made concrete:** the new model has NO owner-bypass representation at all; it has NO
+  write-implies-read rule (the exact Phase 2/Mandate-4 addition to `staff-permission.ts`), so a
+  Manager holding `products:write` would be incorrectly denied `products:read` under the new model
+  today; only 5 of the real staff permission catalog's keys have a canonical alias at all (products/
+  orders read+write, `super_admin`) — every other key (customers, discounts, settings, etc.) is
+  unmapped. These are exactly the kind of divergence Slice 4 below would need to resolve before any
+  cutover could be considered, discovered without needing to build Slice 4's full harness first.
 
 ### Slice 3 — Backfill run (dry-run first, then a real local run)
 
@@ -87,19 +102,30 @@ to, not work already done.
 - **Status:** IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE.
 - **Dependencies:** none.
 
-### Slice 2 — Role tier enforcement in `operations/support.ts`
+### Slice 2 — Role tier enforcement in `operations/support.ts` (DONE, Mandate 7 — simpler than planned)
 
-- **What:** replace the current single `requireSuperAdmin` gate (every route) with the approved
-  Reviewer/Moderator/Administrator tiers from `PHASE2_DECISIONS.md`'s table, backed by a new column
-  or table recording each operator's tier (extending `super_admin_allowlist`, not replacing it).
-- **Dependencies:** D04 decisions 1-2 answered.
-- **Acceptance criteria:** a synthetic Reviewer identity can call every `support:view`-gated route
-  and is denied every `support:reply`/`support:manage` route; a synthetic Moderator is denied
-  Administrator-only routes (macro management); an existing session for a since-downgraded operator
-  is denied the higher tier's routes on its very next request (matching the already-proven
-  fresh-per-request pattern, not a new caching layer).
-- **Rollback:** the tier column is additive; reverting to "every allowlisted operator is
-  equivalent" is a one-line change back to the current `requireSuperAdmin`-only gate.
+- **What actually happened, corrected from the plan:** this slice originally assumed a NEW tier
+  column/table would be needed. It was not — `INTERNAL_PERMISSION_TIERS`
+  (`viewer`/`operator`/`lead`/`admin`, in `@letbuyy/shared-types`) already existed, fully built, with
+  `support:view`/`support:reply`/`support:manage` already correctly mapped per tier; the only missing
+  piece was `operations/support.ts`'s own router-level `requireRoleCategory('ops')` +
+  `requireSuperAdmin` gate, which made those tiers unreachable dead code for anyone but a superadmin.
+  Built `requirePlatformOperator()` (`middleware/rbac.ts`) — a new, explicit gate preserving every
+  property the old pair established (see `PHASE2_DECISIONS.md`'s D04 section for the full property
+  list) — and wired it in, replacing the old pair.
+- **Status:** IMPLEMENTED, LOCAL VERIFIED. 8 isolated middleware tests + 2 end-to-end router tests,
+  0 regressions in the pre-existing suite.
+- **Acceptance criteria (met):** an active viewer-tier platform employee reaches the router (no
+  401/403) and is denied `support:manage`-only routes by the unchanged permission check; a merchant's
+  own store-scoped staff, even given a role/permission string that looks platform-related (including
+  a literal `"*"` wildcard), is still denied at the router level; revocation (an operator's `employees`
+  row going from `active` to `removed`) is denied on the very next request, no re-login needed.
+- **Found in the process, not fixed:** `GET /overview`'s own `support_tickets` query has no site_id
+  predicate, so it 500s for every caller today, superadmin included — confirmed pre-existing and
+  unrelated (reproduced identically for a superadmin control case; the diff touches only the import
+  list and the `router.use` line). Flagged as a separate follow-up task.
+- **Rollback:** revert to the old `requireRoleCategory('ops')` + `requireSuperAdmin` pair, a one-line
+  change; `requirePlatformOperator()` itself is additive and can be left in place unused.
 
 ### Slice 3 — Bootstrap and recovery
 
@@ -122,14 +148,18 @@ to, not work already done.
   external message sent; the real adapter is exercised only in an environment the owner has
   configured with real credentials, never as part of this repository's own test suite.
 
-### Slice 5 — Single-use token enforcement (if prioritized)
+### Slice 5 — Single-use token enforcement (DONE, Mandate 7)
 
-- **What:** add a `jti` claim to the magic-link token and a small `consumed_magic_link_tokens` (or
-  equivalent) table checked at verification time, closing the gap
-  `platform-magic-link.test.ts` characterizes.
-- **Dependencies:** none blocking, but genuinely new schema + a decision on where "consumed" state
-  lives (a new table vs. reusing an existing one) — an implementation choice, not a policy one, so
-  this slice can proceed independently of D04's other items once prioritized.
+- **What:** `jti` added to `LetbuyyPlatformMagicLinkPayload`; migration 263
+  (`console_magic_link_consumptions`, `PRIMARY KEY (jti)` as the atomicity guarantee); a new gateway
+  route (`POST /internal/console/magic-link/consume`) performing the atomic insert-based consume;
+  wired into the callback route BEFORE session issuance.
+- **Status:** IMPLEMENTED, LOCAL VERIFIED. 9 fake-postgrest tests + a real-Postgres concurrent-HTTP
+  proof through the actual route (one 200, one 409, exactly one row confirmed by direct query, run
+  once and deleted). Also found and flagged, not fixed: the pre-existing `verification_tokens.used`
+  pattern (buyer/merchant OTP, password-reset) uses a read-then-update shape with a genuine,
+  exploitable TOCTOU race under concurrent redemption — a different, pre-existing system, out of this
+  slice's scope.
 
 ---
 
@@ -140,19 +170,21 @@ to, not work already done.
 - **What:** `buyer-export-contract.ts` + 11 tests.
 - **Status:** IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE (`BUYER_EXPORT_GENERATION_AVAILABLE = false`).
 
-### Slice 2 — Real data-source wiring (read-only)
+### Slice 2 — Real data-source wiring (read-only) (DONE, Mandate 7)
 
-- **What:** replace the synthetic `SyntheticSourceData` input with real, ownership-scoped queries
-  against `buyer_accounts`/`buyer_addresses`/`support_tickets`/`ticket_messages`/`buyer_order_links`
-  — each query using exactly the `ownershipPredicate` already named in the contract, never a
-  broader read.
-- **Dependencies:** D05 decision 1 (scope) answered.
-- **Acceptance criteria:** Buyer A's real, owned rows are the only rows returned for Buyer A,
-  verified with at least two synthetic buyer identities sharing the same underlying tables (matching
-  the existing test's structure, now against real Postgres); credentials/security-material columns
-  are absent regardless of what the underlying query happens to select (the contract's
-  `transformation: 'omitted'` fields are dropped in application code, never relied on to be excluded
-  by the query alone — defense in depth).
+- **What:** `buyer-export-source.ts`'s `fetchBuyerExportSourceData` — real, ownership-scoped queries
+  against `buyer_accounts`/`buyer_addresses`/`support_tickets`/`ticket_messages`/`buyer_order_links`/
+  `orders`/`order_items`, each using exactly the `ownershipPredicate` the contract names. Corrected
+  two real schema errors found while wiring this (`orders.total`, not the never-existent
+  `total_minor`; `order_items.name`/`price`, not `product_name`/`price_minor`).
+- **Status:** IMPLEMENTED, LOCAL VERIFIED. 4 tests against two real synthetic buyer accounts seeded
+  in the owned local Postgres (deleted after): Buyer A's export contains exactly A's address, A's own
+  requester-authored ticket message (never the agent's internal note on the same thread), and exactly
+  the one order linked via `buyer_order_links` (excluding a second order sharing A's email but never
+  linked, and excluding `orders.notes`); Buyer B's export never contains any of A's data; a simulated
+  database failure throws rather than returning a false success.
+- **Acceptance criteria (met):** all of the above, verified against real Postgres, not hand-constructed
+  objects. Not wired into any route — `BUYER_EXPORT_GENERATION_AVAILABLE` stays `false`.
 
 ### Slice 3 — Requester verification and release design
 
