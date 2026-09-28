@@ -14,7 +14,7 @@ import {
     type JsonRecord,
 } from '@letbuyy/shared-types';
 import type { Env } from '../../index';
-import { getSupabaseAdmin, paginated, success } from '../../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, success } from '../../lib/supabase';
 import {
     logSensitiveRead,
     requirePermission,
@@ -350,7 +350,14 @@ async function fetchMerchantContext(db: Db, siteId: string | null) {
 }
 
 router.get('/overview', requirePermission('support:view'), async (c) => {
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): support_tickets is a registered tenant table; these are
+    // platform-wide aggregate counts across every site by design (an operator's dashboard), which no
+    // site_id/requester_user_id predicate could correctly narrow without defeating the route's own
+    // purpose. Safe here specifically because requirePlatformOperator() (router-level) and
+    // requirePermission('support:view') (this route) have ALREADY verified the caller before this
+    // line runs -- see operator-scoped-admin-client-contract.test.ts's allowlist entry for the full
+    // review. Every query below is a head:true count -- no row is ever returned to enumerate.
+    const db = getSupabaseAdminForOperatorRead(c);
     const [open, pendingCustomer, escalated, overdueClocks, csatRows, macroCount] = await Promise.all([
         db.from('support_tickets').select('id', { count: 'exact', head: true }).in('status', ['open', 'pending_internal']),
         db.from('support_tickets').select('id', { count: 'exact', head: true }).eq('status', 'pending_customer'),
@@ -384,7 +391,10 @@ router.get('/overview', requirePermission('support:view'), async (c) => {
 router.get('/tickets', requirePermission('support:view'), async (c) => {
     const query = ListTicketsQuerySchema.parse(c.req.query());
     const { from, to } = rangeFor(query.page, query.limit);
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): the platform queue lists tickets across every site by design
+    // unless the caller opts into one via ?site_id=; bounded by ListTicketsQuerySchema's own
+    // limit.max(100), never an unbounded scan. See the allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
 
     let request = db
         .from('support_tickets')
@@ -414,7 +424,10 @@ router.get('/tickets', requirePermission('support:view'), async (c) => {
 });
 
 router.get('/tickets/:id', requirePermission('support:view'), async (c) => {
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): fetchTicket below looks up by the ticket's own primary key
+    // (id), whose site is not known until the row returns -- bounded to exactly one row by
+    // construction (.maybeSingle()), never an enumeration. See the allowlist entry for the review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const ticketId = c.req.param('id');
     const ticket = await fetchTicket(db, ticketId);
     if (!ticket) return c.json({ error: { code: 'NOT_FOUND', message: 'Support ticket not found' } }, 404);
@@ -448,7 +461,12 @@ router.post('/tickets', requirePermission('support:reply'), async (c) => {
     const reason = validateSensitiveReason(body.reason);
     if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required to create a support ticket' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): the insert below always includes the site_id key (even when
+    // null for a platform-level ticket), which already satisfies the tenant guard on its own -- the
+    // operator-scoped client is needed here only for the CONDITIONAL trust-safety escalation update
+    // further down (maybeEscalateTrustSafety), a single-row-by-id update on the ticket just created
+    // in this same request. See the allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const actorId = actorUserId(c);
     const actor = actorEmail(c);
     const now = new Date();
@@ -517,7 +535,9 @@ router.post('/tickets/:id/messages', requirePermission('support:reply'), async (
     const reason = validateSensitiveReason(body.reason);
     if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required to update a support ticket' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): fetchTicket (by primary key) and the status update below
+    // (.eq('id', ticketId)) are both single-row-by-id. See the allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const actorId = actorUserId(c);
     const actor = actorEmail(c);
     const ticketId = c.req.param('id');
@@ -582,7 +602,9 @@ router.patch('/tickets/:id/assign', requirePermission('support:manage'), async (
     const reason = validateSensitiveReason(body.reason);
     if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required to assign a support ticket' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): single-row-by-id update (.eq('id', ticketId)). See the
+    // allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const actorId = actorUserId(c);
     const ticketId = c.req.param('id');
     const { data, error } = await db
@@ -613,7 +635,9 @@ router.post('/tickets/:id/escalate', requirePermission('support:reply'), async (
     const reason = validateSensitiveReason(body.reason);
     if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required to escalate a support ticket' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): fetchTicket and the escalation update below are both
+    // single-row-by-id. See the allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const actorId = actorUserId(c);
     const ticketId = c.req.param('id');
     const ticket = await fetchTicket(db, ticketId);
@@ -657,7 +681,9 @@ router.post('/tickets/:id/resolve', requirePermission('support:reply'), async (c
     const reason = validateSensitiveReason(body.reason);
     if (!reason) return c.json({ error: { code: 'REASON_REQUIRED', message: 'A reason is required to resolve a support ticket' } }, 400);
 
-    const db = getSupabaseAdmin(c);
+    // Phase 2 (Mandate 7 follow-up): fetchTicket and the resolution update below are both
+    // single-row-by-id. See the allowlist entry for the full review.
+    const db = getSupabaseAdminForOperatorRead(c);
     const actorId = actorUserId(c);
     const ticketId = c.req.param('id');
     const ticket = await fetchTicket(db, ticketId);

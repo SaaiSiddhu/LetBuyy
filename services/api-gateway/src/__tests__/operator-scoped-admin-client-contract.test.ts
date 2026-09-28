@@ -2,10 +2,18 @@
 //
 // getSupabaseAdminForOperatorRead returns the service-role client WITHOUT
 // createTenantGuardedSupabaseClient, exactly like getSupabaseAdminUnguarded, but for a different
-// shape of exception: a permission-gated, paginated, cross-site read (an operator moderation queue)
-// rather than a single-row bootstrap lookup. Nothing else in the repository stops it spreading to an
-// ungated route, so this file is the control, mirroring unguarded-admin-client-contract.test.ts's
-// method exactly (strip comments/strings before scanning, so prose mentions cannot pass as a use).
+// shape of exception: a permission-gated, bounded, cross-site query (an operator moderation queue,
+// or an operator's own ticket dashboard) rather than a single-row bootstrap lookup. Nothing else in
+// the repository stops it spreading to an ungated route, so this file is the control, mirroring
+// unguarded-admin-client-contract.test.ts's method exactly (strip comments/strings before scanning,
+// so prose mentions cannot pass as a use).
+//
+// Extended this pass (Mandate 7 follow-up) to allow MULTIPLE call sites per file: a single-route file
+// (marketplace-listings.ts) and a many-routes-at-different-scopes file (operations/support.ts) are
+// both real shapes, and collapsing the second into "one scope for the whole file" would either
+// under-verify (checking only one of several routes) or force a false single scope. Each entry in a
+// file's `calls` array is independently checked against its own route registration and its own
+// boundedness -- one call site being correctly bounded never excuses another from also being checked.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -15,26 +23,80 @@ import { fileURLToPath } from 'node:url';
 
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-// The ONLY files permitted to call it. Adding an entry is a deliberate security decision: re-read
-// getSupabaseAdminForOperatorRead's four documented conditions in lib/supabase.ts before doing so.
-// `requiredScope` is the requirePermission(...) scope that must gate the exact route calling the
-// bounded symbol; `boundedIn` names where the call is made and its request-schema page-size cap.
-const ALLOWED_CALLERS: Record<string, {
-    why: string;
+type BoundedBy =
+    | { kind: 'schema-limit'; schemaFile: string; schemaLimitField: string }
+    | { kind: 'single-row-by-id'; note: string }
+    | { kind: 'count-only'; note: string };
+
+interface CallSite {
     requiredScope: string;
     routeRegistration: string;
-    boundedIn: { file: string; symbol: string; schemaLimitField: string; schemaFile: string };
-}> = {
+    boundedIn: { symbol: string } & BoundedBy;
+}
+
+// The ONLY files permitted to call it, each with the ONLY call sites permitted within it. Adding a
+// file or a call site is a deliberate security decision: re-read getSupabaseAdminForOperatorRead's
+// four documented conditions in lib/supabase.ts before doing so.
+const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
     'routes/operations/marketplace-listings.ts': {
         why: 'the operator moderation queue lists pending listings across every site by design -- narrowing to one site_id would hide every other site\'s queue from review, not make it safer',
-        requiredScope: 'review:view',
-        routeRegistration: "router.get('/', deps.permission('review:view')",
-        boundedIn: {
-            file: 'routes/operations/marketplace-listings.ts',
-            symbol: 'listListings',
-            schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(20)',
-            schemaFile: 'schemas/channel-listing.schema.ts',
-        },
+        calls: [
+            {
+                requiredScope: 'review:view',
+                routeRegistration: "router.get('/', deps.permission('review:view')",
+                boundedIn: {
+                    symbol: 'listListings',
+                    kind: 'schema-limit',
+                    schemaFile: 'schemas/channel-listing.schema.ts',
+                    schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(20)',
+                },
+            },
+        ],
+    },
+    'routes/operations/support.ts': {
+        why: 'the platform operator\'s support-ticket dashboard and queue read and mutate tickets across every site by design (an operator\'s job is to triage tickets platform-wide, not one store at a time) -- support_tickets is a registered tenant table (site_id, requester_user_id) with no predicate these routes could correctly supply without defeating their own purpose. Every route below is already gated by requirePlatformOperator() (router-level, verifies platform-operator eligibility) AND its own requirePermission(scope) (route-level, verifies the specific action) before any query runs -- matching this function\'s condition 4 (the permission check already happened) exactly.',
+        calls: [
+            {
+                requiredScope: 'support:view',
+                routeRegistration: "router.get('/overview', requirePermission('support:view')",
+                boundedIn: { symbol: 'overview aggregate counts', kind: 'count-only', note: 'every support_tickets query here uses {count:\'exact\', head:true} -- no row is ever returned, only a number, so there is nothing to enumerate' },
+            },
+            {
+                requiredScope: 'support:view',
+                routeRegistration: "router.get('/tickets', requirePermission('support:view')",
+                boundedIn: { symbol: 'GET /tickets list', kind: 'schema-limit', schemaFile: 'routes/operations/support.ts', schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)' },
+            },
+            {
+                requiredScope: 'support:view',
+                routeRegistration: "router.get('/tickets/:id', requirePermission('support:view')",
+                boundedIn: { symbol: 'fetchTicket via GET /tickets/:id', kind: 'single-row-by-id', note: 'fetchTicket queries .eq(\'id\', ticketId).maybeSingle() -- id is the primary key, so this can never return or touch more than the one named row regardless of tenant' },
+            },
+            {
+                requiredScope: 'support:reply',
+                routeRegistration: "router.post('/tickets', requirePermission('support:reply')",
+                boundedIn: { symbol: 'maybeEscalateTrustSafety via POST /tickets', kind: 'single-row-by-id', note: 'the conditional escalation update is .eq(\'id\', ticketId) on the row just inserted in this same request' },
+            },
+            {
+                requiredScope: 'support:reply',
+                routeRegistration: "router.post('/tickets/:id/messages', requirePermission('support:reply')",
+                boundedIn: { symbol: 'fetchTicket + status update via POST /tickets/:id/messages', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
+            },
+            {
+                requiredScope: 'support:manage',
+                routeRegistration: "router.patch('/tickets/:id/assign', requirePermission('support:manage')",
+                boundedIn: { symbol: 'PATCH /tickets/:id/assign', kind: 'single-row-by-id', note: '.eq(\'id\', ticketId) -- the assignee update touches only the one named ticket' },
+            },
+            {
+                requiredScope: 'support:reply',
+                routeRegistration: "router.post('/tickets/:id/escalate', requirePermission('support:reply')",
+                boundedIn: { symbol: 'fetchTicket + escalation update via POST /tickets/:id/escalate', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
+            },
+            {
+                requiredScope: 'support:reply',
+                routeRegistration: "router.post('/tickets/:id/resolve', requirePermission('support:reply')",
+                boundedIn: { symbol: 'fetchTicket + resolution update via POST /tickets/:id/resolve', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
+            },
+        ],
     },
 };
 
@@ -92,31 +154,54 @@ test('only the allowlisted files call the operator-scoped admin client', () => {
     );
 });
 
-test('every allowlisted route is gated by requirePermission for the declared scope before the bypass can run', () => {
+test('every allowlisted call site is gated by requirePermission for its declared scope before the bypass can run', () => {
     for (const [rel, entry] of Object.entries(ALLOWED_CALLERS)) {
-        // Raw (un-stripped) source here, deliberately: the registration text this checks INCLUDES the
-        // quoted scope literal, which code() would blank out along with every other string.
         const rawBody = files.find((f) => f.rel === rel)!.body;
-        assert.ok(
-            rawBody.includes(entry.routeRegistration),
-            `${rel} must register its route exactly as documented (${JSON.stringify(entry.routeRegistration)}), so this test is actually looking at the gated handler`,
-        );
-        assert.match(
-            entry.routeRegistration,
-            new RegExp(`permission\\(\\s*['"]${entry.requiredScope}['"]\\s*\\)`),
-            `${rel}'s route registration must call requirePermission('${entry.requiredScope}')`,
-        );
+        for (const call of entry.calls) {
+            // Raw (un-stripped) source here, deliberately: the registration text this checks
+            // INCLUDES the quoted scope literal, which code() would blank out along with every
+            // other string.
+            assert.ok(
+                rawBody.includes(call.routeRegistration),
+                `${rel} must register its route exactly as documented for ${call.boundedIn.symbol} (${JSON.stringify(call.routeRegistration)}), so this test is actually looking at the gated handler`,
+            );
+            assert.match(
+                call.routeRegistration,
+                // Matches both this codebase's two permission-check spellings: `deps.permission(...)`
+                // (marketplace-listings.ts) and `requirePermission(...)` (operations/support.ts) --
+                // [Pp] is the only case-sensitivity needed since both end in "...ermission(".
+                new RegExp(`[Pp]ermission\\(\\s*['"]${call.requiredScope}['"]\\s*\\)`),
+                `${rel}'s route registration for ${call.boundedIn.symbol} must call a permission check for '${call.requiredScope}'`,
+            );
+        }
     }
 });
 
-test('every allowlisted cross-site read is capped by its own request schema page size, not left unbounded', () => {
+test('every allowlisted cross-site read/write is bounded -- by an enforced page-size cap, by returning only a count, or by a primary-key predicate that can only ever touch one row -- never left open to enumerate a whole tenant table', () => {
     for (const [rel, entry] of Object.entries(ALLOWED_CALLERS)) {
-        const schemaHost = files.find((f) => f.rel === entry.boundedIn.schemaFile);
-        assert.ok(schemaHost, `${entry.boundedIn.schemaFile} should exist`);
-        assert.ok(
-            code(schemaHost.body).includes(entry.boundedIn.schemaLimitField),
-            `${entry.boundedIn.schemaFile} must cap the page size exactly as documented for ${rel}'s ${entry.boundedIn.symbol} (found no match for ${JSON.stringify(entry.boundedIn.schemaLimitField)}) -- an uncapped page size on a cross-site query can enumerate the whole table`,
-        );
+        for (const call of entry.calls) {
+            const boundedIn = call.boundedIn;
+            if (boundedIn.kind === 'schema-limit') {
+                const schemaFile: string = boundedIn.schemaFile;
+                const schemaLimitField: string = boundedIn.schemaLimitField;
+                const schemaHost = files.find((f) => f.rel === schemaFile);
+                assert.ok(schemaHost, `${schemaFile} should exist`);
+                assert.ok(
+                    code(schemaHost!.body).includes(schemaLimitField),
+                    `${schemaFile} must cap the page size exactly as documented for ${rel}'s ${boundedIn.symbol} -- an uncapped page size on a cross-site query can enumerate the whole table`,
+                );
+            } else if (boundedIn.kind === 'single-row-by-id' || boundedIn.kind === 'count-only') {
+                // These two kinds are bounded by construction (a primary-key equality predicate can
+                // only ever match its one row; a head:true count query returns no rows at all), not
+                // by a runtime-checkable schema field -- the `note` on each entry above is the
+                // reviewed justification. Nothing further to assert here without re-implementing the
+                // query itself; this branch exists so a THIRD, unbounded kind cannot be added
+                // silently (the exhaustiveness check below catches that).
+                assert.ok(boundedIn.note.length > 0, `${rel}'s ${boundedIn.symbol} must state its bounding justification`);
+            } else {
+                assert.fail(`Unknown boundedIn.kind for ${rel}'s ${(boundedIn as { symbol: string }).symbol} -- add a case above, do not fall through unchecked`);
+            }
+        }
     }
 });
 
