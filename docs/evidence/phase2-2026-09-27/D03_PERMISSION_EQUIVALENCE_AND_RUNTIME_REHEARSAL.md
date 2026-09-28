@@ -204,26 +204,29 @@ at the session scratchpad path used to generate these numbers (not committed to 
 timing probe, not a correctness test); its full source is reproduced in the appendix below so the
 measurement can be rerun by anyone, on a quieter host, for a tighter number.
 
-### Bounded shadow-path failure behavior (measured, not merely asserted)
+### Bounded shadow-path failure behavior (measured, not merely asserted; the timeout gap is now FIXED)
 
-Two new tests in `staff-permission-shadow.test.ts` (29 tests total in that file, up from 27):
+Two tests in `staff-permission-shadow.test.ts` originally measured this (29 tests, up from 27), then a
+same-day follow-up fixed the gap they found and added a third (30 tests total, commit `3a75bcee`):
 
 - **Thrown connection failure** (simulated dropped fetch, not a well-formed error response) during the
   target lookup: caught, logged as `TARGET_LOOKUP_ERROR`, `target_allowed:false`; the real response is
   unaffected (200). Confirmed by injecting a throwing fake fetch for the `principals` table.
-- **Slow (120ms-delayed) target lookup: NO independent timeout exists.** The real request measurably
-  waits out the full artificial delay (`elapsedMs >= 120`, asserted and passing) — because
-  `runShadowComparisonSafely` is `await`ed inline in `evaluateStaffRequest`
-  (`middleware/staff-permission.ts`) with no `Promise.race`/timeout guard around it. The existing
-  try/catch only protects against a THROWN exception, never against a merely-slow-but-eventually-
-  resolving query. **This is a real, named, unfixed gap** — a production target store running slow
-  today would add its full latency to every real request in shadow mode. Not fixed in this pass:
-  request-hot-path middleware deserves its own dedicated review rather than a change made alongside
-  this phase's permission-mapping and rehearsal work under time pressure. **Recommendation:** wrap the
-  shadow call in a generous, clearly-labeled internal diagnostic timeout (e.g. `Promise.race` against a
-  fixed budget well above real P99 Postgres latency, explicitly documented as an internal safety bound
-  for a diagnostic-only path, never a claimed SLO), with its own test proving the real response returns
-  within the bound regardless of target-store slowness.
+- **Slow target lookup — was unbounded, now fixed.** The original test measured that a 120ms-delayed
+  lookup made the real request measurably wait out the full delay — `runShadowComparisonSafely` was
+  `await`ed inline in `evaluateStaffRequest` (`middleware/staff-permission.ts`) with no
+  `Promise.race`/timeout guard, and the existing try/catch only protected against a THROWN exception,
+  never a merely-slow-but-eventually-resolving one. **Fixed same day** (commit `3a75bcee`): each of
+  `runShadowComparisonSafely`'s two comparisons is now raced against `SHADOW_COMPARISON_TIMEOUT_MS`
+  (800ms — an internal, diagnostic-only safety bound, not a claimed production SLO, chosen generously
+  above realistic real-Postgres latency for the 1-3 sequential lookups either comparator performs). A
+  timeout is caught exactly like a thrown exception: logged with its own distinct outcome
+  (`SHADOW_EVALUATION_TIMEOUT` / `TARGET_SHADOW_EVALUATION_TIMEOUT`), never affecting the real decision.
+  The original 120ms test still passes (its delay stays comfortably under the new budget, so the
+  request still simply waits it out — same behavior, updated comment). A new test pushes the delay to
+  2000ms and confirms the real response now returns in ~800ms (measured: 802ms), not ~2000ms, with the
+  shadow log correctly showing `TARGET_SHADOW_EVALUATION_TIMEOUT` and `target_allowed: null` (a timeout
+  must never be reported as an allow or a deny — it never ran to completion).
 - Malformed/garbage target-row data was already covered by the prior mandate's
   `target-shadow-wildcard-deny.test.ts` (a malformed permission string never matches and never throws).
   Not re-duplicated here.
@@ -307,12 +310,15 @@ Concrete, independently actionable items surfaced by this pass:
    `products:write`-permitted staff member can actually create/update/delete products. See Section D's
    routing note for the fix detail and `product-tenant-guard.test.ts`'s section 5 for its regression
    coverage.
-2. **Add a bounded timeout around the shadow-comparison call** (Section E): a small,
-   `Promise.race`-based guard in `runShadowComparisonSafely`'s caller, with its own slow-target test.
-   Independently actionable now.
-3. **Fix the stale local-Postgres container name** in the 9 skipping pre-existing test files (Section
-   E): mechanical, low-risk, but touches files outside this mandate's own scope — flagged via
-   `spawn_task` rather than bundled into this pass's commits.
+2. ~~Add a bounded timeout around the shadow-comparison call~~ — **DONE, same day, commit `3a75bcee`.**
+   `runShadowComparisonSafely`'s two comparisons are each raced against `SHADOW_COMPARISON_TIMEOUT_MS`
+   (800ms); a timeout is logged with its own distinct outcome and never affects the real decision. See
+   the updated "Bounded shadow-path failure behavior" section above.
+3. ~~Fix the stale local-Postgres container name~~ — **DONE, same day, commit `8226f5ad`.** All 9
+   previously-skipping tests across 5 files now genuinely run against real Postgres (skip count 9 → 0).
+   8 of them then revealed a SEPARATE, genuine, pre-existing gap (a missing shared fixture store, "snaz")
+   — not fixed (would mean guessing at fixture shape across 5 files without reading each test's exact
+   assertions first), flagged as its own follow-up task.
 4. **A legacy `employees.role` → target role id mapping for arbitrary custom staff roles** remains
    genuinely open (Section A/B) — only the owner role has a defined target representation today. This
    is a real design decision (how many built-in role tiers, whether merchants can define custom roles
@@ -320,6 +326,8 @@ Concrete, independently actionable items surfaced by this pass:
    invent, consistent with the standing instruction not to invent policy-shaped decisions.
 5. **Canonical session-revocation design** (Section G, below): a concrete, scoped recommendation is
    given; implementing it is a separate, dedicated piece of work.
+6. **Seed (or redesign the fixture for) the shared "snaz" store** the 8 newly-unmasked tests depend on
+   (item 3, above) — flagged as its own follow-up task, not attempted here.
 
 ## G. Session-revocation design recommendation (concise, not implemented this pass)
 
@@ -376,10 +384,12 @@ production/staging activation attempted or possible from this pass). The full pr
 twice, genuinely observed both times (not asserted): the first run caught two real typecheck errors of
 this pass's own making, both fixed and re-verified; the second run shows `failed=5`, matching the
 pre-existing baseline exactly, with zero file-path overlap between any of the 5 remaining lanes and
-anything this pass (or this session) touched. The product-mutation routing gap named in Section D was
-fixed the same day (commit `81dc8e94`) and is no longer open. Remaining open items (arbitrary
-custom-role mapping, the shadow-path timeout gap, session revocation) are named precisely, are each
-independently actionable, and are not claimed resolved.
+anything this pass (or this session) touched. The product-mutation routing gap named in Section D
+(commit `81dc8e94`), the stale local-Postgres container name (commit `8226f5ad`), and the shadow-path
+timeout gap (commit `3a75bcee`) were all fixed the same day and are no longer open. Remaining open
+items (arbitrary custom-role mapping; session revocation; seeding, or redesigning the fixture for, the
+shared "snaz" store the container-name fix unmasked) are named precisely, are each independently
+actionable, and are not claimed resolved.
 
 **Confirmed:** no merge, no push, no deploy, no hosted/staging/production change, no external message
 sent, no real payment or order, no buyer data exported, nothing irreversibly erased. `.dev.vars`,
