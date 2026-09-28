@@ -9,9 +9,22 @@ import test from 'node:test';
 import {
     verifyConsoleTotp,
     resetConsoleMfaGuardStateForTests,
+    resolveConsoleLoginOutcome,
 } from './console-mfa';
 
 const EMAIL = 'operator@letbuyy.test';
+
+// Phase 2 / D04 (Mandate 6, Section 10): the production check must run before the allowlist check
+// so a production response never distinguishes "allowed but delivery not configured" from
+// "not allowed" -- both must resolve identically, closing an account-enumeration path.
+test('production always resolves to magic_link_delivery_not_configured, regardless of allowlist membership', () => {
+    assert.deepEqual(resolveConsoleLoginOutcome({ isProduction: true, isAllowed: true }), { kind: 'magic_link_delivery_not_configured' });
+    assert.deepEqual(resolveConsoleLoginOutcome({ isProduction: true, isAllowed: false }), { kind: 'magic_link_delivery_not_configured' });
+});
+test('non-production resolves by allowlist membership: allowed proceeds, not-allowed is denied', () => {
+    assert.deepEqual(resolveConsoleLoginOutcome({ isProduction: false, isAllowed: true }), { kind: 'proceed' });
+    assert.deepEqual(resolveConsoleLoginOutcome({ isProduction: false, isAllowed: false }), { kind: 'access_denied' });
+});
 
 function hotp(secret: Buffer, counter: number): string {
     const buffer = Buffer.alloc(8);

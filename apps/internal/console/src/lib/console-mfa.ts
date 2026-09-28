@@ -31,6 +31,28 @@ export function isConsoleEmailAllowed(email: string) {
     return allowedEmails.includes(normalizeConsoleEmail(email));
 }
 
+export type ConsoleLoginOutcome =
+    | { kind: 'proceed' }
+    | { kind: 'magic_link_delivery_not_configured' }
+    | { kind: 'access_denied' };
+
+/**
+ * Phase 2 / D04 (Mandate 6, Section 10): the ORDER of these two checks is itself the security
+ * property, not an implementation detail -- pulled out as its own pure, unit-testable function so
+ * that property stays enforced even if the route handler is edited later without re-reading this
+ * comment. `isProduction` must be checked first: in production every submission ends at
+ * `magic_link_delivery_not_configured` today (no delivery is wired), so checking that FIRST means
+ * every production response is identical regardless of whether the submitted email is on the
+ * allowlist. Checking the allowlist first would let `access_denied` (not allowed) and
+ * `magic_link_delivery_not_configured` (allowed) leak, one guess at a time, exactly which candidate
+ * emails are real platform-operator accounts.
+ */
+export function resolveConsoleLoginOutcome(input: { isProduction: boolean; isAllowed: boolean }): ConsoleLoginOutcome {
+    if (input.isProduction) return { kind: 'magic_link_delivery_not_configured' };
+    if (!input.isAllowed) return { kind: 'access_denied' };
+    return { kind: 'proceed' };
+}
+
 function parsePerPrincipalTotpSecrets(): Record<string, string> {
     const raw = process.env.PLATFORM_CONSOLE_TOTP_SECRETS || '';
     if (!raw.trim()) return {};

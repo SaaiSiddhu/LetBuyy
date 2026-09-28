@@ -22,7 +22,9 @@ export {
     getConsoleTotpSecretForPrincipal,
     verifyConsoleTotp,
     resetConsoleMfaGuardStateForTests,
+    resolveConsoleLoginOutcome,
     type MfaVerificationResult,
+    type ConsoleLoginOutcome,
 } from './console-mfa';
 import { normalizeConsoleEmail } from './console-mfa';
 
