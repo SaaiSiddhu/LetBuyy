@@ -1,6 +1,6 @@
 # P2-HERMETIC-GATEWAY-DB — gateway database tests isolated and executed
 
-**Branch** `letbuyy/phase2-shared-buyer-identity` · **initial SHA** `eb5404071e6ab1a9dc94c11a6edec89f1b9e8370` · **final SHA** `7e10134f1480344b5687dbb7410835d878452a6d` (the last source commit, the tree every number below was measured on; the documents-only commit that adds this file follows it and is the branch tip) · **date** 2026-09-29 · **agent** single agent (no subagents, no delegation, no parallel sessions)
+**Branch** `letbuyy/phase2-shared-buyer-identity` · **initial SHA** `eb5404071e6ab1a9dc94c11a6edec89f1b9e8370` · **final SHA** `7e10134f1480344b5687dbb7410835d878452a6d` (the last source commit, the tree every number below was measured on; only documents-only commits follow it) · **date** 2026-09-29 · **agent** single agent (no subagents, no delegation, no parallel sessions)
 
 **Verdict: A — GATEWAY DATABASE TESTS ISOLATED AND EXECUTED.** The nine gateway suites that used to discover the developer's restored Supabase
 stack and write to it now run only inside database infrastructure the executable-suite runner creates for them. All nine ran, 14 tests, 0
