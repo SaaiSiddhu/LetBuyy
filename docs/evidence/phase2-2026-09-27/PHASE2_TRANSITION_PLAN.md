@@ -8,6 +8,18 @@ out of scope for this entire document, not merely deferred.
 
 ---
 
+> **Status reconciliation (2026-09-29).** This plan was written before most of it was executed and is kept as written. The
+> current state of each slice is the one recorded in `PHASE2_DECISIONS.md`'s "Updated requirement matrix" (not re-verified
+> line by line here): **D03** slices 1, 2 and 3.5 done; slice 3 (backfill) done locally for principals, store memberships,
+> the owner role and arbitrary staff roles; slice 4 (shadow evaluation) done locally as a flag-gated, local-only runtime
+> shadow (legacy-translated and target-backed) with independence proofs, **but no sustained observation window**; slice 5
+> (cutover) **not done and not authorized**. **D04** slices 1, 2 and 5 done, plus console session-revocation and
+> single-use hardening; slices 3 (bootstrap/recovery) and 4 (delivery activation) blocked on owner decisions. **D05**
+> slices 1 and 2 done (not exposed); slices 3 and 4 blocked. The plan's D03 rollback wording ("truncate the new tables") and
+> its target tables now matter more than when it was written: `site_roles`/`site_role_permissions` are written by the D03
+> backfills and read by the live shadow path, so they are **not** deletion candidates (`PHASE2_CLOSURE.md`, dated
+> correction; `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §3). The current acceptance matrix is §8 of that document.
+
 ## D03 — Merchant-staff identity transition (if Option A is approved)
 
 ### Slice 1 — Reconciliation (already done, this pass)

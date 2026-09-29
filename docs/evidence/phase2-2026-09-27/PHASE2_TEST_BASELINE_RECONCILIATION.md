@@ -110,7 +110,8 @@ cluster, parallelism by adding clusters — and the shared container is never to
 **No secret is read, written or logged.** The cluster uses a fixed throwaway credential, publishes no port, and the
 `docker()` helper echoes only the subcommand on failure. **Cleanup is limited to what this code created** (label + owner
 pid). Not done, on purpose: the shared `letbuyy-executable-pg` container was not used, dropped from or removed (§15);
-no role was dropped in any shared cluster; the restored Supabase volume was never addressed.
+no role was dropped in any shared cluster; the restored Supabase volume was never addressed by the runner or the root
+wrapper (the gate battery's gateway lane did reach the local Supabase stack — correction under §17).
 
 ## 6. Exact failure ledger
 
@@ -280,7 +281,7 @@ Non-destructive: the per-validator sweep does no artefact cleanup, and `git stat
 | governance `--plan` | exit 0 — 120 modules on disk, 114 selected for the gate lane |
 | validator sweep (each gate-lane validator run alone) | 113/114 — `stale-artifact` fails when run individually **by method** (it needs the orchestrator's cleanup); it passes in the real lane (§11.3) |
 | `test:contracts` | exit 0 — 320/320 |
-| `test:unit:gateway` | exit 0 — 1331 tests, 1330 pass, 0 fail, 1 todo (was 1324; +7 are the two new files) |
+| `test:unit:gateway` | exit 0 — 1331 tests, 1330 pass, 0 fail, 1 todo (was 1324; +7 are the two new files). **Includes nine suites that ran against the local Supabase stack** — see the correction under §17 |
 | `tests/governance` | exit 0 — 291/291 |
 | `tests/ci` | exit 0 — 10/10 |
 
@@ -392,7 +393,8 @@ This task did not touch them and does not claim them.
 - **D04 — operator bootstrap and recovery**, and **D04.9** the moderation/impersonation callers (blocked on an owner decision).
 - **D05 — export release, retention and deletion** (blocked on an owner decision); irreversible erasure not implemented.
 - **Privacy policy** (policy input required).
-- `site_memberships` / `site_roles` `SAFE_DELETE` (F2.5) and a real merchant-realm browser journey (§16).
+- ~~`site_memberships` / `site_roles` `SAFE_DELETE` (F2.5) and a real merchant-realm browser journey (§16).~~ **Superseded
+  2026-09-29:** neither is an open requirement; see the correction under §16.
 
 ## 15. Observations (not fixed here, each with an owner)
 
@@ -425,6 +427,14 @@ This task did not touch them and does not claim them.
 
 ## 16. Exact next task
 
+> **SUPERSEDED 2026-09-29.** Neither item below is the next task. Item 1 must **not** be executed: `site_roles` and
+> `site_role_permissions` are used by the current D03 implementation and are the accepted role catalog, and `site_memberships`
+> is a live read path with a planned migration (`PHASE2_CLOSURE.md`, dated correction). Item 2 is removed from the immediate
+> queue: its evidence exists in four distinct categories (database proof; internal signed-header API verification; browser
+> login verification; owner-confirmed local runtime and S26 verification). The current next task is in
+> `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10. This section was written from the closure document without re-checking
+> it against the D03 code that had landed since; that was the error. Kept for the record:
+
 1. **`site_memberships` / `site_roles` `SAFE_DELETE`** (F2.5): drop both tables (new migration + paired rollback),
    simplify `lib/tenant-context.ts`'s `resolveTenantAccessProfile` to use its fallback parameters unconditionally, update
    the one read in `routes/app-store/developer-routes.ts`. Zero writers confirmed; independent of D03.
@@ -438,3 +448,14 @@ No runtime bring-up, no S26 reinstall, no service restarted. No merge, no push, 
 No hosted database or feature-flag change. No real message, payment or order. No backup, restored data or signing
 asset deleted or touched (`~/.letbuyy/preservation/primary-pre-integration-20260927-181701/` present). No role dropped in
 a shared cluster; no broad Docker cleanup; every container removed by this work carried this work's label.
+
+> **Correction (2026-09-29): "restored data … touched" was too broad for one lane.** The gate battery's `test:unit:gateway`
+> lane (`tsx --test services/api-gateway/src/__tests__/*.test.ts`) also matches nine test files that discover the local
+> Supabase stack and write synthetic fixture rows to it: `backfill-and-target-shadow`, `real-http-shadow-rehearsal`,
+> `real-staff-product-journey` and `verification-token-redemption` (all `*.postgres.test.ts`, which delete what they insert)
+> and `gift-card-money-path`, `gst-invoice-issuance`, `gst-tax-computation`, `inventory-reservation-lifecycle` and
+> `merchant-tenant-predicate` (some append-only by design). They ran, and passed, in each battery of that task (0 skipped),
+> which is what "0 skipped" in §11.2 hides. The owned-cluster runner and the root wrapper never address that stack; this
+> lane did, and this document did not say so. No restored row was deleted or altered by design; what those runs left behind
+> is measured, read-only, in `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §6.4, and later runs keep the lane off that stack
+> by pointing `LETBUYY_LOCAL_SUPABASE_CONTAINER` at a container that does not exist, which makes all nine skip visibly.

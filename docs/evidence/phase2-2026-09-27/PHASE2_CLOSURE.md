@@ -20,6 +20,22 @@ Background agents: **NO** · Parallel worktree agents: **NO** · Workflow orches
 | F2.6 Operator identity and privileged actions | Console MFA hardened (SUSTAINED-E); gateway RBAC two-tier and tested | **Fixed**: operator moderation read-path break (F-ADM4-1 #5) — no operator could complete an approve/reject/take-down before this phase; 2 stale contract-test assertions retargeted; real browser journey (ordinary account denied) | **PARTIALLY COMPLETE** — D04 (bootstrap/MFA-factor/role-tier) genuinely open; console has no role concept to test "restricted reviewer" against |
 | F2.7 Privacy and database isolation | RLS/GUC tenant fence, already built | none needed — re-verified: 2/2 + 1/1 fresh real-Postgres red-team proof (RT-1..9, security-rls-hardening); confirmed absence of buyer-facing export/deletion (named for handoff) | **PARTIALLY COMPLETE** — D05 (retention/deletion policy) genuinely open; export/deletion is net-new capability, not built |
 
+> **Correction (2026-09-29) — the F2.5 row above and "Exact next task" below are superseded.** The row's "dead-in-effect,
+> … zero writers" finding was true on 2026-09-27 and stopped being true the next day:
+>
+> - `PHASE2_CONTINUATION.md` §3 (the same day) had already concluded **do not delete**: these tables are the named target
+>   schema of the identity-foundation scaffold, and dropping three of 22+ coherent tables piecemeal is not a safe cleanup.
+> - The D03 work of 2026-09-28 made `site_roles` and `site_role_permissions` **load-bearing**: `owner-role-backfill.ts` and
+>   `staff-role-backfill.ts` write them (library code run by persisted tests; no route or worker calls them yet),
+>   `target-shadow-comparison.ts` reads `site_role_permissions` and is imported by the live `staff-permission.ts` gate, and
+>   `resolveTenantAccessProfile` (called from `middleware/store-context.ts` on store-scoped requests) reads all three tables.
+> - The accepted identity design reuses `site_roles`/`site_role_permissions` as the canonical role catalog and plans
+>   `site_memberships` → `store_memberships` as a dual-run migration (`ORGANIZATION_ARCHITECTURE.md` M3–M5), not a drop.
+>
+> **No deletion of any of these tables is authorized, and none was performed.** `site_memberships` is assessed on its own —
+> it is not interchangeable with `store_memberships`. The trace, the assessment and the replacement queue are in
+> `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §3 and §10.
+
 ## What was actually implemented (not audited, not proposed — done, tested, negative-controlled)
 
 1. **`services/api-gateway/src/lib/supabase.ts` + `routes/operations/marketplace-listings.ts`**: closed
@@ -139,6 +155,17 @@ remaining after. No migration was applied to that shared local database.
   `git log --oneline` in the completion report).
 
 ## Exact next task
+
+> **SUPERSEDED 2026-09-29.** Do **not** execute item 1: `site_roles` and `site_role_permissions` are used by the current D03
+> implementation and the accepted design keeps them as the role catalog; `site_memberships` is a live read path with a
+> planned migration, not a dead table (see the correction after the status matrix). Item 2 is removed from the immediate
+> queue: the evidence it asked for already exists in four categories that must not be conflated — **database proof**
+> (F2.5's four-scenario journey and the persisted real-Postgres D03 suites), **internal signed-header API verification**
+> (the real staff product journey drives real HMAC-signed requests through the real `authMiddleware`; that is not a browser
+> login or MFA proof), **browser login verification** (the merchant sign-in redirect to identity-platform and the console's
+> ordinary-account-denied journey) and the **owner-confirmed local runtime and S26 verification**. It returns to the queue
+> only if a specific change invalidates one of them. The current queue is `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10.
+> The original text is kept below for the record.
 
 Two independent, immediately-executable next steps, neither blocked on an owner decision:
 
