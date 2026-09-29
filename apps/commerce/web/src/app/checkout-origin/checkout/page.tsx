@@ -59,7 +59,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
             className="flex min-h-screen items-center justify-center px-4"
             style={brandingCssVariables(neutral)}
         >
-            <div className="w-full max-w-md rounded-2xl border border-[var(--lb-color-border,#e5e7eb)] bg-surface p-8 text-center shadow-xl">
+            <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-8 text-center shadow-xl">
                 <h1 className="mb-2 text-xl font-bold text-theme">This checkout link isn&apos;t valid</h1>
                 <p className="text-sm text-theme-secondary">{reason}</p>
                 <p className="mt-4 text-xs text-theme-muted">Nothing was created. Go back to the store and try checking out again.</p>
@@ -154,7 +154,7 @@ export default async function CheckoutOriginPage({
 
     return (
         <div style={brandingCssVariables(branding)} data-checkout-theme={branding.checkoutTheme} data-is-dark={branding.isDark}>
-            <header className="border-b border-[var(--lb-color-border,#e5e7eb)] px-4 py-3">
+            <header className="border-b border-line px-4 py-3">
                 <div className="mx-auto flex max-w-5xl items-center justify-between">
                     <a
                         href={resolveStorefrontOriginUrl(store.subdomain)}

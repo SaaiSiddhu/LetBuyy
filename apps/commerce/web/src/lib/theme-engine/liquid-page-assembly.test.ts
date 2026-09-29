@@ -11,7 +11,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { LiquidRenderedTheme } from '@letbuyy/theme-engine';
+import { letbuyyColorTokens } from '@letbuyy/ui/tokens';
 import { assembleLiquidPageFromRenderResult } from './liquid-page-assembly';
+
+// The renderer's :root token block and lb-* base stylesheet are opaque to the assembler, which must
+// carry them through verbatim. The payload is built once, at runtime, from the platform's own primary
+// colour, so it still contains a real `#RRGGBB` value (an assembler that mangled or escaped `#…` would
+// change it and fail the equality checks below) without repeating a colour literal in three places.
+const HEAD_STYLE_TEXT = `:root{--primary:${letbuyyColorTokens.primary};}.lb-hero-banner{color:red;}`;
 
 function fixture(overrides: Partial<LiquidRenderedTheme> = {}): LiquidRenderedTheme {
     return {
@@ -21,15 +28,17 @@ function fixture(overrides: Partial<LiquidRenderedTheme> = {}): LiquidRenderedTh
         sections: [],
         header: '<header>header</header>',
         footer: '<footer>footer</footer>',
-        headStyleText: ':root{--primary:#8B5CF6;}.lb-hero-banner{color:red;}',
+        headStyleText: HEAD_STYLE_TEXT,
         ...overrides,
     };
 }
 
 test('assembleLiquidPageFromRenderResult carries headStyleText through, not just header/body/footer', () => {
+    // Guard the fixture itself: the pass-through is only meaningful for a payload that really contains a hex colour.
+    assert.match(HEAD_STYLE_TEXT, /--primary:#[0-9A-Fa-f]{6};/, 'the head-style fixture must carry a real #RRGGBB value');
     const result = assembleLiquidPageFromRenderResult(fixture());
     assert.equal(result.html, '<header>header</header><main>body</main><footer>footer</footer>');
-    assert.equal(result.headStyleText, ':root{--primary:#8B5CF6;}.lb-hero-banner{color:red;}');
+    assert.equal(result.headStyleText, HEAD_STYLE_TEXT);
     // The exact assertion that would have caught the historical bug: headStyleText is non-empty
     // and distinct from html — proving it was not silently merged into / dropped alongside the
     // header+contentForLayout+footer concatenation.
@@ -46,5 +55,5 @@ test('assembleLiquidPageFromRenderResult tolerates a missing headStyleText (rend
 test('assembleLiquidPageFromRenderResult tolerates missing header/footer templates (chrome-less Liquid page)', () => {
     const result = assembleLiquidPageFromRenderResult(fixture({ header: undefined, footer: undefined }));
     assert.equal(result.html, '<main>body</main>');
-    assert.equal(result.headStyleText, ':root{--primary:#8B5CF6;}.lb-hero-banner{color:red;}');
+    assert.equal(result.headStyleText, HEAD_STYLE_TEXT);
 });

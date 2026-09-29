@@ -28,6 +28,21 @@ import {
     sanitizeBrandingHexColor,
 } from './branding';
 
+// The literal colour data these tests need -- merchant-supplied inputs, deliberately invalid inputs and
+// the exact expected outputs -- lives in branding.fixtures.json (see its `purpose`). They must stay real
+// #RRGGBB strings: replacing them with design tokens would make several assertions compare the
+// implementation with itself, and the case-preservation and invalid-input cases have no token form.
+type ThemeInput = NonNullable<Parameters<typeof sanitizeBranding>[1]>;
+interface BrandingFixtures {
+    merchantTheme: { input: ThemeInput; expected: { textColor: string; backgroundColor: string; primaryColor: string } };
+    hostileTheme: { input: ThemeInput };
+    pureColors: { black: string; white: string };
+    accessibleTextColor: Array<{ why: string; text: string; background: string; expected: { color: string; fellBackToAA: boolean } }>;
+    hexColorSanitization: Array<{ why: string; input: string; fallback: string; expected: string }>;
+    lightThemeOverWhite: { input: ThemeInput };
+}
+const fixtures = JSON.parse(readFileSync(new URL('./branding.fixtures.json', import.meta.url), 'utf8')) as BrandingFixtures;
+
 // rgba(0,0,0,alpha) or rgba(255,255,255,alpha) composited over a solid background reduces to a
 // flat grey/tint whose hex is `background * (1-alpha) + channel * alpha` per channel — exact for
 // these tiers since they're always pure black or pure white with no other tint.
@@ -81,23 +96,11 @@ test('W3: a merchant with no branding row and no theme settings is fully legible
 });
 
 test('W3: a real resolved merchant theme (snaz-shaped) is legible and its colours flow through unchanged', () => {
-    const theme = {
-        isDark: false,
-        textColor: '#1A202C',
-        fontFamily: 'Inter',
-        accentColor: '#00B4D8',
-        borderRadius: 8,
-        primaryColor: '#1E3A5F',
-        surfaceColor: '#F0F4F8',
-        bodyFontFamily: 'Inter',
-        secondaryColor: '#1E40AF',
-        backgroundColor: '#FFFFFF',
-        headingFontFamily: 'Inter',
-    };
+    const { input: theme, expected } = fixtures.merchantTheme;
     const branding = sanitizeBranding(null, theme);
-    assert.equal(branding.textColor, '#1A202C');
-    assert.equal(branding.backgroundColor, '#FFFFFF');
-    assert.equal(branding.primaryColor, '#1E3A5F');
+    assert.equal(branding.textColor, expected.textColor);
+    assert.equal(branding.backgroundColor, expected.backgroundColor);
+    assert.equal(branding.primaryColor, expected.primaryColor);
     assert.equal(branding.contrastFallbackApplied, false);
     const ratio = contrastRatio(branding.textColor, branding.backgroundColor);
     assert.ok(ratio >= 4.5, `resolved merchant text/background pair only reaches ${ratio.toFixed(2)}:1, below WCAG AA`);
@@ -106,22 +109,23 @@ test('W3: a real resolved merchant theme (snaz-shaped) is legible and its colour
 test('W3: an unreadable merchant colour pair triggers the AA fallback and the resolved pair passes AA', () => {
     // Deliberately hostile: a merchant setting near-white text on a near-white background, the
     // exact class of misconfiguration W2 requires checkout to survive without ARB/human review.
-    const hostileTheme = { textColor: '#FEFEFE', backgroundColor: '#FFFFFF' };
-    const branding = sanitizeBranding(null, hostileTheme);
+    const branding = sanitizeBranding(null, fixtures.hostileTheme.input);
     assert.equal(branding.contrastFallbackApplied, true, 'a near-white-on-white pair must trigger the AA fallback');
     const ratio = contrastRatio(branding.textColor, branding.backgroundColor);
     assert.ok(ratio >= 4.5, `fallback pair only reaches ${ratio.toFixed(2)}:1, below WCAG AA — the fallback itself must be legible`);
-    assert.ok(branding.textColor === '#000000' || branding.textColor === '#FFFFFF', 'fallback must resolve to pure black or white');
+    const { black, white } = fixtures.pureColors;
+    assert.ok(branding.textColor === black || branding.textColor === white, 'fallback must resolve to pure black or white');
 });
 
 test('resolveAccessibleTextColor: picks whichever of black/white has better contrast, and only flags a fallback when needed', () => {
-    const passing = resolveAccessibleTextColor('#000000', '#FFFFFF');
-    assert.equal(passing.fellBackToAA, false);
-    assert.equal(passing.color, '#000000');
-
-    const failing = resolveAccessibleTextColor('#CCCCCC', '#FFFFFF');
-    assert.equal(failing.fellBackToAA, true);
-    assert.equal(failing.color, '#000000', 'black has better contrast than white against a light background');
+    // One passing pair and one failing pair; an emptied fixture must not turn this into a vacuous pass.
+    assert.ok(fixtures.accessibleTextColor.some((c) => c.expected.fellBackToAA === false), 'the fixture must include a pair that passes AA as chosen');
+    assert.ok(fixtures.accessibleTextColor.some((c) => c.expected.fellBackToAA === true), 'the fixture must include a pair that needs the AA fallback');
+    for (const { why, text, background, expected } of fixtures.accessibleTextColor) {
+        const resolved = resolveAccessibleTextColor(text, background);
+        assert.equal(resolved.fellBackToAA, expected.fellBackToAA, why);
+        assert.equal(resolved.color, expected.color, why);
+    }
 });
 
 test('W2: a hostile font-family value crafted to break out of a CSS declaration is rejected, not passed through', () => {
@@ -151,9 +155,12 @@ test('T9/W2: the neutral fallback palette traces to @letbuyy/ui/tokens, not stan
 });
 
 test('a malformed hex colour is rejected and falls back, never reaching the rendered style', () => {
-    assert.equal(sanitizeBrandingHexColor('not-a-color', '#FFFFFF'), '#FFFFFF');
-    assert.equal(sanitizeBrandingHexColor('#12345', '#FFFFFF'), '#FFFFFF', 'a short hex must be rejected');
-    assert.equal(sanitizeBrandingHexColor('#1a2b3c', '#FFFFFF'), '#1a2b3c', 'a valid lowercase hex must pass through');
+    // Rejected inputs must return the fallback; the valid lowercase input must return itself, case preserved.
+    assert.ok(fixtures.hexColorSanitization.some((c) => c.expected === c.fallback), 'the fixture must include an input that is rejected');
+    assert.ok(fixtures.hexColorSanitization.some((c) => c.expected === c.input), 'the fixture must include an input that passes through');
+    for (const { why, input, fallback, expected } of fixtures.hexColorSanitization) {
+        assert.equal(sanitizeBrandingHexColor(input, fallback), expected, why);
+    }
 });
 
 // T9/W3 — checkout-client.tsx's ONE genuinely informational use of the muted text tier is the
@@ -161,7 +168,7 @@ test('a malformed hex colour is rejected and falls back, never reaching the rend
 // (step-badge, form-field icons) are decorative. The tier is shared by class, so it must pass AA
 // as a whole rather than only for that one consumer — this is the regression guard for that fix.
 test('W3: --text-muted (light) passes AA against a white background — it carries the buyer contact-confirmation line', () => {
-    const branding = sanitizeBranding(null, { backgroundColor: '#FFFFFF', isDark: false });
+    const branding = sanitizeBranding(null, fixtures.lightThemeOverWhite.input);
     const vars = brandingCssVariables(branding) as Record<string, string>;
     const effectiveHex = compositeRgbaOverHex(vars['--text-muted'], branding.backgroundColor);
     const ratio = contrastRatio(effectiveHex, branding.backgroundColor);

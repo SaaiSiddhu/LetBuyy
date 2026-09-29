@@ -1,0 +1,77 @@
+{
+    "purpose": "Literal colour DATA for branding.test.ts. These are the merchant-supplied inputs, the deliberately invalid inputs and the exact expected outputs of the checkout branding sanitiser, so they must be real #RRGGBB strings: a test of hex handling cannot be written without them, and swapping them for design tokens would make the assertions compare the implementation with itself. Kept as data, not code, because @letbuyy/ui/no-hardcoded-hex polices colour literals in UI code and cannot tell a fixture from a styling decision.",
+    "merchantTheme": {
+        "why": "a real resolved merchant theme (snaz-shaped): every colour must flow through unchanged",
+        "input": {
+            "isDark": false,
+            "textColor": "#1A202C",
+            "fontFamily": "Inter",
+            "accentColor": "#00B4D8",
+            "borderRadius": 8,
+            "primaryColor": "#1E3A5F",
+            "surfaceColor": "#F0F4F8",
+            "bodyFontFamily": "Inter",
+            "secondaryColor": "#1E40AF",
+            "backgroundColor": "#FFFFFF",
+            "headingFontFamily": "Inter"
+        },
+        "expected": {
+            "textColor": "#1A202C",
+            "backgroundColor": "#FFFFFF",
+            "primaryColor": "#1E3A5F"
+        }
+    },
+    "hostileTheme": {
+        "why": "near-white text on a white background: the exact class of misconfiguration checkout must survive without human review",
+        "input": {
+            "textColor": "#FEFEFE",
+            "backgroundColor": "#FFFFFF"
+        }
+    },
+    "pureColors": {
+        "why": "the two endpoints the AA fallback may resolve to",
+        "black": "#000000",
+        "white": "#FFFFFF"
+    },
+    "accessibleTextColor": [
+        {
+            "why": "an already-passing pair is returned as chosen and is not flagged as a fallback",
+            "text": "#000000",
+            "background": "#FFFFFF",
+            "expected": { "color": "#000000", "fellBackToAA": false }
+        },
+        {
+            "why": "black has better contrast than white against a light background",
+            "text": "#CCCCCC",
+            "background": "#FFFFFF",
+            "expected": { "color": "#000000", "fellBackToAA": true }
+        }
+    ],
+    "hexColorSanitization": [
+        {
+            "why": "a non-colour string must fall back",
+            "input": "not-a-color",
+            "fallback": "#FFFFFF",
+            "expected": "#FFFFFF"
+        },
+        {
+            "why": "a short hex must be rejected",
+            "input": "#12345",
+            "fallback": "#FFFFFF",
+            "expected": "#FFFFFF"
+        },
+        {
+            "why": "a valid lowercase hex must pass through with its case preserved",
+            "input": "#1a2b3c",
+            "fallback": "#FFFFFF",
+            "expected": "#1a2b3c"
+        }
+    ],
+    "lightThemeOverWhite": {
+        "why": "the light-mode muted text tier is measured against a white background",
+        "input": {
+            "backgroundColor": "#FFFFFF",
+            "isDark": false
+        }
+    }
+}
