@@ -261,6 +261,10 @@ fixture and fixing the one genuine regression found in the first) is the number 
 
 **Remaining in run 2 (25 failures, 2090 total — the number this document stands behind):**
 
+> **Corrections (2026-09-29, `PHASE2_TEST_BASELINE_RECONCILIATION.md` §2):** (a) "2090 total" counted only the first half
+> of the root script — `&&` skipped `test:contracts` (320 tests) once that half failed — so it was never the root suite's
+> total; (b) item 3's cause below is wrong; (c) item 4's attribution method is replaced. A note follows each item.
+
 3. **4 failures, `tests/executable/*-postgres.test.mjs` — environment-sensitive, a different and more
    specific cause than run 1's.** `checkout-order-concurrency-postgres.test.mjs`,
    `gift-card-issue-idempotency-postgres.test.mjs`, `late-capture-after-release-postgres.test.mjs`,
@@ -272,6 +276,12 @@ fixture and fixing the one genuine regression found in the first) is the number 
    not clear them). Confirmed pre-existing fixture-hygiene state, not this phase's own — nothing in this
    phase's 6-file diff touches these files or the fixture script. Resolving it would mean recreating
    shared test infrastructure, outside this mandate's authorization ("no broad Docker cleanup").
+
+   > **Correction (2026-09-29, `PHASE2_TEST_BASELINE_RECONCILIATION.md` §2 C-1, §4):** the cause stated above is wrong. These
+   > four suites fail at file level because each carries a deliberate guard that refuses to run unless
+   > `LETBUYY_EXECUTABLE_PG_CONTAINER` names a dedicated throwaway container, and the old root script supplied none. The
+   > role-collision error is a real, reproducible hazard when two suites share a cluster at the same time, but it is not
+   > what failed these four. They now run, and pass (5, 5, 12 and 4 tests), in owned clusters.
 4. **~21 failures, pre-existing, unrelated domains — confirmed by reading each failure message and by a
    `git diff --name-status c1717e80..HEAD` (this pass's own 6-file diff, §7) containing none of them.**
    Re-verified 3 of these in complete isolation (`node --test` on just those 3 files, outside the full
@@ -298,9 +308,16 @@ fixture and fixing the one genuine regression found in the first) is the number 
    `variant-checkout-deferral.test.mjs` (storefront performance domain). None of these files, or the
    files they check, appear in this phase's 6-file diff (§7).
 
+   > **Correction (2026-09-29, `PHASE2_TEST_BASELINE_RECONCILIATION.md` §2 C-3, §6.2):** "not in this phase's diff" is not
+   > attribution. The failures are exactly 21 tests in 17 files; each was run at the pre-Phase-2 base `130b669d` in a clean
+   > export and fails there with the same error; each is repaired; none was a product defect.
+
 **Conclusion:** the root gate is genuinely not green (25 failures), and this document does not claim
 otherwise. Every one of the 25 is accounted for by name and by verified cause; zero touch a file this
 phase changed; the only failure this phase's own work was responsible for (item 2 above) is fixed.
+
+> **Superseded (2026-09-29):** with the corrections above, the root gate at `e21dc2d9` is green — 2445 tests, 0 failures,
+> 15 named `[HUMAN-REQUIRED]` skips (`PHASE2_TEST_BASELINE_RECONCILIATION.md` §11).
 
 ---
 
@@ -328,6 +345,9 @@ this window's new tests but not themselves edited here. Nothing outside
 ---
 
 ## 8. Remaining, explicitly not closed
+
+> **Update (2026-09-29):** the third bullet (role contamination) is corrected and the fifth (the ~21 failures) is resolved —
+> see `PHASE2_TEST_BASELINE_RECONCILIATION.md` §2 and §6. The other bullets stand.
 
 - **Authoritative identity cutover** — not attempted, not authorized this pass.
 - **Sustained, production-shaped shadow-observation window** — genuinely new work beyond this pass's
