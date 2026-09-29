@@ -168,6 +168,8 @@ and fixed earlier this pass.
 
 ## 4. Database test configuration — explicit validated discovery, not a hardcoded name
 
+> **Superseded (2026-09-29, P2-HERMETIC-GATEWAY-DB):** `local-postgres-support.ts` and both discovery functions described here are deleted. Refusing to guess a container name was safer than the hardcoded string, but it was still a *discovery* of the developer's own stack: a suite that found it wrote to it. All nine gateway database suites (these four and the five "deliberately not applied" below) now reach a database only through `owned-db/owned-db-support.ts`, which fails closed unless the runner-owned infrastructure passes an ownership proof. See `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`. The text above stays as the record of what was true at the time; it is not rewritten.
+
 New: `services/api-gateway/src/__tests__/local-postgres-support.ts`. Every `*.postgres.test.ts` file
 previously duplicated its own copy of "find the local Supabase container and shell out to `psql`," and
 every copy fell back to the same hardcoded, machine-specific container name if

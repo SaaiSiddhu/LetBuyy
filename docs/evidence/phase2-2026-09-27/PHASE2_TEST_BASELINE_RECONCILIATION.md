@@ -482,3 +482,5 @@ a shared cluster; no broad Docker cleanup; every container removed by this work 
 > lane did, and this document did not say so. No restored row was deleted or altered by design; what those runs left behind
 > is measured, read-only, in `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §6.4, and later runs keep the lane off that stack
 > by pointing `LETBUYY_LOCAL_SUPABASE_CONTAINER` at a container that does not exist, which makes all nine skip visibly.
+
+> **Superseded (2026-09-29, later the same day — P2-HERMETIC-GATEWAY-DB):** the nine files no longer discover any local stack, and the `LETBUYY_LOCAL_SUPABASE_CONTAINER` workaround above is retired (nothing reads that variable in the gateway lane). They live in `services/api-gateway/src/__tests__/owned-db/`, outside the unit lane, and run only inside runner-owned infrastructure with a proven-ownership check; the 14 tests that used to skip run and pass. See `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`. The text above stays as the record of what was true at the time; it is not rewritten.

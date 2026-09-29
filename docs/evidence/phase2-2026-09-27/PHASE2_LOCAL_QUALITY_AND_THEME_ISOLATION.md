@@ -5,6 +5,8 @@ Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b6
 hardening, §7.6; the theme, lint and fixture work ends at `be0f107a`), then documents-only commits (§11), the last of which is the
 branch tip. Not merged, not pushed, not deployed.
 
+> **Later notes (2026-09-29, P2-HERMETIC-GATEWAY-DB).** Three things in this document were true of its moment and have been superseded by the next task, `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`: the gateway-lane hazard of §6.4, the "14 gateway skips" of §7.1 and §9, and the Q2 / §10.3 recommendation. Each carries a dated note where it appears. Q3 (what to do with the rows already in the local stack) is **still open**; the evidence for answering it is in §15 of that document.
+
 Execution mode: **SINGLE AGENT** · Subagents invoked: **NO** · Agent/Task delegation: **NO** · Background agents: **NO** ·
 Parallel worktree agents: **NO** · Workflow orchestration: **NO**. (Long test runs were waited on as background *shell
 commands*; they are processes, not agents.)
@@ -215,6 +217,8 @@ guarded by `reject_update`/`reject_delete` triggers, so the orders they belong t
 gift-card ledger is append-only by design of the money rules; a marker-scoped cleanup would have to defeat those guards on the
 owner's data. The choices are Q2 and Q3 in §10.
 
+> **Superseded (2026-09-29, P2-HERMETIC-GATEWAY-DB): the hazard described in this section no longer exists.** The nine files moved to `services/api-gateway/src/__tests__/owned-db/`, outside the unit lane's glob, and reach a database only through `requireOwnedDatabase()`: a disposable cluster, a database cloned per suite from a migrated template, a real PostgREST, and a fail-closed ownership proof that refuses the restored stack by name, labels and image before a statement is sent. `local-postgres-support.ts`, the `snaz` constants, `.dev.vars` discovery and the `LETBUYY_LOCAL_SUPABASE_CONTAINER` workaround are gone. The census above is unchanged by that task (a read-only before/after comparison is in its §9), and the rows it counts are still there: Q3 is open. See `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`. The text above stays as the record of what was true at the time; it is not rewritten.
+
 ## 7. Task D — final verification and exact accounting
 
 ### 7.1 State
@@ -287,6 +291,8 @@ worktree's sweep. It was run again at `17034d37`, the tip after the commit that 
 | TODO | **1** | `LB-BIL-002 (open)`: one payment cannot also activate a second store the same merchant owns. Open product work, unrelated; 0 in the root suite |
 | Actual failures | **0** | in every lane, except the validator sweep's `stale-artifact`, which fails when run alone by method and passes in the real lane (§7.4). Before this task: 42 lint errors, and 36 `theme-editor-aa` failures in merchant-web's script |
 
+> **Note (2026-09-29, P2-HERMETIC-GATEWAY-DB):** the "Test-level skips, gateway lane: 14" row above is retired. Those 14 database tests are no longer skipped and no longer live in the unit lane; they run, and pass, in the isolated database lane (14 tests, 0 skipped). The root suite's 15 skips, all `[HUMAN-REQUIRED]`, are unchanged.
+
 **One failure, explained and fixed (it is not intermittent).** Twice, a run of `tests/governance` + `tests/ci` reported 301 pass / 1 fail:
 `every tracked shell script parses` — "no shell scripts found; the check would be inert". I first recorded it as an unidentified
 intermittent failure, because the first time the output had been filtered to counts. The second run kept the output. Cause: both runs
@@ -303,6 +309,7 @@ as many busy loops as cores — passed 302/302. No other test or validator passe
   test per hand-listed workspace). The theme suite left the pure+live group (174 → 173 files) and its suite-level skip with it.
 - **Gateway lane:** 1331 tests both times (this task added none there); 1330 pass → 1316 pass + 14 skipped, because the 14 local-stack
   tests were skipped on purpose (§7.6). `tests/governance` 291 → 292; `tests/ci` 10 → 10.
+  *(2026-09-29, later: those 14 now run, in the isolated lane, and pass; the unit lane is 1320 tests, 0 skipped. See P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md §6.)*
 - **Package scripts (not in the root count):** customer-web 1005 → 1036 (+31 route tests); merchant-web 771 (735 pass, 36 fail) →
   775 pass (+4 `SettingsPane` tests, and the 36 failures repaired).
 - **Lint:** 42 errors → 0; warnings not targeted.
@@ -351,6 +358,8 @@ Only questions the record leaves genuinely unanswered. Every option is a **propo
 | Q3 | What should happen to the synthetic rows already in the local stack (§6.4)? | Restore the stack's data from its own restore source, or recreate it; do **not** hand-`DELETE` (GST invoices are trigger-protected, the gift-card ledger is append-only by the money rules) | Leave them: they are identifiable by their markers and only clutter the `snaz` catalogue and orders | A local stack whose merchant views are not 96/97 synthetic | Nothing runs against it from this branch; the rows are read-only evidence |
 | Q4 | Is a custom-auth owner of an unpublished site meant to read that site's private themes through the Data API? (§5.5) | Leave it (dormant); decide together with the Data API exposure of merchants | Add a `sites` policy keyed on `custom_user_id` (an RLS change: ARB) | Nothing today | The gateway path is unaffected |
 
+> **Q2 answered and done (2026-09-29, P2-HERMETIC-GATEWAY-DB).** The recommended option was taken (hermetic, in an owned cluster, no dependence on the restored store) and all four acceptance criteria of §10.3 were met. **Q3 remains open** and unexecuted: `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md` §15 is the evidence-backed proposal.
+
 ### 10.2 Carried from the decision package (still unanswered; D03/D04/D05 first tiers were answered 2026-09-28)
 
 | # | Question | Recommended (on record) | Alternative | Unlocks | Safe behaviour while unanswered |
@@ -373,6 +382,9 @@ constant belonging to the restored stack; (4) each is mutation-checked. Independ
 is the `reports:read` canonical alias (`packages/permission-core`), which removes the one remaining "excluded by name" entry from
 derived staff roles. Not the next task, by explicit exclusion: dropping any identity table, re-bringing the runtime up, or repeating the
 merchant browser journey.
+
+
+> **Done (2026-09-29).** All four acceptance criteria were met and are evidenced in `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`: (1) a read-only census of the local stack before and after every run of the task is identical, including the server's per-table write counters; (2) the nine suites run as their own group ("gateway database (owned)") and pass, 14 tests, 0 skipped; (3) no test file contains a store, location or container constant belonging to the restored stack (pinned by `tests/governance/gateway-db-lane.test.mjs`); (4) each was mutation-checked, and one surviving mutant was found and fixed. The `reports:read` item was inspected and deliberately not aliased (§12 there).
 
 ## 11. Commits, dirty paths, confirmations
 
