@@ -286,6 +286,13 @@ worktree's sweep. It was run again at `17034d37`, the tip after the commit that 
 | TODO | **1** | `LB-BIL-002 (open)`: one payment cannot also activate a second store the same merchant owns. Open product work, unrelated; 0 in the root suite |
 | Actual failures | **0** | in every lane, except the validator sweep's `stale-artifact`, which fails when run alone by method and passes in the real lane (§7.4). Before this task: 42 lint errors, and 36 `theme-editor-aa` failures in merchant-web's script |
 
+**One intermittent failure, unidentified.** Of twelve runs of `tests/governance` + `tests/ci` (302 tests) at the final source state, one
+reported 301 pass / 1 fail, and its output had been filtered down to counts, so the failing test's name was not captured. The run
+before it and the ten runs after it passed 302/302 (five of those on the naturally loaded machine, one with twice as many busy loops
+as cores). The machine is shared — other projects' compilers and test runners held its load average between roughly 170 and 270 — and
+the Docker-based lifecycle tests in that group are the timing-sensitive ones, but that is a suspicion, not a finding. It is recorded,
+not explained; a run that has to be attributed should keep the full TAP output.
+
 ### 7.7 Why the counts changed from the baseline (`e21dc2d9`: 2445 tests)
 
 - **Root total 2445 → 2481 (+36), all passing:** pure +2 (the route-inventory/lint-baseline equality test; the live-class mechanism test),
