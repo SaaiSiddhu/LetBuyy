@@ -207,9 +207,9 @@ alive at once, **298 MiB** summed. Template build 18.8 s per cluster (31 s in th
 ## 9. The restored development stack: not touched
 
 Read-only census (`default_transaction_read_only=on`, counts and timestamps only, no record contents) of `supabase_db_letbuyy-newmac-20260926`:
-before this task's work (2026-09-29 10:35 UTC), in the middle (11:14 UTC) and after the last run (11:58 UTC).
+before this task's work (2026-09-29 10:35 UTC), in the middle (11:14 UTC), after the last database run (11:58 UTC) and once more after everything else, the documents commit included (12:09 UTC).
 
-**Result: the three captures are identical** (compared with the capture timestamp removed): 21 tables' row counts, the 3 marker counts, the 6 newest-row
+**Result: all four captures are identical** (compared with the capture timestamp removed): 21 tables' row counts, the 3 marker counts, the 6 newest-row
 timestamps, and the server's own cumulative insert/update/delete counters for 21 tables (`pg_stat_user_tables`, stats never reset). The DB container has not
 restarted (started 2026-09-26). The whole session was read-only (`transaction_read_only = on`, printed by the script itself).
 
@@ -239,7 +239,7 @@ restarted (started 2026-09-26). The whole session was read-only (`transaction_re
 
 Marker counts (`T12`-`T16` products / `t16-autotest-*` sites / their orders): 115, 14, 14. Newest rows: gift_card_accounts 2026-09-29T06:07:43Z; gst_invoices 2026-09-29T06:07:36Z; orders 2026-09-29T06:07:44Z; products 2026-09-29T06:07:43Z; sites 2026-09-29T06:07:40Z; verification_tokens 2026-09-28T13:07:45Z.
 
-(Captured 2026-09-29 10:35:27Z, 11:14:18Z and 11:58:18Z; the scripts that produce them are in the appendix.)
+(Captured 2026-09-29 10:35:27Z, 11:14:18Z, 11:58:18Z and 12:09:15Z; the scripts that produce them are in the appendix.)
 
 The strongest guarantee is the enforced connection boundary, not the census (a changed count would not by itself be this task's write — the stack
 is live): no suite, runner or test-support file can name the restored stack (the guard refuses it by name, labels and image before a statement is sent;
@@ -327,7 +327,8 @@ was pushed, merged or deployed.
 | Runner and lane tests | `owned-fixture-guard` 13, `gateway-db-lane` 11, `executable-runner-lifecycle` 13 (2 new shim tests), `gateway-db-lifecycle` 6 (150 s, real Docker) | 43 / 43 |
 | Typecheck | `pnpm run typecheck` (turbo); `pnpm --filter @letbuyy/api-gateway run typecheck` | 81 / 81 successful; gateway exit 0 |
 | Lint | `pnpm run lint` (turbo) | exit 0, **0 errors** (the run replayed cached results for the five lint tasks: this task changed no file those tasks lint, so the cache hit is the correct answer, not a shortcut) |
-| Governance | `node scripts/validate-governance.mjs --lane=gate`, real lane, in a fresh disposable clone of `7e10134f` (the lane deletes generated directories; never run in the worktree); the default invocation is identical | **PASS=114 FAIL=0 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1** (115 discovered on disk) |
+| Governance | `node scripts/validate-governance.mjs --lane=gate`, real lane, in a fresh disposable clone of `7e10134f` and again of the final commit `882cb819` (the lane deletes generated directories; never run in the worktree); the default invocation is identical | **PASS=114 FAIL=0 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1** (115 discovered on disk), both times |
+| `tests/governance` + `tests/ci` on the final commit | `node --test --test-concurrency=1 tests/governance/*.test.mjs tests/ci/*.test.mjs` in the fresh clone of `882cb819`, 191 s | **334 tests, 334 pass, 0 skipped**: the Docker lifecycle tests executed, they were not skipped |
 | **Network census of the default lane** | the gateway unit lane with a preload that records every socket `connect()` and would **block** the restored stack's ports (5432, 54320-54329) | 174 attempts: 165 are tsx's own IPC pipe, 9 are the tenant-guard tests' deliberate negative controls at `*.invalid.test:443` (an unresolvable reserved name), **0 to any loopback database or REST port, 0 blocked**. The default lane never connects to the restored stack. |
 
 **Root count reconciliation** (the earlier task's root run: 2481 tests, 2466 pass, 15 skipped): **+46 tests, +46 passes, +-0 skips**: the ownership-guard tests +13, the lane
