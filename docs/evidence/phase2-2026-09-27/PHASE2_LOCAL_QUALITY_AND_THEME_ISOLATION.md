@@ -1,8 +1,9 @@
 # Phase 2 — local quality gaps closed, theme tenant isolation reproducible, acceptance reconciled
 
 2026-09-29. Branch `letbuyy/phase2-shared-buyer-identity`, worktree `/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2`.
-Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b669d`). Last source commit `be0f107a`; three
-documents-only commits follow it (§11), the last of which is the branch tip. Not merged, not pushed, not deployed.
+Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b669d`). Last source commit `96319505` (a one-line test
+hardening, §7.6; the theme, lint and fixture work ends at `be0f107a`), then documents-only commits (§11), the last of which is the
+branch tip. Not merged, not pushed, not deployed.
 
 Execution mode: **SINGLE AGENT** · Subagents invoked: **NO** · Agent/Task delegation: **NO** · Background agents: **NO** ·
 Parallel worktree agents: **NO** · Workflow orchestration: **NO**. (Long test runs were waited on as background *shell
@@ -218,9 +219,9 @@ owner's data. The choices are Q2 and Q3 in §10.
 
 ### 7.1 State
 
-The gate battery, the root suite and the package tests ran at source commit `be0f107a` (the last commit that changes anything other than
-documents), HEAD unchanged from the start to the end of each run; the real governance lane and the two builds ran at `d3bed683` (that
-commit plus this document, no source change). The worktree also held the three dated-correction documents (committed later, with this one),
+The gate battery, the root suite and the package tests ran at source commit `be0f107a`, HEAD unchanged from the start to the end of each run.
+The only source change after it is the hardening of `tests/governance/shell-scripts.test.mjs` (`96319505`, §7.6), verified by running that group and
+the real lane; the real governance lane and the two builds ran at `d3bed683` (`be0f107a` plus this document) and the lane again at the tip. The worktree also held the three dated-correction documents (committed later, with this one),
 the nine preserved `analysis_options.yaml` modifications and the two untracked local-environment artefacts; none of them is a
 lane input other than as a document to be scanned. Docker held no container this task had created when each run ended.
 
@@ -286,12 +287,14 @@ worktree's sweep. It was run again at `17034d37`, the tip after the commit that 
 | TODO | **1** | `LB-BIL-002 (open)`: one payment cannot also activate a second store the same merchant owns. Open product work, unrelated; 0 in the root suite |
 | Actual failures | **0** | in every lane, except the validator sweep's `stale-artifact`, which fails when run alone by method and passes in the real lane (§7.4). Before this task: 42 lint errors, and 36 `theme-editor-aa` failures in merchant-web's script |
 
-**One intermittent failure, unidentified.** Of twelve runs of `tests/governance` + `tests/ci` (302 tests) at the final source state, one
-reported 301 pass / 1 fail, and its output had been filtered down to counts, so the failing test's name was not captured. The run
-before it and the ten runs after it passed 302/302 (five of those on the naturally loaded machine, one with twice as many busy loops
-as cores). The machine is shared — other projects' compilers and test runners held its load average between roughly 170 and 270 — and
-the Docker-based lifecycle tests in that group are the timing-sensitive ones, but that is a suspicion, not a finding. It is recorded,
-not explained; a run that has to be attributed should keep the full TAP output.
+**One failure, explained and fixed (it is not intermittent).** Twice, a run of `tests/governance` + `tests/ci` reported 301 pass / 1 fail:
+`every tracked shell script parses` — "no shell scripts found; the check would be inert". I first recorded it as an unidentified
+intermittent failure, because the first time the output had been filtered to counts. The second run kept the output. Cause: both runs
+were made in the same shell command as the `git commit` before them, and that command had exported `GIT_LITERAL_PATHSPECS=1` (the
+setting for paths containing `[brackets]`) into the test process; the test found scripts with a glob pathspec (`git ls-files --
+'*.sh'`), which that variable turns literal, so it matched nothing. Reproduced both ways (fails with the variable, passes without).
+The test now filters in JavaScript and passes either way (`96319505`). Every other run — with and without load, including one with twice
+as many busy loops as cores — passed 302/302. No other test or validator passes a glob pathspec to git.
 
 ### 7.7 Why the counts changed from the baseline (`e21dc2d9`: 2445 tests)
 
@@ -385,7 +388,10 @@ Commits on this task (all local, staged by explicit path, identity `SaaiSiddhu <
 | `be0f107a` | test(security): prove the theme RLS in an owned cluster, under the roles and identity it is written for |
 | `d3bed683` | docs(evidence): Phase 2 local quality, theme isolation proof and acceptance reconciliation, with the dated corrections it cites (this document) |
 | `17034d37` | docs(evidence): record the real governance lane and both app builds; tighten the acceptance record |
-| (branch tip) | docs(evidence): list this task's commits accurately (documents only) |
+| `d3dd2ebb` | docs(evidence): list this task's commits accurately (documents only) |
+| `7a46cae7` | docs(evidence): record the one intermittent governance-test failure honestly (documents only) — its "intermittent" diagnosis was wrong, see §7.6 |
+| `96319505` | fix(test): find tracked shell scripts without a glob pathspec |
+| (branch tip) | docs(evidence): correct the diagnosis of the governance-test failure (documents only) |
 
 Pre-existing dirty paths, preserved byte-identical and never staged: the nine `analysis_options.yaml` modifications
 (`git diff -- '*analysis_options.yaml'` sha256 `b8af63ad4a51f786`, 95 lines), `docs/evidence/local-environment-2026-09-28/RUNBOOK.md`
