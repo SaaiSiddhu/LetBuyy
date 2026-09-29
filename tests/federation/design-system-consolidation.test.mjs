@@ -4,14 +4,20 @@ import { join } from 'node:path';
 import test from 'node:test';
 
 const root = process.cwd();
-const webApps = [
-  'merchant-web',
-  'customer-web',
-  'identity-platform',
-  'app-marketplace',
-  'theme-marketplace',
-  'admin-web',
-  'platform-operations-portal',
+// The seven React web apps, at their D-APP-LAYOUT paths (Constitution Amendment 3). The names this list
+// carried before that move map one to one: merchant-web -> apps/merchant/web, customer-web ->
+// apps/commerce/web, identity-platform -> apps/platform/identity, app-marketplace -> apps/frozen/app-store,
+// theme-marketplace -> apps/frozen/theme-store, admin-web -> apps/internal/console,
+// platform-operations-portal -> apps/frozen/operations-portal. apps/marketing/web is deliberately not in
+// the seven: its design-system adoption is on HOLD (D-UIUX). One list serves both tests below.
+const webAppRoots = [
+  'apps/merchant/web',
+  'apps/commerce/web',
+  'apps/platform/identity',
+  'apps/frozen/app-store',
+  'apps/frozen/theme-store',
+  'apps/internal/console',
+  'apps/frozen/operations-portal',
 ];
 
 function read(path) {
@@ -35,10 +41,10 @@ test('only one active LetBuyy React design-system package remains', () => {
 });
 
 test('all seven web apps consume the shared design-system package', () => {
-  for (const app of webApps) {
-    const packageJson = readJson(`apps/${app}/package.json`);
-    const manifest = readJson(`apps/${app}/runtime.manifest.json`);
-    const layout = read(`apps/${app}/src/app/layout.tsx`);
+  for (const app of webAppRoots) {
+    const packageJson = readJson(`${app}/package.json`);
+    const manifest = readJson(`${app}/runtime.manifest.json`);
+    const layout = read(`${app}/src/app/layout.tsx`);
 
     assert.equal(packageJson.dependencies['@letbuyy/ui'], 'workspace:*', `${app} package.json`);
     assert.ok(
@@ -52,13 +58,7 @@ test('all seven web apps consume the shared design-system package', () => {
 
 test('no app or package imports dead UI package names', () => {
   const checkedFiles = [
-    'apps/platform/identity/package.json',
-    'apps/commerce/web/package.json',
-    'apps/frozen/theme-store/package.json',
-    'apps/frozen/app-store/package.json',
-    'apps/merchant/web/package.json',
-    'apps/internal/console/package.json',
-    'apps/frozen/operations-portal/package.json',
+    ...webAppRoots.map((app) => `${app}/package.json`),
     'packages/typescript/ui/src/index.ts',
   ];
 

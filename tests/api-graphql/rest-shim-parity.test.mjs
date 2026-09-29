@@ -96,7 +96,10 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
     "router.get('/:subdomain/products'",
     "body: paginated(data || [], count || 0, page, limit)",
     "router.get('/:subdomain/products/:slug'",
-    "body: success(product)",
+    // SEC-1: the product body is still a success() envelope (the parity contract), but it is now
+    // filtered through toPublicProduct at the point of serialisation so nothing an upstream step
+    // attaches reaches an anonymous caller unreviewed. The pin follows that filter, not the bare row.
+    "body: success(toPublicProduct(product as Record<string, unknown>))",
     "router.get('/:subdomain/pages'",
     "body: success(pages)",
     "router.get('/customer/orders'",

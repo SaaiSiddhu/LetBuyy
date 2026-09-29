@@ -134,10 +134,20 @@ test('production smoke runs only after explicit required-job success gate', () =
 });
 
 test('production app deployment matrices match production Vercel topology', () => {
-  const topologyAppRoots = productionTopology.runtimes
+  // Which app runtimes deploy through Vercel is the topology's own declaration (deploymentKind), not a path
+  // prefix. The old filter excluded `apps/mobile/`; D-APP-LAYOUT moved the Flutter apps to
+  // apps/marketplace/mobile and apps/merchant/mobile, so they leaked into this set and the comparison
+  // failed for a reason that had nothing to do with Vercel. Every active production app runtime must
+  // declare one of the two kinds, so a runtime with no kind cannot be dropped from the comparison.
+  const activeAppRuntimes = productionTopology.runtimes
     .filter((runtime) => runtime.environment === 'production' && runtime.status === 'active')
+    .filter((runtime) => runtime.runtimeRoot.startsWith('apps/'));
+  for (const runtime of activeAppRuntimes) {
+    assert.ok(['vercel-next', 'mobile-app'].includes(runtime.deploymentKind), `${runtime.runtimeRoot} declares a known deploymentKind`);
+  }
+  const topologyAppRoots = activeAppRuntimes
+    .filter((runtime) => runtime.deploymentKind === 'vercel-next')
     .map((runtime) => runtime.runtimeRoot)
-    .filter((runtimeRoot) => runtimeRoot.startsWith('apps/') && !runtimeRoot.startsWith('apps/mobile/'))
     .sort();
   const vercelAppRoots = productionVercelApps()
     .map((app) => app.directory)

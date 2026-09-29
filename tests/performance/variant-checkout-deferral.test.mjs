@@ -54,9 +54,19 @@ test('storefront checkout defers post-commit usage and GST work', () => {
   const adminOrders = read('services/api-gateway/src/routes/orders.ts');
 
   assert.match(orderAdapter, /interface CreateOrderOptions/);
-  // input is CreateCheckoutOrderCommand (optionally intersected with shipping_rate_id/tax_amount),
-  // followed by tenant + the deferral options bag.
-  assert.match(orderAdapter, /async createOrder\(\s*input: CreateCheckoutOrderCommand[\s\S]{0,200}tenant: TenantContext,\s*options: CreateOrderOptions = \{\},?\s*\)/);
+  // The signature is (input, tenant, options): input is a CreateCheckoutOrderCommand, intersected with
+  // whatever extra checkout fields the adapter accepts (shipping_rate_id, tax_amount, place_of_supply_state,
+  // tax_lines, ... -- a list that only grows, so its length is not pinned), followed by the tenant and the
+  // deferral options bag. Pinned as the three parameters in that order, ending the parameter list.
+  const signatureStart = orderAdapter.indexOf('async createOrder(');
+  assert.notEqual(signatureStart, -1, 'createOrder exists');
+  const optionsStart = orderAdapter.indexOf('options: CreateOrderOptions', signatureStart);
+  const signature = orderAdapter.slice(signatureStart, orderAdapter.indexOf(') {', optionsStart) + 3);
+  const inputAt = signature.indexOf('input: CreateCheckoutOrderCommand');
+  const tenantAt = signature.indexOf('tenant: TenantContext');
+  const optionsAt = signature.indexOf('options: CreateOrderOptions = {}');
+  assert.ok(inputAt > -1 && tenantAt > inputAt && optionsAt > tenantAt, 'createOrder takes (input: CreateCheckoutOrderCommand, tenant: TenantContext, options: CreateOrderOptions = {}) in that order');
+  assert.match(signature, /options: CreateOrderOptions = \{\},?\s*\)\s*\{$/, 'options is the last parameter');
   assert.match(orderAdapter, /if \(options\.deferPostCommit\) return data/);
   assert.match(orderAdapter, /async completeOrderPostCommitWork/);
   assert.match(storefront, /isCheckoutPostCommitDeferralEnabled\(c\.env\)/);

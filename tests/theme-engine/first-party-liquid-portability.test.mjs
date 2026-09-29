@@ -42,11 +42,18 @@ test('brand-new spotlight section is provided by bundle files, not storefront co
 test('converted Liquid theme keeps reusable and app block portability', () => {
   const source = read(THEME_BUNDLE_SOURCE);
 
-  assert.match(source, /path: 'blocks\/category\.liquid'/);
-  assert.match(source, /path: 'blocks\/product-card\.liquid'/);
+  // A reusable block still ships as a portable Liquid block file, and it is merchant-editable.
   assert.match(source, /path: 'blocks\/badge\.liquid'/);
+  assert.match(source, /block\.settings\.label/);
+  // App blocks stay portable: a slot an installed extension can render into.
   assert.match(source, /type: '@app'/);
   assert.match(source, /slot: 'home\.spotlight\.offer'/);
+  // 9c02d2ac (T2a/W1b, T1/W3) removed the merchant-typed category-card and product-card blocks on
+  // purpose: those sections render the store's real collections and products, and the commit's own
+  // instruction is that fabricated cards never come back. The old pins required the files; the decision
+  // is that they are gone, so that is what is pinned.
+  assert.doesNotMatch(source, /path: 'blocks\/category\.liquid'/);
+  assert.doesNotMatch(source, /path: 'blocks\/product-card\.liquid'/);
 });
 
 test('Liquid parity map covers the frozen React section files with portable sections', () => {

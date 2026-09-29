@@ -72,12 +72,14 @@ test('OIDC skeleton exposes disabled routes plus callback and consent placeholde
   }
 });
 
+// Phase N3 (W3, commit 92769175) removed 'supabase-bearer' from the registry along with the Supabase
+// token-acceptance path (ART-05). The order that is still owed is the surviving legacy branches, then the
+// dormant OIDC verifier last; the retired branch must not come back under this registry either.
 test('gateway verifier registry preserves legacy branch order and keeps OIDC dormant by default', () => {
   const source = read('services/api-gateway/src/identity-foundation/auth-verifier-registry.ts');
   const legacyOrder = [
     'internal-session-hmac',
     'internal-identity-hmac',
-    'supabase-bearer',
     'oidc-jwks',
   ];
   let cursor = 0;
@@ -86,6 +88,17 @@ test('gateway verifier registry preserves legacy branch order and keeps OIDC dor
     assert.ok(index > cursor, `${verifier} must appear after the previous verifier`);
     cursor = index;
   }
-  assert.match(source, /activeByDefault: false/);
+  assert.equal(source.includes("name: 'supabase-bearer'"), false, 'the Supabase token-acceptance verifier stays retired');
+
+  const block = (name) => {
+    const at = source.indexOf(`name: '${name}'`);
+    return source.slice(at, source.indexOf('},', at));
+  };
+  assert.match(block('internal-session-hmac'), /activeByDefault: true/);
+  assert.match(block('internal-identity-hmac'), /activeByDefault: true/);
+  assert.match(block('oidc-jwks'), /activeByDefault: false/, 'the OIDC verifier is dormant unless its flag turns it on');
   assert.match(source, /FEATURE_OIDC_CLIENT/);
+
+  const orders = [...source.matchAll(/order: (\d+)/g)].map((match) => Number(match[1]));
+  assert.deepEqual(orders, [...orders].sort((a, b) => a - b), 'registry order numbers ascend in declaration order');
 });

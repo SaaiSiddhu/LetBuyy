@@ -202,11 +202,27 @@ test('5C Navigation: operations dashboard linked (no dead nav)', () => {
   assert.match(nav, /path: 'products\/operations-dashboard'/);
 });
 
-test('5C Invite acceptance: public proxy forwards to the real gateway endpoint (pre-auth, no ownership check) + page consumes it without a dead link', () => {
-  const proxy = read('apps/merchant/web/src/app/api/employees/accept-invite/route.ts');
-  assert.match(proxy, /\/employees\/auth\/accept-invite/);          // real gateway endpoint
+// Phase N3 retired staff self-service invites: the gateway endpoint (POST /employees/auth/accept-invite)
+// never had a working completion path and was removed; owners add staff directly (POST /employees, which
+// activates a verified account at once). This test used to prove the proxy forwarded to that endpoint and
+// the page called the proxy. What it protects is that a public, pre-auth route never presents a dead
+// capability as a working one, so it now proves the retired flow is honest: the proxy fails closed with an
+// explicit 503 and forwards nowhere, the page tells the visitor the invite no longer works and calls
+// nothing, and neither leaves a dead link. (The gateway's own POST /employees/invite is 503 too, proved
+// against the real router in services/api-gateway/src/__tests__/staff-invite-retired.test.ts.)
+// Comments are stripped first: the old assertion matched the removed endpoint's path inside a COMMENT and
+// so passed while checking nothing.
+const withoutComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+test('5C Invite acceptance: the retired flow fails closed, forwards nowhere, and leaves no dead link', () => {
+  const proxy = withoutComments(read('apps/merchant/web/src/app/api/employees/accept-invite/route.ts'));
+  assert.match(proxy, /export async function POST\(\)/);
+  assert.match(proxy, /code: 'STAFF_INVITE_UNAVAILABLE'/);
+  assert.match(proxy, /status: 503/);                                // an explicit unavailable, never a success
+  assert.doesNotMatch(proxy, /fetch\(|createLetbuyyApiClient|\/employees\/auth\/accept-invite|process\.env/); // forwards nowhere
   assert.doesNotMatch(proxy, /resolveOwnedStoreId/);                 // pre-auth: no store ownership
-  const page = read('apps/merchant/web/src/app/accept-invite/page.tsx');
-  assert.match(page, /\/api\/employees\/accept-invite/);            // consumes the proxy
+  const page = withoutComments(read('apps/merchant/web/src/app/accept-invite/page.tsx'));
+  assert.match(page, /Staff invite activation is unavailable/);       // says so, plainly
+  assert.doesNotMatch(page, /\/api\/employees\/accept-invite|fetch\(/); // calls nothing retired
   assert.doesNotMatch(page, /href="\/login"/);                      // no dead link (merchant app has no /login)
 });
