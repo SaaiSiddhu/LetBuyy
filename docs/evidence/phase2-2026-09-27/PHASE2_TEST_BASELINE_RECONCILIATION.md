@@ -295,6 +295,12 @@ under `apps/commerce/web` or `apps/merchant/web`, and the three SUSTAINED-K rout
 an ancestor of `130b669d`. Not repaired here: lint is outside this mandate and each item already has an owner in the
 backlog.
 
+> **Correction (2026-09-29): repaired.** All 42 errors were repaired by the follow-up task without a rule change, a disable
+> comment, a baseline for the hex rule or a skipped package: the 37 hex sites, the four routes (reviewed, baselined,
+> hardened and given tests) and the `SettingsPane` compiler error. The ledger, the invariant each site protected and the
+> verification of each is `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §4. The text above stays as the record of the state
+> at `e21dc2d9`.
+
 ### 11.3 Real governance gate lane — in a disposable clone
 
 `git clone --local` of the committed tree at `e21dc2d9` into the session scratch directory (clean, uncommitted files not
@@ -342,6 +348,18 @@ database, apply `SUPABASE_FAITHFUL_BOOTSTRAP_SQL` and then every `database/supab
 (dropping the PG17-only `SET transaction_timeout` line, as the executable suites do), and run the suite with
 `LETBUYY_SUPABASE_PG_CONTAINER=<cluster>` and `LETBUYY_SUPABASE_PG_DATABASE=<database>`.
 
+> **Superseded (2026-09-29): the suite now passes from repository state, in an owned cluster, and cannot self-skip.** The
+> two dependencies this section found were resolved without adding the grant this section declined to add: (a) the
+> disposable bootstrap's `auth.uid()` now derives the identity from the request claims, exactly as Supabase's does, and is
+> verified on its own; (b) the suite reads `themes` through the roles that can carry an identity (`authenticated`, `anon`),
+> keeps the tenant path (`app_tenant` + `app.site_id`) for the store-scoped theme tables it belongs to, and states the
+> privilege precondition of a *policy* proof inside its own rolled-back transaction instead of assuming a production
+> grant. The gateway reads `public.themes` only through `service_role` (28 call sites, none through a tenant role), and no
+> migration grants `app_tenant` anything on it, so no grant is added; whether the privilege posture should be made
+> explicit by a migration is a separate owner/ARB choice (`PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10, Q1). The
+> suite is classified `postgres` (owned cluster) and the `live-external` class is empty. Result, method and negative
+> controls: `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §5. The text above stays as the record of what was believed.
+
 ### 11.5 Skip and TODO accounting
 
 - **15 skipped, all `[HUMAN-REQUIRED]` markers** (none is a code defect and none was added by this task): HR-KMS-LIVE,
@@ -349,6 +367,8 @@ database, apply `SUPABASE_FAITHFUL_BOOTSTRAP_SQL` and then every `database/supab
   HR-WHATSAPP-LIVE, HR-DLT-TRAI-LIVE, HR-ESP-LIVE, HR-AUTOPAY-LIVE, HR-LEGAL-DPDP-PA, HR-WAREHOUSE-LIVE, HR-AI-MODEL-LIVE,
   HR-PROD-MIGRATE-DEPLOY. Each names what must be provisioned or approved first.
 - **1 suite-level skip**, invisible in Node's `# skipped`: the live theme-isolation suite (§11.4). The wrapper prints it.
+  > **Correction (2026-09-29):** no longer true. The theme-isolation suite moved to an owned cluster and fails, never skips,
+  > when it cannot reach a database; the `live-external` class is empty, so the root run has no suite-level skip.
 - **0 TODO** in the root suite. The gateway unit suite carries one pre-existing `# TODO` (`LB-BIL-002 (open)`: one payment
   cannot also activate a second store the same merchant owns) — open product work unrelated to this task.
 
@@ -378,6 +398,9 @@ suite.
 - **Decision needed (owner / ARB): the live theme tenant-isolation proof** (§11.4). Which role reads `themes`, and
   whether `app_tenant` should hold SELECT on it, is not this task's call. Until decided, migration 196's policies are
   proven only by a hand-provisioned database, and the default root run skips the suite.
+  > **Superseded (2026-09-29):** resolved as a test/fixture defect (wrong role for an identity policy, an `auth.uid()` that could
+  > never match, an access path mixed with another), with no grant added; the root run now executes the proof. What remains
+  > is a privilege-posture choice, not a blocker: `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10, Q1.
 - **DEPLOY-1**: real Vercel/cloud project ids, domains and credentials (owner acts; D-DEPLOY). Not invented here.
 - The 15 `[HUMAN-REQUIRED]` items (§11.5) — provider credentials, legal sign-off, DNS cutover, production migration.
 - **D-ID**: commit identity and the `Co-Authored-By` policy remain an open owner decision.

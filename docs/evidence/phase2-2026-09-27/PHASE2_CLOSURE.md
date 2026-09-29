@@ -135,6 +135,18 @@ remaining after. No migration was applied to that shared local database.
   invented; affected record categories named (`buyer_accounts`, `buyer_addresses`,
   `buyer_order_links`) for whoever answers it next.
 
+> **Status reconciliation (2026-09-29).** The F2.5–F2.7 rows and the three decisions above describe 2026-09-27. Since then
+> (`PHASE2_DECISIONS.md`, "Recovered owner decisions"): **D03** was answered "Local merchant-staff transition" and its local
+> slices — backfill, target-backed shadow comparison, a real HTTP-to-database rehearsal, roles for arbitrary staff, a real
+> independently authenticated staff product journey, a bounded and cancellable shadow lookup — are implemented and locally
+> verified; the authoritative cutover and a sustained observation window are not done and not authorized. **D04**'s
+> Reviewer/Moderator/Administrator tiers were approved and implemented (`requirePlatformOperator`), and console session
+> revocation and magic-link single use were hardened; bootstrap, recovery, the MFA enrollment model, high-risk dual control,
+> delivery and the moderation/impersonation callers remain open. **D05**'s initial restricted export scope was approved and the
+> generator is implemented, tested and inactive; requester verification, release protection, retention and deletion remain
+> open. "Genuinely open, none resolved" is therefore true only of the sub-decisions listed in
+> `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10. The current matrix is §8 there.
+
 ## External/infrastructure blockers
 
 - The three-times-observed long-running-dev-server wedge (identity-platform, api-gateway,
