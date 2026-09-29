@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -39,28 +39,33 @@ test('deployable workspaces run real test commands instead of no-op placeholders
 
 test('root and governance runners include workspace and TypeScript contract tests', () => {
     const rootPackageJson = readPackageJson('.');
-    assert.match(rootPackageJson.scripts?.test || '', /node --test --test-concurrency=1 tests\/\*\/\*\.test\.mjs/);
-    assert.match(rootPackageJson.scripts?.test || '', /test:contracts/);
-    // SUSTAINED-J: test:behavioral no longer inlines the raw `node --test` invocation -- it
-    // delegates to scripts/governance/test-behavioral.mjs, which routes the destructive-guard
-    // suites through their own dedicated disposable Postgres container/database (each throws at
-    // module load under the bare invocation, unconditionally, regardless of code changes) and
-    // still runs every other suite with the exact same `node --test --test-concurrency=1`
-    // invocation this test used to check for directly. The next assertion checks the wrapper
-    // itself still covers the full tests/*/*.test.mjs surface, so this isn't just a narrower check.
+    // The root `test` script runs the behavioral wrapper AND the contract tests, and always both: the
+    // wrapper takes `--with-contracts` instead of the old `a && b` chain, which never ran the contract
+    // tests once the first part had failed and so hid a whole lane behind the first red.
+    assert.match(rootPackageJson.scripts?.test || '', /node scripts\/governance\/test-behavioral\.mjs --with-contracts/);
+    assert.doesNotMatch(rootPackageJson.scripts?.test || '', /&&/, 'a short-circuiting chain hides every part after the first failure');
+    // SUSTAINED-J: test:behavioral delegates to scripts/governance/test-behavioral.mjs; the next test
+    // checks that wrapper covers the full tests/*/*.test.mjs surface.
     assert.match(rootPackageJson.scripts?.['test:behavioral'] || '', /node scripts\/governance\/test-behavioral\.mjs/);
     assert.match(rootPackageJson.scripts?.['test:workspaces'] || '', /turbo test/);
     assert.equal(rootPackageJson.scripts?.['test:contracts'], 'tsx --test tests/contracts/*.test.ts');
 });
 
-test('the test:behavioral wrapper still discovers and runs the full tests/*/*.test.mjs surface', () => {
+test('the test:behavioral wrapper runs the full tests/*/*.test.mjs surface, each suite in exactly one environment', async () => {
+    const { discoverSuites } = await import('../../scripts/governance/test-suite-catalog.mjs');
+    const { all, pure, postgres, live } = discoverSuites(repoRoot) as Record<string, string[]>;
+    // The surface `tests/*/*.test.mjs` would glob, computed without the catalog.
+    const globbed = readdirSync(join(repoRoot, 'tests'), { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .flatMap((dir) => readdirSync(join(repoRoot, 'tests', dir.name)).filter((name) => name.endsWith('.test.mjs')).map((name) => `tests/${dir.name}/${name}`))
+        .sort();
+    assert.deepEqual(all, globbed);
+    assert.deepEqual([...pure, ...postgres, ...live].sort(), globbed, 'every suite runs, none twice');
+
     const wrapper = readFileSync(join(repoRoot, 'scripts/governance/test-behavioral.mjs'), 'utf8');
-    // discoverAll() walks every immediate subdirectory of tests/ for *.test.mjs files -- the same
-    // set `tests/*/*.test.mjs` would glob -- rather than a narrower, hand-picked list.
-    assert.match(wrapper, /readdirSync\(join\(repoRoot, ['"]tests['"]\)/);
-    assert.match(wrapper, /\.test\.mjs['"]\)/);
-    // Every suite not in the destructive-guard allowlist still runs through the same real runner.
-    assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.rest\]/);
+    assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.pure, \.\.\.live\]/, 'database-free suites keep the sequential node --test invocation');
+    assert.match(wrapper, /scripts\/governance\/run-executable-suites\.mjs/, 'Postgres-backed suites go through the owned-cluster runner');
+    assert.doesNotMatch(wrapper, /foundation-ephemeral-postgres/, 'the shared fixture is not part of the gate');
 });
 
 test('main CI runs the behavioral gate before filtered workspace tests', () => {

@@ -1,202 +1,265 @@
 #!/usr/bin/env node
-// Run the executable Postgres suites as a set, against a container this runner owns.
+// Run the Postgres-backed suites as a set, each inside a cluster this runner owns.
 //
 // WHY THIS EXISTS (CAP-C66)
-// No gate lane runs tests/executable, so the only way anyone learns those suites are red is by
-// remembering to run them one at a time. Two were red on develop for some time while every phase
-// reported a clean gate; chasing them found a latent checkout outage (CAP-C65).
+// No gate lane ran tests/executable, so the only way anyone learned those suites were red was by
+// remembering to run them one at a time. Chasing that found a latent checkout outage (CAP-C65).
 //
-// WHY IT CREATES ITS OWN CONTAINER
-// Several suites drop and recreate databases and replay every migration, and three refuse to run at
-// all unless LETBUYY_EXECUTABLE_PG_CONTAINER names a dedicated throwaway — a sensible guard, since
+// WHY IT OWNS ITS CLUSTERS
+// Several suites drop and recreate databases and replay every migration, and four refuse to run at
+// all unless LETBUYY_EXECUTABLE_PG_CONTAINER names a dedicated throwaway - a sensible guard, since
 // the shared `letbuyy-executable-pg` container carries other sessions' in-progress state. Rather
-// than working around that guard, this runner satisfies it: it starts a uniquely-named container,
-// runs everything inside it, and removes it. Nothing outside that container is touched.
-//
-// It sits in scripts/governance/ beside foundation-ephemeral-postgres.mjs, which is the same class
-// of thing — a test-execution tool, not a migration or a build step.
+// than working around that guard, this runner satisfies it. The isolation contract (roles are
+// cluster-global, so one cluster per worker, one suite at a time inside it, fresh clusters every run)
+// is written out in executable-pg-fixture.mjs. Nothing outside the containers this run created is
+// touched, and a run that is killed leaves nothing behind that the next run does not reap.
 //
 // Usage:
-//   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--list] [--json]
-//                                          [--keep-container] [--timeout <seconds>]
-// Exit code is the number of failing suites, so it composes with a gate lane.
+//   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--suite <path>]...
+//        [--suite-dir <dir>]... [--jobs <n>] [--timeout <seconds>] [--log-dir <dir>] [--json]
+//        [--json-out <file>] [--list] [--keep-container] [--container <name>] [--no-reap] [--reap-only]
+//        [--reap-min-age <seconds>]
+// With no --suite/--suite-dir it runs every Postgres-backed suite the catalog finds under tests/.
+// Exit code: the number of failing suites (capped at 125 so it can never wrap to 0), 70 when the
+// infrastructure itself could not start, so a lane can consume it.
 
-import { spawn, spawnSync } from 'node:child_process';
-import { readdirSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { spawn } from 'node:child_process';
+import { constants as osConstants } from 'node:os';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+    DEFAULT_IMAGE,
+    docker,
+    reapStaleClusters,
+    removeCluster,
+    startCluster,
+    uniqueContainerName,
+    waitUntilAccepting,
+} from './executable-pg-fixture.mjs';
+import { discoverSuites } from './test-suite-catalog.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const suiteDir = join(repoRoot, 'tests/executable');
 
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
-const value = (name, fallback) => {
-    const i = args.indexOf(name);
-    return i === -1 || i === args.length - 1 ? fallback : args[i + 1];
-};
+const values = (name) => args.flatMap((arg, i) => (arg === name && i < args.length - 1 ? [args[i + 1]] : []));
+const value = (name, fallback) => values(name)[0] ?? fallback;
 
 const filter = value('--filter', null);
 const asJson = flag('--json');
 const keepContainer = flag('--keep-container');
 const perSuiteTimeoutMs = Number(value('--timeout', '600')) * 1000;
-const image = process.env.LETBUYY_EXECUTABLE_PG_IMAGE || 'postgres:16-alpine';
-// The database name the suites share by default; suites needing isolation pick their own.
+const requestedJobs = Number(value('--jobs', process.env.LETBUYY_EXECUTABLE_PG_JOBS || '2'));
+const logDir = value('--log-dir', null);
+const jsonOutPath = value('--json-out', null);
+// The database the suites share by default; suites needing isolation pick their own.
 const sharedDatabase = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_executable';
+const containerBase = value('--container', uniqueContainerName());
+const say = (message) => { if (!asJson) process.stdout.write(`${message}\n`); };
+const warn = (message) => process.stderr.write(`run-executable-suites: ${message}\n`);
 
-// Unique per run: a name that can never collide with the shared container or with a parallel run.
-const container = value('--container', `letbuyy-exec-${process.pid}-${Math.floor(process.uptime() * 1000)}`);
-
-function docker(dockerArgs, { allowFailure = false } = {}) {
-    const result = spawnSync('docker', dockerArgs, { encoding: 'utf8' });
-    if (!allowFailure && result.status !== 0) {
-        throw new Error(`docker ${dockerArgs.join(' ')} failed:\n${result.stderr || result.stdout}`);
+function selectSuites() {
+    const explicit = values('--suite').map((suite) => (isAbsolute(suite) ? relative(repoRoot, suite) : suite));
+    for (const dir of values('--suite-dir')) {
+        const absolute = resolve(repoRoot, dir);
+        for (const name of readdirSync(absolute).filter((n) => n.endsWith('.test.mjs')).sort()) {
+            explicit.push(relative(repoRoot, join(absolute, name)));
+        }
     }
-    return result;
-}
-
-function suites() {
-    return readdirSync(suiteDir)
-        .filter((name) => name.endsWith('.test.mjs'))
-        .filter((name) => !filter || name.includes(filter))
-        .sort();
-}
-
-function startContainer() {
-    // POSTGRES_DB matters: roughly half the suites default LETBUYY_EXECUTABLE_PG_DATABASE to
-    // `letbuyy_executable` and expect it to exist, which is why
-    // scripts/governance/foundation-ephemeral-postgres.mjs creates the container with it. Without
-    // this, those suites fail in ~0.3s with a connection error that looks exactly like a red test —
-    // the first run of this runner reported 22 "failures" that were all this one line.
-    docker(['run', '-d', '--name', container,
-        '-e', 'POSTGRES_PASSWORD=postgres',
-        '-e', `POSTGRES_DB=${sharedDatabase}`,
-        image]);
-    const deadline = Date.now() + 60_000;
-    while (Date.now() < deadline) {
-        if (docker(['exec', container, 'pg_isready', '-U', 'postgres'], { allowFailure: true }).status === 0) return;
-        spawnSync('sleep', ['1']);
+    const chosen = explicit.length > 0 ? explicit : discoverSuites(repoRoot).postgres;
+    for (const suite of chosen) {
+        if (!existsSync(join(repoRoot, suite))) throw new Error(`suite not found: ${suite}`);
     }
-    throw new Error(`Postgres did not become ready in ${container} within 60s`);
-}
-
-function removeContainer() {
-    if (keepContainer) return;
-    docker(['rm', '-f', container], { allowFailure: true });
+    return chosen.filter((suite) => !filter || suite.includes(filter));
 }
 
 // Postgres identifiers cap at 63 bytes; suite names are long, so trim from the front and keep the
 // distinctive tail.
-function databaseNameFor(suiteName) {
-    const slug = suiteName.replace(/\.test\.mjs$/, '').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+function databaseNameFor(suite) {
+    const slug = basename(suite).replace(/\.test\.mjs$/, '').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
     return `letbuyy_exec_${slug}`.slice(0, 63);
 }
 
-function runSuite(name) {
-    return new Promise((resolve) => {
+const psqlOn = (cluster, sql, { allowFailure = false } = {}) =>
+    docker(['exec', '-i', cluster, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c', sql], { allowFailure });
+
+const running = new Set();
+const clusters = [];
+let shuttingDown = false;
+
+function removeClusters() {
+    if (keepContainer) return;
+    for (const cluster of clusters) removeCluster(cluster.name);
+}
+
+function shutdown(signal) {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    for (const child of running) child.kill('SIGKILL');
+    removeClusters();
+    process.exit(128 + (osConstants.signals[signal] ?? 15));
+}
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(signal, () => shutdown(signal));
+
+function runSuite(suite, cluster) {
+    return new Promise((resolveResult) => {
         const started = Date.now();
         // Per-suite database. Without it the suites contaminate each other: about twenty share the
         // default `letbuyy_executable` and leave schema and rows behind, so the second suite to touch
         // a table sees the first one's state and fails in a fraction of a second. Run standalone they
-        // pass. That mutual contamination is why this set has never been run as a set, and it has to
-        // be fixed in the runner rather than in twenty suites.
-        const database = databaseNameFor(name);
-        // Two separate psql invocations, not one `-c` with both statements: psql wraps a multi-command
-        // -c string in an implicit transaction and CREATE DATABASE cannot run inside one. Doing it the
-        // short way failed silently under allowFailure, the database never existed, and every suite
-        // then died in ~0.2s looking exactly like a red test.
-        docker(['exec', '-i', container, 'psql', '-U', 'postgres', '-d', 'postgres',
-                '-c', `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`], { allowFailure: true });
-        docker(['exec', '-i', container, 'psql', '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1',
-                '-c', `CREATE DATABASE "${database}";`]);
+        // pass. Two separate psql invocations, not one `-c` with both statements: psql wraps a
+        // multi-command -c string in an implicit transaction and CREATE DATABASE cannot run inside one.
+        const database = databaseNameFor(suite);
+        psqlOn(cluster.name, `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`, { allowFailure: true });
+        psqlOn(cluster.name, `CREATE DATABASE "${database}";`);
 
-        const child = spawn('node', ['--test', join('tests/executable', name)], {
-            cwd: repoRoot,
-            encoding: 'utf8',
-            env: {
-                ...process.env,
-                LETBUYY_EXECUTABLE_PG_CONTAINER: container,
-                LETBUYY_EXECUTABLE_PG_DATABASE: database,
-            },
-        });
+        // NODE_TEST_CONTEXT is set by an outer `node --test`. Inherited, it puts the nested runner in
+        // its "child" mode: no TAP summary, and a failing test exits 0. That reads exactly like a pass,
+        // so it is removed here and any result without a summary is refused below.
+        const env = { ...process.env, LETBUYY_EXECUTABLE_PG_CONTAINER: cluster.name, LETBUYY_EXECUTABLE_PG_DATABASE: database };
+        delete env.NODE_TEST_CONTEXT;
+        const child = spawn('node', ['--test', suite], { cwd: repoRoot, env });
+        running.add(child);
         let out = '';
         let timedOut = false;
         const timer = setTimeout(() => { timedOut = true; child.kill('SIGKILL'); }, perSuiteTimeoutMs);
         child.stdout.on('data', (d) => { out += d; });
         child.stderr.on('data', (d) => { out += d; });
         child.on('close', (code) => {
+            running.delete(child);
             clearTimeout(timer);
-            docker(['exec', '-i', container, 'psql', '-U', 'postgres', '-d', 'postgres',
-                    '-c', `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`], { allowFailure: true });
-            // Node 22's `node --test` TAP output uses `# <label> <n>` (no `ℹ ` prefix, which was an
-            // older reporter's format this regex was written against) and `not ok <n> - <name>` for a
-            // failing (sub)test (no leading `✖ ` line). Found this phase (F2.2, Phase 2) while trying
-            // to trust this runner's own summary for buyer-authorization-codes-postgres.test.mjs: the
-            // exit `code` below was always correct, but pass/fail/skipped silently read 0/0/0 on every
-            // suite regardless of the real outcome, defeating this file's own stated CAP-C66 purpose
-            // (verified directly: `node --test` on this Node version prints `# pass 10` / `# fail 0`
-            // on the real success case this suite now has, `# pass 0` / `# fail 10` when it does not).
+            psqlOn(cluster.name, `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`, { allowFailure: true });
+            // Node 22's `node --test` TAP output uses `# <label> <n>` and `not ok <n> - <name>`.
             const number = (label) => Number(out.match(new RegExp(`^# ${label} (\\d+)`, 'm'))?.[1] ?? 0);
-            const firstFailure = out.split('\n').find((line) => /^not ok \d+ - /.test(line)) ?? '';
-            resolve({
-                name: name.replace(/-postgres\.test\.mjs$|\.test\.mjs$/, ''),
-                code: timedOut ? 124 : code,
+            const lines = out.split('\n');
+            const failures = lines.filter((line) => /^not ok \d+ - /.test(line)).map((line) => line.replace(/ \([0-9.]+ms\)$/, ''));
+            const skips = lines.filter((line) => /^ok \d+ - .* # SKIP/.test(line)).map((line) => line.replace(/ \([0-9.]+ms\)$/, ''));
+            if (logDir) {
+                mkdirSync(logDir, { recursive: true });
+                writeFileSync(join(logDir, `${basename(suite, '.test.mjs')}.log`), out);
+            }
+            // Exit status is not trusted alone: a suite is red if the process failed, the TAP summary
+            // reports a failure or a cancellation, or there is no summary at all.
+            const hasSummary = /^# tests \d+/m.test(out);
+            const consistent = hasSummary && number('fail') === 0 && number('cancelled') === 0;
+            resolveResult({
+                name: basename(suite).replace(/-postgres\.test\.mjs$|\.test\.mjs$/, ''),
+                path: suite,
+                cluster: cluster.name,
+                code: timedOut ? 124 : (code ?? 1) !== 0 ? (code ?? 1) : consistent ? 0 : 1,
                 timedOut,
+                hasSummary,
+                tests: number('tests'),
                 pass: number('pass'),
                 fail: number('fail'),
+                cancelled: number('cancelled'),
                 skipped: number('skipped'),
+                todo: number('todo'),
                 seconds: Math.round((Date.now() - started) / 100) / 10,
-                firstFailure: firstFailure.replace(/ \([0-9.]+ms\)$/, '').slice(0, 96),
-                output: out,
+                firstFailure: (failures[0] ?? '').slice(0, 96),
+                failures,
+                skips,
             });
         });
     });
 }
 
-const results = [];
-let startupError = null;
-try {
-    startContainer();
-    for (const name of suites()) {
-        const result = await runSuite(name);
-        results.push(result);
-        if (!asJson) {
-            process.stdout.write(
-                `  ${result.name.padEnd(48)} ${String(result.code === 0 ? 'ok' : 'FAIL').padEnd(5)}` +
-                ` pass=${String(result.pass).padStart(3)} fail=${String(result.fail).padStart(2)}` +
-                ` ${String(result.seconds).padStart(6)}s${result.timedOut ? '  TIMED OUT' : ''}\n`);
+async function startClusters(count) {
+    for (let i = 0; i < count; i += 1) {
+        const name = count > 1 ? `${containerBase}-${i + 1}` : containerBase;
+        // Registered only once `docker run` succeeded: a name that was already taken belongs to
+        // someone else, and cleanup must never remove a container this run did not create.
+        startCluster({ name, database: sharedDatabase });
+        clusters.push({ name });
+    }
+    await Promise.all(clusters.map((cluster) => waitUntilAccepting(cluster.name)));
+}
+
+async function main() {
+    const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
+    if (flag('--reap-only')) {
+        const reaped = reapStaleClusters({ minAgeSeconds: reapMinAgeSeconds, log: warn });
+        process.stdout.write(JSON.stringify({ reaped }) + '\n');
+        return 0;
+    }
+
+    const suites = selectSuites();
+    if (flag('--list')) {
+        process.stdout.write(asJson ? JSON.stringify(suites, null, 2) + '\n' : suites.join('\n') + '\n');
+        return 0;
+    }
+    if (suites.length === 0) throw new Error('no suites selected');
+
+    const reaped = flag('--no-reap') ? [] : reapStaleClusters({ minAgeSeconds: reapMinAgeSeconds, log: warn });
+    let jobs = Math.max(1, Math.min(Number.isFinite(requestedJobs) ? requestedJobs : 1, suites.length));
+    // Parallel clusters are only isolated when each container is a real one. The cloud-sandbox docker
+    // shim (scripts/dev/docker-shim) maps every container name onto ONE native cluster, so parallel
+    // suites there would share roles and race; it does not implement `docker info`, which is the tell.
+    if (jobs > 1 && docker(['info'], { allowFailure: true }).status !== 0) {
+        warn('no real Docker daemon (shim or daemon down): running one suite at a time, parallel clusters would not be isolated');
+        jobs = 1;
+    }
+    const wallStart = Date.now();
+    const results = [];
+    let infrastructureError = null;
+
+    try {
+        await startClusters(jobs);
+        const queue = [...suites];
+        await Promise.all(clusters.map(async (cluster) => {
+            while (!shuttingDown) {
+                const suite = queue.shift();
+                if (!suite) return;
+                const result = await runSuite(suite, cluster);
+                results.push(result);
+                say(`  ${result.name.padEnd(48)} ${String(result.code === 0 ? 'ok' : 'FAIL').padEnd(5)}` +
+                    ` pass=${String(result.pass).padStart(3)} fail=${String(result.fail).padStart(2)}` +
+                    ` skip=${String(result.skipped).padStart(2)} ${String(result.seconds).padStart(6)}s${result.timedOut ? '  TIMED OUT' : ''}`);
+            }
+        }));
+    } catch (error) {
+        infrastructureError = error;
+    } finally {
+        removeClusters();
+    }
+
+    if (infrastructureError) {
+        warn(infrastructureError.message);
+        if (asJson) process.stdout.write(JSON.stringify({ infrastructureError: infrastructureError.message }) + '\n');
+        return 70;
+    }
+
+    results.sort((a, b) => a.path.localeCompare(b.path));
+    const failed = results.filter((r) => r.code !== 0);
+    const sum = (key) => results.reduce((total, r) => total + r[key], 0);
+    const wallSeconds = Math.round((Date.now() - wallStart) / 100) / 10;
+    const report = {
+        image: DEFAULT_IMAGE, jobs, containers: clusters.map((c) => c.name), reaped,
+        suites: results.length, failedSuites: failed.length,
+        tests: sum('tests'), assertionsPassed: sum('pass'), assertionsFailed: sum('fail'),
+        cancelled: sum('cancelled'), skipped: sum('skipped'), todo: sum('todo'),
+        wallSeconds, suiteSeconds: Math.round(sum('seconds') * 10) / 10,
+        results,
+    };
+    if (jsonOutPath) writeFileSync(jsonOutPath, JSON.stringify(report, null, 2));
+
+    if (asJson) {
+        process.stdout.write(JSON.stringify(report, null, 2) + '\n');
+    } else {
+        process.stdout.write(
+            `\nPOSTGRES SUITES  suites=${results.length}  failed=${failed.length}  jobs=${jobs}` +
+            `  tests=${sum('tests')} pass=${sum('pass')} fail=${sum('fail')} cancelled=${sum('cancelled')} skipped=${sum('skipped')} todo=${sum('todo')}` +
+            `  wall=${wallSeconds}s  image=${DEFAULT_IMAGE}\n`);
+        for (const r of failed) {
+            process.stdout.write(`  FAIL ${r.name}${r.timedOut ? ' (timed out)' : ''}\n` + (r.firstFailure ? `       ${r.firstFailure}\n` : ''));
         }
     }
-} catch (error) {
-    startupError = error;
-} finally {
-    removeContainer();
+    return Math.min(failed.length, 125);
 }
 
-if (startupError) {
-    process.stderr.write(`run-executable-suites: ${startupError.message}\n`);
-    process.exit(2);
-}
-
-const failed = results.filter((r) => r.code !== 0);
-const totalSeconds = Math.round(results.reduce((sum, r) => sum + r.seconds, 0) * 10) / 10;
-const totalPass = results.reduce((sum, r) => sum + r.pass, 0);
-const totalFail = results.reduce((sum, r) => sum + r.fail, 0);
-
-if (asJson) {
-    process.stdout.write(JSON.stringify({
-        container, image, suites: results.length, failedSuites: failed.length,
-        assertionsPassed: totalPass, assertionsFailed: totalFail, seconds: totalSeconds,
-        results: results.map(({ output, ...rest }) => rest),
-    }, null, 2) + '\n');
-} else {
-    process.stdout.write(
-        `\nEXECUTABLE SUITES  suites=${results.length}  failed=${failed.length}` +
-        `  assertions=${totalPass} passed / ${totalFail} failed  wall=${totalSeconds}s  image=${image}\n`);
-    for (const r of failed) {
-        process.stdout.write(`  FAIL ${r.name}${r.timedOut ? ' (timed out)' : ''}\n` +
-                             (r.firstFailure ? `       ${r.firstFailure}\n` : ''));
-    }
-}
-
-process.exit(failed.length);
+main().then((code) => process.exit(code), (error) => {
+    removeClusters();
+    warn(error.message);
+    process.exit(70);
+});

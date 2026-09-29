@@ -28,11 +28,18 @@ function isRunning() {
   return result.status === 0 && result.stdout.trim() === "true";
 }
 
+// The postgres image initialises through a temporary server that listens on the unix socket only,
+// stops it, then starts the real one, so a socket `pg_isready` can answer while the temporary server
+// is still up and the next query can hit its shutdown. The TCP probe is true only for the final
+// server; the query then confirms it end to end (see executable-pg-fixture.mjs for the measurement).
 function waitReady() {
   const started = Date.now();
   while (Date.now() - started < 30_000) {
-    const result = run("docker", ["exec", container, "pg_isready", "-U", "postgres", "-d", database], { allowFailure: true });
-    if (result.status === 0) return;
+    const tcp = run("docker", ["exec", container, "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", database], { allowFailure: true });
+    if (tcp.status === 0) {
+      const query = run("docker", ["exec", container, "psql", "-U", "postgres", "-d", "postgres", "-qAt", "-c", "select 1"], { allowFailure: true });
+      if (query.status === 0 && query.stdout.trim() === "1") return;
+    }
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 500);
   }
   throw new Error(`Postgres fixture did not become ready in ${container}`);

@@ -1,6 +1,7 @@
 import {
   createReporter,
   exists,
+  readFile,
   readJson,
 } from "./governance-common.mjs";
 
@@ -35,8 +36,15 @@ for (const file of requiredTestFiles) {
 }
 
 const packageJson = readJson("package.json");
-reporter.assert(packageJson?.scripts?.test?.includes("node --test"), "Root package.json must define node --test based governance test runner");
-reporter.assert(packageJson?.scripts?.test?.includes("test:contracts"), "Root test runner must invoke TypeScript contract tests");
+// The root `test` script is the wrapper, not an inline command chain: a `node --test ... && test:contracts`
+// chain never ran the contract tests once the first part failed. What must still hold is what the chain
+// was checked for -- a node --test governance runner and the TypeScript contract tests both run -- so
+// those are checked where they now live.
+const rootTestScript = packageJson?.scripts?.test ?? "";
+const behavioralWrapper = exists("scripts/governance/test-behavioral.mjs") ? readFile("scripts/governance/test-behavioral.mjs") : "";
+reporter.assert(/node scripts\/governance\/test-behavioral\.mjs/.test(rootTestScript), "Root package.json test script must run the governance test wrapper (scripts/governance/test-behavioral.mjs)");
+reporter.assert(behavioralWrapper.includes("'--test', '--test-concurrency=1'"), "Root test wrapper must define a node --test based governance test runner");
+reporter.assert(rootTestScript.includes("--with-contracts") && behavioralWrapper.includes("'test:contracts'"), "Root test runner must invoke TypeScript contract tests");
 reporter.assert(packageJson?.scripts?.["test:contracts"] === "tsx --test tests/contracts/*.test.ts", "Root package.json must run tests/contracts/*.test.ts with tsx");
 reporter.assert(Boolean(packageJson?.scripts?.["validate:tests"]), "Root package.json must define validate:tests");
 
