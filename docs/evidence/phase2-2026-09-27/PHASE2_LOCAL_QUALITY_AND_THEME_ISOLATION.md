@@ -1,8 +1,8 @@
 # Phase 2 — local quality gaps closed, theme tenant isolation reproducible, acceptance reconciled
 
 2026-09-29. Branch `letbuyy/phase2-shared-buyer-identity`, worktree `/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2`.
-Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b669d`). Last source commit before this
-document `be0f107a`; this document's own commit is the branch tip. Not merged, not pushed, not deployed.
+Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b669d`). Last source commit `be0f107a`; three
+documents-only commits follow it (§11), the last of which is the branch tip. Not merged, not pushed, not deployed.
 
 Execution mode: **SINGLE AGENT** · Subagents invoked: **NO** · Agent/Task delegation: **NO** · Background agents: **NO** ·
 Parallel worktree agents: **NO** · Workflow orchestration: **NO**. (Long test runs were waited on as background *shell
@@ -265,7 +265,7 @@ then `pnpm install --frozen-lockfile`:
 2026-09-29T08:22:35Z → 08:23:08Z (32 s), exit 0: **`TOTALS: PASS=114 FAIL=0 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1`** ("114 validators executed and
 passed; 115 discovered on disk"), `stale-artifact` passing. In the clone the branch-dispositions validator prints "not checked: develop ref
 missing locally" for each MERGED_DEVELOP row, because a fresh clone has no local `develop` branch; those rows are evaluated (and pass) in the
-worktree's sweep. The lane was run again at the final tip after the documents-only commit that recorded this table.
+worktree's sweep. It was run again at `17034d37`, the tip after the commit that recorded this table (114 pass, 0 fail, 08:24:25Z → 08:24:57Z), and once more at the final tip.
 
 ### 7.5 Package tests and builds
 
@@ -376,7 +376,9 @@ Commits on this task (all local, staged by explicit path, identity `SaaiSiddhu <
 | `3ed9b7eb` | fix(lint): render the settings header icon through a module-level component |
 | `18aa35b1` | fix(test): point theme-editor-aa at the merchant web app's current path |
 | `be0f107a` | test(security): prove the theme RLS in an owned cluster, under the roles and identity it is written for |
-| (this commit) | docs(evidence): Phase 2 local quality, theme isolation proof and acceptance reconciliation, with the dated corrections it cites |
+| `d3bed683` | docs(evidence): Phase 2 local quality, theme isolation proof and acceptance reconciliation, with the dated corrections it cites (this document) |
+| `17034d37` | docs(evidence): record the real governance lane and both app builds; tighten the acceptance record |
+| (branch tip) | docs(evidence): list this task's commits accurately (documents only) |
 
 Pre-existing dirty paths, preserved byte-identical and never staged: the nine `analysis_options.yaml` modifications
 (`git diff -- '*analysis_options.yaml'` sha256 `b8af63ad4a51f786`, 95 lines), `docs/evidence/local-environment-2026-09-28/RUNBOOK.md`
