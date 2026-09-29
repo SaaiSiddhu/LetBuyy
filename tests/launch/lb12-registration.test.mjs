@@ -1,10 +1,11 @@
 // LB-12 — Shopper registration. Verifies the register backend (gateway), the storefront proxy, the
-// api-client method, the route-count lockstep, and the HS256 issuer invariant. (Smoke / contract level.)
+// api-client method, the proxy's route-inventory ownership, and the HS256 issuer invariant. (Smoke / contract level.)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { classifyAppApiRoute, listAppApiRoutes } from '../../scripts/validators/app-api-route-inventory.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
@@ -12,7 +13,6 @@ const read = (p) => readFileSync(resolve(ROOT, p), 'utf8');
 const gateway = read('services/api-gateway/src/routes/storefront/customer-registration.ts');
 const proxy = read('apps/commerce/web/src/app/api/customer/register/route.ts');
 const apiClient = read('packages/typescript/api-client/src/index.ts');
-const validator = read('scripts/validators/domain-boundary-validator.mjs');
 
 test('LB-12: gateway exposes POST /customer/register', () => {
   assert.match(gateway, /router\.post\('\/customer\/register'/);
@@ -47,9 +47,14 @@ test('LB-12: storefront proxy re-mints locally + handles ACCOUNT_EXISTS', () => 
   assert.match(apiClient, /'\/storefront\/customer\/register'/);
 });
 
-test('LB-12: route-count lockstep applied (188 routes)', () => {
-  // This mirror tracks the validator's live pinned count in lockstep.
-  assert.match(validator, /appApiRoutes\.length === 188/);
+// The count is the validator's ratchet (scripts/validators/app-api-route-inventory.mjs, checked in
+// tests/federation/app-api-route-ownership.test.mjs). What LB-12 owes is that its proxy is inventoried
+// and is a plain gateway proxy: it forwards to the gateway and re-mints the session locally, and touches
+// no database.
+test('LB-12: the register proxy is inventoried as gateway-proxy', () => {
+  const route = 'apps/commerce/web/src/app/api/customer/register/route.ts';
+  assert.ok(listAppApiRoutes().includes(route), `${route} must be in the app-local API route inventory`);
+  assert.equal(classifyAppApiRoute(route), 'gateway-proxy');
 });
 
 // ── LB-12 (UI): the storefront account bottom-sheet now wires the register branch. The backend

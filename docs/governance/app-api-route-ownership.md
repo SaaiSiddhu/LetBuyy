@@ -24,6 +24,13 @@ This document records app-local API route authority for the P4 product remediati
 
 ## Inventory Changes
 
+> **Where the count lives now (2026-09-29).** The route ratchet and the classification rules moved into
+> `scripts/validators/app-api-route-inventory.mjs`; `domain-boundary-validator.mjs` enforces them and the
+> tests call into that module, so no test carries its own copy of the number. The list below stops at 129
+> (2026-06-13). Every later change (BUYER-4, APPID-P4a, APPID-SEC2, APPID-P4b, APPID-P4c, SUSTAINED-K, up
+> to the current count) is recorded in the change-log comments beside `APP_API_ROUTE_RATCHET` in that
+> module, which is the authority. Bumping the ratchet remains the deliberate, reviewed maintenance action.
+
 - 2026-06-12 (V1-LAUNCH-B2): inventory 115 → 123. Eight `gateway-proxy` routes added under `apps/merchant/web/src/app/api/stores/[store]/` for the LB-3/LB-4 money flows: `security/step-up`, `security/two-factor` (+ `enroll`, `verify`, `disable`), `orders/[orderId]/refund`, `payouts`, `payouts/[payoutId]/settle`. All translate the merchant session and call the canonical `/v1` gateway (step-up challenges, 2FA, payment refund, payout settle); none performs database writes or provider mutations locally.
 - 2026-06-12 (V1-LAUNCH-LB6): inventory 123 → 124. One `gateway-proxy` route added: `apps/merchant/web/src/app/api/stores/[store]/collections/[collectionId]/products/route.ts`. Supports GET (list assigned products) and PUT (replace assignment set) for collection-product management; proxies to the canonical `/v1/products/collections/:id/products` gateway endpoints via `createMerchantApiClient().products.collections.listProducts/replaceProducts`; no database writes or domain mutations locally.
 
