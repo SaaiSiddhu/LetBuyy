@@ -68,7 +68,11 @@ test('the catalog puts every suite in exactly one class, and the live list is th
     assert.equal(pure.length + postgres.length + live.length, all.length, 'no suite is in two classes or in none');
     assert.equal(new Set([...pure, ...postgres, ...live]).size, all.length);
     assert.deepEqual(live, LIVE_EXTERNAL_SUITES);
-    assert.deepEqual(LIVE_EXTERNAL_SUITES, ['tests/security/theme-tenant-isolation.test.mjs']);
+    assert.deepEqual(LIVE_EXTERNAL_SUITES, [], 'no suite is left that reads a database it did not build; adding one is a reviewed decision');
+    assert.ok(
+        postgres.includes('tests/security/theme-tenant-isolation.test.mjs'),
+        'the theme isolation proof builds its own database in an owned cluster, so it can neither skip itself nor touch anyone else\'s',
+    );
     for (const guarded of [
         'checkout-order-concurrency', 'gift-card-issue-idempotency', 'late-capture-after-release', 'money-rpc-idempotency-sweep',
     ]) {
@@ -83,13 +87,27 @@ test('the catalog derives the class from the source, so a new suite cannot fall 
     try {
         mkdirSync(join(root, 'tests/security'), { recursive: true });
         mkdirSync(join(root, 'tests/newdir'), { recursive: true });
-        writeFileSync(join(root, 'tests/security/theme-tenant-isolation.test.mjs'), '// live\n');
+        writeFileSync(join(root, 'tests/security/reads-a-live-database.test.mjs'), '// live\n');
         writeFileSync(join(root, 'tests/newdir/db.test.mjs'), `const c = ${CONTAINER_ENV} || 'x';\n`);
         writeFileSync(join(root, 'tests/newdir/plain.test.mjs'), `import test from 'node:test';\n`);
-        const { pure, postgres, live } = discoverSuites(root);
+        // The real list is empty, so the live class is exercised through the reviewed-list parameter.
+        const { pure, postgres, live } = discoverSuites(root, ['tests/security/reads-a-live-database.test.mjs']);
         assert.deepEqual(postgres, ['tests/newdir/db.test.mjs']);
         assert.deepEqual(pure, ['tests/newdir/plain.test.mjs']);
-        assert.deepEqual(live, ['tests/security/theme-tenant-isolation.test.mjs']);
+        assert.deepEqual(live, ['tests/security/reads-a-live-database.test.mjs']);
+        assert.deepEqual(discoverSuites(root).live, [], 'with the real (empty) list nothing is live');
+    } finally {
+        rmSync(root, { recursive: true, force: true });
+    }
+});
+
+test('a live-external entry must exist on disk and must not also target the owned container', () => {
+    const root = mkdtempSync(join(tmpdir(), 'letbuyy-catalog-'));
+    try {
+        mkdirSync(join(root, 'tests/security'), { recursive: true });
+        writeFileSync(join(root, 'tests/security/both.test.mjs'), `const c = ${CONTAINER_ENV} || 'x';\n`);
+        assert.throws(() => discoverSuites(root, ['tests/security/both.test.mjs']), /also targets the owned Postgres container/);
+        assert.throws(() => discoverSuites(root, ['tests/security/gone.test.mjs']), /catalog is stale/);
     } finally {
         rmSync(root, { recursive: true, force: true });
     }

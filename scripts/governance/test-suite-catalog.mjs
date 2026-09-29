@@ -7,17 +7,22 @@
 //             These run only inside owned, disposable clusters (executable-pg-fixture.mjs).
 //   live      a suite that reads a LIVE, already-running Supabase database instead. It never gets an
 //             owned cluster and is never pointed at one; it reports its own skip when that database
-//             is absent. The list is explicit and reviewed: adding to it is a decision.
+//             is absent. The list is explicit and reviewed: adding to it is a decision. It is EMPTY
+//             today: the one suite that lived here (theme tenant isolation) skipped itself on every
+//             machine without a Supabase stack of one particular name, and needed a role grant and an
+//             auth.uid() the repository does not provide, so it builds its own database in an owned
+//             cluster instead (2026-09-29). A live suite must never write to, or replace anything in,
+//             the database it reads.
 //   pure      everything else: needs no database.
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-export const LIVE_EXTERNAL_SUITES = ['tests/security/theme-tenant-isolation.test.mjs'];
+export const LIVE_EXTERNAL_SUITES = [];
 
 const POSTGRES_MARKER = /process\.env\.LETBUYY_EXECUTABLE_PG_CONTAINER/;
 
-export function discoverSuites(repoRoot) {
+export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
     const all = [];
     for (const dir of readdirSync(join(repoRoot, 'tests'), { withFileTypes: true })) {
         if (!dir.isDirectory()) continue;
@@ -27,7 +32,7 @@ export function discoverSuites(repoRoot) {
     }
     all.sort();
 
-    const missingLive = LIVE_EXTERNAL_SUITES.filter((suite) => !all.includes(suite));
+    const missingLive = liveExternal.filter((suite) => !all.includes(suite));
     if (missingLive.length > 0) {
         throw new Error(`live-external suite(s) not found on disk, the catalog is stale: ${missingLive.join(', ')}`);
     }
@@ -37,7 +42,7 @@ export function discoverSuites(repoRoot) {
     const pure = [];
     for (const suite of all) {
         const usesOwnedPostgres = POSTGRES_MARKER.test(readFileSync(join(repoRoot, suite), 'utf8'));
-        if (LIVE_EXTERNAL_SUITES.includes(suite)) {
+        if (liveExternal.includes(suite)) {
             if (usesOwnedPostgres) throw new Error(`${suite} is listed as live-external but also targets the owned Postgres container`);
             live.push(suite);
         } else if (usesOwnedPostgres) {

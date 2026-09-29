@@ -11,9 +11,10 @@
 // docs/evidence/appid-2026-09-24/SUSTAINED_J.md, workstream 2d). This version is that phase.
 //
 // WHAT RUNS WHERE (classification: scripts/governance/test-suite-catalog.mjs)
-//   pure + live   `node --test --test-concurrency=1`, no database. The live suite (theme tenant
-//                 isolation) reads an already-running Supabase database and reports its own suite-level
-//                 skip when there is none; this wrapper surfaces that skip instead of hiding it.
+//   pure + live   `node --test --test-concurrency=1`, no database. "live" is the class of a suite that
+//                 reads an already-running database and reports its own suite-level skip when there is
+//                 none; this wrapper surfaces that skip instead of hiding it. The class is EMPTY today
+//                 (theme tenant isolation moved to an owned cluster on 2026-09-29), so nothing here skips.
 //   postgres      scripts/governance/run-executable-suites.mjs: owned, disposable clusters, one suite
 //                 at a time inside each, several clusters in parallel. The shared container is not used.
 //   contracts     `pnpm run test:contracts` (tsx), only with --with-contracts (the root `test` script).
