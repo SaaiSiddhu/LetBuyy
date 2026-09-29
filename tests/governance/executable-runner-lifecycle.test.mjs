@@ -29,7 +29,8 @@ const needsDocker = realDocker ? false : 'a real Docker daemon is required (the 
 
 const docker = (args) => spawnSync('docker', args, { encoding: 'utf8' });
 const containerExists = (name) => docker(['ps', '-a', '--filter', `name=^/${name}$`, '--format', '{{.Names}}']).stdout.trim() === name;
-const uniqueName = (label) => `letbuyy-lifecycle-${label}-${process.pid}-${Date.now().toString(36)}`;
+// A cluster name given to --container must be one the runner allocates (letbuyy-exec-...); it refuses any other before a docker command runs.
+const uniqueName = (label) => `letbuyy-exec-lifecycle-${label}-${process.pid}-${Date.now().toString(36)}`;
 
 function suiteDir(files) {
     const dir = mkdtempSync(join(tmpdir(), 'letbuyy-runner-lifecycle-'));
@@ -191,7 +192,7 @@ test('a name that is already taken is an infrastructure error and the other cont
         assert.match(JSON.parse(run.stdout).infrastructureError, /docker run failed/);
         assert.equal(containerExists(taken), true, 'cleanup removes only what this run created');
     } finally {
-        docker(['rm', '-f', taken]);
+        docker(['rm', '-f', '-v', taken]);
         rmSync(dir, { recursive: true, force: true });
     }
 });
@@ -207,7 +208,7 @@ test('SIGTERM removes the run\'s clusters and exits 143', { skip: needsDocker },
         assert.equal(await closed, 143);
         assert.equal(containerExists(base), false);
     } finally {
-        docker(['rm', '-f', base]);
+        docker(['rm', '-f', '-v', base]);
         rmSync(dir, { recursive: true, force: true });
     }
 });
@@ -241,7 +242,97 @@ test('a run killed with SIGKILL leaves one labeled orphan, and only that kind of
         assert.equal(containerExists(live), true);
         assert.equal(containerExists(unlabeled), true);
     } finally {
-        for (const name of [orphanBase, live, unlabeled]) docker(['rm', '-f', name]);
+        for (const name of [orphanBase, live, unlabeled]) docker(['rm', '-f', '-v', name]);
         rmSync(dir, { recursive: true, force: true });
+    }
+});
+
+// ---- no real Docker daemon: the cloud-sandbox shim (scripts/dev/docker-shim) ---------------------------------------------
+//
+// The shim models `run`, `exec` and `inspect` of one Postgres container and nothing else: no `info`, no image, network or
+// volume subcommand. The runner must keep working there for Postgres suites (the flow the shim was written for), must never
+// ask it for something it cannot do, and must report a gateway database suite red with the reason rather than skip or fake
+// it. A recording docker that answers exactly like the shim stands in for it, so this needs no daemon and runs everywhere.
+
+function withShimDocker(body) {
+    const dir = mkdtempSync(join(tmpdir(), 'letbuyy-shim-docker-'));
+    const log = join(dir, 'calls.log');
+    writeFileSync(join(dir, 'docker'), [
+        '#!/bin/sh',
+        `echo "$@" >> "${log}"`,
+        'case "$1" in',
+        '  info) exit 1 ;;',
+        '  run) echo fake-container-id; exit 0 ;;',
+        '  inspect) exit 0 ;;',
+        '  exec)',
+        '    shift; [ "$1" = "-i" ] && shift; shift',
+        '    case "$1" in pg_isready) exit 0 ;; psql) echo 1; exit 0 ;; *) exit 1 ;; esac ;;',
+        '  *) echo "docker-shim: unsupported command $1" >&2; exit 1 ;;',
+        'esac',
+        '',
+    ].join('\n'), { mode: 0o755 });
+    const calls = () => {
+        try {
+            return readFileSync(log, 'utf8').split('\n').filter(Boolean);
+        } catch {
+            return [];
+        }
+    };
+    try {
+        return body({ dir, calls, env: { ...process.env, PATH: `${dir}:${process.env.PATH}` } });
+    } finally {
+        rmSync(dir, { recursive: true, force: true });
+    }
+}
+
+const TRIVIAL_SUITE = `import test from 'node:test';\ntest('ok', () => {});\n`;
+
+test('with no Docker daemon a Postgres suite still runs through the shim-compatible flow, and the runner asks the shim for nothing it cannot do', () => {
+    const suites = suiteDir({ 'a-ok.test.mjs': TRIVIAL_SUITE });
+    try {
+        withShimDocker(({ calls, env }) => {
+            const run = spawnSync('node', [runner, '--suite-dir', suites, '--json', '--jobs', '2', '--no-reap'], { cwd: repoRoot, encoding: 'utf8', env });
+            const report = JSON.parse(run.stdout);
+            assert.equal(run.status, 0, `${run.stderr}${run.stdout}`);
+            assert.equal(report.suites, 1);
+            assert.equal(report.failedSuites, 0);
+            assert.equal(report.results[0].code, 0);
+            const log = calls();
+            assert.ok(log.some((line) => line.startsWith('run -d --pull never --name letbuyy-exec-')), 'the cluster was started with the invocation the shim models (the shim ignores the pull flag, and no docker run may pull)');
+            for (const forbidden of [/\bnetwork\b/, /\bvolume\b/, /\bimage\b/, /^pull /, /--mount/, /--network/, /--memory/, /--pids-limit/, /--read-only/]) {
+                assert.equal(log.filter((line) => forbidden.test(line) && !/^rm /.test(line)).length, 0, `the shim has no ${forbidden}, so it is never asked: ${log.filter((line) => forbidden.test(line)).join(' | ')}`);
+            }
+        });
+    } finally {
+        rmSync(suites, { recursive: true, force: true });
+    }
+});
+
+test('with no Docker daemon a gateway database suite is red with the reason, never skipped, and no cluster is started for it', () => {
+    const gateway = suiteDir({ 'a-gateway.test.ts': `import test from 'node:test';\ntest('never runs', () => {});\n` });
+    const postgres = suiteDir({ 'b-ok.test.mjs': TRIVIAL_SUITE });
+    try {
+        withShimDocker(({ calls, env }) => {
+            const alone = spawnSync('node', [runner, '--suite-dir', gateway, '--kind', 'gateway-db', '--json', '--no-reap'], { cwd: repoRoot, encoding: 'utf8', env });
+            const aloneReport = JSON.parse(alone.stdout);
+            assert.equal(alone.status, 1, 'one failing suite');
+            assert.equal(aloneReport.results[0].kind, 'gateway-db');
+            assert.notEqual(aloneReport.results[0].code, 0);
+            assert.equal(aloneReport.results[0].skipped, 0, 'refused, not skipped');
+            assert.match(aloneReport.results[0].failures.join(' '), /no real Docker daemon answers `docker info`; the gateway database lane needs one/);
+            assert.equal(aloneReport.results[0].ownership, 'not started');
+            assert.equal(calls().some((line) => line.startsWith('run ')), false, 'no cluster was started for a run that has nothing to run');
+
+            // Mixed selection: the Postgres suite keeps its flow, the gateway suite is refused beside it.
+            const mixed = spawnSync('node', [runner, '--suite', join(postgres, 'b-ok.test.mjs'), '--suite', 'services/api-gateway/src/__tests__/owned-db/gst-tax-computation.test.ts', '--json', '--no-reap'], { cwd: repoRoot, encoding: 'utf8', env });
+            const mixedReport = JSON.parse(mixed.stdout);
+            assert.equal(mixed.status, 1);
+            const byKind = Object.fromEntries(mixedReport.results.map((entry) => [entry.kind, entry]));
+            assert.equal(byKind.postgres.code, 0);
+            assert.notEqual(byKind['gateway-db'].code, 0);
+        });
+    } finally {
+        rmSync(gateway, { recursive: true, force: true });
+        rmSync(postgres, { recursive: true, force: true });
     }
 });

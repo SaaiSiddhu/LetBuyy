@@ -17,6 +17,11 @@
 //                 (theme tenant isolation moved to an owned cluster on 2026-09-29), so nothing here skips.
 //   postgres      scripts/governance/run-executable-suites.mjs: owned, disposable clusters, one suite
 //                 at a time inside each, several clusters in parallel. The shared container is not used.
+//   gateway db    the gateway's real-database suites (services/api-gateway/src/__tests__/owned-db). The SAME runner
+//                 invocation as `postgres` -- one set of owned clusters -- reported as its own group so the table
+//                 never blends them: each suite gets a database cloned from a pristine, fully migrated template, a
+//                 real PostgREST and a proven-ownership check, and may not skip. The gateway's fast unit lane
+//                 (`pnpm run test:unit:gateway`) does not include them and is NOT full gateway acceptance.
 //   contracts     `pnpm run test:contracts` (tsx), only with --with-contracts (the root `test` script).
 // Every group always runs: a failure in one never stops or hides another (the old `a && b` root script
 // never ran the contract tests once the first part failed).
@@ -72,45 +77,61 @@ function runTapGroup(label, suites, command, commandArgs) {
     });
 }
 
-function runPostgresGroup(suites) {
+// One runner invocation, two groups in the table. Each group is red on its own suites' results; an infrastructure or
+// cleanup failure of the run itself (exit 70 / 71) is not attributable to either group, so it reddens both.
+function runOwnedClusterGroups(postgresSuites, gatewaySuites) {
     return new Promise((resolve) => {
-        const stats = newStats('postgres (owned clusters)', suites.length);
+        const groups = [
+            { kind: 'postgres', stats: newStats('postgres (owned clusters)', postgresSuites.length) },
+            { kind: 'gateway-db', stats: newStats('gateway database (owned)', gatewaySuites.length) },
+        ];
         const jsonOut = join(mkdtempSync(join(tmpdir(), 'letbuyy-pg-group-')), 'runner.json');
         const child = spawn('node', ['scripts/governance/run-executable-suites.mjs', '--json-out', jsonOut], { cwd: repoRoot, env: childEnv(), stdio: 'inherit' });
         child.on('close', (code, signal) => {
-            stats.code = code ?? (signal ? 128 : 1);
+            const exit = code ?? (signal ? 128 : 1);
+            const runLevelFailure = exit === 70 || exit === 71 || signal ? exit : 0;
+            let report = null;
             try {
-                const report = JSON.parse(readFileSync(jsonOut, 'utf8'));
+                report = JSON.parse(readFileSync(jsonOut, 'utf8'));
+            } catch {
+                report = null;
+            }
+            for (const { kind, stats } of groups) {
+                if (!report) {
+                    stats.code = exit;
+                    stats.hasSummary = false;
+                    continue;
+                }
+                const results = report.results.filter((result) => result.kind === kind);
                 stats.hasSummary = true;
-                stats.suites = report.suites;
-                for (const key of ['tests', 'cancelled', 'skipped', 'todo']) stats[key] = report[key];
-                stats.pass = report.assertionsPassed;
-                stats.fail = report.assertionsFailed;
-                for (const result of report.results) {
+                stats.suites = results.length;
+                for (const key of ['tests', 'cancelled', 'skipped', 'todo']) stats[key] = results.reduce((sum, result) => sum + result[key], 0);
+                stats.pass = results.reduce((sum, result) => sum + result.pass, 0);
+                stats.fail = results.reduce((sum, result) => sum + result.fail, 0);
+                stats.code = runLevelFailure || results.filter((result) => result.code !== 0).length;
+                for (const result of results) {
                     for (const title of result.failures) stats.failing.push(`${result.path} :: ${title.replace(/^not ok \d+ - /, '')}`);
                     for (const title of result.skips) stats.skips.push(`${result.path} :: ${title.replace(/^ok \d+ - /, '')}`);
                     if (result.code !== 0 && result.failures.length === 0) {
                         stats.failing.push(`${result.path} :: exited ${result.code}${result.hasSummary ? '' : ' with no TAP summary'} without a failing test line`);
                     }
                 }
-            } catch {
-                stats.hasSummary = false;
             }
-            resolve(stats);
+            resolve(groups.map((group) => group.stats));
         });
     });
 }
 
-const { pure, postgres, live } = discoverSuites(repoRoot);
+const { pure, postgres, live, gatewayDb } = discoverSuites(repoRoot);
 console.log(
-    `test-behavioral: ${pure.length + postgres.length + live.length} suites -- ${pure.length} pure, ` +
-    `${live.length} live-external (self-skipping), ${postgres.length} postgres (owned clusters)` +
-    `${withContracts ? ', + tests/contracts' : ''}`,
+    `test-behavioral: ${pure.length + postgres.length + live.length + gatewayDb.length} suites -- ${pure.length} pure, ` +
+    `${live.length} live-external (self-skipping), ${postgres.length} postgres (owned clusters), ` +
+    `${gatewayDb.length} gateway database (owned)${withContracts ? ', + tests/contracts' : ''}`,
 );
 
 const groups = [];
 groups.push(await runTapGroup('pure + live', pure.length + live.length, 'node', ['--test', '--test-concurrency=1', ...pure, ...live]));
-groups.push(await runPostgresGroup(postgres));
+groups.push(...await runOwnedClusterGroups(postgres, gatewayDb));
 if (withContracts) groups.push(await runTapGroup('contracts', null, 'pnpm', ['run', 'test:contracts']));
 
 const total = totalOf(groups);

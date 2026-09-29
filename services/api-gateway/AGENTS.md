@@ -32,3 +32,10 @@ Tenant rules:
 - Every merchant-owned mutation must resolve `site_id` or prove explicit store ownership.
 - Payment, checkout, and webhook-facing mutations must be idempotent.
 - Unknown errors must return sanitized `AppError` responses.
+
+Test lanes (P2-HERMETIC-GATEWAY-DB, 2026-09-29):
+
+- `pnpm --filter @letbuyy/api-gateway run test:unit` is the fast unit lane: `src/__tests__/*.test.ts` (the glob does not descend). It needs no database and no Docker, and it is **not** full gateway acceptance.
+- `pnpm --filter @letbuyy/api-gateway run test:db` is the isolated database lane: every `src/__tests__/owned-db/*.test.ts`, run only through `scripts/governance/run-executable-suites.mjs --gateway-db`. Each suite gets its own database cloned from a fully migrated template, a real PostgREST and a proven-ownership check. It needs Docker and two images the runner names; it never pulls one on a workstation. `pnpm --filter @letbuyy/api-gateway run test` is the acceptance: unit, then database, then contracts.
+- A test that needs a real database goes in `owned-db/`, obtains it only through `requireOwnedDatabase()`, builds its own synthetic tenant (`owned-db/synthetic-tenant.ts`), never deletes an immutable or protected row by hand and never skips: the database is discarded with the suite. A unit-lane test must not run processes, name docker, read `.dev.vars` or depend on any store that already exists. `tests/governance/gateway-db-lane.test.mjs` pins all of this.
+- No gateway test may write to a developer's own stack, hosted or local. The restored development stack (`supabase_*` containers) is refused by name, label and image before any statement is sent.

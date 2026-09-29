@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import test from 'node:test';
+import test, { before } from 'node:test';
 import { createSupabaseServiceClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
+import { createTenantGuardedSupabaseClient } from '../../tenant/tenant-scoped';
+import { requireOwnedDatabase } from './owned-db-support';
+import { newSyntheticTenant, seedSyntheticOrder, seedSyntheticTenant } from './synthetic-tenant';
 
 // T16: the merchant app could not see its own data. hydrateOrderItems (routes/orders.ts) called
 // order_items with no site_id/store_id predicate at all; four inventory.ts/commerce-analytics.ts
@@ -19,54 +19,41 @@ import { createTenantGuardedSupabaseClient } from '../tenant/tenant-scoped';
 // Money-table discipline: no row is ever DELETEd by this file; all inserts are additive to a
 // disposable test store created via direct DB inserts (mirroring T8-T15's fixture pattern).
 //
-// Guarded: skips (not fails) if the local Supabase Postgres container is not reachable.
+// Runs only in the owned database lane (scripts/governance/run-executable-suites.mjs): the REST layer under test is the
+// real PostgREST the runner started for this suite, in front of a database cloned for it alone, and every row below is
+// created there. There is no skip path.
 
-const CONTAINER = process.env.LETBUYY_LOCAL_SUPABASE_CONTAINER || 'supabase_db_letbuyy-newmac-20260926';
-// Snaz-fixture follow-up (2026-09-28): snaz is seeded by scripts/dev/seed-snaz-fixture.mjs
-// (idempotent -- run it once against a fresh local database). It carries at least one real order,
-// used read-only below -- this file's own assertions only ever check `.length > 0`, never an exact
-// count, so the historical "65 real orders" this comment once described is not required to hold.
-const STORE_ID = '9c047c9a-1ea3-4438-b1f7-4a9d1a123adb'; // snaz -- real orders exist, used read-only
+const owned = requireOwnedDatabase();
+const { psql } = owned;
 
-function dbAvailable(): boolean {
-    try {
-        execFileSync('docker', ['exec', CONTAINER, 'psql', '-U', 'postgres', '-d', 'postgres', '-c', 'SELECT 1'], {
-            stdio: 'ignore',
-            timeout: 5000,
-        });
-        return true;
-    } catch {
-        return false;
-    }
-}
+// A store that already carries a real order (placed through the real create_checkout_order RPC), built inside this
+// suite's own database. The first two tests read it and assert only `.length > 0`, never an exact count.
+const tenant = newSyntheticTenant('mtp');
+const STORE_ID = tenant.siteId;
+// A second, unrelated tenant with an order of its own, so that "cross-tenant sees nothing" is a claim about rows that exist.
+const rival = newSyntheticTenant('mtp-rival');
+let rivalOrderId = '';
+let ownOrderId = '';
 
-function psql(sql: string): string {
-    return execFileSync(
-        'docker',
-        ['exec', CONTAINER, 'psql', '-U', 'postgres', '-d', 'postgres', '-At', '-F', '|', '-c', sql],
-        { encoding: 'utf8', timeout: 15000 },
-    ).trim();
-}
+before(() => {
+    seedSyntheticTenant(psql, tenant, { gst: true });
+    ownOrderId = seedSyntheticOrder(psql, tenant).orderId;
+    seedSyntheticTenant(psql, rival, { gst: true });
+    rivalOrderId = seedSyntheticOrder(psql, rival).orderId;
+});
 
 function client() {
-    const devVars = readFileSync(new URL('../../.dev.vars', import.meta.url), 'utf8');
-    const env: Record<string, string> = {};
-    for (const line of devVars.split('\n')) {
-        const m = line.match(/^([A-Z_]+)=(.*)$/);
-        if (m) env[m[1]] = m[2];
-    }
-    const raw = createSupabaseServiceClient(env as never);
+    const raw = createSupabaseServiceClient(owned.restEnv());
     return createTenantGuardedSupabaseClient(raw as never);
 }
 
 test(
     'hydrateOrderItems\' exact query shape: no predicate throws, the real fix (scoped by store_id) loads real rows, and cross-tenant sees nothing',
-    { skip: !dbAvailable() && 'local Supabase Postgres container not reachable' },
     async () => {
         const guarded = client();
         const rawIds = psql(`SELECT id FROM orders WHERE site_id = '${STORE_ID}'::uuid LIMIT 65;`);
         const orderIds = rawIds.split('\n').filter(Boolean);
-        assert.ok(orderIds.length > 0, 'snaz must carry real orders for this proof to mean anything');
+        assert.ok(orderIds.length > 0, 'the store under test must carry real orders for this proof to mean anything');
 
         await assert.rejects(
             Promise.resolve(guarded
@@ -86,13 +73,40 @@ test(
             .is('deleted_at', null);
         assert.equal(error, null);
         assert.ok((data || []).length > 0, 'the fixed shape must actually return real order_items rows');
-        assert.ok((data || []).every((row: { store_id: string }) => row.store_id === STORE_ID), 'every returned row must belong to snaz');
+        assert.ok((data || []).every((row: { store_id: string }) => row.store_id === STORE_ID), 'every returned row must belong to the store under test');
+
+        // Cross-tenant sees nothing. The control first: in the database the two tenants' lines really are side by side (the
+        // unguarded client, asked for both orders, gets both stores back), so the empty answers below are isolation and not
+        // an absence of data.
+        const control = await createSupabaseServiceClient(owned.restEnv())
+            .from('order_items')
+            .select('store_id')
+            .in('order_id', [ownOrderId, rivalOrderId]);
+        assert.equal(control.error, null);
+        assert.deepEqual([...new Set((control.data || []).map((row: { store_id: string }) => row.store_id))].sort(), [STORE_ID, rival.siteId].sort(), 'both tenants have order lines in this database');
+
+        const across = await guarded
+            .from('order_items')
+            .select('id, order_id, store_id')
+            .eq('store_id', STORE_ID)
+            .in('order_id', [rivalOrderId])
+            .is('deleted_at', null);
+        assert.equal(across.error, null);
+        assert.deepEqual(across.data, [], 'the other tenant\'s order, asked for under this tenant\'s scope, returns no lines');
+
+        const rivalOwn = await guarded
+            .from('order_items')
+            .select('id, store_id')
+            .eq('store_id', rival.siteId)
+            .in('order_id', orderIds)
+            .is('deleted_at', null);
+        assert.equal(rivalOwn.error, null);
+        assert.deepEqual(rivalOwn.data, [], 'and this tenant\'s order, asked for under the other tenant\'s scope, returns none either');
     },
 );
 
 test(
     'inventory_levels\' join-only predicate (products.store_id) is refused by the guard; the table\'s own store_id column is required, and isolation holds across stores',
-    { skip: !dbAvailable() && 'local Supabase Postgres container not reachable' },
     async () => {
         const guarded = client();
 
@@ -111,13 +125,12 @@ test(
             .eq('store_id', STORE_ID)
             .in('products.store_id', [STORE_ID]);
         assert.equal(error, null);
-        assert.ok((data || []).length > 0, 'the fixed shape must return real inventory rows for snaz');
+        assert.ok((data || []).length > 0, 'the fixed shape must return real inventory rows for the store under test');
     },
 );
 
 test(
     'a genuine end-to-end order-lines edit (PATCH .../line-items shape) can add and read back a line under the tenant guard, scoped to a disposable test store',
-    { skip: !dbAvailable() && 'local Supabase Postgres container not reachable' },
     async () => {
         const guarded = client();
         const suffix = Date.now().toString(36);

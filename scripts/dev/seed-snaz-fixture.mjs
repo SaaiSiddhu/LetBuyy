@@ -2,6 +2,10 @@
 // Seeds the shared "snaz" merchant fixture (see seed-snaz-fixture.sql for the full why/what).
 // Idempotent -- safe to re-run any number of times against the same local database.
 //
+// This is a manual local-development seed for the developer's own stack. The gateway's database test suites do NOT use
+// it: since P2-HERMETIC-GATEWAY-DB they build their own synthetic tenants in a database the executable-suite runner owns
+// (services/api-gateway/src/__tests__/owned-db/), and never touch the developer's stack.
+//
 // Usage: node scripts/dev/seed-snaz-fixture.mjs
 
 import { execFileSync } from 'node:child_process';

@@ -69,9 +69,10 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
     // unguarded client, exactly as production code must -- see that file's own "CLIENT CONTRACT" note
     // for why site_roles' site_id-IS-NULL lookup cannot satisfy the tenant guard. This is the one
     // caller not itself in routes/ or lib/, because it is the one caller proving the real, non-test
-    // construction path this allowlist exists to review.
-    '__tests__/real-http-shadow-rehearsal.postgres.test.ts': {
-        why: 'exercises the real ensureOwnerRole bootstrap path (global owner role lookup) exactly as production callers must, against real local Postgres',
+    // construction path this allowlist exists to review. (P2-HERMETIC-GATEWAY-DB, 2026-09-29: the file moved to
+    // __tests__/owned-db/ with the gateway's other real-database suites; the entry follows it, unchanged in purpose.)
+    '__tests__/owned-db/real-http-shadow-rehearsal.postgres.test.ts': {
+        why: 'exercises the real ensureOwnerRole bootstrap path (global owner role lookup) exactly as production callers must, against a real Postgres the executable-suite runner owns for that suite',
         boundedIn: { file: 'identity-foundation/owner-role-backfill.ts', symbol: 'findOrCreateOwnerRoleId' },
     },
 };

@@ -123,6 +123,8 @@
     "test:behavioral": "node scripts/governance/test-behavioral.mjs",
     "test:contracts": "tsx --test tests/contracts/*.test.ts",
     "test:unit:gateway": "pnpm --filter @letbuyy/api-gateway run test:unit",
+    "test:db:gateway": "pnpm --filter @letbuyy/api-gateway run test:db",
+    "test:gateway": "pnpm --filter @letbuyy/api-gateway run test",
     "test:workspaces": "turbo test",
     "typecheck": "turbo typecheck --continue --filter=!@letbuyy/app-marketplace --filter=!@letbuyy/theme-marketplace --filter=!@letbuyy/developer-portal --filter=!@letbuyy/platform-operations-portal",
     "foundation:pg:start": "node scripts/governance/foundation-ephemeral-postgres.mjs start",

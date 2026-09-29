@@ -14,7 +14,7 @@
 // synchronously on `.then()`, before any network call, so a rejection here is the guard itself,
 // and an ACCEPTANCE that then fails is a network error, never the guard's message -- the same
 // technique __tests__/product-tenant-guard.test.ts's negative control and
-// __tests__/merchant-tenant-predicate.test.ts use.
+// __tests__/owned-db/merchant-tenant-predicate.test.ts use.
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
