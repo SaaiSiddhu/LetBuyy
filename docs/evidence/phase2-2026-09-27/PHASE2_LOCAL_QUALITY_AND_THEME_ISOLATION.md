@@ -14,7 +14,7 @@ commands*; they are processes, not agents.)
 
 | Objective | Result |
 |---|---|
-| A. Stale next-task / acceptance claims | Corrected in place with dated notes, history kept; the drop-`site_memberships`/`site_roles` instruction is superseded; a fourth stale claim (the shadow-lookup timeout "gap") found and corrected. No table dropped, none authorized (§3). |
+| A. Stale next-task / acceptance claims | Corrected in place with dated notes, history kept; the drop-`site_memberships`/`site_roles` instruction is superseded; a further stale claim (the shadow-lookup timeout "gap") found and corrected. No table dropped, none authorized (§3). |
 | B. Lint | 42 errors → **0**, no rule weakened, disabled, baselined (hex) or excluded; `turbo lint` 5/5 packages exit 0 (§4). |
 | C. Theme tenant isolation | Reproducible from repository state in an owned cluster under the intended roles; 23 tests, five real-migration mutations and eight in-suite broken policy sets all fail it; **no grant added, no policy changed** (§5). |
 | D. Final checks | Accounted test by test, skip by skip (§7). |
@@ -54,7 +54,7 @@ of that day (three read call sites, zero writers) and stopped being true on 2026
 dropped by this or any earlier task, and this task authorizes no deletion. Corrected in place, each with a dated note and the
 original text kept (commit `eab3ee5b`): `PHASE2_CLOSURE.md` (status matrix row and "Exact next task"),
 `F2.5_MERCHANT_STAFF_CONVERGENCE.md`, `PHASE2_TEST_BASELINE_RECONCILIATION.md` (§16 and §14), `PHASE2_TRANSITION_PLAN.md`
-(status note), and the session memory. This task's own commit adds three more dated notes (§3.4).
+(status note), and the session memory. This task's docs commit adds further dated notes to three of those documents (§3.4).
 
 ### 3.3 Four kinds of evidence that must not be conflated
 
@@ -109,7 +109,7 @@ now fails, for both hand-listed workspaces, on an unnamed test, a glob path or a
 
 `tests/security/theme-tenant-isolation.test.mjs` did not pass from repository state and skipped itself on every machine
 without a Supabase container of one particular name (`PHASE2_TEST_BASELINE_RECONCILIATION.md` §11.4). It was hand-provisioned
-to green twice: with a `SELECT` grant for `app_tenant` on `public.themes`, and with a real `auth.uid()`.
+to green in two steps: a `SELECT` grant for `app_tenant` on `public.themes`, then a real `auth.uid()`.
 
 | Hypothesis | Evidence | Verdict |
 |---|---|---|
@@ -193,8 +193,8 @@ Nothing.
 `test:unit:gateway`'s glob (`*.test.ts`) matches nine files that discover this stack and write to it: `backfill-and-target-shadow`,
 `real-http-shadow-rehearsal`, `real-staff-product-journey`, `verification-token-redemption` (`*.postgres.test.ts`, which delete what
 they insert) and `gift-card-money-path`, `gst-invoice-issuance`, `gst-tax-computation`, `inventory-reservation-lifecycle`,
-`merchant-tenant-predicate`. The last five call `create_checkout_order`, `issue_gift_card` and `issue_gst_invoice` and only partly
-clean up (two of them never delete). Read-only census, 2026-09-29:
+`merchant-tenant-predicate`. Four of the last five call `create_checkout_order`, `issue_gift_card` or `issue_gst_invoice` (the fifth
+inserts rows directly) and they only partly clean up (two of them never delete). Read-only census, 2026-09-29:
 
 | Measure | Synthetic (test markers `T12`–`T16`, `t16-autotest-*`) | Whole stack |
 |---|---|---|
@@ -218,8 +218,9 @@ owner's data. The choices are Q2 and Q3 in §10.
 
 ### 7.1 State
 
-Every lane below ran at source commit `be0f107a` (the last commit that changes anything other than documents), HEAD unchanged from
-the start to the end of each run. The worktree also held the three dated-correction documents (committed later, with this one),
+The gate battery, the root suite and the package tests ran at source commit `be0f107a` (the last commit that changes anything other than
+documents), HEAD unchanged from the start to the end of each run; the real governance lane and the two builds ran at `d3bed683` (that
+commit plus this document, no source change). The worktree also held the three dated-correction documents (committed later, with this one),
 the nine preserved `analysis_options.yaml` modifications and the two untracked local-environment artefacts; none of them is a
 lane input other than as a document to be scanned. Docker held no container this task had created when each run ended.
 
@@ -248,25 +249,31 @@ no owned container left behind. The header line reads `232 suites -- 173 pure, 0
 | contracts | — | 322 | 322 | 0 | 0 | 0 | 0 | ok |
 | **total** | | **2481** | **2466** | **0** | **0** | **15** | **0** | **PASS** |
 
-The owned-cluster group was also run alone before the commit that changed the shared bootstrap's `auth.uid()`
-was accepted: 59 suites, 305/305, 0 skipped, wall 479 s at `--jobs 2`. The 57 suites that existed before this task went from
-273/273 to 273/273 (the two new suites add 9 and 23).
+The owned-cluster group was also run alone, with the new `auth.uid()` in the working tree and before it was committed, to see what it
+did to the suites that share the bootstrap: 59 suites, 305/305, 0 skipped, wall 479 s at `--jobs 2`. The 57 suites that existed before
+this task went from 273/273 to 273/273 (the two new suites add 9 and 23).
 
 ### 7.4 Governance — two different things
 
 The per-validator **sweep** in §7.2 runs each gate-lane validator alone, does no artefact cleanup and is safe in this worktree.
 The **real lane** (`node scripts/validate-governance.mjs --lane=gate`) deletes generated directories (`node_modules`, `.next`,
 `.turbo`, `dist`, `.dart_tool`, `build`, …) and therefore never ran in this worktree, which holds a live local environment. It ran
-in a disposable `git clone --local` of the committed tree, `git pull --ff-only`'d to the final source checkpoint, then
-`pnpm install --frozen-lockfile`:
+in a fresh disposable `git clone --local` of the committed tree (an earlier clone could not fast-forward past an amended commit),
+then `pnpm install --frozen-lockfile`:
 
-Run at this commit; the result is recorded by the commit that follows.
+`d3bed683423f5f91342fea71b923bbcbb87c6506` (this document's first commit; source unchanged since `be0f107a`),
+2026-09-29T08:22:35Z → 08:23:08Z (32 s), exit 0: **`TOTALS: PASS=114 FAIL=0 BLOCKED=0 SKIP=0 NOT_APPLICABLE=1`** ("114 validators executed and
+passed; 115 discovered on disk"), `stale-artifact` passing. In the clone the branch-dispositions validator prints "not checked: develop ref
+missing locally" for each MERGED_DEVELOP row, because a fresh clone has no local `develop` branch; those rows are evaluated (and pass) in the
+worktree's sweep. The lane was run again at the final tip after the documents-only commit that recorded this table.
 
 ### 7.5 Package tests and builds
 
 - `@letbuyy/customer-web` `test`: **1036/1036** in three segments (60 app tests in five files + 31 new route tests in two files + 945 root-level tests; 0 skipped, 0 todo). It was 1005 before this task: the difference is the 31 route tests.
 - `@letbuyy/merchant-web` `test`: **775/775** (4 new `SettingsPane` tests + 771; 771 was 735 pass / 36 fail before the `theme-editor-aa` path repair).
-- `next build` of both apps: run in the disposable clone at this commit; the result is recorded by the commit that follows.
+- `pnpm --filter @letbuyy/customer-web run build` and `pnpm --filter @letbuyy/merchant-web run build` (the gate does not cover `next build`) ran in the
+  disposable clone at `d3bed683`: both exit 0 (webpack; 48 s and 51 s wall, "Compiled successfully"). The generated customer-web CSS contains
+  `.border-line{border-color:var(--color-line)}`: the utility the checkout page now uses resolves to the token layer.
 
 ### 7.6 Skips, todos and failures, separately
 
