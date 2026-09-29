@@ -73,11 +73,25 @@ test('every route class is a known class, and the sensitive classes hold exactly
     routes.filter((route) => classifyAppApiRoute(route) === 'blocked-local-safety'),
     ['apps/commerce/web/src/app/api/seed/route.ts', 'apps/commerce/web/src/app/api/themes/install/route.ts'],
   );
-  // Each app-local class is an exception to "backend behaviour lives in the gateway" and is allowlisted one
-  // route at a time in config/eslint/boundary-baseline.json (letbuyy-boundaries/no-new-next-api-route).
-  const baseline = new Set(JSON.parse(read('config/eslint/boundary-baseline.json')).apiRoutes);
-  const notAllowlisted = routes.filter((route) => String(classifyAppApiRoute(route)).startsWith('app-local-') && !baseline.has(route));
-  assert.deepEqual(notAllowlisted, [], 'an app-local route must be individually allowlisted in the boundary baseline');
+});
+
+// The freeze rule (letbuyy-boundaries/no-new-next-api-route) reports EVERY app API route file that is absent from
+// config/eslint/boundary-baseline.json, whatever its class -- gateway-proxy included. This test used to check only the
+// app-local-* classes, on the belief (repeated in the inventory's change log) that the baseline was "for app-local-*
+// only"; the lint lane disagreed and stayed red on four proxies for weeks with nothing else naming the cause. The two
+// lists are one fact stated twice, so they must be equal: a route missing from the baseline is a lint error nobody
+// reviewed, and a baseline entry with no route is a stale exemption that would silently pre-approve a future route.
+test('the ESLint route baseline and the route inventory list exactly the same routes', () => {
+  const baseline = JSON.parse(read('config/eslint/boundary-baseline.json')).apiRoutes;
+  assert.equal(new Set(baseline).size, baseline.length, 'the baseline lists no route twice');
+  const inventory = listAppApiRoutes();
+  const baselineSet = new Set(baseline);
+  const inventorySet = new Set(inventory);
+  assert.deepEqual(inventory.filter((route) => !baselineSet.has(route)), [],
+    'every inventoried route must be in config/eslint/boundary-baseline.json (add it in the same reviewed change as the ratchet bump)');
+  assert.deepEqual(baseline.filter((route) => !inventorySet.has(route)), [],
+    'every baseline entry must be a route that exists (remove the entry in the same change that removes the route)');
+  assert.equal(baseline.length, APP_API_ROUTE_RATCHET, 'the baseline and the ratchet count agree');
 });
 
 test('storefront auto-create no longer accepts client-controlled order stats', () => {

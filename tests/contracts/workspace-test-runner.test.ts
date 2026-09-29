@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -66,6 +66,41 @@ test('the test:behavioral wrapper runs the full tests/*/*.test.mjs surface, each
     assert.match(wrapper, /'node', \['--test', '--test-concurrency=1', \.\.\.pure, \.\.\.live\]/, 'database-free suites keep the sequential node --test invocation');
     assert.match(wrapper, /scripts\/governance\/run-executable-suites\.mjs/, 'Postgres-backed suites go through the owned-cluster runner');
     assert.doesNotMatch(wrapper, /foundation-ephemeral-postgres/, 'the shared fixture is not part of the gate');
+});
+
+// customer-web lists its test files by hand, and `node --test` reads every path argument as a GLOB. Two failure modes
+// follow, and both end in a green run that executed nothing: a test file that is never named in the script is simply
+// never run, and a path containing glob characters (the [subdomain] directory of a Next dynamic route is a character
+// class) matches no file, so the runner reports 0 tests and exits 0. This pins that neither can happen unnoticed.
+test('customer-web names every test file it owns, and every named test path is a literal file that exists', () => {
+    const workspace = 'apps/commerce/web';
+    const script = readPackageJson(workspace).scripts?.test || '';
+
+    // The script is a chain: the first segments run from the app directory, everything after `cd ../../..` from the repo root.
+    let cwd = join(repoRoot, workspace);
+    const listedFromApp = new Set<string>();
+    for (const segment of script.split('&&').map((part) => part.trim())) {
+        if (/^cd\s+\.\.\/\.\.\/\.\.$/.test(segment)) { cwd = repoRoot; continue; }
+        for (const token of segment.split(/\s+/)) {
+            const path = token.replace(/^["']|["']$/g, '');
+            if (!/\.test\.(ts|tsx|mjs)$/.test(path)) continue;
+            assert.doesNotMatch(path, /[[\]*?{}]/, `${path} contains glob characters: node --test would match nothing and report 0 tests with exit 0`);
+            assert.ok(existsSync(join(cwd, path)), `${path} is named in the test script but does not exist`);
+            if (cwd !== repoRoot) listedFromApp.add(path);
+        }
+    }
+    assert.ok(listedFromApp.size > 0, 'the app-directory segment names at least one test');
+
+    const owned: string[] = [];
+    const walk = (dir: string) => {
+        for (const entry of readdirSync(join(repoRoot, workspace, dir), { withFileTypes: true })) {
+            const relative = `${dir}/${entry.name}`;
+            if (entry.isDirectory()) walk(relative);
+            else if (/\.test\.(ts|tsx|mjs)$/.test(entry.name)) owned.push(relative);
+        }
+    };
+    for (const dir of ['src', 'scripts']) walk(dir);
+    assert.deepEqual(owned.filter((file) => !listedFromApp.has(file)).sort(), [], 'a test file under src/ or scripts/ that the test script never names is never run');
 });
 
 test('main CI runs the behavioral gate before filtered workspace tests', () => {

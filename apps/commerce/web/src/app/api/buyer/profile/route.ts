@@ -70,7 +70,10 @@ export async function PATCH(request: NextRequest) {
     if (res.status === 401) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
     if (!res.ok) {
         const failure = await res.json().catch(() => null) as { error?: { message?: string } } | null;
-        return NextResponse.json({ error: failure?.error?.message ?? 'Your profile could not be updated right now.' }, { status: res.status === 400 ? 400 : 503, headers: NO_STORE });
+        // The gateway's message is user-facing for a client error. A 5xx body is the gateway's own failure: the status
+        // is already generalised to 503 below, and so is the message, so nothing internal can reach the browser.
+        const relayed = res.status < 500 ? failure?.error?.message : undefined;
+        return NextResponse.json({ error: relayed ?? 'Your profile could not be updated right now.' }, { status: res.status === 400 ? 400 : 503, headers: NO_STORE });
     }
 
     const payload = await res.json().catch(() => null) as { data?: { buyer?: unknown } } | null;

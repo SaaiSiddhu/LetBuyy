@@ -5,8 +5,11 @@
 //
 // The count is a ratchet: a route added or removed without a matching, reviewed edit here is a
 // violation. Bumping it is the deliberate maintenance action the check expects -- and the route is
-// also added to config/eslint/boundary-baseline.json when it is an app-local-* class, and to the change
-// log in docs/governance/app-api-route-ownership.md.
+// also added to (or removed from) config/eslint/boundary-baseline.json, for EVERY class: the freeze rule
+// letbuyy-boundaries/no-new-next-api-route reports any app API route file absent from that baseline,
+// gateway-proxy included. tests/federation/app-api-route-ownership.test.mjs pins that the inventory and
+// the baseline are the same list. The change log in docs/governance/app-api-route-ownership.md gets
+// the entry and the rationale.
 //
 // A count alone can hide a swap (one route removed, another added), so the checks that matter are the
 // per-route ones: every route on disk has a classification, the class is a known one, and no route is
@@ -94,6 +97,11 @@ export function classifyAppApiRoute(file) {
 // buyer/profile and GET/POST/PATCH/DELETE /storefront/buyer/addresses[/:id], forwarding only the
 // buyer's own session token -- no database access, no commerce logic, nothing config/eslint/
 // boundary-baseline.json needs to know about (that allowlist is for app-local-* classes only).
+// Correction (2026-09-29, Phase 2 local quality): that last claim was wrong. The freeze rule reports every
+// route file absent from the baseline whatever its class, and it did, for these three and for
+// store/[subdomain]/search-suggest (CAP-C76, in the same position since T5/W3), until all four were
+// reviewed and added to config/eslint/boundary-baseline.json -- see docs/governance/app-api-route-ownership.md.
+// The count stays 204: the inventory already held them; only the lint-side mirror had been missed.
 export const APP_API_ROUTE_RATCHET = 204;
 
 export function ownershipCounts(routes) {
