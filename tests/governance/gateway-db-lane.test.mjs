@@ -27,16 +27,18 @@ const ownedSuites = () => readdirSync(ownedDir).filter((name) => name.endsWith('
 const ownedFiles = () => readdirSync(ownedDir).filter((name) => name.endsWith('.ts')).sort();
 const unitTests = () => readdirSync(testsDir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.test.ts')).map((entry) => entry.name).sort();
 
-test('the lane holds the nine gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
+test('the lane holds the eleven gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
     assert.deepEqual(
         ownedSuites(),
         [
             'backfill-and-target-shadow.postgres.test.ts',
+            'buyer-privacy-intake.postgres.test.ts',
             'gift-card-money-path.test.ts',
             'gst-invoice-issuance.test.ts',
             'gst-tax-computation.test.ts',
             'inventory-reservation-lifecycle.test.ts',
             'merchant-tenant-predicate.test.ts',
+            'privacy-support-visibility.postgres.test.ts',
             'real-http-shadow-rehearsal.postgres.test.ts',
             'real-staff-product-journey.postgres.test.ts',
             'verification-token-redemption.postgres.test.ts',
@@ -89,6 +91,19 @@ test('a lane suite cannot skip: it has no skip, todo or conditional-execution co
     assert.doesNotMatch(support, skipping);
     assert.match(support, /throw new Error/);
     assert.doesNotMatch(support, /return\s+(null|undefined)\s*;?\s*\n\s*}\s*\n\s*let verified/, 'no early return without a database');
+});
+
+test('the privacy suites drive the real worker through the shared harness; only the harness touches the HTTP hop, and the staff-side suite taps nothing', () => {
+    const harness = stripComments(read(join(ownedDir, 'gateway-harness.ts')));
+    assert.match(harness, /import worker from '\.\.\/\.\.\/index'/, 'the harness calls the worker\'s own entry point');
+    assert.match(harness, /worker\.fetch\(/);
+    assert.doesNotMatch(harness, /process\.env|\.dev\.vars|supabase\.co|supabase\.com/, 'the harness reaches a database only through the handles it is given');
+    for (const name of ['buyer-privacy-intake.postgres.test.ts', 'privacy-support-visibility.postgres.test.ts']) {
+        const source = stripComments(read(join(ownedDir, name)));
+        assert.match(source, /from '\.\/gateway-harness'/, `${name} goes through the harness`);
+        assert.doesNotMatch(source, /globalThis\.fetch\s*=|fake-postgrest|installFakePostgrest|mock\.method|\.mock\(/, `${name} replaces nothing by hand: the tap in the harness is the only seam`);
+    }
+    assert.doesNotMatch(stripComments(read(join(ownedDir, 'privacy-support-visibility.postgres.test.ts'))), /tapRest\(/, 'the staff-side suite taps nothing');
 });
 
 test('only the support module may run docker, and only the guard may decide what is owned', () => {

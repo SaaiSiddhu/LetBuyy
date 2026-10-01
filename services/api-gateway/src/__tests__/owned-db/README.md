@@ -24,6 +24,23 @@ before(() => seedSyntheticTenant(owned.psql, tenant, { gst: true, taxRates: true
 // owned.psql / psqlAsync / psqlExpectError / script  -> statements as the superuser, in this suite's own database
 ```
 
+## Driving the real worker (`gateway-harness.ts`)
+
+A suite that proves a route, not just an RPC, calls the worker's own `fetch` (the default export of `src/index.ts`) instead of mounting a router of its own: the request then passes the real global middleware, the real route registration and mount order, the real session and role middleware and the production dependency wiring, against the owned PostgREST and Postgres.
+
+```ts
+import { Gateway, gatewayEnv, newIdentityKeys, buyerHeaders, signedIdentityHeaders, tapRest, newBarrier, seedBuyerAccount } from './gateway-harness';
+
+const keys = await newIdentityKeys();                       // an ES256 key; its JWKS is what the gateway is told to trust
+const gateway = new Gateway(gatewayEnv(owned, keys));       // Env = the owned REST endpoint + the identity configuration
+await gateway.request('/v1/storefront/buyer/privacy-requests', { headers: await buyerHeaders(keys, buyer.id) });   // a buyer session
+await gateway.request('/v1/employees/tickets', { headers: await signedIdentityHeaders(userId, email) });          // merchant staff / platform staff
+```
+
+- Credentials are the real thing, signed by the keys the suite generates: a buyer session (ES256, verified against the configured JWKS, issuer, audience, realm, token use, expiry, replay id and session epoch, then checked against `buyer_accounts`) or the HMAC-signed internal identity merchant and platform staff present. `SessionOverrides` bends one claim at a time for the refusal tests.
+- Every request carries a client address of its own (`CF-Connecting-IP`), as Cloudflare presents one per caller, because the gateway's global query-cost limiter keeps a bucket per address and a suite must not exhaust a bucket no production caller shares. Pass an address explicitly to test the limiter itself.
+- `tapRest` is the only seam, and it sits on the single HTTP hop between the gateway and the owned PostgREST. Use it to hold concurrent writes until all of them have arrived (`newBarrier`: the conflict path is reached every run, not by luck) or to inject one named fault (a failed readback, a lost response, a collision on an unrelated column); everything downstream of an injected fault stays real. A suite says, where it uses the tap, exactly which of the two it is doing. The governance test pins that no suite replaces `fetch` by hand and that the staff-side suite taps nothing.
+
 ## Rules
 
 - Build everything the suite needs from nothing: no store, owner, catalog row, location or invoice that already exists anywhere. `seedSyntheticTenant` is the recipe; a new ingredient goes there.
