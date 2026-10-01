@@ -383,6 +383,7 @@ test('each buyer lists only their own requests, whatever the query string says, 
 interface RaceOutcomes {
     insertAttempts: number;
     created: number;
+    /** INSERTs the database refused with SQLSTATE 23505 on the privacy index (support_tickets_privacy_open_request_uidx). */
     uniqueViolations: number;
     /** What each fast-path read (findOpenRequest) answered before the INSERTs were released: the number of open requests it saw. */
     fastPathAnswers: number[];
@@ -416,7 +417,11 @@ function raceInserts(parties: number): { tap: RestTap; barrier: Barrier; outcome
         outcomes.readsAtRelease.push(tap.calls.filter(isPrivacyRead).length);
         const response = await forward();
         if (response.status === 201) outcomes.created += 1;
-        if (response.status === 409 && ((await response.clone().json()) as { code?: string }).code === '23505') outcomes.uniqueViolations += 1;
+        if (response.status === 409) {
+            // Only the INTENDED conflict counts: SQLSTATE 23505 on the privacy index, not just any unique violation.
+            const refusal = (await response.clone().json()) as { code?: string; message?: string };
+            if (refusal.code === '23505' && refusal.message?.includes(PRIVACY_INDEX)) outcomes.uniqueViolations += 1;
+        }
         return response;
     });
     return { tap, barrier, outcomes };
@@ -772,6 +777,36 @@ test('a creation conflict is resolved to the winner even when the fast path is b
     assert.equal(ticketsOf(buyer.id).length, 1);
 });
 
+interface Refusal {
+    status: number;
+    code?: string;
+    message?: string;
+}
+
+/**
+ * Fault: the ticket reference the gateway generated collides with one already held. The INSERT body is rewritten in flight; Postgres then
+ * raises a REAL unique violation, on support_tickets_ticket_ref_key and not on the privacy index, and the tap records exactly what the
+ * database answered so a test can prove the violation is the unrelated one it is meant to be.
+ */
+function collideTicketRef(heldRef: string): { tap: RestTap; refusal: () => Refusal | undefined } {
+    let refusal: Refusal | undefined;
+    const tap = tapRest(owned.restUrl, async (call, forward) => {
+        if (!isPrivacyInsert(call)) return forward();
+        const answer = await forward({ body: JSON.stringify({ ...(call.json as object), ticket_ref: heldRef }) });
+        const body = (await answer.clone().json()) as { code?: string; message?: string };
+        refusal = { status: answer.status, code: body.code, message: body.message };
+        return answer;
+    });
+    return { tap, refusal: () => refusal };
+}
+
+function assertRefusedOnTicketRef(refusal: Refusal | undefined): void {
+    assert.equal(refusal?.status, 409);
+    assert.equal(refusal?.code, '23505');
+    assert.match(refusal?.message ?? '', /support_tickets_ticket_ref_key/, 'a unique violation, but on the reference');
+    assert.doesNotMatch(refusal?.message ?? '', new RegExp(PRIVACY_INDEX), 'and not on the privacy index: it is not the intended conflict');
+}
+
 test('an unrelated unique violation (the ticket reference) is NOT deduplication: no other buyer\'s request is returned and nothing is reported as created', async () => {
     const victim = seedBuyerAccount(psql, 'holder');
     const requester = seedBuyerAccount(psql, 'collider');
@@ -782,7 +817,7 @@ test('an unrelated unique violation (the ticket reference) is NOT deduplication:
 
     // Fault: the reference the gateway generated collides. (The body of the INSERT is rewritten in flight; the violation is raised by
     // the database on the unrelated column support_tickets_ticket_ref_key, not by the privacy index, and the rest is real.)
-    const tap = tapRest(owned.restUrl, async (call, forward) => (isPrivacyInsert(call) ? forward({ body: JSON.stringify({ ...(call.json as object), ticket_ref: heldRef }) }) : forward()));
+    const { tap, refusal } = collideTicketRef(heldRef);
     let response;
     try {
         response = await post(requester.id, { type: 'access', notes: 'this must not be stored' });
@@ -791,6 +826,7 @@ test('an unrelated unique violation (the ticket reference) is NOT deduplication:
     }
     const insert = tap.calls.filter(isPrivacyInsert);
     assert.equal(insert.length, 1, 'one attempt, no retry loop');
+    assertRefusedOnTicketRef(refusal());
     assert.equal(response.status, 500, `an unrelated unique violation is a failure: ${response.text}`);
     assert.deepEqual(response.json, { success: false, error: { code: 'DB_ERROR', message: 'Database operation failed' } }, 'a generic failure, with no database detail');
     assert.doesNotMatch(response.text, new RegExp(`${victim.id}|${heldRef}|duplicate|constraint|ticket_ref|support_tickets|23505`, 'i'));
@@ -809,13 +845,14 @@ test('an unrelated violation does not turn into success for a buyer who already 
     const erasure = await post(buyer.id, { type: 'erasure' });
     assert.equal(erasure.status, 201);
 
-    const tap = tapRest(owned.restUrl, async (call, forward) => (isPrivacyInsert(call) ? forward({ body: JSON.stringify({ ...(call.json as object), ticket_ref: heldRef }) }) : forward()));
+    const { tap, refusal } = collideTicketRef(heldRef);
     let response;
     try {
         response = await post(buyer.id, { type: 'access' });
     } finally {
         tap.restore();
     }
+    assertRefusedOnTicketRef(refusal());
     assert.equal(response.status, 500, 'the erasure request is not an answer to an access request');
     assert.notEqual(response.json?.data?.id, erasure.json?.data?.id);
     assert.equal(ticketsOf(buyer.id).length, 1);
@@ -906,12 +943,15 @@ test('a foreign-key failure when storing the notes (the request vanished between
     // Fault: between the request being written and its notes being written, the request row is removed (a repair, another process). The
     // notes' foreign key refuses them with SQLSTATE 23503, a real failure from the real database.
     let removed = 0;
+    let notesRefusal: Refusal | undefined;
     const tap = tapRest(owned.restUrl, async (call, forward) => {
-        if (call.method === 'POST' && touchesTable(call, 'ticket_messages')) {
-            psql(`DELETE FROM support_tickets WHERE id = '${(call.json as { ticket_id: string }).ticket_id}';`);
-            removed += 1;
-        }
-        return forward();
+        if (!(call.method === 'POST' && touchesTable(call, 'ticket_messages'))) return forward();
+        psql(`DELETE FROM support_tickets WHERE id = '${(call.json as { ticket_id: string }).ticket_id}';`);
+        removed += 1;
+        const answer = await forward();
+        const body = (await answer.clone().json()) as { code?: string; message?: string };
+        notesRefusal = { status: answer.status, code: body.code, message: body.message };
+        return answer;
     });
     let response;
     try {
@@ -920,6 +960,7 @@ test('a foreign-key failure when storing the notes (the request vanished between
         tap.restore();
     }
     assert.equal(removed, 1);
+    assert.deepEqual({ status: notesRefusal?.status, code: notesRefusal?.code }, { status: 409, code: '23503' }, 'the notes were refused by their foreign key, by the database itself');
     assert.equal(response.status, 500, response.text);
     assert.deepEqual(response.json, { success: false, error: { code: 'DB_ERROR', message: 'Database operation failed' } });
     assert.doesNotMatch(response.text, /23503|foreign key|violates|ticket_messages|support_tickets/i);
