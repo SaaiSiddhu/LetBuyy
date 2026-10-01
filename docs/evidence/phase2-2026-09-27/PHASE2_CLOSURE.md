@@ -146,6 +146,11 @@ remaining after. No migration was applied to that shared local database.
 > generator is implemented, tested and inactive; requester verification, release protection, retention and deletion remain
 > open. "Genuinely open, none resolved" is therefore true only of the sub-decisions listed in
 > `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §10. The current matrix is §8 there.
+>
+> **Later note (2026-10-01, P2-PRIVACY-CONCURRENCY-DB).** "Approved and implemented (`requirePlatformOperator`)" is accurate for the
+> support router mounted alone; through the production worker an earlier `/operations/*` gate admits only allowlisted super
+> admins, so the Reviewer/Moderator/Administrator tiers are implemented and not reachable (`P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md`
+> §9.3). Buyer privacy-request intake also now has a persistent real-database proof of concurrency and ownership (same document).
 
 ## External/infrastructure blockers
 

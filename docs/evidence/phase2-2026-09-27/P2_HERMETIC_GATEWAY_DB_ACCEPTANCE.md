@@ -302,6 +302,10 @@ sit side by side in the database, and asserts the guarded, store-scoped query re
 No signed-authentication test was replaced by injected trusted context: the two suites that use signed identity still do; the one that injects context did so
 before, states it in its header, and its sibling covers the real path.
 
+> **Superseded (2026-10-01, P2-PRIVACY-CONCURRENCY-DB):** the "privacy request concurrency" row above is out of date. A real-database concurrency proof now exists and runs
+> by default in this lane: `owned-db/buyer-privacy-intake.postgres.test.ts` (34 tests) and `owned-db/privacy-support-visibility.postgres.test.ts` (6), driving the real worker
+> with real buyer-session verification — see `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md`. The lane is now eleven suites.
+
 ## 12. `reports:read`
 
 Inspected and **not aliased**, on evidence. It is one of the 12 keys a store owner may grant staff (`LETBUYY_STORE_STAFF_PERMISSIONS`, the keys the
@@ -348,6 +352,9 @@ count; it moved 1331 to 1320 (section 6).
   concurrency has no real-database test (section 11); the lane needs Docker and two images present locally (CI pulls them; a workstation does not); the cloud-sandbox shim cannot host it
   (gateway suites are red there, with the reason); 397 dangling anonymous Docker volumes remain, deliberately (section 9); and the CI behaviour (pulling the two images when `CI=true`) is designed and
   unit-tested (the image-policy test) but has not been observed on a hosted runner from here.
+
+> **Superseded in part (2026-10-01, P2-PRIVACY-CONCURRENCY-DB):** "privacy-request concurrency has no real-database test" is no longer true; see the note under section 11 and
+> `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md`. The other limits stand.
 
 ## 15. Existing synthetic data in the restored stack — PROPOSAL ONLY (unexecuted)
 
@@ -423,6 +430,9 @@ Still open, unchanged by this task: **Q3** (§15), Q1, Q4 and the Phase 2 decisi
 **Precise next task:** either (a) *P2-PRIVACY-CONCURRENCY-DB* — add the missing real-database concurrency proof for buyer privacy-request intake (migration 262's
 partial unique index under genuine concurrency) as a tenth suite in the isolated lane, which is now a small addition; or (b) whichever of Q3's options the owner
 chooses, as its own bounded task with a fresh read-only census first.
+
+> **Done (2026-10-01): option (a), as P2-PRIVACY-CONCURRENCY-DB** — two suites, not one (the lane is now eleven), with the real worker, the barrier-synchronized race, ownership,
+> truthful status and negative controls. Q3 (option b) is still open and was not touched. The next task is named in `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §17.
 
 ## 18. A process incident during this task (disclosed; no effect found)
 

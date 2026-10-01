@@ -7,6 +7,8 @@ branch tip. Not merged, not pushed, not deployed.
 
 > **Later notes (2026-09-29, P2-HERMETIC-GATEWAY-DB).** Three things in this document were true of its moment and have been superseded by the next task, `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`: the gateway-lane hazard of §6.4, the "14 gateway skips" of §7.1 and §9, and the Q2 / §10.3 recommendation. Each carries a dated note where it appears. Q3 (what to do with the rows already in the local stack) is **still open**; the evidence for answering it is in §15 of that document.
 
+> **Later notes (2026-10-01, P2-PRIVACY-CONCURRENCY-DB).** `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` adds a real-database proof of buyer privacy-request intake (a new F2.7 row in §8) and **corrects** one row of the matrix below: F2.6's "the tiers are enforced at the gateway" holds for the support router mounted alone, not through the production mount (an earlier `/operations/*` gate admits only allowlisted super admins). Q3 is still open and was not touched.
+
 Execution mode: **SINGLE AGENT** · Subagents invoked: **NO** · Agent/Task delegation: **NO** · Background agents: **NO** ·
 Parallel worktree agents: **NO** · Workflow orchestration: **NO**. (Long test runs were waited on as background *shell
 commands*; they are processes, not agents.)
@@ -327,11 +329,12 @@ or a disposable cluster; nothing here was exercised on a hosted environment.
 | F2.4 | Order ownership, historical and new | **LOCAL VERIFIED** | `buyer-verified-ownership-postgres` 12/12; gateway 17/17 | none |
 | F2.5 | Local staff transition / shadow preparation (D03, option "local merchant-staff transition") | **IMPLEMENTED, LOCAL VERIFIED** | principal repository, backfills (principals, store memberships, owner role, arbitrary-staff roles), target-backed shadow comparison, bounded and cancellable shadow lookup, real HTTP-to-database rehearsal, real staff product journey, revocation reconciliation; environment gate requires non-production **and** a local Supabase URL | one named alias gap (`reports:read`, no route uses it); a sustained observation window |
 | F2.5 | Authoritative cutover | **BLOCKED — not attempted, not authorized** | — | observation window + a separate owner decision (§10, Q5) |
-| F2.6 | Operator role enforcement (D04.1 tiers) | **IMPLEMENTED, LOCAL VERIFIED** | `requirePlatformOperator()`, 19 tests; console allowlist re-checked on every request; magic-link single use (one 200, one 409, one row); two unauthenticated static-token routes closed | the console app itself has no role concept to test a "restricted reviewer" against; the tiers are enforced at the gateway |
+| F2.6 | Operator role enforcement (D04.1 tiers) | **IMPLEMENTED, LOCAL VERIFIED at the router level; NOT REACHABLE through the production mount by anyone but an allowlisted super admin** *(corrected 2026-10-01, P2-PRIVACY-CONCURRENCY-DB)* | `requirePlatformOperator()`, 19 tests; console allowlist re-checked on every request; magic-link single use (one 200, one 409, one row); two unauthenticated static-token routes closed; **and, against a real database and the real worker, `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §9.3: the support router's tier logic is correct when mounted alone, but `index.ts:858` mounts `incident-command`'s `requireRoleCategory('ops') + requireSuperAdmin` gate at `/operations/*` before `/operations/support` (`index.ts:860`), so platform viewers, operators and leads get 403 there** | the console app itself has no role concept to test a "restricted reviewer" against; an owner decision whether the tiers should reach `/v1/operations/support/*` (acceptance doc O1) — until then only the super-admin allowlist can read or act on a buyer's privacy request through the gateway |
 | F2.6 | Operator provisioning, bootstrap, recovery (D04.2–D04.6) | **BLOCKED** on owner decisions | — | §10, Q6 |
 | F2.6 | Console delivery (D04.8) | **NOT ACTIVE** (boundary + capture transport; no sender chosen, no provider wired) | — | §10, Q7 |
 | F2.6 | Moderation / impersonation callers (D04.9) | **BLOCKED** — no caller found in the repository | — | §10, Q8 |
 | F2.7 | Tenant and privacy isolation | **LOCAL VERIFIED** | `tenant-redteam-postgres` (RT-1..9, 2/2), `security-rls-hardening-postgres`, and **the theme proof (§5)** | none |
+| F2.7 | Buyer privacy-request intake: concurrency, ownership, truthful status *(added 2026-10-01, P2-PRIVACY-CONCURRENCY-DB)* | **LOCAL VERIFIED against a real database** — the real worker, real buyer-session verification, a real PostgREST and Postgres in the owned lane; replaces a one-off script that was run once against the then-restored stack and deleted | owned lane `buyer-privacy-intake.postgres` 34 tests and `privacy-support-visibility.postgres` 6; unit `privacy-fulfillment-writers` 2; governance `privacy-fulfillment-writers` 3; negative controls in `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §12 | intake only: no export, no erasure and no fulfillment writer exists (D05); who may read a privacy request (acceptance doc O1) |
 | F2.7 | Buyer export generator (D05.1 scope) | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (`BUYER_EXPORT_GENERATION_AVAILABLE = false`; no route imports it) | 11 + 4 tests | — |
 | F2.7 | Export release to real buyers (D05.2–D05.3) | **BLOCKED** | — | §10, Q9 |
 | F2.7 | Retention, deletion, legal hold, incident ownership (D05.4–D05.8) | **BLOCKED**; irreversible erasure unimplemented | — | §10, Q10 |
@@ -341,7 +344,7 @@ or a disposable cluster; nothing here was exercised on a hosted environment.
 ## 9. Original Phase 2 requirements still open
 
 Authoritative identity cutover and the sustained shadow-observation window (D03); operator bootstrap, recovery, MFA enrollment,
-high-risk dual control, delivery activation and the moderation/impersonation callers (D04); export release, requester
+high-risk dual control, delivery activation and the moderation/impersonation callers (D04); who may read a privacy request through the gateway (added 2026-10-01: `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` O1); export release, requester
 verification, retention, deletion, legal hold and incident ownership (D05); the privacy policy those depend on; the two named
 identity-authority deviations from F2.1; hosted delivery and deployment. None was touched, none is claimed.
 

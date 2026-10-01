@@ -205,6 +205,13 @@ that looks like coverage but is not. Verifying once, with full evidence captured
 the fake-PostgREST test as the permanent regression guard is the more honest choice; a properly
 env-gated permanent version is a reasonable future addition but was not built in this bounded pass.
 
+> **Superseded (2026-10-01, P2-PRIVACY-CONCURRENCY-DB).** The "reasonable future addition" now exists, and not env-gated: the owned
+> database lane (`P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md`) removed the reason this proof could not be kept, and the one-off above (which
+> read `.dev.vars` and wrote to the restored stack) is replaced by `owned-db/buyer-privacy-intake.postgres.test.ts`, which drives the real
+> worker against a disposable database and races the INSERTs deterministically — 6, 12 and 8 racers, with a barrier that makes the
+> unique-violation path run every time — plus the direct database invariant, ownership, truthful status and negative controls.
+> See `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md`. The text above is left as the record of its moment.
+
 ---
 
 ## 6. §9 — Revocation evidence: re-validated, not re-run
