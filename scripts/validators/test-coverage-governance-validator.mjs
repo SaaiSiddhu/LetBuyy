@@ -48,10 +48,16 @@ reporter.assert(rootTestScript.includes("--with-contracts") && behavioralWrapper
 reporter.assert(packageJson?.scripts?.["test:contracts"] === "tsx --test tests/contracts/*.test.ts", "Root package.json must run tests/contracts/*.test.ts with tsx");
 reporter.assert(Boolean(packageJson?.scripts?.["validate:tests"]), "Root package.json must define validate:tests");
 
+// The gateway's acceptance runs the root's own contracts command from the repository root. Run from the
+// package directory, tsx applies services/api-gateway/tsconfig.json at runtime, and its type-check `paths`
+// send hono/factory to a declaration file, so a contract crashes on import. A path substring cannot tell
+// the two apart: the stage itself must be `cd ../..` followed by the root's test:contracts command (the
+// shape tests/governance/gateway-db-lane.test.mjs pins).
 const apiGatewayPackageJson = readJson("services/api-gateway/package.json");
+const apiGatewayTestStages = String(apiGatewayPackageJson?.scripts?.test ?? "").split("&&").map((stage) => stage.trim());
 reporter.assert(
-  apiGatewayPackageJson?.scripts?.test?.includes("../../tests/contracts/*.test.ts"),
-  "API gateway workspace test script must execute root TypeScript contract tests under pnpm turbo test",
+  apiGatewayTestStages.some((stage, index) => index > 0 && apiGatewayTestStages[index - 1] === "cd ../.." && stage === packageJson?.scripts?.["test:contracts"]),
+  "API gateway workspace test script must execute root TypeScript contract tests under pnpm turbo test (`cd ../..`, then the root test:contracts command)",
 );
 
 reporter.finish(`${requiredTestFiles.length} required enterprise test proof files checked`);
