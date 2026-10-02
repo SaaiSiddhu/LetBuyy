@@ -307,6 +307,8 @@ A fresh `git clone --local` of the branch at the source commit `929ee367`, in a 
 * **O9 — the tenant guard is a backstop, not a proof.** Removing the buyer predicate outright from a privacy query makes the guard refuse it (a `500`, not a leak: NC3a, NC3b, NC5, NC7 and NC11 went red for that reason, and are kept as the evidence that it does); the bug the guard cannot see is a predicate that is *present but bound to the wrong value*, which is what NC3c, NC3d, NC11b, NC13, NC5b and NC7b model and what the tests catch.
 * **O10 — a ticket reference has 32 bits of randomness** (`SUP-<year>-<8 hex>`), and the column is unique: a collision answers the privacy request with one generic `500` (this is the "unrelated unique violation" of §7, deliberately not deduplicated) and the retry gets a new reference. An availability quirk at volume, not a correctness problem.
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-CORRECTNESS).** O2 and O3 are repaired, and the repair is proven through the production worker against an owned database (`P2_OPERATOR_QUEUE_CORRECTNESS_ACCEPTANCE.md`): the queue is filtered with a separate queue-topic list that includes privacy while ticket and macro creation keep it out; malformed input on every support route is a sanitized `400`, not a `500`; and a reply is one transaction (migration 264), so a reopen the privacy rule refuses is a `409` that keeps no message and writes no audit row. O1 is unchanged and still the owner's decision.
+
 **Outstanding, explicit** (none touched, none claimed): authoritative identity cutover and the sustained shadow-observation window (D03); operator provisioning, bootstrap, recovery, MFA enrollment, high-risk dual control, console delivery and the moderation/impersonation callers (D04), and now **who may read a privacy request** (O1); export release, requester verification, retention, deletion, legal hold and incident ownership (D05) — no export, no erasure and no fulfillment writer exists; the two named identity-authority deviations from F2.1; hosted delivery and deployment; Q3, the unexecuted proposal about the synthetic rows already in the restored stack (`P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md` §15), which this task did **not** act on.
 
 ## 16. The requirement matrix and the dated notes
@@ -328,6 +330,8 @@ The original text is left where it is, as the record of its moment.
 3. **If open:** narrow or reorder the earlier `incident-command` gate so only the routes that need `ops` + super admin are behind it (`index.ts:858`–`860`), decide whether a `viewer` may read a buyer's note at all, and change the production-mount test in `privacy-support-visibility.postgres.test.ts` in the **same commit** — that test is built to fail on exactly this change, so it cannot happen unnoticed.
 
 Either way the two suites in this task are the acceptance. The other open item from the previous task, **Q3** (what to do with the synthetic rows already in the restored stack — `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md` §15), is unchanged and is its own bounded task with a fresh read-only census first.
+
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-CORRECTNESS).** The three honesty fixes of step 2 were made by the next task without waiting for O1 — its mandate authorized them, and they change no one's access — together with an atomic reply (`P2_OPERATOR_QUEUE_CORRECTNESS_ACCEPTANCE.md`). Step 1 (the owner's answer to O1) and step 3 are still open; the "implemented, dormant" wording of the F2.6 row waits on that answer.
 
 ## Appendix A — the exact edits of the negative controls
 

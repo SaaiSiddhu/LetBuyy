@@ -259,6 +259,13 @@ follow-up task, not fixed in this pass.
 > implemented and dormant. Because a buyer's privacy request is a support ticket, the same fact decides who can read one through
 > the gateway. See `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §9.3 and its O1.
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-CORRECTNESS).** The support router's own correctness is repaired and proven through
+> the production worker against an owned database: the queue can be filtered by the privacy topic (creation still cannot use it),
+> malformed input is a `400`, and an operator reply is one transaction (migration 264) that answers `409` and writes nothing when the
+> privacy rule refuses it. The production access boundary in the correction above is **unchanged and still pinned**. The open D04
+> question stands: retain super-admin-only access to the queue, or enable selected tiers — and, if so, who may read a buyer's
+> privacy note and the internal notes. See `P2_OPERATOR_QUEUE_CORRECTNESS_ACCEPTANCE.md` §3 and §14.
+
 ### Product role → existing tier mapping (Mandate 7, Section 8 — explicit, not assumed equivalent)
 
 | Product role (what D04 approved) | Existing tier (`INTERNAL_PERMISSION_TIERS`) | Exact scopes granted | Excluded actions | Assignment authority |
