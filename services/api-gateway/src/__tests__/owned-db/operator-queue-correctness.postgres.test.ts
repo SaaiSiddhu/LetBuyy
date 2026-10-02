@@ -412,7 +412,8 @@ test('A. production mount: the queue answers an allowlisted super admin and nobo
 
     assert.deepEqual(snapshot(), untouched, 'no refused call read (a read writes an audit row) or wrote anything');
 
-    // The positive control: the same requests, made by the allowlisted super admin.
+    // The positive control: the same requests, made by the allowlisted super admin. (Results are keyed by name: names are unique.)
+    assert.equal(new Set(attempts.map(([what]) => what)).size, attempts.length);
     const privacyBefore = Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`));
     const results: Record<string, unknown> = {};
     for (const [what, path, init] of attempts) {
@@ -541,11 +542,13 @@ test('B2. a malformed filter, id or body is a sanitized 400 (never an internal e
         ['a reply whose metadata is a list', `${OPS}/tickets/${id}/messages`, send('POST', { body: 'Hello', metadata: [], reason: REASON }), 'VALIDATION_ERROR'],
         ['a reply with too short a reason', `${OPS}/tickets/${id}/messages`, send('POST', { body: 'Hello', reason: 'short' }), 'VALIDATION_ERROR'],
         ['a reply naming a macro that does not exist', `${OPS}/tickets/${id}/messages`, send('POST', { body: 'Hello', macro_id: missingMacro, reason: REASON }), 'VALIDATION_ERROR'],
-        ['an assignee that is not an id', `${OPS}/tickets/${id}/assign`, send('PATCH', { assignee_id: 'someone', reason: REASON }), 'VALIDATION_ERROR'],
+        ['an assign body whose assignee is not an id', `${OPS}/tickets/${id}/assign`, send('PATCH', { assignee_id: 'someone', reason: REASON }), 'VALIDATION_ERROR'],
         ['an unknown escalation target', `${OPS}/tickets/${id}/escalate`, send('POST', { target: 'police', reason: REASON }), 'VALIDATION_ERROR'],
         ['a satisfaction score out of range', `${OPS}/tickets/${id}/csat`, send('POST', { score: 9, reason: REASON }), 'VALIDATION_ERROR'],
         ['a macro name too short', `${OPS}/macros`, send('POST', { name: 'x', body: 'Text', reason: REASON }), 'VALIDATION_ERROR'],
     ];
+    // The results are keyed by name: a repeated name would silently drop a case's assertion.
+    assert.equal(new Set(cases.map(([name]) => name)).size, cases.length, 'every case has its own name');
     const observed: Record<string, unknown> = {};
     for (const [name, path, init] of cases) {
         const response = await as(admin, path, init);
