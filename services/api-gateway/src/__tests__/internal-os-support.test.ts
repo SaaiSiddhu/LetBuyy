@@ -62,7 +62,10 @@ test('support operations routes enforce scopes, reason capture, audit, SLA, CSAT
     assert.match(supportSource, /validateSensitiveReason/);
     assert.match(supportSource, /logSensitiveRead/);
     assert.match(supportSource, /support\.ticket\.create/);
-    assert.match(supportSource, /support\.ticket\.reply/);
+    // A reply's audit row is written by reply_to_support_ticket (migration 264), in the reply's own transaction.
+    assert.match(supportSource, /REPLY_TO_SUPPORT_TICKET_RPC = 'reply_to_support_ticket'/);
+    const replyMigration = repositorySource('database/supabase/migrations/264_support_ticket_reply_atomic.sql');
+    assert.match(replyMigration, /'support\.ticket\.internal_note' ELSE 'support\.ticket\.reply'/);
     assert.match(supportSource, /support\.ticket\.escalate/);
     assert.match(supportSource, /support\.ticket\.resolve/);
     assert.match(supportSource, /support\.csat\.record/);

@@ -374,12 +374,15 @@ test('production mount: an allowlisted super admin reaches a privacy request thr
     assert.deepEqual(byEmail.json?.data, [], 'and the buyer\'s email does not identify the request');
     assert.deepEqual((byReference.json?.data as Array<{ id: string }>).map((row) => row.id), [request.id], 'its reference does');
 
-    // The queue cannot be filtered to the privacy topic: the shared support-topic list does not include it. That is a gap in the operator
-    // tooling, not a way in: the request is refused and nothing is returned for it. (The same list is what keeps an operator from creating
-    // a privacy-topic ticket with arbitrary metadata: see the lifecycle test.)
-    const byTopic = await signedAs(superAdmin, `${OPS}/tickets?topic=privacy`);
-    assert.ok(byTopic.status >= 400, `a topic outside the shared list is refused, not answered: ${byTopic.status}`);
-    assert.deepEqual(leaks(byTopic.text, [request.id, buyer.id]), []);
+    // The queue can be filtered to the privacy topic (P2-OPERATOR-QUEUE-CORRECTNESS, 2026-10-02: until then the filter used the
+    // creation topic list, which leaves privacy out, and the request was a 500). Filtering and creating are separate contracts: an
+    // operator still cannot CREATE a privacy-topic ticket (see the lifecycle test), and operator-queue-correctness.postgres.test.ts
+    // proves the filter's rows and totals.
+    const byTopic = await signedAs(superAdmin, `${OPS}/tickets?topic=privacy&limit=100`);
+    assert.equal(byTopic.status, 200, byTopic.text);
+    const privacyRows = byTopic.json?.data as Array<{ id: string; topic: string }>;
+    assert.ok(privacyRows.some((row) => row.id === request.id), 'the privacy filter finds the request');
+    assert.ok(privacyRows.every((row) => row.topic === 'privacy'), 'and lists privacy requests alone');
 
     // The tiers are stopped upstream: same people, same routes, refused with the ops gate's own answer, and nothing is read or written.
     const viewer = seedUser('gate-viewer');
@@ -469,6 +472,10 @@ test('router level (the support router mounted alone, real database): only activ
         ['assign', `/tickets/${request.id}/assign`, body('PATCH', { assignee_id: null, reason: REASON })],
         ['record satisfaction', `/tickets/${request.id}/csat`, body('POST', { score: 5, reason: REASON })],
         ['create a ticket', '/tickets', body('POST', { requester_type: 'customer', requester_user_id: buyer.id, subject: 'A forged request', body: 'Text', reason: REASON })],
+        // Malformed input from someone who may not act is refused for who they are, never answered with a validation error: each
+        // route checks the permission before it looks at the request (P2-OPERATOR-QUEUE-CORRECTNESS).
+        ['a reply whose body is not JSON', `/tickets/${request.id}/messages`, { method: 'POST', body: '{"body": ' }],
+        ['a reply to a malformed id', '/tickets/not-a-ticket-id/messages', body('POST', { body: 'A reply', reason: REASON })],
     ];
     for (const [name, path, init] of attempts) {
         const response = await aloneAs(viewer, path, init);
@@ -567,18 +574,22 @@ test('whatever a support agent does through the real routes, the buyer never rea
     assert.equal(ticket(access.id).status, 'resolved');
     assert.equal((await viewOf(again.id))?.status, 'received');
 
-    // Reopening the old request while the new one is unresolved: the database refuses (migration 262), and the invariant holds whatever the
-    // route reports. (The reply route does not check the result of its status update: it records the message and answers as if the status
-    // had changed. That is a general support-route behaviour, outside the privacy intake, noted in the acceptance document.)
-    await signedAs(agent, `${OPS}/tickets/${access.id}/messages`, body('POST', { body: 'Reopening', visibility: 'public', status: 'open', reason: REASON }));
+    // Reopening the old request while the new one is unresolved: the database refuses (migration 262), and since P2-OPERATOR-QUEUE-
+    // CORRECTNESS (2026-10-02) the reply route says so -- 409, and the reply is not kept (it used to keep the message and answer 200).
+    const messagesBeforeReopen = messages(access.id).length;
+    const reopen = await signedAs(agent, `${OPS}/tickets/${access.id}/messages`, body('POST', { body: 'Reopening', visibility: 'public', status: 'open', reason: REASON }));
+    assert.equal(reopen.status, 409, reopen.text);
+    assert.equal(reopen.json?.error?.code, 'CONFLICT');
+    assert.equal(messages(access.id).length, messagesBeforeReopen, 'the refused reply left no message');
     assert.equal(ticket(access.id).status, 'resolved', 'the closed request stayed closed');
     assert.equal(unresolved(buyer.id, 'access'), 1, 'exactly one unresolved request of the type');
 
-    // An agent cannot create a privacy-topic ticket: the support topic list the create route validates against does not include it. This is
-    // what stops an operator from writing one with arbitrary metadata, and it is a gap in the tooling as much as a control.
+    // An agent cannot create a privacy-topic ticket: ticket creation validates against the support topic list, which leaves privacy out on
+    // purpose (only the buyer's privacy intake writes one), so an operator cannot write one with arbitrary metadata. The refusal is a 400.
     const privacyBefore = Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`));
     const createPrivacy = await signedAs(agent, `${OPS}/tickets`, body('POST', { requester_type: 'customer', requester_user_id: buyer.id, subject: 'A privacy request', body: 'Text', topic: 'privacy', metadata: { privacy_request_type: 'access', fulfillment_outcome: 'fulfilled' }, reason: REASON }));
-    assert.ok(createPrivacy.status >= 400, `${createPrivacy.status} ${createPrivacy.text}`);
+    assert.equal(createPrivacy.status, 400, createPrivacy.text);
+    assert.equal(createPrivacy.json?.error?.code, 'VALIDATION_ERROR');
     assert.equal(Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`)), privacyBefore, 'no privacy ticket was created by an operator');
 
     // The same payload as an ordinary ticket IS accepted, and is what it says it is: a general ticket. The buyer's privacy view does not

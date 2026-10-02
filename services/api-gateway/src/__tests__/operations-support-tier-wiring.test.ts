@@ -85,7 +85,8 @@ const MODERATOR = 'user-moderator-tier';
 const ADMINISTRATOR = 'user-administrator-tier';
 const MERCHANT_LOOKALIKE = 'user-merchant-lookalike';
 const SUPERADMIN = 'user-superadmin-control';
-const TICKET_A = 'ticket-a-11111111-1111-1111-1111-111111111111';
+// A real uuid: the routes validate :id as one before any lookup (P2-OPERATOR-QUEUE-CORRECTNESS), as support_tickets.id is.
+const TICKET_A = '11111111-1111-4111-8111-111111111111';
 
 function tables(): Record<string, Row[]> {
     return {

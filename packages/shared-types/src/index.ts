@@ -557,6 +557,10 @@ export const SupportTicketStatusSchema = z.enum(['open', 'pending_customer', 'pe
 export const SupportTicketPrioritySchema = z.enum(['low', 'normal', 'high', 'urgent']);
 export const SupportTicketChannelSchema = z.enum(['email', 'in_app', 'chat', 'phone', 'api']);
 export const SupportTicketTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general']);
+// What a ticket in the platform queue can carry, so what the queue can be filtered by: every topic above plus 'privacy'
+// (migration 261). Only the buyer's privacy intake writes a privacy ticket. An operator creates tickets and macros with
+// SupportTicketTopicSchema, which leaves 'privacy' out on purpose: filter with this schema, create with that one.
+export const SupportTicketQueueTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general', 'privacy']);
 export const SupportTicketMessageAuthorSchema = z.enum(['requester', 'agent', 'system']);
 export const SupportTicketMessageVisibilitySchema = z.enum(['public', 'internal']);
 export const SupportTicketEscalationTargetSchema = z.enum(['risk', 'trust_safety', 'incident', 'finance', 'engineering']);
@@ -566,6 +570,7 @@ export type SupportTicketStatus = z.infer<typeof SupportTicketStatusSchema>;
 export type SupportTicketPriority = z.infer<typeof SupportTicketPrioritySchema>;
 export type SupportTicketChannel = z.infer<typeof SupportTicketChannelSchema>;
 export type SupportTicketTopic = z.infer<typeof SupportTicketTopicSchema>;
+export type SupportTicketQueueTopic = z.infer<typeof SupportTicketQueueTopicSchema>;
 export type SupportTicketMessageAuthor = z.infer<typeof SupportTicketMessageAuthorSchema>;
 export type SupportTicketMessageVisibility = z.infer<typeof SupportTicketMessageVisibilitySchema>;
 export type SupportTicketEscalationTarget = z.infer<typeof SupportTicketEscalationTargetSchema>;

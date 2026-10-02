@@ -15,7 +15,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -51,6 +51,28 @@ test('the only runtime files that write support tickets are the two that are rev
         'services/api-gateway/src/routes/operations/support.ts',
         'services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts',
     ], 'a new writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+});
+
+// The same tripwire for SQL. A function in a migration that writes support tickets is a writer the TypeScript scan above cannot see.
+// The one there is (P2-OPERATOR-QUEUE-CORRECTNESS, 2026-10-02) is reply_to_support_ticket, migration 264: an operator's reply in one
+// transaction. Its update may move a ticket's status and response times and nothing else -- never the metadata a privacy request's
+// type and any outcome would live in, never the topic. operator-queue-correctness.postgres.test.ts is its database-backed proof.
+const stripSqlComments = (sql) => sql.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/--[^\n]*/g, ' ');
+
+test('the only migration that writes support tickets is 264, and its one update moves status and response times, never metadata or topic', () => {
+    const migrationsDir = join(repoRoot, 'database/supabase/migrations');
+    const sqlOf = (name) => stripSqlComments(readFileSync(join(migrationsDir, name), 'utf8'));
+    const writers = readdirSync(migrationsDir)
+        .filter((name) => name.endsWith('.sql'))
+        .filter((name) => /\b(?:update|insert\s+into|delete\s+from)\s+(?:public\.)?support_tickets\b/i.test(sqlOf(name)))
+        .sort();
+    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+
+    const updates = sqlOf('264_support_ticket_reply_atomic.sql').match(/\bupdate\s+public\.support_tickets\s+set\b[\s\S]*?\bwhere\b/gi) ?? [];
+    assert.equal(updates.length, 1, 'one update of support_tickets');
+    const assignments = updates[0].replace(/^[\s\S]*?\bset\b/i, '').replace(/\bwhere\b$/i, '');
+    const columns = [...assignments.matchAll(/([a-z_]+)\s*=/gi)].map((match) => match[1]);
+    assert.deepEqual(columns, ['status', 'first_response_at', 'last_agent_message_at', 'updated_by']);
 });
 
 test('the scans really look: the key is found where it is known to be, and a reviewed writer is found as a writer', () => {

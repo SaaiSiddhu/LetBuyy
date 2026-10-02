@@ -79,7 +79,7 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
             {
                 requiredScope: 'support:reply',
                 routeRegistration: "router.post('/tickets/:id/messages', requirePermission('support:reply')",
-                boundedIn: { symbol: 'fetchTicket + status update via POST /tickets/:id/messages', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
+                boundedIn: { symbol: 'Trust & Safety follow-on via POST /tickets/:id/messages', kind: 'single-row-by-id', note: 'the reply itself is one rpc call (reply_to_support_ticket, migration 264), which locks and writes only the ticket it is given; the follow-on\'s claim and link updates are .eq(\'id\', ticketId)' },
             },
             {
                 requiredScope: 'support:manage',
@@ -89,7 +89,7 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
             {
                 requiredScope: 'support:reply',
                 routeRegistration: "router.post('/tickets/:id/escalate', requirePermission('support:reply')",
-                boundedIn: { symbol: 'fetchTicket + escalation update via POST /tickets/:id/escalate', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
+                boundedIn: { symbol: 'fetchTicket + escalation and case-link updates via POST /tickets/:id/escalate', kind: 'single-row-by-id', note: 'the fetch and both updates are .eq(\'id\', ticketId)' },
             },
             {
                 requiredScope: 'support:reply',

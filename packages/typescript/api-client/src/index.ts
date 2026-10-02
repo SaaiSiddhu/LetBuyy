@@ -150,6 +150,7 @@ import type {
   SupportTicketMessageAuthor,
   SupportTicketMessageVisibility,
   SupportTicketPriority,
+  SupportTicketQueueTopic,
   SupportTicketStatus,
   SupportTicketTopic,
   TrustSafetyAppealStatus,
@@ -1542,7 +1543,8 @@ export interface InternalSupportTicket extends JsonRecord {
   requester_user_id?: string | null;
   subject: string;
   channel: SupportTicketChannel;
-  topic: SupportTicketTopic;
+  // A ticket in the queue may be a buyer's privacy request; an operator still creates tickets with SupportTicketTopic.
+  topic: SupportTicketQueueTopic;
   priority: SupportTicketPriority;
   status: SupportTicketStatus;
   assignee_id?: string | null;
@@ -1626,7 +1628,7 @@ export interface InternalSupportTicketQuery extends QueryParams {
   limit?: number;
   status?: SupportTicketStatus;
   priority?: SupportTicketPriority;
-  topic?: SupportTicketTopic;
+  topic?: SupportTicketQueueTopic;
   assignee_id?: string;
   site_id?: string;
   q?: string;
@@ -1699,9 +1701,26 @@ export interface InternalSupportTicketDetail extends JsonRecord {
   merchant_context: JsonRecord | null;
 }
 
+// What happened to a Trust & Safety escalation: the automatic one a reply or a new ticket gets when it mentions fraud and the
+// like, or the case an explicit escalation to trust_safety opens. 'linked' only when the ticket really points at the case.
+export type InternalSupportTrustSafetyEscalation =
+  | { status: 'not_triggered' }
+  | { status: 'already_escalated' }
+  | { status: 'refused'; reason: 'privacy_request_conflict' }
+  | { status: 'linked'; ts_case_id: string }
+  | { status: 'failed'; stage: 'claim' | 'case' | 'link' };
+
 export interface InternalSupportTicketResult extends JsonRecord {
   ticket: InternalSupportTicket;
   linked_ts_case_id?: string | null;
+  trust_safety_escalation?: InternalSupportTrustSafetyEscalation;
+}
+
+export interface InternalSupportReplyResult extends JsonRecord {
+  message: InternalSupportTicketMessage;
+  ticket: InternalSupportTicket;
+  linked_ts_case_id: string | null;
+  trust_safety_escalation: InternalSupportTrustSafetyEscalation;
 }
 
 export type InternalIncidentSeverity = 'sev1' | 'sev2' | 'sev3' | 'sev4';
@@ -4567,7 +4586,7 @@ export class LetbuyyApiClient {
         { ...options, method: 'POST', body: input },
       ),
     replySupportTicket: (id: string, input: InternalSupportMessageInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ message: InternalSupportTicketMessage; linked_ts_case_id?: string | null }>(
+      this.requestData<InternalSupportReplyResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/messages`,
         { ...options, method: 'POST', body: input },
       ),
