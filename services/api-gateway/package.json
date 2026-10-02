@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts",
     "test:db": "cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db",
-    "test": "pnpm run test:unit && pnpm run test:db && tsx --test ../../tests/contracts/*.test.ts"
+    "test": "pnpm run test:unit && pnpm run test:db && cd ../.. && tsx --test tests/contracts/*.test.ts"
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",

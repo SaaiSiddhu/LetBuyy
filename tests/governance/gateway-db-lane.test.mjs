@@ -144,17 +144,33 @@ test('the gateway\'s fast unit lane cannot reach a database, and the retired hel
     }
 });
 
-test('the package scripts keep three lanes apart: unit (fast, no database), database (owned), and the acceptance that needs both', () => {
+test('the package scripts keep three lanes apart: unit (fast, no database), database (owned), and the acceptance that needs both, every tsx stage run from the repository root', () => {
     const gateway = JSON.parse(read(join(repoRoot, 'services/api-gateway/package.json'))).scripts;
+    const root = JSON.parse(read(join(repoRoot, 'package.json'))).scripts;
     assert.equal(gateway['test:unit'], 'cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts', 'the unit glob does not descend, so owned-db/ is outside it');
     assert.equal(gateway['test:db'], 'cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db');
-    assert.match(gateway.test, /pnpm run test:unit/);
-    assert.match(gateway.test, /pnpm run test:db/, '`test` is the acceptance: it includes the database lane');
-    assert.match(gateway.test, /tests\/contracts\/\*\.test\.ts/);
-    assert.ok(gateway.test.indexOf('test:unit') < gateway.test.indexOf('test:db'));
+    // `test` is the acceptance: the unit lane, the database lane, then the canonical contracts runner (the root's own
+    // `test:contracts`, the command the root suite runs) from the repository root.
+    assert.deepEqual(
+        gateway.test.split('&&').map((stage) => stage.trim()),
+        ['pnpm run test:unit', 'pnpm run test:db', 'cd ../..', root['test:contracts']],
+    );
     assert.doesNotMatch(gateway['test:unit'], /owned-db/);
 
-    const root = JSON.parse(read(join(repoRoot, 'package.json'))).scripts;
+    // No gateway script runs tsx from services/api-gateway. That directory's tsconfig.json is a TYPE-CHECK configuration: its
+    // `paths` send hono/factory and hono/cors to hono's declaration files (dist/types/.../index.d.ts) and every other bare import
+    // into pnpm's store. tsx applies the tsconfig of its working directory at runtime, so from the package it loads a .d.ts for
+    // hono/factory, `createMiddleware` is undefined, and a test that imports middleware/buyer-session.ts dies on import: the
+    // acceptance's contract stage did exactly that until P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE. (The bundler, esbuild, skips a
+    // .d.ts target and is not affected; the repository root has no tsconfig.)
+    for (const [name, script] of Object.entries(gateway)) {
+        let atRoot = false;
+        for (const stage of script.split('&&').map((part) => part.trim())) {
+            if (stage === 'cd ../..') atRoot = true;
+            else if (/\btsx\b/.test(stage)) assert.ok(atRoot, `${name}: "${stage}" would run tsx under the gateway's type-check tsconfig`);
+        }
+    }
+
     assert.equal(root['test:unit:gateway'], 'pnpm --filter @letbuyy/api-gateway run test:unit');
     assert.equal(root['test:db:gateway'], 'pnpm --filter @letbuyy/api-gateway run test:db');
     assert.equal(root['test:gateway'], 'pnpm --filter @letbuyy/api-gateway run test');
