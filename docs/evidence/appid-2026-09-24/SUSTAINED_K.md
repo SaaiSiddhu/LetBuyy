@@ -205,6 +205,22 @@ script's second stage is invoked directly from inside `services/api-gateway`, wh
 or CI paths does. Recorded as evidence, not fixed — outside this phase's scope, and the governed paths
 are unaffected.
 
+> **Correction (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The root cause given above is wrong. It is not
+> `hono/factory`'s CJS/ESM interop shape. `services/api-gateway/tsconfig.json` maps `hono/factory` and `hono/cors` to hono's
+> declaration files in `compilerOptions.paths`. tsx applies the tsconfig of its working directory to runtime resolution, so from
+> the package directory `hono/factory` loads a `.d.ts`, which is an empty module.
+>
+> Shown by experiment, from the package directory:
+>
+> - The gateway tsconfig without those two entries passes the file 10/10.
+> - A tsconfig holding only those two entries reproduces the crash.
+>
+> The production bundle (wrangler's esbuild) is unaffected.
+>
+> The gateway's package script now runs the contracts from the repository root, and a governance pin refuses any gateway
+> script that runs tsx from the package directory: `docs/evidence/phase2-2026-09-27/P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md` §3.
+> The rest of the paragraph stands: which files were affected, and that the gate and CI paths never ran from that directory.
+
 ## Status summary
 
 | Item | Status |

@@ -5,6 +5,8 @@ Initial HEAD `5f3341bfe4d31528e37752dfab3b159d510f3bfd`. Source commits `c7ad3b6
 
 Execution mode: **SINGLE AGENT** · Subagents invoked: **NO** · Agent/Task delegation: **NO** · Background agents: **NO** · Parallel worktree agents: **NO** · Workflow orchestration: **NO**. (The root suite was waited on as a background *shell command*; it is a process, not an agent.)
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The owner decided O1 the same day, and it is implemented: `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`. The access boundary below is the one before that decision; dated notes at §3, §9, §14 and §16 say what changed.
+
 ## 0. Verdict
 
 **A — THE OPERATOR QUEUE'S VALIDATION, PRIVACY FILTERING AND REPLY CONSISTENCY ARE REPAIRED, AND PROVEN THROUGH THE PRODUCTION WORKER AGAINST AN OWNED DATABASE.** Limited to this mandate: it does not say anything about the rest of Phase 2.
@@ -65,6 +67,14 @@ Through the real worker, real signed identities and real `employees` / `super_ad
 | Buyer session; the super admin's own id under a forged staff signature; no credential | refused | nothing | `401` |
 
 Each refused caller sent valid **and** malformed requests (an unknown topic with `limit=0`, a malformed id, a body that is not JSON, a privacy-ticket creation): every one got the gate's answer, so authorization runs before validation, and the `audit_logs` count (a successful read writes a sensitive-read row) shows nothing was read. Each refusal is paired with the same seven requests from the super admin (200 / 400 as each deserves). The router's own tiers (viewer reads, agent acts, only a lead assigns) remain proven with the router **mounted alone**, which is not production; this task added that a viewer's malformed request is refused there with `PERMISSION_SCOPE_DENIED`, not validated.
+
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The table above is the boundary before the owner's O1 decision. Measured through the production worker since then:
+>
+> - Active platform reviewers, operators and leads reach the queue. The reviewer only reads, the operator cannot assign or create macros, and the lead and super admin can do everything.
+> - A platform `admin`-role employee not on the allowlist gets `403 Platform operator tier not admitted`.
+> - Every other refused caller above stays refused. Each store or inactive caller now gets the support gate's own `Platform operator access required` instead of the ops gate's message.
+>
+> See `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md` §5.
 
 ## 4. Two topic contracts: filter and create
 
@@ -160,6 +170,14 @@ On every route, after its permission check: ticket ids must be uuids (detail, re
 
 The suite's tests: A (access boundary), B1 (privacy filter, totals, pagination, ordinary filters, search), B2 (32 malformed inputs), B3 (creation contracts), C (successful reply: message, state, clocks, audit, attribution, public vs internal, what the buyer reads, no fulfillment invented), D (refused transition, retries, status routes, positive controls), E1a/E1b (named in-transaction faults), E2a/E2b (gone, gone in flight), E3a/E3b/E3c (follow-on outcomes), F1/F2/F3 (concurrency), and the function's grants, definer, search path and rollback.
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The contract step's failure in the table above is repaired.
+>
+> - **Cause:** `services/api-gateway/tsconfig.json` maps `hono/factory` to a declaration file, and tsx applies that tsconfig at runtime when run from the package directory.
+> - **Repair:** the package script now runs the root's contracts command from the repository root.
+> - **Result:** `pnpm --filter @letbuyy/api-gateway run test` is green end to end.
+>
+> See `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md` §3.
+
 ## 10. Negative controls
 
 One temporary edit each (every edit matched exactly once), the two suites run through the runner, the file restored byte for byte and verified by sha256; after NC1–NC9 every changed file was identical to its pre-control hash, and after NC10 `support.ts` was identical to the commit. NC1–NC9 ran on `c7ad3b67`'s content, NC10 on `16568c54`.
@@ -204,6 +222,12 @@ Tested source: `c7ad3b679e5bc7d4f7b33884272cb5f689f42470` (the first two consecu
 * **The gateway `test` script's contract step fails one file from the package directory** (§9) — pre-existing module resolution, unrelated to this change; the root suite runs the file green.
 * Unchanged and out of scope: Q3 (synthetic rows in the restored stack), D03 cutover, D04.2–D04.9, D05 (export, erasure, retention, legal hold — no fulfillment writer exists, and the SQL tripwire now guards that too), hosted delivery.
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** Status of the items above:
+>
+> - **O1:** decided by the owner and implemented, `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`.
+> - **The contract-step failure:** repaired.
+> - **Still open:** the missing idempotency key and the best-effort writes of assign, escalate, resolve, satisfaction and create, along with the other items listed.
+
 ## 15. The requirement matrix and the dated notes
 
 * `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md`: a header note and a new F2.6 row for the operator queue's correctness; the tiers row keeps its "not reachable through the production mount" correction.
@@ -215,6 +239,14 @@ The original text stays where it is, as the record of its moment.
 ## 16. Precise next task
 
 **P2-OPERATOR-QUEUE-GATE — the owner answers O1, then the wiring says so.** *Retain:* record "implemented, dormant" for the tiers as the decision, not a gap, and stop there. *Enable:* first decide which tiers may read a buyer's privacy note and the internal notes (a viewer can today, mounted alone); then narrow the incident-command gate to the routes that need `ops` + super admin, or mount the support router outside it, and change the production-mount tests of `operator-queue-correctness` (A) and `privacy-support-visibility` in the same commit. Either way these two suites are the acceptance. Q3 stays its own task.
+
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The next task ran under that name with the owner's answer: open the queue to the tiers.
+>
+> - The incident-command gate was **not** narrowed. Four routers under `/operations` have no gate of their own and rely on it.
+> - Instead, the support router was mounted before the gate.
+> - The production-mount tests of both suites changed in the same commit.
+>
+> See `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md` §4.
 
 ## Appendix A — the exact edits of the negative controls
 

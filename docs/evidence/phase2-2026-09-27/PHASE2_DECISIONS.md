@@ -266,6 +266,33 @@ follow-up task, not fixed in this pass.
 > question stands: retain super-admin-only access to the queue, or enable selected tiers — and, if so, who may read a buyer's
 > privacy note and the internal notes. See `P2_OPERATOR_QUEUE_CORRECTNESS_ACCEPTANCE.md` §3 and §14.
 
+> **Owner decision (2026-10-02; recorded and implemented by P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** `OWNER_DECISION` O1,
+> from the owner's own message of 2026-10-02, headed "OWNER DECISION — O1 APPROVED". It is not an assistant's recommendation.
+> Reviewers, operators and leads get access to the production operator support queue, including buyer privacy requests,
+> buyer-authored notes and internal notes:
+>
+> - **Reviewer:** read only.
+> - **Operator:** the existing operator action permissions.
+> - **Lead:** the existing lead management and assignment permissions.
+> - **Super admin:** access keeps working.
+> - **Platform membership:** must be active. Merchant owners and staff never gain platform access through a similarly named role.
+>
+> It approves local implementation and verification only: no deployment, push, merge, hosted change or real operator provisioning.
+>
+> **Implementation** (`P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`):
+>
+> - `/operations/support` is now mounted before incident-command's `/operations/*` gate. That gate is unchanged and still guards
+>   every other router mounted after it.
+> - The support gate admits active platform employees of the `viewer`, `operator` and `lead` tiers, and allowlisted super admins.
+> - Each route's existing `requirePermission` decides the action.
+> - The production-mount tests changed in the same commit.
+>
+> The correction and the note above remain the record of the boundary before this decision.
+>
+> **Sub-question, not decided.** A platform employee whose role is `admin` but who is not on the super-admin allowlist maps to the
+> `admin` tier. The mapping below leaves that tier unassigned, and O1 does not name it, so it stays refused
+> (`403 Platform operator tier not admitted`). Admitting it is the owner's call.
+
 ### Product role → existing tier mapping (Mandate 7, Section 8 — explicit, not assumed equivalent)
 
 | Product role (what D04 approved) | Existing tier (`INTERNAL_PERMISSION_TIERS`) | Exact scopes granted | Excluded actions | Assignment authority |
@@ -424,7 +451,7 @@ IMPLEMENTED / LOCAL VERIFIED / BLOCKED / CLOSED), not an invented scale. Rows ou
 > `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §3.4.
 
 | D03 real-rehearsal discovery: product mutation routes were owner-only regardless of staff permission | **DISCOVERED, THEN FIXED SAME DAY** (2026-09-28 permission-equivalence follow-up, fix in commit `81dc8e94`) — while building the real rehearsal, found that `PATCH`/`DELETE /products/:id` (via `ProductExecutionAdapter.ownedProductStoreId`) and `POST /products` (via `createProduct`'s internal `assertStoreOwnership`) each performed their OWN literal-owner-only recheck (`verifySiteOwnership`, `sites.custom_user_id`/`user_id` only) AFTER the route-level `assertStaffPermission('products:write')` had already correctly allowed a permitted staff member through — meaning no non-owner staff member, however permissioned, could complete a product mutation through this router. `GET /:id` already had the equivalent owner-OR-staff fix; POST/PATCH/DELETE had not. Fixed by giving PATCH/DELETE the same `loadProductByIdUnguarded`-then-`assertStaffPermission` pattern `GET /:id` uses, and by adding an explicit `alreadyAuthorized` parameter to `createProduct`/`bulkAction` (set only by callers that already checked staff permission; every other existing caller unchanged). Regression-tested in `product-tenant-guard.test.ts`'s section 5. See `D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md`. |
-| D04 operator role tiers (Reviewer/Moderator/Administrator) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — `requirePlatformOperator()` wired into `operations/support.ts`; 19 tests (8 middleware, 2 end-to-end, 9 pre-existing unaffected) *(corrected 2026-10-01: at the router level; through the production mount an earlier `/operations/*` gate admits only allowlisted super admins, so the tiers are dormant — see the correction note in the D04 section above and `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §9.3)* |
+| D04 operator role tiers (Reviewer/Moderator/Administrator) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — `requirePlatformOperator()` wired into `operations/support.ts`; 19 tests (8 middleware, 2 end-to-end, 9 pre-existing unaffected) *(corrected 2026-10-01: at the router level; through the production mount an earlier `/operations/*` gate admits only allowlisted super admins, so the tiers are dormant — see the correction note in the D04 section above and `P2_PRIVACY_CONCURRENCY_DB_ACCEPTANCE.md` §9.3)* *(2026-10-02, O1: the owner decided to open the queue to the three tiers. The support router is now mounted before that gate and admits only active platform `viewer`, `operator` and `lead` employees, plus allowlisted super admins. The tiers are reachable, and LOCAL VERIFIED through the production worker against an owned database: `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`.)* |
 | D04 operator bootstrap/recovery | **BLOCKED** on D04 decisions 2-4 (who assigns roles; bootstrap authority; recovery approver) |
 | D04 console magic-link single-use enforcement | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — real, previously absent; atomic consume proven via real-Postgres concurrency (one 200, one 409, exactly one row) |
 | D04 console session revocation (the allowlist-membership dimension, the "8-hour gap") | **IMPLEMENTED, LOCAL VERIFIED** (2026-09-28) — verified the gap was real (neither `proxy.ts` nor `requireConsoleSession()` re-checked `PLATFORM_CONSOLE_ALLOWED_EMAILS` per request), fixed both layers, 6 tests against the real `proxy()` function. Precisely characterized this pass (2026-09-28 follow-up), not just claimed fixed: `PLATFORM_CONSOLE_ALLOWED_EMAILS` is read fresh from `process.env` on every call with NO caching layer of this repo's own construction, so the fix's guarantee is "the very next request after the deployed process's environment actually changes is denied" -- in most real hosting models that means after a redeploy/restart, not instantly on an env-var edit alone; a rolling multi-instance deployment can have instances briefly disagree during that rollout (inherent to env-var-based config generally, not something this fix changes); `proxy.ts` and `console-auth-server.ts` are CONFIRMED to call the identical `isConsoleEmailAllowed` from the identical `console-access-allowlist.ts` module (one source of truth, not two policies that could drift); re-adding a removed email makes any STILL-UNEXPIRED session cookie for that email valid again immediately -- "removal" is membership state, not a permanent per-session kill; `services/api-gateway`'s own `internal-console.ts` routes do NOT themselves re-verify per-operator membership -- they trust `PLATFORM_CONSOLE_API_TOKEN`, a shared service-level credential common to every console-originated call, so the person-level check lives ENTIRELY in the console app's own layer (which this fix covers). Per-session-jti revocation (killing one specific already-issued token before its natural expiry, independent of allowlist membership) remains unsupported — a named limitation, not fabricated as tested. |

@@ -166,6 +166,14 @@ Mounted **alone**, against real `employees` rows, the support router's own logic
 
 What that means: the privacy-relevant truth today is **"only the super-admin allowlist can read or act on a privacy request through the gateway"**, which is stricter than `PHASE2_DECISIONS.md` ("a non-superadmin active platform employee can now reach this router") and the matrix row F2.6 say. It is fail-closed, so nothing here is exposed; but the tiers are "DDL-real, wiring-dead", and the existing `operations-support-tier-wiring.test.ts` — which mounts the support router alone against a fake PostgREST — could not see it. The suite pins the production behaviour on purpose: **a future change to the mount order or the gate fails it**, so widening who may read a privacy request cannot happen by accident. **Decision for the owner (O1, §15):** keep it (privacy-protective, and the D04 tiers stay dormant), or open the queue to the tiers — knowing, from the router-level test, exactly what a viewer would then read and what an agent could do.
 
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** The owner decided O1: open the queue to the tiers.
+>
+> - **Reviewer:** reads the queue, the detail with the buyer's note, the internal notes and the overview.
+> - **Operator:** acts but does not assign.
+> - **Lead:** assigns.
+>
+> The support router is now mounted before the incident-command gate, so "only the super-admin allowlist" above describes the boundary before that decision. Proven through the production worker: `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`.
+
 ## 10. Lifecycle truthfulness (§13)
 
 Through the dedicated route, from real rows:
@@ -332,6 +340,14 @@ The original text is left where it is, as the record of its moment.
 Either way the two suites in this task are the acceptance. The other open item from the previous task, **Q3** (what to do with the synthetic rows already in the restored stack — `P2_HERMETIC_GATEWAY_DB_ACCEPTANCE.md` §15), is unchanged and is its own bounded task with a fresh read-only census first.
 
 > **Later note (2026-10-02, P2-OPERATOR-QUEUE-CORRECTNESS).** The three honesty fixes of step 2 were made by the next task without waiting for O1 — its mandate authorized them, and they change no one's access — together with an atomic reply (`P2_OPERATOR_QUEUE_CORRECTNESS_ACCEPTANCE.md`). Step 1 (the owner's answer to O1) and step 3 are still open; the "implemented, dormant" wording of the F2.6 row waits on that answer.
+
+> **Later note (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE).** Step 1 is answered: the owner opened the queue to the viewer, operator and lead tiers, and super admins are unchanged.
+>
+> - **Step 3, done:** the support router was mounted before the incident-command gate rather than narrowing it, because four routers rely on that gate as their only router-level protection.
+> - **Same commit:** the production-mount test of `privacy-support-visibility.postgres.test.ts` was changed alongside.
+> - **"Implemented, dormant":** no longer the status.
+>
+> See `P2_OPERATOR_QUEUE_GATE_ACCEPTANCE.md`.
 
 ## Appendix A — the exact edits of the negative controls
 
