@@ -9,9 +9,10 @@
 //   1. a merchant's staff, a store owner, an unrelated user and a platform employee who is not active cannot see, count or reach a
 //      buyer's privacy request;
 //   2. through the PRODUCTION mount, the platform support queue (where a privacy request is visible) is reachable by an allowlisted
-//      super admin only: platform employees of the viewer, operator and lead tiers are stopped by an earlier router's gate. The tier
-//      logic the support router carries is proven separately, with that router mounted alone, so that a decision to open the queue to the
-//      tiers is made knowing exactly what they would then be able to read and do;
+//      super admin and, since the owner's decision O1 (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE), by active platform
+//      employees of the reviewer (viewer), operator and lead tiers: each reads the request, the buyer's own note and the internal
+//      notes; the reviewer cannot act. (Until O1 an earlier router's gate stopped the tiers; this suite pinned that, and was changed
+//      in the same commit as the gate.) The tier logic is also proven with the support router mounted alone;
 //   3. nothing a support agent can do through a supported route makes a request read as an export or an erasure that happened:
 //      replies, escalation (with hostile metadata), resolution and closure all read as in_review or closed_no_fulfillment to the
 //      buyer, the protected metadata is never rewritten, and a status change cannot create a second unresolved request;
@@ -55,7 +56,6 @@ const STORE_TICKETS = '/v1/employees/tickets';
 const OPS = '/v1/operations/support';
 // Long enough for the support routes' reason rule, and free of the words the support router treats as a Trust & Safety trigger.
 const REASON = 'Handling a buyer data request';
-const OPS_GATE_MESSAGE = 'Insufficient role category. Required: ops';
 const PLATFORM_OPERATOR_MESSAGE = 'Platform operator access required';
 
 let keys: IdentityKeys;
@@ -318,6 +318,8 @@ test('production mount: store staff, store owners, strangers and inactive platfo
             const response = await signedAs(person, path);
             assert.equal(response.status, 403, `${name}: GET ${path} -> ${response.status} ${response.text}`);
             assert.equal(response.json?.error?.code, 'FORBIDDEN', `${name}: ${response.text}`);
+            // Since O1 the support router's own gate answers (before O1 it was incident-command's): no active platform membership.
+            assert.equal(response.json?.error?.message, PLATFORM_OPERATOR_MESSAGE, `${name}: ${response.text}`);
             assert.deepEqual(leaks(response.text, needles), [], name);
         }
         const mutation = await signedAs(person, `${OPS}/tickets/${request.id}/resolve`, body('POST', { reason: REASON }));
@@ -335,15 +337,12 @@ test('production mount: store staff, store owners, strangers and inactive platfo
 // 2. Platform staff: who reaches the queue in production, and what the router's own tiers would allow
 // --------------------------------------------------------------------------------------------------------------------
 
-test('production mount: an allowlisted super admin reaches a privacy request through the platform queue; platform employees of the viewer, operator and lead tiers are stopped by the ops gate', async () => {
-    // routes/operations/incident-command.ts registers router.use('*', requireRoleCategory('ops'), requireSuperAdmin) and is mounted at
-    // '/operations' in src/index.ts BEFORE '/operations/support'. Hono applies a '*' middleware of a mounted router to every route
-    // registered after it under the same prefix, so every platform support route is behind that gate whatever its own router checks.
-    // The consequence, measured here: through the production worker, the platform support queue (and with it every privacy request,
-    // its buyer-authored notes and the internal notes) is reachable by the super-admin allowlist only. The viewer/operator/lead tiers
-    // that routes/operations/support.ts and middleware/rbac.ts implement are real (see the next test) but not reachable through the
-    // production mount. Opening the queue to them is a decision about who may read privacy requests; it must be made deliberately, and
-    // this test will fail when the mount order or the gate changes, so it cannot happen by accident.
+test('production mount (O1): an allowlisted super admin and platform reviewers, operators and leads reach a privacy request through the platform queue and read what the buyer wrote and the internal notes; the reviewer cannot act, the operator cannot assign', async () => {
+    // Owner decision O1 (2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE): the queue -- and with it every privacy request, its
+    // buyer-authored notes and the internal notes -- is open in production to the super-admin allowlist and to ACTIVE PLATFORM
+    // employees of the viewer, operator and lead tiers. Until then routes/operations/incident-command.ts's gate on every /operations
+    // route, mounted before /operations/support, kept everyone but super admins out, and this test pinned that; src/index.ts now mounts
+    // the support router before that gate, and this test changed in the same commit.
     const buyer = seedBuyerAccount(psql, 'queue');
     const noteText = `QUEUE-NOTE-${crypto.randomUUID().slice(0, 8)}`;
     const request = await buyerRequest(buyer, 'access', noteText);
@@ -384,40 +383,57 @@ test('production mount: an allowlisted super admin reaches a privacy request thr
     assert.ok(privacyRows.some((row) => row.id === request.id), 'the privacy filter finds the request');
     assert.ok(privacyRows.every((row) => row.topic === 'privacy'), 'and lists privacy requests alone');
 
-    // The tiers are stopped upstream: same people, same routes, refused with the ops gate's own answer, and nothing is read or written.
+    // The tiers, through the same production worker: every one of them reads the request, the buyer's note and the internal notes.
     const viewer = seedUser('gate-viewer');
     const agent = seedUser('gate-agent');
     const lead = seedUser('gate-lead');
     const leadEmployee = seedEmployee(lead, 'manager', null);
     seedEmployee(viewer, 'viewer', null);
     seedEmployee(agent, 'support', null);
-    const before = { row: ticket(request.id), counts: counts(), messages: messages(request.id) };
-    const needles = [request.id, request.reference, buyer.id, noteText];
     for (const [name, person] of [['a platform viewer', viewer], ['a platform agent', agent], ['a platform lead', lead]] as Array<[string, Person]>) {
-        for (const path of [`${OPS}/tickets`, `${OPS}/tickets/${request.id}`, `${OPS}/overview`]) {
-            const response = await signedAs(person, path);
-            assert.equal(response.status, 403, `${name}: GET ${path} -> ${response.status} ${response.text}`);
-            assert.equal(response.json?.error?.message, OPS_GATE_MESSAGE, `${name}: refused by the ops gate, before the support router's own checks`);
-            assert.deepEqual(leaks(response.text, needles), [], name);
-        }
-        const attempts: Array<[string, string, RequestInit]> = [
-            ['reply', `${OPS}/tickets/${request.id}/messages`, body('POST', { body: 'A reply', visibility: 'public', reason: REASON })],
-            ['escalate', `${OPS}/tickets/${request.id}/escalate`, body('POST', { target: 'finance', reason: REASON })],
-            ['resolve', `${OPS}/tickets/${request.id}/resolve`, body('POST', { reason: REASON })],
-            ['assign', `${OPS}/tickets/${request.id}/assign`, body('PATCH', { assignee_id: leadEmployee, reason: REASON })],
-        ];
-        for (const [action, path, init] of attempts) {
-            const response = await signedAs(person, path, init);
-            assert.equal(response.status, 403, `${name}: ${action} -> ${response.status} ${response.text}`);
-            assert.equal(response.json?.error?.message, OPS_GATE_MESSAGE, `${name}: ${action}`);
-        }
+        const list = await signedAs(person, `${OPS}/tickets?topic=privacy&limit=100`);
+        assert.equal(list.status, 200, `${name}: ${list.text}`);
+        assert.ok((list.json?.data as Array<{ id: string }>).some((row) => row.id === request.id), `${name} finds the request in the queue`);
+        const seen = await signedAs(person, `${OPS}/tickets/${request.id}`);
+        assert.equal(seen.status, 200, `${name}: ${seen.text}`);
+        const bodies = (seen.json?.data?.messages as Array<{ body: string }>).map((message) => message.body);
+        assert.ok(bodies.includes(noteText), `${name} reads what the buyer wrote`);
+        assert.ok(bodies.some((text) => text.startsWith('INTERNAL-TRIAGE-')), `${name} reads the internal notes`);
+        assert.equal((await signedAs(person, `${OPS}/overview`)).status, 200, name);
     }
-    assert.deepEqual({ row: ticket(request.id), counts: counts(), messages: messages(request.id) }, before, 'none of them read or changed anything');
+
+    // Their actions differ by tier. The viewer (reviewer) takes none, and writes nothing.
+    const attempts: Array<[string, string, RequestInit]> = [
+        ['reply', `${OPS}/tickets/${request.id}/messages`, body('POST', { body: 'A reply', visibility: 'public', reason: REASON })],
+        ['internal note', `${OPS}/tickets/${request.id}/messages`, body('POST', { body: 'A note', visibility: 'internal', reason: REASON })],
+        ['escalate', `${OPS}/tickets/${request.id}/escalate`, body('POST', { target: 'finance', reason: REASON })],
+        ['resolve', `${OPS}/tickets/${request.id}/resolve`, body('POST', { reason: REASON })],
+        ['assign', `${OPS}/tickets/${request.id}/assign`, body('PATCH', { assignee_id: leadEmployee, reason: REASON })],
+    ];
+    const before = { row: ticket(request.id), counts: counts(), messages: messages(request.id) };
+    for (const [action, path, init] of attempts) {
+        const response = await signedAs(viewer, path, init);
+        assert.deepEqual([response.status, response.json?.error?.code], [403, 'PERMISSION_SCOPE_DENIED'], `the viewer: ${action}: ${response.text}`);
+    }
+    assert.deepEqual({ row: ticket(request.id), counts: counts(), messages: messages(request.id) }, before, 'the viewer read the request and changed nothing');
+
+    // The agent (operator) notes the request but cannot assign it; the lead can. None of it changes what kind of ticket the request
+    // is, whose it is, or its protected metadata.
+    const agentAssign = await signedAs(agent, `${OPS}/tickets/${request.id}/assign`, body('PATCH', { assignee_id: leadEmployee, reason: REASON }));
+    assert.deepEqual([agentAssign.status, agentAssign.json?.error?.code], [403, 'PERMISSION_SCOPE_DENIED'], agentAssign.text);
+    assert.equal(ticket(request.id).assignee_id, null);
+    const agentNote = await signedAs(agent, `${OPS}/tickets/${request.id}/messages`, body('POST', { body: 'Checked the identity records', visibility: 'internal', reason: REASON }));
+    assert.equal(agentNote.status, 200, agentNote.text);
+    const leadAssign = await signedAs(lead, `${OPS}/tickets/${request.id}/assign`, body('PATCH', { assignee_id: leadEmployee, reason: REASON }));
+    assert.equal(leadAssign.status, 200, leadAssign.text);
+    const after = ticket(request.id);
+    assert.deepEqual([after.assignee_id, after.topic, after.site_id, after.requester_user_id], [leadEmployee, 'privacy', null, buyer.id]);
+    assert.deepEqual(after.metadata, { privacy_request_type: 'access' });
 });
 
 test('router level (the support router mounted alone, real database): only active platform employees pass, and their tier decides: a viewer reads, an agent acts, only a lead assigns', async () => {
-    // NOT the production mount (see the previous test). This is the support router's own gate and tier logic, against real employees rows,
-    // to show what the tiers would be allowed to read and do if the production gate were ever opened to them.
+    // The support router mounted alone: its own gate and tier logic, against real employees rows. Since O1 the production mount gives the
+    // same answers (the previous test, and operator-queue-correctness.postgres.test.ts A to A4); this keeps the router's logic proven on its own.
     const buyer = seedBuyerAccount(psql, 'tiers');
     const noteText = `TIER-NOTE-${crypto.randomUUID().slice(0, 8)}`;
     const request = await buyerRequest(buyer, 'access', noteText);

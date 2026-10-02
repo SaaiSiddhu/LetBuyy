@@ -10,6 +10,7 @@ import {
     INTERNAL_PERMISSION_TIERS,
     type InternalEffectivePermissionScope,
     type InternalPermissionScope,
+    type InternalPermissionTier,
 } from '@letbuyy/shared-types';
 import type { RbacRoleCategory } from '@letbuyy/auth-core';
 import type { Env } from '../index';
@@ -621,8 +622,15 @@ export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
  *     this change does not add or imply one.
  *  7. Audit actor identity -- unchanged; every route's own writeAudit/logSensitiveRead call already
  *     derives the actor from `auth.user.id` (via actorUserId(c)), never from anything client-supplied.
+ *
+ * `admittedTiers` (P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE, owner decision O1 of 2026-10-02): a router may admit only some
+ * platform tiers. A super admin always passes, unchanged. Any other caller must still be an active platform employee (above),
+ * AND the default tier of its platform role (INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS) must be one the router admits; a role with no
+ * tier, or a tier the router does not list, is refused here (fail closed), before any route runs. Without the option, every
+ * active platform employee passes, as before. Which ACTIONS an admitted caller may take is still each route's requirePermission.
  */
-export function requirePlatformOperator() {
+export function requirePlatformOperator(options: { admittedTiers?: readonly InternalPermissionTier[] } = {}) {
+    const { admittedTiers } = options;
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
         const auth = c.get('auth');
         if (!auth?.user) {
@@ -643,6 +651,17 @@ export function requirePlatformOperator() {
                 { error: { code: 'FORBIDDEN', message: 'Platform operator access required' } },
                 403
             );
+        }
+
+        if (!isSuperAdmin && admittedTiers) {
+            const role = typeof employee?.role === 'string' ? employee.role.trim() : '';
+            const tier = role && Object.hasOwn(INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS, role) ? INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS[role] : undefined;
+            if (!tier || !admittedTiers.includes(tier)) {
+                return c.json(
+                    { error: { code: 'FORBIDDEN', message: 'Platform operator tier not admitted' } },
+                    403
+                );
+            }
         }
 
         await next();

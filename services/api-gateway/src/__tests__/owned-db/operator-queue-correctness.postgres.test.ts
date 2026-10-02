@@ -1,13 +1,15 @@
 // The operator support queue through the PRODUCTION worker and a real Postgres (P2-OPERATOR-QUEUE-CORRECTNESS, 2026-10-02).
 //
-// Every request below goes through the worker's own fetch (src/index.ts): the real global middleware, the real mount order
-// (routes/operations/incident-command.ts's ops gate in front of /operations/support), real signed identities, a real PostgREST
-// and a real Postgres. What it proves:
+// Every request below goes through the worker's own fetch (src/index.ts): the real global middleware, the real mount order,
+// real signed identities, a real PostgREST and a real Postgres. What it proves:
 //
-//   A. who reaches the routes under /v1/operations/support at all: an allowlisted super admin, and nobody else. Platform employees of every
-//      tier, merchant owners and staff, strangers, inactive employees, buyers, forged identities and anonymous callers are
-//      refused BEFORE any validation runs, and read and write nothing. Each refusal is paired with the same request made by
-//      the super admin;
+//   A. who reaches the routes under /v1/operations/support, as the owner decided on 2026-10-02 (O1,
+//      P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE): an allowlisted super admin and ACTIVE PLATFORM employees of the reviewer
+//      (viewer), operator and lead tiers -- and nobody else. A platform role outside those tiers (admin, which D04 left
+//      unassigned), merchant owners and staff whatever their role string, strangers, inactive employees, buyers, forged
+//      identities and anonymous callers are refused BEFORE any validation runs, and read and write nothing. Every refusal is
+//      paired with an admitted caller making the same request. A2 to A4 are the exact read and action matrix and the
+//      same-session loss of access; G proves incident-command and every sibling /operations route keep their protection;
 //   B. the two topic contracts: the queue can be FILTERED by topic=privacy, with exact rows and totals, while an operator
 //      still cannot CREATE a privacy ticket or macro; a malformed filter, id or body is a sanitized 400, never an internal
 //      error, and writes nothing;
@@ -57,7 +59,12 @@ const PRIVACY = '/v1/storefront/buyer/privacy-requests';
 const BUYER_TICKETS = '/v1/storefront/buyer/support/tickets';
 // Long enough for the support routes' reason rule, and free of every word the router treats as a Trust & Safety trigger.
 const REASON = 'Handling a queued support request';
+// incident-command's gate (routes/operations/incident-command.ts), in front of every /operations route mounted after it.
 const OPS_GATE_MESSAGE = 'Insufficient role category. Required: ops';
+// The support router's own gate (middleware/rbac.ts requirePlatformOperatorTier): no active platform membership, or a platform
+// role whose tier the queue does not admit.
+const PLATFORM_OPERATOR_MESSAGE = 'Platform operator access required';
+const TIER_NOT_ADMITTED_MESSAGE = 'Platform operator tier not admitted';
 const REPLY_RPC = 'rpc/reply_to_support_ticket';
 const REPLY_SIGNATURE = 'public.reply_to_support_ticket(uuid, uuid, text, text, text, text, uuid, jsonb, jsonb, text)';
 const MIGRATION = new URL('../../../../../database/supabase/migrations/264_support_ticket_reply_atomic.sql', import.meta.url);
@@ -100,11 +107,19 @@ function seedStore(owner: Person, label: string): string {
     return id;
 }
 
-/** An `employees` row: store_id set = a merchant's own staff; store_id NULL = the platform's own staff. */
-function seedEmployee(person: Person, role: string, storeId: string | null, options: { status?: string; deleted?: boolean } = {}): void {
+/** An `employees` row: store_id set = a merchant's own staff; store_id NULL = the platform's own staff. Returns the row's id. */
+function seedEmployee(person: Person, role: string, storeId: string | null, options: { status?: string; deleted?: boolean } = {}): string {
+    const id = crypto.randomUUID();
     const status = options.status ?? 'active';
     psql(`INSERT INTO employees (id, user_id, email, role, store_id, status, is_active, deleted_at)
-          VALUES ('${crypto.randomUUID()}', '${person.id}', '${person.email}', '${role}', ${storeId ? `'${storeId}'` : 'NULL'}, '${status}', ${status === 'active'}, ${options.deleted ? 'now()' : 'NULL'});`);
+          VALUES ('${id}', '${person.id}', '${person.email}', '${role}', ${storeId ? `'${storeId}'` : 'NULL'}, '${status}', ${status === 'active'}, ${options.deleted ? 'now()' : 'NULL'});`);
+    return id;
+}
+
+/** An active PLATFORM employee (no store) with this role: viewer = the reviewer tier, support = operator, manager = lead. */
+function seedPlatformStaff(label: string, role: string): Person & { employeeId: string } {
+    const person = seedUser(label);
+    return { ...person, employeeId: seedEmployee(person, role, null) };
 }
 
 /** An active entry in the super-admin allowlist: what the ops gate in front of the queue admits. */
@@ -329,33 +344,37 @@ function installFault(table: 'audit_logs' | 'ticket_sla_clocks', event: 'INSERT'
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-// A. The access boundary, through the production mount
+// A. The access boundary, through the production mount (owner decision O1, 2026-10-02)
 // --------------------------------------------------------------------------------------------------------------------
 
-test('A. production mount: the queue answers an allowlisted super admin and nobody else; every other caller is refused before any validation, and reads and writes nothing', async () => {
+test('A. production mount (O1): an allowlisted super admin and active platform reviewers, operators and leads reach the queue; everyone else is refused before any validation, and reads and writes nothing', async () => {
     const buyer = seedBuyerAccount(psql, 'opsq-access');
     const note = `ACCESS-NOTE-${crypto.randomUUID().slice(0, 8)}`;
     const requestId = await buyerRequest(buyer, 'access', note);
     const admin = seedSuperAdmin('access-admin');
+    const reviewer = seedPlatformStaff('access-reviewer', 'viewer');
+    const operator = seedPlatformStaff('access-operator', 'support');
+    const lead = seedPlatformStaff('access-lead', 'manager');
+    // An active PLATFORM employee whose role maps to the admin tier, without an allowlist entry: a tier neither O1 nor D04 admits.
+    const platformAdmin = seedPlatformStaff('access-platform-admin', 'admin');
 
     const owner = seedUser('access-owner');
     const site = seedStore(owner, 'access');
-    const storeAdmin = seedUser('access-store-admin');
-    seedEmployee(storeAdmin, 'admin', site); // the admin tier by role string, but a STORE employee
-    const storeAgent = seedUser('access-store-agent');
-    seedEmployee(storeAgent, 'support', site);
-    const viewer = seedUser('access-viewer');
-    seedEmployee(viewer, 'viewer', null);
-    const agent = seedUser('access-agent');
-    seedEmployee(agent, 'support', null);
-    const lead = seedUser('access-lead');
-    seedEmployee(lead, 'manager', null);
-    const invited = seedUser('access-invited');
-    seedEmployee(invited, 'admin', null, { status: 'invited' });
-    const disabled = seedUser('access-disabled');
-    seedEmployee(disabled, 'admin', null, { status: 'disabled' });
-    const removed = seedUser('access-removed');
-    seedEmployee(removed, 'admin', null, { deleted: true });
+    // A merchant's staff, under the same role strings the platform tiers use: none of them is platform membership.
+    const storeStaff: Array<[string, Person]> = ['admin', 'manager', 'support', 'viewer'].map((role) => {
+        const person = seedUser(`access-store-${role}`);
+        seedEmployee(person, role, site);
+        return [`a store employee whose role is ${role}`, person];
+    });
+    const inactive: Array<[string, Person]> = [
+        ['an invited platform lead', { status: 'invited' }],
+        ['a disabled platform lead', { status: 'disabled' }],
+        ['a soft-deleted platform lead', { deleted: true }],
+    ].map(([name, options]) => {
+        const person = seedUser(`access-inactive-${crypto.randomUUID().slice(0, 4)}`);
+        seedEmployee(person, 'manager', null, options as { status?: string; deleted?: boolean });
+        return [name as string, person];
+    });
     const stranger = seedUser('access-stranger');
 
     // Valid AND malformed requests. A refused caller gets the gate's answer for both: authorization runs before validation.
@@ -368,28 +387,22 @@ test('A. production mount: the queue answers an allowlisted super admin and nobo
         ['a malformed reply body', `${OPS}/tickets/${requestId}/messages`, raw('POST', '{"body": ')],
         ['creating a privacy ticket', `${OPS}/tickets`, send('POST', { requester_type: 'customer', requester_user_id: buyer.id, subject: 'A forged request', body: 'Text', topic: 'privacy', reason: REASON })],
     ];
+    assert.equal(new Set(attempts.map(([what]) => what)).size, attempts.length, 'results are keyed by name: names are unique');
     const needles = [requestId, buyer.id, buyer.email, note];
     const snapshot = () => ({ counts: counts(), row: ticketRow(requestId), messages: messagesOf(requestId) });
     const untouched = snapshot();
 
-    const refused: Array<[string, Person]> = [
-        ['a platform viewer', viewer],
-        ['a platform agent', agent],
-        ['a platform lead', lead],
-        ['a store employee whose role is admin', storeAdmin],
-        ['a store employee whose role is support', storeAgent],
-        ['the store owner', owner],
-        ['an invited platform employee', invited],
-        ['a disabled platform employee', disabled],
-        ['a soft-deleted platform employee', removed],
-        ['a user with no employee row', stranger],
+    const refused: Array<[string, Person, string]> = [
+        ...storeStaff.map(([name, person]) => [name, person, PLATFORM_OPERATOR_MESSAGE] as [string, Person, string]),
+        ['the store owner', owner, PLATFORM_OPERATOR_MESSAGE],
+        ...inactive.map(([name, person]) => [name, person, PLATFORM_OPERATOR_MESSAGE] as [string, Person, string]),
+        ['a user with no employee row', stranger, PLATFORM_OPERATOR_MESSAGE],
+        ['an active platform employee whose role is admin (a tier O1 does not admit)', platformAdmin, TIER_NOT_ADMITTED_MESSAGE],
     ];
-    for (const [name, person] of refused) {
+    for (const [name, person, message] of refused) {
         for (const [what, path, init] of attempts) {
             const response = await as(person, path, init);
-            assert.equal(response.status, 403, `${name}, ${what}: ${response.status} ${response.text}`);
-            assert.equal(response.json?.error?.code, 'FORBIDDEN', `${name}, ${what}: ${response.text}`);
-            assert.equal(response.json?.error?.message, OPS_GATE_MESSAGE, `${name}, ${what}: refused by the ops gate, before the support router runs`);
+            assert.deepEqual([response.status, response.json?.error?.code, response.json?.error?.message], [403, 'FORBIDDEN', message], `${name}, ${what}: ${response.text}`);
             assert.deepEqual(leaks(response.text, needles), [], `${name}, ${what}`);
         }
     }
@@ -412,16 +425,11 @@ test('A. production mount: the queue answers an allowlisted super admin and nobo
 
     assert.deepEqual(snapshot(), untouched, 'no refused call read (a read writes an audit row) or wrote anything');
 
-    // The positive control: the same requests, made by the allowlisted super admin. (Results are keyed by name: names are unique.)
-    assert.equal(new Set(attempts.map(([what]) => what)).size, attempts.length);
+    // The admitted callers, the same requests. Reads and validation are the same for all four; each route's own permission decides
+    // the actions, and it runs before the body is looked at (the reviewer's malformed reply is refused for who it is, not parsed).
     const privacyBefore = Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`));
-    const results: Record<string, unknown> = {};
-    for (const [what, path, init] of attempts) {
-        const response = await as(admin, path, init);
-        results[what] = [response.status, response.json?.error?.code ?? null];
-        if (response.status >= 400) assertSanitized(response, `the super admin, ${what}`, [buyer.id, buyer.email, note]);
-    }
-    assert.deepEqual(results, {
+    const scopeDenied = [403, 'PERMISSION_SCOPE_DENIED'];
+    const actor = {
         'the queue filtered to privacy': [200, null],
         'an unsupported filter': [400, 'VALIDATION_ERROR'],
         'the request itself': [200, null],
@@ -429,10 +437,177 @@ test('A. production mount: the queue answers an allowlisted super admin and nobo
         'a reply': [200, null],
         'a malformed reply body': [400, 'INVALID_INPUT'],
         'creating a privacy ticket': [400, 'VALIDATION_ERROR'],
+    };
+    const expected: Record<string, Record<string, unknown>> = {
+        'the super admin': actor,
+        'a platform reviewer': { ...actor, 'a reply': scopeDenied, 'a malformed reply body': scopeDenied, 'creating a privacy ticket': scopeDenied },
+        'a platform operator': actor,
+        'a platform lead': actor,
+    };
+    const observed: Record<string, Record<string, unknown>> = {};
+    for (const [name, person] of [['the super admin', admin], ['a platform reviewer', reviewer], ['a platform operator', operator], ['a platform lead', lead]] as Array<[string, Person]>) {
+        observed[name] = {};
+        for (const [what, path, init] of attempts) {
+            const response = await as(person, path, init);
+            observed[name][what] = [response.status, response.json?.error?.code ?? null];
+            if (response.status >= 400) assertSanitized(response, `${name}, ${what}`, [buyer.id, buyer.email, note]);
+            if (what === 'the queue filtered to privacy' && response.status === 200) assert.ok(ids(response).includes(requestId), `${name} finds the request in the privacy queue`);
+        }
+    }
+    assert.deepEqual(observed, expected);
+    assert.equal(Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`)), privacyBefore, 'nobody created a privacy ticket');
+});
+
+test('A2. read matrix (O1): the reviewer, the operator, the lead and the super admin each read the whole queue -- the list and its total with privacy requests, the detail with the buyer-authored note and the internal notes, the overview and the macros -- and every read of a request is attributed to its reader', async () => {
+    const admin = seedSuperAdmin('read-admin');
+    const readers: Array<[string, Person]> = [
+        ['the super admin', admin],
+        ['a platform reviewer', seedPlatformStaff('read-reviewer', 'viewer')],
+        ['a platform operator', seedPlatformStaff('read-operator', 'support')],
+        ['a platform lead', seedPlatformStaff('read-lead', 'manager')],
+    ];
+    const buyer = seedBuyerAccount(psql, 'opsq-read');
+    const buyerNote = `BUYER-NOTE-${crypto.randomUUID().slice(0, 8)}`;
+    const internalNote = `INTERNAL-NOTE-${crypto.randomUUID().slice(0, 8)}`;
+    const requestId = await buyerRequest(buyer, 'erasure', buyerNote);
+    const noted = await as(admin, `${OPS}/tickets/${requestId}/messages`, send('POST', { body: internalNote, visibility: 'internal', reason: REASON }));
+    assert.equal(noted.status, 200, noted.text);
+    const privacy = queueIds(`topic = 'privacy'`);
+
+    const observed: Record<string, unknown> = {};
+    for (const [name, person] of readers) {
+        const list = await as(person, `${OPS}/tickets?topic=privacy&limit=100`);
+        const detail = await as(person, `${OPS}/tickets/${requestId}`);
+        const overview = await as(person, `${OPS}/overview`);
+        const macros = await as(person, `${OPS}/macros`);
+        const bodies = ((detail.json?.data?.messages ?? []) as Array<{ body: string }>).map((message) => message.body);
+        observed[name] = {
+            list: [list.status, ids(list).length === privacy.length && privacy.every((id) => ids(list).includes(id)), list.json?.meta?.total],
+            detail: [detail.status, detail.json?.data?.ticket?.topic, bodies.includes(buyerNote), bodies.includes(internalNote)],
+            overview: [overview.status, typeof overview.json?.data?.open_count],
+            macros: [macros.status, Array.isArray(macros.json?.data)],
+            // logSensitiveRead: a read of the request leaves an audit row naming the reader.
+            attributed: Number(psql(`SELECT count(*) FROM audit_logs WHERE action = 'support.ticket.view' AND resource_id = '${requestId}' AND actor_id = '${person.id}';`)) >= 1,
+        };
+    }
+    const everyone = {
+        list: [200, true, privacy.length],
+        detail: [200, 'privacy', true, true],
+        overview: [200, 'number'],
+        macros: [200, true],
+        attributed: true,
+    };
+    assert.deepEqual(observed, Object.fromEntries(readers.map(([name]) => [name, everyone])));
+});
+
+test('A3. action matrix (O1): the reviewer takes no action; the operator replies, notes, creates, escalates, resolves and records satisfaction but cannot assign or create macros; the lead and the super admin do all of it -- and a refused action writes nothing', async () => {
+    const admin = seedSuperAdmin('act-admin');
+    const personas: Array<[string, Person & { employeeId?: string }]> = [
+        ['a platform reviewer', seedPlatformStaff('act-reviewer', 'viewer')],
+        ['a platform operator', seedPlatformStaff('act-operator', 'support')],
+        ['a platform lead', seedPlatformStaff('act-lead', 'manager')],
+        ['the super admin', admin],
+    ];
+    const buyer = seedBuyerAccount(psql, 'opsq-act');
+    const privacyRequest = await buyerRequest(buyer, 'access', 'a request the operators answer');
+
+    // Each action on its own fresh ticket, so no action depends on another's outcome. Satisfaction needs a resolved ticket (the
+    // survey is created by resolve), so the super admin resolves those first.
+    const fresh = async (subject: string) => (await createTicket(admin, { subject })).id as string;
+    const actions: Array<[string, (person: Person & { employeeId?: string }) => Promise<[string, RequestInit]>]> = [
+        ['reply', async () => [`${OPS}/tickets/${await fresh('Reply target')}/messages`, send('POST', { body: 'An answer', reason: REASON })]],
+        ['internal note', async () => [`${OPS}/tickets/${await fresh('Note target')}/messages`, send('POST', { body: 'A note', visibility: 'internal', reason: REASON })]],
+        ['internal note on a privacy request', async () => [`${OPS}/tickets/${privacyRequest}/messages`, send('POST', { body: 'Checked the identity', visibility: 'internal', reason: REASON })]],
+        ['create a ticket', async () => [`${OPS}/tickets`, send('POST', { requester_type: 'merchant', subject: 'Opened by staff', body: 'Text', reason: REASON })]],
+        ['escalate', async () => [`${OPS}/tickets/${await fresh('Escalation target')}/escalate`, send('POST', { target: 'engineering', reason: REASON })]],
+        ['resolve', async () => [`${OPS}/tickets/${await fresh('Resolution target')}/resolve`, send('POST', { reason: REASON })]],
+        ['record satisfaction', async () => {
+            const id = await fresh('Satisfaction target');
+            await resolveTicket(admin, id);
+            return [`${OPS}/tickets/${id}/csat`, send('POST', { score: 5, reason: REASON })];
+        }],
+        ['assign', async (person) => [`${OPS}/tickets/${await fresh('Assignment target')}/assign`, send('PATCH', { assignee_id: person.employeeId ?? null, reason: REASON })]],
+        ['create a macro', async () => [`${OPS}/macros`, send('POST', { name: `Macro ${crypto.randomUUID().slice(0, 8)}`, body: 'Thanks for writing in', reason: REASON })]],
+    ];
+    assert.equal(new Set(actions.map(([name]) => name)).size, actions.length);
+
+    const observed: Record<string, Record<string, number>> = {};
+    for (const [name, person] of personas) {
+        observed[name] = {};
+        for (const [action, build] of actions) {
+            const [path, init] = await build(person);
+            const before = counts();
+            const response = await as(person, path, init);
+            observed[name][action] = response.status;
+            if (response.status === 403) {
+                assert.equal(response.json?.error?.code, 'PERMISSION_SCOPE_DENIED', `${name}, ${action}: ${response.text}`);
+                assert.deepEqual(counts(), before, `${name}, ${action}: a refused action wrote nothing`);
+            }
+        }
+    }
+    const all = { reply: 200, 'internal note': 200, 'internal note on a privacy request': 200, 'create a ticket': 201, escalate: 200, resolve: 200, 'record satisfaction': 200, assign: 200, 'create a macro': 201 };
+    assert.deepEqual(observed, {
+        'a platform reviewer': Object.fromEntries(Object.keys(all).map((action) => [action, 403])),
+        'a platform operator': { ...all, assign: 403, 'create a macro': 403 },
+        'a platform lead': all,
+        'the super admin': all,
     });
-    const queue = await as(admin, `${OPS}/tickets?topic=privacy&limit=100`);
-    assert.ok(ids(queue).includes(requestId), 'the super admin finds the request in the privacy queue');
-    assert.equal(Number(psql(`SELECT count(*) FROM support_tickets WHERE topic = 'privacy';`)), privacyBefore, 'and still cannot create one');
+});
+
+test('A4. same person, same session, real changes: the operator loses the queue on the very next request after the platform employee row is disabled or removed, gets it back when re-activated, keeps the reads but loses the actions as a reviewer, loses the queue as an admin-tier role; a super admin taken off the allowlist loses it too', async () => {
+    const admin = seedSuperAdmin('session-admin');
+    const operator = seedPlatformStaff('session-operator', 'support');
+    const ticketId = (await createTicket(admin, { subject: 'A ticket the session works on' })).id as string;
+    // The auth model: within one console session every request carries a FRESH signed internal identity (its replay id is single-use:
+    // lib/internal-auth.ts consumeInternalJti), and the gateway re-reads membership, role and allowlist on every request. So the same
+    // person, request after request, with the database changed in between -- no new login, no cache.
+    const read = async (person: Person) => {
+        const response = await as(person, `${OPS}/tickets?limit=1`);
+        return [response.status, response.json?.error?.message ?? null];
+    };
+    const note = async (person: Person, text: string) => {
+        const response = await as(person, `${OPS}/tickets/${ticketId}/messages`, send('POST', { body: text, visibility: 'internal', reason: REASON }));
+        return [response.status, response.json?.error?.code ?? null];
+    };
+    const employee = (assignment: string) => psql(`UPDATE employees SET ${assignment} WHERE id = '${operator.employeeId}';`);
+    const steps: Array<[string, unknown]> = [];
+
+    steps.push(['active operator: read', await read(operator)], ['active operator: note', await note(operator, 'note 1')]);
+    employee(`status = 'disabled', is_active = false`);
+    steps.push(['disabled: read', await read(operator)], ['disabled: note', await note(operator, 'never written 1')]);
+    employee(`status = 'active', is_active = true`);
+    steps.push(['re-activated: read', await read(operator)]);
+    employee(`role = 'viewer'`);
+    steps.push(['as a reviewer: read', await read(operator)], ['as a reviewer: note', await note(operator, 'never written 2')]);
+    employee(`role = 'admin'`);
+    steps.push(['as an admin-tier role: read', await read(operator)]);
+    employee(`role = 'manager'`);
+    steps.push(['as a lead: note', await note(operator, 'note 2')]);
+    employee(`deleted_at = now()`);
+    steps.push(['soft-deleted: read', await read(operator)]);
+
+    steps.push(['super admin: read', await read(admin)]);
+    psql(`UPDATE super_admin_allowlist SET is_active = false WHERE user_id = '${admin.id}';`);
+    steps.push(['super admin off the allowlist: read', await read(admin)]);
+    psql(`UPDATE super_admin_allowlist SET is_active = true WHERE user_id = '${admin.id}';`);
+    steps.push(['super admin back on the allowlist: read', await read(admin)]);
+
+    assert.deepEqual(steps, [
+        ['active operator: read', [200, null]],
+        ['active operator: note', [200, null]],
+        ['disabled: read', [403, PLATFORM_OPERATOR_MESSAGE]],
+        ['disabled: note', [403, 'FORBIDDEN']],
+        ['re-activated: read', [200, null]],
+        ['as a reviewer: read', [200, null]],
+        ['as a reviewer: note', [403, 'PERMISSION_SCOPE_DENIED']],
+        ['as an admin-tier role: read', [403, TIER_NOT_ADMITTED_MESSAGE]],
+        ['as a lead: note', [200, null]],
+        ['soft-deleted: read', [403, PLATFORM_OPERATOR_MESSAGE]],
+        ['super admin: read', [200, null]],
+        ['super admin off the allowlist: read', [403, PLATFORM_OPERATOR_MESSAGE]],
+        ['super admin back on the allowlist: read', [200, null]],
+    ]);
+    assert.deepEqual(messagesOf(ticketId).filter((message) => message.author_type === 'agent').map((message) => message.body), ['note 1', 'note 2'], 'only the allowed notes were written');
 });
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1007,6 +1182,59 @@ test('F3. two fraud reports on one ticket at the same moment open one Trust & Sa
         cases: 1,
         ticketPointsAtTheCase: true,
     }, `outcomes: ${outcomes.join(', ')}`);
+});
+
+// --------------------------------------------------------------------------------------------------------------------
+// G. The rest of /operations keeps its protection
+// --------------------------------------------------------------------------------------------------------------------
+
+test('G. incident-command and every sibling /operations route keep their protection: the admitted queue tiers are refused exactly as a stranger is, and the super admin still gets through', async () => {
+    // incident-command's router-level gate (requireRoleCategory('ops') + requireSuperAdmin) covers its own routes and every
+    // /operations router mounted after it. Several of those (buyer-links, marketplace-listings, -categories, -banners) declare no
+    // gate of their own and carry only per-route scopes (support:view, review:view, ...) that the reviewer, operator and lead
+    // tiers hold -- so they rely on that inherited gate. The queue was opened to the tiers WITHOUT touching it: these are the
+    // routes that must not have moved. The app platform's two routers sit behind its kill switch (404 to everyone while the flag
+    // is off); they are probed with the flag on, to reach their own gates.
+    const appPlatformOn = gatewayEnv(owned, keys, { FEATURE_APP_PLATFORM: 'true' });
+    const probes: Array<[string, string, boolean]> = [
+        ['incident-command: on-call now', '/v1/operations/oncall/current', false],
+        ['incident-command: postmortems', '/v1/operations/postmortems', false],
+        ['operations: runtime control commands', '/v1/operations/runtime/control-commands', false],
+        ['risk: rules', '/v1/operations/risk/rules', false],
+        ['trust & safety: policies', '/v1/operations/trust-safety/policies', false],
+        ['buyer links: conflicts', '/v1/operations/buyer-links/conflicts', false],
+        ['marketplace listings', '/v1/operations/marketplace-listings', false],
+        ['marketplace categories', '/v1/operations/marketplace-categories', false],
+        ['marketplace banners', '/v1/operations/marketplace-banners', false],
+        ['rbac: break-glass grants', '/v1/operations/rbac/break-glass', false],
+        ['marketplace reviews (app platform on)', '/v1/operations/marketplace-reviews', true],
+        ['developers: search (app platform on)', '/v1/operations/developers/search', true],
+    ];
+    const refusedAlike: Array<[string, Person]> = [
+        ['a platform reviewer', seedPlatformStaff('sibling-reviewer', 'viewer')],
+        ['a platform operator', seedPlatformStaff('sibling-operator', 'support')],
+        ['a platform lead', seedPlatformStaff('sibling-lead', 'manager')],
+        ['an admin-tier platform role', seedPlatformStaff('sibling-platform-admin', 'admin')],
+        ['a user with no employee row', seedUser('sibling-stranger')],
+    ];
+    const admin = seedSuperAdmin('sibling-admin');
+    const answer = async (person: Person, path: string, flagOn: boolean) => {
+        const headers = await signedIdentityHeaders(person.id, person.email);
+        const response = flagOn ? await gateway.request(path, { headers }, appPlatformOn) : await gateway.request(path, { headers });
+        return { status: response.status, code: response.json?.error?.code ?? null, message: response.json?.error?.message ?? null };
+    };
+
+    const refusal = { status: 403, code: 'FORBIDDEN', message: OPS_GATE_MESSAGE };
+    const observed: Record<string, Record<string, unknown>> = {};
+    const adminStatuses: Record<string, number> = {};
+    for (const [route, path, flagOn] of probes) {
+        observed[route] = {};
+        for (const [name, person] of refusedAlike) observed[route][name] = await answer(person, path, flagOn);
+        adminStatuses[route] = (await answer(admin, path, flagOn)).status;
+    }
+    assert.deepEqual(observed, Object.fromEntries(probes.map(([route]) => [route, Object.fromEntries(refusedAlike.map(([name]) => [name, refusal]))])), 'every queue tier is refused on every sibling route exactly as a stranger is');
+    // The positive control: the gate is not "deny everyone" -- the super admin passes it on every route.
+    assert.deepEqual(adminStatuses, Object.fromEntries(probes.map(([route]) => [route, 200])), 'the super admin passes every sibling gate');
 });
 
 // --------------------------------------------------------------------------------------------------------------------

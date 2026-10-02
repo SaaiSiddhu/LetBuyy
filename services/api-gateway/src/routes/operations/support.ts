@@ -43,7 +43,14 @@ type Db = ReturnType<typeof getSupabaseAdmin>;
 // viewer/operator/lead scopes already defined in INTERNAL_PERMISSION_TIERS. A superadmin's access is
 // completely unchanged: isSuperAdmin still passes requirePlatformOperator, and still receives the
 // full admin-tier scope set from loadEffectivePermissionScopes as before.
-router.use('*', requirePlatformOperator());
+//
+// P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE (owner decision O1, 2026-10-02): the queue is open, in production, to an allowlisted
+// super admin and to ACTIVE PLATFORM employees of exactly the reviewer (viewer), operator and lead tiers -- including what a
+// buyer's privacy request holds (the buyer-authored note) and the internal notes. A platform role whose default tier is not one
+// of those three (today only `admin`, which D04 left unassigned) is refused here. Until O1 this gate was never reached by anyone
+// but a super admin: index.ts mounted this router after incident-command's gate on every /operations route; it is now mounted
+// before it.
+router.use('*', requirePlatformOperator({ admittedTiers: ['viewer', 'operator', 'lead'] }));
 
 // Every route validates its id, query and body with the gateway's validate() middleware, registered AFTER the route's
 // requirePermission(...): a caller who may not use the route is refused before anything they sent is looked at, and a

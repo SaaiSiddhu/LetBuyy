@@ -855,9 +855,16 @@ api.route('/reviews', reviewsRouter);
 api.route('/form-submissions', formSubmissionsRouter);
 api.route('/pages', pagesRouter);
 api.route('/operations/rbac', operationsRbacRouter);
+// MOUNT ORDER IS AN ACCESS DECISION. incident-command's router registers `use('*', requireRoleCategory('ops'), requireSuperAdmin)`;
+// mounted at '/operations' it guards every route under /operations registered AFTER this point -- its own routes and the routers
+// below, several of which (buyer-links, marketplace-listings, -categories, -banners) have no gate of their own and rely on it.
+// The support router is mounted BEFORE it, deliberately (owner decision O1, 2026-10-02, P2-OPERATOR-QUEUE-GATE-AND-ACCEPTANCE):
+// its own gate, requirePlatformOperator({ admittedTiers: viewer, operator, lead }) plus a requirePermission on every route, is
+// what decides the queue. Moving it after this line closes the queue to everyone but super admins; moving any other router
+// above it removes that router's inherited gate. operator-queue-correctness.postgres.test.ts (A, G) fails on either.
+api.route('/operations/support', operationsSupportRouter);
 api.route('/operations', operationsIncidentCommandRouter);
 api.route('/operations/risk', operationsRiskRouter);
-api.route('/operations/support', operationsSupportRouter);
 api.route('/operations/trust-safety', operationsTrustSafetyRouter);
 api.route('/operations/marketplace-reviews', operationsMarketplaceReviewsRouter);
 api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);
