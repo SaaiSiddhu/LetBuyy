@@ -1577,6 +1577,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20260524.1
         version: 4.20260525.1
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       tsx:
         specifier: 4.20.6
         version: 4.20.6

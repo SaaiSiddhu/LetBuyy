@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260524.1",
+    "@letbuyy/api-client": "workspace:*",
     "tsx": "4.20.6",
     "typescript": "^5.7.0",
     "wrangler": "^4.100.0"
