@@ -5,12 +5,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import { Button, Input,
     User as UserIcon, Lock, Loader2, Check, Eye, EyeOff, Save, AlertCircle, Mail, Phone,
 } from '@letbuyy/ui';
 
-export default function SettingsPageClient() {
+function StoreCustomerSettings() {
     const { customer, refreshSession } = useCustomerAuth();
 
     // Profile edit state
@@ -293,4 +294,128 @@ export default function SettingsPageClient() {
             </div>
         </div>
     );
+}
+
+type BuyerProfile = { email: string; email_verified: boolean; full_name: string | null; phone: string | null };
+
+function BuyerSettings() {
+    const [profile, setProfile] = useState<BuyerProfile | null>(null);
+    const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+
+    const load = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const response = await fetch('/api/buyer/profile', { cache: 'no-store' });
+            const body = await response.json() as { buyer?: BuyerProfile; error?: string };
+            if (!response.ok || !body.buyer) throw new Error(body.error || 'We could not load your profile.');
+            setProfile(body.buyer);
+            setFullName(body.buyer.full_name || '');
+            setPhone(body.buyer.phone || '');
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'We could not load your profile.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => { void load(); }, []);
+
+    const save = async (event: React.FormEvent) => {
+        event.preventDefault();
+        setSaving(true);
+        setError('');
+        setMessage('');
+        try {
+            const response = await fetch('/api/buyer/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName: fullName.trim(), phone: phone.trim() }),
+            });
+            const body = await response.json() as { buyer?: BuyerProfile; error?: string };
+            if (!response.ok || !body.buyer) throw new Error(body.error || 'We could not update your profile.');
+            setProfile(body.buyer);
+            setFullName(body.buyer.full_name || '');
+            setPhone(body.buyer.phone || '');
+            setMessage('Your LetBuyy profile is saved.');
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'We could not update your profile.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const signOut = async () => {
+        try {
+            const response = await fetch('/api/buyer-auth/logout', { method: 'POST', headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error('sign_out_failed');
+            window.location.assign(window.location.pathname);
+        } catch {
+            setError('We could not sign you out. Please try again.');
+        }
+    };
+
+    if (loading) return <p role="status">Loading your LetBuyy profile…</p>;
+
+    return (
+        <div>
+            <h1 className="text-2xl font-bold mb-6">LetBuyy Account</h1>
+            <form onSubmit={save} className="rounded-2xl border p-5 space-y-4" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                <div>
+                    <h2 className="font-semibold flex items-center gap-2"><UserIcon size={18} /> Buyer profile</h2>
+                    <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>These contact details belong to your LetBuyy account and are shared across supported stores.</p>
+                </div>
+                <div>
+                    <label className="text-xs font-medium block mb-1">Email address</label>
+                    <p className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--surface, rgb(243 244 246))' }}>
+                        <Mail size={16} /> {profile?.email}
+                        {profile?.email_verified ? <span className="text-xs text-green-700">Verified</span> : <span className="text-xs">Not verified</span>}
+                    </p>
+                </div>
+                <div>
+                    <label className="text-xs font-medium block mb-1" htmlFor="buyer-full-name">Full name</label>
+                    <Input unstyled id="buyer-full-name" value={fullName} onChange={event => setFullName(event.target.value)} maxLength={200} className="w-full px-4 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--border, rgb(229 231 235))' }} />
+                </div>
+                <div>
+                    <label className="text-xs font-medium block mb-1" htmlFor="buyer-phone">Phone number</label>
+                    <div className="relative"><Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2" /><Input unstyled id="buyer-phone" value={phone} onChange={event => setPhone(event.target.value.slice(0, 32))} inputMode="tel" maxLength={32} className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border" style={{ borderColor: 'var(--border, rgb(229 231 235))' }} /></div>
+                </div>
+                {error && <div role="alert" className="text-sm text-red-600"><p>{error}</p><Button unstyled type="button" onClick={() => void load()} className="underline">Try again</Button></div>}
+                {message && <p role="status" className="text-sm text-green-700">{message}</p>}
+                <div className="flex flex-wrap gap-3">
+                    <Button unstyled type="submit" disabled={saving} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50" style={{ backgroundColor: 'var(--primary)' }}>
+                        {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save profile
+                    </Button>
+                    <Button unstyled type="button" onClick={() => void signOut()} className="px-5 py-2.5 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>Sign out at this store</Button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+export default function SettingsPageClient() {
+    const [mode, setMode] = useState<'checking' | 'buyer' | 'store-customer' | 'error'>('checking');
+    useEffect(() => {
+        const controller = new AbortController();
+        fetch('/api/buyer-auth/session', { cache: 'no-store', signal: controller.signal })
+            .then(async response => {
+                if (!response.ok) throw new Error('session_unavailable');
+                const data = await response.json() as { buyer?: unknown };
+                setMode(data.buyer ? 'buyer' : 'store-customer');
+            })
+            .catch((reason: unknown) => {
+                if (reason instanceof Error && reason.name === 'AbortError') return;
+                setMode('error');
+            });
+        return () => controller.abort();
+    }, []);
+
+    if (mode === 'checking') return <p role="status">Checking your account…</p>;
+    if (mode === 'error') return <p role="alert">We could not check your account. Please refresh and try again.</p>;
+    return mode === 'buyer' ? <BuyerSettings /> : <StoreCustomerSettings />;
 }

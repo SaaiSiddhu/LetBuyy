@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCustomerAuth } from '@/context/customer-auth-context';
@@ -15,10 +15,11 @@ import { StorefrontListLoadingState } from '@/components/storefront/storefront-s
 
 const navItems = [
     { href: 'orders', icon: Package, label: 'Orders' },
-    { href: 'wishlist', icon: Heart, label: 'Wishlist' },
     { href: 'addresses', icon: MapPin, label: 'Addresses' },
     { href: 'settings', icon: Settings, label: 'Settings' },
 ];
+
+type BuyerSession = { email: string; emailVerified: boolean } | null;
 
 export default function AccountChromeClient({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -27,15 +28,36 @@ export default function AccountChromeClient({ children }: { children: React.Reac
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
     const { isAuthenticated, isLoading, customer } = useCustomerAuth();
+    const [buyer, setBuyer] = useState<BuyerSession | undefined>(undefined);
+    const [buyerSessionError, setBuyerSessionError] = useState(false);
 
-    // Redirect if not authenticated (after loading completes)
     useEffect(() => {
-        if (!isLoading && !isAuthenticated) {
+        const controller = new AbortController();
+        fetch('/api/buyer-auth/session', { cache: 'no-store', signal: controller.signal })
+            .then(async (response) => {
+                if (!response.ok) throw new Error('session_unavailable');
+                const payload = await response.json() as { buyer?: BuyerSession };
+                setBuyer(payload.buyer ?? null);
+                setBuyerSessionError(false);
+            })
+            .catch((error: unknown) => {
+                if (error instanceof Error && error.name === 'AbortError') return;
+                setBuyer(null);
+                setBuyerSessionError(true);
+            });
+        return () => controller.abort();
+    }, []);
+
+    const loading = isLoading || buyer === undefined;
+    const hasAccount = isAuthenticated || buyer !== null;
+
+    useEffect(() => {
+        if (!loading && !hasAccount && !buyerSessionError) {
             router.push(basePath);
         }
-    }, [basePath, isLoading, isAuthenticated, router]);
+    }, [basePath, loading, hasAccount, buyerSessionError, router]);
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }}>
                 <StorefrontListLoadingState rows={4} />
@@ -43,11 +65,20 @@ export default function AccountChromeClient({ children }: { children: React.Reac
         );
     }
 
-    if (!isAuthenticated) return null;
+    if (!hasAccount) {
+        return buyerSessionError ? (
+            <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }} role="alert">
+                We could not check your account right now. Please try again.
+            </div>
+        ) : null;
+    }
 
-    const initials = customer?.fullName
-        ? customer.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-        : customer?.email?.[0]?.toUpperCase() || '?';
+    const displayName = buyer?.email ?? customer?.fullName;
+    const displayEmail = buyer?.email ?? customer?.email;
+    const initials = displayName
+        ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        : displayEmail?.[0]?.toUpperCase() || '?';
+    const visibleNavItems = isAuthenticated ? [...navItems, { href: 'wishlist', icon: Heart, label: 'Wishlist' }] : navItems;
 
     return (
         <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }}>
@@ -61,12 +92,12 @@ export default function AccountChromeClient({ children }: { children: React.Reac
                         {initials}
                     </div>
                     <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{customer?.fullName || 'Customer'}</p>
-                        <p className="truncate text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>{customer?.email}</p>
+                        <p className="truncate text-sm font-semibold">{displayName || 'Customer'}</p>
+                        <p className="truncate text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>{displayEmail}</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                    {navItems.map(({ href, icon: Icon, label }) => {
+                    {visibleNavItems.map(({ href, icon: Icon, label }) => {
                         const itemHref = `${basePath}/account/${href}`;
                         const active = currentPath.includes(itemHref);
                         return (
@@ -99,15 +130,15 @@ export default function AccountChromeClient({ children }: { children: React.Reac
                                 {initials}
                             </div>
                             <div className="min-w-0">
-                                <p className="truncate font-semibold">{customer?.fullName || 'Customer'}</p>
+                                <p className="truncate font-semibold">{displayName || 'Customer'}</p>
                                 <p className="truncate text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                    {customer?.email}
+                                    {displayEmail}
                                 </p>
                             </div>
                         </div>
 
                         <nav className="space-y-1">
-                            {navItems.map(({ href, icon: Icon, label }) => {
+                            {visibleNavItems.map(({ href, icon: Icon, label }) => {
                                 const itemHref = `${basePath}/account/${href}`;
                                 const active = currentPath.includes(itemHref);
                                 return (

@@ -14,6 +14,7 @@ import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/s
 type AddressRow = Pick<CustomerAddress, 'id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code' | 'country' | 'is_default'> &
     Partial<Pick<CustomerAddress, 'label' | 'address_line2' | 'landmark'>> & {
         customer_phone?: string | null;
+        phone?: string | null;
     };
 
 const EMPTY_FORM = {
@@ -51,6 +52,7 @@ export default function AddressesPageClient() {
     const [loadError, setLoadError] = useState<string | null>(null);
     /** A failed WRITE (save/delete/set-default). Shown next to the action that failed. */
     const [actionError, setActionError] = useState<string | null>(null);
+    const [buyerMode, setBuyerMode] = useState<boolean | null>(null);
     const pinCodeComplete = form.postal_code.length === 6;
 
     /** Pull the server's safe message, falling back to something a shopper can act on. */
@@ -64,10 +66,10 @@ export default function AddressesPageClient() {
         }
     };
 
-    const fetchAddresses = useCallback(async (): Promise<void> => {
+    const fetchAddresses = useCallback(async (isBuyer: boolean): Promise<void> => {
         setLoadError(null);
         try {
-            const res = await fetch('/api/customer/addresses');
+            const res = await fetch(isBuyer ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store' });
             if (!res.ok) {
                 // A non-2xx must NOT fall through to `addresses: []`. An expired
                 // session (401) previously rendered as an empty address book.
@@ -76,7 +78,7 @@ export default function AddressesPageClient() {
                     : 'We could not load your addresses.');
                 return;
             }
-            const data = await res.json();
+            const data = await res.json() as { addresses?: AddressRow[] };
             setAddresses(data.addresses || []);
         } catch {
             setLoadError('We could not reach the server. Check your connection and try again.');
@@ -85,7 +87,24 @@ export default function AddressesPageClient() {
         }
     }, []);
 
-    useEffect(() => { fetchAddresses(); }, [fetchAddresses]);
+    useEffect(() => {
+        const controller = new AbortController();
+        void (async () => {
+            try {
+                const session = await fetch('/api/buyer-auth/session', { cache: 'no-store', signal: controller.signal });
+                if (!session.ok) throw new Error('session_unavailable');
+                const payload = await session.json() as { buyer?: unknown };
+                const isBuyer = Boolean(payload.buyer);
+                setBuyerMode(isBuyer);
+                await fetchAddresses(isBuyer);
+            } catch (error) {
+                if (error instanceof Error && error.name === 'AbortError') return;
+                setLoadError('We could not verify your account. Please try again.');
+                setLoading(false);
+            }
+        })();
+        return () => controller.abort();
+    }, [fetchAddresses]);
 
     const openAdd = () => {
         setForm(EMPTY_FORM);
@@ -104,7 +123,7 @@ export default function AddressesPageClient() {
             postal_code: addr.postal_code,
             country: addr.country,
             landmark: addr.landmark || '',
-            phone: addr.customer_phone || '',
+            phone: addr.phone || addr.customer_phone || '',
             is_default: addr.is_default,
         });
         setEditingId(addr.id);
@@ -117,13 +136,16 @@ export default function AddressesPageClient() {
         setSaving(true);
         setActionError(null);
         try {
-            const method = editingId ? 'PUT' : 'POST';
-            const body = editingId ? { id: editingId, ...form } : form;
-
-            const res = await fetch('/api/customer/addresses', {
-                method,
+            const res = buyerMode
+                ? await fetch(editingId ? `/api/buyer/addresses/${encodeURIComponent(editingId)}` : '/api/buyer/addresses', {
+                    method: editingId ? 'PATCH' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(form),
+                })
+                : await fetch('/api/customer/addresses', {
+                method: editingId ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
+                body: JSON.stringify(editingId ? { id: editingId, ...form } : form),
             });
 
             if (!res.ok) {
@@ -135,7 +157,7 @@ export default function AddressesPageClient() {
 
             setShowForm(false);
             setEditingId(null);
-            await fetchAddresses();
+            await fetchAddresses(Boolean(buyerMode));
         } catch {
             setActionError('We could not reach the server. Your address was not saved.');
         } finally {
@@ -148,7 +170,9 @@ export default function AddressesPageClient() {
         setDeletingId(id);
         setActionError(null);
         try {
-            const res = await fetch('/api/customer/addresses', {
+            const res = buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                : await fetch('/api/customer/addresses', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id }),
@@ -174,7 +198,11 @@ export default function AddressesPageClient() {
         setDefaultingId(id);
         setActionError(null);
         try {
-            const res = await fetch('/api/customer/addresses', {
+            const res = buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_default: true }),
+                })
+                : await fetch('/api/customer/addresses', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, is_default: true }),
@@ -185,7 +213,7 @@ export default function AddressesPageClient() {
                 return;
             }
 
-            await fetchAddresses();
+            await fetchAddresses(Boolean(buyerMode));
         } catch {
             setActionError('We could not reach the server. The default address is unchanged.');
         } finally {
@@ -231,7 +259,7 @@ export default function AddressesPageClient() {
                     action={(
                         <Button
                             variant="secondary"
-                            onClick={() => { setLoading(true); void fetchAddresses(); }}
+                            onClick={() => { setLoading(true); void fetchAddresses(Boolean(buyerMode)); }}
                         >
                             Try again
                         </Button>

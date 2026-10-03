@@ -46,3 +46,16 @@ The order-list boundary above has since been extended through detail and both no
 | Liquid account | Separate allowlisted `buyer` drop only on order templates; host/session revalidation per render; cursor-based order history; canonical linked detail; guest and unavailable states are distinct. Store-customer `customer` remains null on order routes. Example bundles regenerated from source. | Theme-engine suite 1869/1869; focused Liquid/order allowlist tests 249/249; theme-engine typecheck passed |
 
 This is local source and package verification, not a live browser/PKCE journey, device run, hosted change or release. The React and Liquid contracts share gateway ownership checks, but a running storefront/browser session and current identity-platform redirect are not claimed as verified here. Phase 2 and the eleven-phase goal remain active.
+
+## Follow-on — React account identity, profile and address integration (4 October 2026)
+
+The React account chrome now recognizes the host-bound LetBuyy buyer session as an account principal, so buyer-only shoppers can reach the previously implemented linked order list/detail. Wishlist remains visible only when the separate store-customer session is authenticated. The existing address book selects the buyer profile/address APIs for a verified buyer session and uses buyer-scoped create, edit, default and delete operations; the store-customer flow remains on its existing endpoints. Account settings now edits the canonical buyer name/phone and shows the email verification state, while store-customer marketing preferences/password remain scoped to their existing customer session.
+
+| Verification | Result |
+| --- | --- |
+| Commerce web TypeScript | Passed after resolving dependencies from an existing local checkout; no source or lockfile changes from dependency setup |
+| Targeted ESLint | Passed; the unsuppressed run reported 87 theme-token/color warnings and zero errors |
+| Buyer API proxy regression | 39/39 passed, covering buyer profile/address forwarding, host/session boundaries, write-origin checks, ownership, sanitized errors and no-store behavior |
+| Diff whitespace check | Passed |
+
+This is a local React account integration; it does not establish a live browser sign-in, identity-provider redirect, or hosted flow. Liquid buyer order journeys remain accepted, while Liquid buyer profile/address/account-hub integration is still open. The package-wide test script could not start because `tsx` is not linked into this checkout; the focused proxy suite was invoked directly from the local cached runtime. The eleven-phase goal and Phase 2 remain active.
