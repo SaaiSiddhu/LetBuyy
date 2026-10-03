@@ -2,6 +2,8 @@
 
 ## Owner execution mandate — 3 October 2026
 
+**Continuous execution update (3 October):** the eleven-phase goal remains active. The owner requested ongoing engineering and an update for each completed work package; hourly heartbeat `letbuyy-continuous-engineering` is ACTIVE on this same chat. It inspects live handles to avoid duplicate workers/fixtures and resumes when the host is available. It does not guarantee execution while the Mac/Codex host is unavailable. A genuinely missing owner decision stops dependent work; independent work continues. Support mutation integrity is implemented with owned-database verification and a green 114-validator source gate; [its final acceptance record](../phase2-2026-09-27/P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md) tracks the full behavioral result. The next dependency-ready package is [customer-session issuer retirement](../phase2-2026-09-27/P2_CUSTOMER_SESSION_RETIREMENT.md). Wider Phase 2 and phases 3–11 remain open.
+
 The owner locked all eleven phases below as one active end-to-end goal and authorized direct implementation by Codex, using the personal `$letbuyy` skill on every work turn. This supersedes the earlier reviewer/Claude-worker arrangement and the original proposed-only programme status. The original dated baseline below remains historical evidence.
 
 | Phase | Locked outcome | Execution position on 3 October |

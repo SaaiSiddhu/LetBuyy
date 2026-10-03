@@ -249,6 +249,8 @@ The original text stays where it is, as the record of its moment. Every note was
 
 ## 14. Precise next task
 
+> **Later note (2026-10-03).** The work below is implemented and locally database-verified by [P2-OPERATOR-MUTATION-INTEGRITY](P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md): all seven actions carry stable keys and commit effects/audit/response receipts together. The original next-task text remains history. Wider Phase 2 requirements stay open; customer issuer/consumer retirement is the next dependency-ready package.
+
 **P2-OPERATOR-MUTATION-INTEGRITY** — the two follow-ups this mandate deliberately left out, now that more people can act on the queue:
 
 1. An idempotency key for operator mutations (a retried successful reply, assign, escalate, resolve or create is applied twice today).

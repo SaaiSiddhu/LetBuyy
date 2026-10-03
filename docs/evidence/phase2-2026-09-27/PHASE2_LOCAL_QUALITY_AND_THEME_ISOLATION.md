@@ -19,6 +19,8 @@ commands*; they are processes, not agents.)
 
 ## 1. Verdict
 
+> **Current continuation (2026-10-03).** [P2-OPERATOR-MUTATION-INTEGRITY](P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md) implements all seven support actions with atomic durable retry receipts, fresh authorization, failure rollback and real-worker/owned-database proof (87/87 tests, no skips). The former mutation-idempotency/atomicity follow-up in F2.6 is addressed. Wider Phase 2 remains open. [Customer-session retirement](P2_CUSTOMER_SESSION_RETIREMENT.md) refreshes the actual multi-signer inventory and defines the next local gates; implementation/retirement are not yet verified. Q3 and the remaining D03/D04/D05 policy/cutover requirements remain open.
+
 **A — LOCAL QUALITY CHECKS AND THEME ISOLATION VERIFIED; remaining policy/cutover requirements listed separately.**
 
 | Objective | Result |
