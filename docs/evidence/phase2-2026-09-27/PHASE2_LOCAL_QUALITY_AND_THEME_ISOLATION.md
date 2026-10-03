@@ -324,6 +324,8 @@ as many busy loops as cores — passed 302/302. No other test or validator passe
 
 ## 8. Task E — the Phase 2 acceptance matrix (current as of 2026-09-29)
 
+> **F2.3 caller correction (2026-10-03).** The platform-buyer API profile/address proofs below remain valid. They do not establish the storefront BFF journey: its real cookie carries a `storefront_session` token but the proxy uses the platform-buyer header and gateway endpoints accept only platform-buyer tokens. The actual issuer/verifier probe confirms that token is rejected there. Repairing this connection is the first bounded step in [customer-session retirement](P2_CUSTOMER_SESSION_RETIREMENT.md); full worker/browser proof is still required. Thus the historical "none" remaining for the API row is not whole-caller closure.
+
 Vocabulary as in `PHASE2_DECISIONS.md`: IMPLEMENTED / LOCAL VERIFIED / NOT ACTIVE / BLOCKED. "Local" means the owned local database
 or a disposable cluster; nothing here was exercised on a hosted environment.
 

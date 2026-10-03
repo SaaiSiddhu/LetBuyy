@@ -1,4 +1,4 @@
-# P2-OPERATOR-MUTATION-INTEGRITY — local implementation and verification
+# P2-OPERATOR-MUTATION-INTEGRITY — local acceptance
 
 Date: 2026-10-03 (Asia/Kolkata). One implementation agent; no delegation.
 Worktree: `/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2`.
@@ -65,12 +65,14 @@ The runtime behavior and owned suite are unchanged since `e8bb2375`. The later s
 | Tenant and migration safety/pairing validators; diff whitespace | Exit 0 | 284 tenant registrations retained; new receipt is platform-domain data, not a new tenant authority |
 | Dependency governance after repair | Exit 0; 4/4 | A disposable mini-repository proves the declared dev dependency is accepted inside `__tests__` and refused in runtime source; package, import and runtime inventory validators pass |
 | `pnpm install --frozen-lockfile --offline --ignore-scripts` | Exit 0 | Narrow workspace link added to the lockfile; no registry version changes or lifecycle scripts |
-| `pnpm test` | Running at initial record; final result must be appended below | Full serial behavioral wrapper, owned database groups and contracts; do not infer acceptance from partial TAP output |
+| `pnpm test --report /private/tmp/letbuyy-mutation-root-final.json` | Exit 0; 2610 tests, 2595 pass, 0 fail/cancel/TODO, 15 named HUMAN-REQUIRED skips | Fresh full wrapper: pure 1881/1896 with 15 skips; 59 PostgreSQL suites 305/305; 13 gateway database suites 87/87; contracts 322/322. The skip list is retained in the behavioral JSON; none is treated as live/provider acceptance |
 | `node scripts/validate-governance.mjs --lane=gate` in disposable final-candidate clone | Exit 0; 114 PASS, 0 FAIL/BLOCKED/SKIP, 1 NOT_APPLICABLE | 115 discovered; the report-only validator is outside the gate. One declared branch advisory: local staging/main refs absent. The clone includes develop; no claim of remote/release lineage verification. Cleanup and package-bin executable mode changes occur only in this clone |
 
 The earlier full database run also passed 87/87, but its template preceded the final SQL guard; the final `fdf173058b8e` run supersedes it. A governance/CI run was interrupted and has no terminal verdict; a machine-wide fixture-census assertion overlapped another owned runner's cleanup. It is not reported green. The full root wrapper runs those lifecycle checks serially before starting its own database groups. Its first pure-group run found the missing test dependency (one failure); this was fixed rather than excused. Clone gate attempts exposed the same missing declaration, absent clone compiler dependencies, then the runtime inventory omission; these are not green results. A frozen offline install supplied the clone dependencies. A broad lockfile regeneration attempt failed because unrelated registry metadata was unavailable offline; the precise workspace-link entry was added and then verified by the successful frozen offline install. Restored Supabase resources, signing assets, unrelated analyzer edits and unrelated local evidence are preserved.
 
 Sanitized final runner evidence is retained alongside this document. Raw diagnostic logs remain in `/private/tmp/letbuyy-mutation-*`; they are optional diagnostics, not a durable acceptance dependency.
+
+**Final verdict:** IMPLEMENTED, INTEGRATED AT THE GATEWAY/CLIENT CONTRACT, LOCAL VERIFIED. The canonical full behavioral command and all 114 required source validators passed. The final combined owned-database run `bb656ffecbee` executed 72 suites/392 tests with no skip/failure/cancellation/TODO; cleanup failures and remaining owned containers/networks/volumes are empty. Its summary is `P2_OPERATOR_MUTATION_INTEGRITY_FINAL_CLEANUP.json`. The behavioral report is `P2_OPERATOR_MUTATION_INTEGRITY_BEHAVIORAL_RUN.json`. Runtime/test source remained unchanged at `88b173de`; intervening `758edbc1` maintained documentation only. No independent review signature, active frozen-portal browser journey, hosted/provider verification, deployment or whole-Phase-2 closure is inferred.
 
 ## Remaining programme requirements and next work
 

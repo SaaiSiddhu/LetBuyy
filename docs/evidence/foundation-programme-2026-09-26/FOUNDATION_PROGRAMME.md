@@ -9,7 +9,7 @@ The owner locked all eleven phases below as one active end-to-end goal and autho
 | Phase | Locked outcome | Execution position on 3 October |
 |---|---|---|
 | 1 / 1R | Reproducible local stack and canonical Android buyer journey | Locally accepted and integrated; preserve the accepted work. |
-| 2 | Shared identity, scoped access, privacy and order ownership | In progress. First bounded outcome: P2-OPERATOR-MUTATION-INTEGRITY. |
+| 2 | Shared identity, scoped access, privacy and order ownership | In progress. Operator mutation integrity locally accepted; storefront buyer profile/address audience wiring is next within customer issuer retirement. |
 | 3 | Commercial, compliance, provider and cloud contracts | Upcoming; research dependencies early. |
 | 4 | Merchant onboarding, subscriptions and storefront operations | Upcoming. |
 | 5 | Canonical catalog, inventory and discovery | Upcoming. |

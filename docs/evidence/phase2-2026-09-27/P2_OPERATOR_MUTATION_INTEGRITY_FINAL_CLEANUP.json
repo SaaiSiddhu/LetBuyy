@@ -1,0 +1,25 @@
+{
+  "runId": "bb656ffecbee",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "jobs": 2,
+  "suites": 72,
+  "gatewayDbSuites": 13,
+  "failedSuites": 0,
+  "tests": 392,
+  "assertionsPassed": 392,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 555.4,
+  "reaped": [],
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  }
+}
