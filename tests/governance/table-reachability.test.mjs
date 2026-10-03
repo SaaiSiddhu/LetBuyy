@@ -27,6 +27,13 @@ import {
 // Each exemption states why the table is legitimately untouched by application code, and what
 // removes the exemption.
 const EXEMPT = {
+    support_mutation_receipts: {
+        why: 'written and replayed only inside execute_operator_support_mutation (265), called by '
+            + 'services/api-gateway/src/execution/support-execution.adapter.ts. Separate application '
+            + 'writes would break atomicity. The owned operator-mutation-integrity suite proves '
+            + 'durable replay, concurrency and rollback after receipt completion failure',
+        blockedOn: 'nothing: the transactional support function is its intended reader and writer',
+    },
     purchases: {
         why: 'written by create_checkout_order in SQL and deliberately unreadable by merchants '
             + '(D-PURCHASE-TENANCY: FORCE RLS with app_tenant revoked outright). While D-3 keeps '

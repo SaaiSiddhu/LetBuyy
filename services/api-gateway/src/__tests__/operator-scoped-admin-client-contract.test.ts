@@ -71,31 +71,6 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
                 routeRegistration: "router.get('/tickets/:id', requirePermission('support:view')",
                 boundedIn: { symbol: 'fetchTicket via GET /tickets/:id', kind: 'single-row-by-id', note: 'fetchTicket queries .eq(\'id\', ticketId).maybeSingle() -- id is the primary key, so this can never return or touch more than the one named row regardless of tenant' },
             },
-            {
-                requiredScope: 'support:reply',
-                routeRegistration: "router.post('/tickets', requirePermission('support:reply')",
-                boundedIn: { symbol: 'maybeEscalateTrustSafety via POST /tickets', kind: 'single-row-by-id', note: 'the conditional escalation update is .eq(\'id\', ticketId) on the row just inserted in this same request' },
-            },
-            {
-                requiredScope: 'support:reply',
-                routeRegistration: "router.post('/tickets/:id/messages', requirePermission('support:reply')",
-                boundedIn: { symbol: 'Trust & Safety follow-on via POST /tickets/:id/messages', kind: 'single-row-by-id', note: 'the reply itself is one rpc call (reply_to_support_ticket, migration 264), which locks and writes only the ticket it is given; the follow-on\'s claim and link updates are .eq(\'id\', ticketId)' },
-            },
-            {
-                requiredScope: 'support:manage',
-                routeRegistration: "router.patch('/tickets/:id/assign', requirePermission('support:manage')",
-                boundedIn: { symbol: 'PATCH /tickets/:id/assign', kind: 'single-row-by-id', note: '.eq(\'id\', ticketId) -- the assignee update touches only the one named ticket' },
-            },
-            {
-                requiredScope: 'support:reply',
-                routeRegistration: "router.post('/tickets/:id/escalate', requirePermission('support:reply')",
-                boundedIn: { symbol: 'fetchTicket + escalation and case-link updates via POST /tickets/:id/escalate', kind: 'single-row-by-id', note: 'the fetch and both updates are .eq(\'id\', ticketId)' },
-            },
-            {
-                requiredScope: 'support:reply',
-                routeRegistration: "router.post('/tickets/:id/resolve', requirePermission('support:reply')",
-                boundedIn: { symbol: 'fetchTicket + resolution update via POST /tickets/:id/resolve', kind: 'single-row-by-id', note: 'both the fetch and the update are .eq(\'id\', ticketId)' },
-            },
         ],
     },
 };

@@ -27,7 +27,7 @@ const ownedSuites = () => readdirSync(ownedDir).filter((name) => name.endsWith('
 const ownedFiles = () => readdirSync(ownedDir).filter((name) => name.endsWith('.ts')).sort();
 const unitTests = () => readdirSync(testsDir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.test.ts')).map((entry) => entry.name).sort();
 
-test('the lane holds the twelve gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
+test('the lane holds the thirteen gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
     assert.deepEqual(
         ownedSuites(),
         [
@@ -38,6 +38,7 @@ test('the lane holds the twelve gateway suites that need a real database, and th
             'gst-tax-computation.test.ts',
             'inventory-reservation-lifecycle.test.ts',
             'merchant-tenant-predicate.test.ts',
+            'operator-mutation-integrity.postgres.test.ts',
             'operator-queue-correctness.postgres.test.ts',
             'privacy-support-visibility.postgres.test.ts',
             'real-http-shadow-rehearsal.postgres.test.ts',

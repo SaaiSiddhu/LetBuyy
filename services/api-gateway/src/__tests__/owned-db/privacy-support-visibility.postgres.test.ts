@@ -122,7 +122,7 @@ function seedStoreTicket(siteId: string, label: string): { id: string; ref: stri
 
 /** A request as this person: a freshly signed internal identity, the credential merchant staff and platform staff present. */
 async function signedAs(person: Person, path: string, init: RequestInit = {}): Promise<GatewayResponse> {
-    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), ...((init.headers as Record<string, string> | undefined) ?? {}) };
+    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': crypto.randomUUID(), ...((init.headers as Record<string, string> | undefined) ?? {}) };
     return gateway.request(path, { ...init, headers });
 }
 
@@ -141,7 +141,7 @@ const supportAlone = (() => {
 })();
 
 async function aloneAs(person: Person, path: string, init: RequestInit = {}): Promise<{ status: number; text: string; json: Record<string, any> | null }> {
-    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), ...((init.headers as Record<string, string> | undefined) ?? {}) };
+    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': crypto.randomUUID(), ...((init.headers as Record<string, string> | undefined) ?? {}) };
     const response = await supportAlone.request(`/support${path}`, { ...init, headers }, gateway.env);
     const text = await response.text();
     let json: Record<string, any> | null = null;

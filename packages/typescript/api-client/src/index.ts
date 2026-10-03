@@ -250,6 +250,11 @@ export interface LetbuyyRequestOptions {
   versioned?: boolean;
 }
 
+/** Allocate once per logical support action and retain across retry attempts. Sign identity afresh. */
+export interface SupportMutationOptions extends LetbuyyRequestOptions {
+  idempotencyKey: string;
+}
+
 export const LETBUYY_DEFAULT_API_VERSION_PATH = '/v1';
 
 /**
@@ -4580,39 +4585,39 @@ export class LetbuyyApiClient {
         `/operations/support/tickets/${encodePathSegment(id)}`,
         options,
       ),
-    createSupportTicket: (input: InternalSupportCreateTicketInput, options?: LetbuyyRequestOptions) =>
+    createSupportTicket: (input: InternalSupportCreateTicketInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         '/operations/support/tickets',
         { ...options, method: 'POST', body: input },
       ),
-    replySupportTicket: (id: string, input: InternalSupportMessageInput, options?: LetbuyyRequestOptions) =>
+    replySupportTicket: (id: string, input: InternalSupportMessageInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportReplyResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/messages`,
         { ...options, method: 'POST', body: input },
       ),
-    assignSupportTicket: (id: string, input: InternalSupportAssignInput, options?: LetbuyyRequestOptions) =>
+    assignSupportTicket: (id: string, input: InternalSupportAssignInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/assign`,
         { ...options, method: 'PATCH', body: input },
       ),
-    escalateSupportTicket: (id: string, input: InternalSupportEscalateInput, options?: LetbuyyRequestOptions) =>
+    escalateSupportTicket: (id: string, input: InternalSupportEscalateInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult>(
         `/operations/support/tickets/${encodePathSegment(id)}/escalate`,
         { ...options, method: 'POST', body: input },
       ),
-    resolveSupportTicket: (id: string, input: InternalSupportResolveInput, options?: LetbuyyRequestOptions) =>
+    resolveSupportTicket: (id: string, input: InternalSupportResolveInput, options: SupportMutationOptions) =>
       this.requestData<InternalSupportTicketResult & { csat_survey_token: string }>(
         `/operations/support/tickets/${encodePathSegment(id)}/resolve`,
         { ...options, method: 'POST', body: input },
       ),
-    recordSupportCsat: (id: string, input: InternalSupportCsatInput, options?: LetbuyyRequestOptions) =>
+    recordSupportCsat: (id: string, input: InternalSupportCsatInput, options: SupportMutationOptions) =>
       this.requestData<{ csat: InternalSupportCsat }>(
         `/operations/support/tickets/${encodePathSegment(id)}/csat`,
         { ...options, method: 'POST', body: input },
       ),
     supportMacros: (options?: LetbuyyRequestOptions) =>
       this.requestData<InternalSupportMacro[]>('/operations/support/macros', options),
-    createSupportMacro: (input: InternalSupportMacroInput, options?: LetbuyyRequestOptions) =>
+    createSupportMacro: (input: InternalSupportMacroInput, options: SupportMutationOptions) =>
       this.requestData<{ macro: InternalSupportMacro }>(
         '/operations/support/macros',
         { ...options, method: 'POST', body: input },

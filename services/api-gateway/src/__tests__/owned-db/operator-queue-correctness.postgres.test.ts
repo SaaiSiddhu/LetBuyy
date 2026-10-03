@@ -19,7 +19,7 @@
 //      migration 262) is refused WHOLE: 409, no message, no audit row, no state change, and retrying adds nothing. The status
 //      routes say the same;
 //   E. named faults: a mandatory write failing inside the reply rolls all of it back; a ticket that is gone before or during
-//      the reply is a 404 with nothing written; the best-effort Trust & Safety follow-on reports exactly what happened;
+//      the reply is a 404 with nothing written; the atomic Trust & Safety follow-on reports a privacy refusal or rolls back a mandatory failure;
 //   F. concurrent replies keep the ticket coherent and the privacy rule intact;
 //   and the database function behind the reply is executable by the backend role alone and rolls back cleanly.
 //
@@ -65,7 +65,7 @@ const OPS_GATE_MESSAGE = 'Insufficient role category. Required: ops';
 // role whose tier the queue does not admit.
 const PLATFORM_OPERATOR_MESSAGE = 'Platform operator access required';
 const TIER_NOT_ADMITTED_MESSAGE = 'Platform operator tier not admitted';
-const REPLY_RPC = 'rpc/reply_to_support_ticket';
+const REPLY_RPC = 'rpc/execute_operator_support_mutation';
 const REPLY_SIGNATURE = 'public.reply_to_support_ticket(uuid, uuid, text, text, text, text, uuid, jsonb, jsonb, text)';
 const MIGRATION = new URL('../../../../../database/supabase/migrations/264_support_ticket_reply_atomic.sql', import.meta.url);
 const ROLLBACK = new URL('../../../../../database/supabase/rollback/264_support_ticket_reply_atomic.rollback.sql', import.meta.url);
@@ -135,7 +135,7 @@ function seedSuperAdmin(label: string): Person {
 
 /** A request as this person: a freshly signed internal identity, the credential platform staff present. */
 async function as(person: Person, path: string, init: RequestInit = {}): Promise<GatewayResponse> {
-    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), ...((init.headers as Record<string, string> | undefined) ?? {}) };
+    const headers = { ...(await signedIdentityHeaders(person.id, person.email)), 'X-Idempotency-Key': crypto.randomUUID(), ...((init.headers as Record<string, string> | undefined) ?? {}) };
     return gateway.request(path, { ...init, headers });
 }
 
@@ -1005,8 +1005,8 @@ test('E2b. a ticket removed while the reply is in flight (held at its write, the
     assertSanitized(response, 'gone in flight');
 });
 
-// The Trust & Safety follow-on (a reply that mentions fraud, chargeback and the like escalates its ticket) is best-effort: the reply
-// stands whatever happens to it, and the answer says exactly what happened. E3a to E3c are its three outcomes.
+// The automatic Trust & Safety follow-on shares the transaction: a privacy-rule refusal is reported;
+// a mandatory case write fault rolls back the whole reply. E3a to E3c prove the outcomes.
 
 test('E3a. Trust & Safety follow-on refused by the privacy rule: the note is kept, no case is opened, and the answer says why', async () => {
     const admin = seedSuperAdmin('ts-refused-admin');
@@ -1038,39 +1038,19 @@ test('E3a. Trust & Safety follow-on refused by the privacy rule: the note is kep
     });
 });
 
-test('E3b. Trust & Safety follow-on failing at case creation (one named fault): the reply stands, the ticket is marked for Trust & Safety without a case, nothing claims one, and the answer says which step failed', async () => {
+test('E3b. a mandatory Trust & Safety case fault rolls back the reply and every follow-on write', async () => {
     const admin = seedSuperAdmin('ts-failed-admin');
     const failing = (await createTicket(admin, { subject: 'A payout question' })).id as string;
-    const tap = tapRest(owned.restUrl, async (call, forward) => (call.method === 'POST' && call.resource === 'ts_cases'
-        ? restJson(500, { code: 'XX000', message: 'injected fault: the case store is unavailable', details: null, hint: null })
-        : forward()));
+    const before = { ticket: ticketRow(failing), messages: messagesOf(failing), audit: auditOf(failing), clocks: clocksOf(failing) };
+    psql(`CREATE FUNCTION public.owned_case_fault() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'owned fault case'; END $$;
+          CREATE TRIGGER owned_case_fault BEFORE INSERT ON public.ts_cases FOR EACH ROW EXECUTE FUNCTION public.owned_case_fault();`);
     let failed: GatewayResponse;
-    try {
-        failed = await as(admin, `${OPS}/tickets/${failing}/messages`, send('POST', { body: 'This looks like a chargeback', reason: REASON }));
-    } finally {
-        tap.restore();
-    }
-    const failingAfter = ticketRow(failing);
-    assert.deepEqual({
-        status: failed.status,
-        escalation: failed.json?.data?.trust_safety_escalation,
-        linked: failed.json?.data?.linked_ts_case_id,
-        ticket: [failingAfter.status, failingAfter.escalated_to, failingAfter.linked_ts_case_id],
-        cases: casesFor(failing),
-        notes: systemNotes(failing),
-        actions: auditOf(failing).map((row) => row.action),
-        kept: messagesOf(failing).some((message) => message.body === 'This looks like a chargeback'),
-    }, {
-        status: 200,
-        escalation: { status: 'failed', stage: 'case' },
-        linked: null,
-        ticket: ['escalated', 'trust_safety', null],
-        cases: 0,
-        notes: [],
-        actions: ['support.ticket.create', 'support.ticket.reply'],
-        kept: true,
-    });
-    assertSanitized(failed, 'a failed follow-on');
+    try { failed = await as(admin, `${OPS}/tickets/${failing}/messages`, send('POST', { body: 'This looks like a chargeback', reason: REASON })); }
+    finally { psql('DROP TRIGGER owned_case_fault ON public.ts_cases; DROP FUNCTION public.owned_case_fault();'); }
+    assert.equal(failed.status, 500);
+    assert.deepEqual({ ticket: ticketRow(failing), messages: messagesOf(failing), audit: auditOf(failing), clocks: clocksOf(failing) }, before);
+    assert.equal(casesFor(failing), 0);
+    assertSanitized(failed, 'atomic case failure');
 });
 
 test('E3c. Trust & Safety follow-on that succeeds: the case exists, the ticket points at it, a system note and an escalation audit row record it, and a later report opens no second case', async () => {

@@ -59,21 +59,20 @@ test('support operations routes enforce scopes, reason capture, audit, SLA, CSAT
     assert.match(supportSource, /requirePermission\('support:view'\)/);
     assert.match(supportSource, /requirePermission\('support:reply'\)/);
     assert.match(supportSource, /requirePermission\('support:manage'\)/);
-    assert.match(supportSource, /validateSensitiveReason/);
     assert.match(supportSource, /logSensitiveRead/);
-    assert.match(supportSource, /support\.ticket\.create/);
-    // A reply's audit row is written by reply_to_support_ticket (migration 264), in the reply's own transaction.
-    assert.match(supportSource, /REPLY_TO_SUPPORT_TICKET_RPC = 'reply_to_support_ticket'/);
+    assert.match(supportSource, /new SupportExecutionAdapter/);
+    const execution = source('execution/support-execution.adapter.ts');
+    const mutation = repositorySource('database/supabase/migrations/265_operator_support_mutation_integrity.sql');
+    assert.match(execution, /rpc\('execute_operator_support_mutation'/);
+    assert.match(execution, /SUPPORT_ESCALATION_KEYWORDS/);
+    assert.match(execution, /SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS/);
+    assert.match(execution, /SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS/);
+    for (const action of ['support.ticket.create', 'support.ticket.escalate', 'support.ticket.resolve', 'support.csat.record']) {
+        assert.ok(mutation.includes(action));
+    }
+    assert.match(mutation, /public\.reply_to_support_ticket\(/);
     const replyMigration = repositorySource('database/supabase/migrations/264_support_ticket_reply_atomic.sql');
     assert.match(replyMigration, /'support\.ticket\.internal_note' ELSE 'support\.ticket\.reply'/);
-    assert.match(supportSource, /support\.ticket\.escalate/);
-    assert.match(supportSource, /support\.ticket\.resolve/);
-    assert.match(supportSource, /support\.csat\.record/);
-    assert.match(supportSource, /SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS/);
-    assert.match(supportSource, /SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS/);
-    assert.match(supportSource, /SUPPORT_ESCALATION_KEYWORDS/);
-    assert.match(supportSource, /openTrustSafetyCaseFromTicket/);
-    assert.match(supportSource, /\.from\('ts_cases'\)/);
     assert.match(employeeSource, /SUPPORT_TICKETS_SCHEMA_UNAVAILABLE/);
     assert.doesNotMatch(employeeSource, /SUPPORT_TICKETS_UNAVAILABLE/);
 });

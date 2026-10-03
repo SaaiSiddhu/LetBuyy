@@ -40,7 +40,7 @@ test('the privacy route is the only file in the repository that mentions fulfill
     assert.deepEqual(trackedFilesMentioning('fulfillment_outcome', ['services', 'apps', 'packages', 'database', 'scripts']), [ROUTE]);
 });
 
-test('the only runtime files that write support tickets are the two that are reviewed', () => {
+test('the only direct runtime writer is buyer intake; operator writes live in the reviewed transaction', () => {
     const writers = trackedFilesMentioning(".from('support_tickets')", ['services', 'apps', 'packages']).filter((file) => {
         const code = stripComments(readFileSync(join(repoRoot, file), 'utf8'));
         // Each chain starts at .from('support_tickets') and ends at the statement's semicolon.
@@ -48,7 +48,6 @@ test('the only runtime files that write support tickets are the two that are rev
         return chains.some((chain) => /\.(insert|update|upsert|delete)\(/.test(chain));
     });
     assert.deepEqual(writers, [
-        'services/api-gateway/src/routes/operations/support.ts',
         'services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts',
     ], 'a new writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
 });
@@ -59,25 +58,40 @@ test('the only runtime files that write support tickets are the two that are rev
 // type and any outcome would live in, never the topic. operator-queue-correctness.postgres.test.ts is its database-backed proof.
 const stripSqlComments = (sql) => sql.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/--[^\n]*/g, ' ');
 
-test('the only migration that writes support tickets is 264, and its one update moves status and response times, never metadata or topic', () => {
+test('only reviewed support migrations write tickets; reply and operator metadata changes cannot claim fulfillment', () => {
     const migrationsDir = join(repoRoot, 'database/supabase/migrations');
     const sqlOf = (name) => stripSqlComments(readFileSync(join(migrationsDir, name), 'utf8'));
     const writers = readdirSync(migrationsDir)
         .filter((name) => name.endsWith('.sql'))
         .filter((name) => /\b(?:update|insert\s+into|delete\s+from)\s+(?:public\.)?support_tickets\b/i.test(sqlOf(name)))
         .sort();
-    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql', '265_operator_support_mutation_integrity.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
 
     const updates = sqlOf('264_support_ticket_reply_atomic.sql').match(/\bupdate\s+public\.support_tickets\s+set\b[\s\S]*?\bwhere\b/gi) ?? [];
     assert.equal(updates.length, 1, 'one update of support_tickets');
     const assignments = updates[0].replace(/^[\s\S]*?\bset\b/i, '').replace(/\bwhere\b$/i, '');
     const columns = [...assignments.matchAll(/([a-z_]+)\s*=/gi)].map((match) => match[1]);
     assert.deepEqual(columns, ['status', 'first_response_at', 'last_agent_message_at', 'updated_by']);
+    const mutation = sqlOf('265_operator_support_mutation_integrity.sql');
+    const mutationUpdates = mutation.match(/\bupdate\s+public\.support_tickets\s+set\b[\s\S]*?\bwhere\b/gi) ?? [];
+    assert.equal(mutationUpdates.length, 5);
+    const allowed = new Set(['linked_ts_case_id','updated_by','assignee_id','status','escalated_to','linked_incident_id','metadata','resolved_at']);
+    for (const update of mutationUpdates) {
+        const assignments = update.replace(/^[\s\S]*?\bset\b/i,'').replace(/\bwhere\b$/i,'');
+        for (const [, column] of assignments.matchAll(/([a-z_]+)\s*=/gi)) assert.ok(allowed.has(column), `unreviewed operator write: ${column}`);
+        if (/metadata\s*=/i.test(assignments)) {
+            assert.match(assignments, /metadata=metadata\|\|jsonb_build_object\('escalation',coalesce\(p_payload->'metadata','\{\}'::jsonb\)\)/);
+        }
+    }
+    assert.match(mutation, /p_operation='create' AND p_payload->>'topic'='privacy'/);
+    assert.match(mutation, /Privacy requests use buyer intake/);
+
 });
 
 test('the scans really look: the key is found where it is known to be, and a reviewed writer is found as a writer', () => {
     // Guards the tripwire against going blind (an empty result would otherwise read as "nothing writes it").
     assert.ok(trackedFilesMentioning('privacy_request_type', ['services']).includes('services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts'));
     assert.ok(trackedFilesMentioning(".from('support_tickets')", ['services']).includes('services/api-gateway/src/routes/operations/support.ts'));
-    assert.match(stripComments(readFileSync(join(repoRoot, 'services/api-gateway/src/routes/operations/support.ts'), 'utf8')), /\.from\('support_tickets'\)[^;]*\.(insert|update)\(/);
+    assert.match(stripComments(readFileSync(join(repoRoot, 'services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts'), 'utf8')), /\.from\('support_tickets'\)[^;]*\.(insert|update)\(/);
+    assert.match(stripComments(readFileSync(join(repoRoot, 'services/api-gateway/src/execution/support-execution.adapter.ts'), 'utf8')), /rpc\('execute_operator_support_mutation'/);
 });
