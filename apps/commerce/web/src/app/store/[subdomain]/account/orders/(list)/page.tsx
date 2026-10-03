@@ -4,9 +4,7 @@ import { resolveAccountLiquid } from '@/lib/account-liquid';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import OrdersClient from './orders-client';
 
-// Customer order history. Liquid stores render the existing `customers/orders` template; the
-// `customer.orders` drop is fetched route-scoped (only here) via the existing getCustomerOrders
-// contract. React stores keep the existing client orders page unchanged.
+// Order history uses verified canonical buyer links in both the Liquid and React storefronts.
 export default async function OrdersPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const { subdomain } = await params;
     const basePath = `/store/${subdomain}`;

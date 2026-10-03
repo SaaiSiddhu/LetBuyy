@@ -401,7 +401,7 @@ test('the realms do not mix: a platform buyer session is not a storefront sessio
 test('identity-platform may check and redeem; the storefront may only read its session', async () => {
     const secret = 'test-internal-secret';
     const router = new Hono<{ Bindings: Env }>();
-    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase() });
+    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false });
     const app = new Hono<{ Bindings: Env }>();
     app.route('/storefront', router);
     const env = { INTERNAL_API_SECRET: secret } as unknown as Env;

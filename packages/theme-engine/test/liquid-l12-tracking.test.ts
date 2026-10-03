@@ -16,7 +16,7 @@ function renderOrder(order) {
     storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
     routeTemplate: { id: 'customers/order', type: 'customers/order', layoutKey: 'theme', sections: [] },
     liquidTemplateKey: 'customers/order',
-    liquidContext: { order },
+    liquidContext: { buyer: { email: 'buyer@example.test' }, order },
     liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
   });
 }

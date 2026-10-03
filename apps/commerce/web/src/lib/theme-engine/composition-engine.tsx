@@ -17,10 +17,10 @@ import LiquidHydrationIslands from './liquid-hydration-islands';
 import { renderRegisteredSection } from './renderer-registry';
 import {
     getStorefrontCustomerDrop,
-    getCustomerOrderDetailDrop,
     type LiquidCustomerDrop,
     type LiquidCustomerOrderDetail,
 } from '@/lib/customer-drop';
+import { getStorefrontBuyerOrderDrop, type LiquidBuyerDrop } from '@/lib/buyer-order-drop';
 import { ProductService } from '@/lib/product-service';
 import { ContentService } from '@/lib/content-service';
 import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
@@ -430,6 +430,8 @@ async function buildLiquidCommerceContext({
     plan,
     sectionData,
     customer,
+    buyer,
+    buyerUnavailable,
     orderDetail,
     page,
 }: {
@@ -437,6 +439,8 @@ async function buildLiquidCommerceContext({
     plan: StorefrontRenderPlan;
     sectionData: Map<string, SectionRenderData>;
     customer: LiquidCustomerDrop | null;
+    buyer?: LiquidBuyerDrop | null;
+    buyerUnavailable?: boolean;
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
 }): Promise<LiquidCommerceDrops> {
@@ -579,6 +583,8 @@ async function buildLiquidCommerceContext({
         collections: collection ? [collection] : [],
         cart: collectLiquidCart(sectionData, plan),
         customer,
+        buyer,
+        buyer_unavailable: buyerUnavailable === true,
         order: orderDetail ?? null,
         search: searchDrop,
         // D1-B: linklists is passed through to buildLiquidScope via LiquidCommerceDrops.
@@ -609,17 +615,15 @@ async function renderLiquidPlan({
 }): Promise<{ html: string; headStyleText: string } | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
 
-    const includeOrders = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
-    const customer = await getStorefrontCustomerDrop(store.id, { includeOrders });
-
-    // Order detail: find the specific order from the path's trailing segment.
-    let orderDetail: LiquidCustomerOrderDetail | null = null;
-    if (plan.route.type === 'customer_order') {
-        const orderId = plan.route.path.split('/').filter(Boolean).at(-1) ?? '';
-        if (orderId) {
-            orderDetail = await getCustomerOrderDetailDrop(store.id, orderId);
-        }
-    }
+    const orderRoute = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
+    // Store-customer identity and LetBuyy buyer identity are separate principals.
+    // Canonical orders come only from the verified buyer_order_links surface.
+    const customer = orderRoute ? null : await getStorefrontCustomerDrop(store.id);
+    const orderId = plan.route.type === 'customer_order' ? plan.route.path.split('/').filter(Boolean).at(-1) : undefined;
+    const buyerOrderView = orderRoute ? await getStorefrontBuyerOrderDrop(store.id, orderId, plan.route.searchParams?.cursor) : null;
+    const buyer = buyerOrderView?.buyer ?? null;
+    const buyerUnavailable = buyerOrderView?.unavailable ?? false;
+    const orderDetail = buyerOrderView?.order ?? null;
 
     // Wishlist products: enrich the customer wishlist IDs into full product drops.
     if (plan.route.type === 'customer_wishlist' && customer && customer.wishlist.length > 0) {
@@ -652,7 +656,7 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, orderDetail, page: liquidPage }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerUnavailable, orderDetail, page: liquidPage }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;

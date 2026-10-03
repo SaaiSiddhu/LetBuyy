@@ -124,13 +124,13 @@
     },
     {
       "path": "sections/customer-order-detail.liquid",
-      "checksum": "2ee7f5fcf03b7a7e5ffcdefb3ac8be06e55866ac932fda1205a95c4963dfafc9",
-      "sizeBytes": 1600
+      "checksum": "7d762b4fd3c326e29de49fbfc58b8e2c69cfd97ee03bf2c2996a712af06e1adc",
+      "sizeBytes": 1940
     },
     {
       "path": "sections/customer-orders.liquid",
-      "checksum": "99890527310493d15697431eea2dacd293de37205f424a53d54141a3858afad8",
-      "sizeBytes": 1098
+      "checksum": "63291a1d2ae7124ffb0362c9acf1300d886343df51a32c49cdd371716068d43c",
+      "sizeBytes": 1430
     },
     {
       "path": "sections/customer-register.liquid",
@@ -398,8 +398,8 @@
     "sections/customer-account.liquid": "8634e5668eca6204286f02c059065b2676522fa1baebdb18497b33f306e2d0df",
     "sections/customer-addresses.liquid": "28f454848612c9eabb5434f6576a46f4cffdcb313346c7069a3af82367054136",
     "sections/customer-login.liquid": "4cb81c8cb762ce03abce8bdbd63dcebce77de4d284c1a39d9c8b9f1c32f8cfc1",
-    "sections/customer-order-detail.liquid": "2ee7f5fcf03b7a7e5ffcdefb3ac8be06e55866ac932fda1205a95c4963dfafc9",
-    "sections/customer-orders.liquid": "99890527310493d15697431eea2dacd293de37205f424a53d54141a3858afad8",
+    "sections/customer-order-detail.liquid": "7d762b4fd3c326e29de49fbfc58b8e2c69cfd97ee03bf2c2996a712af06e1adc",
+    "sections/customer-orders.liquid": "63291a1d2ae7124ffb0362c9acf1300d886343df51a32c49cdd371716068d43c",
     "sections/customer-register.liquid": "d4a1f7dab5076b3aa780718112a935ff74651a04274e9e205a6b3d0fc6d290eb",
     "sections/customer-settings.liquid": "39507268454dedb1cc48272e4ef7bc1054bff234fb3bad474acf36e479fdc457",
     "sections/customer-wishlist.liquid": "6d7a928d9c365f929e1272f6ea4b632c1861a9aaf543191f76dc163723993b50",
@@ -449,5 +449,5 @@
     "templates/product.json": "0782536d9e51e4bebdf6d8acda7947d12dd2bfe15c0c108253143aaf55098552",
     "templates/search.json": "1c2f3c312a09bdcebae0450874494f0dc07614a1f33f1c0264ec569a8c3d9385"
   },
-  "contentHash": "a9b2c9e7c431b7b04d5e9971b11947146be68aa33f54aceebd1c227a40ab4316"
+  "contentHash": "a87d3411b9c2695995d0127733d49af5112402fc581cb2faa4c901c7d7aaf8e0"
 }

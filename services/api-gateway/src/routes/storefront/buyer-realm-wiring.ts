@@ -34,7 +34,7 @@ import {
     type AuthorizationCodeRedemption,
 } from './buyer-authorization-routes';
 import { registerBuyerNotificationRoutes, BUYER_NOTIFICATION_COLUMNS } from './buyer-notification-routes';
-import { registerBuyerOrderRoutes, listBuyerOrdersFromDatabase } from './buyer-order-routes';
+import { registerBuyerOrderRoutes, listBuyerOrdersFromDatabase, loadBuyerOrderDetailFromDatabase } from './buyer-order-routes';
 import { registerBuyerReturnRoutes, type BuyerReturnRequestRow } from './buyer-return-routes';
 import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
@@ -47,12 +47,12 @@ import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlace
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
 import { addBusinessDays, generateTicketRef } from '../operations/support';
 import { SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS } from '@letbuyy/shared-types';
-import type { AppContext } from './customer-engagement-routes';
+import type { AppContext, StorefrontCustomerEngagementDependencies } from './customer-engagement-routes';
 
 /** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
 const UNIQUE_VIOLATION = '23505';
 
-export interface BuyerRealmRoutesDeps {
+export interface BuyerRealmRoutesDeps extends Pick<StorefrontCustomerEngagementDependencies, 'hydrateStorefrontOrderItems' | 'orderItemsRelationalReadsEnabled'> {
     normalizeEmail: (email: string) => string;
 }
 
@@ -326,6 +326,22 @@ export function registerBuyerRealmRoutes(
     // in both, never re-approximated by a test double.
     registerBuyerOrderRoutes(router, {
         listBuyerOrders: (c, buyerAccountId, input) => listBuyerOrdersFromDatabase(getSupabaseAdmin(c), buyerAccountId, input),
+        loadBuyerOrderDetail: async (c, buyerAccountId, siteId, orderId) => {
+            const result = await loadBuyerOrderDetailFromDatabase(getSupabaseAdmin(c), buyerAccountId, siteId, orderId, deps.orderItemsRelationalReadsEnabled(c.env));
+            if (result.error || !result.data) return result;
+            try {
+                const [hydrated] = await deps.hydrateStorefrontOrderItems(c, [result.data]);
+                if (!Array.isArray(hydrated?.items)) return { data: null, error: new Error('Order items are unavailable') };
+                const { store_id: _storeId, order_items: _rawItems, ...order } = hydrated;
+                // The common hydrator also serves internal readers. The buyer view
+                // gets its display fields, never arbitrary product snapshot data.
+                const fields = ['id','product_id','variant_id','name','title','sku','quantity',
+                    'price','unit_price','total','variant_title','image','image_url','variant'];
+                order.items = hydrated.items.map((item: Record<string, unknown>) =>
+                    Object.fromEntries(fields.filter((field) => Object.hasOwn(item, field)).map((field) => [field, item[field]])));
+                return { data: order, error: null };
+            } catch (error) { return { data: null, error }; }
+        },
     });
 
     // CAP-FB-APPUPDATE (D-9): the mobile release gate. Public and unauthenticated — it must answer

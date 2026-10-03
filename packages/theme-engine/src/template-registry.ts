@@ -274,7 +274,7 @@ export const TEMPLATE_TYPE_REGISTRY: Readonly<Record<string, TemplateTypeEntry>>
 
   /** Customer order history listing. */
   'customers/orders': {
-    allowedDrops: ['shop', 'request', 'settings', 'routes', 'customer'],
+    allowedDrops: ['shop', 'request', 'settings', 'routes', 'buyer'],
     alternatesAllowed: false,
     sectionGroupRoles: ['header', 'footer'],
     requiresLayout: true,
@@ -282,7 +282,7 @@ export const TEMPLATE_TYPE_REGISTRY: Readonly<Record<string, TemplateTypeEntry>>
 
   /** Customer single-order detail page. */
   'customers/order': {
-    allowedDrops: ['shop', 'request', 'settings', 'routes', 'customer', 'order'],
+    allowedDrops: ['shop', 'request', 'settings', 'routes', 'buyer', 'order'],
     alternatesAllowed: false,
     sectionGroupRoles: ['header', 'footer'],
     requiresLayout: true,

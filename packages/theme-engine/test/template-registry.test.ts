@@ -648,6 +648,14 @@ test('template-registry: order drop only available on customers/order template',
   }
 });
 
+test('template-registry: canonical buyer drop is limited to buyer order surfaces', () => {
+  assert.ok(getAllowedDropsForTemplate('customers/orders').includes('buyer'));
+  assert.ok(getAllowedDropsForTemplate('customers/order').includes('buyer'));
+  for (const key of ['customers/login', 'customers/register', 'customers/account', 'customers/addresses', 'customers/settings', 'customers/wishlist']) {
+    assert.ok(!getAllowedDropsForTemplate(key).includes('buyer'), `${key}: buyer order identity is not a store-customer drop`);
+  }
+});
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Phase V hardening — consecutive-slash guard in validateTemplateKey
 // ──────────────────────────────────────────────────────────────────────────────

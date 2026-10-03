@@ -104,6 +104,7 @@ const SESSION_GATE_CASES: Array<{ name: string; handler: unknown; path: string; 
     { name: 'PATCH /addresses/:id', handler: addressRoute.PATCH, path: '/api/buyer/addresses/addr-1', method: 'PATCH', body: { line1: 'x' } },
     { name: 'DELETE /addresses/:id', handler: addressRoute.DELETE, path: '/api/buyer/addresses/addr-1', method: 'DELETE' },
     { name: 'GET /orders', handler: ordersRoute.GET, path: '/api/buyer/orders', method: 'GET' },
+    { name: 'GET /orders?order_id=:id', handler: ordersRoute.GET, path: '/api/buyer/orders?order_id=order-1', method: 'GET' },
 ];
 
 const BAD_SESSIONS: Array<{ label: string; cookie: string | null }> = [
@@ -181,6 +182,32 @@ test('GET /orders preserves auth/validation status but sanitizes failures and ma
         const result = await call(ordersRoute.GET, '/api/buyer/orders');
         assert.equal(result.status, 503);
         assert.doesNotMatch(await result.text(), /synthetic-private-order-detail/);
+    });
+});
+
+test('GET /orders?order_id= uses only the selected order id and the host-bound buyer session', async () => {
+    await withGateway(() => ok({ order: { id: 'owned-order', total: 240, private_note: 'must not be relayed', items: [{ name: 'Synthetic item', quantity: 1, internal_cost: 4 }] }, ignored: true }), async (requests) => {
+        const response = await call(ordersRoute.GET, '/api/buyer/orders?order_id=owned-order&store_id=forged&buyer_account_id=forged');
+        assert.equal(response.status, 200);
+        assertBrowserFacing(response);
+        assert.deepEqual(await response.json(), { order: { id: 'owned-order', total: 240, items: [{ name: 'Synthetic item', quantity: 1 }] } });
+        assert.equal(requests.length, 1);
+        assert.equal(requests[0].url.pathname, '/v1/storefront/buyer/storefront-orders/owned-order');
+        assert.deepEqual([...requests[0].url.searchParams], [['store_id', SITE_ID]]);
+        assert.equal(requests[0].headers.get(buyerHeader), BUYER_TOKEN);
+        assert.deepEqual([...requests[0].headers.keys()].sort(), EXPECTED_UPSTREAM_HEADERS);
+        assert.equal(requests[0].cache, 'no-store');
+    });
+    for (const status of [401, 403, 404, 400, 500]) {
+        await withGateway(() => jsonResponse({ error: 'synthetic-private-order-detail' }, { status }), async () => {
+            const response = await call(ordersRoute.GET, '/api/buyer/orders?order_id=order-1');
+            assert.equal(response.status, status === 500 ? 503 : status);
+            assert.doesNotMatch(await response.text(), /synthetic-private-order-detail/);
+            assertBrowserFacing(response);
+        });
+    }
+    await withGateway(() => ok({}), async () => {
+        assert.equal((await call(ordersRoute.GET, '/api/buyer/orders?order_id=order-1')).status, 503);
     });
 });
 

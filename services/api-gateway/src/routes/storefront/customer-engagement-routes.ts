@@ -1420,6 +1420,6 @@ export function registerStorefrontCustomerEngagementRoutes(
     // CAP-FB-* (D-8/D-9): the buyer realm's wiring lives in its own module. It shares nothing
     // with the per-store customer lifecycle above -- a buyer is platform-level and carries no
     // store_id -- and keeping it here pushed this file past the 1500-line budget twice.
-    registerBuyerRealmRoutes(router, { normalizeEmail });
+    registerBuyerRealmRoutes(router, { normalizeEmail, hydrateStorefrontOrderItems, orderItemsRelationalReadsEnabled });
 
 }

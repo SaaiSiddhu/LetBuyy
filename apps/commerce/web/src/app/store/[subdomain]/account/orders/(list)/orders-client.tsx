@@ -1,77 +1,84 @@
-// ============================================================
-// MY ORDERS PAGE — Displays customer's order history
-// ============================================================
-
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { LineItem, Order as SharedOrder } from '@letbuyy/shared-types';
-import { Button, Calendar, CheckCircle, ChevronRight, Clock, Package, ShoppingBag, Truck } from '@letbuyy/ui';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Calendar, ChevronRight, Package, ShoppingBag } from '@letbuyy/ui';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
-type OrderHistoryItem = Pick<SharedOrder, 'id' | 'order_number' | 'status' | 'total' | 'created_at'> & {
-    items?: OrderHistoryLineItem[];
-};
-
-type OrderHistoryLineItem = Pick<LineItem, 'quantity'> & {
-    name: string;
-    price: number;
-    image?: string;
-};
-
-const statusColors: Record<string, string> = {
-    pending: 'rgb(245 158 11)',
-    confirmed: 'rgb(59 130 246)',
-    processing: 'rgb(59 130 246)',
-    shipped: 'rgb(139 92 246)',
-    delivered: 'rgb(16 185 129)',
-    cancelled: 'rgb(239 68 68)',
-    refunded: 'rgb(107 114 128)',
-};
-
-const timelineSteps = [
-    { key: 'pending', label: 'Placed', icon: Clock },
-    { key: 'processing', label: 'Preparing', icon: Package },
-    { key: 'shipped', label: 'Shipped', icon: Truck },
-    { key: 'delivered', label: 'Delivered', icon: CheckCircle },
-];
-
-function timelineIndex(status: string | undefined) {
-    if (!status) return 0;
-    if (status === 'confirmed') return 1;
-    const index = timelineSteps.findIndex(step => step.key === status);
-    return index >= 0 ? index : 0;
+interface OrderSummary {
+    id: string;
+    order_number: string | null;
+    status: string | null;
+    total: number | null;
+    currency: string | null;
+    created_at: string | null;
 }
+
+const money = (amount: number | null, currency: string | null) => {
+    const value = Number(amount ?? 0);
+    try { return new Intl.NumberFormat('en-IN', { style: 'currency', currency: currency || 'INR', maximumFractionDigits: 2 }).format(value); }
+    catch { return `₹${value.toLocaleString('en-IN')}`; }
+};
 
 export default function OrdersClient() {
     const params = useParams();
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
-    const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
+    const [orders, setOrders] = useState<OrderSummary[]>([]);
+    const [cursor, setCursor] = useState<string | null>(null);
+    const [hasMore, setHasMore] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [signedOut, setSignedOut] = useState(false);
 
-    useEffect(() => {
-        fetch('/api/customer/orders')
-            .then(r => r.json())
-            .then(d => setOrders(d.orders || []))
-            .catch(() => { })
-            .finally(() => setLoading(false));
+    const loadPage = useCallback(async (nextCursor: string | null, append: boolean, signal?: AbortSignal) => {
+        if (append) setLoadingMore(true);
+        else setLoading(true);
+        setError(null);
+        try {
+            const query = new URLSearchParams({ limit: '20' });
+            if (nextCursor) query.set('cursor', nextCursor);
+            const response = await fetch(`/api/buyer/orders?${query}`, { cache: 'no-store', signal });
+            if (response.status === 401 || response.status === 403) {
+                setSignedOut(true);
+                setOrders([]);
+                setHasMore(false);
+                return;
+            }
+            if (!response.ok) throw new Error('Orders are temporarily unavailable. Please try again.');
+            const body = await response.json() as { orders?: OrderSummary[]; nextCursor?: string | null; hasMore?: boolean };
+            if (!Array.isArray(body.orders)) throw new Error('Orders are temporarily unavailable. Please try again.');
+            setSignedOut(false);
+            setOrders((current) => append ? [...current, ...body.orders!] : body.orders!);
+            setCursor(typeof body.nextCursor === 'string' ? body.nextCursor : null);
+            setHasMore(body.hasMore === true && typeof body.nextCursor === 'string');
+        } catch (cause) {
+            if (cause instanceof DOMException && cause.name === 'AbortError') return;
+            setError(cause instanceof Error ? cause.message : 'Orders are temporarily unavailable. Please try again.');
+        } finally {
+            setLoading(false);
+            setLoadingMore(false);
+        }
     }, []);
 
-    if (loading) {
-        return <StorefrontListLoadingState rows={4} />;
-    }
+    useEffect(() => {
+        const controller = new AbortController();
+        void loadPage(null, false, controller.signal);
+        return () => controller.abort();
+    }, [loadPage]);
 
-    if (orders.length === 0) {
+    if (loading) return <StorefrontListLoadingState rows={4} />;
+
+    if (signedOut) {
         return (
             <StorefrontEmptyState
                 icon={<ShoppingBag size={28} aria-hidden="true" />}
-                title="No orders yet"
-                body="When you place an order, it will appear here."
-                actionHref={`${basePath}/shop`}
-                actionLabel="Start shopping"
+                title="Sign in to LetBuyy to view your orders"
+                body="Your linked orders are private to your LetBuyy account. Sign in to continue."
+                actionHref={`/api/buyer-auth/start?return_to=${encodeURIComponent(`${basePath}/account/orders`)}`}
+                actionLabel="Continue with LetBuyy"
                 actionIcon={<ShoppingBag size={18} aria-hidden="true" />}
             />
         );
@@ -79,150 +86,34 @@ export default function OrdersClient() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-6">My Orders</h1>
-            <div className="space-y-4">
-                {orders.map(order => {
-                    const items = Array.isArray(order.items) ? order.items : [];
-                    const isExpanded = expandedOrderId === order.id;
-                    const activeTimelineIndex = timelineIndex(order.status);
-                    return (
-                        <div
-                            key={order.id}
-                            className="rounded-2xl border p-4 transition-shadow hover:shadow-md"
-                            style={{ borderColor: 'var(--border, rgb(229 231 235))' }}
-                        >
-                            <div className="flex items-center justify-between gap-3 mb-3">
-                                <div className="flex items-center gap-2">
-                                    <Package size={18} style={{ color: 'var(--primary)' }} />
-                                    <span className="font-semibold text-sm">
-                                        {order.order_number || `#${order.id.slice(0, 8)}`}
-                                    </span>
-                                </div>
-                                <span
-                                    className="text-xs font-medium px-2.5 py-1 rounded-full"
-                                    style={{
-                                        backgroundColor: `${statusColors[order.status] || 'rgb(107 114 128)'}15`,
-                                        color: statusColors[order.status] || 'rgb(107 114 128)',
-                                    }}
-                                >
-                                    {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
-                                </span>
+            <h1 className="mb-6 text-2xl font-bold">My Orders</h1>
+            {error && <div role="alert" className="mb-4 rounded-xl border p-4 text-sm" style={{ borderColor: 'var(--border)', color: 'var(--text)' }}>{error} <Button unstyled className="ml-2 underline" onClick={() => void loadPage(null, false)}>Try again</Button></div>}
+            {error ? null : orders.length === 0 ? (
+                <StorefrontEmptyState
+                    icon={<ShoppingBag size={28} aria-hidden="true" />}
+                    title="No linked orders yet"
+                    body="Orders linked to your LetBuyy account will appear here."
+                    actionHref={`${basePath}/shop`}
+                    actionLabel="Start shopping"
+                    actionIcon={<ShoppingBag size={18} aria-hidden="true" />}
+                />
+            ) : (
+                <div className="space-y-4">
+                    {orders.map((order) => (
+                        <Link key={order.id} href={`${basePath}/account/orders/${encodeURIComponent(order.id)}`} className="block rounded-2xl border p-4 transition-shadow hover:shadow-md" style={{ borderColor: 'var(--border)' }}>
+                            <div className="mb-3 flex items-center justify-between gap-3">
+                                <span className="flex items-center gap-2 font-semibold text-sm"><Package size={18} style={{ color: 'var(--primary)' }} />{order.order_number || `#${order.id.slice(0, 8)}`}</span>
+                                <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: 'var(--surface)' }}>{order.status || 'Status unavailable'}</span>
                             </div>
-
-                            {/* Item previews */}
-                            {items.length > 0 && (
-                                <div className="flex gap-2 mb-3 overflow-x-auto">
-                                    {items.slice(0, 4).map((item, i) => (
-                                        <div key={i} className="flex items-center gap-2 shrink-0">
-                                            {item.image && (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.name}
-                                                    className="w-10 h-10 object-cover rounded-lg"
-                                                />
-                                            )}
-                                            <div className="text-xs">
-                                                <p className="font-medium truncate max-w-[120px]">{item.name}</p>
-                                                <p style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                                    x{item.quantity}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {items.length > 4 && (
-                                        <span className="text-xs self-center" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                            +{items.length - 4} more
-                                        </span>
-                                    )}
-                                </div>
-                            )}
-
-                            <div className="flex items-center justify-between gap-3 pt-2 border-t" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
-                                <div>
-                                    <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                        <Calendar size={13} />
-                                        {new Date(order.created_at).toLocaleDateString('en-IN', {
-                                            day: 'numeric', month: 'short', year: 'numeric',
-                                        })}
-                                    </span>
-                                    <span className="font-bold ml-3">
-                                        ₹{Number(order.total).toLocaleString('en-IN')}
-                                    </span>
-                                </div>
-                                <Button unstyled
-                                    type="button"
-                                    onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
-                                    className="inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm font-semibold transition-colors"
-                                    style={{ color: 'var(--primary)' }}
-                                    aria-expanded={isExpanded}
-                                >
-                                    {isExpanded ? 'Hide details' : 'View details'}
-                                    <ChevronRight
-                                        size={16}
-                                        className={`transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                                    />
-                                </Button>
+                            <div className="flex items-center justify-between gap-3 border-t pt-3" style={{ borderColor: 'var(--border)' }}>
+                                <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-secondary)' }}><Calendar size={13} aria-hidden="true" />{order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Date unavailable'}<strong className="ml-2 text-sm text-[var(--text)]">{money(order.total, order.currency)}</strong></span>
+                                <span className="inline-flex items-center gap-1 text-sm font-semibold" style={{ color: 'var(--primary)' }}>View order <ChevronRight size={16} aria-hidden="true" /></span>
                             </div>
-
-                            {isExpanded && (
-                                <div className="mt-4 space-y-4 rounded-xl p-4" style={{ backgroundColor: 'var(--surface, rgb(243 244 246))' }}>
-                                    <div>
-                                        <h2 className="text-sm font-semibold mb-3">Order timeline</h2>
-                                        <div className="grid grid-cols-4 gap-2">
-                                            {timelineSteps.map((step, index) => {
-                                                const Icon = step.icon;
-                                                const isActive = activeTimelineIndex >= index && !['cancelled', 'refunded'].includes(order.status || '');
-                                                return (
-                                                    <div key={step.key} className="flex min-w-0 flex-col items-center gap-2 text-center">
-                                                        <span
-                                                            className="flex h-9 w-9 items-center justify-center rounded-full"
-                                                            style={{
-                                                                backgroundColor: isActive ? 'var(--primary)' : 'var(--card-bg, rgb(255 255 255))',
-                                                                color: isActive ? 'rgb(255 255 255)' : 'var(--text-secondary, rgb(107 114 128))',
-                                                                border: '1px solid var(--border, rgb(229 231 235))',
-                                                            }}
-                                                        >
-                                                            <Icon size={16} />
-                                                        </span>
-                                                        <span className="text-[11px] font-medium" style={{ color: isActive ? 'var(--text)' : 'var(--text-secondary, rgb(107 114 128))' }}>
-                                                            {step.label}
-                                                        </span>
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <h2 className="text-sm font-semibold mb-3">Items</h2>
-                                        {items.length > 0 ? (
-                                            <div className="space-y-2">
-                                                {items.map((item, index) => (
-                                                    <div key={`${item.name}-${index}`} className="flex items-center justify-between gap-3 rounded-lg bg-[var(--lb-color-surface)]/70 p-2">
-                                                        <div className="min-w-0">
-                                                            <p className="truncate text-sm font-medium">{item.name}</p>
-                                                            <p className="text-xs" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                                                Qty {item.quantity}
-                                                            </p>
-                                                        </div>
-                                                        <span className="shrink-0 text-sm font-semibold">
-                                                            ₹{Number(item.price || 0).toLocaleString('en-IN')}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                                Item details are not available for this order yet.
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
+            {hasMore && <div className="mt-6 text-center"><Button unstyled disabled={loadingMore} onClick={() => void loadPage(cursor, true)} className="min-h-11 rounded-xl border px-5 py-2 text-sm font-semibold disabled:opacity-50" style={{ borderColor: 'var(--border)' }}>{loadingMore ? 'Loading…' : 'Load more orders'}</Button></div>}
         </div>
     );
 }

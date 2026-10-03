@@ -205,3 +205,17 @@ email/SMS/notification sent. No payment execution, no order placed, Pay/Place-Or
 (nothing in this phase reached a payment surface at all — F8/F9 are out of scope). Old Mac and T7
 backups, `~/.letbuyy/preservation/primary-pre-integration-20260927-181701/`, and all signing assets
 untouched.
+
+## Current follow-on position — 3 October 2026
+
+The historical queue above predates later accepted Phase 2 work; do not execute it as the current
+next task. Operator mutation integrity, verified storefront order list/detail reads, and their React
+and Liquid buyer-order surfaces are recorded in the later dated acceptance files. See
+`P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md`, `P2_STOREFRONT_BUYER_ORDERS_ACCEPTANCE.md`, and
+`P2_BUYER_ADDRESS_ATOMIC_ACCEPTANCE.md` for current evidence.
+
+The next dependency-ready slice is to connect the canonical buyer session to normal account
+profile/address surfaces and the account hub while keeping verified store-customer-only features
+separate. Then continue the remaining Phase 2 issuer, staff/operator, privacy fulfillment, and
+cutover decisions in `PHASE2_DECISIONS.md`. Phase 2 remains open; this does not accept the full
+identity programme, browser/hosted cutover, or any later parent phase.

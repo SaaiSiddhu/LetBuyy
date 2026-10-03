@@ -3056,16 +3056,15 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-orders" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
-          // T2b — customer-orders previously had no guest branch at all: an unauthenticated visitor
-          // (customer is nil) fell into the {% else %} arm and saw "No orders yet.", which falsely
-          // implies they have an account with an empty order history. Matches the {% if customer %}
-          // guest-messaging pattern every other account section already uses.
-          '  {% if customer %}',
-          '  {% if customer.orders and customer.orders.size > 0 %}',
-          '  <ul class="lb-orders__list">{% for order in customer.orders %}<li class="lb-orders__row"><a href="{{ routes.account_orders_url }}/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
+          // Storefront order ownership is the verified canonical buyer-order link,
+          // never a store-customer email match.
+          '  {% if buyer_unavailable %}<p class="lb-orders__error" role="alert">Orders are temporarily unavailable. Please try again.</p>{% elsif buyer %}',
+          '  {% if buyer.orders and buyer.orders.size > 0 %}',
+          '  <ul class="lb-orders__list">{% for order in buyer.orders %}<li class="lb-orders__row"><a href="{{ routes.account_orders_url }}/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
+          '  {% if buyer.has_more and buyer.next_cursor %}<a class="lb-orders__next" href="{{ routes.account_orders_url }}?cursor={{ buyer.next_cursor }}">Older orders</a>{% endif %}',
           '  {% else %}<p class="lb-orders__empty">No orders yet.</p>{% endif %}',
           '  {% else %}',
-          '  <p class="lb-orders__guest">Please <a href="{{ routes.customer_login_url }}">sign in</a> to view your orders.</p>',
+          '  <p class="lb-orders__guest">Please <a href="/api/buyer-auth/start?return_to={{ routes.account_orders_url }}">sign in with LetBuyy</a> to view your orders.</p>',
           '  {% endif %}',
           '</section>',
         ],
@@ -3076,6 +3075,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Order' })],
         body: [
           '<section class="lb-order-detail" data-section-id="{{ section.id }}">',
+          '  {% if buyer_unavailable %}<p class="lb-order-detail__error" role="alert">This order is temporarily unavailable. Please try again.</p>{% elsif buyer %}',
           '  {% if order %}',
           '  <h1>Order #{{ order.number }}</h1>',
           '  <p class="lb-order-detail__status">Status: {{ order.status }}</p>',
@@ -3085,6 +3085,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  <ol class="lb-order-detail__timeline">{% for step in order.timeline %}<li class="lb-order-detail__step{% if step.reached %} is-reached{% endif %}">{{ step.label }}</li>{% endfor %}</ol>',
           '  {% if order.tracking_number != blank %}<p class="lb-order-detail__tracking">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}',
           '  {% else %}<p class="lb-order-detail__missing">Order not found.</p>{% endif %}',
+          '  {% else %}<p class="lb-order-detail__guest">Please <a href="/api/buyer-auth/start?return_to={{ routes.account_orders_url }}">sign in with LetBuyy</a> to view this order.</p>{% endif %}',
           '</section>',
         ],
       }),

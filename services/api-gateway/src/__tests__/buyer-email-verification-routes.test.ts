@@ -409,7 +409,7 @@ test('a reset validates the code and the password before anything else', async (
 test("identity-platform's own signed header reaches the buyer routes; the storefront's does not", async () => {
     const secret = 'test-internal-secret';
     const router = new Hono<{ Bindings: Env }>();
-    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase() });
+    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false });
     const app = new Hono<{ Bindings: Env }>();
     app.route('/storefront', router);
     const env = { INTERNAL_API_SECRET: secret } as unknown as Env;

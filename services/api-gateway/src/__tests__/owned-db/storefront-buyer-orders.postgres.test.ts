@@ -108,3 +108,47 @@ test('link read failure returns sanitized failure rather than an empty order his
         assert.ok(tap.calls.some((call) => call.resource === 'buyer_order_links' && call.search.get('site_id') === `eq.${site.siteId}`));
     } finally { tap.restore(); }
 });
+
+test('canonical storefront order detail requires this buyer link and this signed site', async () => {
+    const buyer = seedBuyerAccount(psql, 'detail-own');
+    const otherBuyer = seedBuyerAccount(psql, 'detail-other');
+    const ownId = linked(buyer.id);
+    const elsewhereId = linked(buyer.id, otherSite);
+    const foreignId = linked(otherBuyer.id);
+    const unlinkedId = seedSyntheticOrder(psql, site).orderId;
+    const auth = await headers(buyer.id);
+    const detailPath = (id: string, siteId = site.siteId) => `${base}/storefront-orders/${id}?store_id=${siteId}`;
+    const own = await gateway.request(detailPath(ownId), { headers: auth }, { ...gateway.env, ORDER_ITEMS_RELATIONAL_READS: 'off' });
+    assert.equal(own.status, 200);
+    assert.equal(own.json?.data.order.id, ownId);
+    const truth = JSON.parse(psql(`SELECT jsonb_build_object('subtotal',subtotal,'total',total,'tax',tax,'payment_method',payment_method,'shipping_cost',shipping_cost) FROM orders WHERE id='${ownId}';`));
+    for (const key of ['subtotal','total','tax','payment_method','shipping_cost']) assert.equal(own.json?.data.order[key], truth[key]);
+    assert.equal(own.json?.data.order.items.length, 1);
+    for (const id of [elsewhereId, foreignId, unlinkedId, crypto.randomUUID()]) {
+        const result = await gateway.request(detailPath(id), { headers: auth });
+        assert.equal(result.status, 404);
+        assert.doesNotMatch(result.text, /customer_email|shipping_address|subtotal/);
+    }
+    assert.equal((await gateway.request(detailPath(ownId, otherSite.siteId), { headers: auth })).status, 401);
+    assert.equal((await gateway.request(detailPath('not-a-uuid'), { headers: auth })).status, 400);
+    const relational = await gateway.request(detailPath(ownId), { headers: auth }, { ...gateway.env, ORDER_ITEMS_RELATIONAL_READS: 'true' });
+    assert.equal(relational.status, 200);
+    assert.equal(relational.json?.data.order.items.length, 1);
+    assert.equal(Object.hasOwn(relational.json?.data.order, 'order_items'), false);
+    assert.equal(Object.hasOwn(relational.json?.data.order.items[0], 'product_snapshot'), false);
+});
+
+test('order detail database failures are sanitized and do not become a misleading 404', async () => {
+    const buyer = seedBuyerAccount(psql, 'detail-fault');
+    const id = linked(buyer.id);
+    const auth = await headers(buyer.id);
+    for (const resource of ['buyer_order_links', 'orders', 'order_items']) {
+        const tap = tapRest(owned.restUrl, async (call, forward) => call.resource === resource ? restJson(503, { message: 'synthetic-private-detail-fault' }) : forward());
+        try {
+            const result = await gateway.request(`${base}/storefront-orders/${id}?store_id=${site.siteId}`, { headers: auth }, { ...gateway.env, ORDER_ITEMS_RELATIONAL_READS: 'true' });
+            assert.equal(result.status, 500, resource);
+            assert.doesNotMatch(result.text, /synthetic-private-detail-fault/);
+            assert.ok(tap.calls.some((call) => call.resource === resource));
+        } finally { tap.restore(); }
+    }
+});

@@ -1,4 +1,5 @@
 <section class="lb-order-detail" data-section-id="{{ section.id }}">
+  {% if buyer_unavailable %}<p class="lb-order-detail__error" role="alert">This order is temporarily unavailable. Please try again.</p>{% elsif buyer %}
   {% if order %}
   <h1>Order #{{ order.number }}</h1>
   <p class="lb-order-detail__status">Status: {{ order.status }}</p>
@@ -8,6 +9,7 @@
   <ol class="lb-order-detail__timeline">{% for step in order.timeline %}<li class="lb-order-detail__step{% if step.reached %} is-reached{% endif %}">{{ step.label }}</li>{% endfor %}</ol>
   {% if order.tracking_number != blank %}<p class="lb-order-detail__tracking">Tracking: {{ order.tracking_number }}{% if order.carrier != blank %} ({{ order.carrier }}){% endif %}</p>{% endif %}
   {% else %}<p class="lb-order-detail__missing">Order not found.</p>{% endif %}
+  {% else %}<p class="lb-order-detail__guest">Please <a href="/api/buyer-auth/start?return_to={{ routes.account_orders_url }}">sign in with LetBuyy</a> to view this order.</p>{% endif %}
 </section>
 {% schema %}
 {

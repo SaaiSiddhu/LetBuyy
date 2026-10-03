@@ -32,4 +32,17 @@ Primary design reference checked 3 October: [PostgREST logical operators](https:
 
 ## Next active work
 
-Connect normal account surfaces to these canonical reads. Existing `account-liquid.ts`, `customer-drop.ts`, Liquid hydration islands, React fallback account context/settings/addresses/orders and account bottom sheet still contain legacy assumptions. Order detail must use the verified link + signed site and the existing order-item hydrator; never use legacy email history. Merchant-specific wishlist/review/loyalty/consent must use a verified store-customer relationship, separate from order ownership. Do not fabricate a store-customer principal from the buyer UUID or invent consent/stats. Keep Liquid canonical, preserve local/hosted/release distinctions and D04/D05 decisions.
+Continue connecting the remaining account surfaces: shared profile, addresses, account hub and store-customer-specific preferences. Merchant-specific wishlist/review/loyalty/consent must use a verified store-customer relationship, separate from order ownership. Do not fabricate a store-customer principal from the buyer UUID or invent consent/stats. Keep local/hosted/release distinctions and D04/D05 decisions.
+
+## Follow-on — React and Liquid order journeys (3 October 2026)
+
+The order-list boundary above has since been extended through detail and both normal storefront renderers. The canonical order remains `buyer_order_links` + the signed storefront site; neither UI looks up order history by an email address.
+
+| Area | Implemented behavior | Verification |
+| --- | --- | --- |
+| Gateway detail | Signed storefront buyer session, exact linked buyer/site/order tuple, site-scoped order read, existing safe line-item hydrator and explicit item field projection | Owned Postgres gateway lane: 104/104 across 15 suites, including 7/7 storefront buyer-order scenarios; gateway unit: 1324 pass + 1 existing TODO |
+| Browser proxy | Existing `/api/buyer/orders` proxy accepts an `order_id` selector without creating a new app-local API route; forwards only host-derived site and buyer session; projects buyer-safe order/item fields; no-store and sanitized errors | Buyer proxy 39/39; full commerce web package test command passed; web typecheck passed |
+| React account | Canonical buyer order pagination, explicit LetBuyy sign-in state, retry/failure state, order detail, and account-sheet link to linked orders | Full commerce web package test command passed (its 945 repository contract tests also passed); gateway proxy tests exercise the positive, negative and malformed-response cases |
+| Liquid account | Separate allowlisted `buyer` drop only on order templates; host/session revalidation per render; cursor-based order history; canonical linked detail; guest and unavailable states are distinct. Store-customer `customer` remains null on order routes. Example bundles regenerated from source. | Theme-engine suite 1869/1869; focused Liquid/order allowlist tests 249/249; theme-engine typecheck passed |
+
+This is local source and package verification, not a live browser/PKCE journey, device run, hosted change or release. The React and Liquid contracts share gateway ownership checks, but a running storefront/browser session and current identity-platform redirect are not claimed as verified here. Phase 2 and the eleven-phase goal remain active.

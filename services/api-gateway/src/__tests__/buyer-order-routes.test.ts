@@ -53,6 +53,7 @@ function routeHarness(rows: BuyerOrderSummaryRow[] = [], hasMore = false) {
     const calls: { buyerAccountId: string; limit: number; before: unknown }[] = [];
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerOrderRoutes(router, {
+        loadBuyerOrderDetail: async () => ({ data: null, error: null }),
         listBuyerOrders: async (_c, buyerAccountId, input) => {
             calls.push({ buyerAccountId, limit: input.limit, before: input.before });
             return { data: rows, error: null, hasMore };

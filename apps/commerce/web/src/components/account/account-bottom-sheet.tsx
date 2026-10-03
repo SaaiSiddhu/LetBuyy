@@ -308,6 +308,9 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 <p>
                                                     Signed in with LetBuyy as <strong>{letbuyyBuyer.email}</strong>
                                                 </p>
+                                                <Link href={`${basePath}/account/orders`} onClick={onClose} className="mt-2 inline-flex min-h-11 items-center font-semibold text-[var(--primary)]">
+                                                    View linked orders at this store
+                                                </Link>
                                                 <Button
                                                     unstyled
                                                     type="button"
@@ -608,6 +611,15 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 </Link>
                                             ))}
                                         </nav>
+
+                                        {letbuyyBuyer && (
+                                            <div className="rounded-xl border p-4 text-sm" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                                                <p className="text-[var(--text-secondary)]">LetBuyy account: <strong className="text-[var(--text)]">{letbuyyBuyer.email}</strong></p>
+                                                <Link href={`${basePath}/account/orders`} onClick={onClose} className="mt-2 inline-flex min-h-11 items-center font-semibold text-[var(--primary)]">
+                                                    View linked orders at this store
+                                                </Link>
+                                            </div>
+                                        )}
 
                                         {/* Sign Out */}
                                         <Button unstyled

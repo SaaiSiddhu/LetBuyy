@@ -198,7 +198,7 @@ function buildOrderTimeline(status: string): Array<{ label: string; reached: boo
     }));
 }
 
-function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomerOrderDetail {
+export function mapOrderDetailDrop(row: Record<string, unknown>): LiquidCustomerOrderDetail {
     const items = Array.isArray(row.items) ? row.items : [];
     const shippingAddr = row.shipping_address && typeof row.shipping_address === 'object'
         ? row.shipping_address as Record<string, unknown>

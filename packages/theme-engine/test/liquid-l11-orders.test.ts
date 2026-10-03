@@ -1,4 +1,4 @@
-// L11 — Orders (Full Liquid V1). Liquid order-history (customer.orders) + order-detail (order drop) over
+// L11 — Orders use the canonical LetBuyy buyer-order link and verified storefront reader.
 // the existing read APIs. Totals are display of already-ledgered values (read-only; no money mutation).
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -27,9 +27,9 @@ test('L11: bundle ships customers/orders + customers/order templates', () => {
   assert.ok(bundle.templates['customers/order'], 'order detail template');
 });
 
-test('L11: order history lists the customer orders', async () => {
+test('L11: order history lists only canonical buyer orders', async () => {
   const result = await render('customers/orders', {
-    customer: { orders: [
+    buyer: { email: 'buyer@example.test', orders: [
       { id: 'o1', number: '1001', status: 'shipped', total: 749900, currency: 'INR' },
       { id: 'o2', number: '1002', status: 'delivered', total: 559900, currency: 'INR' },
     ] },
@@ -42,6 +42,7 @@ test('L11: order history lists the customer orders', async () => {
 
 test('L11: order detail binds line items, status, and the already-ledgered total', async () => {
   const result = await render('customers/order', {
+    buyer: { email: 'buyer@example.test' },
     order: { number: '1001', status: 'shipped', total: 749900, currency: 'INR', line_items: [{ title: 'Apex Runner', quantity: 1, line_price: 749900 }] },
   });
   const html = result.liquid?.layoutHtml ?? '';
@@ -52,10 +53,14 @@ test('L11: order detail binds line items, status, and the already-ledgered total
 });
 
 test('L11: empty history + missing order render their empty states; PII escaped', async () => {
-  const empty = (await render('customers/orders', { customer: { orders: [] } })).liquid?.layoutHtml ?? '';
+  const empty = (await render('customers/orders', { buyer: { email: 'buyer@example.test', orders: [] } })).liquid?.layoutHtml ?? '';
   assert.match(empty, /lb-orders__empty/);
-  const missing = (await render('customers/order', { order: null })).liquid?.layoutHtml ?? '';
+  const missing = (await render('customers/order', { buyer: { email: 'buyer@example.test' }, order: null })).liquid?.layoutHtml ?? '';
   assert.match(missing, /lb-order-detail__missing/);
-  const hostile = (await render('customers/order', { order: { number: '<script>alert(1)</script>', status: 'x', total: 1, currency: 'INR', line_items: [] } })).liquid?.layoutHtml ?? '';
+  const guest = (await render('customers/order', { order: null })).liquid?.layoutHtml ?? '';
+  assert.match(guest, /sign in with LetBuyy/);
+  const legacyOnly = (await render('customers/orders', { customer: { orders: [{ id: 'unlinked', number: 'LEAK', total: 1 }] } })).liquid?.layoutHtml ?? '';
+  assert.doesNotMatch(legacyOnly, /LEAK/);
+  const hostile = (await render('customers/order', { buyer: { email: 'buyer@example.test' }, order: { number: '<script>alert(1)</script>', status: 'x', total: 1, currency: 'INR', line_items: [] } })).liquid?.layoutHtml ?? '';
   assert.doesNotMatch(hostile, /<script/i);
 });
