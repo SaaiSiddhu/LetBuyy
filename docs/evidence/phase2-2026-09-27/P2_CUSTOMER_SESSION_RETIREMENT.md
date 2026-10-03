@@ -46,3 +46,7 @@ A service credential proves a service, not its claimed customer ID. Canonical is
 Primary research checked 2026-10-03: [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725.html), sections 3.1 and 3.8–3.12, supports JWT algorithm/issuer/subject/audience and distinct validation constraints. [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html) supports authorization-code/PKCE and redirect constraints. Neither chooses business policy or certifies LetBuyy code.
 
 D04 bootstrap/assignment/recovery authority, MFA enrollment, high-risk second approval and sender ownership remain unanswered. D05 export release, retention, deletion and legal-hold policy remain unanswered. Continue dependency-ready work; ask when a missing decision is necessary for the concrete implementation. No approval, customer inventory, credential, observation duration or cloud access is invented.
+
+## 3 October implementation checkpoint
+
+The first audience connection is locally accepted at `26660485`; see [acceptance](P2_STOREFRONT_BUYER_DATA_ACCEPTANCE.md). Five real-worker database scenarios and 32 Next proxy tests now pass; exact source governance 114/114 passes. Browser navigation and whole legacy retirement remain open. Next active correction: atomic canonical default-address mutation, with red tests being added before changing the existing two-request writer.
