@@ -6,9 +6,70 @@ import { mapOrderDetailDrop, type LiquidCustomerOrderDetail, type LiquidCustomer
 
 export interface LiquidBuyerDrop {
     email: string;
+    email_verified?: boolean;
+    full_name?: string | null;
+    phone?: string | null;
+    addresses?: Array<Record<string, unknown>>;
     orders: LiquidCustomerOrder[];
     has_more: boolean;
     next_cursor: string | null;
+}
+
+export async function getStorefrontBuyerAccountDrop(
+    storeId: string,
+): Promise<{ buyer: LiquidBuyerDrop | null; unavailable: boolean }> {
+    const session = await resolveBuyerDataSessionForRender(storeId);
+    if (!session) return { buyer: null, unavailable: false };
+    if ('unavailable' in session) return { buyer: null, unavailable: true };
+
+    try {
+        const query = `?store_id=${encodeURIComponent(session.siteId)}`;
+        const [profileResponse, addressesResponse] = await Promise.all([
+            storefrontApiFetch(`/storefront/buyer/profile${query}`, { method: 'GET', headers: session.headers, cache: 'no-store' }),
+            storefrontApiFetch(`/storefront/buyer/addresses${query}`, { method: 'GET', headers: session.headers, cache: 'no-store' }),
+        ]);
+        if ([profileResponse, addressesResponse].some((response) => response.status === 401 || response.status === 403)) {
+            return { buyer: null, unavailable: false };
+        }
+        if (!profileResponse.ok || !addressesResponse.ok) return { buyer: null, unavailable: true };
+
+        const [profileBody, addressesBody] = await Promise.all([
+            profileResponse.json().catch(() => null) as Promise<{ data?: { buyer?: Record<string, unknown> } } | null>,
+            addressesResponse.json().catch(() => null) as Promise<{ data?: { addresses?: Array<Record<string, unknown>> } } | null>,
+        ]);
+        const profile = profileBody?.data?.buyer;
+        if (!profile || typeof profile.email !== 'string' || !profile.email) return { buyer: null, unavailable: true };
+        const addresses = Array.isArray(addressesBody?.data?.addresses) ? addressesBody.data.addresses.map((address) => ({
+            id: address.id,
+            label: address.label,
+            full_name: address.full_name,
+            phone: address.phone,
+            address_line1: address.address_line1,
+            address_line2: address.address_line2,
+            city: address.city,
+            state: address.state,
+            postal_code: address.postal_code,
+            country: address.country,
+            landmark: address.landmark,
+            is_default: address.is_default,
+        })) : [];
+
+        return {
+            buyer: {
+                email: profile.email,
+                email_verified: profile.email_verified === true,
+                full_name: typeof profile.full_name === 'string' ? profile.full_name : null,
+                phone: typeof profile.phone === 'string' ? profile.phone : null,
+                addresses,
+                orders: [],
+                has_more: false,
+                next_cursor: null,
+            },
+            unavailable: false,
+        };
+    } catch {
+        return { buyer: null, unavailable: true };
+    }
 }
 
 export async function getStorefrontBuyerOrderDrop(

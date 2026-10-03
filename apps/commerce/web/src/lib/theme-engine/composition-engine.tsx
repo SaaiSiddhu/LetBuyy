@@ -20,7 +20,7 @@ import {
     type LiquidCustomerDrop,
     type LiquidCustomerOrderDetail,
 } from '@/lib/customer-drop';
-import { getStorefrontBuyerOrderDrop, type LiquidBuyerDrop } from '@/lib/buyer-order-drop';
+import { getStorefrontBuyerAccountDrop, getStorefrontBuyerOrderDrop, type LiquidBuyerDrop } from '@/lib/buyer-order-drop';
 import { ProductService } from '@/lib/product-service';
 import { ContentService } from '@/lib/content-service';
 import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
@@ -616,13 +616,18 @@ async function renderLiquidPlan({
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
 
     const orderRoute = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
+    const buyerAccountRoute = plan.route.type === 'customer_account'
+        || plan.route.type === 'customer_addresses'
+        || plan.route.type === 'customer_settings';
     // Store-customer identity and LetBuyy buyer identity are separate principals.
     // Canonical orders come only from the verified buyer_order_links surface.
-    const customer = orderRoute ? null : await getStorefrontCustomerDrop(store.id);
+    let customer = orderRoute ? null : await getStorefrontCustomerDrop(store.id);
     const orderId = plan.route.type === 'customer_order' ? plan.route.path.split('/').filter(Boolean).at(-1) : undefined;
     const buyerOrderView = orderRoute ? await getStorefrontBuyerOrderDrop(store.id, orderId, plan.route.searchParams?.cursor) : null;
-    const buyer = buyerOrderView?.buyer ?? null;
-    const buyerUnavailable = buyerOrderView?.unavailable ?? false;
+    const buyerAccountView = buyerAccountRoute ? await getStorefrontBuyerAccountDrop(store.id) : null;
+    const buyer = buyerOrderView?.buyer ?? buyerAccountView?.buyer ?? null;
+    if (buyer) customer = null;
+    const buyerUnavailable = buyerOrderView?.unavailable ?? buyerAccountView?.unavailable ?? false;
     const orderDetail = buyerOrderView?.order ?? null;
 
     // Wishlist products: enrich the customer wishlist IDs into full product drops.

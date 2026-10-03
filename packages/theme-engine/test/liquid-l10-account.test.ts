@@ -10,13 +10,13 @@ import {
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
 
-async function renderAccount(customer) {
+async function renderAccount(customer, buyer = null, buyer_unavailable = false) {
   return new LiquidRenderer().render({
     context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/account', previewMode: true, locale: 'en' },
     storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
     routeTemplate: { id: 'customers/account', type: 'customers/account', layoutKey: 'theme', sections: [] },
     liquidTemplateKey: 'customers/account',
-    liquidContext: { customer },
+    liquidContext: { customer, buyer, buyer_unavailable },
     liquidBundle: createUrbanKicksLiquidThemeBundleFixture(),
   });
 }
@@ -47,6 +47,23 @@ test('L10: logged-out account renders the sign-in prompt (auth-gated)', async ()
   assert.match(html, /lb-account__guest/);
   assert.match(html, /href="\/store\/local-kicks\/customers\/login"/);
   assert.doesNotMatch(html, /Signed in as/);
+});
+
+test('L10: LetBuyy buyer account renders canonical account links and store-scoped sign-out', async () => {
+  const result = await renderAccount({ name: 'Legacy customer', email: 'store@example.in' }, { email: 'buyer@example.in', full_name: 'Buyer One' });
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /Signed in to LetBuyy as Buyer One/);
+  assert.match(html, /href="\/store\/local-kicks\/account\/orders"/);
+  assert.match(html, /action="\/api\/buyer-auth\/logout\?return_to=/);
+  assert.doesNotMatch(html, /store@example\.in/);
+  assert.doesNotMatch(html, /\/api\/customer\/logout/);
+});
+
+test('L10: buyer account service failure is distinct from signed out', async () => {
+  const result = await renderAccount(null, null, true);
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /lb-account__unavailable/);
+  assert.doesNotMatch(html, /lb-account__guest/);
 });
 
 test('L10: customer PII is escaped', async () => {

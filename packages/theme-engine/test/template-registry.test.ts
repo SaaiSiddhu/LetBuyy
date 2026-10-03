@@ -648,11 +648,14 @@ test('template-registry: order drop only available on customers/order template',
   }
 });
 
-test('template-registry: canonical buyer drop is limited to buyer order surfaces', () => {
+test('template-registry: canonical buyer drop is limited to verified buyer account surfaces', () => {
   assert.ok(getAllowedDropsForTemplate('customers/orders').includes('buyer'));
   assert.ok(getAllowedDropsForTemplate('customers/order').includes('buyer'));
-  for (const key of ['customers/login', 'customers/register', 'customers/account', 'customers/addresses', 'customers/settings', 'customers/wishlist']) {
-    assert.ok(!getAllowedDropsForTemplate(key).includes('buyer'), `${key}: buyer order identity is not a store-customer drop`);
+  for (const key of ['customers/account', 'customers/addresses', 'customers/settings']) {
+    assert.ok(getAllowedDropsForTemplate(key).includes('buyer'), `${key}: canonical account pages may use the verified buyer drop`);
+  }
+  for (const key of ['customers/login', 'customers/register', 'customers/wishlist']) {
+    assert.ok(!getAllowedDropsForTemplate(key).includes('buyer'), `${key}: buyer identity is not available on this store-customer surface`);
   }
 });
 

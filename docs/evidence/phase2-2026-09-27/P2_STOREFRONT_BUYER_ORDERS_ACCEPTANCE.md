@@ -58,4 +58,19 @@ The React account chrome now recognizes the host-bound LetBuyy buyer session as 
 | Buyer API proxy regression | 39/39 passed, covering buyer profile/address forwarding, host/session boundaries, write-origin checks, ownership, sanitized errors and no-store behavior |
 | Diff whitespace check | Passed |
 
-This is a local React account integration; it does not establish a live browser sign-in, identity-provider redirect, or hosted flow. Liquid buyer order journeys remain accepted, while Liquid buyer profile/address/account-hub integration is still open. The package-wide test script could not start because `tsx` is not linked into this checkout; the focused proxy suite was invoked directly from the local cached runtime. The eleven-phase goal and Phase 2 remain active.
+At this first 4 October check, only the React account integration was in scope; Liquid profile/address/account-hub integration was completed later the same date below. No live browser sign-in, identity-provider redirect, or hosted flow was established. The package-wide web test script could not start because `tsx` is not linked into this checkout; the focused proxy suite was invoked directly from the local cached runtime. The eleven-phase goal and Phase 2 remain active.
+
+## Follow-on — Liquid account identity, profile and addresses (4 October 2026)
+
+The Liquid account hub, profile/settings and address templates can now render a separate verified buyer drop built from the host-bound buyer session plus the existing `/storefront/buyer/profile` and `/storefront/buyer/addresses` reads. Liquid settings uses the canonical profile API and omits store-only password/marketing controls for buyers. The address island selects buyer-scoped create/edit/default/delete endpoints and reports failed loads or writes instead of presenting an outage as an empty address book. Buyer account sign-out clears only this store's buyer session. Store-customer rendering and its legacy APIs remain available when no buyer session exists. The Liquid hub no longer redirects a buyer away before its account template can render.
+
+| Verification | Result |
+| --- | --- |
+| Commerce web TypeScript | Passed |
+| Theme-engine full suite | 1,869/1,869 passed, zero failures/skips/TODO |
+| Focused Liquid account, registry and generated examples | 258/258 passed |
+| Liquid renderer/hydration contracts | 34/34 passed |
+| Generated bundles | Urban Kicks and LetBuyy Core examples regenerated and compared by tests |
+| Diff whitespace | Passed |
+
+These are local source and contract checks. No live browser/PKCE, real session, deployed gateway or hosted storefront journey is claimed. Theme example regeneration is package output, not an app/store publication. Phase 2 and the eleven-phase goal remain active.

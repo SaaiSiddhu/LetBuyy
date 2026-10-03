@@ -222,10 +222,9 @@ identity programme, browser/hosted cutover, or any later parent phase.
 
 ## Current follow-on position — 4 October 2026
 
-The React buyer-session gate, shared buyer profile, and buyer address CRUD are now connected to the
-normal React account surfaces. The signed storefront buyer session is kept distinct from the
-store-customer session, including wishlist visibility and store-only preferences. See the dated
-follow-on in `P2_STOREFRONT_BUYER_ORDERS_ACCEPTANCE.md` for checks and limits. The next account
-integration slice is the same buyer profile/address/account-hub behavior for Liquid-rendered stores;
-then proceed through the remaining Phase 2 work and locked parent phases. This does not close Phase
-2 or verify any hosted/browser sign-in path.
+The React and Liquid buyer-session gates, shared buyer profile, buyer address CRUD, and account-hub
+entry are now connected to their normal account surfaces. The signed storefront buyer session is
+kept distinct from the store-customer session, including wishlist visibility and store-only
+preferences. See the dated follow-ons in `P2_STOREFRONT_BUYER_ORDERS_ACCEPTANCE.md` for checks and
+limits. Continue through the remaining Phase 2 issuer, staff/operator and privacy fulfillment work,
+then the locked parent phases. This does not close Phase 2 or verify any hosted/browser sign-in path.

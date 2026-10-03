@@ -9,7 +9,7 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 export default async function AccountPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const { subdomain } = await params;
     const basePath = `/store/${subdomain}`;
-    const { store, plan, isLiquid, isAuthenticated } = await resolveAccountLiquid(
+    const { store, plan, isLiquid } = await resolveAccountLiquid(
         subdomain,
         'customer_account',
         'customers/account',
@@ -19,7 +19,6 @@ export default async function AccountPage({ params }: { params: Promise<{ subdom
     if (!store || !plan) return notFound();
 
     if (isLiquid) {
-        if (!isAuthenticated) redirect(basePath);
         return <StorefrontCompositionEngine store={store} plan={plan} sectionData={new Map<string, SectionRenderData>()} />;
     }
 

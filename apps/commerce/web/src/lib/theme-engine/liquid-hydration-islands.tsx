@@ -1350,10 +1350,78 @@ class LbCartElement extends LiquidIslandBase {
 // No new backend, no new auth, no new schema.
 class LbCustomerSettingsElement extends LiquidIslandBase {
     private basePath = '';
+    private buyerMode = false;
 
     connectedCallback() {
         this.basePath = this.dataset.basePath || inferBasePath();
+        this.buyerMode = this.dataset.accountType === 'buyer';
+        if (this.buyerMode) {
+            void this.renderBuyer();
+            return;
+        }
         this.render();
+    }
+
+    private async renderBuyer() {
+        this.innerHTML = '<p role="status">Loading your LetBuyy profile…</p>';
+        try {
+            const response = await fetch('/api/buyer/profile', { cache: 'no-store' });
+            const body = await response.json() as { buyer?: { email?: unknown; email_verified?: unknown; full_name?: unknown; phone?: unknown }; error?: string };
+            if (!response.ok || !body.buyer || typeof body.buyer.email !== 'string') throw new Error(body.error || 'profile_load_failed');
+            const buyer = body.buyer;
+            this.innerHTML = [
+                '<div class="lb-settings__forms">',
+                '<form class="lb-settings__profile-form" data-lb-settings-buyer-profile>',
+                '<h2>LetBuyy profile</h2>',
+                `<p class="lb-settings__email-display">${escapeHtml(buyer.email)}${buyer.email_verified ? ' · Verified' : ' · Not verified'}</p>`,
+                `<label>Full name<${liquidInputTag} type="text" name="fullName" maxlength="200" value="${escapeHtml(buyer.full_name ?? '')}" autocomplete="name"></${liquidInputTag}></label>`,
+                `<label>Phone<${liquidInputTag} type="tel" name="phone" maxlength="32" value="${escapeHtml(buyer.phone ?? '')}" autocomplete="tel" inputmode="tel"></${liquidInputTag}></label>`,
+                '<p class="lb-settings__profile-msg" aria-live="polite"></p>',
+                `<${liquidButtonTag} type="submit">Save profile</${liquidButtonTag}>`,
+                '</form>',
+                `<${liquidButtonTag} type="button" data-lb-buyer-signout>Sign out at this store</${liquidButtonTag}>`,
+                '</div>',
+            ].join('');
+
+            const form = this.querySelector<HTMLFormElement>('[data-lb-settings-buyer-profile]');
+            form?.addEventListener('submit', (event) => {
+                event.preventDefault();
+                void this.saveBuyerProfile(form);
+            });
+            this.querySelector('[data-lb-buyer-signout]')?.addEventListener('click', () => { void this.signOutBuyer(); });
+        } catch {
+            this.innerHTML = '<p class="lb-settings__error" role="alert">We could not load your LetBuyy profile. <button type="button" data-lb-buyer-retry>Try again</button></p>';
+            this.querySelector('[data-lb-buyer-retry]')?.addEventListener('click', () => { void this.renderBuyer(); });
+        }
+    }
+
+    private async saveBuyerProfile(form: HTMLFormElement) {
+        const msg = this.querySelector<HTMLElement>('.lb-settings__profile-msg');
+        if (msg) msg.textContent = 'Saving…';
+        const fd = new FormData(form);
+        try {
+            const response = await fetch('/api/buyer/profile', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName: String(fd.get('fullName') ?? '').trim(), phone: String(fd.get('phone') ?? '').trim() }),
+            });
+            if (msg) msg.textContent = response.ok ? 'Your LetBuyy profile is saved.' : 'We could not save your profile. Please try again.';
+        } catch {
+            if (msg) msg.textContent = 'Network error. Your profile was not saved.';
+        }
+    }
+
+    private async signOutBuyer() {
+        try {
+            const response = await fetch('/api/buyer-auth/logout', { method: 'POST', headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error('signout_failed');
+            window.location.assign(this.basePath);
+        } catch {
+            const message = document.createElement('p');
+            message.setAttribute('role', 'alert');
+            message.textContent = 'We could not sign you out. Please try again.';
+            this.append(message);
+        }
     }
 
     private render() {
@@ -1437,22 +1505,27 @@ class LbCustomerSettingsElement extends LiquidIslandBase {
 // address cards + add/edit/delete/set-default using existing CRUD endpoints. No new APIs.
 class LbAddressManagerElement extends LiquidIslandBase {
     private basePath = '';
+    private buyerMode = false;
     private addresses: Array<Record<string, unknown>> = [];
     private editingId: string | null = null;
 
     connectedCallback() {
         this.basePath = this.dataset.basePath || inferBasePath();
+        this.buyerMode = this.dataset.accountType === 'buyer';
+        this.addEventListener('click', this.handleClick);
         void this.loadAddresses();
     }
 
     private async loadAddresses() {
         this.innerHTML = '<p class="lb-addresses__loading">Loading addresses…</p>';
         try {
-            const res = await fetch('/api/customer/addresses');
+            const res = await fetch(this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses', { cache: 'no-store' });
+            if (!res.ok) throw new Error('address_load_failed');
             const data = await res.json() as { addresses?: Array<Record<string, unknown>> };
             this.addresses = Array.isArray(data.addresses) ? data.addresses : [];
         } catch {
-            this.addresses = [];
+            this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not load your addresses. <button type="button" data-lb-addr-retry>Try again</button></p>';
+            return;
         }
         this.renderList();
     }
@@ -1464,6 +1537,8 @@ class LbAddressManagerElement extends LiquidIslandBase {
             const isDefault = Boolean(addr.is_default);
             const full_name = String(addr.full_name ?? '');
             const line1 = String(addr.address_line1 ?? '');
+            const line2 = String(addr.address_line2 ?? '');
+            const landmark = String(addr.landmark ?? '');
             const city = String(addr.city ?? '');
             const state = String(addr.state ?? '');
             const zip = String(addr.postal_code ?? '');
@@ -1472,7 +1547,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
                 `<span class="lb-address-card__label">${escapeHtml(label)}${isDefault ? ' <span class="lb-address-card__default-badge">Default</span>' : ''}</span>`,
                 `<p class="lb-address-card__name">${escapeHtml(full_name)}</p>`,
                 `<p class="lb-address-card__line">${escapeHtml(line1)}</p>`,
+                line2 ? `<p class="lb-address-card__line">${escapeHtml(line2)}</p>` : '',
                 `<p class="lb-address-card__city">${escapeHtml(city)}, ${escapeHtml(state)} ${escapeHtml(zip)}</p>`,
+                landmark ? `<p class="lb-address-card__landmark">Landmark: ${escapeHtml(landmark)}</p>` : '',
                 '<div class="lb-address-card__actions">',
                 `<${liquidButtonTag} type="button" data-lb-addr-edit="${escapeHtml(id)}">Edit</${liquidButtonTag}>`,
                 !isDefault ? `<${liquidButtonTag} type="button" data-lb-addr-default="${escapeHtml(id)}">Set default</${liquidButtonTag}>` : '',
@@ -1486,12 +1563,13 @@ class LbAddressManagerElement extends LiquidIslandBase {
             `<${liquidButtonTag} type="button" class="lb-addresses__add-btn" data-lb-addr-add>+ Add address</${liquidButtonTag}>`,
         ].join('');
 
-        this.addEventListener('click', this.handleClick);
     }
 
     private readonly handleClick = (e: Event) => {
         const target = e.target instanceof Element ? e.target : null;
         if (!target) return;
+
+        if (target.closest('[data-lb-addr-retry]')) { void this.loadAddresses(); return; }
 
         const editBtn = target.closest<HTMLElement>('[data-lb-addr-edit]');
         if (editBtn?.dataset.lbAddrEdit) { this.showForm(editBtn.dataset.lbAddrEdit); return; }
@@ -1516,7 +1594,9 @@ class LbAddressManagerElement extends LiquidIslandBase {
         this.innerHTML = [
             `<form class="lb-address-form" data-lb-addr-form>`,
             `<h3>${id ? 'Edit' : 'New'} address</h3>`,
+            `<label>Label<select name="label"><option value="home" ${existing?.label === 'home' || !existing?.label ? 'selected' : ''}>Home</option><option value="work" ${existing?.label === 'work' ? 'selected' : ''}>Work</option><option value="other" ${existing?.label === 'other' ? 'selected' : ''}>Other</option></select></label>`,
             `<label>Full name<${liquidInputTag} type="text" name="full_name" value="${v('full_name')}" required></${liquidInputTag}></label>`,
+            `<label>Phone<${liquidInputTag} type="tel" name="phone" value="${v('phone')}" inputmode="tel"></${liquidInputTag}></label>`,
             `<label>Address line 1<${liquidInputTag} type="text" name="address_line1" value="${v('address_line1')}" required></${liquidInputTag}></label>`,
             `<label>Address line 2<${liquidInputTag} type="text" name="address_line2" value="${v('address_line2')}"></${liquidInputTag}></label>`,
             `<label>City<${liquidInputTag} type="text" name="city" value="${v('city')}" required></${liquidInputTag}></label>`,
@@ -1532,7 +1612,6 @@ class LbAddressManagerElement extends LiquidIslandBase {
 
         const form = this.querySelector<HTMLFormElement>('[data-lb-addr-form]');
         form?.addEventListener('submit', (e) => { e.preventDefault(); void this.saveAddress(form); });
-        this.addEventListener('click', this.handleClick);
     }
 
     private async saveAddress(form: HTMLFormElement) {
@@ -1541,6 +1620,7 @@ class LbAddressManagerElement extends LiquidIslandBase {
         const fd = new FormData(form);
         const body: Record<string, unknown> = {
             full_name: String(fd.get('full_name') ?? ''),
+            phone: String(fd.get('phone') ?? '') || undefined,
             address_line1: String(fd.get('address_line1') ?? ''),
             address_line2: String(fd.get('address_line2') ?? '') || undefined,
             city: String(fd.get('city') ?? ''),
@@ -1550,10 +1630,13 @@ class LbAddressManagerElement extends LiquidIslandBase {
             country: 'IN',
             is_default: Boolean(fd.get('is_default')),
         };
-        if (this.editingId) body.id = this.editingId;
+        if (this.buyerMode) body.label = String(fd.get('label') ?? 'home');
+        if (this.editingId && !this.buyerMode) body.id = this.editingId;
         try {
-            const res = await fetch('/api/customer/addresses', {
-                method: this.editingId ? 'PUT' : 'POST',
+            const collectionUrl = this.buyerMode ? '/api/buyer/addresses' : '/api/customer/addresses';
+            const itemUrl = this.editingId && this.buyerMode ? `/api/buyer/addresses/${encodeURIComponent(this.editingId)}` : collectionUrl;
+            const res = await fetch(this.buyerMode ? itemUrl : collectionUrl, {
+                method: this.buyerMode ? (this.editingId ? 'PATCH' : 'POST') : (this.editingId ? 'PUT' : 'POST'),
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             });
@@ -1568,21 +1651,27 @@ class LbAddressManagerElement extends LiquidIslandBase {
     }
 
     private async setDefault(id: string) {
-        await fetch('/api/customer/addresses', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, is_default: true }),
-        });
-        await this.loadAddresses();
+        try {
+            const res = this.buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_default: true }) })
+                : await fetch('/api/customer/addresses', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, is_default: true }) });
+            if (!res.ok) throw new Error('address_update_failed');
+            await this.loadAddresses();
+        } catch {
+            this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not update the default address. <button type="button" data-lb-addr-retry>Reload</button></p>';
+        }
     }
 
     private async deleteAddress(id: string) {
-        await fetch('/api/customer/addresses', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id }),
-        });
-        await this.loadAddresses();
+        try {
+            const res = this.buyerMode
+                ? await fetch(`/api/buyer/addresses/${encodeURIComponent(id)}`, { method: 'DELETE' })
+                : await fetch('/api/customer/addresses', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+            if (!res.ok) throw new Error('address_delete_failed');
+            await this.loadAddresses();
+        } catch {
+            this.innerHTML = '<p class="lb-addresses__error" role="alert">We could not delete this address. <button type="button" data-lb-addr-retry>Reload</button></p>';
+        }
     }
 }
 
