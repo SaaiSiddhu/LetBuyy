@@ -50,3 +50,5 @@ D04 bootstrap/assignment/recovery authority, MFA enrollment, high-risk second ap
 ## 3 October implementation checkpoint
 
 The first audience connection is locally accepted at `26660485`; see [acceptance](P2_STOREFRONT_BUYER_DATA_ACCEPTANCE.md). Five real-worker database scenarios and 32 Next proxy tests now pass; exact source governance 114/114 passes. Browser navigation and whole legacy retirement remain open. Next active correction: atomic canonical default-address mutation, with red tests being added before changing the existing two-request writer.
+
+Atomic default-address correction is locally accepted at `70baef80`; [evidence](P2_BUYER_ADDRESS_ATOMIC_ACCEPTANCE.md) records 18/18 database tests, rollback/reapply parity and exact governance 114/114. Next active work: normal account surface/caller inventory and canonical store-bound linked-order read; no normal commerce caller currently consumes the repaired buyer profile/address BFFs. Preserve Liquid and verified order ownership when connecting those surfaces.

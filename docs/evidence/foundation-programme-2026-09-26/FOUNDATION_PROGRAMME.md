@@ -1,5 +1,8 @@
 # LetBuyy foundation programme — complete canonical systems, prove complete journeys
 
+**3 October implementation checkpoint:** two further bounded Phase 2 outcomes are locally accepted: storefront own-data audience wiring (`26660485`) and atomic canonical default-address mutation (`70baef80`). Current next work is normal Liquid/React account caller integration and store-bound verified-link order access, followed by remaining legacy issuer retirement. The eleven-phase goal remains ACTIVE; hourly same-chat continuation remains configured; unresolved D04/D05 remain human decisions.
+
+
 ## Owner execution mandate — 3 October 2026
 
 **Continuous execution update (3 October):** the eleven-phase goal remains active. The owner requested ongoing engineering and an update for each completed work package; hourly heartbeat `letbuyy-continuous-engineering` is ACTIVE on this same chat. It inspects live handles to avoid duplicate workers/fixtures and resumes when the host is available. It does not guarantee execution while the Mac/Codex host is unavailable. A genuinely missing owner decision stops dependent work; independent work continues. Support mutation integrity is implemented with owned-database verification and a green 114-validator source gate; [its final acceptance record](../phase2-2026-09-27/P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md) tracks the full behavioral result. The next dependency-ready package is [customer-session issuer retirement](../phase2-2026-09-27/P2_CUSTOMER_SESSION_RETIREMENT.md). Wider Phase 2 and phases 3–11 remain open.

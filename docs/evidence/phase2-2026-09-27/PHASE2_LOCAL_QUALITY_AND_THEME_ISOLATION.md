@@ -1,5 +1,8 @@
 # Phase 2 — local quality gaps closed, theme tenant isolation reproducible, acceptance reconciled
 
+**3 October latest buyer checkpoint:** storefront audience connection `26660485` and atomic default-address writer `70baef80` are locally accepted. See `P2_STOREFRONT_BUYER_DATA_ACCEPTANCE.md` and `P2_BUYER_ADDRESS_ATOMIC_ACCEPTANCE.md`. Phase 2 remains open: normal Liquid/React account callers still use legacy customer flows. Next is canonical account-surface integration with store-bound verified order links; no implicit email-based historical-order access. D04/D05 remain pending.
+
+
 2026-09-29. Branch `letbuyy/phase2-shared-buyer-identity`, worktree `/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2`.
 Starting SHA `232c92764e686838ee239151c4d85d010fb4197a` (pre-Phase-2 base `130b669d`). Last source commit `96319505` (a one-line test
 hardening, §7.6; the theme, lint and fixture work ends at `be0f107a`), then documents-only commits (§11), the last of which is the
