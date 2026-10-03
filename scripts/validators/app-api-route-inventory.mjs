@@ -102,7 +102,9 @@ export function classifyAppApiRoute(file) {
 // store/[subdomain]/search-suggest (CAP-C76, in the same position since T5/W3), until all four were
 // reviewed and added to config/eslint/boundary-baseline.json -- see docs/governance/app-api-route-ownership.md.
 // The count stays 204: the inventory already held them; only the lint-side mirror had been missed.
-export const APP_API_ROUTE_RATCHET = 204;
+// P2-STOREFRONT-BUYER-ORDERS (2026-10-03) — 205: canonical own-order proxy.
+// Uses host-bound storefront credentials and verified links; no local commerce.
+export const APP_API_ROUTE_RATCHET = 205;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

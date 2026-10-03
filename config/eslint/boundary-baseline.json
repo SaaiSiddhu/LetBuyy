@@ -21,6 +21,7 @@
     "apps/commerce/web/src/app/api/buyer-auth/start/route.ts",
     "apps/commerce/web/src/app/api/buyer/addresses/[id]/route.ts",
     "apps/commerce/web/src/app/api/buyer/addresses/route.ts",
+    "apps/commerce/web/src/app/api/buyer/orders/route.ts",
     "apps/commerce/web/src/app/api/buyer/profile/route.ts",
     "apps/commerce/web/src/app/api/customer/addresses/route.ts",
     "apps/commerce/web/src/app/api/customer/auto-create/route.ts",

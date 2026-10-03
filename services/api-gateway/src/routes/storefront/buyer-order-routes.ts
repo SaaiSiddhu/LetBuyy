@@ -18,6 +18,7 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../../index';
 import { dbFailureBody, decodeListCursor, encodeListCursor, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { getStorefrontBuyerSession, requireStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import type { AppContext } from './customer-engagement-routes';
 
 export interface BuyerOrderSummaryRow {
@@ -38,12 +39,14 @@ export interface BuyerOrderRoutesDeps {
     listBuyerOrders: (
         c: AppContext,
         buyerAccountId: string,
-        input: { limit: number; before?: string | number | boolean | null },
+        input: { limit: number; before?: string | number | boolean | null; beforeId?: string; siteId?: string },
     ) => Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }>;
 }
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 /// The actual query, shared by production wiring (buyer-realm-wiring.ts, given the request's real
 /// admin client) and tests (given a client pointed at a fake PostgREST) -- so the tenant-guard
@@ -54,7 +57,7 @@ const MAX_LIMIT = 50;
 export async function listBuyerOrdersFromDatabase(
     db: SupabaseClient,
     buyerAccountId: string,
-    { limit, before }: { limit: number; before?: string | number | boolean | null },
+    { limit, before, beforeId, siteId }: { limit: number; before?: string | number | boolean | null; beforeId?: string; siteId?: string },
 ): Promise<{ data: BuyerOrderSummaryRow[] | null; error: unknown; hasMore: boolean }> {
     let linksQuery = db
         .from('buyer_order_links')
@@ -62,8 +65,15 @@ export async function listBuyerOrdersFromDatabase(
         .eq('buyer_account_id', buyerAccountId)
         .order('linked_at', { ascending: false })
         .order('order_id', { ascending: false });
+    if (siteId) linksQuery = linksQuery.eq('site_id', siteId);
     if (before !== null && before !== undefined) {
-        linksQuery = linksQuery.lt('linked_at', before as string);
+        if (beforeId) {
+            if (!UUID.test(beforeId) || typeof before !== 'string' || !TIMESTAMP.test(before) || !Number.isFinite(Date.parse(before))) {
+                return { data: null, error: new Error('Invalid order cursor'), hasMore: false };
+            }
+            // Same ordering tuple as ORDER BY. A timestamp alone loses tied rows.
+            linksQuery = linksQuery.or(`linked_at.lt.${before},and(linked_at.eq.${before},order_id.lt.${beforeId})`);
+        } else linksQuery = linksQuery.lt('linked_at', before as string);
     }
 
     const { data: links, error: linksError } = await linksQuery.limit(limit + 1);
@@ -87,7 +97,8 @@ export async function listBuyerOrdersFromDatabase(
     const siteById = new Map((sitesResult.data ?? []).map((row) => [row.id as string, row]));
 
     const rows: BuyerOrderSummaryRow[] = pageLinks.map((link) => {
-        const order = orderById.get(link.order_id) as Record<string, unknown> | undefined;
+        const candidate = orderById.get(link.order_id) as Record<string, unknown> | undefined;
+        const order = candidate?.site_id === link.site_id ? candidate : undefined;
         const site = siteById.get(link.site_id) as Record<string, unknown> | undefined;
         return {
             id: link.order_id,
@@ -111,17 +122,20 @@ export function registerBuyerOrderRoutes(
 ): void {
     const { listBuyerOrders } = deps;
 
-    router.get('/buyer/orders', requireBuyerSession, async (c) => {
-        const session = getBuyerSession(c);
-        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
-
+    async function readOrders(c: AppContext, buyerAccountId: string, siteId?: string) {
         const requested = Number.parseInt(c.req.query('limit') || '', 10);
         const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, MAX_LIMIT) : DEFAULT_LIMIT;
-        const cursor = decodeListCursor(c.req.query('cursor') || undefined);
+        const rawCursor = c.req.query('cursor');
+        const cursor = decodeListCursor(rawCursor || undefined);
+        if (rawCursor && (!cursor || !UUID.test(cursor.id) || typeof cursor.value !== 'string' || !TIMESTAMP.test(cursor.value) || !Number.isFinite(Date.parse(cursor.value)))) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order cursor.' } }, 400);
+        }
 
-        const { data, error, hasMore } = await listBuyerOrders(c, session.buyerAccountId, {
+        const { data, error, hasMore } = await listBuyerOrders(c, buyerAccountId, {
             limit,
             before: cursor?.value ?? null,
+            beforeId: cursor?.id,
+            siteId,
         });
         if (error) return c.json(dbFailureBody(), 500);
 
@@ -131,5 +145,19 @@ export function registerBuyerOrderRoutes(
             : null;
 
         return c.json(success({ orders, next_cursor: nextCursor, has_more: hasMore }));
+    }
+
+    router.get('/buyer/orders', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        return readOrders(c, session.buyerAccountId);
+    });
+
+    // A storefront's token is authorized only at its signed site, with the same
+    // canonical verified-link query. Never translate its email into legacy reads.
+    router.get('/buyer/storefront-orders', requireStorefrontBuyerSession, async (c) => {
+        const session = getStorefrontBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+        return readOrders(c, session.buyerAccountId, session.siteId);
     });
 }

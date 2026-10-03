@@ -65,7 +65,7 @@ export function seedSyntheticOrder(psql: Psql, tenant: SyntheticTenant): { produ
     const productId = randomUUID();
     psql(`
         INSERT INTO products (id, store_id, name, price, sku, is_active, created_at, updated_at)
-        VALUES ('${productId}', '${tenant.siteId}', 'Synthetic Seed Product', 199.00, 'SYN-SEED-${tenant.subdomain}', true, now(), now());
+        VALUES ('${productId}', '${tenant.siteId}', 'Synthetic Seed Product', 199.00, 'SYN-SEED-${productId}', true, now(), now());
     `);
     psql(`
         INSERT INTO inventory_levels (id, store_id, product_id, variant_id, location_id, available, reserved, committed_quantity, available_quantity, reserved_quantity, on_hand_quantity, created_at, updated_at)
@@ -77,7 +77,7 @@ export function seedSyntheticOrder(psql: Psql, tenant: SyntheticTenant): { produ
             '{"line1":"Fixture","city":"Bengaluru","state":"Karnataka","state_code":"29"}'::jsonb,
             '[{"product_id":"${productId}","quantity":1}]'::jsonb,
             'cod', NULL, NULL, NULL, 'standard',
-            'syn-seed-order-idem-${tenant.subdomain}', NULL, 'syn-seed-order-req-${tenant.subdomain}'
+            'syn-seed-order-idem-${productId}', NULL, 'syn-seed-order-req-${productId}'
         ) ->> 'id';
     `);
     return { productId, orderId };

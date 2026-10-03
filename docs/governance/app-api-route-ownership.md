@@ -40,6 +40,8 @@ This document records app-local API route authority for the P4 product remediati
 
 ## Enforcement
 
+2026-10-03, P2-STOREFRONT-BUYER-ORDERS: inventory and lint baseline 204 → 205. `apps/commerce/web/src/app/api/buyer/orders/route.ts` is a gateway-proxy for `/v1/storefront/buyer/storefront-orders`. It resolves the host, forwards the existing site-bound identity token and only cursor/limit inputs; the gateway owns account state, signed site, verified buyer/order links and pagination. It performs no database, local commerce or email-based ownership operation. Normal UI connection and legacy retirement remain separate acceptance work.
+
 App-local API routes and their app-local `src/lib` support files must not import Supabase clients, service-role helpers, Prisma/Drizzle clients, raw SQL helpers, payment signature SDK logic, or direct commerce mutation logic. Commerce, checkout, customer, payment, theme, and marketplace behavior must live in the Hono gateway and package contracts.
 
 - 2026-09-29 (Phase 2 local quality, ESLint baseline reconciliation): inventory unchanged at 204; `config/eslint/boundary-baseline.json` 200 → 204. Four `gateway-proxy` routes were counted in the inventory but had never been added to the lint-side baseline, because the inventory's change log said that allowlist was "for app-local-* classes only". It is not: `letbuyy-boundaries/no-new-next-api-route` reports every app API route file absent from the baseline. Each was reviewed, not just registered:

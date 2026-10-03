@@ -23,6 +23,7 @@ import {
 import * as profileRoute from './profile/route';
 import * as addressesRoute from './addresses/route';
 import * as addressRoute from './addresses/[id]/route';
+import * as ordersRoute from './orders/route';
 
 const ORIGIN = 'http://snaz.localhost:9000';
 const NOT_AUTHENTICATED = { error: 'Not authenticated' };
@@ -102,6 +103,7 @@ const SESSION_GATE_CASES: Array<{ name: string; handler: unknown; path: string; 
     { name: 'POST /addresses', handler: addressesRoute.POST, path: '/api/buyer/addresses', method: 'POST', body: { line1: 'x' } },
     { name: 'PATCH /addresses/:id', handler: addressRoute.PATCH, path: '/api/buyer/addresses/addr-1', method: 'PATCH', body: { line1: 'x' } },
     { name: 'DELETE /addresses/:id', handler: addressRoute.DELETE, path: '/api/buyer/addresses/addr-1', method: 'DELETE' },
+    { name: 'GET /orders', handler: ordersRoute.GET, path: '/api/buyer/orders', method: 'GET' },
 ];
 
 const BAD_SESSIONS: Array<{ label: string; cookie: string | null }> = [
@@ -145,6 +147,42 @@ for (const scenario of SESSION_GATE_CASES) {
         });
     }
 }
+
+test('GET /orders forwards the authoritative site and only pagination fields, returning canonical history', async () => {
+    await withGateway(() => ok({ orders: [{ id: 'synthetic-order', total: 199 }], next_cursor: 'next-page', has_more: true, private_note: 'never relay' }), async (requests) => {
+        const response = await call(ordersRoute.GET, '/api/buyer/orders?store_id=forged&buyer_account_id=forged&limit=1&cursor=cursor-value');
+        assert.equal(response.status, 200);
+        assertBrowserFacing(response);
+        assert.deepEqual(await response.json(), { orders: [{ id: 'synthetic-order', total: 199 }], nextCursor: 'next-page', hasMore: true });
+        assert.equal(requests.length, 1);
+        assert.equal(requests[0].url.pathname, '/v1/storefront/buyer/storefront-orders');
+        assert.deepEqual([...requests[0].url.searchParams], [['store_id', SITE_ID], ['limit', '1'], ['cursor', 'cursor-value']]);
+        assert.equal(requests[0].headers.get(buyerHeader), BUYER_TOKEN);
+        assert.deepEqual([...requests[0].headers.keys()].sort(), EXPECTED_UPSTREAM_HEADERS);
+        assert.equal(requests[0].cache, 'no-store');
+    });
+});
+
+test('GET /orders preserves auth/validation status but sanitizes failures and malformed success bodies', async () => {
+    for (const status of [401,403,400,500]) {
+        await withGateway(() => jsonResponse({ error: 'synthetic-private-order-detail' }, { status }), async () => {
+            const result = await call(ordersRoute.GET, '/api/buyer/orders');
+            assert.equal(result.status, status === 500 ? 503 : status);
+            assert.doesNotMatch(await result.text(), /synthetic-private-order-detail/);
+            assertBrowserFacing(result);
+        });
+    }
+    for (const reply of [() => ok({}), () => new Response('not-json', { status: 200 })]) {
+        await withGateway(reply, async () => {
+            assert.equal((await call(ordersRoute.GET, '/api/buyer/orders')).status, 503);
+        });
+    }
+    await withGateway(() => { throw new Error('synthetic-private-order-detail'); }, async () => {
+        const result = await call(ordersRoute.GET, '/api/buyer/orders');
+        assert.equal(result.status, 503);
+        assert.doesNotMatch(await result.text(), /synthetic-private-order-detail/);
+    });
+});
 
 for (const scenario of SESSION_GATE_CASES) {
     test(`${scenario.name}: every missing or malformed buyer session is a 401 and the gateway is never called`, async () => {
