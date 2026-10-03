@@ -1,5 +1,29 @@
 # LetBuyy foundation programme — complete canonical systems, prove complete journeys
 
+## Owner execution mandate — 3 October 2026
+
+The owner locked all eleven phases below as one active end-to-end goal and authorized direct implementation by Codex, using the personal `$letbuyy` skill on every work turn. This supersedes the earlier reviewer/Claude-worker arrangement and the original proposed-only programme status. The original dated baseline below remains historical evidence.
+
+| Phase | Locked outcome | Execution position on 3 October |
+|---|---|---|
+| 1 / 1R | Reproducible local stack and canonical Android buyer journey | Locally accepted and integrated; preserve the accepted work. |
+| 2 | Shared identity, scoped access, privacy and order ownership | In progress. First bounded outcome: P2-OPERATOR-MUTATION-INTEGRITY. |
+| 3 | Commercial, compliance, provider and cloud contracts | Upcoming; research dependencies early. |
+| 4 | Merchant onboarding, subscriptions and storefront operations | Upcoming. |
+| 5 | Canonical catalog, inventory and discovery | Upcoming. |
+| 6 | Revision-bound human product review | Upcoming. |
+| 7 | Approved reel commerce and media | Upcoming. |
+| 8 | Server-authoritative checkout, payments and order recovery | Upcoming. |
+| 9 | Accounting, weekly eligible settlements and reconciliation | Upcoming. |
+| 10 | Credit-backed CPC, CPM and purchase advertising | Upcoming. |
+| 11 | Whole-product security, performance, recovery and operations certification | Upcoming. |
+
+The seven packages and closure evidence per phase remain the execution scope. Completion requires integrated positive, denied, concurrent, retry and failure journeys appropriate to each package, including provider/device evidence where required. Implemented, locally verified, sandbox verified, hosted and released remain distinct verdicts. Missing business decisions or inaccessible external systems stay explicit; they cannot be replaced by invented approval or simulated acceptance.
+
+Execute as one agent in the existing isolated Phase 2 worktree, initially at `eb49fe27cae28612d10884dd5513242a40afd64a`. Preserve unrelated analyzer edits, local runtime evidence, signing assets and backups. Existing exclusions on merge, push, deployment, hosted cutover, external messages, live transactions and backup deletion remain in force until explicitly changed.
+
+Current bounded acceptance: all seven operator support mutation endpoints (reply includes internal notes) commit their effects and durable actor/operation/target/key/payload receipts together; retries and concurrent duplicates return one coherent result; mismatched payloads conflict; fresh authorization precedes replay; transaction failure leaves neither partial effects nor a poisoned key. Verify through the real worker and an owned disposable database, with named write/lost-response faults, concurrency, actor separation and revocation controls. Inspect typed-client and real callers without activating a frozen portal.
+
 > **Superseded in part by the owner on 26 September 2026:** no real marketplace users require migration; remove Firebase from the marketplace runtime and use direct canonical LetBuyy sign-in. Do not request Firebase credentials or preserve the legacy login gate. Read [Phase 1R revised plan](PHASE_1R_FIREBASE_FREE_MARKETPLACE_PLAN.md) before using this historical plan/prompt. Other preservation and no-deployment constraints remain.
 
 Date: 26 September 2026. Planning baseline: `develop` at `6eb01d95867e1c7d0eb15c704eeaf2195ca8cc68` on the restored Apple Silicon Mac. **Proposed detailed programme; not an implementation report, constitutional amendment, deployment authorization or schedule.**
