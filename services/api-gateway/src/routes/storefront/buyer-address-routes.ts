@@ -51,9 +51,8 @@ export interface BuyerAddressInput {
 
 export interface BuyerAddressRoutesDeps {
     listAddresses: (c: AppContext, buyerAccountId: string) => Promise<{ data: BuyerAddressRow[] | null; error: unknown }>;
-    /// Both operations of the unset-then-set default switch (customer-address-routes.ts's own
-    /// established, already-accepted pattern — see migration 260's own header) live behind one
-    /// injected function so a route can never call one half without the other.
+    /// Ownership, default switch and save execute in one database transaction
+    /// (migration 266), including failure rollback and concurrent requests.
     createAddress: (
         c: AppContext,
         input: { buyerAccountId: string; address: BuyerAddressInput },

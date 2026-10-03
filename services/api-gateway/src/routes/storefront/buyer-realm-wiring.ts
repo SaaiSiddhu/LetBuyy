@@ -150,11 +150,9 @@ export function registerBuyerRealmRoutes(
         },
     });
 
-    // D2 (SUSTAINED-J, migration 260). Raw admin-client calls, not RPCs — matching
-    // customer-address-routes.ts's own established, unRPC'd pattern for the same shape of table
-    // (application-layer ownership predicate on every query, no complex outcome/audit logic an RPC
-    // would centralize). Every query below carries .eq('buyer_account_id', ...); nothing here ever
-    // trusts an address id alone.
+    // D2: canonical own addresses. Migration 266 makes the ownership check,
+    // default switch and save atomic, serialized per buyer. Reads/deletes carry
+    // the same verified buyer predicate. Never trust an address id alone.
     registerBuyerAddressRoutes(router, {
         listAddresses: async (c, buyerAccountId) => getSupabaseAdmin(c)
             .from('buyer_addresses')
@@ -163,28 +161,14 @@ export function registerBuyerRealmRoutes(
             .order('is_default', { ascending: false })
             .order('created_at', { ascending: false }),
         createAddress: async (c, { buyerAccountId, address }) => {
-            const db = getSupabaseAdmin(c);
-            if (address.is_default) {
-                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
-            }
-            return db
-                .from('buyer_addresses')
-                .insert({ ...address, buyer_account_id: buyerAccountId })
-                .select('*')
-                .single();
+            return getSupabaseAdmin(c).rpc('mutate_buyer_address', {
+                p_buyer_account_id: buyerAccountId, p_address_id: null, p_address: address,
+            });
         },
         updateAddress: async (c, { buyerAccountId, addressId, address }) => {
-            const db = getSupabaseAdmin(c);
-            if (address.is_default) {
-                await db.from('buyer_addresses').update({ is_default: false }).eq('buyer_account_id', buyerAccountId);
-            }
-            const { data, error } = await db
-                .from('buyer_addresses')
-                .update(address)
-                .eq('id', addressId)
-                .eq('buyer_account_id', buyerAccountId)
-                .select('*')
-                .maybeSingle();
+            const { data, error } = await getSupabaseAdmin(c).rpc('mutate_buyer_address', {
+                p_buyer_account_id: buyerAccountId, p_address_id: addressId, p_address: address,
+            });
             return { data: (data ?? null) as BuyerAddressRow | null, error, notFound: !error && !data };
         },
         deleteAddress: async (c, { buyerAccountId, addressId }) => {
