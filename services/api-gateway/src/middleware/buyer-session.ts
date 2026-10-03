@@ -63,7 +63,9 @@ function readBuyerToken(c: Context<{ Bindings: Env }>): string | null {
     if (cookieHeader) {
         for (const part of cookieHeader.split(';')) {
             const [name, ...rest] = part.trim().split('=');
-            if (name === LETBUYY_BUYER_SESSION_COOKIE) return decodeURIComponent(rest.join('='));
+            if (name === LETBUYY_BUYER_SESSION_COOKIE) {
+                try { return decodeURIComponent(rest.join('=')); } catch { return null; }
+            }
         }
     }
     return c.req.header(LETBUYY_BUYER_SESSION_HEADER) || null;

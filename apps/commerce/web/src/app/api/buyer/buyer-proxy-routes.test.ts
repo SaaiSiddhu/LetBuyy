@@ -10,9 +10,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NextRequest } from 'next/server';
+import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import {
     BUYER_TOKEN,
-    LETBUYY_BUYER_SESSION_HEADER,
+    SITE_ID,
     buyerCookieHeader,
     installGatewayFake,
     jsonResponse,
@@ -28,11 +29,13 @@ const NOT_AUTHENTICATED = { error: 'Not authenticated' };
 
 type Handler = (request: NextRequest, context: { params: Promise<{ id: string }> }) => Promise<Response>;
 
-interface CallOptions { method?: string; cookie?: string | null; body?: unknown; id?: string }
+interface CallOptions { method?: string; cookie?: string | null; body?: unknown; id?: string; origin?: string | null }
 
 function call(handler: unknown, path: string, options: CallOptions = {}): Promise<Response> {
     const { method = 'GET', cookie = buyerCookieHeader(), body, id = 'addr-1' } = options;
     const headers = new Headers();
+    headers.set('host', new URL(ORIGIN).host);
+    if (options.origin !== null) headers.set('origin', options.origin ?? ORIGIN);
     if (cookie !== null) headers.set('cookie', cookie);
     if (body !== undefined) headers.set('content-type', 'application/json');
     const request = new NextRequest(`${ORIGIN}${path}`, {
@@ -43,16 +46,30 @@ function call(handler: unknown, path: string, options: CallOptions = {}): Promis
     return (handler as Handler)(request, { params: Promise.resolve({ id }) });
 }
 
-async function withGateway<T>(respond: GatewayResponder, run: (requests: RecordedGatewayRequest[]) => Promise<T>): Promise<T> {
-    const fake = installGatewayFake(respond);
+async function withGateway<T>(respond: GatewayResponder, run: (requests: RecordedGatewayRequest[]) => Promise<T>, resolve: () => Response = () => jsonResponse({ data: { site_id: SITE_ID } })): Promise<T> {
+    const originalSecret = process.env.INTERNAL_API_SECRET;
+    process.env.INTERNAL_API_SECRET = 'synthetic-proxy-resolution-secret';
+    const requests: RecordedGatewayRequest[] = [];
+    const fake = installGatewayFake((request) => {
+        if (request.url.pathname.endsWith('/internal/store-access/resolve')) {
+            assert.equal(request.url.searchParams.get('host'), new URL(ORIGIN).host);
+            assert.equal(request.headers.get('x-internal-api-secret'), 'synthetic-proxy-resolution-secret');
+            assert.equal(request.cache, 'no-store');
+            return resolve();
+        }
+        requests.push(request);
+        return respond(request);
+    });
     try {
-        return await run(fake.requests);
+        return await run(requests);
     } finally {
         fake.restore();
+        if (originalSecret === undefined) delete process.env.INTERNAL_API_SECRET;
+        else process.env.INTERNAL_API_SECRET = originalSecret;
     }
 }
 
-const buyerHeader = LETBUYY_BUYER_SESSION_HEADER.toLowerCase();
+const buyerHeader = LETBUYY_STOREFRONT_SESSION_HEADER.toLowerCase();
 // What the gateway may see from these proxies: the buyer token under its own header, plus the three headers
 // storefrontApiFetch adds to every call. Never the browser's cookie, and never an Authorization header.
 const EXPECTED_UPSTREAM_HEADERS = [buyerHeader, 'content-type', 'x-client', 'x-request-id'].sort();
@@ -60,7 +77,7 @@ const EXPECTED_UPSTREAM_HEADERS = [buyerHeader, 'content-type', 'x-client', 'x-r
 function assertProxiedToGateway(request: RecordedGatewayRequest, method: string, pathSuffix: string): void {
     assert.equal(request.method, method);
     assert.ok(request.url.pathname.endsWith(pathSuffix), `${request.url.pathname} must end with ${pathSuffix}`);
-    assert.equal(request.url.search, '', 'nothing may ride along in the query string');
+    assert.equal(request.url.search, `?store_id=${SITE_ID}`, 'only the host-resolved site reaches the gateway');
     assert.equal(request.headers.get(buyerHeader), BUYER_TOKEN, 'the buyer token is forwarded under its own header');
     assert.deepEqual([...request.headers.keys()].sort(), EXPECTED_UPSTREAM_HEADERS, 'only the buyer token and the three standard storefront headers reach the gateway');
     assert.equal(request.cache, 'no-store', 'personal data is never cached');
@@ -95,6 +112,39 @@ const BAD_SESSIONS: Array<{ label: string; cookie: string | null }> = [
     { label: 'a token that is not JWT-shaped', cookie: '__Host-lb_store_buyer=0d8a7b1c-3e5f-4a6b-9c1d-2e3f4a5b6c7d~not-a-jwt' },
     { label: 'a token longer than 4096 characters', cookie: `__Host-lb_store_buyer=0d8a7b1c-3e5f-4a6b-9c1d-2e3f4a5b6c7d~a.b.${'c'.repeat(4100)}` },
 ];
+
+for (const scenario of SESSION_GATE_CASES) {
+    test(`${scenario.name}: host resolution rejects another site's cookie and fails closed on unavailable resolution`, async () => {
+        for (const [status, resolve] of [
+            [401, () => jsonResponse({ data: { site_id: crypto.randomUUID() } })],
+            [401, () => jsonResponse({}, { status: 404 })],
+            [503, () => jsonResponse({ error: 'synthetic-private-host-detail' }, { status: 503 })],
+            [503, () => { throw new Error('synthetic-private-host-detail'); }],
+        ] as Array<[number, () => Response]>) {
+            await withGateway(() => { throw new Error('must not reach buyer gateway'); }, async (requests) => {
+                const response = await call(scenario.handler, scenario.path, { method: scenario.method, body: scenario.body });
+                assert.equal(response.status, status);
+                assertBrowserFacing(response);
+                assert.doesNotMatch(await response.text(), /synthetic-private-host-detail/);
+                assert.equal(requests.length, 0);
+            }, resolve);
+        }
+    });
+    if (scenario.method !== 'GET') {
+        test(`${scenario.name}: foreign or missing Origin cannot trigger a cookie-authenticated write`, async () => {
+            for (const origin of ['http://attacker.localhost:9000', null]) {
+                let resolved = false;
+                await withGateway(() => { throw new Error('must not write'); }, async (requests) => {
+                    const response = await call(scenario.handler, scenario.path, { method: scenario.method, body: scenario.body, origin });
+                    assert.equal(response.status, 403);
+                    assertBrowserFacing(response);
+                    assert.equal(requests.length, 0);
+                    assert.equal(resolved, false);
+                }, () => { resolved = true; return jsonResponse({ data: { site_id: SITE_ID } }); });
+            }
+        });
+    }
+}
 
 for (const scenario of SESSION_GATE_CASES) {
     test(`${scenario.name}: every missing or malformed buyer session is a 401 and the gateway is never called`, async () => {
@@ -295,7 +345,7 @@ test('an address id in the URL is only ever a path segment: traversal and query 
         assert.equal(requests.length, 2);
         for (const request of requests) {
             assert.ok(request.url.pathname.endsWith(`/storefront/buyer/addresses/${encodeURIComponent(hostile)}`), request.url.pathname);
-            assert.equal(request.url.search, '', 'a "?" in the id must not become a query string');
+            assert.equal(request.url.search, `?store_id=${SITE_ID}`, 'the id cannot inject a query; only the resolved site is present');
             assert.equal(request.url.hash, '', 'a "#" in the id must not become a fragment');
             assert.equal(request.url.pathname.split('/').includes('admin'), false, 'a ".." in the id must not climb into another gateway route');
         }

@@ -1,29 +1,21 @@
-// GET/POST /api/buyer/addresses — the signed-in buyer's own cross-store address book (D2,
-// SUSTAINED-J). A thin gateway proxy, same pattern as ../profile/route.ts: the buyer's own token
-// from __Host-lb_store_buyer is sufficient authorization, forwarded as-is to GET/POST
-// /storefront/buyer/addresses. Never the store_customers-scoped /api/customer/addresses, a
-// separate, already-complete, per-store address book left untouched.
+// GET/POST /api/buyer/addresses — the canonical buyer address book. Resolve this
+// host independently of the cookie, then forward the site-bound storefront token.
+// Ownership is enforced at the gateway using the verified buyer account id.
 import { NextRequest, NextResponse } from 'next/server';
-import { LETBUYY_BUYER_SESSION_HEADER } from '@letbuyy/auth-core';
 import { storefrontApiFetch } from '@/lib/api/client';
-import { STOREFRONT_BUYER_SESSION_COOKIE, decodeSession } from '@/lib/buyer-auth/flow';
+import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
-function buyerToken(request: NextRequest): string | null {
-    const cookie = request.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE)?.value;
-    return decodeSession(cookie)?.token ?? null;
-}
-
 export async function GET(request: NextRequest) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
     let res: Response;
     try {
-        res = await storefrontApiFetch('/storefront/buyer/addresses', {
+        res = await storefrontApiFetch(`/storefront/buyer/addresses?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'GET',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             cache: 'no-store',
         });
     } catch {
@@ -37,17 +29,17 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
     const body = await request.json().catch(() => null);
     if (!body) return NextResponse.json({ error: 'A JSON body is required' }, { status: 400, headers: NO_STORE });
 
     let res: Response;
     try {
-        res = await storefrontApiFetch('/storefront/buyer/addresses', {
+        res = await storefrontApiFetch(`/storefront/buyer/addresses?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'POST',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             body: JSON.stringify(body),
             cache: 'no-store',
         });

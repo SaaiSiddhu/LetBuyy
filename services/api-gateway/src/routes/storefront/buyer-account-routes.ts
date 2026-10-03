@@ -31,6 +31,7 @@ import type { Env } from '../../index';
 import type { BuyerEmailCodeSender } from '../../lib/buyer-email-code';
 import { dbFailureBody, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { requireBuyerDataSession } from '../../middleware/buyer-data-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const BCRYPT_COST = 10;
@@ -454,17 +455,17 @@ export function registerBuyerAccountRoutes(
     });
 
     // D1 (SUSTAINED-J) — the canonical buyer profile, read and updated by the buyer's own verified
-    // session, same gate as GET /buyer/orders (requireBuyerSession alone, no identityInternal): the
+    // session, accepting platform or site-bound storefront credentials (no identityInternal): the
     // buyer's own token is sufficient authorization for the buyer's own data; identityInternal is
     // reserved for identity-platform's own broker-specific pages (/buyer/me above), not every
     // buyer-consumable route. apps/commerce/web and apps/marketplace/mobile call this directly.
-    router.get('/buyer/profile', requireBuyerSession, async (c) => {
+    router.get('/buyer/profile', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
         return c.json(success({ buyer: publicBuyerAccount(resolved.buyer) }));
     });
 
-    router.patch('/buyer/profile', requireBuyerSession, async (c) => {
+    router.patch('/buyer/profile', requireBuyerDataSession, async (c) => {
         const resolved = await sessionBuyer(c);
         if ('response' in resolved) return resolved.response;
 

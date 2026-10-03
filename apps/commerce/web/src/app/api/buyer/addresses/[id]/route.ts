@@ -4,20 +4,14 @@
 // own .eq('buyer_account_id', ...) predicate (buyer-address-routes.ts) is what actually enforces
 // ownership and answers 404 for another buyer's address.
 import { NextRequest, NextResponse } from 'next/server';
-import { LETBUYY_BUYER_SESSION_HEADER } from '@letbuyy/auth-core';
 import { storefrontApiFetch } from '@/lib/api/client';
-import { STOREFRONT_BUYER_SESSION_COOKIE, decodeSession } from '@/lib/buyer-auth/flow';
+import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
-function buyerToken(request: NextRequest): string | null {
-    const cookie = request.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE)?.value;
-    return decodeSession(cookie)?.token ?? null;
-}
-
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
     const { id } = await params;
     const body = await request.json().catch(() => null);
@@ -25,9 +19,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     let res: Response;
     try {
-        res = await storefrontApiFetch(`/storefront/buyer/addresses/${encodeURIComponent(id)}`, {
+        res = await storefrontApiFetch(`/storefront/buyer/addresses/${encodeURIComponent(id)}?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'PATCH',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             body: JSON.stringify(body),
             cache: 'no-store',
         });
@@ -48,16 +42,16 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-    const token = buyerToken(request);
-    if (!token) return NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: NO_STORE });
+    const session = await resolveBuyerDataSession(request);
+    if ('response' in session) return session.response;
 
     const { id } = await params;
 
     let res: Response;
     try {
-        res = await storefrontApiFetch(`/storefront/buyer/addresses/${encodeURIComponent(id)}`, {
+        res = await storefrontApiFetch(`/storefront/buyer/addresses/${encodeURIComponent(id)}?store_id=${encodeURIComponent(session.siteId)}`, {
             method: 'DELETE',
-            headers: { [LETBUYY_BUYER_SESSION_HEADER]: token },
+            headers: session.headers,
             cache: 'no-store',
         });
     } catch {
