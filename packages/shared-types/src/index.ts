@@ -1432,6 +1432,38 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   seo_description: z.string().max(160).optional().nullable(),
 });
 
+// Complete manual membership and an explicit ordered replacement intent. These
+// contracts do not change the metadata Collection shape or public projections.
+export const CollectionMembershipProductSchema = ProductSchema.pick({id: true, name: true, price: true, is_active: true}).extend({
+  thumbnail_url: UrlSchema.optional().nullable(),
+});
+export const CollectionMembershipIdsSchema = z.array(UuidSchema).max(500).refine(ids => new Set(ids).size === ids.length, 'Product IDs must be unique');
+export const ReplaceCollectionMembershipSchema = z.object({
+  product_ids: CollectionMembershipIdsSchema,
+  expected_version: z.number().int().positive(),
+  idempotency_key: UuidSchema,
+}).strict();
+export const CollectionMembershipSnapshotSchema = z.object({
+  collection_id: UuidSchema,
+  store_id: UuidSchema,
+  membership_version: z.number().int().positive(),
+  product_ids: CollectionMembershipIdsSchema,
+  products: z.array(CollectionMembershipProductSchema).max(500),
+  unavailable_product_ids: CollectionMembershipIdsSchema,
+}).strict().superRefine((data, ctx) => {
+  const ids = new Set(data.product_ids), products = new Set<string>();
+  for (const product of data.products) {
+    if (!ids.has(product.id) || products.has(product.id)) ctx.addIssue({code: 'custom', path: ['products'], message: 'Products must belong to the loaded membership'});
+    products.add(product.id);
+  }
+  for (const id of data.unavailable_product_ids) {
+    if (!ids.has(id) || products.has(id)) ctx.addIssue({code: 'custom', path: ['unavailable_product_ids'], message: 'Unavailable products must be an explicit disjoint part of membership'});
+  }
+  if (products.size + data.unavailable_product_ids.length !== ids.size) ctx.addIssue({code: 'custom', path: ['products'], message: 'Every assigned ID must have a product or an explicit unavailable representation'});
+});
+export type ReplaceCollectionMembershipInput = z.infer<typeof ReplaceCollectionMembershipSchema>;
+export type CollectionMembershipSnapshot = z.infer<typeof CollectionMembershipSnapshotSchema>;
+
 export const GiftCardSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
   code: z.string().min(4).max(80),
@@ -1947,7 +1979,21 @@ export const StoreSubscriptionStateSchema = z.object({
   subscription: StoreSubscriptionSchema.nullable(),
 }).passthrough();
 
+// Public subscription money summary. Private supplier/recipient/source facts stay
+// in the canonical Billing snapshot and never enter browser retry storage.
+export const SubscriptionTaxSummarySchema=z.object({
+  schema_version:z.literal(1),policy_version:z.literal('D-SUB-TAX-INCLUSIVE-V1'),basis:z.literal('inclusive'),currency:z.literal('INR'),
+  supply_type:z.enum(['intra_state','inter_state']),
+  gross_minor:z.number().int().safe().min(1).max(2147483647),taxable_minor:z.number().int().safe().min(0).max(2147483647),
+  tax_minor:z.number().int().safe().min(0).max(2147483647),cgst_minor:z.number().int().safe().min(0).max(2147483647),
+  sgst_minor:z.number().int().safe().min(0).max(2147483647),igst_minor:z.number().int().safe().min(0).max(2147483647),
+}).strict().refine(s=>s.taxable_minor+s.tax_minor===s.gross_minor && s.cgst_minor+s.sgst_minor+s.igst_minor===s.tax_minor
+  && (s.supply_type==='intra_state'?s.igst_minor===0&&s.cgst_minor===Math.floor(s.tax_minor/2)&&s.sgst_minor===s.tax_minor-s.cgst_minor:s.cgst_minor===0&&s.sgst_minor===0&&s.igst_minor===s.tax_minor),
+  'Subscription tax summary does not conserve gross');
+export type SubscriptionTaxSummary=z.infer<typeof SubscriptionTaxSummarySchema>;
+
 export const BillingHistoryItemSchema = z.object({
+  tax:SubscriptionTaxSummarySchema.optional().nullable(),
   id: UuidSchema,
   amount_paid: z.number().min(0).optional().nullable(),
   status: z.string().max(80).optional().nullable(),
@@ -1961,6 +2007,7 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
+  tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
   checkout_mode: z.enum(['free_activation', 'razorpay_order', 'razorpay_subscription']).default('razorpay_order'),
@@ -2749,6 +2796,9 @@ export const ThemeReleaseSchema = z.object({
 
 export const ThemeRollbackResultSchema = z.object({
   rollback: ThemePublishedReleaseSchema,
+  replayed: z.boolean(),
+  current_release_id: UuidSchema,
+  current_release_version: z.number().int().positive(),
   restored_release: z.object({
     id: UuidSchema,
     version: z.number().int().positive(),
@@ -4970,3 +5020,9 @@ export function featureFlagExposureTelemetry(
     evaluated_at: evaluatedAt.toISOString(),
   };
 }
+
+export * from './reel-upload';
+export { BuyerAssistantRequestSchema, BuyerAssistantResponseSchema } from './buyer-assistant';
+export type { BuyerAssistantRequest, BuyerAssistantResponse } from './buyer-assistant';
+
+export { calculateGstAmounts } from './gst-amounts';

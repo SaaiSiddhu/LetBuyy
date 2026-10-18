@@ -27,6 +27,21 @@ const OTHER_SITE = '22222222-2222-4222-8222-2222222222c2';
 const CAMPAIGN = '33333333-3333-4333-8333-3333333333c3';
 const OTHER_CAMPAIGN = '44444444-4444-4444-8444-4444444444c4';
 
+//355 fixture authority: canonical synthetic owner and same-statement captured
+//context. The materialized CTE executes before the volatile budget RPC. It
+//does not grant authority, mint credit, or replace the role under test.
+const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
+const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
+function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
+    return `WITH captured_budget_context AS MATERIALIZED (
+      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
+             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
+    ) SELECT public.${operation}_ad_campaign_budget(
+      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
+      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
+      FROM captured_budget_context`;
+}
+
 function psql(sql, targetDatabase = databaseName) {
   return execFileSync('docker', ['exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', targetDatabase,
     '-v', 'ON_ERROR_STOP=1', '-qAt'], { input: sql, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }).trim();
@@ -59,16 +74,20 @@ before(() => {
   if (!runnable) return;
   bootstrap();
   psql(`
+    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid');
+    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${q(SITE)}::uuid, 'Ads idempotency', 'Ads idempotency', 'store', 'ads-idem-a', true),
       (${q(OTHER_SITE)}::uuid, 'Other ads', 'Other ads', 'store', 'ads-idem-b', true);
+    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE)}::uuid,${budgetQ(OTHER_SITE)}::uuid);
+
     INSERT INTO public.ad_campaigns (id, site_id, name, status, pricing_model, bid_minor)
     VALUES (${q(CAMPAIGN)}::uuid, ${q(SITE)}::uuid, 'CPC campaign', 'active', 'cpc', 100),
            (${q(OTHER_CAMPAIGN)}::uuid, ${q(SITE)}::uuid, 'Other campaign', 'draft', 'cpc', 200);
     SELECT public.record_ad_credit_purchase(${q(SITE)}::uuid, 100000, 'pay_ads_exact', 'idem:purchase');
-    SELECT public.allocate_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 20000, 'idem:allocate');
+    ${budgetRpc('allocate', SITE, CAMPAIGN, 20000, 'idem:allocate', null, SITE)};
     SELECT public.record_ad_spend(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 'click', 1, 'idem:spend');
-    SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, NULL, 'idem:release');
+    ${budgetRpc('release', SITE, CAMPAIGN, null, 'idem:release', null, SITE)};
   `);
 });
 
@@ -81,18 +100,19 @@ test('ad-credit RPC idempotency is bound to purchase, allocation, spend and rele
   // Negative control: the prior definitions silently treat changed requests as successful replays.
   apply(ROLLBACK);
   assert.match(psql(`SELECT public.record_ad_credit_purchase(${q(SITE)}::uuid, 200000, 'pay_changed', 'idem:purchase');`), /"replayed"\s*:\s*true/);
-  assert.match(psql(`SELECT public.allocate_ad_campaign_budget(${q(SITE)}::uuid, ${q(OTHER_CAMPAIGN)}::uuid, 30000, 'idem:allocate');`), /"replayed"\s*:\s*true/);
+  assert.match(psql(`${budgetRpc('allocate', SITE, OTHER_CAMPAIGN, 30000, 'idem:allocate', null, SITE)};`), /"replayed"\s*:\s*true/);
   assert.match(psql(`SELECT public.record_ad_spend(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 'click', 2, 'idem:spend');`), /"replayed"\s*:\s*true/);
-  assert.match(psql(`SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 1, 'idem:release');`), /"replayed"\s*:\s*true/);
+  assert.match(psql(`${budgetRpc('release', SITE, CAMPAIGN, 1, 'idem:release', null, SITE)};`), /"replayed"\s*:\s*true/);
 
   apply(MIGRATION);
   apply(MIGRATION);
+  apply('database/supabase/migrations/355_ad_campaign_current_budget_authority.sql');
   const conflict = /ad credit idempotency key conflicts with a different request payload/;
 
   assert.match(psqlFailure(`SELECT public.record_ad_credit_purchase(${q(SITE)}::uuid, 200000, 'pay_changed', 'idem:purchase');`) || '', conflict);
-  assert.match(psqlFailure(`SELECT public.allocate_ad_campaign_budget(${q(SITE)}::uuid, ${q(OTHER_CAMPAIGN)}::uuid, 30000, 'idem:allocate');`) || '', conflict);
+  assert.match(psqlFailure(`${budgetRpc('allocate', SITE, OTHER_CAMPAIGN, 30000, 'idem:allocate', null, SITE)};`) || '', conflict);
   assert.match(psqlFailure(`SELECT public.record_ad_spend(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 'click', 2, 'idem:spend');`) || '', conflict);
-  assert.match(psqlFailure(`SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 1, 'idem:release');`) || '', conflict);
+  assert.match(psqlFailure(`${budgetRpc('release', SITE, CAMPAIGN, 1, 'idem:release', null, SITE)};`) || '', conflict);
 
   // Migration 242 rows predate the persisted request mode. NULL means "release all" and can be
   // replayed only when that row records the same effective releasable amount.
@@ -110,16 +130,14 @@ test('ad-credit RPC idempotency is bound to purchase, allocation, spend and rele
       public.ad_credit_balance_minor(a.id), 'idem:legacy-release-mismatch',
       '{"releasable_minor":3000,"campaign_allocated_before":3000}'::jsonb
     FROM public.ad_credit_accounts a WHERE a.site_id = ${q(SITE)}::uuid;`);
-  assert.match(psql(`SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid,
-    NULL, 'idem:legacy-release-all');`), /"replayed"\s*:\s*true/);
-  assert.match(psqlFailure(`SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid,
-    NULL, 'idem:legacy-release-mismatch');`) || '', conflict);
+  assert.match(psql(`${budgetRpc('release', SITE, CAMPAIGN, null, 'idem:legacy-release-all', null, SITE)};`), /"replayed"\s*:\s*true/);
+  assert.match(psqlFailure(`${budgetRpc('release', SITE, CAMPAIGN, null, 'idem:legacy-release-mismatch', null, SITE)};`) || '', conflict);
 
   const before = psql(`SELECT count(*) FROM public.ad_credit_ledger_entries WHERE site_id = ${q(SITE)}::uuid`);
   assert.match(psql(`SELECT public.record_ad_credit_purchase(${q(SITE)}::uuid, 100000, 'pay_ads_exact', 'idem:purchase');`), /"replayed"\s*:\s*true/);
-  assert.match(psql(`SELECT public.allocate_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 20000, 'idem:allocate');`), /"replayed"\s*:\s*true/);
+  assert.match(psql(`${budgetRpc('allocate', SITE, CAMPAIGN, 20000, 'idem:allocate', null, SITE)};`), /"replayed"\s*:\s*true/);
   assert.match(psql(`SELECT public.record_ad_spend(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, 'click', 1, 'idem:spend');`), /"replayed"\s*:\s*true/);
-  assert.match(psql(`SELECT public.release_ad_campaign_budget(${q(SITE)}::uuid, ${q(CAMPAIGN)}::uuid, NULL, 'idem:release');`), /"replayed"\s*:\s*true/);
+  assert.match(psql(`${budgetRpc('release', SITE, CAMPAIGN, null, 'idem:release', null, SITE)};`), /"replayed"\s*:\s*true/);
   assert.equal(psql(`SELECT count(*) FROM public.ad_credit_ledger_entries WHERE site_id = ${q(SITE)}::uuid`), before,
     'exact replays must not add money-ledger entries');
 });

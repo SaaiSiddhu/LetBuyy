@@ -6,6 +6,7 @@ import '../../app/store_context.dart';
 import '../../app/routes.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme_colors.dart';
+import '../../widgets/shared/provider_mode_badge.dart';
 
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
@@ -237,6 +238,7 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   Widget _subscriptionCard() {
+    final providerMode = ProviderMode.parse(_subscription?.providerMode);
     final status = _subscription?.status ?? 'unknown';
     final amount = _subscription?.amountPaidMinor;
     final nextBilling = _subscription?.periodEnd;
@@ -274,7 +276,9 @@ class _BillingScreenState extends State<BillingScreen> {
                   ),
                 ),
               ),
-              Text(
+              if (providerMode != null)
+                ProviderModeBadge(mode: providerMode, compact: true)
+              else Text(
                 'Provider status unavailable',
                 style: TextStyle(color: colors.textSecondary, fontSize: 10),
               ),
@@ -445,6 +449,8 @@ class _BillingScreenState extends State<BillingScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
+                if(entry.taxBreakdown!=null)
+                  Text('Taxable amount: ${subscriptionMoney(entry.taxBreakdown!.base,decimals:true)}; tax is included in the total.',style:TextStyle(color:colors.textSecondary,fontSize:12)),
                 if (entry.taxAmount != null)
                   Text(
                     'Recorded tax: ${subscriptionMoney(entry.taxAmount!, decimals: true)}',

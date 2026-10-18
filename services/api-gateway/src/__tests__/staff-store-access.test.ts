@@ -22,6 +22,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import storesRouter from '../routes/stores';
 import productsRouter from '../routes/products';
+import { AppError, formatAppError } from '../lib/errors';
 import employeeRouter from '../routes/employee';
 
 const POSTGREST = 'https://staff-store-access.fake-postgrest.test';
@@ -136,6 +137,11 @@ function baseTables(): Record<string, Row[]> {
 
 function appWithAuth(userId: string, router: typeof storesRouter, mountPath: string) {
     const api = new Hono<{ Bindings: Env }>();
+    api.onError((error, c) => {
+        if (!(error instanceof AppError)) throw error;
+        const formatted = formatAppError(error);
+        return c.json(formatted.body, formatted.status as never);
+    });
     api.use('*', async (c, next) => {
         (c as unknown as { env: Env }).env = env();
         c.set('auth', { user: { id: userId, email: `${userId}@shop.test`, roles: [], roleCategories: [], authSource: 'internal-sso' } } as never);
@@ -212,10 +218,12 @@ test('GET /products/:id: bootstraps without 500ing, then is denied to a staff me
     t.after(fake.restore);
 
     const owner = await appWithAuth(OWNER, productsRouter, '/products').request(`/products/${PRODUCT}`);
-    assert.equal(owner.status, 200, `owner should read the product, not be refused by the tenant guard: ${await owner.text()}`);
+    assert.equal(owner.status, 503, 'authorized owner reaches the required SQL read; this REST-only unit fixture has no SQL transport');
+    assert.equal((await owner.json() as { error: { code: string } }).error.code, 'PRODUCT_EDIT_UNAVAILABLE');
 
     const staffRead = await appWithAuth(STAFF_READ, productsRouter, '/products').request(`/products/${PRODUCT}`);
-    assert.equal(staffRead.status, 200, 'a staff member holding products:read/products:write at this store can read it');
+    assert.equal(staffRead.status, 503, 'authorized read staff reach the required SQL transport rather than being denied by the tenant guard');
+    assert.equal((await staffRead.json() as { error: { code: string } }).error.code, 'PRODUCT_EDIT_UNAVAILABLE');
 
     const staffNoGrant = await appWithAuth(STAFF_NO_GRANT, productsRouter, '/products').request(`/products/${PRODUCT}`);
     assert.equal(staffNoGrant.status, 404, 'a staff member with no grant at this store gets the same not-found as a stranger, not a 500');

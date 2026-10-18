@@ -707,7 +707,7 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeExecutionAdapter(db);
+    const service = new ThemeExecutionAdapter(db, auth.user.storeId);
     const rollback = await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c));
     await purgeThemeStorefrontCache(c, body.store_id);
     return c.json(success(rollback));

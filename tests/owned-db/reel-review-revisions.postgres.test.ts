@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Actual production worker/PostgREST + owned PostgreSQL. Verified private media
 // and inspection rows below are explicit SUPERUSER SYNTHETIC FIXTURES, never
 // provider/custody/human playback evidence or an application-ready writer.
@@ -31,6 +34,11 @@ const command = (action: 'save' | 'submit', version: number, selection: ReelMerc
 
 test('canonical private reel revision lifecycle, denial, races, fault recovery and privileges', async t => {
   assert.equal(owned.psql("SELECT to_regprocedure('public.mutate_reel_review_v1(uuid,uuid,uuid,jsonb,jsonb)') IS NOT NULL;"), 't', '345 must be present on the explicitly authorized branch/final test chain');
+
+  const forward359 = readFileSync(new URL('../../database/supabase/migrations/359_private_reel_intake.sql', import.meta.url), 'utf8');
+  const retirement359 = readFileSync(new URL('../../database/supabase/rollback/359_private_reel_intake.rollback.sql', import.meta.url), 'utf8');
+  // Reverse-order, entirely empty schema retirement; no retained rows are deleted.
+  owned.script(retirement359);
 
   const retirement = readFileSync(new URL('../../database/supabase/rollback/345_canonical_reel_review.rollback.sql', import.meta.url), 'utf8');
   const forward345 = readFileSync(new URL('../../database/supabase/migrations/345_canonical_reel_review.sql', import.meta.url), 'utf8');
@@ -604,6 +612,7 @@ test('canonical private reel revision lifecycle, denial, races, fault recovery a
     globalThis.console.info('OWNED_N5_RETENTION_AFTER ' + JSON.stringify({ retainedDataRefused: true, everyRowAndCatalogConserved: true, canonicalRowsConserved: true,
       retainedCounts: Object.fromEntries(Object.entries(parsed.rows).map(([name, rows]) => [name, (rows as unknown[]).length])) }));
   });
+  owned.script(forward359);
 });
 
 // Finite synthetic owned snapshot: nothing is erased to make rollback pass.

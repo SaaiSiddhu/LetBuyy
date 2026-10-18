@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import { Banner, Button, Card, Input, Section } from '@letbuyy/ui'
 import type { ReelDraftSelection, ReelMerchantCommand, ReelReadback, ReelReviewPage } from '@letbuyy/api-client'
 import { ReelMerchantCommandSchema } from '@letbuyy/cms-core'
+import { PrivateReelIntake } from '@/components/reels/PrivateReelIntake'
 import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
 const emptySelection = (): ReelDraftSelection => ({ media_asset_id: null, listing_id: null, variant_id: null, thumbnail_asset_id: null, caption: '', rights_evidence_ids: [] })
@@ -96,6 +97,7 @@ function ReelWorkspace({ store, actorId }: { store: string; actorId: string }) {
     const options = page?.references, selectedProduct = options?.listings.find(item => item.id === selection.listing_id)
     const select = (name: 'media_asset_id' | 'listing_id' | 'variant_id' | 'thumbnail_asset_id', label: string, rows: Array<{ id: string; label?: string; name?: string; title?: string }>) => <label className="grid gap-2">{label}<select aria-label={label} value={selection[name] ?? ''} disabled={busy || retry} onChange={event => setSelection(current => ({ ...current, [name]: event.target.value || null, ...(name === 'listing_id' ? { variant_id: null } : {}) }))}><option value="">Select…</option>{rows.map(item => <option key={item.id} value={item.id}>{item.label || item.name || item.title || item.id}</option>)}</select></label>
     return <div className="grid gap-4"><h1>Product reels</h1>
+        <PrivateReelIntake key={`${actorId}:${store}`} store={store} actorId={actorId} />
         <Banner title="Private reel drafts">Private video processing and reviewer playback are not available yet. Generic public uploads cannot be submitted as reels. Saving a draft does not publish or approve it.</Banner>
         {error && <Banner title="Reel needs attention" variant="critical">{error}</Banner>}{notice && <p role="status">{notice}</p>}
         {loading ? <p role="status">Checking private reel access…</p> : <><Card><Section title="Your reels">

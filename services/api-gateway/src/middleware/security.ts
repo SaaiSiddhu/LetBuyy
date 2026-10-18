@@ -133,6 +133,20 @@ export const errorResponseSanitizer = createMiddleware<{ Bindings: Env }>(
 
 export const inputValidation = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
+        // Exact intake delegation: these handlers authenticate normally, then
+        // enforce their bounded JSON/binary parser. Never clone their body here.
+        const uploadPath = c.req.path.replace(/\/+$/, '');
+        const uploadId = '[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}';
+        const intakeJson = c.req.method === 'POST' && (uploadPath === '/v1/reels/uploads'
+            || new RegExp('^/v1/reels/uploads/' + uploadId + '$').test(uploadPath));
+        const intakeBinary = c.req.method === 'PUT' && new RegExp('^/v1/reels/uploads/' + uploadId + '/content$').test(uploadPath);
+        if (intakeJson || intakeBinary) { await next(); return; }
+        // This new BUYER route owns authenticated streaming64KiB validation and
+        // fixed errors. Do not eagerly clone/read private content before it.
+        if (c.req.method === 'POST' && c.req.path === '/v1/storefront/buyer/assistant') {
+            await next();
+            return;
+        }
         // Only validate mutating requests with JSON bodies
         if (['POST', 'PUT', 'PATCH'].includes(c.req.method)) {
             const contentType = c.req.header('content-type');

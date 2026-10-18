@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal merchant password sign-in -> maintained web -> real Gateway/pooled DB.
 // Verified synthetic accounts are fixture inputs, not provider/inbox proof.
 import assert from 'node:assert/strict';

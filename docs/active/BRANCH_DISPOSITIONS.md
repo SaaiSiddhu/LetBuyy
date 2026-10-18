@@ -47,6 +47,8 @@ validator already accepts. A branch holding commits absent from `develop` is nev
 
 ## Rows
 
+| `letbuyy/local-complete-integration` | `a23958fe` | ACTIVE | 2026-10-18 | Owner request in local integration chat | Integrate remaining N1–N9 source with provenance, repair gateway/governance failures, verify canonical local web/backend/native journeys without weakening security or touching restored data. Scope apps, services, packages, paired migrations/rollbacks, tests, validators and existing evidence records. Existing phase overlays, environment and signing files preserved. | N/A — pending |
+
 | Branch | SHA | Status | Decided | Decided by | Why | Merged into |
 |---|---|---|---|---|---|---|
 | `develop` | `a751a2ff` | ENVIRONMENT | 2026-09-04 | owner (D-BRANCH) | Created at the working tip `a751a2ff` (former `feature/claude-md-durable-architecture-memory` head). Integration + local end-to-end. | N/A |

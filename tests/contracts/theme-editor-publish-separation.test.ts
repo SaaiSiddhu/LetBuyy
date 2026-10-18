@@ -59,7 +59,7 @@ test('web editor saves drafts with base_version and requires a clean draft befor
     assert.match(saveDraftBlock, /client\.save\(draftConfig, reviewedVersion\)/);
     assert.match(publishBlock, /if \(isDirty && !client.hasPendingPublication\)/);
     assert.match(publishBlock, /client\.publish\(async \(intent\)/);
-    assert.match(publishBlock, /JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent \}\)/);
+    assert.match(publishBlock, /JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent, actorId: client\.actorId, storeId: client\.storeId \}\)/);
 });
 
 test('draft and preview-session app routes forward template and base-version contracts', () => {

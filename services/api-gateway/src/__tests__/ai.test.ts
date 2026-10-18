@@ -193,7 +193,7 @@ test('AI schemas and mobile service accept the mobile generation contract', () =
     assert.match(mobileAiServiceSource, /runOperatorCommand/);
     assert.match(mobileAiServiceSource, /_api\.products\.create/);
     assert.match(mobileAiServiceSource, /_api\.coupons\.create/);
-    assert.match(mobileAiServiceSource, /_api\.themes\.saveDraft/);
+    assert.match(mobileAiServiceSource, /_themeService\.saveDraft/);
     assert.match(mobileAiServiceSource, /AiFeatureUnavailableException/);
     assert.match(mobileEditorSource, /Describe your homepage/);
     assert.match(mobileEditorSource, /_showAiHomepageSheet/);

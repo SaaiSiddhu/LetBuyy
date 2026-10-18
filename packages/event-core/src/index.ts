@@ -77,6 +77,7 @@ export const DOMAIN_EVENT_TYPES = [
   'store.created',
   'product.created',
   'product.updated',
+  'collection.membership.updated',
   'product.deleted',
   'cart.created',
   'cart.email_captured',
@@ -149,6 +150,7 @@ export const DOMAIN_EVENT_TYPES = [
   'customer.dsr_requested',
   'media.processed',
   'reel.review.changed',
+  'reel.upload.changed',
   'audit.recorded',
   'payout.ledger_entry.created',
   'payout.released',
@@ -183,6 +185,7 @@ export interface DomainEventContract {
   aggregateType:
     | 'store'
     | 'product'
+    | 'collection'
     | 'cart'
     | 'checkout'
     | 'order'
@@ -226,6 +229,12 @@ const ProductPayloadSchema = z.object({
   handle: z.string().trim().min(1).max(160).optional(),
   status: z.enum(['draft', 'active', 'archived', 'deleted']).optional(),
 });
+
+const CollectionMembershipPayloadSchema = z.object({
+  site_id: UuidSchema,
+  collection_id: UuidSchema,
+  membership_version: z.number().int().positive(),
+}).strict();
 
 const OrderPayloadSchema = z.object({
   site_id: UuidSchema,
@@ -439,6 +448,12 @@ function activeGatewayContract(
 }
 
 export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract> = {
+  'reel.upload.changed': {
+    eventType: 'reel.upload.changed', schemaVersion: 1, producer: 'api-gateway',
+    consumers: [], aggregateType: 'media',
+    payloadSchema: z.object({ site_id: UuidSchema, intent_id: UuidSchema,
+      state: z.enum(['reserved', 'receiving', 'transfer_unknown', 'received_unprocessed', 'expired']), version: z.number().int().positive() }).strict(),
+  },
   'reel.review.changed': {
     eventType: 'reel.review.changed', schemaVersion: 1, producer: 'api-gateway',
     consumers: [], aggregateType: 'reel',
@@ -469,6 +484,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
     aggregateType: 'product',
     payloadSchema: ProductPayloadSchema,
   },
+  'collection.membership.updated': activeGatewayContract('collection.membership.updated', 'collection', CollectionMembershipPayloadSchema, ['analytics', 'webhook-service']),
   'product.deleted': {
     eventType: 'product.deleted',
     schemaVersion: 1,

@@ -1,13 +1,15 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
-import {readSubscriptionCheckoutSource} from '../lib/subscription-checkout-source';
+import {readSubscriptionCheckoutSource,verifyNativeSubscriptionInvoice} from '../lib/subscription-checkout-source';
 import { ValidationError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { isInternalApiSecretRequest } from '../lib/internal-secret';
-import { SubscriptionExecutionAdapter, type SubscriptionStatus } from '../execution/subscription-execution.adapter';
+import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
 import {
     InternalSubscriptionActivationSchema,
+    InternalSubscriptionInvoiceSchema,
+    InternalSubscriptionStateSyncSchema,
     applyStorePlanTierDefaults,
     planBillingAmountMinor,
     type BillingPlanCatalogRecord,
@@ -45,11 +47,6 @@ function billingPeriodValue(value: unknown): SubscriptionBillingPeriod {
     return value === 'yearly' ? 'yearly' : 'monthly';
 }
 
-function subscriptionStatusValue(value: unknown): SubscriptionStatus {
-    if (value === 'cancelled' || value === 'past_due' || value === 'trialing') return value;
-    return 'active';
-}
-
 function isInternalRequest(c: AppContext): boolean {
     return isInternalApiSecretRequest(c.env, c.req);
 }
@@ -76,21 +73,22 @@ async function requireStoreAndPlan(c: AppContext, body: Record<string, unknown>)
 
     const owner = store as StoreOwnerRow;
     const siteType = textValue(body.siteType) || owner.site_type || 'store';
-    const { data: rawPlan } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', siteType)
-        .eq('slug', planSlug)
-        .eq('is_active', true)
-        .single();
-
-    if (!rawPlan) {
-        return { error: c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Plan not found' } }, 404) };
+    const actor=textValue(body.userId)||owner.custom_user_id||owner.user_id;
+    const source=body.provider==='razorpay'&&!String(body.providerPaymentId||'').startsWith('sandbox_autopay_payment:')&&actor
+        ?await readSubscriptionCheckoutSource(db,{actor,site:owner.id,
+            reference:textValue(body.externalSubscriptionId)||textValue(body.providerOrderId)||'',payment:textValue(body.providerPaymentId)||'',
+            planSlug,period:billingPeriodValue(body.billingPeriod)}):null;
+    let rawPlan:BillingPlanCatalogRecord|null=source?.plan||null;
+    if(!rawPlan){
+        const result=await db.from('plans').select('*').eq('site_type',siteType).eq('slug',planSlug).eq('is_active',true).single();
+        rawPlan=result.data as BillingPlanCatalogRecord|null;
     }
+    if(!rawPlan)return {error:c.json({success:false,error:{code:'NOT_FOUND',message:'Plan not found'}},404)};
 
     return {
         db,
         store: owner,
+        source,
         plan: applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord,
     };
 }
@@ -117,11 +115,18 @@ router.post('/subscriptions/activate', async (c) => {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'provider must be razorpay or stripe' } }, 400);
     }
 
-    const amountPaid = numberValue(body.amountPaid) ?? planBillingAmountMinor(resolved.plan, billingPeriod).amountMinor;
-    const source=provider==='razorpay'&&!String(body.providerPaymentId||'').startsWith('sandbox_autopay_payment:')
-        ?await readSubscriptionCheckoutSource(resolved.db,{actor:userId,site:resolved.store.id,
-            reference:textValue(body.externalSubscriptionId)||textValue(body.providerOrderId)||'',payment:textValue(body.providerPaymentId)||'',
-            planSlug:resolved.plan.slug,period:billingPeriod}):null;
+    let amountPaid = numberValue(body.amountPaid) ?? planBillingAmountMinor(resolved.plan, billingPeriod).amountMinor;
+    const source=resolved.source;
+    if(source&&body.amountPaid==null)amountPaid=source.retained_invoice_evidence?.gross_minor??source.amount;
+
+    const nativeInvoice=source?.subscription_checkout.mode==='razorpay_subscription'&&!source.legacy_completed
+        ?await verifyNativeSubscriptionInvoice({keyId:c.env.RAZORPAY_KEY_ID,keySecret:c.env.RAZORPAY_KEY_SECRET},source,
+            {paymentId:textValue(body.providerPaymentId)||'',subscriptionId:textValue(body.externalSubscriptionId)||'',orderId:textValue(body.providerOrderId)}):null;
+    if(nativeInvoice){
+        if(body.amountPaid!=null&&numberValue(body.amountPaid)!==nativeInvoice.gross_minor)
+            throw new ValidationError('The notification amount does not match its captured invoice.');
+        amountPaid=nativeInvoice.gross_minor;
+    }
 
     const subscription = await new SubscriptionExecutionAdapter(resolved.db).activateMerchantSubscription({
         userId,
@@ -131,8 +136,10 @@ router.post('/subscriptions/activate', async (c) => {
         amountPaid,
         paymentGateway: provider,
         externalSubscriptionId: textValue(body.externalSubscriptionId) || textValue(body.providerOrderId) || null,
-        razorpayOrderId: provider === 'razorpay' ? textValue(body.providerOrderId) || null : null,
+        razorpayOrderId: provider === 'razorpay' ? nativeInvoice?.order_id || textValue(body.providerOrderId) || null : null,
         razorpayPaymentId: provider === 'razorpay' ? textValue(body.providerPaymentId) || null : null,
+        ...(source?{taxSource:source}:{}),
+        ...(nativeInvoice?{verifiedInvoice:nativeInvoice}:{}),
     });
 
     return c.json(success({ subscription }));
@@ -143,18 +150,9 @@ router.post('/subscriptions/sync', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
     }
 
-    const body = asRecord(await c.req.json().catch(() => ({})));
-    const externalSubscriptionId = textValue(body.externalSubscriptionId);
-    if (!externalSubscriptionId) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'externalSubscriptionId is required' } }, 400);
-    }
-
-    const subscription = await new SubscriptionExecutionAdapter(getSupabaseAdmin(c)).syncProviderSubscription({
-        externalSubscriptionId,
-        status: subscriptionStatusValue(body.status),
-        currentPeriodStart: textValue(body.currentPeriodStart) || null,
-        currentPeriodEnd: textValue(body.currentPeriodEnd) || null,
-    });
+    const parsed=InternalSubscriptionStateSyncSchema.safeParse(await c.req.json().catch(()=>null));
+    if(!parsed.success)throw new ValidationError('Invalid provider subscription status payload.');
+    const subscription = await new SubscriptionExecutionAdapter(getSupabaseAdmin(c)).syncProviderSubscription(parsed.data);
 
     return c.json(success({ subscription }));
 });
@@ -164,31 +162,21 @@ router.post('/subscriptions/invoice', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
     }
 
-    const body = asRecord(await c.req.json().catch(() => ({})));
+    const parsedInvoice=InternalSubscriptionInvoiceSchema.safeParse(await c.req.json().catch(()=>null));
+    if(!parsedInvoice.success)throw new ValidationError('Invalid subscription invoice payload.');
+    const body=parsedInvoice.data;
     const externalSubscriptionId = textValue(body.externalSubscriptionId);
     if (!externalSubscriptionId) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'externalSubscriptionId is required' } }, 400);
     }
 
     const db = getSupabaseAdmin(c);
-    const { data: subscription } = await db
-        .from('subscriptions')
-        .select('id, user_id, store_id')
-        .eq('external_subscription_id', externalSubscriptionId)
-        .is('deleted_at', null)
-        .single();
-
-    if (!subscription?.store_id) {
-        return c.json(success({ recorded: false, reason: 'subscription_not_found' }));
-    }
-
-    const now = new Date().toISOString();
+    // The canonical transaction resolves the original payment's tenant and
+    // current owner. A provider reference never authorizes an unscoped REST read.
     const invoice = await new SubscriptionExecutionAdapter(db).recordSubscriptionInvoice({
-        userId: String(subscription.user_id),
-        storeId: String(subscription.store_id),
-        subscriptionId: String(subscription.id),
-        invoiceNumber: textValue(body.invoiceNumber) || `INV-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
-        description: textValue(body.description) || 'Provider subscription invoice',
+        externalSubscriptionId,
+        invoiceNumber: body.invoiceNumber,
+        description: body.description,
         amount: numberValue(body.amount) || 0,
         currency: (textValue(body.currency) || 'INR').toUpperCase(),
         taxAmount: numberValue(body.taxAmount) || 0,
@@ -196,8 +184,8 @@ router.post('/subscriptions/invoice', async (c) => {
         paymentGateway: textValue(body.provider) === 'razorpay' ? 'razorpay' : 'stripe',
         paymentId: textValue(body.paymentId) || null,
         paymentStatus: textValue(body.paymentStatus) === 'failed' ? 'failed' : 'paid',
-        periodStart: textValue(body.periodStart) || now,
-        periodEnd: textValue(body.periodEnd) || now,
+        periodStart: body.periodStart,
+        periodEnd: body.periodEnd,
     });
 
     return c.json(success({ recorded: true, invoice }));

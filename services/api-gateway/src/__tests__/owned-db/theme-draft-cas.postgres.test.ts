@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, { before } from 'node:test';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { Gateway, gatewayEnv, newIdentityKeys, signedIdentityHeaders, tapRest } from './gateway-harness';
@@ -8,6 +8,79 @@ import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 import { ThemeEditorPayloadSchema, ThemeDraftSaveResultSchema, ThemePublishResultSchema } from '@letbuyy/shared-types';
 
 const owned = requireOwnedDatabase();
+let clean354Retirement = false;
+let reapplied354 = false;
+let predecessor354Refused = false, defaults354Refused = false, concurrent354Verified = false;
+const sql354 = (kind: 'migrations' | 'rollback') => readFileSync(new URL(`../../../../../database/supabase/${kind}/354_atomic_theme_release_rollback${kind === 'rollback' ? '.rollback' : ''}.sql`, import.meta.url), 'utf8');
+const themeFunctionSignatures = [
+    'public.theme_draft_actor_site_v1(uuid,uuid,uuid)',
+    'public.read_owned_theme_draft_v1(uuid,uuid,text,text,uuid)',
+    'public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)',
+    'public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)',
+];
+const quoteSql = (value: string) => "'" + value.replaceAll("'", "''") + "'";
+const rollback344 = () => readFileSync(new URL('../../../../../database/supabase/rollback/344_atomic_theme_draft_cas.rollback.sql', import.meta.url), 'utf8');
+// Isolated metadata probes require a quiescent administrative window. The
+// production guard remains conservative; only its exact transient write-XID
+// refusal is retried here. Explicit concurrent-writer tests never use this.
+function catalogScriptWhenQuiescent(sql: string) {
+    const deadline = Date.now() + 10_000;
+    const observations: unknown[] = [];
+    while (true) {
+        try {
+            const result = owned.script(sql);
+            if (observations.length) console.log('N4_CATALOG_QUIESCENCE_RETRY ' + JSON.stringify(observations));
+            return result;
+        } catch (error) {
+            if (!/rollback (?:344|354) refuses concurrent\/prepared writes or non-read-committed state/.test(String(error)) || Date.now() >= deadline) {
+                if (observations.length) console.log('N4_CATALOG_QUIESCENCE_RETRY ' + JSON.stringify(observations));
+                throw error;
+            }
+            observations.push(JSON.parse(owned.psql(`SELECT coalesce(jsonb_agg(jsonb_build_object('backend_type',a.backend_type,'application_name',a.application_name,'state',a.state,'wait_event',a.wait_event)),'[]')::text
+                FROM pg_catalog.pg_locks l LEFT JOIN pg_catalog.pg_stat_activity a ON a.pid=l.pid
+                WHERE l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted AND(l.pid IS NULL OR l.pid<>pg_catalog.pg_backend_pid());`)));
+            Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 100);
+        }
+    }
+}
+
+before(async () => {
+    const signature = 'public.rollback_owned_theme_release_v1(uuid,uuid,text,uuid,uuid,text,boolean,text,uuid,text)';
+    assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NOT NULL;`), 't', 'the full migration template applied354');
+    const prior = rollbackConservationSnapshot();
+    for (const role of ['anon', 'authenticated', 'app_tenant']) {
+        assert.match(owned.psqlExpectError(`SET ROLE ${role}; SELECT public.rollback_owned_theme_release_v1(NULL,NULL,'letbuyy-core',NULL,NULL,'synthetic-key');`), /permission denied for function/);
+    }
+    verify354RetirementGuards(signature);
+    const conserve = rollback354Snapshot();
+    const dependencyGuard = "-- 354 uses the live actor helper and draft-preserving publisher. Its private\n-- function must retire first, including any unknown overload in that family.\nDO $dependent_rollback_precondition$\nBEGIN\n IF EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace\n  WHERE n.nspname='public' AND p.proname='rollback_owned_theme_release_v1') THEN\n  RAISE EXCEPTION 'rollback 344 refuses dependent354 rollback function; retire 354 first';\n END IF;\nEND $dependent_rollback_precondition$;\n\n";
+    const older = rollback344().replace(dependencyGuard, '');
+    assert.equal(createHash('sha256').update(older).digest('hex'), 'c931175ac3725167b1a888abdd0e2cc12884f67f378ae0416928c6bee6550d51', 'the negative control is the exact previously reviewed predecessor, with only the new guard absent');
+    const olderResult = catalogScriptWhenQuiescent(older.replace(/COMMIT;\s*$/, `SELECT to_regprocedure('${signature}') IS NOT NULL AND to_regprocedure('public.theme_draft_actor_site_v1(uuid,uuid,uuid)') IS NULL
+        AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute WHERE attrelid='public.theme_instances'::regclass AND attname='draft_revision' AND NOT attisdropped); ROLLBACK;`));
+    assert.equal(olderResult, 't', 'the old predecessor can retire its actor helper/draft column while leaving354 installed');
+    assert.deepEqual(rollback354Snapshot(), conserve, 'the exact old predecessor negative control is rolled back in full');
+    try { catalogScriptWhenQuiescent(rollback344().replace(/COMMIT;\s*$/, 'ROLLBACK;')); }
+    catch (error) { console.log('N4_354_PREDECESSOR_REFUSAL '+String(error)); predecessor354Refused = /rollback 344 refuses.*354/.test(String(error)); }
+    assert.deepEqual(rollback354Snapshot(), conserve, 'diagnostic reverse-order probe is always rolled back');
+    const definition = owned.psql(`SELECT pg_get_functiondef(${quoteSql(signature)}::regprocedure);`);
+    const acl = owned.psql(`SELECT proacl::text FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`);
+    assert.match(definition, /p_make_store_live boolean DEFAULT true/);
+    owned.script(definition.replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION').replace('p_make_store_live boolean DEFAULT true', 'p_make_store_live boolean DEFAULT false'));
+    try {
+        const drifted = rollback354Snapshot();
+        try { catalogScriptWhenQuiescent(sql354('rollback').replace(/COMMIT;\s*$/, 'ROLLBACK;')); }
+        catch (error) { defaults354Refused = /rollback 354 refuses unknown current body, owner, profile or privileges/.test(String(error)); }
+        assert.deepEqual(rollback354Snapshot(), drifted);
+    } finally { owned.script(definition.replace('CREATE FUNCTION', 'CREATE OR REPLACE FUNCTION')); owned.script(`UPDATE pg_catalog.pg_proc SET proacl=${quoteSql(acl)}::aclitem[] WHERE oid=${quoteSql(signature)}::regprocedure;`); }
+    await verify354ConcurrentRetirement(signature);
+    concurrent354Verified = true;
+    console.log('N4_354_REVERSE_ORDER_DEFAULTS ' + JSON.stringify({predecessor354Refused, defaults354Refused, current_defaults:owned.psql(`SELECT pg_get_expr(proargdefaults,0) FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`)}));
+    owned.script(sql354('rollback'));
+    assert.equal(owned.psql(`SELECT to_regprocedure('${signature}') IS NULL;`), 't');
+    assert.deepEqual(rollbackConservationSnapshot(), prior, 'clean354 retirement leaves the publisher/private344ACL/schema/data untouched');
+    clean354Retirement = true;
+});
 let sequence = 0;
 const slug = 'letbuyy-core';
 async function fixture() {
@@ -44,6 +117,82 @@ async function fixture() {
         (SELECT count(*) FROM idempotency_keys WHERE site_id='${tenant.siteId}' AND scope LIKE 'theme-draft-v1:%');`);
     return { tenant, owner, staff, email, staffEmail, env, gateway, request, editorPath, config, version, save, counts };
 }
+
+function rollback354Snapshot() {
+    return { canonical: rollbackConservationSnapshot(), family: owned.psql("SELECT md5(coalesce(jsonb_agg(to_jsonb(p) ORDER BY p.oid)::text,'')) FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname='rollback_owned_theme_release_v1';") };
+}
+function verify354RetirementGuards(signature: string) {
+    const refuse = (message: RegExp) => {
+        const before = rollback354Snapshot();
+        assert.throws(() => catalogScriptWhenQuiescent(sql354('rollback')), message);
+        assert.deepEqual(rollback354Snapshot(), before, '354 refusal conserves complete function/ACL/schema/data snapshots');
+    };
+    owned.script("CREATE FUNCTION public.rollback_owned_theme_release_v1() RETURNS integer LANGUAGE sql AS 'SELECT 1';");
+    try { refuse(/changed signature or overload family/); }
+    finally { owned.script('DROP FUNCTION public.rollback_owned_theme_release_v1();'); }
+    const definition = owned.psql(`SELECT pg_get_functiondef(${quoteSql(signature)}::regprocedure);`);
+    const acl = owned.psql(`SELECT proacl::text FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`);
+    owned.script(`DROP FUNCTION ${signature};`);
+    try { refuse(/changed signature or overload family/); }
+    finally { owned.script(definition); owned.script(`UPDATE pg_catalog.pg_proc SET proacl=${quoteSql(acl)}::aclitem[] WHERE oid=${quoteSql(signature)}::regprocedure;`); }
+    const cases = [
+        ['proargnames', "ARRAY['wrong_actor']::text[] || proargnames[2:10]", 'text[]'],
+        ['prorettype', "'text'::regtype::oid", 'oid'],
+        ['proretset', 'true', 'boolean'], ['prokind', "'p'::\"char\"", '"char"'],
+        ['proallargtypes', "ARRAY['uuid'::regtype::oid]::oid[]", 'oid[]'],
+        ['proargmodes', "ARRAY['o']::\"char\"[]", '"char"[]'],
+        ['prosrc', "prosrc || E'\\n-- synthetic unknown354body'", 'text'],
+        ['proowner', "'service_role'::regrole::oid", 'oid'], ['prosecdef', 'true', 'boolean'],
+        ['pronargdefaults', '3', 'smallint'], ['proconfig', "ARRAY['search_path=public']::text[]", 'text[]'],
+        ['provolatile', "'s'::\"char\"", '"char"'], ['proisstrict', 'true', 'boolean'],
+        ['proparallel', "'s'::\"char\"", '"char"'],
+    ];
+    for (const [field, expression, cast] of cases) {
+        const original: string = JSON.parse(owned.psql(`SELECT to_jsonb(coalesce(${field}::text,'__NULL__'))::text FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`));
+        owned.script(`UPDATE pg_catalog.pg_proc SET ${field}=${expression} WHERE oid=${quoteSql(signature)}::regprocedure;`);
+        try { refuse(/rollback 354 refuses changed input names or return ABI|rollback 354 refuses unknown current body, owner, profile or privileges/); }
+        finally { owned.script(`UPDATE pg_catalog.pg_proc SET ${field}=${original === '__NULL__' ? 'NULL' : quoteSql(original) + '::' + cast} WHERE oid=${quoteSql(signature)}::regprocedure;`); }
+    }
+    for (const statement of [`GRANT EXECUTE ON FUNCTION ${signature} TO authenticated`, `GRANT EXECUTE ON FUNCTION ${signature} TO service_role WITH GRANT OPTION`, `REVOKE EXECUTE ON FUNCTION ${signature} FROM service_role`]) {
+        owned.script(statement);
+        try { refuse(/unknown current body, owner, profile or privileges/); }
+        finally { owned.script(`UPDATE pg_catalog.pg_proc SET proacl=${quoteSql(acl)}::aclitem[] WHERE oid=${quoteSql(signature)}::regprocedure;`); }
+    }
+    const before = rollback354Snapshot();
+    assert.throws(() => owned.script(sql354('rollback').replace('BEGIN;', 'BEGIN ISOLATION LEVEL REPEATABLE READ;')), /rollback 354 refuses concurrent\/prepared writes or non-read-committed state/);
+    assert.deepEqual(rollback354Snapshot(), before);
+}
+
+async function verify354ConcurrentRetirement(signature: string) {
+    const definition = owned.psql(`SELECT pg_get_functiondef(${quoteSql(signature)}::regprocedure);`);
+    const original: string = JSON.parse(owned.psql(`SELECT to_jsonb(prosrc)::text FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`));
+    for (const variant of ['body','overload']) {
+        const prior = rollback354Snapshot(), app=`n4-354-ddl-${variant}-${owned.runId}`;
+        const suffix='\n-- independently committed synthetic354 body\n', end=definition.lastIndexOf('$function$');
+        const ddl=variant==='body'?definition.slice(0,end)+suffix+definition.slice(end):"CREATE FUNCTION public.rollback_owned_theme_release_v1(p_unknown integer) RETURNS integer LANGUAGE sql AS 'SELECT 1';";
+        const writing=owned.psqlAsync(`BEGIN; SET LOCAL statement_timeout='20s'; SET LOCAL application_name=${quoteSql(app)}; ${ddl};SELECT pg_sleep(5);COMMIT;`).then(()=>null,error=>String(error));
+        try {
+            let active=false;const deadline=Date.now()+10_000;
+            while(Date.now()<deadline) {
+                active=owned.psql(`SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_stat_activity WHERE application_name=${quoteSql(app)} AND backend_xid IS NOT NULL AND wait_event='PgSleep');`)==='t';
+                if(active) break; await new Promise(resolve=>setTimeout(resolve,20));
+            }
+            assert.equal(active,true, 'independent354DDL is written and uncommitted');
+            assert.throws(()=>owned.script(sql354('rollback')),/rollback 354 refuses concurrent\/prepared writes/);
+            assert.deepEqual(rollback354Snapshot(),prior);
+            assert.equal(await writing,null);
+            if(variant==='body') assert.equal(owned.psql(`SELECT encode(sha256(convert_to(prosrc,'UTF8')),'hex') FROM pg_catalog.pg_proc WHERE oid=${quoteSql(signature)}::regprocedure;`),createHash('sha256').update(original+suffix).digest('hex'));
+            else assert.equal(owned.psql("SELECT to_regprocedure('public.rollback_owned_theme_release_v1(integer)') IS NOT NULL;"),'t');
+        } finally { await writing; if(variant==='body') owned.script(definition.replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION'));else owned.script('DROP FUNCTION public.rollback_owned_theme_release_v1(integer);'); }
+        assert.deepEqual(rollback354Snapshot(),prior);
+    }
+}
+
+test('354 must retire before predecessor344 and unknown same-count default expressions refuse', () => {
+    assert.equal(predecessor354Refused,true,'predecessor344 must refuse retirement while354 depends on its draft-preserving publisher and live authority helper');
+    assert.equal(defaults354Refused,true,'default true to false changes the known callable contract even though argument/default counts and body are identical');
+    assert.equal(concurrent354Verified,true);
+});
 
 test('344 supports clean rollback/reapply and ordinary roles cannot call the private writers', () => {
     const base = '../../../../../database/supabase/';
@@ -83,15 +232,8 @@ test('344 supports clean rollback/reapply and ordinary roles cannot call the pri
     }
 });
 
-const themeFunctionSignatures = [
-    'public.theme_draft_actor_site_v1(uuid,uuid,uuid)',
-    'public.read_owned_theme_draft_v1(uuid,uuid,text,text,uuid)',
-    'public.mutate_owned_theme_draft_v1(uuid,uuid,text,text,integer,text,text,jsonb,jsonb,uuid,text,jsonb)',
-    'public.publish_theme_release(uuid,text,jsonb,uuid,integer,uuid,text,boolean,text,uuid)',
-];
-const rollback344 = () => readFileSync(new URL('../../../../../database/supabase/rollback/344_atomic_theme_draft_cas.rollback.sql', import.meta.url), 'utf8');
+
 const reapply344 = () => owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/344_atomic_theme_draft_cas.sql', import.meta.url), 'utf8'));
-const quoteSql = (value: string) => "'" + value.replaceAll("'", "''") + "'";
 function rollbackConservationSnapshot() {
     const families = themeFunctionSignatures.map(signature => quoteSql(signature.slice(7, signature.indexOf('(')))).join(',');
     const functions = owned.psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(p) ORDER BY p.oid)::text,'')) FROM pg_catalog.pg_proc p
@@ -104,7 +246,7 @@ function rollbackConservationSnapshot() {
 function assertRollbackRefusesUnchanged(reason: RegExp) {
     const before = rollbackConservationSnapshot();
     try {
-        assert.throws(() => owned.script(rollback344()), reason);
+        assert.throws(() => catalogScriptWhenQuiescent(rollback344()), reason);
         assert.deepEqual(rollbackConservationSnapshot(), before, 'refusal preserves the complete function families, ACLs, schema and canonical data');
     } finally {
         // An unfixed rollback can commit in the red regression run. Restore the
@@ -543,8 +685,13 @@ test('legacy release rollback preserves an unrelated active canonical editor dra
         encode(sha256(convert_to(d.working_manifest::text,'UTF8')),'hex') FROM theme_instances i
         JOIN theme_instance_drafts d ON d.id=i.current_draft_id WHERE i.store_id='${j.tenant.siteId}';`);
     const before = snapshot(); assert.match(before, /\|3\|active\|/);
+    const reviewedCurrent = owned.psql(`SELECT release_id FROM public.publish_theme_release('${j.tenant.siteId}','${slug}',${quoteSql(JSON.stringify(j.config))}::jsonb,NULL,NULL,'${j.owner}','Synthetic legacy caller',false,NULL,NULL);`);
+    assert.equal(snapshot(), before, 'the legacy publisher itself must preserve the unrelated active draft');
+    const before354Reapply = rollbackConservationSnapshot();
+    owned.script(sql354('migrations')); reapplied354 = true;
+    assert.deepEqual(rollbackConservationSnapshot(), before354Reapply, 'reapplying354 changes no canonical row or344executionACL');
     const rollback = await j.request(`/v1/themes/${slug}/releases/${releaseId}/rollback`, 'POST', {
-        store_id: j.tenant.siteId, expected_current_release_id: releaseId, make_store_live: false,
+        store_id: j.tenant.siteId, expected_current_release_id: reviewedCurrent, idempotency_key: crypto.randomUUID(), make_store_live: false,
     });
     assert.equal(rollback.status, 200, rollback.text);
     assert.equal(snapshot(), before, 'release rollback must preserve the unpublished canonical draft, revision and current pointer');
@@ -582,4 +729,171 @@ test('partial owned read state and malformed mutation acknowledgements cannot fa
         const result = await j.request(`/v1/themes/${slug}/publish`, 'POST', { store_id: j.tenant.siteId, base_version: 1, idempotency_key: crypto.randomUUID(), make_store_live: false });
         assert.equal(result.status, 503); assert.equal(j.counts(), '1|1|1|1|1');
     } finally { tap.restore(); }
+});
+
+
+test('354 retains its clean reverse-order proof and refuses retirement once rollback evidence exists', () => {
+    assert.equal(clean354Retirement, true); assert.equal(reapplied354, true);
+    const prior = rollbackConservationSnapshot();
+    const functionState = () => owned.psql("SELECT md5(to_jsonb(p)::text) FROM pg_catalog.pg_proc p WHERE oid='public.rollback_owned_theme_release_v1(uuid,uuid,text,uuid,uuid,text,boolean,text,uuid,text)'::regprocedure;");
+    const before = functionState();
+    assert.throws(() => owned.script(sql354('rollback')), /retained rollback receipts or release evidence/);
+    assert.equal(functionState(), before);
+    assert.deepEqual(rollbackConservationSnapshot(), prior);
+});
+
+
+// Published-storefront followup. The frozen344 repair source-after remains an
+// immutable integration prerequisite; this is a separate real route regression.
+test('reviewed release rollback recovers one exact intent and preserves a newer canonical draft', async () => {
+    const j = await fixture();
+    const publish = (base: number) => j.request(`/v1/themes/${slug}/publish`, 'POST', {
+        store_id: j.tenant.siteId, base_version: base, idempotency_key: crypto.randomUUID(), make_store_live: true,
+    });
+    assert.equal((await j.save()).status, 200);
+    const a = await publish(1); assert.equal(a.status, 200, a.text);
+    const target = a.json!.data.release.release_id;
+    const second = structuredClone(j.config); second.themeSettings = { ...second.themeSettings, primaryColor: '#314159' };
+    assert.equal((await j.save(2, crypto.randomUUID(), second)).status, 200);
+    const b = await publish(3); assert.equal(b.status, 200, b.text);
+    const current = b.json!.data.release.release_id;
+    const newer = structuredClone(j.config); newer.themeSettings = { ...newer.themeSettings, primaryColor: '#271828' };
+    assert.equal((await j.save(4, crypto.randomUUID(), newer)).status, 200);
+    const before = await j.request(j.editorPath); assert.equal(before.status, 200, before.text);
+    const savedDraft = { version: before.json!.data.version, config: before.json!.data.template_config, draft: before.json!.data.draft };
+    const rollback = `/v1/themes/${slug}/releases/${target}/rollback`;
+    const intent = { store_id: j.tenant.siteId, expected_current_release_id: current, idempotency_key: crypto.randomUUID(), make_store_live: true };
+    const first = await j.request(rollback, 'POST', intent); assert.equal(first.status, 200, first.text);
+    assert.equal(owned.psql(`SELECT count(*) FROM audit_activity_events WHERE store_id='${j.tenant.siteId}' AND action='theme.rollback';`), '1');
+    assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${j.tenant.siteId}' AND event_type='theme.release.rollback_published';`), '1');
+    const once = rollbackConservationSnapshot();
+    const retry = await j.request(rollback, 'POST', intent); assert.equal(retry.status, 200, retry.text);
+    assert.equal(retry.json!.data.rollback.release_id, first.json!.data.rollback.release_id, 'exact retry must not publish another release');
+    assert.deepEqual(rollbackConservationSnapshot(), once, 'retry leaves every canonical effect unchanged');
+    const after = await j.request(j.editorPath); assert.equal(after.status, 200, after.text);
+    assert.deepEqual({ version: after.json!.data.version, config: after.json!.data.template_config, draft: after.json!.data.draft }, savedDraft);
+    const stale = await j.request(rollback, 'POST', { ...intent, idempotency_key: crypto.randomUUID() });
+    assert.equal(stale.status, 409, stale.text);
+    assert.deepEqual(rollbackConservationSnapshot(), once);
+});
+
+async function publishedRollbackFixture() {
+    const j = await fixture();
+    const publish = (base: number) => j.request(`/v1/themes/${slug}/publish`, 'POST', {store_id: j.tenant.siteId, base_version: base, idempotency_key: crypto.randomUUID(), make_store_live: true});
+    assert.equal((await j.save()).status, 200);
+    const a = await publish(1); assert.equal(a.status, 200, a.text);
+    assert.equal((await j.save(2, crypto.randomUUID(), j.config)).status, 200);
+    const b = await publish(3); assert.equal(b.status, 200, b.text);
+    const newer = structuredClone(j.config); newer.n4RollbackMarker = 'unpublished newer document';
+    assert.equal((await j.save(4, crypto.randomUUID(), newer)).status, 200);
+    const path = `/v1/themes/${slug}/releases/${a.json!.data.release.release_id}/rollback`;
+    const intent = {store_id: j.tenant.siteId, expected_current_release_id: b.json!.data.release.release_id, idempotency_key: crypto.randomUUID(), make_store_live: true};
+    return {...j, path, intent, target: a.json!.data.release.release_id, current: b.json!.data.release.release_id};
+}
+
+test('354 rollback response lost after commit recovers once after a newer publication', async () => {
+    const j = await publishedRollbackFixture(); let dropped = false;
+    const tap = tapRest(owned.restUrl, async (call, forward) => {
+        const response = await forward();
+        if (call.resource === 'rpc/rollback_owned_theme_release_v1' && !dropped) {
+            dropped = true; return new Response(JSON.stringify({message: 'Synthetic post-commit reply loss'}), {status: 503, headers: {'content-type':'application/json'}});
+        }
+        return response;
+    });
+    try { assert.equal((await j.request(j.path, 'POST', j.intent)).status, 503); } finally { tap.restore(); }
+    assert.equal(dropped, true);
+    const committed = owned.psql(`SELECT id FROM theme_releases WHERE store_id='${j.tenant.siteId}' AND idempotency_key='${j.intent.idempotency_key}';`); assert.ok(committed);
+    const newest = await j.request(`/v1/themes/${slug}/publish`, 'POST', {store_id: j.tenant.siteId, base_version: 5, idempotency_key: crypto.randomUUID(), make_store_live: true});
+    assert.equal(newest.status, 200, newest.text);
+    const once = rollback354Snapshot();
+    const recovered = await j.request(j.path, 'POST', j.intent);
+    assert.equal(recovered.status, 200, recovered.text); assert.equal(recovered.json!.data.replayed, true);
+    assert.equal(recovered.json!.data.rollback.release_id, committed);
+    assert.equal(recovered.json!.data.current_release_id, newest.json!.data.release.release_id);
+    assert.deepEqual(rollback354Snapshot(), once);
+});
+
+test('354 content grants are checked live before effects and before replay; wrong store and private theme deny', async () => {
+    const j = await publishedRollbackFixture(), other = await fixture();
+    const provision = await j.gateway.request('/v1/employees', {method:'POST', headers:{...await signedIdentityHeaders(j.owner,j.email,j.tenant.siteId),'X-Idempotency-Key':crypto.randomUUID()}, body:JSON.stringify({store_id:j.tenant.siteId,email:j.staffEmail,role:'editor',permissions:{granted:['content:write']}})});
+    assert.equal(provision.status, 201, provision.text);
+    let current = j.current;
+    for (const grant of ['content:write','content:*','*']) {
+        owned.psql(`UPDATE employees SET permissions=jsonb_build_object('granted',jsonb_build_array('${grant}')) WHERE store_id='${j.tenant.siteId}' AND user_id='${j.staff}';`);
+        const intent = {...j.intent, expected_current_release_id:current, idempotency_key:crypto.randomUUID()};
+        const accepted = await j.request(j.path,'POST',intent,j.staff,j.staffEmail); assert.equal(accepted.status,200,accepted.text);
+        current = accepted.json!.data.rollback.release_id;
+        for (const [disable,restore] of [["permissions='{}'", `permissions=jsonb_build_object('granted',jsonb_build_array('${grant}'))`], ['is_active=false','is_active=true'], ["status='disabled'", "status='active'"], ['deleted_at=now()','deleted_at=NULL']]) {
+            owned.psql(`UPDATE employees SET ${disable} WHERE store_id='${j.tenant.siteId}' AND user_id='${j.staff}';`);
+            try {
+                const before=rollback354Snapshot();
+                assert.equal((await j.request(j.path,'POST',intent,j.staff,j.staffEmail)).status,403);
+                assert.equal((await j.request(j.path,'POST',{...intent,idempotency_key:crypto.randomUUID()},j.staff,j.staffEmail)).status,403);
+                assert.deepEqual(rollback354Snapshot(),before);
+            } finally { owned.psql(`UPDATE employees SET ${restore} WHERE store_id='${j.tenant.siteId}' AND user_id='${j.staff}';`); }
+        }
+        const before=rollback354Snapshot();
+        const replay=await j.request(j.path,'POST',intent,j.staff,j.staffEmail);assert.equal(replay.status,200,replay.text);
+        assert.equal(replay.json!.data.rollback.release_id,current);assert.deepEqual(rollback354Snapshot(),before);
+    }
+    let before=rollback354Snapshot();
+    assert.equal((await j.request(j.path,'POST',j.intent,other.owner,other.email)).status,403);
+    assert.equal((await j.request(j.path,'POST',j.intent,j.owner,j.email,j.gateway,other.tenant.siteId)).status,403);
+    const wrongTarget = await j.request(`/v1/themes/${slug}/releases/${other.tenant.siteId}/rollback`,'POST',{...j.intent,expected_current_release_id:current,idempotency_key:crypto.randomUUID()});
+    assert.equal(wrongTarget.status,409,wrongTarget.text);assert.deepEqual(rollback354Snapshot(),before);
+    const original=owned.psql(`SELECT jsonb_build_object('is_site_private',is_site_private,'owned_by_site_id',owned_by_site_id)::text FROM themes WHERE slug='${slug}';`);
+    owned.psql(`UPDATE themes SET is_site_private=true,owned_by_site_id='${other.tenant.siteId}' WHERE slug='${slug}';`);
+    try { before=rollback354Snapshot();assert.equal((await j.request(j.path,'POST',j.intent)).status,403);assert.deepEqual(rollback354Snapshot(),before); }
+    finally { const prior=JSON.parse(original);owned.psql(`UPDATE themes SET is_site_private=${prior.is_site_private},owned_by_site_id=${prior.owned_by_site_id ? quoteSql(prior.owned_by_site_id) : 'NULL'} WHERE slug='${slug}';`); }
+});
+
+test('354 rollback mandatory audit, outbox and receipt failures roll back every canonical effect', async () => {
+    const j=await publishedRollbackFixture();
+    for (const [table,predicate] of [['audit_activity_events', "NEW.action='theme.rollback'"],['outbox_events', "NEW.event_type='theme.release.rollback_published'"],['idempotency_keys', "NEW.scope LIKE 'theme-release-rollback-v1:%'"]]) {
+        const trigger=`n4_354_fault_${table}`;
+        const siteField=table==='idempotency_keys'?'site_id':'store_id';
+        // Outbox store identity is authoritative in payload, not a parallel table column.
+        const siteCheck=table==='outbox_events'?`NEW.payload->>'store_id'='${j.tenant.siteId}'`:`NEW.${siteField}='${j.tenant.siteId}'`;
+        owned.script(`CREATE FUNCTION public.${trigger}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF ${siteCheck} AND ${predicate} THEN RAISE EXCEPTION 'Synthetic required354write failed'; END IF; RETURN NEW; END $$; CREATE TRIGGER ${trigger} BEFORE INSERT ON public.${table} FOR EACH ROW EXECUTE FUNCTION public.${trigger}();`);
+        try { const before=rollback354Snapshot();const response=await j.request(j.path,'POST',j.intent);assert.equal(response.status,503,response.text);assert.deepEqual(rollback354Snapshot(),before); }
+        finally { owned.script(`DROP TRIGGER ${trigger} ON public.${table};DROP FUNCTION public.${trigger}();`); }
+    }
+    assert.equal((await j.request(j.path,'POST',j.intent)).status,200);
+});
+
+test('354 competing rollback intents serialize one publication and same-key concurrent retries share its receipt', async () => {
+    const j=await publishedRollbackFixture();
+    const race=await Promise.all([j.request(j.path,'POST',j.intent),j.request(j.path,'POST',{...j.intent,idempotency_key:crypto.randomUUID()})]);
+    assert.deepEqual(race.map(r=>r.status).sort(),[200,409],race.map(r=>r.text).join('\n'));
+    assert.equal(owned.psql(`SELECT count(*) FROM theme_releases WHERE store_id='${j.tenant.siteId}' AND rollback_of_release_id='${j.target}';`),'1');
+    const winner=race.find(r=>r.status===200)!;
+    const next={...j.intent,expected_current_release_id:winner.json!.data.rollback.release_id,idempotency_key:crypto.randomUUID()};
+    const twins=await Promise.all([j.request(j.path,'POST',next),j.request(j.path,'POST',next)]);
+    assert.deepEqual(twins.map(r=>r.status),[200,200],twins.map(r=>r.text).join('\n'));
+    assert.equal(twins[0].json!.data.rollback.release_id,twins[1].json!.data.rollback.release_id);
+    assert.deepEqual(twins.map(r=>r.json!.data.replayed).sort(),[false,true]);
+    assert.equal(owned.psql(`SELECT count(*) FROM audit_activity_events WHERE store_id='${j.tenant.siteId}' AND action='theme.rollback';`),'2');
+    assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${j.tenant.siteId}' AND event_type='theme.release.rollback_published';`),'2');
+    const draft=await j.request(j.editorPath);assert.equal(draft.json!.data.version,5);assert.equal(draft.json!.data.template_config.n4RollbackMarker,'unpublished newer document');
+});
+
+
+test('354 corrupted retained receipt integrity and valid-shaped misbound RPC acknowledgements cannot confirm rollback', async () => {
+    const j=await publishedRollbackFixture();
+    const accepted=await j.request(j.path,'POST',j.intent);assert.equal(accepted.status,200,accepted.text);
+    const retained=owned.psql(`SELECT jsonb_build_object('hash',response_hash,'body',response_body)::text FROM idempotency_keys WHERE site_id='${j.tenant.siteId}' AND key='${j.intent.idempotency_key}';`);
+    const original=JSON.parse(retained);
+    const outcomes=[];
+    try {
+        owned.psql(`UPDATE idempotency_keys SET response_hash='unknown-corrupt-hash' WHERE site_id='${j.tenant.siteId}' AND key='${j.intent.idempotency_key}';`);
+        const before=rollback354Snapshot();
+        const replay=await j.request(j.path,'POST',j.intent);outcomes.push({case:'corrupt retained response hash',status:replay.status});
+        assert.deepEqual(rollback354Snapshot(),before);
+    } finally { owned.psql(`UPDATE idempotency_keys SET response_hash=${quoteSql(original.hash)},response_body=${quoteSql(JSON.stringify(original.body))}::jsonb WHERE site_id='${j.tenant.siteId}' AND key='${j.intent.idempotency_key}';`); }
+    const misbound=structuredClone(accepted.json!.data);misbound.restored_release.id=crypto.randomUUID();
+    const tap=tapRest(owned.restUrl,async(call,forward)=>call.resource==='rpc/rollback_owned_theme_release_v1'?new Response(JSON.stringify(misbound),{headers:{'content-type':'application/json'}}):forward());
+    try { const before=rollback354Snapshot();const response=await j.request(j.path,'POST',j.intent);outcomes.push({case:'valid-shaped different restored target',status:response.status});assert.deepEqual(rollback354Snapshot(),before); }
+    finally { tap.restore(); }
+    console.log('N4_354_RECEIPT_INTEGRITY '+JSON.stringify(outcomes));
+    for(const outcome of outcomes) assert.equal(outcome.status,503,outcome.case);
 });

@@ -110,6 +110,7 @@ class MerchantBillingState {
       planName = row['plan_name'] as String? ?? _title(planSlug!);
       status = row['status'] as String? ?? 'unknown';
       billingPeriod = row['billing_period'] as String?;
+      providerMode = row['provider_mode'] is String ? row['provider_mode'] as String : null;
       amountPaidMinor = row['amount_paid'] == null
           ? null
           : _minor(row['amount_paid']);
@@ -129,7 +130,7 @@ class MerchantBillingState {
       status = trialStatus ?? 'unknown';
     }
   }
-  String? id, planSlug, billingPeriod, trialStatus;
+  String? id, planSlug, billingPeriod, trialStatus, providerMode;
   late String planName, status;
   int? amountPaidMinor, productLimit, productCount;
   bool productLimitKnown = false;

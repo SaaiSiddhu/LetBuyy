@@ -32,6 +32,7 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
   bool _isVerifying = false;
   bool _isReady = false;
   String? _error;
+  SubscriptionTaxBreakdown? _tax;
 
   @override
   void initState() {
@@ -69,6 +70,8 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
           'Checkout does not match the selected plan. Return to plans and retry.';
       return;
     }
+    try { _tax=SubscriptionTaxBreakdown.fromJson(widget.checkout['tax'],grossMinor:widget.checkout['amount']); }
+    catch (_) { _error='The saved tax breakdown needs review. Return to billing before paying.';return; }
     final checkoutUrl = _checkoutUrlFrom(widget.checkout);
     final inlineHtml = _inlineCheckoutHtml();
     if (inlineHtml != null) {
@@ -144,7 +147,10 @@ class _RazorpayCheckoutScreenState extends State<RazorpayCheckoutScreen> {
                     ),
                     child: _error != null
                         ? _buildError(colors)
-                        : WebViewWidget(controller: _controller),
+                        : Column(children:[
+                            Padding(padding:const EdgeInsets.all(12),child:Text('${subscriptionMoney(_tax!.gross,decimals:true)} total, including applicable taxes',style:TextStyle(color:colors.textPrimary))),
+                            Expanded(child:WebViewWidget(controller: _controller)),
+                          ]),
                   ),
                 ),
               ),

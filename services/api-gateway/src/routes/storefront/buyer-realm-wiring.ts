@@ -40,8 +40,11 @@ import { registerMobileReleaseRoutes } from './mobile-release-routes';
 import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
+import { executeBuyerSupportMutation, readBuyerSupportMutationReceipt } from '../../lib/buyer-support-mutations';
 import { registerBuyerPrivacyRoutes, type PrivacyRequestRow, type PrivacyRequestType } from './buyer-privacy-routes';
 import {registerBuyerPrivacyExportRoutes} from './buyer-privacy-export-routes';
+import { registerBuyerAssistantRoutes } from './buyer-assistant-routes';
+import { createBuyerAiAdapter, type Admission } from '../../execution/buyer-assistant.adapter';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
 import { registerBuyerWishlistRoutes } from './buyer-wishlist-routes';
 import { registerBuyerReviewRoutes } from './buyer-review-routes';
@@ -78,6 +81,39 @@ export function registerBuyerRealmRoutes(
     deps: BuyerRealmRoutesDeps,
 ): void {
     const { normalizeEmail } = deps;
+
+    registerBuyerAssistantRoutes(router, {
+        dependencies: c => ({
+            provider: createBuyerAiAdapter({
+                profile: c.env.BUYER_AI_ENABLED === 'true' ? c.env.BUYER_AI_PROFILE : undefined,
+                apiKey: c.env.BUYER_AI_API_KEY,
+            }),
+            fingerprintKey: c.env.BUYER_AI_FINGERPRINT_KEY,
+            receipts: {
+                async reserve(actor, request, hash, profile, tokens) {
+                    const { data, error } = await getSupabaseAdmin(c).rpc('reserve_buyer_ai_request', {
+                        p_buyer_account_id: actor.buyerAccountId, p_session_epoch: actor.sessionEpoch,
+                        p_conversation_id: request.conversation_id, p_request_id: request.request_id,
+                        p_payload_hash: hash, p_profile_id: profile.id,
+                        p_request_limit: profile.requests_per_day, p_token_limit: profile.token_bound_per_day,
+                        p_reserved_tokens: tokens,
+                    });
+                    const status = data?.status;
+                    if (error || !['reserved','conflict','unauthorized','quota_exceeded','in_progress',
+                        'outcome_unknown','result_unavailable'].includes(status)) throw new Error('BUYER_AI_RECEIPT_UNAVAILABLE');
+                    return status as Admission;
+                },
+                async transition(actor, requestId, from, to) {
+                    const { data, error } = await getSupabaseAdmin(c).rpc('transition_buyer_ai_request', {
+                        p_buyer_account_id: actor.buyerAccountId, p_session_epoch: actor.sessionEpoch,
+                        p_request_id: requestId, p_from_state: from, p_to_state: to,
+                    });
+                    if (error || typeof data !== 'boolean') throw new Error('BUYER_AI_RECEIPT_UNAVAILABLE');
+                    return data;
+                },
+            },
+        }),
+    });
 
     registerBuyerAccountRoutes(router, {
         normalizeEmail,
@@ -484,15 +520,17 @@ export function registerBuyerRealmRoutes(
     });
 
     registerBuyerSupportRoutes(router, {
-        listTickets: async (c, buyerAccountId, limit) => {
-            const { data, error } = await getSupabaseAdmin(c)
+        listTickets: async (c, buyerAccountId, limit, cursor) => {
+            let query = getSupabaseAdmin(c)
                 .from('support_tickets')
                 .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
                 .eq('requester_user_id', buyerAccountId)
                 .eq('requester_type', 'customer')
                 .is('deleted_at', null)
                 .order('created_at', { ascending: false })
-                .limit(limit);
+                .order('id', { ascending: false });
+            if (cursor) query = query.or(`created_at.lt.${cursor.value},and(created_at.eq.${cursor.value},id.lt.${cursor.id})`);
+            const { data, error } = await query.limit(limit);
             return { data: (data || null) as BuyerTicketRow[] | null, error };
         },
         // Scoped by BOTH the ticket and the buyer. Scoping by ticket alone would let any buyer read
@@ -512,44 +550,23 @@ export function registerBuyerRealmRoutes(
         // visibility = 'internal' is an agent's private note — triage, fraud suspicion, escalation
         // reasoning. It must never reach the buyer, and the filter lives HERE, in the query, so no
         // caller can obtain the unfiltered rows by using this dependency differently.
-        listPublicMessages: async (c, ticketId, limit) => {
-            const { data, error } = await getSupabaseAdmin(c)
+        listPublicMessages: async (c, ticketId, limit, cursor) => {
+            let query = getSupabaseAdmin(c)
                 .from('ticket_messages')
                 .select('id, author_type, body, created_at')
                 .eq('ticket_id', ticketId)
                 .eq('visibility', 'public')
                 .is('deleted_at', null)
                 .order('created_at', { ascending: true })
-                .limit(limit);
+                .order('id', { ascending: true });
+            if (cursor) query = query.or(`created_at.gt.${cursor.value},and(created_at.eq.${cursor.value},id.gt.${cursor.id})`);
+            const { data, error } = await query.limit(limit);
             return { data: (data || null) as BuyerTicketMessageRow[] | null, error };
         },
-        // requester_type, channel, status and author_type are set HERE, never taken from the request:
-        // a buyer must not be able to open a ticket as a merchant, nor post as an agent.
-        openTicket: async (c, buyerAccountId, input) => {
-            const db = getSupabaseAdmin(c);
-            const now = new Date();
-            const { data, error } = await db.rpc('open_buyer_support_ticket_with_complaint', {
-                p_ticket_ref: generateTicketRef(now),
-                p_first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
-                p_resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
-                p_site_id: input.siteId,
-                p_requester_user_id: buyerAccountId,
-                p_subject: input.subject,
-                p_body: input.body,
-            });
-            if (error || !data || typeof data !== 'object') return { data: null, complaintCopy: null, error };
-            const result = data as { ticket?: BuyerTicketRow; message?: BuyerTicketMessageRow };
-            if (!result.ticket || !result.message) return { data: null, complaintCopy: null, error: new Error('Atomic buyer support intake returned an incomplete result') };
-            return { data: result.ticket, complaintCopy: result.message, error: null };
-        },
-        addRequesterMessage: async (c, ticketId, body) => {
-            const { data, error } = await getSupabaseAdmin(c)
-                .from('ticket_messages')
-                .insert({ ticket_id: ticketId, author_type: 'requester', visibility: 'public', body })
-                .select('id, author_type, body, created_at')
-                .maybeSingle();
-            return { data: (data || null) as BuyerTicketMessageRow | null, error };
-        },
+        // Buyer identity/epoch come from verified contexts; the canonical RPC
+        // binds the logical action and enforces current ownership atomically.
+        mutate: executeBuyerSupportMutation,
+        recover: readBuyerSupportMutationReceipt,
     });
 
     const PRIVACY_REQUEST_COLUMNS = 'id, ticket_ref, status, metadata, created_at, updated_at';

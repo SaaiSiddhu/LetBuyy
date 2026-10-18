@@ -40,7 +40,7 @@
 //   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--suite <path>]...
 //        [--suite-dir <dir>]... [--gateway-db] [--jobs <n>] [--timeout <seconds>] [--log-dir <dir>] [--json]
 //        [--json-out <file>] [--list] [--keep-container] [--container <name>] [--kind postgres|gateway-db] [--no-reap]
-//        [--reap-only] [--reap-min-age <seconds>] [--reap-run-id <12hex>]... [--run-receipt <new-file>]
+//        [--reap-only] [--reap-min-age <seconds>]
 // --container names the cluster(s); it must be one of this runner's own names (letbuyy-exec-...), and anything else -
 // a Supabase development container included - is refused before a single docker command runs. --kind applies to
 // explicit --suite/--suite-dir paths that live outside the catalog (the runner's own lifecycle tests use it).
@@ -66,7 +66,6 @@ import {
     newRunId,
     publishedHostPort,
     reapStaleClusters,
-    parseReapRunIds,
     removeContainer,
     removeNetwork,
     removeVolume,
@@ -358,6 +357,7 @@ async function runGatewaySuite(suite, cluster) {
             [OWNED_FIXTURE_ENV.restContainer]: restName,
             [OWNED_FIXTURE_ENV.restUpstreamPort]: String(upstreamPort),
             [OWNED_FIXTURE_ENV.restServiceKey]: serviceKey,
+            LETBUYY_OWNED_SQL_PASSWORD: cluster.restPassword,
         };
         // The runner holds itself to the rule it imposes: nothing starts until ownership is proven.
         await verifyOwnedFixture(fixtureEnv);
@@ -434,12 +434,11 @@ async function startClusters(count) {
 }
 
 async function main() {
-    const reapRunIds = parseReapRunIds(args); // before any Docker discovery or deletion
     const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
     if (flag('--reap-only')) {
-        const { containers, networks, volumes, failures = [] } = reapStaleClusters({ runIds: reapRunIds, minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
-        process.stdout.write(JSON.stringify({ reaped: containers, reapedNetworks: networks, reapedVolumes: volumes, reapFailures: failures }) + '\n');
-        return failures.length ? 71 : 0;
+        const { containers, networks, volumes } = reapStaleClusters({ minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
+        process.stdout.write(JSON.stringify({ reaped: containers, reapedNetworks: networks, reapedVolumes: volumes }) + '\n');
+        return 0;
     }
 
     const suites = selectSuites();
@@ -521,7 +520,7 @@ async function main() {
     const leftover = keepContainer ? [] : [...remaining.containers, ...remaining.networks, ...remaining.volumes];
     const cleanupFailures = [...cleanupOutcomes.filter((outcome) => !outcome.removed).map((outcome) => `${outcome.kind} ${outcome.name}`), ...leftover.map((name) => `remaining ${name}`)];
     if (cleanupFailures.length > 0) {
-        warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only --reap-run-id ${runId}\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
+        warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
     }
 
     if (infrastructureError) {

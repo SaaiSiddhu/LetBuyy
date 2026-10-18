@@ -160,7 +160,7 @@ export class OutboxExecutionAdapter {
 
     private async createWebhookDeliveries(event: OutboxEventClaim, envelope: JsonObject): Promise<number> {
         // Private review metadata has no external consumer or delivery authority.
-        if (event.event_type === 'reel.review.changed') return 0;
+        if (event.event_type === 'reel.review.changed' || event.event_type === 'reel.upload.changed') return 0;
         if (!event.site_id) return 0;
 
         const { data, error } = await this.db

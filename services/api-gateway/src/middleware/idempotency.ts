@@ -181,10 +181,18 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const routeOwnedOrderReceipt = (method === 'PATCH' && /^\/orders\/[^/]+$/.test(orderPath))
         || (method === 'POST' && /^\/(?:orders|returns)\/[^/]+\/refund\/complete$/.test(orderPath));
     const routeOwnedMoneyClaim = method === 'POST' && (/^\/payments\/[^/]+\/refund$/.test(orderPath) || /^\/payouts\/[^/]+\/settle$/.test(orderPath));
+    // Subscription checkout owns a live-owner, actor/site/key/payload-bound
+    // durable source. Replaying an outer HTTP cache would bypass owner checks
+    // and split the free activation from its mandatory receipt completion.
+    const routeOwnedSubscriptionCheckout = method === 'POST'
+        && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
+    // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
+    const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
+    // Membership commands own live-owner/version/payload-bound SQL receipts.
+    const routeOwnedCollectionMembership = method === 'PUT' && /^\/products\/collections\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/products$/i.test(orderPath);
     // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
     const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
-    const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
-    if (routeOwnedInventoryAdjustment || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    if (routeOwnedCollectionMembership || routeOwnedInventoryAdjustment || routeOwnedSubscriptionCheckout || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }

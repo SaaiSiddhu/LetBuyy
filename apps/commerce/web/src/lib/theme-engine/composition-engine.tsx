@@ -1,8 +1,9 @@
+import { headers } from 'next/headers';
 import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
 } from '@letbuyy/shared-types';
-import type { StoreModel } from '@letbuyy/tenant-core';
+import { resolveStorefrontHost, type StoreModel } from '@letbuyy/tenant-core';
 import type { NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import {
     createThemeRenderer,
@@ -245,6 +246,19 @@ function buildLiquidAppEmbeds(input: unknown): LiquidAppEmbeds {
     return embeds;
 }
 
+// Product URLs follow the public request origin; the proxy already owns tenant access.
+// Other host modes and editor previews keep their existing /store/<subdomain> compatibility prefix.
+async function resolveLiquidProductBasePath(subdomain: string): Promise<string> {
+    const requestHeaders = await headers();
+    const resolution = resolveStorefrontHost(
+        requestHeaders.get('x-forwarded-host') || requestHeaders.get('host'),
+        process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN,
+        process.env.NEXT_PUBLIC_STORE_ROOT_DOMAIN_ALIASES,
+    );
+    return resolution.kind === 'subdomain' && resolution.subdomain === subdomain
+        ? '' : `/store/${subdomain}`;
+}
+
 function productSlug(product: SectionRenderData['product']): string {
     if (!product) return '';
     const explicitSlug = 'slug' in product && typeof product.slug === 'string' ? product.slug : '';
@@ -436,6 +450,7 @@ async function buildLiquidCommerceContext({
     buyerUnavailable,
     orderDetail,
     page,
+    productBasePath,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
@@ -446,8 +461,9 @@ async function buildLiquidCommerceContext({
     buyerUnavailable?: boolean;
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
+    productBasePath?: string;
 }): Promise<LiquidCommerceDrops> {
-    const basePath = `/store/${plan.route.subdomain}`;
+    const basePath = productBasePath ?? await resolveLiquidProductBasePath(plan.route.subdomain);
     const products = collectLiquidProducts(sectionData, basePath);
     const product = products[0] || null;
     const reviewData = collectLiquidProductReviews(sectionData);
@@ -625,6 +641,7 @@ async function renderLiquidPlan({
     liquidPage?: Record<string, unknown> | null;
 }): Promise<{ html: string; headStyleText: string } | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
+    const productBasePath = await resolveLiquidProductBasePath(plan.route.subdomain);
 
     const orderRoute = plan.route.type === 'customer_orders' || plan.route.type === 'customer_order';
     const buyerAccountRoute = plan.route.type === 'customer_account'
@@ -652,14 +669,14 @@ async function renderLiquidPlan({
     // Wishlist products: enrich the customer wishlist IDs into full product drops.
     if (plan.route.type === 'customer_wishlist' && customer && customer.wishlist.length > 0) {
         const enriched = await ProductService.getProductsByIds(customer.wishlist, plan.route.subdomain);
-        customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p, `/store/${plan.route.subdomain}`));
+        customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p, productBasePath));
     }
     if (plan.route.type === 'customer_wishlist' && buyerWishlist.linked && buyerWishlist.productIds.length > 0) {
         const enriched = await ProductService.getProductsByIds(buyerWishlist.productIds, plan.route.subdomain);
         buyerWishlist = {
             ...buyerWishlist,
             products: enriched.flatMap((p) => {
-                const drop = productToLiquidDrop(p, `/store/${plan.route.subdomain}`);
+                const drop = productToLiquidDrop(p, productBasePath);
                 return drop ? [drop] : [];
             }),
         };
@@ -690,7 +707,7 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage, productBasePath }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;

@@ -73,7 +73,7 @@ export function assertLiveSettlementReady(env: Env, input: SettlementIngestInput
     // Easy Split is researched as a candidate, but this runtime has no Cashfree-specific
     // split/settlement execution and reconciliation adapter. Do not let a settlement row fall
     // through to the Razorpay Route payout path merely because Cashfree credentials exist.
-    if (input.provider === 'cashfree') {
+    if (input.rail === 'pa_split' && input.provider !== 'razorpay_route') {
         throw new HumanRequiredError('Cashfree Easy Split live settlement is unavailable until its provider-specific execution and reconciliation adapter is implemented.');
     }
 

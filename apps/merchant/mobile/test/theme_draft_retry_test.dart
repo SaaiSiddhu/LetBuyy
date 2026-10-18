@@ -33,6 +33,16 @@ class _Api extends ApiClient {
       );
 }
 
+class _CatalogRaceApi extends _Api {
+  final catalog = Completer<dynamic>();
+  final catalogStarted = Completer<void>();
+  @override
+  Future<dynamic> request(String path, {ApiRequestOptions? options}) {
+    if (!catalogStarted.isCompleted) catalogStarted.complete();
+    return catalog.future;
+  }
+}
+
 JsonMap receipt(int version, {int? current}) => {
   'version': version,
   'current_version': current ?? version,
@@ -46,6 +56,277 @@ const config = <String, dynamic>{
 };
 
 void main() {
+  test(
+    'historical publication receipt confirms the old intent without clearing a newer loaded draft',
+    () async {
+      final api = _Api();
+      var attempts = 0;
+      api.respond = (path, options) async {
+        if (path.endsWith('/editor'))
+          return {
+            'version': 3,
+            'store': {'id': 'store-a'},
+            'theme': {'slug': 'modern'},
+            'template_config': config,
+            'draft': {'exists': true},
+          };
+        if (++attempts == 1)
+          throw const ApiException(
+            message: 'Reply lost',
+            statusCode: 503,
+            code: 'SYNTHETIC_RESPONSE_LOSS',
+          );
+        return {
+          'version': 2,
+          'current_version': 3,
+          'replayed': true,
+          'release': {'release_id': 'published-before-newer-draft'},
+        };
+      };
+      final service = ThemeService(api: api);
+      await expectLater(
+        service.publish(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          baseVersion: 1,
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      final newer = await service.loadEditor(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+      );
+      await service.recoverPublication(storeId: 'store-a', themeSlug: 'modern');
+      final posts = api.calls
+          .where((call) => (call['path'] as String).endsWith('/publish'))
+          .toList();
+      expect(posts, hasLength(2));
+      expect(posts[0], posts[1]);
+      expect(service.editorPayload, same(newer));
+      expect(service.editorPayload?.version, 3);
+      expect(service.editorPayload?.hasDraft, true);
+      expect(service.hasPendingPublication('store-a', 'modern'), false);
+    },
+  );
+  test(
+    'actor switch during post-publication refresh cannot adopt an old catalog or publication completion',
+    () async {
+      final api = _CatalogRaceApi();
+      api.respond = (_, __) async => {
+        'version': 2,
+        'current_version': 2,
+        'replayed': false,
+        'release': {'release_id': 'old-actor-publication'},
+      };
+      final service = ThemeService(api: api);
+      final operation = service.publish(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+        baseVersion: 1,
+      );
+      final denied = expectLater(operation, throwsA(isA<StateError>()));
+      await api.catalogStarted.future;
+      api.identity = ('actor-b', 'store-b');
+      api.catalog.complete({
+        'data': [
+          {
+            'id': 'old-actor-theme',
+            'slug': 'modern',
+            'name': 'Actor A catalog',
+          },
+        ],
+      });
+      await denied;
+      expect(service.catalog, isNull);
+    },
+  );
+
+  JsonMap rollbackReceipt({
+    bool replayed = false,
+    String current = 'restored-2',
+  }) => {
+    'rollback': {'release_id': 'restored-2', 'release_version': 3},
+    'restored_release': {'id': 'prior-1'},
+    'replayed': replayed,
+    'current_release_id': current,
+    'current_release_version': current == 'restored-2' ? 3 : 4,
+  };
+
+  test(
+    'rollback response loss retains exact target/current/key and rejects a replacement intent',
+    () async {
+      final api = _Api();
+      var attempts = 0;
+      api.respond = (_, __) async {
+        if (++attempts == 1)
+          throw const ApiException(
+            message: 'Reply lost',
+            statusCode: 503,
+            code: 'SYNTHETIC_RESPONSE_LOSS',
+          );
+        return rollbackReceipt(replayed: true, current: 'newer-4');
+      };
+      final service = ThemeService(api: api);
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'prior-1',
+          expectedCurrentReleaseId: 'current-2',
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      expect(service.pendingRollbackTarget('store-a', 'modern'), 'prior-1');
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'other-prior',
+          expectedCurrentReleaseId: 'newer-4',
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(api.calls, hasLength(1));
+      final result = await service.recoverRollback(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+      );
+      expect(result['current_release_id'], 'newer-4');
+      expect(api.calls, hasLength(2));
+      expect(api.calls[1], api.calls[0]);
+      expect(
+        (api.calls.first['body'] as Map)['idempotency_key'],
+        api.calls.first['key'],
+      );
+      expect(service.pendingRollbackTarget('store-a', 'modern'), isNull);
+    },
+  );
+
+  test(
+    'concurrent rollback clicks share one transport and malformed success stays recoverable',
+    () async {
+      final api = _Api(), completion = Completer<JsonMap>();
+      api.respond = (_, __) => completion.future;
+      final service = ThemeService(api: api);
+      final first = service.rollbackRelease(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+        releaseId: 'prior-1',
+        expectedCurrentReleaseId: 'current-2',
+      );
+      final second = service.rollbackRelease(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+        releaseId: 'prior-1',
+        expectedCurrentReleaseId: 'current-2',
+      );
+      final deniedFirst = expectLater(first, throwsA(isA<FormatException>()));
+      final deniedSecond = expectLater(second, throwsA(isA<FormatException>()));
+      await Future<void>.delayed(Duration.zero);
+      expect(api.calls, hasLength(1));
+      completion.complete({'ok': true});
+      await Future.wait([deniedFirst, deniedSecond]);
+      expect(service.pendingRollbackTarget('store-a', 'modern'), 'prior-1');
+      api.respond = (_, __) async => rollbackReceipt(replayed: true);
+      await service.recoverRollback(storeId: 'store-a', themeSlug: 'modern');
+      expect(api.calls[1], api.calls[0]);
+    },
+  );
+
+  test(
+    'late actor A rollback cannot clear actor B recovery or adopt its receipt',
+    () async {
+      final api = _Api(), completion = Completer<JsonMap>();
+      api.respond = (_, __) => completion.future;
+      final service = ThemeService(api: api);
+      final first = service.rollbackRelease(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+        releaseId: 'prior-1',
+        expectedCurrentReleaseId: 'current-2',
+      );
+      final denied = expectLater(first, throwsA(isA<StateError>()));
+      await Future<void>.delayed(Duration.zero);
+      expect(
+        api.calls,
+        hasLength(1),
+        reason: 'Actor A has actually reached its in-flight HTTP request.',
+      );
+      api.identity = ('actor-b', 'store-a');
+      api.respond = (_, __) async => throw const ApiException(
+        message: 'Reply lost',
+        statusCode: 503,
+        code: 'SYNTHETIC_RESPONSE_LOSS',
+      );
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'prior-b',
+          expectedCurrentReleaseId: 'current-b',
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      completion.complete(rollbackReceipt());
+      await denied;
+      expect(service.pendingRollbackTarget('store-a', 'modern'), 'prior-b');
+      expect(api.calls[0]['context'], ('actor-a', 'store-a'));
+      expect(api.calls[1]['context'], ('actor-b', 'store-a'));
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'prior-1',
+          expectedCurrentReleaseId: 'current-2',
+          expectedContext: ('actor-a', 'store-a'),
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(api.calls, hasLength(2));
+    },
+  );
+
+  test(
+    'controlled rollback conflict clears only that intent and current target never sends',
+    () async {
+      final api = _Api();
+      api.respond = (_, __) async => throw const ApiException(
+        message: 'Current release changed',
+        statusCode: 409,
+        code: 'CONFLICT',
+      );
+      final service = ThemeService(api: api);
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'current-2',
+          expectedCurrentReleaseId: 'current-2',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      expect(api.calls, isEmpty);
+      await expectLater(
+        service.rollbackRelease(
+          storeId: 'store-a',
+          themeSlug: 'modern',
+          releaseId: 'prior-1',
+          expectedCurrentReleaseId: 'current-2',
+        ),
+        throwsA(isA<ApiException>()),
+      );
+      expect(service.pendingRollbackTarget('store-a', 'modern'), isNull);
+      api.respond = (_, __) async => rollbackReceipt();
+      await service.rollbackRelease(
+        storeId: 'store-a',
+        themeSlug: 'modern',
+        releaseId: 'prior-1',
+        expectedCurrentReleaseId: 'newer-4',
+      );
+      expect(api.calls[1]['key'], isNot(api.calls[0]['key']));
+    },
+  );
+
   test(
     'lost response reuses immutable intent/key before newer local edits can save',
     () async {

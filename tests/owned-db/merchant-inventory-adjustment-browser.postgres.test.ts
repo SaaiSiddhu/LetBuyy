@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Cross-runtime integration: normal Identity -> Merchant Next -> Gateway -> owned PG.
 // No positive credential injection, fake inventory API, or provider transaction.
 import assert from 'node:assert/strict';

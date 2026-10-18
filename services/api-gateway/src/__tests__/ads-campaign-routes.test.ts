@@ -42,7 +42,7 @@ function app(options: { rows?: Record<string, unknown>[]; resolvedSite?: string;
             return callback({
                 unsafe: async (query: string, params: unknown[] = []) => {
                     calls.push({ query, params });
-                    if (options.throwOnWrite && /allocate_ad_campaign_budget/.test(query)) throw options.throwOnWrite;
+                    if (options.throwOnWrite && /(?:allocate|release)_ad_campaign_budget/.test(query)) throw options.throwOnWrite;
                     if (/allocate_ad_campaign_budget/.test(query)) return [{ result: { allocated: true, balance_minor: 75000 } }];
                     if (/ad_credit_balance_minor/.test(query)) return [{ balance_minor: 100000 }];
                     if (/count\(\*\)/.test(query)) return [{ total: 1 }];
@@ -106,6 +106,23 @@ test('allocated_minor never appears in any write the router issues', async () =>
     );
 });
 
+test('allocation and release capture the canonical actor in the same transaction before calling money RPC', async () => {
+    for (const operation of ['budget', 'release']) {
+        const { app: router, calls } = app();
+        const result = await router.request(`/ads/campaigns/${CAMPAIGN}/${operation}`,
+            json('POST', { store_id: SITE, amount_minor: 100, idempotency_key: 'captured-budget-actor' }), {});
+        assert.equal(result.status, 200);
+        assert.deepEqual(calls[0], { query: 'SELECT set_config($1, $2, true)', params: ['app.user_id', USER_ID] });
+        assert.match(calls[1].query, /(?:allocate|release)_ad_campaign_budget/);
+        assert.equal(calls[1].params[5], USER_ID);
+        const smuggled = app();
+        const denied = await smuggled.app.request(`/ads/campaigns/${CAMPAIGN}/${operation}`,
+            json('POST', { store_id: SITE, amount_minor: 100, idempotency_key: 'smuggled-budget-actor', actor_id: OTHER_SITE }), {});
+        assert.equal(denied.status, 400);
+        assert.equal(smuggled.calls.length, 0);
+    }
+});
+
 test('a new campaign is created without a budget at all', async () => {
     const { app: a, calls } = app();
     const res = await a.request('/ads/campaigns', json('POST', { store_id: SITE, name: 'Spring' }), {});
@@ -149,6 +166,21 @@ test('the prepaid refusals are 422s a client can act on, not 500s', async () => 
             json('POST', { store_id: SITE, amount_minor: 999, idempotency_key: 'ads-key-0003' }), {});
         assert.equal(res.status, 422, message);
         assert.equal(((await res.json()) as { error: { code: string } }).error.code, code);
+    }
+});
+
+test('current SQL payload conflicts return fixed409 for allocation and release without database detail', async () => {
+    for (const operation of ['budget', 'release']) {
+        const error = Object.assign(new Error('ad credit idempotency key conflicts with a different request payload SYNTHETIC_PRIVATE_DATABASE_DETAIL'), { code: 'P0001' });
+        const { app: router, calls } = app({ throwOnWrite: error });
+        const response = await router.request(`/ads/campaigns/${CAMPAIGN}/${operation}`,
+            json('POST', { store_id: SITE, amount_minor: 100, idempotency_key: 'conflict-exact-key' }), {});
+        assert.equal(response.status, 409);
+        const body = await response.text();
+        assert.equal(JSON.parse(body).error.code, 'CONFLICT');
+        assert.match(body, /this idempotency key belongs to a different budget request/);
+        assert.doesNotMatch(body, /SYNTHETIC_PRIVATE_DATABASE_DETAIL|P0001|stack/);
+        assert.equal(calls.filter(call => /(?:allocate|release)_ad_campaign_budget/.test(call.query)).length, 1);
     }
 });
 

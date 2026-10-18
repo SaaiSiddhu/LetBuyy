@@ -815,7 +815,7 @@ export default function AddProductPage() {
                     name: productTitle,
                     description: description.trim(),
                     images,
-                    category: category || undefined,
+                    category: category || null,
                     price: parseFloat(price) || 0,
                     compare_price: parseFloat(comparePrice) || null,
                     cost_per_item: parseFloat(costPerItem) || null,

@@ -46,6 +46,9 @@ interface ThemeVersionInfo {
     currentVersionId: string
     availableVersionId?: string
     currentReleaseId?: string
+    rollbackTargetReleaseId?: string
+    rollbackTargetVersion?: number
+    actorId?: string
     themeName?: string
 }
 
@@ -93,12 +96,19 @@ export default function UpdatePageClient({
             // Extract current release and available update from the releases list
             const releases = Array.isArray(payload.data) ? payload.data : []
             const currentRelease = releases.find(
-                (r: Record<string, unknown>) => r.release_status === 'current'
+                (r: Record<string, unknown>) => r.is_current === true && r.release_status === 'published'
             ) as Record<string, unknown> | undefined
             const latestAvailable = releases.find(
                 (r: Record<string, unknown>) => r.release_status === 'available' || r.is_latest
             ) as Record<string, unknown> | undefined
 
+            const priorRelease = releases.filter((r: Record<string, unknown>) => r.is_current !== true &&
+                r.release_status === 'superseded' && typeof r.release_version === 'number' &&
+                typeof currentRelease?.release_version === 'number' && r.release_version < currentRelease.release_version)
+                .sort((a: Record<string, unknown>, b: Record<string, unknown>) => Number(b.release_version) - Number(a.release_version))[0] as Record<string, unknown> | undefined
+            const actorResponse = await fetch(`/api/themes/${encodeURIComponent(initialThemeSlug)}/editor?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' })
+            const actorPayload = await actorResponse.json().catch(() => null) as Record<string, unknown> | null
+            if (!actorResponse.ok || typeof actorPayload?.actorId !== 'string') throw new Error('The current account could not be confirmed. Reload releases.')
             setVersionInfo({
                 themeSlug: initialThemeSlug,
                 currentVersionId: typeof currentRelease?.schema_version === 'string'
@@ -108,6 +118,9 @@ export default function UpdatePageClient({
                     ? latestAvailable.schema_version
                     : typeof latestAvailable?.id === 'string' ? latestAvailable.id : undefined,
                 currentReleaseId: typeof currentRelease?.id === 'string' ? currentRelease.id : undefined,
+                rollbackTargetReleaseId: typeof priorRelease?.id === 'string' ? priorRelease.id : undefined,
+                rollbackTargetVersion: typeof priorRelease?.release_version === 'number' ? priorRelease.release_version : undefined,
+                actorId: actorPayload.actorId,
             })
         } catch (err) {
             setFetchError(err instanceof Error ? err.message : 'Could not load version information.')
@@ -218,6 +231,9 @@ export default function UpdatePageClient({
                         currentVersionId={versionInfo.currentVersionId}
                         availableVersionId={versionInfo.availableVersionId}
                         currentReleaseId={versionInfo.currentReleaseId}
+                        rollbackTargetReleaseId={versionInfo.rollbackTargetReleaseId}
+                        rollbackTargetVersion={versionInfo.rollbackTargetVersion}
+                        actorId={versionInfo.actorId}
                         onUpdateApplied={() => void fetchVersionInfo()}
                         onRollbackApplied={() => void fetchVersionInfo()}
                     />

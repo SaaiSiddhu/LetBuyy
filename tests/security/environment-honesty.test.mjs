@@ -35,19 +35,39 @@ test('active runtime source has no staging LetBuyy URL defaults', () => {
   }
 });
 
-test('mobile and next environment contracts name newly consumed public values', () => {
+test('mobile excludes provider configuration while next public values remain explicit', () => {
   const mobileTemplate = read('config/env/templates/mobile.dart-defines.example');
   const mobileSchema = read('config/env/schemas/mobile.schema.json');
   const nextTemplate = read('config/env/templates/next-app.env.example');
   const nextSchema = read('config/env/schemas/next-app.schema.json');
 
   for (const key of ['GEMINI_API_KEY', 'GEMINI_BASE_URL', 'GEMINI_MODEL']) {
-    assert.match(mobileTemplate, new RegExp(`${key}=`));
-    assert.match(mobileSchema, new RegExp(`"${key}"`));
+    assert.doesNotMatch(mobileTemplate, new RegExp(key));
+    assert.doesNotMatch(mobileSchema, new RegExp(key));
   }
 
   for (const key of ['NEXT_PUBLIC_MARKETING_URL', 'NEXT_PUBLIC_THEME_MARKETPLACE_URL', 'STOREFRONT_FRAME_ANCESTORS']) {
     assert.match(nextTemplate, new RegExp(`${key}=`));
     assert.match(nextSchema, new RegExp(`"${key}"`));
   }
+});
+
+
+test('native provider key/export/endpoint mutation controls fail while approved server caps remain mandatory', async () => {
+  const { buyerAiConfigurationProblems } = await import('../../scripts/validators/environment-honesty-validator.mjs');
+  const base = {
+    mobileTemplate: read('config/env/templates/mobile.dart-defines.example'),
+    mobileSchema: read('config/env/schemas/mobile.schema.json'),
+    coreExports: read('packages/dart/core/lib/letbuyy_core.dart') + read('packages/dart/marketplace_core/lib/letbuyy_marketplace_core.dart'),
+    nativeSource: read('packages/dart/marketplace_services/lib/src/ai_chat_service.dart'),
+    workerSchema: read('config/env/schemas/worker.schema.json'),
+  };
+  assert.deepEqual(buyerAiConfigurationProblems(base), []);
+  assert.ok(buyerAiConfigurationProblems({ ...base, mobileTemplate: base.mobileTemplate + '\nGEMINI_API_KEY=synthetic-marker' }).some(p => p.includes('GEMINI_API_KEY')));
+  assert.ok(buyerAiConfigurationProblems({ ...base, coreExports: base.coreExports + "\nexport 'src/config/gemini_config.dart';" }).some(p => p.includes('export')));
+  assert.ok(buyerAiConfigurationProblems({ ...base, nativeSource: base.nativeSource + "\nconst endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/synthetic:generateContent';" }).some(p => p.includes('endpoint')));
+  const noProfile = JSON.parse(base.workerSchema); noProfile.allOf = [];
+  assert.ok(buyerAiConfigurationProblems({ ...base, workerSchema: JSON.stringify(noProfile) }).some(p => p.includes('server-only')));
+  const noCaps = JSON.parse(base.workerSchema); noCaps.$defs.BuyerAiProfile.required = [];
+  assert.ok(buyerAiConfigurationProblems({ ...base, workerSchema: JSON.stringify(noCaps) }).some(p => p.includes('bounded server cap')));
 });

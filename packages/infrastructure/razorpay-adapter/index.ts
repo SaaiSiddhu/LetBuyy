@@ -1,3 +1,5 @@
+export const RAZORPAY_API_ORIGIN = 'https://api.razorpay.com';
+
 import {
   inrMoney,
   normalizeIdempotencyKey,
@@ -159,6 +161,7 @@ export async function fetchRazorpayOrdersByReceipt(
 }
 
 export interface RazorpayPaymentFetchResult {
+  invoice_id?: string | null;
   id?: string;
   order_id?: string;
   amount?: number;
@@ -514,4 +517,53 @@ export function createRazorpayPaymentProvider(
       };
     },
   };
+}
+
+export interface RazorpayPlanFetchResult {
+  id?:string;entity?:string;period?:string;interval?:number;
+  item?:{active?:boolean;amount?:number;currency?:string;tax_inclusive?:boolean;tax_rate?:number|null;tax_id?:string|null;tax_group_id?:string|null};
+  error?:{description?:string};
+}
+/** Read the configured plan before a subscription can create a provider charge. */
+export async function fetchRazorpayPlan(credentials:RazorpayCredentials,planId:string,options:{fetch?:RazorpayFetch}={}):Promise<RazorpayPlanFetchResult>{
+  if(!/^plan_[A-Za-z0-9]+$/.test(planId)||planId.length>120)return {error:{description:'Invalid Razorpay plan reference'}};
+  const response=await (options.fetch??fetch)(`${RAZORPAY_API_ORIGIN}/v1/plans/${encodeURIComponent(planId)}`,{
+    method:'GET',headers:{Authorization:basicAuth(credentials)},
+  });
+  const data=await response.json().catch(()=>({})) as RazorpayPlanFetchResult;
+  if(!response.ok)return {...data,error:data.error||{description:`Razorpay plan lookup failed with ${response.status}`}};
+  return data;
+}
+
+/** Minimal provider evidence only. Customer/card/address/notes are not retained. */
+export interface RazorpaySubscriptionFetchResult {
+ id?:string;entity?:string;plan_id?:string;status?:string;quantity?:number;
+ current_start?:number|null;current_end?:number|null;start_at?:number|null;
+ paid_count?:number;total_count?:number;error?:{description?:string};
+}
+export interface RazorpayInvoiceLine {
+ id?:string;type?:string;name?:string;quantity?:number;currency?:string;
+ amount?:number;unit_amount?:number;gross_amount?:number;tax_amount?:number;
+}
+export interface RazorpayInvoiceFetchResult {
+ id?:string;entity?:string;subscription_id?:string|null;payment_id?:string|null;order_id?:string|null;
+ status?:string;currency?:string;amount?:number;amount_paid?:number;amount_due?:number;gross_amount?:number;
+ billing_start?:number|null;billing_end?:number|null;partial_payment?:boolean;line_items?:RazorpayInvoiceLine[];
+ error?:{description?:string};
+}
+export async function fetchRazorpaySubscription(credentials:RazorpayCredentials,subscriptionId:string,options:{fetch?:RazorpayFetch}={}):Promise<RazorpaySubscriptionFetchResult>{
+ if(!/^sub_[A-Za-z0-9]+$/.test(subscriptionId)||subscriptionId.length>120)return {error:{description:'Invalid Razorpay subscription reference'}};
+ const response=await (options.fetch??fetch)(`${RAZORPAY_API_ORIGIN}/v1/subscriptions/${encodeURIComponent(subscriptionId)}`,{method:'GET',headers:{Authorization:basicAuth(credentials)}});
+ if(!response.ok)return {error:{description:`Razorpay subscription lookup failed with ${response.status}`}};
+ const raw=asRecord(await response.json().catch(()=>null));
+ return Object.fromEntries(['id','entity','plan_id','status','quantity','current_start','current_end','start_at','paid_count','total_count'].filter(k=>Object.hasOwn(raw,k)).map(k=>[k,raw[k]])) as RazorpaySubscriptionFetchResult;
+}
+export async function fetchRazorpayInvoice(credentials:RazorpayCredentials,invoiceId:string,options:{fetch?:RazorpayFetch}={}):Promise<RazorpayInvoiceFetchResult>{
+ if(!/^inv_[A-Za-z0-9]+$/.test(invoiceId)||invoiceId.length>120)return {error:{description:'Invalid Razorpay invoice reference'}};
+ const response=await (options.fetch??fetch)(`${RAZORPAY_API_ORIGIN}/v1/invoices/${encodeURIComponent(invoiceId)}`,{method:'GET',headers:{Authorization:basicAuth(credentials)}});
+ if(!response.ok)return {error:{description:`Razorpay invoice lookup failed with ${response.status}`}};
+ const raw=asRecord(await response.json().catch(()=>null));
+ if(!Array.isArray(raw.line_items)||raw.line_items.length>50)return {error:{description:'Razorpay invoice lines are unavailable'}};
+ const result=Object.fromEntries(['id','entity','subscription_id','payment_id','order_id','status','currency','amount','amount_paid','amount_due','gross_amount','billing_start','billing_end','partial_payment'].filter(k=>Object.hasOwn(raw,k)).map(k=>[k,raw[k]]));
+ return {...result,line_items:raw.line_items.map(line=>{const row=asRecord(line);return Object.fromEntries(['id','type','name','quantity','currency','amount','unit_amount','gross_amount','tax_amount'].filter(k=>Object.hasOwn(row,k)).map(k=>[k,row[k]]));})} as RazorpayInvoiceFetchResult;
 }

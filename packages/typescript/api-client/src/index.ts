@@ -1,3 +1,5 @@
+export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
+import { CollectionMembershipSnapshotSchema, type ReplaceCollectionMembershipInput } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import { createReelReviewSdk } from './reels';
 export { createReelReviewSdk } from './reels';
@@ -207,6 +209,7 @@ import type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
+  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,
@@ -3445,6 +3448,8 @@ export type ThemePreviewSessionInput = {
 };
 export type RollbackThemeReleaseInput = {
   store_id: string;
+  expected_current_release_id: string;
+  idempotency_key: string;
   make_store_live?: boolean;
   rollback_message?: string;
 };
@@ -4889,10 +4894,10 @@ export class LetbuyyApiClient {
         this.requestData<Collection>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
       remove: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean; id: string }>(`/products/collections/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
-      listProducts: (id: string, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ collection_id: string; product_ids: string[]; products: Product[] }>(`/products/collections/${encodePathSegment(id)}/products`, options),
-      replaceProducts: (id: string, input: { product_ids: string[] }, options?: LetbuyyRequestOptions) =>
-        this.requestData<{ collection_id: string; product_ids: string[]; count: number }>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input }),
+      listProducts: async (id: string, options: LetbuyyRequestOptions & { storeId: string }) =>
+        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, options)),
+      replaceProducts: async (id: string, input: ReplaceCollectionMembershipInput, options: LetbuyyRequestOptions & { storeId: string }) =>
+        CollectionMembershipSnapshotSchema.parse(await this.requestData<unknown>(`/products/collections/${encodePathSegment(id)}/products`, { ...options, method: 'PUT', body: input, idempotencyKey: input.idempotency_key })),
     },
     giftCards: {
       list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -5921,6 +5926,7 @@ export type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
+  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,

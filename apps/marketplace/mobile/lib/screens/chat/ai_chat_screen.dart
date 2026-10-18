@@ -257,8 +257,8 @@ class _AIChatActions {
       if (!current(run, epoch)) return;
       final greeting = ChatMessage.ai(
         text: isGuest
-            ? '**Welcome to LetBuyy!** 🛒\n\nYou are in Guest Mode with limited features.\n\nFeatures available:\n- Browse products\n- View categories\n\n*Sign in for personalized, profile-aware help.*'
-            : '**Welcome to LetBuyy!** 🛒\n\nI\'m your smart shopping assistant. How can I help you today?\n\n**What I can do:**\n- 🛍️ Find products for you\n- 📚 Browse categories\n- 👤 Answer questions about your profile\n- ❓ Answer general questions',
+            ? '**LetBuyy shopping help**\n\nSign in to request the server assistant. Availability depends on an approved server profile. Product facts remain available in the catalog.'
+            : '**LetBuyy shopping help**\n\nThe assistant is available only with an approved server profile and request allowance. Only your message and short excerpts from up to eight visible chat messages are submitted. Profile, orders and support records are not added. Product prices and stock must be verified in the catalog.',
         sessionId: id,
         quickReplies: ['Show all products', 'Best deals', 'Categories'],
         category: 'greeting',

@@ -119,7 +119,8 @@ export function classifyAppApiRoute(file) {
 // N1.7 — 215: finite privacy transport; Gateway owns proof, snapshot and single-use release.
 // N1.5 (2026-10-16): merchant loyalty settings proxy; all authority stays in Gateway334.
 // N5-PERSIST-01 (reviewed 2026-10-18): two owned-store private reel Gateway proxies.
-export const APP_API_ROUTE_RATCHET = 219;
+// Complete local integration (2026-10-18): three bounded private-upload Gateway proxies.
+export const APP_API_ROUTE_RATCHET = 222;
 
 export function ownershipCounts(routes) {
   const counts = new Map();
