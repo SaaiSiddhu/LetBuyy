@@ -107,7 +107,7 @@ before(async()=>{
  // a post360 exception. Retire only the empty newly-provisioned360 source first.
  const refundFamily=owned.psql("SELECT count(*) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname IN('guard_subscription_refund_source_reference_v1','read_merchant_subscription_refund_source_v1','record_subscription_refund_source_reference_v1','assert_subscription_refund_source_profile_364','guard_subscription_refund_source_ddl_364');");
  assert.ok(['0','5'].includes(refundFamily),'partial364 must fail, never bypass its lifecycle');restoreRefund364=refundFamily==='5';
- if(restoreRefund364){assert.match(owned.psqlExpectError(migration('rollback')),/360 rollback requires empty364 retirement first/);owned.script(refundMigration('rollback'));}
+ if(restoreRefund364){assert.match(owned.psqlScriptExpectError(migration('rollback')),/360 rollback requires empty364 retirement first/);owned.script(refundMigration('rollback'));}
  owned.script(migration('rollback'));
  legacy=await fixture();legacyId=crypto.randomUUID();const sub=crypto.randomUUID();
  owned.psql(`INSERT INTO subscriptions(id,user_id,store_id,site_id,plan,status,billing_period,amount_paid,current_period_end)
@@ -122,15 +122,22 @@ before(async()=>{
   'definition',pg_get_functiondef(p.oid),'owner',p.proowner,'acl',p.proacl::text) ORDER BY p.oid)
   FROM pg_proc p WHERE p.pronamespace='public'::regnamespace AND p.proname IN('claim_merchant_subscription_checkout_v1','bind_merchant_subscription_checkout_v1','read_merchant_subscription_checkout_v1','activate_merchant_subscription_v1');`);
  const retainedPredecessor=predecessor();
- const forwardBody=migration('migrations').replace(/^([\s\S]*?\n)BEGIN;\n/,'$1').replace(/COMMIT;\s*$/,'');
  for(const [signature,oldDefault,newDefault] of [
   ['claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)','DEFAULT NULL::jsonb',"DEFAULT '{}'::jsonb"],
   ['bind_merchant_subscription_checkout_v1(uuid,uuid,uuid,text,text)','DEFAULT NULL::text',"DEFAULT 'synthetic-changed-default'::text"],
  ] as const){
   const definition=owned.psql(`SELECT pg_get_functiondef('public.${signature}'::regprocedure);`);
   assert.ok(definition.includes(oldDefault),'observed canonical predecessor default expression');
-  assert.match(owned.psqlExpectError(`BEGIN;${definition.replace(oldDefault,newDefault)};${forwardBody}`),/refuses changed predecessor signature\/config/);
-  assert.equal(predecessor(),retainedPredecessor,'failed admission preserves the full predecessor definitions, owner and ACL');
+  // Admission requires a fresh transaction, so commit this deliberate fixture
+  // drift first and restore the captured predecessor in finally. The failing
+  // migration itself must leave that drift and all retained rows untouched.
+  owned.script(definition.replace(oldDefault,newDefault));
+  const driftedPredecessor=predecessor();
+  try {
+   assert.match(owned.psqlScriptExpectError(migration('migrations')),/refuses changed predecessor signature\/config/);
+   assert.equal(predecessor(),driftedPredecessor,'failed admission preserves the observed drifted predecessor');
+  } finally { owned.script(definition); }
+  assert.equal(predecessor(),retainedPredecessor,'fixture restores the captured predecessor definitions, owner and ACL');
  }
  owned.script(migration('migrations'));
  if(restoreRefund364)owned.script(refundMigration('migrations'));
@@ -426,5 +433,5 @@ test('new tax financial rows and populated retirement reject direct changes with
  }
  assert.match(owned.psqlExpectError(`UPDATE billing_history SET total_amount=total_amount+1 WHERE site_id='${f.site.siteId}' AND subscription_tax_snapshot IS NOT NULL;`),/immutable|canonical writer/);
  assert.match(owned.psqlExpectError(`BEGIN;SET ROLE service_role;INSERT INTO subscriptions(user_id,store_id,site_id,plan,status,billing_period,amount_paid) VALUES('${f.owner}','${f.site.siteId}','${f.site.siteId}','growth','active','monthly',69900);ROLLBACK;`),/canonical activation writer/);
- assert.match(owned.psqlExpectError(migration('rollback')),/refuses retained tax evidence/);assert.equal(f.state(),before);
+ assert.match(owned.psqlScriptExpectError(migration('rollback')),/refuses retained tax evidence/);assert.equal(f.state(),before);
 });

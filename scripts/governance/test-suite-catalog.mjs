@@ -98,9 +98,6 @@ export function discoverGatewayDatabaseSuites(repoRoot) {
     return suites;
 }
 
-// Native runtime suites require explicit reviewed execution; never auto-run in pure.
-export const EXPLICIT_RUNTIME_SUITES = ['tests/runtime/reel-private-r2.workerd.test.mjs'];
-
 const POSTGRES_MARKER = /process\.env\.LETBUYY_EXECUTABLE_PG_CONTAINER/;
 
 export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
@@ -112,7 +109,7 @@ export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
         for (const file of readdirSync(join(repoRoot, 'tests', dir.name), { withFileTypes: true })) {
             if (file.isFile() && file.name.endsWith('.test.mjs')) {
                 const suite = `tests/${dir.name}/${file.name}`;
-                if (!EXPLICIT_RUNTIME_SUITES.includes(suite)) all.push(suite);
+                all.push(suite);
             }
         }
     }

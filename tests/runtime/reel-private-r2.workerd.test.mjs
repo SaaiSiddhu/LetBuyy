@@ -1,4 +1,4 @@
-// Native local runtime proof; requires reviewed resource grant before execution.
+// Hermetic local workerd proof: ephemeral R2 only, all external network disabled.
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';

@@ -139,8 +139,10 @@ function rawStateSql361() {
     const ident=(s:string)=>'"'+s.replaceAll('"','""')+'"';
     const fields=[...tables.map(([schema,table])=>[schema+'.'+table,'SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY to_jsonb(t)::text),\'[]\'::jsonb)FROM '+ident(schema)+'.'+ident(table)+' t']),
         ...state361Catalogs.map(([table,predicate])=>['catalog.'+table,"SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY to_jsonb(t)::text),'[]'::jsonb)FROM pg_catalog."+table+' t WHERE '+predicate])];
-    // jsonb_build_object has an argument limit; aggregate closed key/value rows.
-    return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>'SELECT '+q(key)+' AS k,('+sql+')AS v').join(' UNION ALL ')+')s';
+    // Fingerprint every complete ordered relation/catalog field before the outer
+    // object. This preserves all row bytes and numeric precision while avoiding
+    // copying the entire schema/data into one unbounded JSONB allocation.
+    return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>'SELECT '+q(key)+" AS k,encode(sha256(convert_to(("+sql+")::text,'UTF8')),'hex')AS v").join(' UNION ALL ')+')s';
 }
 function rawState361(){return largeOwnedScript(rawStateSql361()+';');}
 function refusedRetirement361(label:string,mutation='') {
@@ -151,7 +153,7 @@ function refusedRetirement361(label:string,mutation='') {
     const result=largeOwnedScript('BEGIN;'+mutation+';SELECT '+q('BEFORE:')+'||('+state+');DO $control$ DECLARE reason text; BEGIN BEGIN EXECUTE '+q(rollbackBody361)+";RAISE EXCEPTION 'SYN361_UNEXPECTED_RETIREMENT_SUCCESS';EXCEPTION WHEN OTHERS THEN GET STACKED DIAGNOSTICS reason=MESSAGE_TEXT;IF reason='SYN361_UNEXPECTED_RETIREMENT_SUCCESS' THEN RAISE;END IF;IF reason NOT LIKE 'COLLECTION_MEMBERSHIP361_%' AND reason NOT LIKE '%lock%' THEN RAISE EXCEPTION 'SYN361_UNEXPECTED_RETIREMENT_ERROR:%',reason;END IF;RAISE NOTICE 'SYN361_EXPECTED_REFUSAL:%',reason;END;END $control$;SELECT "+q('AFTER:')+'||('+state+');ROLLBACK;');
     const lines=result.split('\n'),before=lines.find(x=>x.startsWith('BEFORE:'))?.slice(7),after=lines.find(x=>x.startsWith('AFTER:'))?.slice(6);
     assert.ok(before&&after,label+' must record raw before/after conservation');assert.equal(after,before,label+' changed state while refusing');
-    console.info('OWNED361_RETIREMENT_REFUSAL '+JSON.stringify({label,rawJsonTextCompared:true,bytes:before.length,sourceBodyExecuted:true}));
+    console.info('OWNED361_RETIREMENT_REFUSAL '+JSON.stringify({label,completeFieldSha256Compared:true,bytes:before.length,sourceBodyExecuted:true}));
 }
 function roleScript361(w:World,sql:string,options:{role?:string;site?:string;actor?:string;request?:string;commit?:boolean}={}) {
     const role=options.role??'app_tenant';assert.ok(['app_tenant','service_role','anon','authenticated'].includes(role));

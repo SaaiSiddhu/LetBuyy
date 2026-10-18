@@ -1,3 +1,4 @@
+import {RAZORPAY_API_ORIGIN} from '@letbuyy/infrastructure/razorpay-adapter';
 import {SubscriptionExecutionAdapter} from '../execution/subscription-execution.adapter';
 import type {SupabaseClient} from '@letbuyy/infrastructure/supabase-adapter';
 import assert from 'node:assert/strict';
@@ -43,7 +44,7 @@ test('configured recurring provider plan must exactly match saved base/currency/
  const original=globalThis.fetch;let calls=0;
  const valid={id:'plan_Synthetic123',entity:'plan',period:'monthly',interval:1,item:{active:true,amount:69900,currency:'INR',tax_rate:null,tax_id:null,tax_group_id:null}};
  let result:unknown=valid;
- globalThis.fetch=(async(input,init)=>{calls++;assert.equal(String(input),'https://api.razorpay.com/v1/plans/plan_Synthetic123');assert.equal(init?.method,'GET');if(result==='synthetic_network_failure')throw new Error('synthetic private transport detail');return Response.json(result);}) as typeof fetch;
+ globalThis.fetch=(async(input,init)=>{calls++;assert.equal(String(input),RAZORPAY_API_ORIGIN+'/v1/plans/plan_Synthetic123');assert.equal(init?.method,'GET');if(result==='synthetic_network_failure')throw new Error('synthetic private transport detail');return Response.json(result);}) as typeof fetch;
  try{
   assert.equal((await requireConfiguredSubscriptionPlan({keyId:'synthetic',keySecret:'synthetic'},{planId:'plan_Synthetic123',baseGross:69900,period:'monthly'})).base_gross_minor,69900);
   for(const change of [{id:'plan_Foreign'},{period:'yearly'},{period:'month'},{period:'year'},{period:'weekly'},{period:'daily'},{interval:2},{item:{...valid.item,active:false}},{item:{...valid.item,amount:82482}},{item:{...valid.item,currency:'USD'}},{item:{...valid.item,amount:69900.5}},{item:{...valid.item,tax_rate:18}},{item:{...valid.item,tax_id:'tax_Synthetic'}},{item:{...valid.item,tax_group_id:'taxgroup_Synthetic'}},{error:{description:'synthetic unavailable'}}]){
@@ -118,9 +119,9 @@ function nativeProviderFixture(){
 function nativeProviderTransport(f:ReturnType<typeof nativeProviderFixture>){
  const calls:string[]=[];
  const transport=(async(input,init)=>{const url=String(input);calls.push(url);assert.equal(init?.method,'GET');assert.match(new Headers(init?.headers).get('Authorization')||'',/^Basic /);
-  if(url==='https://api.razorpay.com/v1/payments/'+f.payment.id)return Response.json(f.payment);
-  if(url==='https://api.razorpay.com/v1/invoices/'+f.payment.invoice_id)return Response.json(f.invoice);
-  if(url==='https://api.razorpay.com/v1/subscriptions/'+f.subscription.id)return Response.json(f.subscription);
+  if(url===RAZORPAY_API_ORIGIN+'/v1/payments/'+f.payment.id)return Response.json(f.payment);
+  if(url===RAZORPAY_API_ORIGIN+'/v1/invoices/'+f.payment.invoice_id)return Response.json(f.invoice);
+  if(url===RAZORPAY_API_ORIGIN+'/v1/subscriptions/'+f.subscription.id)return Response.json(f.subscription);
   throw new Error('Unexpected native provider transport');}) as typeof fetch;
  return {transport,calls};
 }

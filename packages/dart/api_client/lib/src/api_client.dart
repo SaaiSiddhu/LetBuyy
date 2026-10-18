@@ -1812,7 +1812,7 @@ class ThemesApi {
     options: _mergeOptions(
       options,
       method: HttpMethod.delete,
-      query: {'store_id': storeId},
+      query: {...?options?.query, 'store_id': storeId},
     ),
   );
 

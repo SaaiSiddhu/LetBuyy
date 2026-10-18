@@ -357,6 +357,7 @@ async function runGatewaySuite(suite, cluster) {
             [OWNED_FIXTURE_ENV.restContainer]: restName,
             [OWNED_FIXTURE_ENV.restUpstreamPort]: String(upstreamPort),
             [OWNED_FIXTURE_ENV.restServiceKey]: serviceKey,
+            LETBUYY_OWNED_SQL_PASSWORD: cluster.restPassword,
         };
         // The runner holds itself to the rule it imposes: nothing starts until ownership is proven.
         await verifyOwnedFixture(fixtureEnv);
