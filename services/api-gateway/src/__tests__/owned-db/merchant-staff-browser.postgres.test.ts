@@ -85,9 +85,12 @@ test('normal owner and staff sign in; ambiguous creation retries once, live down
             NEXT_PUBLIC_TURNSTILE_SITE_KEY:'1x00000000000000000000AA',TURNSTILE_SECRET_KEY:'1x0000000000000000000000000000000AA',
             LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false',RESEND_API_KEY:'',LETBUYY_EMAIL_API_KEY:''}});
         identity.stderr.on('data',d=>errors.push(d.toString().slice(0,700)));
+        // Finish one real production build before starting the next. Both
+        // retain their existing bounded readiness and normal password login.
+        await ready(identityOrigin+'/login',identity);
         merchant=startOwnedClientRuntime(owned,'merchant-next-production',{port:merchantPort,env:{...shared,LETBUYY_API_BASE_URL:apiOrigin+'/v1'}});
         merchant.stderr.on('data',d=>errors.push(d.toString().slice(0,700)));
-        await Promise.all([ready(identityOrigin+'/login',identity),ready(merchantOrigin,merchant)]);
+        await ready(merchantOrigin,merchant);
         browser=await chromium.launch({headless:true});
         const owner=await browser.newContext();page=await owner.newPage();page.setDefaultTimeout(30_000);page.setDefaultNavigationTimeout(60_000);
         await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);

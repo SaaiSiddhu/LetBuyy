@@ -18,6 +18,7 @@
 // (Phase R4) exactly.
 
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -172,9 +173,13 @@ async function runVaryingCodeReplay(key) {
   // Hold the INSERT lock until every real caller reaches a PostgreSQL lock
   // boundary. This exposes the historical pre-check race on every platform;
   // after 207 the additional callers wait for the same advisory lock instead.
-  const prefix = `syn-gift-${process.pid}-${key}`;
+  // PostgreSQL application_name has 63 usable bytes. Keep connection markers
+  // independent of opaque idempotency-key length and Linux PID width.
+  const marker = createHash('sha256').update(key).digest('hex').slice(0, 16);
+  const prefix = `syn-gift-${process.pid}-${marker}`;
   const holderName = `${prefix}-holder`;
   const callers = ['A', 'B', 'C'].map(suffix => `${prefix}-${suffix}`);
+  assert.ok([holderName, ...callers].every(name => Buffer.byteLength(name) <= 63), 'race connection markers must fit PostgreSQL without truncation');
   const holder = spawn('docker', [
     'exec', '-i', containerName, 'psql', '-U', 'postgres', '-d', databaseName,
     '-v', 'ON_ERROR_STOP=1', '-qAt',
@@ -269,7 +274,7 @@ test('fresh pre-fix fixture: migrations applied cleanly through 206 and site see
 });
 
 test('W1 — REPRODUCTION (pre-fix): varying-code replay of one idempotency key duplicates money', async () => {
-  const key = 'race:issue-gift-card:varying-code-prefix';
+  const key = 'race:issue-gift-card:varying-code-prefix:long-client-context-0123456789';
   const result = await runVaryingCodeReplay(key);
 
   console.log(
@@ -305,7 +310,7 @@ test('W2 — apply migration 207 in place', () => {
 });
 
 test('W2 — POST-FIX: varying-code replay of one idempotency key is deduplicated, not multiplied', async () => {
-  const key = 'race:issue-gift-card:varying-code-postfix';
+  const key = 'race:issue-gift-card:varying-code-postfix:long-client-context-0123456789';
   const result = await runVaryingCodeReplay(key);
 
   console.log(
