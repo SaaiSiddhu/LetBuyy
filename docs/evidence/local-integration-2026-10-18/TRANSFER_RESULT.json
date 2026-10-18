@@ -88,5 +88,22 @@
   "sourceConservation": {
     "originalPhaseWorktreeStatusesUnchanged": 9,
     "phaseSourceFilesHashVerified": 11542
+  },
+  "graphReportRepair": {
+    "sourceCommit": "f758c69a",
+    "mergeCommit": "55fdcd82aa3098a1137f48a7259ae7d58ca3dad6",
+    "observedFailedRun": "https://github.com/SaaiSiddhu/LetBuyy/actions/runs/39136857718",
+    "cause": "Database report required the Git-ignored optional code graph in a fresh checkout.",
+    "behavioralTests": {
+      "pass": 3,
+      "fail": 0,
+      "skip": 0
+    },
+    "actualWorkflowRunStepsPassed": 18,
+    "databaseSanity": {
+      "tables": 468,
+      "functions": 255
+    },
+    "remoteCiStatus": "Read current GitHub Actions for the final push; earlier main CI run was cancelled by the existing newer-push concurrency policy."
   }
 }

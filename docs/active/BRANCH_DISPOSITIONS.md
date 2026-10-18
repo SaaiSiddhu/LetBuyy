@@ -49,6 +49,7 @@ validator already accepts. A branch holding commits absent from `develop` is nev
 
 | Branch | SHA | Status | Decided | Decided by | Why | Merged into |
 |---|---|---|---|---|---|---|
+| `letbuyy/machine-handoff-ci` | `f758c69a` | MERGED_DEVELOP | 2026-10-18 | Owner-authorized proper merge/push and machine handoff | Fix report generation in fresh CI without a Git-ignored code graph. Three behavioral regressions and all18 actual graph-workflow run steps pass in isolation. The dirty original checkout remains preserved. | `55fdcd82aa3098a1137f48a7259ae7d58ca3dad6` |
 | `letbuyy/local-complete-integration` | `7b8aacac6211102effb400bd04ae7defc86e3fb4` | MERGED_DEVELOP | 2026-10-18 | Owner-authorized consolidation and machine transfer | Remaining N1–N9 assembly and repairs are contained by merges8800ee34,3038312d and216ca020. This records actual ancestry, not whole-phase acceptance. The dirty checkout is retained for private transfer; no cleanup is authorized. | `216ca0205b50cdc2308ef9b8391b8734b8f61ee9` |
 | `letbuyy/recovery-2026-10-18` | `faeab17f7d5a404ffec95b7c56961bdae74ee379` | PRESERVED_REFERENCE | 2026-10-18 | Owner request to consolidate work and transfer machines | Nine unfinished phase source snapshots, captured with temporary indexes and indexed by phase. Recovery only; older shared files make wholesale merging unsafe. Original dirty worktrees remain intact. | N/A — recovery only |
 | `develop` | `a751a2ff` | ENVIRONMENT | 2026-09-04 | owner (D-BRANCH) | Created at the working tip `a751a2ff` (former `feature/claude-md-durable-architecture-memory` head). Integration + local end-to-end. | N/A |
@@ -239,5 +240,3 @@ owner's first push of `develop`/`staging`/`main` is a fast-forward on every ref.
 |---|---|---|---|---|---|
 | 2026-09-04 | `a751a2ff` | `staging` (created) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
 | 2026-09-04 | `a751a2ff` | `main` (fast-forward from `5c984eaa`) | no | "Level all three to a751a2ff" (D-BRANCH) | not readable from this machine |
-
-| `letbuyy/machine-handoff-ci` | `7b8aacac6211102effb400bd04ae7defc86e3fb4` | ACTIVE | 2026-10-18 | Owner-authorized proper merge/push and machine handoff | Repair graph-report fresh-checkout ENOENT without fabricating code-graph counts; scope tools/graph-server/gen-reports.mjs and tests/governance/graph-report-ci.test.mjs. Existing local integration evidence and runtime artifacts remain untouched. | N/A — pending |

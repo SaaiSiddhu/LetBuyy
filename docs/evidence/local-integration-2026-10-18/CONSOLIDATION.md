@@ -170,3 +170,21 @@ Only `develop` and the named recovery branch are push targets for this request.
 `staging` and `main` retain their existing tips. Local runtimes and all phase
 Goals remain paused; production, external provider and formal phase acceptance
 are not claimed by this transfer.
+
+## Push-time Graph Intelligence correction
+
+The first source push exposed a fresh-checkout CI error in
+`gen-reports.mjs`: its database report unconditionally read the Git-ignored
+`graphify-out/graph.json`, although the database workflow intentionally does
+not install Graphify. The scoped fix `f758c69a` was merged as `55fdcd82`.
+Missing code-graph data now renders an explicit unavailable message; existing
+graph counts remain intact, and malformed JSON still fails. No graph is
+fabricated and no workflow step is skipped.
+
+Three behavioral controls pass on the merge result. The original source fails
+the missing-file control; all18 actual workflow run steps also pass in an
+isolated checkout without a code graph, including the real database sanity gate
+(468 parsed tables and255 functions). Generated reports remain outside this
+change. Remote whole-CI status is separate; newer pushes cancel older runs under
+the existing concurrency policy. The final push's current Actions page is the
+authority for its ongoing remote result.
