@@ -104,6 +104,17 @@
       "tables": 468,
       "functions": 255
     },
-    "remoteCiStatus": "Read current GitHub Actions for the final push; earlier main CI run was cancelled by the existing newer-push concurrency policy."
+    "remoteCiStatus": "Read current GitHub Actions for the final push; earlier main CI run was cancelled by the existing newer-push concurrency policy.",
+    "finalGovernance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "checkedCommit": "14140ea7e9f499ef851c2e9a47277cd1e7028467"
+    }
   }
 }
