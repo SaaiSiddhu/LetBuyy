@@ -448,12 +448,20 @@ test('with no Docker daemon a Postgres suite still runs through the shim-compati
     const suites = suiteDir({ 'a-ok.test.mjs': TRIVIAL_SUITE });
     try {
         withShimDocker(({ calls, env }) => {
-            const run = spawnSync('node', [runner, '--suite-dir', suites, '--json', '--jobs', '2', '--no-reap'], { cwd: repoRoot, encoding: 'utf8', env });
+            const reportRoot = join(suites, 'retained-diagnostics');
+            const run = spawnSync('node', [runner, '--suite-dir', suites, '--json', '--jobs', '2', '--no-reap'], {
+                cwd: repoRoot, encoding: 'utf8', env: { ...env, LETBUYY_EXECUTABLE_REPORT_DIR: reportRoot },
+            });
             const report = JSON.parse(run.stdout);
             assert.equal(run.status, 0, `${run.stderr}${run.stdout}`);
             assert.equal(report.suites, 1);
             assert.equal(report.failedSuites, 0);
             assert.equal(report.results[0].code, 0);
+            const retained = join(reportRoot, report.runId);
+            assert.deepEqual(JSON.parse(readFileSync(join(retained, 'runner.json'), 'utf8')), report,
+                'CI retains the exact per-run accounting in the configured artifact directory');
+            assert.match(readFileSync(join(retained, 'suite-logs', 'a-ok.log'), 'utf8'), /ok 1 - ok/,
+                'the artifact directory also retains the full suite output');
             const log = calls();
             assert.ok(log.some((line) => line.startsWith('run -d --pull never --name letbuyy-exec-')), 'the cluster was started with the invocation the shim models (the shim ignores the pull flag, and no docker run may pull)');
             for (const forbidden of [/\bnetwork\b/, /\bvolume\b/, /\bimage\b/, /^pull /, /--mount/, /--network/, /--memory/, /--pids-limit/, /--read-only/]) {

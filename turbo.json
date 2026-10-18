@@ -44,7 +44,12 @@
         "coverage/**"
       ],
       "env": [
-        "CI"
+        "CI",
+        "LETBUYY_EXECUTABLE_PG_IMAGE",
+        "LETBUYY_EXECUTABLE_REST_IMAGE"
+      ],
+      "passThroughEnv": [
+        "LETBUYY_EXECUTABLE_REPORT_DIR"
       ]
     },
     "typecheck": {

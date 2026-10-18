@@ -115,21 +115,24 @@ async function storefrontBrowserCartFetch(subdomain: string, cartToken: string |
     });
 }
 
-async function syncLiquidCartToServer(items: LiquidCartItem[]) {
+async function syncLiquidCartToServer(items: LiquidCartItem[]): Promise<boolean> {
     const subdomain = getLiquidStorefrontSubdomain();
-    if (!subdomain) return;
+    if (!subdomain) return false;
 
     const cartToken = window.localStorage.getItem(CART_TOKEN_STORAGE_KEY);
     try {
         const response = await storefrontBrowserCartFetch(subdomain, cartToken, items);
         const payload = await readStorefrontApiJson<LiquidServerCart>(response);
-        if (!response.ok || !payload.success || !payload.data) return;
+        if (!response.ok || !payload.success || !payload.data
+            || typeof payload.data.cart_token !== 'string' || !payload.data.cart_token.trim()) return false;
 
         window.localStorage.setItem(CART_TOKEN_STORAGE_KEY, payload.data.cart_token);
         writeServerCart(payload.data);
         writeCart(liquidCartItemsFromServer(payload.data), { sync: false });
+        return true;
     } catch {
         // Browser cart remains available from local storage while sync retries on the next mutation.
+        return false;
     }
 }
 
@@ -139,7 +142,7 @@ function writeCart(items: LiquidCartItem[], options: { sync?: boolean } = {}) {
     if (options.sync) void syncLiquidCartToServer(items);
 }
 
-function addCartItem(item: LiquidCartItem) {
+function addCartItem(item: LiquidCartItem, options: { sync?: boolean; openDrawer?: boolean } = {}): LiquidCartItem[] {
     const items = readCart();
     const existingIndex = items.findIndex((candidate) => candidate.id === item.id);
 
@@ -156,13 +159,15 @@ function addCartItem(item: LiquidCartItem) {
         items.push(item);
     }
 
-    writeCart(items, { sync: true });
-    window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT, { detail: { source: 'liquid-add-to-cart' } }));
+    if (options.sync === false) writeCart(items, { sync: false });
+    else writeCart(items, { sync: true });
+    if (options.openDrawer !== false) window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT, { detail: { source: 'liquid-add-to-cart' } }));
+    return items;
 }
 
 function inferBasePath(): string {
     const match = window.location.pathname.match(/^\/store\/[^/]+/);
-    return match?.[0] || '/store';
+    return match?.[0] || '';
 }
 
 function numericDatasetValue(value: string | undefined, fallback: number): number {
@@ -230,6 +235,7 @@ const LiquidIslandBase: typeof HTMLElement =
     typeof HTMLElement !== 'undefined' ? HTMLElement : (class {} as unknown as typeof HTMLElement);
 
 class LbAddToCartElement extends LiquidIslandBase {
+    private checkoutPending = false;
     private readonly handleClick = (event: Event) => {
         const target = event.target instanceof Element ? event.target : null;
         // T6/W3 — Buy now is NOT a second checkout path: it calls the exact same addCurrentProduct()
@@ -266,7 +272,8 @@ class LbAddToCartElement extends LiquidIslandBase {
         this.removeEventListener('submit', this.handleSubmit);
     }
 
-    private addCurrentProduct(options: { redirectToCheckout?: boolean } = {}) {
+    private async addCurrentProduct(options: { redirectToCheckout?: boolean } = {}) {
+        if (this.checkoutPending) return;
         const item = cartItemFromElement(this);
         const status = this.querySelector<HTMLElement>('[data-lb-add-to-cart-status]');
         if (!item) {
@@ -274,11 +281,29 @@ class LbAddToCartElement extends LiquidIslandBase {
             return;
         }
 
-        addCartItem(item);
         if (options.redirectToCheckout) {
-            window.location.assign(`${this.dataset.basePath || inferBasePath()}/checkout`);
+            this.checkoutPending = true;
+            const button = this.querySelector<HTMLButtonElement>('[data-lb-buy-now]');
+            if (button) button.disabled = true;
+            try {
+                // Keep this document alive until the canonical cart token is
+                // persisted. Opening the drawer here would start a second
+                // create request before the first cart receipt has arrived.
+                const items = addCartItem(item, { sync: false, openDrawer: false });
+                if (!await syncLiquidCartToServer(items)) {
+                    if (status) status.textContent = 'We could not prepare checkout. Please try again.';
+                    return;
+                }
+                window.location.assign(`${this.dataset.basePath ?? inferBasePath()}/checkout`);
+            } catch {
+                if (status) status.textContent = 'We could not prepare checkout. Please try again.';
+            } finally {
+                this.checkoutPending = false;
+                if (button) button.disabled = false;
+            }
             return;
         }
+        addCartItem(item);
         if (status) status.textContent = 'Added';
         this.setAttribute('data-lb-added', 'true');
         window.setTimeout(() => {

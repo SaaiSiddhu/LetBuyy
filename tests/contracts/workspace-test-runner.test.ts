@@ -111,15 +111,17 @@ for (const workspace of ['apps/commerce/web', 'apps/merchant/web']) {
     });
 }
 
-test('main CI runs the behavioral gate before filtered workspace tests', () => {
+test('main CI runs the behavioral gate before the complete bounded workspace tests', () => {
     const workflow = readFileSync(join(repoRoot, '.github/workflows/ci.yml'), 'utf8');
     const behavioralIndex = workflow.indexOf('pnpm run test:behavioral');
-    const filteredWorkspaceIndex = workflow.indexOf('pnpm turbo test --filter="...[HEAD^1]"');
+    const workspaceIndex = workflow.indexOf('pnpm turbo test --concurrency=2');
 
     assert.notEqual(behavioralIndex, -1, 'CI must run the root behavioral gate');
-    assert.notEqual(filteredWorkspaceIndex, -1, 'CI must run filtered workspace tests');
+    assert.notEqual(workspaceIndex, -1, 'CI must test the full workspace with bounded concurrency');
+    assert.doesNotMatch(workflow, /pnpm turbo test[^\n]*--filter/,
+        'a merge-ledger-only final commit must not hide the source changes from workspace tests');
     assert.ok(
-        behavioralIndex < filteredWorkspaceIndex,
-        'behavioral gate must run before filtered workspace tests so root tests are not skipped by workspace filters',
+        behavioralIndex < workspaceIndex,
+        'the root behavioral gate and complete workspace tests are both required',
     );
 });

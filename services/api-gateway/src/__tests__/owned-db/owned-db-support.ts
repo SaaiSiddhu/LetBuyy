@@ -105,6 +105,13 @@ export function requireOwnedDatabase(): OwnedDatabase {
         'LETBUYY_EXECUTABLE_PG_DATABASE', 'LETBUYY_OWNED_REST_URL', 'LETBUYY_OWNED_REST_CONTAINER',
         'LETBUYY_OWNED_REST_UPSTREAM_PORT', 'LETBUYY_OWNED_REST_SERVICE_KEY',
     ].map(name => [name, process.env[name] ?? '']));
+    // Rechecks must use the same exact image configuration that passed above.
+    // CI uses a digest-pinned official mirror; dropping that configuration makes
+    // child guards compare the mirror container with the default registry name.
+    for (const name of ['LETBUYY_EXECUTABLE_PG_IMAGE', 'LETBUYY_EXECUTABLE_REST_IMAGE']) {
+        if (process.env[name] !== undefined) clientFixtureEnv[name] = process.env[name]!;
+    }
+    Object.freeze(clientFixtureEnv);
 
     const psqlBase = ['exec', verified.pgContainer, 'psql', '-U', 'postgres', '-d', verified.database];
     const scriptArgs = ['exec', '-i', verified.pgContainer, 'psql', '-U', 'postgres', '-d', verified.database, '-v', 'ON_ERROR_STOP=1', '-qAt'];

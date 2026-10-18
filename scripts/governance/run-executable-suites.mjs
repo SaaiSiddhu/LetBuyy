@@ -103,8 +103,10 @@ const exhaustiveCatalogSuites = new Set([
     'services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts',
 ]);
 const requestedJobs = Number(value('--jobs', process.env.LETBUYY_EXECUTABLE_PG_JOBS || '2'));
-const logDir = value('--log-dir', null);
-const jsonOutPath = value('--json-out', null);
+const reportDir = process.env.LETBUYY_EXECUTABLE_REPORT_DIR
+    ? join(resolve(process.env.LETBUYY_EXECUTABLE_REPORT_DIR), runId) : null;
+const logDir = value('--log-dir', reportDir ? join(reportDir, 'suite-logs') : null);
+const jsonOutPath = value('--json-out', reportDir ? join(reportDir, 'runner.json') : null);
 // The database the suites share by default; suites needing isolation pick their own.
 const sharedDatabase = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_executable';
 const containerBase = value('--container', uniqueContainerName());
@@ -233,6 +235,9 @@ const INHERITED_DATABASE_SETTINGS = /^(SUPABASE_|DATABASE_URL$|POSTGRES_|PG(HOST
 function gatewayEnv(fixtureEnv) {
     const env = baseEnv();
     for (const key of Object.keys(env)) if (INHERITED_DATABASE_SETTINGS.test(key)) delete env[key];
+    const preparedTransactions = value('--prepared-transactions', undefined);
+    if (preparedTransactions !== undefined) env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS = preparedTransactions;
+    else delete env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS;
     return { ...env, ...fixtureEnv };
 }
 
@@ -558,7 +563,10 @@ async function main() {
         // The captured output of every suite stays in --log-dir; the report carries the accounting only.
         results: results.map(({ out, ...rest }) => rest),
     };
-    if (jsonOutPath) writeFileSync(jsonOutPath, JSON.stringify(report, null, 2));
+    if (jsonOutPath) {
+        mkdirSync(dirname(jsonOutPath), { recursive: true });
+        writeFileSync(jsonOutPath, JSON.stringify(report, null, 2));
+    }
 
     if (asJson) {
         process.stdout.write(JSON.stringify(report, null, 2) + '\n');

@@ -5,7 +5,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, requireOwnedHistoricalSqlDatabase, startOwnedClientRuntime, stopOwnedClientRuntime } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import type { MoneyLedgerReconciliationResult } from '../../services/queue-workers/src/money-ledger-reconciliation';
 
 interface ScheduledObservation { status: string; result?: MoneyLedgerReconciliationResult }
@@ -310,7 +310,21 @@ test('fresh scheduled invocations progress beyond two pages despite tied timesta
         denyMutation('disabled-trigger', empty + ' ALTER TABLE public.money_ledger_reconciliation_batches DISABLE TRIGGER money_ledger_reconciliation_batches_updated;', /ROLLBACK349_UNKNOWN_SCHEMA_ATTRIBUTES/);
         denyMutation('unknown-external-view', empty + ' CREATE VIEW public.n7_retention_dependency AS SELECT * FROM public.money_ledger_reconciliation_traversal;', /ROLLBACK349_UNKNOWN_DEPENDENCY_OR_ANNOTATION/);
         denyMutation('unknown-type', empty + ' CREATE TYPE public.money_ledger_reconciliation_unreviewed AS ENUM(\'unknown\');', /ROLLBACK349_UNKNOWN_TYPE_FAMILY/);
-        denyMutation('changed-schema-privilege', empty + ' GRANT CREATE ON SCHEMA public TO service_role;', /ROLLBACK349_UNKNOWN_SOURCE_SCHEMA_OR_ACL_PROFILE/);
+        // HEAD's 360 DDL guard refuses this privilege escalation before the
+        // older rollback can run. Preserve that stronger current boundary and
+        // independently exercise 349 at its reviewed historical schema point.
+        denyMutation('changed-schema-privilege-at-head', empty + ' GRANT CREATE ON SCHEMA public TO service_role;', /360 refuses untrusted public CREATE/);
+        const historical = requireOwnedHistoricalSqlDatabase(357);
+        const historicalAcl = historical.psql("SELECT nspacl::text FROM pg_namespace WHERE nspname='public';");
+        const historicalRefusal = historical.psqlExpectError(`BEGIN;
+          TRUNCATE public.money_ledger_reconciliation_batches,public.money_ledger_reconciliation_traversal;
+          GRANT CREATE ON SCHEMA public TO service_role;
+          ${guardBody}
+          DO $unexpected349$ BEGIN RAISE EXCEPTION 'N7_349_UNEXPECTED_RETIREMENT_MUST_ABORT'; END $unexpected349$;`);
+        assert.match(historicalRefusal, /ROLLBACK349_UNKNOWN_SOURCE_SCHEMA_OR_ACL_PROFILE/);
+        assert.equal(historical.psql("SELECT nspacl::text FROM pg_namespace WHERE nspname='public';"), historicalAcl);
+        assert.equal(historical.psql("SELECT to_regclass('public.money_ledger_reconciliation_traversal') IS NOT NULL AND to_regclass('public.money_ledger_reconciliation_batches') IS NOT NULL;"),'t');
+        matrix.push('changed-schema-privilege-at-historical-357');
         denyMutation('non-read-committed-session', 'SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;', /ROLLBACK349_UNSAFE_SESSION_OR_WRITER/);
         denyMutation('replica-session', 'SET LOCAL session_replication_role=replica;', /ROLLBACK349_UNSAFE_SESSION_OR_WRITER/);
 

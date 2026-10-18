@@ -27,7 +27,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
+  NODE_VERSION: "22"
   PNPM_VERSION: "10.6.2"
   # Official Supabase mirror, same v16.2 multi-architecture image. Avoid the
   # anonymous ECR download limit shared by GitHub-hosted runners.
@@ -104,6 +104,8 @@ jobs:
   unit-tests:
     name: Unit tests
     runs-on: ubuntu-latest
+    env:
+      LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
     steps:
       - uses: actions/checkout@v4
         with:
@@ -159,9 +161,20 @@ jobs:
         env:
           CI: "true"
 
+      - name: Preserve owned acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests-owned-diagnostics
+          path: ${{ runner.temp }}/letbuyy-owned
+          if-no-files-found: ignore
+          retention-days: 7
+
   merge-safety-gate:
     name: Merge safety gate
     runs-on: ubuntu-latest
+    env:
+      LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
     steps:
       - uses: actions/checkout@v4
         with:
@@ -227,6 +240,15 @@ jobs:
       - name: Merchant mobile tests
         working-directory: apps/merchant/mobile
         run: flutter test
+
+      - name: Preserve owned acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: merge-safety-gate-owned-diagnostics
+          path: ${{ runner.temp }}/letbuyy-owned
+          if-no-files-found: ignore
+          retention-days: 7
 
   governance:
     name: Governance
