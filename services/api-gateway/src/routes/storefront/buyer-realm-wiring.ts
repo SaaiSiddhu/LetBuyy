@@ -42,6 +42,8 @@ import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
 import { registerBuyerPrivacyRoutes, type PrivacyRequestRow, type PrivacyRequestType } from './buyer-privacy-routes';
 import {registerBuyerPrivacyExportRoutes} from './buyer-privacy-export-routes';
+import { registerBuyerAssistantRoutes } from './buyer-assistant-routes';
+import { createBuyerAiAdapter, type Admission } from '../../execution/buyer-assistant.adapter';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
 import { registerBuyerWishlistRoutes } from './buyer-wishlist-routes';
 import { registerBuyerReviewRoutes } from './buyer-review-routes';
@@ -77,6 +79,39 @@ export function registerBuyerRealmRoutes(
     deps: BuyerRealmRoutesDeps,
 ): void {
     const { normalizeEmail } = deps;
+
+    registerBuyerAssistantRoutes(router, {
+        dependencies: c => ({
+            provider: createBuyerAiAdapter({
+                profile: c.env.BUYER_AI_ENABLED === 'true' ? c.env.BUYER_AI_PROFILE : undefined,
+                apiKey: c.env.BUYER_AI_API_KEY,
+            }),
+            fingerprintKey: c.env.BUYER_AI_FINGERPRINT_KEY,
+            receipts: {
+                async reserve(actor, request, hash, profile, tokens) {
+                    const { data, error } = await getSupabaseAdmin(c).rpc('reserve_buyer_ai_request', {
+                        p_buyer_account_id: actor.buyerAccountId, p_session_epoch: actor.sessionEpoch,
+                        p_conversation_id: request.conversation_id, p_request_id: request.request_id,
+                        p_payload_hash: hash, p_profile_id: profile.id,
+                        p_request_limit: profile.requests_per_day, p_token_limit: profile.token_bound_per_day,
+                        p_reserved_tokens: tokens,
+                    });
+                    const status = data?.status;
+                    if (error || !['reserved','conflict','unauthorized','quota_exceeded','in_progress',
+                        'outcome_unknown','result_unavailable'].includes(status)) throw new Error('BUYER_AI_RECEIPT_UNAVAILABLE');
+                    return status as Admission;
+                },
+                async transition(actor, requestId, from, to) {
+                    const { data, error } = await getSupabaseAdmin(c).rpc('transition_buyer_ai_request', {
+                        p_buyer_account_id: actor.buyerAccountId, p_session_epoch: actor.sessionEpoch,
+                        p_request_id: requestId, p_from_state: from, p_to_state: to,
+                    });
+                    if (error || typeof data !== 'boolean') throw new Error('BUYER_AI_RECEIPT_UNAVAILABLE');
+                    return data;
+                },
+            },
+        }),
+    });
 
     registerBuyerAccountRoutes(router, {
         normalizeEmail,

@@ -1,4 +1,6 @@
 // lib/screens/chat/ai_chat_screen.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,8 +15,43 @@ import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
 import 'package:letbuyy_marketplace/auth/buyer_sign_in_controller.dart';
 import 'chat_history_screen.dart';
 
-class AIChatScreen extends HookWidget {
-  const AIChatScreen({super.key});
+class AIChatScreen extends StatelessWidget {
+  const AIChatScreen({super.key, this.service});
+
+  /// Optional local transport seam; ordinary routes use the existing singleton.
+  final AIChatService? service;
+
+  @override
+  Widget build(BuildContext context) {
+    final signIn = context.watch<BuyerSignInController>();
+    final chat = service ?? AIChatService.instance;
+    chat.configure(
+      client: context.read<ApiClient>(),
+      accounts: context.read<BuyerAccountApi>(),
+    );
+    chat.updateAuth(
+      buyerId: signIn.buyerId,
+      sessionToken: signIn.token,
+      email: signIn.email,
+    );
+    // Disposing the actor's subtree also disposes input, focus, reply, loading,
+    // and scroll state. A token refresh for the same principal keeps that subtree.
+    return _ActorAIChatScreen(
+      key: ValueKey((chat, signIn.buyerId)),
+      service: chat,
+      sessionToken: signIn.token,
+    );
+  }
+}
+
+class _ActorAIChatScreen extends HookWidget {
+  const _ActorAIChatScreen({
+    super.key,
+    required this.service,
+    required this.sessionToken,
+  });
+  final AIChatService service;
+  final String? sessionToken;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +62,9 @@ class AIChatScreen extends HookWidget {
     final chat = _useAIChat(
       context: context,
       scrollController: scrollController,
+      inputController: textController,
+      aiService: service,
+      sessionToken: sessionToken,
     );
 
     final showScrollToBottom = useState(false);
@@ -74,8 +114,10 @@ class AIChatScreen extends HookWidget {
                         onReply: chat.actions.setReplyTo,
                         onCopy: (text) {
                           Clipboard.setData(ClipboardData(text: text));
-                          chat.actions.showSnack('Message copied',
-                              isError: false);
+                          chat.actions.showSnack(
+                            'Message copied',
+                            isError: false,
+                          );
                         },
                       ),
                     ),
@@ -108,8 +150,10 @@ class AIChatScreen extends HookWidget {
                     child: FloatingActionButton.small(
                       onPressed: chat.actions.scrollToBottom,
                       backgroundColor: AppColors.primary,
-                      child: const Icon(Icons.arrow_downward,
-                          color: AppColors.white),
+                      child: const Icon(
+                        Icons.arrow_downward,
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
               ],
@@ -157,20 +201,31 @@ class _AIChatActions {
 ({_AIChatState state, _AIChatActions actions}) _useAIChat({
   required BuildContext context,
   required ScrollController scrollController,
+  required TextEditingController inputController,
+  required AIChatService aiService,
+  required String? sessionToken,
 }) {
   final messages = useState<List<ChatMessage>>([]);
   final isLoading = useState(false);
   final isInitializing = useState(true);
-  final isGuest = useState(false);
   final sessionStats = useState<Map<String, int>>({});
   final replyToMessageId = useState<String?>(null);
+  final runId = useRef(0);
+  final ownedEpoch = useRef(aiService.epoch);
+  final scrollTimer = useRef<Timer?>(null);
+  final isGuest = !aiService.isSignedIn;
 
-  // ✅ FIXED: Use the singleton .instance
-  final aiService = useMemoized(() => AIChatService.instance);
+  bool current(int run, int epoch) =>
+      context.mounted && runId.value == run && aiService.isCurrent(epoch);
 
   void scrollToBottom({Duration delay = Duration.zero}) {
-    Future.delayed(delay, () {
-      if (!context.mounted || !scrollController.hasClients) return;
+    final run = runId.value;
+    scrollTimer.value?.cancel();
+    scrollTimer.value = Timer(delay, () {
+      if (!context.mounted ||
+          runId.value != run ||
+          !scrollController.hasClients)
+        return;
       scrollController.animateTo(
         scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 300),
@@ -181,277 +236,202 @@ class _AIChatActions {
 
   void showSnack(String msg, {required bool isError}) {
     if (!context.mounted) return;
-
-    final backgroundColor = isError ? AppColors.error : AppColors.success;
-    final textColor = AppColors.white;
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          msg,
-          style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
-        ),
-        backgroundColor: backgroundColor,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        duration: const Duration(seconds: 3),
+        content: Text(msg),
+        backgroundColor: isError ? AppColors.error : AppColors.success,
       ),
     );
   }
 
-  // C3 (Firebase SDK removal): this used to promise "Login to keep your chats" -- there is no
-  // durable chat-history backend for anyone yet (guest or signed in), so that was never true and
-  // is not reintroduced here. Signing in genuinely does unlock profile-aware answers (see
-  // handleUserProfile), which is what this now says.
-  void showGuestModeDialog() {
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text(
-          'Guest Mode: Sign in for personalized help with your profile.',
-          style: TextStyle(color: AppColors.white),
-        ),
-        backgroundColor: AppColors.warning,
-        duration: const Duration(seconds: 5),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        action: SnackBarAction(
-          label: 'Login',
-          textColor: AppColors.white,
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, '/login'),
-        ),
-      ),
-    );
-  }
-
-  Future<void> loadSessionStats() async {
-    try {
-      sessionStats.value = aiService.getSessionStats();
-    } catch (e) {
-      debugPrint('Session stats error: $e');
-    }
-  }
-
-  Future<void> initializeChat([String? sessionId]) async {
+  Future<void> initializeChat() async {
+    final run = runId.value;
+    final epoch = aiService.epoch;
+    ownedEpoch.value = epoch;
     isInitializing.value = true;
     try {
-      if (sessionId != null) {
-        // Load a specific session from history
-        final history = await aiService.loadSessionHistory(sessionId);
-        messages.value = history;
-      } else {
-        // Load the current, persistent session
-        final currentSessionId = aiService.currentSessionId;
-        final history = await aiService.loadSessionHistory(currentSessionId);
-        if (history.isNotEmpty && !isGuest.value) {
-          messages.value = history;
-        } else {
-          // No history, or is guest, so show greeting
-          // C3 (Firebase SDK removal): both greetings used to promise order-tracking and coupons
-          // as available -- neither has a canonical backend yet (see AIChatService's own
-          // handleGetOrders/handleGetCoupons), so this no longer claims they work.
-          final greeting = ChatMessage.ai(
-            text: isGuest.value
-                ? '**Welcome to LetBuyy!** 🛒\n\nYou are in Guest Mode with limited features.\n\nFeatures available:\n- Browse products\n- View categories\n\n*Sign in for personalized, profile-aware help.*'
-                : '**Welcome to LetBuyy!** 🛒\n\nI\'m your smart shopping assistant. How can I help you today?\n\n**What I can do:**\n- 🛍️ Find products for you\n- 📚 Browse categories\n- 👤 Answer questions about your profile\n- ❓ Answer general questions',
-            sessionId: currentSessionId,
-            quickReplies: ['Show all products', 'Best deals', 'Categories'],
-            category: 'greeting',
-          );
-          messages.value = [greeting];
-          if (!isGuest.value) await aiService.saveMessage(greeting);
-        }
-      }
+      await aiService.initSession();
+      if (!current(run, epoch)) return;
+      final id = aiService.currentSessionId;
+      await aiService.loadSessionHistory(id);
+      if (!current(run, epoch)) return;
+      final greeting = ChatMessage.ai(
+        text: isGuest
+            ? '**LetBuyy shopping help**\n\nSign in to request the server assistant. Availability depends on an approved server profile. Product facts remain available in the catalog.'
+            : '**LetBuyy shopping help**\n\nThe assistant is available only with an approved server profile and request allowance. Only your message and short excerpts from up to eight visible chat messages are submitted. Profile, orders and support records are not added. Product prices and stock must be verified in the catalog.',
+        sessionId: id,
+        quickReplies: ['Show all products', 'Best deals', 'Categories'],
+        category: 'greeting',
+      );
+      messages.value = [greeting];
+      if (!isGuest) await aiService.saveMessage(greeting, expectedEpoch: epoch);
+      if (!current(run, epoch)) return;
+      sessionStats.value = aiService.getSessionStats();
       scrollToBottom(delay: const Duration(milliseconds: 300));
-      if (!isGuest.value) await loadSessionStats();
-    } catch (e) {
-      debugPrint('Initialize chat error: $e');
+    } catch (_) {
+      if (!current(run, epoch)) return;
       messages.value = [
         ChatMessage.error(
-          text: 'Failed to load chat history. Please refresh or try again.',
-          sessionId: aiService.currentSessionId,
-          errorMessage: e.toString(),
-        )
+          text: 'Chat could not be initialized. Start a new chat to retry.',
+          sessionId: aiService.initializedSessionId ?? '',
+          errorMessage: 'Chat initialization failed.',
+        ),
       ];
     } finally {
-      isInitializing.value = false;
-    }
-  }
-
-  // ✅ ADDED THIS FUNCTION BACK (it's crucial for persistence)
-  //
-  // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): "signed in"
-  // is now the canonical buyer session (BuyerSignInController), never
-  // safeFirebaseCurrentUser()/FirebaseAuth -- that check was always true (always "guest") for
-  // every canonical buyer, since canonical "Sign in with LetBuyy" never touches Firebase.
-  Future<void> checkAuthAndInitialize() async {
-    try {
-      aiService.configure(
-        client: context.read<ApiClient>(),
-        accounts: context.read<BuyerAccountApi>(),
-      );
-      final signIn = context.read<BuyerSignInController>();
-      aiService.updateAuth(sessionToken: signIn.token, email: signIn.email);
-
-      // ✅ MUST CALL INITSESSION() FIRST
-      await aiService.initSession();
-
-      isGuest.value = !aiService.isSignedIn;
-      if (isGuest.value) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showGuestModeDialog();
-        });
-      }
-      // Now initializeChat() will use the correct persistent session ID
-      await initializeChat();
-    } catch (e) {
-      debugPrint('Auth check failed: $e');
-      showSnack('Failed to initialize chat.', isError: true);
-      isInitializing.value = false;
+      if (current(run, epoch)) isInitializing.value = false;
     }
   }
 
   Future<void> sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
-
-    HapticFeedback.mediumImpact();
-
+    if (text.trim().isEmpty || isLoading.value || isInitializing.value) return;
+    if (aiService.initializedSessionId == null) {
+      await initializeChat();
+      return;
+    }
+    final run = runId.value;
+    final epoch = aiService.epoch;
+    ownedEpoch.value = epoch;
+    final id = aiService.currentSessionId;
     final userMessage = ChatMessage.user(
       text: text.trim(),
-      sessionId: aiService.currentSessionId, // Uses persistent getter
+      sessionId: id,
       replyTo: replyToMessageId.value,
       category: 'user_query',
     );
-
+    final loading = ChatMessage.loading(sessionId: id, category: 'system');
     isLoading.value = true;
     replyToMessageId.value = null;
-
-    final loading = ChatMessage.loading(
-      sessionId: aiService.currentSessionId, // Uses persistent getter
-      category: 'system',
-    );
     messages.value = [...messages.value, userMessage, loading];
+    HapticFeedback.mediumImpact();
     scrollToBottom();
-
-    if (!isGuest.value) await aiService.saveMessage(userMessage);
-
+    if (!isGuest)
+      await aiService.saveMessage(userMessage, expectedEpoch: epoch);
+    if (!current(run, epoch)) return;
     try {
-      final aiResponse = await aiService.processUserMessage(
+      final response = await aiService.processUserMessage(
         text,
-        conversationHistory:
-            messages.value.where((m) => m.id != loading.id).toList(),
+        conversationHistory: messages.value
+            .where((m) => m.id != loading.id)
+            .toList(),
       );
-
+      if (!current(run, epoch)) return;
       messages.value = [
         ...messages.value.where((m) => m.id != loading.id),
-        aiResponse
+        response,
       ];
-
-      if (!isGuest.value) {
-        await aiService.saveMessage(aiResponse);
-        await loadSessionStats();
-      }
-    } catch (e) {
-      debugPrint('AI message error: $e');
+      if (!isGuest) await aiService.saveMessage(response, expectedEpoch: epoch);
+      if (current(run, epoch)) sessionStats.value = aiService.getSessionStats();
+    } catch (_) {
+      if (!current(run, epoch)) return;
       messages.value = [
         ...messages.value.where((m) => m.id != loading.id),
         ChatMessage.error(
           text: 'Something went wrong. Please try again.',
-          sessionId: aiService.currentSessionId, // Uses persistent getter
-          errorMessage: e.toString(),
-        )
+          sessionId: id,
+          errorMessage: 'Message could not be completed.',
+        ),
       ];
     } finally {
-      isLoading.value = false;
-      scrollToBottom(delay: const Duration(milliseconds: 200));
+      if (current(run, epoch)) {
+        isLoading.value = false;
+        scrollToBottom(delay: const Duration(milliseconds: 200));
+      }
     }
   }
 
   Future<void> startNewChat() async {
-    if (isGuest.value) {
-      await aiService.startNewSession(); // Now async
-      await initializeChat();
-      return;
-    }
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Start New Chat?'),
-        content: const Text(
-          'Your current chat will be saved in history. Start a new conversation?',
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
-          FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Start New')),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await aiService.startNewSession(); // Now async
-      await initializeChat();
-      HapticFeedback.mediumImpact();
-      showSnack('New chat started!', isError: false);
-    }
+    final run = runId.value;
+    final epoch = aiService.epoch;
+    final confirmed =
+        isGuest ||
+        await showDialog<bool>(
+              context: context,
+              builder: (dialogContext) => AlertDialog(
+                title: const Text('Start New Chat?'),
+                content: const Text(
+                  'Chat history is only available in this session. Start a new conversation?',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    child: const Text('Cancel'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    child: const Text('Start New'),
+                  ),
+                ],
+              ),
+            ) ==
+            true;
+    if (!confirmed || !current(run, epoch)) return;
+    runId.value++;
+    inputController.clear();
+    replyToMessageId.value = null;
+    messages.value = [];
+    sessionStats.value = {};
+    isLoading.value = false;
+    final pending = aiService.startNewSession();
+    final newEpoch = aiService.epoch;
+    ownedEpoch.value = newEpoch;
+    final newRun = runId.value;
+    await pending;
+    if (!current(newRun, newEpoch)) return;
+    await initializeChat();
   }
 
-  // C3 (Firebase SDK removal): dropped the "Login to access chat history" gate -- there is no
-  // durable chat-history backend for anyone yet (see AIChatService's own doc comments), so
-  // ChatHistoryScreen already shows its own honest empty state regardless of sign-in status;
-  // gating navigation to it behind a fake login requirement was strictly less honest than letting
-  // everyone see that same empty state.
   Future<void> showHistory() async {
+    final run = runId.value;
+    final epoch = aiService.epoch;
     final selectedSession = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (_) => const ChatHistoryScreen()),
     );
-
-    if (selectedSession != null) {
-      // This will now load the old session AND make it the new active one
-      await initializeChat(selectedSession);
-    }
-  }
-
-  void setReplyTo(String? messageId) {
-    replyToMessageId.value = messageId;
+    if (selectedSession != null &&
+        current(run, epoch) &&
+        selectedSession == aiService.currentSessionId)
+      await initializeChat();
   }
 
   useEffect(() {
-    // ✅ Make sure the correct init function is called
-    checkAuthAndInitialize();
-    return null;
-  }, []);
+    runId.value++;
+    ownedEpoch.value = aiService.epoch;
+    // Same-principal token refresh cancels old work and unlocks retry, while
+    // retaining the principal's conversation and draft. Actor changes remount.
+    isLoading.value = false;
+    messages.value = messages.value
+        .where((m) => m.messageType != MessageType.loading)
+        .toList();
+    if (messages.value.isEmpty) unawaited(initializeChat());
+    return () {
+      runId.value++;
+      scrollTimer.value?.cancel();
+      aiService.invalidatePending(expectedEpoch: ownedEpoch.value);
+    };
+  }, [sessionToken, aiService]);
 
-  final state = _AIChatState(
-    messages: messages.value,
-    isLoading: isLoading.value,
-    isInitializing: isInitializing.value,
-    isGuest: isGuest.value,
-    sessionStats: sessionStats.value,
-    replyToMessage: replyToMessageId.value == null
-        ? null
-        : messages.value.firstWhereOrNull(
-            (m) => m.id == replyToMessageId.value),
+  return (
+    state: _AIChatState(
+      messages: messages.value,
+      isLoading: isLoading.value,
+      isInitializing: isInitializing.value,
+      isGuest: isGuest,
+      sessionStats: sessionStats.value,
+      replyToMessage: replyToMessageId.value == null
+          ? null
+          : messages.value.firstWhereOrNull(
+              (m) => m.id == replyToMessageId.value,
+            ),
+    ),
+    actions: _AIChatActions(
+      sendMessage: sendMessage,
+      startNewChat: startNewChat,
+      showHistory: showHistory,
+      setReplyTo: (id) => replyToMessageId.value = id,
+      scrollToBottom: scrollToBottom,
+      showSnack: showSnack,
+    ),
   );
-
-  final actions = _AIChatActions(
-    sendMessage: sendMessage,
-    startNewChat: startNewChat,
-    showHistory: showHistory,
-    setReplyTo: setReplyTo,
-    scrollToBottom: scrollToBottom,
-    showSnack: showSnack,
-  );
-
-  return (state: state, actions: actions);
 }
 
 // ... (Rest of the file, _ChatAppBar, _LoadingState, etc., remains the same) ...
@@ -522,16 +502,13 @@ class _LoadingState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
-            color: AppColors.primary,
-            strokeWidth: 3,
-          ),
+          CircularProgressIndicator(color: AppColors.primary, strokeWidth: 3),
           const SizedBox(height: 20),
           Text(
             'Loading conversation...',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -566,8 +543,7 @@ class _GuestModeBanner extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () =>
-                Navigator.pushReplacementNamed(context, '/login'),
+            onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
             child: const Text(
               'Login',
               style: TextStyle(
@@ -626,8 +602,11 @@ class _StatChip extends StatelessWidget {
   final String value;
   final String label;
 
-  const _StatChip(
-      {required this.icon, required this.value, required this.label});
+  const _StatChip({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -646,13 +625,7 @@ class _StatChip extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: textColor,
-            fontSize: 11,
-          ),
-        ),
+        Text(label, style: const TextStyle(color: textColor, fontSize: 11)),
       ],
     );
   }
@@ -681,9 +654,9 @@ class _MessageList extends StatelessWidget {
       itemCount: messages.length,
       itemBuilder: (context, index) {
         final message = messages[index];
-        final showTimestamp = index == 0 ||
-            messages[index - 1]
-                    .timestamp
+        final showTimestamp =
+            index == 0 ||
+            messages[index - 1].timestamp
                     .difference(message.timestamp)
                     .inMinutes >
                 5;
@@ -722,42 +695,68 @@ class _MessageList extends StatelessWidget {
     );
   }
 
-  void _showMessageOptions(BuildContext context, ChatMessage message) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.reply),
-              title: const Text('Reply'),
-              onTap: () {
-                Navigator.pop(context);
-                onReply(message.id);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.copy),
-              title: const Text('Copy'),
-              onTap: () {
-                Navigator.pop(context);
-                onCopy(message.text);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('Share'),
-              onTap: () {
-                Navigator.pop(context);
-                // Implement share functionality
-              },
-            ),
-          ],
+  Future<void> _showMessageOptions(
+    BuildContext context,
+    ChatMessage message,
+  ) async {
+    final auth = context.read<BuyerSignInController>();
+    final buyerId = auth.buyerId;
+    final navigator = Navigator.of(context);
+    ModalRoute<dynamic>? ownedRoute;
+    void dismissOldActorOptions() {
+      final route = ownedRoute;
+      if (auth.buyerId != buyerId && route != null && route.isActive) {
+        navigator.removeRoute(route);
+      }
+    }
+
+    auth.addListener(dismissOldActorOptions);
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-      ),
-    );
+        builder: (sheetContext) {
+          ownedRoute = ModalRoute.of(sheetContext);
+          if (auth.buyerId != buyerId) {
+            scheduleMicrotask(dismissOldActorOptions);
+            return const SizedBox.shrink();
+          }
+          return SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.reply),
+                  title: const Text('Reply'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    if (context.mounted && auth.buyerId == buyerId)
+                      onReply(message.id);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.copy),
+                  title: const Text('Copy'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    if (context.mounted && auth.buyerId == buyerId)
+                      onCopy(message.text);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.share),
+                  title: const Text('Share'),
+                  onTap: () => Navigator.pop(sheetContext),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } finally {
+      auth.removeListener(dismissOldActorOptions);
+    }
   }
 }
 
@@ -784,10 +783,7 @@ class _ReplyingToBar extends StatelessWidget {
           Expanded(
             child: Text(
               message.text.replaceAll('\n', ' '),
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: AppColors.white, fontSize: 12),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -827,7 +823,7 @@ class _ChatInputArea extends StatelessWidget {
             color: AppColors.shadowLight,
             blurRadius: 10,
             offset: Offset(0, -5),
-          )
+          ),
         ],
       ),
       child: SafeArea(
@@ -840,10 +836,7 @@ class _ChatInputArea extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.surfaceVariant,
                     borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: AppColors.borderLight,
-                      width: 1,
-                    ),
+                    border: Border.all(color: AppColors.borderLight, width: 1),
                   ),
                   child: TextField(
                     controller: controller,
@@ -852,8 +845,10 @@ class _ChatInputArea extends StatelessWidget {
                       hintText: 'Ask me anything...',
                       hintStyle: TextStyle(color: AppColors.textHint),
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                     ),
                     textInputAction: TextInputAction.send,
                     // ✅ FIXED: Clear controller on submit

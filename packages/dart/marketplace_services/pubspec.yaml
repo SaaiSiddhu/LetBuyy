@@ -51,8 +51,7 @@ dependencies:
   # Local Storage
   shared_preferences: ^2.5.3
   
-  # AI
-  google_generative_ai: ^0.4.7
+  # Buyer AI uses the typed Gateway boundary; no native provider SDK.
   
   # Payment
   razorpay_flutter: ^1.3.7

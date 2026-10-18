@@ -37,6 +37,21 @@ const SITE_B = '22222222-2222-4222-8222-2222222222c2';
 const CAMPAIGN_A = '33333333-3333-4333-8333-3333333333c3';
 const CAMPAIGN_B = '44444444-4444-4444-8444-4444444444c4';
 
+//355 fixture authority: canonical synthetic owner and same-statement captured
+//context. The materialized CTE executes before the volatile budget RPC. It
+//does not grant authority, mint credit, or replace the role under test.
+const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
+const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
+function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
+    return `WITH captured_budget_context AS MATERIALIZED (
+      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
+             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
+    ) SELECT public.${operation}_ad_campaign_budget(
+      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
+      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
+      FROM captured_budget_context`;
+}
+
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -89,9 +104,13 @@ function bootstrapDatabase() {
 
 function seedFixtures() {
     psql(`
+    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid');
+    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${sqlString(SITE_A)}::uuid, 'Ads A', 'Ads A', 'store', 'ads-a', true),
       (${sqlString(SITE_B)}::uuid, 'Ads B', 'Ads B', 'store', 'ads-b', true);
+
+    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE_A)}::uuid,${budgetQ(SITE_B)}::uuid);
 
     INSERT INTO public.ad_campaigns (id, site_id, name, status) VALUES
       (${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Campaign A', 'draft'),
@@ -135,9 +154,9 @@ before(() => {
 
 test('the fence refuses a site that is not the transaction\'s tenant — both functions', { skip }, () => {
     const allocation = withTenant(SITE_A,
-        `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 1000, 'ads2:x1')`);
+        `${budgetRpc('allocate', SITE_B, CAMPAIGN_B, 1000, 'ads2:x1', null, SITE_A)}`);
     assert.ok(allocation, 'allocating for another site inside site A\'s transaction must be refused');
-    assert.match(allocation, /tenant context .* does not match the requested site/, allocation);
+    assert.match(allocation, /Current tenant site context is required/, allocation);
 
     const purchase = withTenant(SITE_A,
         `SELECT public.record_ad_credit_purchase(${sqlString(SITE_B)}::uuid, 1000, 'pay_x', 'ads2:x2')`);
@@ -145,15 +164,22 @@ test('the fence refuses a site that is not the transaction\'s tenant — both fu
     assert.match(purchase, /tenant context .* does not match the requested site/, purchase);
 });
 
-test('the matching site still works with the GUC set, and with it unset', { skip }, () => {
+test('the matching site works with captured context; unscoped backend allocation denies', { skip }, () => {
     assert.equal(
-        withTenant(SITE_A, `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 1000, 'ads2:ok1')`),
+        withTenant(SITE_A, `${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 1000, 'ads2:ok1', null, SITE_A)}`),
         null,
         'the fence must not make the merchant\'s own allocation impossible',
     );
-    // GUC unset: a service_role caller has no tenant context, and the fence deliberately does not
-    // invent one. This is the path the queue workers and operator tools use.
-    psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 25000, 'ads2:ok2');`);
+    //355 preserves the backend role's EXECUTE grant, but requires captured
+    //current owner context. Current production budget callers use the Gateway.
+    for (const role of ['app_tenant', 'service_role']) {
+        const denied = psqlExpectingFailure(`BEGIN; SET LOCAL ROLE ${role};
+          SELECT public.allocate_ad_campaign_budget(${budgetQ(SITE_A)}::uuid,${budgetQ(CAMPAIGN_A)}::uuid,
+            1000,'ads355:missing-context',NULL,${budgetQ(BUDGET_OWNER)}::uuid); ROLLBACK;`);
+        assert.match(denied || '', /Current tenant site context is required/);
+        assert.equal(allocated(CAMPAIGN_A), '0'); assert.equal(balance(SITE_A), '100000');
+    }
+    psql(`BEGIN; SET LOCAL ROLE service_role; ${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 25000, 'ads2:ok2', null, SITE_A)}; COMMIT;`);
     assert.equal(allocated(CAMPAIGN_A), '25000');
     assert.equal(balance(SITE_A), '75000', '100000 purchased minus 25000 allocated');
 });
@@ -161,21 +187,21 @@ test('the matching site still works with the GUC set, and with it unset', { skip
 test('232 survived the redefinition: replay, overdraft, cross-site and the ledger entry', { skip }, () => {
     // Replay — the same key must return the first result and write nothing new.
     const before = psql(`SELECT count(*) FROM public.ad_credit_ledger_entries WHERE site_id = ${sqlString(SITE_A)}::uuid;`);
-    const replayed = psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 25000, 'ads2:ok2');`);
+    const replayed = psql(`${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 25000, 'ads2:ok2', null, SITE_A)};`);
     assert.match(replayed, /"replayed"\s*:\s*true/, replayed);
     assert.equal(psql(`SELECT count(*) FROM public.ad_credit_ledger_entries WHERE site_id = ${sqlString(SITE_A)}::uuid;`), before);
     assert.equal(allocated(CAMPAIGN_A), '25000', 'a replay must not raise the budget again');
 
     // No overdraft — the single most important line in the function.
     const overdraft = psqlExpectingFailure(
-        `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 999999, 'ads2:over');`,
+        `${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 999999, 'ads2:over', null, SITE_A)};`,
     );
     assert.ok(overdraft, 'an overdraft is credit extended, which D-5 forbids');
     assert.match(overdraft, /insufficient ad credits/, overdraft);
 
-    // Cross-site campaign — refused even with no GUC at all, by 232's own check.
+    // Cross-site campaign — refused with correctly captured site/actor context.
     const crossSite = psqlExpectingFailure(
-        `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 1000, 'ads2:cross');`,
+        `${budgetRpc('allocate', SITE_A, CAMPAIGN_B, 1000, 'ads2:cross', null, SITE_A)};`,
     );
     assert.ok(crossSite, 'site A must not fund site B\'s campaign');
     assert.match(crossSite, /does not belong to site/, crossSite);
@@ -200,7 +226,7 @@ test('app_tenant can execute the allocation but still cannot touch the ledger', 
     const viaFunction = psqlExpectingFailure(`BEGIN;
 SELECT set_config('app.site_id', ${sqlString(SITE_A)}, true);
 SET LOCAL ROLE app_tenant;
-SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 1000, 'ads2:tenant1');
+${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 1000, 'ads2:tenant1', null, SITE_A)};
 ROLLBACK;`);
     assert.equal(viaFunction, null, `app_tenant must be able to allocate through the RPC: ${viaFunction}`);
 
@@ -218,16 +244,19 @@ test('the rollback restores 232 exactly, and 238 re-applies', { skip }, () => {
     applySqlFile(ROLLBACK);
     // The fence is gone: the mismatched site is accepted again.
     assert.equal(
-        withTenant(SITE_A, `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 1000, 'ads2:rb1')`),
+        withTenant(SITE_A, `${budgetRpc('allocate', SITE_B, CAMPAIGN_B, 1000, 'ads2:rb1', null, SITE_A)}`),
         null,
         'without 238 the GUC and the site need not agree — this is what the fence adds',
     );
 
     applySqlFile(MIGRATION);
     assert.match(
-        withTenant(SITE_A, `SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 1000, 'ads2:rb2')`) || '',
+        withTenant(SITE_A, `${budgetRpc('allocate', SITE_B, CAMPAIGN_B, 1000, 'ads2:rb2', null, SITE_A)}`) || '',
         /tenant context .* does not match the requested site/,
         'the fence is back',
     );
     applySqlFile(MIGRATION);
+    applySqlFile('database/supabase/migrations/291_ad_credit_idempotency_payload_conflict.sql');
+    applySqlFile('database/supabase/migrations/355_ad_campaign_current_budget_authority.sql');
+
 });

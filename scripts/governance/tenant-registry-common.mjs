@@ -26,9 +26,7 @@ const OWNER_COLUMNS = [
 ];
 
 function normalizeTableName(value) {
-  const name = value.trim();
-  if (name.startsWith('"') && name.endsWith('"')) return name.slice(1, -1).replace(/""/g, '"');
-  return name.replace(/^public\./i, '').toLowerCase();
+  return value.replace(/^public\./, '').replace(/"/g, '').trim();
 }
 
 function readMigrationFiles() {
@@ -41,6 +39,11 @@ function readMigrationFiles() {
     }));
 }
 
+function stripSqlComments(sql) {
+  return sql
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/--.*$/gm, '');
+}
 
 function ensureTable(map, name, sourceFile) {
   const tableName = normalizeTableName(name);
@@ -66,151 +69,32 @@ function addColumn(table, column) {
   }
 }
 
-// A bounded lexical pass keeps SQL data opaque while retaining identifier case.
-// It is not a general SQL parser: only ordinary public/unqualified CREATE/ALTER
-// TABLE declarations and the existing explicit partition helpers are derived.
-function sqlTokens(source, doDepth = 0) {
-  if (doDepth > 32) throw new Error('SQL DO nesting exceeds bounded parser depth');
-  const tokens = [];
-  const doBody = () => word(tokens.at(-1), 'do') || (word(tokens.at(-3), 'do') && word(tokens.at(-2), 'language') && identifier(tokens.at(-1)));
-  let i = 0;
-  while (i < source.length) {
-    const start = i, char = source[i];
-    if (/\s/.test(char)) { i++; continue; }
-    if (source.startsWith('--', i)) {
-      while (i < source.length && source[i] !== '\n') i++;
-      continue;
+function parseCreateTables(source, sourceFile, tables) {
+  const createPattern = /CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+(?:public\.)?("?[a-zA-Z_][a-zA-Z0-9_]*"?)[\s\n]*\(([\s\S]*?)\)\s*(?:PARTITION\s+BY\s+(?:RANGE|LIST|HASH)\s*\([^)]*\)\s*)?;/gi;
+  let match;
+  while ((match = createPattern.exec(source))) {
+    const table = ensureTable(tables, match[1], sourceFile);
+    const body = match[2];
+    for (const line of body.split('\n')) {
+      const columnMatch = line.trim().match(/^"?([a-zA-Z_][a-zA-Z0-9_]*)"?\s+/);
+      if (!columnMatch) continue;
+      const column = columnMatch[1].toLowerCase();
+      if (['constraint', 'primary', 'unique', 'foreign', 'check', 'exclude'].includes(column)) continue;
+      addColumn(table, column);
     }
-    if (source.startsWith('/*', i)) {
-      let depth = 1; i += 2;
-      while (i < source.length && depth) {
-        if (source.startsWith('/*', i)) { depth++; i += 2; }
-        else if (source.startsWith('*/', i)) { depth--; i += 2; }
-        else i++;
-      }
-      if (depth) throw new Error('Unterminated SQL block comment');
-      continue;
-    }
-    if (char === "'" || char === '"') {
-      const identifier = char === '"';
-      const previous = tokens.at(-1);
-      const escaped = !identifier && previous?.kind === 'word' && previous.value === 'e' && previous.end === i;
-      let value = '', closed = false; i++;
-      while (i < source.length) {
-        if (source[i] === char) {
-          if (source[i + 1] === char) { value += char; i += 2; }
-          else { i++; closed = true; break; }
-        } else if (escaped && source[i] === '\\') {
-          if (i + 1 >= source.length) break;
-          value += source.slice(i, i + 2); i += 2;
-        } else value += source[i++];
-      }
-      if (!closed) throw new Error(`Unterminated SQL ${identifier ? 'identifier' : 'literal'}`);
-      if (!identifier && doBody()) {
-        for (const token of sqlTokens(value, doDepth + 1)) tokens.push(token);
-      } else tokens.push({ kind: identifier ? 'identifier' : 'literal', value, raw: source.slice(start, i), end: i });
-      continue;
-    }
-    if (char === '$') {
-      const delimiter = source.slice(i).match(/^\$(?:[a-zA-Z_][a-zA-Z0-9_]*)?\$/)?.[0];
-      if (delimiter) {
-        const end = source.indexOf(delimiter, i + delimiter.length);
-        if (end < 0) throw new Error('Unterminated SQL dollar literal');
-        i = end + delimiter.length;
-        if (doBody()) {
-          // Anonymous DO blocks execute during the migration. Inspect their
-          // static SQL, while EXECUTE strings inside them remain opaque data.
-          const bodyStart = start + delimiter.length;
-          for (const token of sqlTokens(source.slice(bodyStart, end), doDepth + 1)) tokens.push(token);
-        } else tokens.push({ kind: 'literal', value: '', raw: source.slice(start, i), end: i });
-        continue;
-      }
-    }
-    if (/[a-zA-Z_]/.test(char)) {
-      while (i < source.length && /[a-zA-Z0-9_$]/.test(source[i])) i++;
-      const raw = source.slice(start, i);
-      tokens.push({ kind: 'word', value: raw.toLowerCase(), raw, end: i });
-    } else {
-      tokens.push({ kind: 'symbol', value: char, raw: char, end: ++i });
-    }
-  }
-  return tokens;
-}
-
-const word = (token, value) => token?.kind === 'word' && token.value === value;
-const identifier = token => token?.kind === 'word' || token?.kind === 'identifier';
-const TABLE_CONSTRAINTS = new Set(['constraint', 'primary', 'unique', 'foreign', 'check', 'exclude', 'like']);
-
-function tableIdentifier(tokens, start) {
-  if (!identifier(tokens[start])) return null;
-  if (tokens[start + 1]?.value === '.') {
-    if (tokens[start].value !== 'public' || !identifier(tokens[start + 2])) return null;
-    return { raw: tokens[start + 2].raw, next: start + 3 };
-  }
-  return { raw: tokens[start].raw, next: start + 1 };
-}
-
-function parseCreateTables(tokens, sourceFile, tables, partitions) {
-  for (let i = 0; i < tokens.length; i++) {
-    if (!word(tokens[i], 'create') || !word(tokens[i + 1], 'table')) continue;
-    let next = i + 2;
-    if (word(tokens[next], 'if') && word(tokens[next + 1], 'not') && word(tokens[next + 2], 'exists')) next += 3;
-    const name = tableIdentifier(tokens, next);
-    if (!name) continue;
-    next = name.next;
-    if (word(tokens[next], 'partition') && word(tokens[next + 1], 'of')) {
-      const parent = tableIdentifier(tokens, next + 2);
-      if (parent) partitions.set(normalizeTableName(name.raw), { parent: normalizeTableName(parent.raw), file: sourceFile });
-      continue;
-    }
-    if (tokens[next]?.value !== '(') continue;
-    const table = ensureTable(tables, name.raw, sourceFile);
-    let round = 0, square = 0, entry = [], closed = false;
-    const column = () => {
-      const first = entry[0];
-      if (identifier(first) && identifier(entry[1]) && !(first.kind === 'word' && TABLE_CONSTRAINTS.has(first.value))) addColumn(table, first.value);
-      entry = [];
-    };
-    for (let j = next + 1; j < tokens.length; j++) {
-      const token = tokens[j];
-      // Literal punctuation is data, including commas/parentheses/dollar bodies.
-      if (token.kind !== 'symbol') { entry.push(token); continue; }
-      if (token.value === ')' && round === 0 && square === 0) { column(); i = j; closed = true; break; }
-      if (token.value === ',' && round === 0 && square === 0) { column(); continue; }
-      if (token.value === ';' && round === 0 && square === 0) break;
-      if (token.value === '(') round++;
-      else if (token.value === ')') round--;
-      else if (token.value === '[') square++;
-      else if (token.value === ']') square--;
-      if (round < 0 || square < 0) throw new Error(`${sourceFile}: unbalanced CREATE TABLE columns`);
-      entry.push(token);
-    }
-    if (!closed) throw new Error(`${sourceFile}: unclosed CREATE TABLE columns`);
   }
 }
 
-function parseAlterAddColumns(tokens, sourceFile, tables) {
-  for (let i = 0; i < tokens.length; i++) {
-    if (!word(tokens[i], 'alter') || !word(tokens[i + 1], 'table')) continue;
-    let next = i + 2;
-    if (word(tokens[next], 'if') && word(tokens[next + 1], 'exists')) next += 2;
-    if (word(tokens[next], 'only')) next++;
-    const name = tableIdentifier(tokens, next);
-    if (!name) continue;
-    const table = ensureTable(tables, name.raw, sourceFile);
-    let depth = 0;
-    for (let j = name.next; j < tokens.length; j++) {
-      const token = tokens[j];
-      if (token.kind === 'symbol') {
-        if (token.value === ';' && depth === 0) break;
-        if (token.value === '(' || token.value === '[') depth++;
-        if (token.value === ')' || token.value === ']') depth--;
-      }
-      if (depth !== 0 || !word(token, 'add')) continue;
-      let at = j + 1;
-      if (word(tokens[at], 'column')) at++;
-      if (word(tokens[at], 'if') && word(tokens[at + 1], 'not') && word(tokens[at + 2], 'exists')) at += 3;
-      if (identifier(tokens[at]) && identifier(tokens[at + 1]) && !(tokens[at].kind === 'word' && TABLE_CONSTRAINTS.has(tokens[at].value))) addColumn(table, tokens[at].value);
+function parseAlterAddColumns(source, sourceFile, tables) {
+  const alterPattern = /ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?(?:public\.)?("?[a-zA-Z_][a-zA-Z0-9_]*"?)([\s\S]*?);/gi;
+  let match;
+  while ((match = alterPattern.exec(source))) {
+    const table = ensureTable(tables, match[1], sourceFile);
+    const statement = match[2];
+    const addPattern = /ADD\s+COLUMN(?:\s+IF\s+NOT\s+EXISTS)?\s+"?([a-zA-Z_][a-zA-Z0-9_]*)"?/gi;
+    let addMatch;
+    while ((addMatch = addPattern.exec(statement))) {
+      addColumn(table, addMatch[1].toLowerCase());
     }
   }
 }
@@ -220,28 +104,22 @@ export function deriveTenantTablesFromMigrations(migrations = readMigrationFiles
   const partitions = new Map();
   const shadows = new Map();
   for (const { file, source } of migrations) {
-    const tokens = sqlTokens(source);
-    parseCreateTables(tokens, file, tables, partitions);
-    parseAlterAddColumns(tokens, file, tables);
-    // Only actual literal helper calls seed known partitions. SQL contained
-    // in a default, dynamic EXECUTE string or comment cannot declare a table.
-    for (let i = 0; i < tokens.length; i++) {
-      if (!word(tokens[i], 'select') || !word(tokens[i + 1], 'public') || tokens[i + 2]?.value !== '.'
-          || !word(tokens[i + 3], 'upsert_retention_policy') || tokens[i + 4]?.value !== '(') continue;
-      const target = tokens[i + 5], shadow = tokens[i + 7];
-      if (target?.kind === 'literal' && shadow?.kind === 'literal' && tokens[i + 6]?.value === ','
-          && /^[a-z0-9_]+$/.test(target.value) && /^[a-z0-9_]+$/.test(shadow.value)) shadows.set(target.value, shadow.value);
+    const stripped = stripSqlComments(source);
+    parseCreateTables(stripped, file, tables);
+    parseAlterAddColumns(stripped, file, tables);
+    // PARTITION OF inherits columns without a parenthesized CREATE TABLE body.
+    for (const match of stripped.matchAll(/CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+public\.([a-z0-9_]+)\s+PARTITION\s+OF\s+public\.([a-z0-9_]+)/gi)) {
+      partitions.set(match[1], { parent: match[2], file });
     }
-    for (let i = 0; i < tokens.length; i++) {
-      if (!word(tokens[i], 'select') || !word(tokens[i + 1], 'public') || tokens[i + 2]?.value !== '.'
-          || !word(tokens[i + 3], 'ensure_monthly_hot_table_partition') || tokens[i + 4]?.value !== '(') continue;
-      const target = tokens[i + 5], date = tokens[i + 8];
-      if (target?.kind !== 'literal' || !/^[a-z0-9_]+$/.test(target.value) || tokens[i + 6]?.value !== ','
-          || !word(tokens[i + 7], 'date') || date?.kind !== 'literal' || !/^\d{4}-\d{2}-\d{2}$/.test(date.value)
-          || tokens[i + 9]?.value !== ')') continue;
-      const parent = shadows.get(target.value);
-      if (!parent) throw new Error(`${file}: seeded partition has no declared retention shadow for ${target.value}`);
-      partitions.set(`${parent}_${date.value.slice(0, 7).replace('-', '_')}`, { parent, file });
+    // The canonical retention helper creates the two explicitly seeded months in
+    // migrations 079–083. Bind those calls to their declared shadow, not a name guess.
+    for (const match of stripped.matchAll(/SELECT\s+public\.upsert_retention_policy\(\s*'([a-z0-9_]+)'\s*,\s*'([a-z0-9_]+)'/gi)) {
+      shadows.set(match[1], match[2]);
+    }
+    for (const match of stripped.matchAll(/SELECT\s+public\.ensure_monthly_hot_table_partition\(\s*'([a-z0-9_]+)'\s*,\s*DATE\s+'(\d{4}-\d{2}-\d{2})'\s*\)/gi)) {
+      const parent = shadows.get(match[1]);
+      if (!parent) throw new Error(`${file}: seeded partition has no declared retention shadow for ${match[1]}`);
+      partitions.set(`${parent}_${match[2].slice(0,7).replace('-','_')}`, { parent, file });
     }
   }
   for (const [name, { parent, file }] of partitions) {

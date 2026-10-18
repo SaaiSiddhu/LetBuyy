@@ -4944,3 +4944,6 @@ export function featureFlagExposureTelemetry(
     evaluated_at: evaluatedAt.toISOString(),
   };
 }
+
+export { BuyerAssistantRequestSchema, BuyerAssistantResponseSchema } from './buyer-assistant';
+export type { BuyerAssistantRequest, BuyerAssistantResponse } from './buyer-assistant';

@@ -185,12 +185,14 @@ class ApiClient {
   // (migration 217's seven predicates, shared by the feed and the detail), so the client never
   // filters — it asks and renders what it is given.
 
-  /// One page of the marketplace grid, across merchants.
+  /// One page of the marketplace grid, optionally scoped to one seller's canonical site ID.
+  /// Seller scope is a public listing filter; it never grants access to a seller profile.
   ///
   /// [cursor] must come from a previous page's [MarketplaceFeedPage.nextCursor]; its two halves are
   /// sent together or not at all, because the gateway rejects a half cursor and a client that
   /// rebuilds one from the last item drifts out of step with the server's ordering.
   Future<MarketplaceFeedPage> marketplaceFeed({
+    String? sellerSiteId,
     String? category,
     String? search,
     String? countryOfOrigin,
@@ -199,6 +201,7 @@ class ApiClient {
     ApiRequestOptions? options,
   }) async {
     final query = <String, dynamic>{
+      if (sellerSiteId != null) 'site_id': sellerSiteId,
       if (category != null && category.isNotEmpty) 'category': category,
       if (search != null && search.isNotEmpty) 'search': search,
       if (countryOfOrigin != null && countryOfOrigin.isNotEmpty)
@@ -239,7 +242,6 @@ class ApiClient {
           : null,
     );
   }
-
   /// Sorted origin choices from currently visible marketplace listings.
   Future<List<String>> marketplaceOrigins({ApiRequestOptions? options}) async {
     final body = await get('/storefront/marketplace/origins', options: options);

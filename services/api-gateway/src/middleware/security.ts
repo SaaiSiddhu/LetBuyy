@@ -133,6 +133,12 @@ export const errorResponseSanitizer = createMiddleware<{ Bindings: Env }>(
 
 export const inputValidation = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
+        // This new BUYER route owns authenticated streaming64KiB validation and
+        // fixed errors. Do not eagerly clone/read private content before it.
+        if (c.req.method === 'POST' && c.req.path === '/v1/storefront/buyer/assistant') {
+            await next();
+            return;
+        }
         // Only validate mutating requests with JSON bodies
         if (['POST', 'PUT', 'PATCH'].includes(c.req.method)) {
             const contentType = c.req.header('content-type');

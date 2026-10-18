@@ -146,6 +146,10 @@ export interface Env {
     KYC_PROVIDER?: 'signzy' | 'hyperverge' | 'manual';
     KYC_PROVIDER_API_KEY?: string;
     KYC_PROVIDER_ACCOUNT_ID?: string;
+    BUYER_AI_ENABLED?: 'true' | 'false';
+    BUYER_AI_PROFILE?: string;
+    BUYER_AI_API_KEY?: string;
+    BUYER_AI_FINGERPRINT_KEY?: string;
     AI_PROVIDER_MODE?: 'sandbox' | 'live';
     AI_PROVIDER?: 'letbuyy_sandbox' | 'openai_compatible' | 'manual';
     AI_PROVIDER_API_KEY?: string;

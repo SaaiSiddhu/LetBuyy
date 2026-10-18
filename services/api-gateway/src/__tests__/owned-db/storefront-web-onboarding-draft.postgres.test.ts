@@ -194,3 +194,119 @@ test('storefront creation refuses an unverified merchant contact and succeeds af
     assert.equal(created.status, 201, created.text);
     assert.equal(psql(`SELECT count(*) FROM sites WHERE custom_user_id='${merchantId}' AND subdomain='${subdomain}' AND status='draft';`), '1');
 });
+
+// Rollback boundary: actual owned catalog/roles/data, not provider or hosted proof.
+import { readFileSync } from 'node:fs';
+const rollback284=readFileSync('database/supabase/rollback/284_storefront_web_onboarding_channels.rollback.sql','utf8');
+const forward284=readFileSync('database/supabase/migrations/284_storefront_web_onboarding_channels.sql','utf8');
+const withoutTransaction=(sql:string)=>sql.replace(/^BEGIN;$/m,'').replace(/^COMMIT;$/m,'');
+const source284='public.save_storefront_web_onboarding_draft(uuid,integer,text,text,text,text[])';
+const target284='public.save_storefront_web_onboarding_draft(uuid,integer,text,text,text)';
+const family284=()=>psql(`SELECT md5(coalesce(jsonb_agg(to_jsonb(p)-'oid' ORDER BY p.oid::regprocedure::text),'[]'::jsonb)::text) FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname='save_storefront_web_onboarding_draft';`);
+const draftDigestSql="(SELECT md5(coalesce(jsonb_agg(to_jsonb(a) ORDER BY a.id),'[]'::jsonb)::text) FROM public.onboarding_attempts a)";
+const draftDigest284=()=>psql('SELECT '+draftDigestSql+';');
+const channels284=`(SELECT survey_data->'channels' FROM public.onboarding_attempts WHERE user_id='${ownerId}' AND status='in_progress' AND survey_data?'web_draft' ORDER BY updated_at DESC,id DESC LIMIT 1)`;
+
+test('284 valid guarded rollback and reapply conserve attempts/channels and exact current function owner/body/ACL',()=>{
+    const before=family284(),dataBefore=draftDigest284();
+    console.log('N9_284_CANONICAL_STATE '+psql(`SELECT jsonb_build_object('body_md5',md5(prosrc),'owner',pg_get_userbyid(proowner),'acl',proacl,'config',proconfig) FROM pg_proc WHERE oid='${source284}'::regprocedure;`));
+    for(const role of ['anon','authenticated','app_tenant'])assert.match(psqlExpectError(`BEGIN; SET LOCAL ROLE ${role}; SELECT public.save_storefront_web_onboarding_draft('${ownerId}',3,'Denied','denied','general',ARRAY['online']::text[]);`),/permission denied/);
+    try{
+        const output=psql(`BEGIN;
+          SET LOCAL ROLE service_role;
+          SELECT public.save_storefront_web_onboarding_draft('${ownerId}',3,'Guard seed','guard-${ownerId.slice(0,8)}','general',ARRAY['online','social']::text[]);
+          RESET ROLE;
+          SELECT jsonb_build_object('phase','seed','data',${draftDigestSql},'channels',${channels284});
+          ${withoutTransaction(rollback284)}
+          SELECT jsonb_build_object('phase','legacy','data',${draftDigestSql},'source_absent',to_regprocedure('${source284}') IS NULL,'target_present',to_regprocedure('${target284}') IS NOT NULL,
+            'anon',has_function_privilege('anon','${target284}','EXECUTE'),'authenticated',has_function_privilege('authenticated','${target284}','EXECUTE'),'app_tenant',has_function_privilege('app_tenant','${target284}','EXECUTE'),'service',has_function_privilege('service_role','${target284}','EXECUTE'));
+          SET LOCAL ROLE service_role;
+          SELECT public.save_storefront_web_onboarding_draft('${ownerId}',2,'Legacy write','guard-${ownerId.slice(0,8)}','general');
+          RESET ROLE;
+          SELECT jsonb_build_object('phase','legacy_write','data',${draftDigestSql},'channels',${channels284});
+          ${withoutTransaction(forward284)}
+          SELECT jsonb_build_object('phase','reapplied','data',${draftDigestSql},'source_present',to_regprocedure('${source284}') IS NOT NULL,'target_absent',to_regprocedure('${target284}') IS NULL);
+          ROLLBACK;`);
+        const states=output.split('\n').filter(line=>line.startsWith('{')).map(line=>JSON.parse(line)).filter(row=>row.phase);
+        assert.deepEqual(states.map(row=>row.phase),['seed','legacy','legacy_write','reapplied']);
+        assert.equal(states[1].data,states[0].data,'rollback does not rewrite attempts');
+        assert.equal(states[1].source_absent,true);assert.equal(states[1].target_present,true);
+        assert.equal(states[1].anon,false);assert.equal(states[1].authenticated,false);assert.equal(states[1].app_tenant,false);assert.equal(states[1].service,true);
+        assert.deepEqual(states[2].channels,states[0].channels,'legacy save preserves existing channel intent');
+        assert.equal(states[3].data,states[2].data,'forward reapply does not rewrite attempts');
+        assert.equal(states[3].source_present,true);assert.equal(states[3].target_absent,true);
+    }finally{assert.equal(family284(),before);assert.equal(draftDigest284(),dataBefore);}
+});
+
+test('284 second rollback explicitly refuses and preserves the known predecessor before exact forward recovery',()=>{
+    const before=family284(),dataBefore=draftDigest284();
+    try{
+        owned.script(rollback284);
+        const predecessor=family284();assert.notEqual(predecessor,before);
+        assert.match(psqlExpectError(rollback284),/rollback284 refuses/);
+        assert.equal(family284(),predecessor);assert.equal(draftDigest284(),dataBefore);
+    }finally{owned.script(forward284);assert.equal(family284(),before);assert.equal(draftDigest284(),dataBefore);}
+});
+
+test('284 unknown source/target ABI, extra overload, body, owner, config and privilege drift refuse before effects',()=>{
+    const before=family284(),dataBefore=draftDigest284();
+    const sourceDefinition=forward284.match(/CREATE FUNCTION[\s\S]*?\$\$;/)![0];
+    const mutations=[
+        `DROP FUNCTION ${source284};`,
+        `CREATE FUNCTION public.save_storefront_web_onboarding_draft(p_user_id uuid,p_step integer,p_store_name text,p_subdomain text,p_industry text) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`,
+        `CREATE FUNCTION public.save_storefront_web_onboarding_draft(p_control text) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`,
+        `DROP FUNCTION ${source284}; CREATE FUNCTION public.save_storefront_web_onboarding_draft(p_wrong uuid,p_step integer,p_store_name text,p_subdomain text,p_industry text,p_channels text[]) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`,
+        `DROP FUNCTION ${source284}; CREATE FUNCTION public.save_storefront_web_onboarding_draft(p_user_id uuid,p_step integer,p_store_name text,p_subdomain text,p_industry text,p_channels text[]) RETURNS text LANGUAGE sql AS $$SELECT ''::text$$;`,
+        sourceDefinition.replace('CREATE FUNCTION','CREATE OR REPLACE FUNCTION').replace('Invalid onboarding draft scope or step','Controlled newer source body'),
+        `ALTER FUNCTION ${source284} OWNER TO service_role;`,
+        `ALTER FUNCTION ${source284} SET search_path TO public;`,
+        `GRANT EXECUTE ON FUNCTION ${source284} TO authenticated;`,
+        `GRANT EXECUTE ON FUNCTION ${source284} TO service_role WITH GRANT OPTION;`,
+    ];
+    for(const mutation of mutations){
+        assert.match(psqlExpectError('BEGIN;'+mutation+withoutTransaction(rollback284)),/rollback284 refuses/,mutation.slice(0,110));
+        assert.equal(family284(),before);assert.equal(draftDigest284(),dataBefore);
+    }
+    assert.match(psqlExpectError('BEGIN ISOLATION LEVEL REPEATABLE READ;'+withoutTransaction(rollback284)),/rollback284 refuses concurrent\/prepared writes or non-read-committed state/);
+    assert.equal(family284(),before);assert.equal(draftDigest284(),dataBefore);
+});
+
+test('284 quiescent catalog transition refuses an actual uncommitted overload before any writer/data change',async()=>{
+    const before=family284(),dataBefore=draftDigest284(),token=crypto.randomUUID().replaceAll('-','');
+    const gateTable='n9_284_gate_'+token,creatorName='n9-284-create-'+token,holderName='n9-284-holder-'+token;
+    const key=crypto.getRandomValues(new Uint32Array(1))[0]%1000000000+1000000000;
+    psql(`CREATE TABLE public.${gateTable}(released boolean NOT NULL);INSERT INTO public.${gateTable} VALUES(false);`);
+    const holder=owned.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${holderName}';SELECT pg_advisory_xact_lock(${key}::bigint);
+      DO $$DECLARE deadline timestamptz:=clock_timestamp()+interval '15 seconds';BEGIN
+       WHILE NOT(SELECT released FROM public.${gateTable}) LOOP
+        IF clock_timestamp()>deadline THEN RAISE EXCEPTION 'catalog test gate not released';END IF;PERFORM pg_sleep(0.01);
+       END LOOP;
+      END$$;COMMIT;`).then(()=>null,(error:Error)=>error);
+    let creator:Promise<Error|null>|undefined;
+    try{
+        const holderDeadline=Date.now()+5000;
+        while(psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${holderName}' AND l.locktype='advisory' AND l.classid=0 AND l.objid=${key} AND l.granted);`)!=='t'){
+            if(Date.now()>holderDeadline)throw Error('actual advisory gate holder did not become ready');
+        }
+        creator=owned.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${creatorName}';
+          CREATE FUNCTION public.save_storefront_web_onboarding_draft(p_control text) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;
+          SELECT pg_advisory_xact_lock(${key}::bigint);COMMIT;`).then(()=>null,(error:Error)=>error);
+        const creatorDeadline=Date.now()+5000;
+        while(psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.locktype='advisory' AND l.classid=0 AND l.objid=${key} AND NOT l.granted) AND EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted);`)!=='t'){
+            if(Date.now()>creatorDeadline)throw Error('actual uncommitted creator/write-XID barrier did not become ready');
+        }
+        console.log('N9_284_CONCURRENT_LOCKS '+psql(`SELECT jsonb_build_object('write_xid_held',bool_or(l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted),'catalog_relation_lock_held',bool_or(l.relation='pg_catalog.pg_proc'::regclass AND l.mode='RowExclusiveLock' AND l.granted)) FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}';`));
+        assert.match(psqlExpectError(rollback284),/rollback284 refuses concurrent\/prepared writes/);
+        assert.equal(family284(),before,'uncommitted other-session overload is invisible; original writer is untouched');
+        assert.equal(draftDigest284(),dataBefore);
+        psql(`UPDATE public.${gateTable} SET released=true;`);
+        const [released,created]=await Promise.all([holder,creator]);assert.equal(released,null);assert.equal(created,null);
+        assert.equal(psql(`SELECT to_regprocedure('${source284}') IS NOT NULL AND to_regprocedure('${target284}') IS NULL;`),'t');
+    }finally{
+        psql(`UPDATE public.${gateTable} SET released=true;`);await Promise.all([holder,creator]);
+        psql(`DROP FUNCTION IF EXISTS public.save_storefront_web_onboarding_draft(text);DROP TABLE public.${gateTable};`);
+        if(psql(`SELECT to_regprocedure('${source284}') IS NULL;`)==='t')owned.script(forward284);
+        assert.equal(family284(),before);assert.equal(draftDigest284(),dataBefore);
+        assert.equal(psql(`SELECT to_regclass('public.${gateTable}') IS NULL;`),'t');
+    }
+});

@@ -33,8 +33,10 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
     assert.deepEqual(
         ownedSuites(),
         [
+            'ad-campaign-budget-authority.postgres.test.ts',
             'authenticated-checkout.postgres.test.ts',
             'backfill-and-target-shadow.postgres.test.ts',
+            'buyer-assistant-quotas.postgres.test.ts',
             'buyer-privacy-export-browser.postgres.test.ts',
             'buyer-privacy-export.postgres.test.ts',
             'buyer-privacy-intake.postgres.test.ts',
@@ -137,7 +139,6 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-loyalty-browser.postgres.test.ts",
         "merchant-mobile-mfa-transport.postgres.test.ts",
         "merchant-staff-invitation-delivery.postgres.test.ts",
-        "money-ledger-reconciliation-traversal.postgres.test.ts",
         "payment-refund-reconciliation.postgres.test.ts",
         "payout-statement-replay.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
