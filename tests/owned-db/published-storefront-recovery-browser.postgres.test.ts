@@ -7,17 +7,14 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { before, after, test } from 'node:test';
-import { chmodSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 import { createServer, request as forwardHttpRequest, type Server } from 'node:http';
 import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
 import { chromium, expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
 import { Gateway, gatewayEnv, newIdentityKeys, INTERNAL_SECRET } from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import { requireOwnedDatabase, createOwnedCheckoutTlsCertificate, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 
 const owned = requireOwnedDatabase();
@@ -25,7 +22,7 @@ const slug = 'urban-kicks'; // Existing ratified Liquid canary; never flip a fla
 const password = 'Synthetic-published-storefront-pass-42';
 let identityOrigin: string, merchantOrigin: string, commerceOrigin: string;
 let bridge: Server | undefined, browser: Browser | undefined;
-let checkoutTls: HttpsServer | undefined, checkoutTlsDirectory: string | undefined, checkoutTlsPort: number;
+let checkoutTls: HttpsServer | undefined, checkoutTlsPort: number;
 const clients: OwnedClientProcess[] = [];
 const contexts: BrowserContext[] = [];
 
@@ -69,16 +66,11 @@ before(async () => {
     commerceOrigin = `http://localhost:${commercePort}`;
     // A real loopback TLS endpoint satisfies the unchanged production checkout
     // HTTPS guard. Chromium trusts only this fixture's temporary public key.
-    checkoutTlsDirectory = mkdtempSync(join(tmpdir(), 'letbuyy-owned-checkout-tls-'));
-    const keyPath = join(checkoutTlsDirectory, 'key.pem'), certPath = join(checkoutTlsDirectory, 'cert.pem');
-    execFileSync('openssl', ['req','-x509','-newkey','rsa:2048','-nodes','-days','1',
-        '-keyout',keyPath,'-out',certPath,'-subj','/CN=checkout.localhost',
-        '-addext','subjectAltName=DNS:checkout.localhost'], { stdio: 'ignore' });
-    chmodSync(keyPath, 0o600);
-    const publicKey = execFileSync('openssl', ['x509','-in',certPath,'-pubkey','-noout']);
-    const publicDer = execFileSync('openssl', ['pkey','-pubin','-outform','der'], { input: publicKey });
-    const checkoutSpki = createHash('sha256').update(publicDer).digest('base64');
-    checkoutTls = createHttpsServer({ key: readFileSync(keyPath), cert: readFileSync(certPath) }, (req, res) => {
+    assert.throws(() => createOwnedCheckoutTlsCertificate({ ...owned }), /requires the verified database handle/,
+        'certificate provisioning refuses a copied database handle before running any tool');
+    const checkoutCertificate = createOwnedCheckoutTlsCertificate(owned);
+    const checkoutSpki = checkoutCertificate.spki;
+    checkoutTls = createHttpsServer({ key: checkoutCertificate.key, cert: checkoutCertificate.cert }, (req, res) => {
         const checkoutHost = `checkout.localhost:${checkoutTlsPort}`;
         if (req.headers.host !== checkoutHost) { res.writeHead(421); res.end(); return; }
         const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
@@ -160,7 +152,6 @@ after(async () => {
     });
     await Promise.allSettled(clients.map(child => stopOwnedClientRuntime(child)));
     if (bridge?.listening) await new Promise<void>(resolve => bridge!.close(() => resolve()));
-    if (checkoutTlsDirectory) rmSync(checkoutTlsDirectory, { recursive: true, force: true });
 });
 
 async function fixture(tag: string) {
