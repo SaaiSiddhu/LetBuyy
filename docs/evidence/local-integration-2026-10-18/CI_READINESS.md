@@ -106,6 +106,21 @@ the existing production HTTPS/host guard stays enforced, and the test requires
 a 200 HTTPS checkout document as well as the signed handoff. The certificate,
 key, proxy and owned runtimes are removed by fixture cleanup.
 
+The retained Linux run exposed another fixture boundary: gift-card connection
+markers included the complete idempotency key and a process ID. PostgreSQL
+[limits application names](https://www.postgresql.org/docs/16/runtime-config-logging.html#GUC-APPLICATION-NAME), and truncates long values, so a six-digit Linux PID made the exact lock
+lookup miss a lock that was held. A short key hash keeps those markers bounded;
+long real idempotency keys retain the historical duplication and fixed three-caller
+conservation controls. No money function or assertion is relaxed.
+
+The staff browser starts its real production Identity app before building
+Merchant, retaining each app's existing readiness limit. Its existing 13-minute
+test and the payout browser's existing 17.5-minute test receive bounded 15/20-minute
+runner budgets, respectively. An explicit CLI timeout still wins, and all other
+default/catalog deadlines retain their previous behavior. This avoids terminating
+the 1050-second payout test at the unrelated generic 600-second limit; actual MFA,
+actor, statement, replay and provider-evidence requirements stay in the tests.
+
 ## Continuation prerequisites
 
 Use `develop` from the verified remote and Node22 (`nvm use` when available).

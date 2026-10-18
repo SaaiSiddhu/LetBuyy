@@ -102,6 +102,13 @@ const exhaustiveCatalogSuites = new Set([
     'services/api-gateway/src/__tests__/owned-db/collection-membership.postgres.test.ts',
     'services/api-gateway/src/__tests__/owned-db/product-atomic-edits.postgres.test.ts',
 ]);
+// These real browser journeys already declare 13/17.5-minute test budgets.
+// Leave bounded room for their owned builds and cleanup instead of killing
+// the 1050-second payout test at the generic 600-second default.
+const merchantBrowserTimeouts = new Map([
+    ['services/api-gateway/src/__tests__/owned-db/merchant-staff-browser.postgres.test.ts', 900_000],
+    ['services/api-gateway/src/__tests__/owned-db/merchant-payout-statements-browser.postgres.test.ts', 1_200_000],
+]);
 const requestedJobs = Number(value('--jobs', process.env.LETBUYY_EXECUTABLE_PG_JOBS || '2'));
 const reportDir = process.env.LETBUYY_EXECUTABLE_REPORT_DIR
     ? join(resolve(process.env.LETBUYY_EXECUTABLE_REPORT_DIR), runId) : null;
@@ -203,7 +210,8 @@ function spawnAndCollect(command, commandArgs, env, suite) {
         let out = '';
         let timedOut = false;
         const deadline = !flag('--timeout') && exhaustiveCatalogSuites.has(suite?.path)
-            ? 1_800_000 : perSuiteTimeoutMs;
+            ? 1_800_000 : !flag('--timeout') && merchantBrowserTimeouts.has(suite?.path)
+                ? merchantBrowserTimeouts.get(suite.path) : perSuiteTimeoutMs;
         const timer = setTimeout(() => { timedOut = true; killGroup(child, 'SIGKILL'); }, deadline);
         const collect=(d)=>{out+=d;if(suite&&logDir)appendFileSync(join(logDir,`${basename(suite.path).replace(/\.test\.(mjs|ts)$/, '')}.log`),d);};
         child.stdout.on('data', collect);
