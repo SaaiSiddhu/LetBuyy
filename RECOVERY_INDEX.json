@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-18",
+  "status": "UNVERIFIED_RECOVERY_ONLY",
+  "baseDevelop": "216ca0205b50cdc2308ef9b8391b8734b8f61ee9",
+  "snapshots": [
+    {
+      "phase": "N1",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "1e617d8c03cc05320b7ea37723ffe036e8725829",
+      "selectedCount": 1307,
+      "omittedCount": 654,
+      "commit": "1860e68d2eb7c523e3ef22010acf8cca3faa77e8",
+      "originalCheckout": "LetBuyy-N1-coordinated"
+    },
+    {
+      "phase": "N2",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "617240c1de68a73c9c3517f55f776adff4f2f60b",
+      "selectedCount": 1271,
+      "omittedCount": 8334,
+      "commit": "9b383f3b9ef8be00bd2cd3b20a1861dff8055e16",
+      "originalCheckout": "LetBuyy-N2-coordinated"
+    },
+    {
+      "phase": "N3",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "2b3a3f9725ce32f4eb0688ea7391c60cd65c6d13",
+      "selectedCount": 1291,
+      "omittedCount": 4,
+      "commit": "61e995782547fa027f7eb91760c5c21955e031ff",
+      "originalCheckout": "LetBuyy-N3-coordinated"
+    },
+    {
+      "phase": "N4",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "32f381edf77a16583fad44eebb48e0e5f03d4c01",
+      "selectedCount": 1301,
+      "omittedCount": 4,
+      "commit": "6fbfa092d4df26ce2d825623903687171cb387eb",
+      "originalCheckout": "LetBuyy-N4-coordinated"
+    },
+    {
+      "phase": "N5",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "89d6fba26b6102ae837d6dac1600b94621ced7ed",
+      "selectedCount": 1290,
+      "omittedCount": 2883,
+      "commit": "c59157de12254e17a7971f0475e2a3cdc3038559",
+      "originalCheckout": "LetBuyy-N5-coordinated"
+    },
+    {
+      "phase": "N6",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "6278a253bdc71afe87e0ec9b42ac68e49e555bed",
+      "selectedCount": 1267,
+      "omittedCount": 3166,
+      "commit": "d8edaab4463530cf048ec3cf5e55c3afa08b9877",
+      "originalCheckout": "LetBuyy-N6-coordinated"
+    },
+    {
+      "phase": "N7",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "2250eda9ba4da531923fbc210d816a95abfaea03",
+      "selectedCount": 1267,
+      "omittedCount": 1108,
+      "commit": "145dff9d3cd47a942bc55a56c7ea0f77197d1cdf",
+      "originalCheckout": "LetBuyy-N7-coordinated"
+    },
+    {
+      "phase": "N8",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "3625848d183439094b7d920e06b4e4b5cadc03ee",
+      "selectedCount": 1295,
+      "omittedCount": 4,
+      "commit": "e1563e4021f558fbbd5dee15366f7b29b46f02dd",
+      "originalCheckout": "LetBuyy-N8-coordinated"
+    },
+    {
+      "phase": "N9",
+      "base": "0862687a5008d604d0df23357b2eb511293139fa",
+      "tree": "514d3b802c7f6dce8d0fbc1f99917e79d13450e0",
+      "selectedCount": 1282,
+      "omittedCount": 4,
+      "commit": "70c13673ef068946f539ee877080f93e4f5c05d5",
+      "originalCheckout": "LetBuyy-N9-coordinated"
+    }
+  ],
+  "excluded": [
+    "ignored private environment and signing files",
+    "generated builds and runtime/session caches",
+    "private local-environment reports",
+    "external coordination packet archive (transfer separately)"
+  ],
+  "instructions": [
+    "Start normal development from origin/develop.",
+    "Inspect a snapshot with git worktree add ../LetBuyy-recovery-N1 <snapshot commit>.",
+    "Compare relevant files against develop and rebase narrowly; never merge this branch wholesale.",
+    "Read CONSOLIDATION.md on develop for the current phase status and collision warnings."
+  ]
+}
