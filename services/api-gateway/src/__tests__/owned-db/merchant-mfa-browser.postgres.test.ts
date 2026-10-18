@@ -3,6 +3,7 @@
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal merchant password sign-in -> maintained web -> real Gateway/pooled DB.
 // Verified synthetic accounts are fixture inputs, not provider/inbox proof.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createServer,type Server} from 'node:http';
@@ -41,7 +42,7 @@ test('normal merchant recovers MFA setup and approval replies without leaking st
  const keysSeen:Record<string,string[]>={};
  const originalFetch=globalThis.fetch;let deniedProviderCalls=0;
  globalThis.fetch=(async(input,init)=>{const url=new URL(typeof input==='string'?input:input instanceof URL?input.href:input.url);if(url.hostname==='api.razorpay.com'){deniedProviderCalls++;return new Response(JSON.stringify({error:{code:'SYNTHETIC_PROVIDER_NOT_APPROVED',description:'Synthetic provider refusal: external transactions are not authorized.'}}),{status:503,headers:{'Content-Type':'application/json'}});}return originalFetch(input,init);}) as typeof fetch;
- const evidence=`/private/tmp/letbuyy-mfa-web-evidence-${owned.runId}`;mkdirSync(evidence,{recursive:true});
+ const evidence=`${ownedTmpDir()}/letbuyy-mfa-web-evidence-${owned.runId}`;mkdirSync(evidence,{recursive:true});
  try{
   bridge=createServer(async(req,res)=>{
    const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const body=Buffer.concat(chunks).toString(),headers=new Headers();

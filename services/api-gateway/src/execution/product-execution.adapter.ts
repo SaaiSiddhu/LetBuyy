@@ -8,7 +8,7 @@ import {
     COMMERCE_EXECUTION_PIPELINES,
     defineRuntimeBridge,
 } from '@letbuyy/shared-types';
-import { NotFoundError, ForbiddenError } from '../lib/errors';
+import { AppError, NotFoundError, ForbiddenError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasExecutionAdapter } from './saas-execution.adapter';
 import type { Env } from '../index';
@@ -356,10 +356,15 @@ export class ProductExecutionAdapter {
     private async assertProductQuota(storeId: string): Promise<void> {
         const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(storeId);
         const rawLimit = entitlements.limits.products;
-        if (rawLimit === null || rawLimit === undefined) return;
+        if (entitlements.authority !== 'persisted' || rawLimit === undefined) {
+            throw new AppError('Product limits are temporarily unavailable. Retry when service is restored.', 503, 'ENTITLEMENT_AUTHORITY_UNAVAILABLE');
+        }
+        if (rawLimit === null) return;
         const productLimit = typeof rawLimit === 'number' ? rawLimit : Number(rawLimit);
 
-        if (!Number.isFinite(productLimit)) return;
+        if (!Number.isFinite(productLimit) || productLimit < 0) {
+            throw new AppError('Product limits are temporarily unavailable. Retry when service is restored.', 503, 'ENTITLEMENT_AUTHORITY_UNAVAILABLE');
+        }
 
         const { count, error } = await this.db
             .from('products')

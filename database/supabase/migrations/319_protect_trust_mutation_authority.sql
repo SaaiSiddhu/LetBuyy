@@ -5,7 +5,7 @@ BEGIN;
 SET LOCAL search_path=pg_catalog,public;
 DO $trust_fence$
 DECLARE v_name text; v_signature text; v_table oid; v_owner oid; v_hash text; v_replay boolean;
- v_entry record; v_role text; v_privilege text; v_backend jsonb; v_after jsonb;
+ v_entry record; v_backend_grant record; v_role text; v_privilege text; v_backend jsonb; v_after jsonb;
 BEGIN
  PERFORM pg_advisory_xact_lock(hashtextextended('letbuyy:migration:319:trust-authority',0));
  IF to_regclass('public.migration_privilege_journal') IS NULL THEN RAISE EXCEPTION 'migration319 requires the private privilege journal'; END IF;
@@ -44,6 +44,11 @@ BEGIN
     AND (j.object_signature=v_signature OR starts_with(j.object_signature,v_signature||'.')) AND (
       object_oid IS DISTINCT FROM v_table OR object_owner IS DISTINCT FROM v_owner OR object_definition_hash IS DISTINCT FROM v_hash
       OR NOT((object_signature=v_signature AND grantee=pg_get_userbyid(v_owner) AND privilege='TABLE MUTATION FENCE' AND action='granted')
+       OR(action='granted' AND grantee='service_role' AND object_signature=v_signature
+        AND privilege=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE'])
+        AND EXISTS(SELECT 1 FROM pg_class bc CROSS JOIN LATERAL aclexplode(bc.relacl) ba
+          WHERE bc.oid=v_table AND ba.grantee='service_role'::regrole AND ba.grantor=v_owner
+            AND ba.privilege_type=j.privilege AND NOT ba.is_grantable))
        OR(action='revoked' AND grantee=ANY(ARRAY['PUBLIC','anon','authenticated','app_tenant'])
         AND((object_signature=v_signature AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN']))
           OR(starts_with(object_signature,v_signature||'.') AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['INSERT','UPDATE','REFERENCES'])
@@ -68,6 +73,25 @@ BEGIN
   END IF;
   SELECT jsonb_object_agg(p,has_table_privilege('service_role',v_table,p)) INTO v_backend
    FROM unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) p;
+  -- service_role can inherit SIUD solely from app_tenant on modern Supabase.
+  -- Materialize only already-effective privileges before fencing that parent;
+  -- journal each added named ACL so clean rollback restores the exact profile.
+  FOR v_backend_grant IN SELECT * FROM (VALUES
+   ('public.ts_policies','SELECT'),('public.ts_policies','INSERT'),('public.ts_policies','UPDATE'),('public.ts_policies','DELETE'),
+   ('public.ts_cases','SELECT'),('public.ts_cases','INSERT'),('public.ts_cases','UPDATE'),('public.ts_cases','DELETE'),
+   ('public.ts_case_events','SELECT'),('public.ts_case_events','INSERT'),('public.ts_case_events','UPDATE'),('public.ts_case_events','DELETE'),
+   ('public.ts_evidence','SELECT'),('public.ts_evidence','INSERT'),('public.ts_evidence','UPDATE'),('public.ts_evidence','DELETE'),
+   ('public.ts_appeals','SELECT'),('public.ts_appeals','INSERT'),('public.ts_appeals','UPDATE'),('public.ts_appeals','DELETE'),
+   ('public.ts_takedowns','SELECT'),('public.ts_takedowns','INSERT'),('public.ts_takedowns','UPDATE'),('public.ts_takedowns','DELETE')
+  ) AS backend(signature,permission) LOOP
+   IF v_backend_grant.signature IS NOT DISTINCT FROM v_signature AND coalesce((v_backend->>v_backend_grant.permission)::boolean,false) AND NOT EXISTS(
+    SELECT 1 FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) a
+     WHERE c.oid=v_table AND a.grantee='service_role'::regrole AND a.privilege_type=v_backend_grant.permission) THEN
+    INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
+     VALUES('319',v_signature,'service_role',v_backend_grant.permission,'granted',v_table,v_owner,v_hash);
+    EXECUTE format('GRANT %s ON TABLE %s TO service_role',v_backend_grant.permission,v_backend_grant.signature);
+   END IF;
+  END LOOP;
   FOR v_entry IN
    SELECT a.grantee,a.grantor,a.privilege_type,a.is_grantable,NULL::text column_name FROM pg_class c
     CROSS JOIN LATERAL aclexplode(coalesce(c.relacl,acldefault('r',c.relowner))) a

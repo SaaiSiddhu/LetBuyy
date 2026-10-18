@@ -68,6 +68,20 @@ export class GraphService {
   private readonly deg = new Map<string, number>();
   private built = false;
   private builtAtCommit: string | undefined;
+  private readonly resolvedSymbols = new Map<string, GraphNode | undefined>();
+  private readonly searches = new Map<string, readonly GraphNode[]>();
+  private searchEntries: { node: GraphNode; label: string; id: string; file: string }[] = [];
+
+  // The graph is an immutable per-engine snapshot. Repeated planning must not
+  // rescan its full node set for the same term; keep each query cache bounded.
+  private remember<T>(cache: Map<string, T>, key: string, value: T): T {
+    if (cache.size >= 4096) {
+      const oldest = cache.keys().next();
+      if (!oldest.done) cache.delete(oldest.value);
+    }
+    cache.set(key, value);
+    return value;
+  }
 
   constructor(private readonly store: ArtifactStore) {}
 
@@ -75,6 +89,10 @@ export class GraphService {
     if (this.built) return;
     const g = this.store.read<RawGraph>('graph');
     for (const n of g.nodes) this.nodesById.set(n.id, toNode(n));
+    this.searchEntries = [...this.nodesById.values()].map(node => ({
+      node, label: node.label.toLowerCase(), id: node.id.toLowerCase(),
+      file: (node.sourceFile ?? '').toLowerCase(),
+    }));
     const links = g.links ?? g.edges ?? [];
     for (const l of links) {
       const e = toEdge(l);
@@ -141,11 +159,10 @@ export class GraphService {
     const direct = this.nodesById.get(symbol);
     if (direct) return direct;
     const q = symbol.toLowerCase();
+    if (this.resolvedSymbols.has(q)) return this.resolvedSymbols.get(q);
     let best: GraphNode | undefined;
     let bestDeg = -1;
-    for (const n of this.nodesById.values()) {
-      const l = n.label.toLowerCase();
-      const sf = (n.sourceFile ?? '').toLowerCase();
+    for (const { node: n, label: l, file: sf } of this.searchEntries) {
       if (l === q || l.startsWith(q) || l.includes(q) || sf.includes(q)) {
         const d = this.degree(n.id);
         if (d > bestDeg) {
@@ -154,7 +171,7 @@ export class GraphService {
         }
       }
     }
-    return best;
+    return this.remember(this.resolvedSymbols, q, best);
   }
 
   /** BFS of reachable node ids from start, up to `depth` hops, in the given direction. Excludes start. */
@@ -191,13 +208,17 @@ export class GraphService {
   search(query: string, limit = 20): GraphNode[] {
     this.build();
     const q = query.toLowerCase();
+    const cacheKey = JSON.stringify([q, limit]);
+    const cached = this.searches.get(cacheKey);
+    if (cached) return [...cached];
     const out: GraphNode[] = [];
-    for (const n of this.nodesById.values()) {
-      if (n.label.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)) {
+    for (const { node: n, label, id } of this.searchEntries) {
+      if (label.includes(q) || id.includes(q)) {
         out.push(n);
         if (out.length >= limit) break;
       }
     }
+    if (out.length <= 100) this.remember(this.searches, cacheKey, [...out]);
     return out;
   }
 }

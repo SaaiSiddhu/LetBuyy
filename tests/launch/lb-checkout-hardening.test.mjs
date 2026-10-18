@@ -26,11 +26,13 @@ test('F1/F2: COD cancellation releases inventory + restores gift card (helper + 
 });
 
 test('E1: the canonical refund/complete path restores gift-card balance', () => {
-  const handler = orders.slice(
-    orders.indexOf("router.post('/:id/refund/complete'"),
-    orders.indexOf("router.post('/:id/refund'"),
-  );
-  assert.match(handler, /restore_gift_card_on_refund/);
+  const start = orders.indexOf("router.post('/:id/refund/complete'");
+  assert.ok(start >= 0);
+  const end = orders.indexOf("\nrouter.", start + 1);
+  const handler = orders.slice(start, end < 0 ? undefined : end);
+  assert.match(handler, /await tryRestoreGiftCardForReversedOrder\(db,\s*\{\s*\.\.\.tenant,\s*orderId\s*\},\s*data\.order\)/);
+  assert.match(handler, /await tryRestoreRedeemedLoyalty\(db,\s*\{\s*\.\.\.tenant,\s*orderId\s*\}\)/);
+  assert.match(read('services/api-gateway/src/lib/gift-card-refund-recovery.ts'), /\.rpc\('restore_gift_card_on_refund'/);
 });
 
 test('I-1: shippingRateId flows storefront proxy -> api-client type -> gateway resolver', () => {

@@ -23,6 +23,7 @@ import {
     migrationsDir,
     numericPrefix,
     referencesIn,
+    reachableSqlSources,
     stripSqlComments,
 } from './reachability-common.mjs';
 
@@ -108,7 +109,22 @@ function governedTables() {
 }
 
 const sources = applicationSources();
+const sqlSources = reachableSqlSources(sources);
 const governed = governedTables();
+
+test('SQL table reachability requires an application entry and follows only its installed helpers', () => {
+    const functions = [{ file: '001.sql', text: `
+CREATE FUNCTION public.entry() RETURNS void LANGUAGE plpgsql AS $$ BEGIN PERFORM public.helper(); END $$;
+CREATE FUNCTION public.helper() RETURNS void LANGUAGE plpgsql AS $$ BEGIN PERFORM 1 FROM public.wired_table; END $$;
+CREATE FUNCTION public.orphan() RETURNS void LANGUAGE plpgsql AS $$ BEGIN PERFORM 1 FROM public.unused_table; END $$;
+` }];
+    const reached = reachableSqlSources([{path:'runtime.ts',text:"db.rpc('entry')"}], functions);
+    assert.ok(referencesIn(reached, 'wired_table').length);
+    assert.equal(referencesIn(reached, 'unused_table').length, 0);
+    assert.deepEqual(reachableSqlSources([], functions), []);
+    assert.equal(referencesIn(reachableSqlSources([{path:'runtime.ts',text:"db.rpc('entry')"}],
+        [{file:'002.sql',text:functions[0].text.replace('PERFORM public.helper();', 'NULL;')}]), 'wired_table').length, 0);
+});
 
 test('reachability includes genuine untracked candidate source without counting tests or generated registries', () => {
     const path=`services/api-gateway/src/lib/reachability-fixture-${randomUUID()}.mjs`;
@@ -178,7 +194,7 @@ for (const [name, file] of governed) {
 
     test(`${name} (created by ${file}) is reached by application code`, () => {
         assert.ok(
-            users.length > 0,
+            users.length > 0 || referencesIn(sqlSources, name).length > 0,
             `${name} is a table nothing in the application reads or writes. DDL wired to nothing is `
             + `this programme's named failure mode — loyalty_programs shipped exactly this way. Either `
             + `wire it, or add it to EXEMPT with a reason and the decision that unblocks it.`,

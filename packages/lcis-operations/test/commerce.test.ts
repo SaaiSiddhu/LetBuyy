@@ -103,8 +103,12 @@ test('detectOrderTrend: orders domain topology finding is CONNECTED', () => {
 
 test('detectOrderTrend: orders domain detail includes route/rpc/table counts from real artifact', () => {
   const f = findingById(svc.detectOrderTrend(), 'COMMERCE-ORDER-DOMAIN-TOPOLOGY');
-  // Real artifact has routes:3, rpcs:12, tables:10 for orders domain
-  assert.ok(f!.detail.includes('12 RPCs') || f!.detail.includes('rpcs=12') || f!.detail.includes('12'), 'orders domain has 12 RPCs');
+  const artifact = engine.store.read<{ domains: { key: string; routes: number; rpcs: number; tables: number }[] }>('commerce-control-intel');
+  const orders = artifact.domains.find(domain => domain.key === 'orders');
+  assert.ok(orders && orders.routes > 0 && orders.rpcs > 0 && orders.tables > 0);
+  for (const [count, label] of [[orders.routes, 'routes'], [orders.rpcs, 'RPCs'], [orders.tables, 'tables']] as const) {
+    assert.ok(f!.detail.includes(`${count} ${label}`), `orders detail preserves the actual ${label} count`);
+  }
 });
 
 test('detectOrderTrend: order journey topology finding is CONNECTED', () => {

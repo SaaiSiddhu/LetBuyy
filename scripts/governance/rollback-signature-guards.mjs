@@ -5,9 +5,20 @@ import {sqlTokens, sqlStatements, tokenText, normalizedSql as norm, splitSqlList
 const same = (tokens, sql) => tokenText(tokens) === norm(sql);
 const word = (t, v) => t?.kind === 'word' && t.value === v;
 class GuardParser {
-    constructor(source) { this.tokens=sqlTokens(source); this.i=0; }
+    constructor(source, catalog=false) { this.tokens=sqlTokens(source); this.i=0; this.catalog=catalog; }
     take(value) { const t=this.tokens[this.i++]; if(t?.value!==value || (/[a-z]/.test(value[0]) && t.kind!=='word')) throw Error('Unknown guard syntax'); return t; }
-    through(value) { const out=[]; while(this.i<this.tokens.length && !((value===';' ? this.tokens[this.i].kind==='symbol' : this.tokens[this.i].kind==='word') && this.tokens[this.i].value===value)) out.push(this.tokens[this.i++]); this.take(value); return out; }
+    through(value) {
+        const out=[];let cases=0;
+        while(this.i<this.tokens.length) {
+            const token=this.tokens[this.i];
+            if(!cases && (value===';'?token.kind==='symbol':token.kind==='word') && token.value===value)break;
+            if(word(token,'case'))cases++;
+            if(word(token,'end') && cases)cases--;
+            out.push(this.tokens[this.i++]);
+        }
+        if(cases)throw Error('Unclosed SQL CASE');
+        this.take(value);return out;
+    }
     sequence(stops=['end']) {
         const nodes=[];
         while(this.i<this.tokens.length && !stops.some(v=>word(this.tokens[this.i],v))) {
@@ -37,7 +48,7 @@ class GuardParser {
             while(!word(this.tokens[this.i],'begin')) {
                 const declaration=this.through(';');
                 const text=tokenText(declaration);
-                if(!/^[a-z_][a-z0-9_]* (?:record|integer|pg_catalog \. pg_proc(?: % rowtype)?|text \[ \](?: := array \[[\s\S]*\])?)$/.test(text)) throw Error('Unknown declaration');
+                if(!/^[a-z_][a-z0-9_]* (?:record|integer|pg_catalog \. pg_proc(?: % rowtype)?|text \[ \](?: := array \[[\s\S]*\])?)$/.test(text) && !(this.catalog && /^[a-z_][a-z0-9_]* (?:jsonb|pg_proc % rowtype|public \. migration_privilege_journal % rowtype)$/.test(text))) throw Error('Unknown declaration');
                 const assignment=declaration.findIndex(t=>t.value===':=');
                 if(assignment>=0)literalCell([...declaration.slice(assignment+1),...sqlTokens('::text[]')]);
                 if(declarations.some(d=>d[0].value===declaration[0].value))throw Error('Duplicate declaration');
@@ -109,14 +120,14 @@ function literalCell(cell) {
     }
     throw Error('Nonliteral ABI row');
 }
-function finiteRows(head) {
+function finiteRows(head, cellParser=literalCell) {
     const text=tokenText(head), start=head.findIndex(t=>word(t,'values'));
     if(start<0 || !same(head.slice(1,start),'IN SELECT * FROM ('))throw Error('Unbounded guard loop');
     let depth=1, end=start+1;
     for(;end<head.length;end++){const t=head[end];if(t.kind==='symbol' && t.value==='(')depth++;if(t.kind==='symbol' && t.value===')')depth--;if(depth===0)break;}
     const rows=splitSqlList(head.slice(start+1,end)).map(row=>{
         if(row[0]?.value!=='(' || row.at(-1)?.value!==')')throw Error('Unknown row');
-        return splitSqlList(row.slice(1,-1)).map(literalCell);
+        return splitSqlList(row.slice(1,-1)).map(cellParser);
     });
     const suffix=head.slice(end+1);if(suffix[0]?.value==='as')suffix.shift();
     if(suffix[0]?.kind!=='word' || suffix[1]?.value!=='(' || suffix.at(-1)?.value!==')')throw Error('Unbound row aliases');
@@ -160,6 +171,18 @@ function compactLoop(loop) {
         `(SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=${p}.pronamespace AND q.proname=${p}.proname)<>1`];
     if(!equalTerms(guard.branches[0].condition,conditions))return [];
     return rows.map(r=>({...r,level:'typed-ABI'}));
+}
+// Equivalent ABI proof with a separate missing-function refusal before SELECT.
+function separatedLoop(loop) {
+    const {variable:e,rows}=expectedRows(loop.head);
+    if(loop.nodes.length!==3)return [];
+    const [present,select,abi]=loop.nodes,p=liveSelection(select,e);
+    if(!p || !refuses(present) || present.branches.length!==1 || !same(present.branches[0].condition,`pg_catalog.to_regprocedure(${e}.signature) IS NULL`)
+        || !refuses(abi) || abi.branches.length!==1)return [];
+    if(!equalTerms(abi.branches[0].condition,[`${p}.proargnames[1:${p}.pronargs] IS DISTINCT FROM ${e}.input_names`,`${p}.proretset`,
+        `${p}.prorettype IS DISTINCT FROM 'jsonb'::regtype`,`${p}.prokind<>'f'`,
+        `(SELECT count(*) FROM pg_catalog.pg_proc other WHERE other.pronamespace=${p}.pronamespace AND other.proname=${p}.proname)<>1`]))return [];
+    return rows.map(r=>({...r,result_type:'jsonb',returns_set:false,level:'typed-ABI'}));
 }
 function standardLoop(loop) {
     const {variable:e,rows}=expectedRows(loop.head);if(loop.nodes.length!==4 || rows.some(r=>!('name'in r)))return [];
@@ -328,6 +351,9 @@ class RefusalCondition {
 }
 function readOnlyCondition(tokens){
     if(equalTerms(tokens,quiescenceTerms))return true;
+    // A literal catalog-family absence check only adds a refusal. No dynamic
+    // callee, assignment or caller-controlled namespace can hide in this shape.
+    if(/^exists \( select 1 from pg_catalog \. pg_proc p join pg_catalog \. pg_namespace n on n \. oid = p \. pronamespace where n \. nspname = 'public' and p \. proname = '[a-z_][a-z0-9_]*' \)$/.test(tokenText(tokens)))return true;
     try{return new RefusalCondition(tokens).parse();}catch{return false;}
 }
 const readOnlyRefusal=node=>node?.op==='if'&&node.branches.length>0&&node.branches.every(branch=>readOnlyCondition(branch.condition)&&branch.nodes.length>0&&branch.nodes.every(child=>child.op==='raise'||readOnlyRefusal(child)));
@@ -339,7 +365,7 @@ function analyzeBlock(body, definitions) {
         // Only refusal-only preconditions may precede the bounded loop; no way to bypass it.
         if(nodes.slice(0,index).some(n=>!refuses(n)||!readOnlyRefusal(n)))return [];
         const transition=familyTransitionLoop(loop,definitions);
-        const rows=transition.length?transition:compactLoop(loop).length?compactLoop(loop):standardLoop(loop);
+        const rows=transition.length?transition:compactLoop(loop).length?compactLoop(loop):separatedLoop(loop).length?separatedLoop(loop):standardLoop(loop);
         if(!rows.length)return [];
         if(transition.length && (index!==1 || !refuses(nodes[0]) || nodes[0].branches.length!==1 || !equalTerms(nodes[0].branches[0].condition,[
             "pg_catalog.current_setting('transaction_isolation')<>'read committed'",
@@ -348,6 +374,7 @@ function analyzeBlock(body, definitions) {
         ])))return [];
         // Optional extra SELECT/IF output-ABI checks can only add refusal, never bypass it.
         const tail=nodes.slice(index+1);
+        while(tail.length && readOnlyRefusal(tail[0]))tail.shift();
         if(tail.length) {
             if(tail.length!==2 || tail[0].op!=='select' || !refuses(tail[1]) || tail[1].branches.length!==1)return [];
             const live=tail[0].tokens[3]?.value, signature=tail[0].tokens.find(t=>t.kind==='string')?.value;
@@ -491,6 +518,7 @@ function baseRollbackSignatureGuards(sql) {
                 if(!rows.length && !new GuardParser(statement[1].value).parse().nodes.every(node=>node.op==='raise'||readOnlyRefusal(node)))return [];
                 guards.push(...rows.map(row=>({...row,guard_start:statement[0].start})));
             } else if(statement[0]?.value==='select' && !/^select pg_advisory_xact_lock \( hashtextextended \( '[^']+' , 0 \) \) ;$/.test(tokenText(statement)))return [];
+            else if(statement[0]?.value==='set' && /^set local lock_timeout = '[1-9][0-9]*(?:ms|s)' ;$/.test(tokenText(statement)))continue;
             else if(statement[0]?.value!=='select' && !/^lock table public \./.test(tokenText(statement)) && !same(statement,'LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;'))return [];
         }
         if(guards.some(g=>g.requires_catalog_lock||g.profile_fingerprint)&&!same(statements[1]??[],'LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;'))return [];
@@ -512,8 +540,8 @@ function literalRestorations(statement) {
 function restoredDefinitions(sql) {
     return [...functionDefinitions(sql), ...sqlStatements(sql).flatMap(literalRestorations)];
 }
-export function guardedRestorations(sql) {
-    const guards=rollbackSignatureGuards(sql);
+export function guardedRestorations(sql, {forwardSql} = {}) {
+    const guards=[...rollbackSignatureGuards(sql), ...birthBoundSignatureGuards(sql,forwardSql)];
     const definitions=restoredDefinitions(sql);
     return [...new Set(definitions.map(fn=>fn.name))].filter(name=>definitions.filter(fn=>fn.name===name)
         .every(fn=>guards.some(g=>g.identity===fn.identity && JSON.stringify(g.input_names)===JSON.stringify(fn.inputNames)&&(!g.requires_catalog_lock||transitionRetirement(sql,g,fn)))));
@@ -2866,4 +2894,94 @@ export function rollbackSignatureGuards(sql) {
     if(existing.length)return existing;
     const receipt=retentionCatalogCertificate(sql,baseRollbackSignatureGuards);
     return receipt.length?receipt:traversalCatalogCertificate(sql);
+}
+
+// Recognize a historical full-definition receipt, not a function-name exemption.
+// The forward source must enumerate every restored ABI in its finite birth set;
+// the rollback must revalidate that set from the receipt before any mutation.
+export function birthBoundSignatureGuards(sql, forwardSql) {
+    try {
+        if (!forwardSql) return [];
+        const statements=sqlStatements(sql), definitions=functionDefinitions(sql);
+        if (!same(statements[0], 'BEGIN;') || !same(statements.at(-1), 'COMMIT;')) return [];
+        const firstMutation=statements.findIndex(s=>['create','drop','alter','insert','update','delete','truncate','grant','revoke','call'].includes(s[0]?.value));
+        const prefix=statements.slice(1,firstMutation);
+        if (firstMutation<0 || prefix.some(s=>!['set','lock','do'].includes(s[0]?.value))) return [];
+        if (!prefix.some(s=>same(s,'SET LOCAL search_path=pg_catalog,public;'))) return [];
+        // Catalog provenance is checked under the same exclusive DDL admission.
+        const catalogLock=prefix.find(s=>s[0]?.value==='lock' && tokenText(s).startsWith('lock table pg_catalog . pg_proc ,'));
+        if (!catalogLock || !tokenText(catalogLock).endsWith('in share row exclusive mode nowait ;')) return [];
+        if (prefix.some(s=>s[0]?.value==='set' && !same(s,'SET LOCAL search_path=pg_catalog,public;') && !/^set local lock_timeout = '[1-9][0-9]*(?:ms|s)' ;$/.test(tokenText(s)))) return [];
+        const blocks=prefix.filter(s=>s[0]?.value==='do');
+        if (blocks.some(s=>s.length!==3 || s[1].kind!=='body')) return [];
+        const parsed=blocks.map(s=>({statement:s,...new GuardParser(s[1].value,true).parse()}));
+        // This grammar has only SELECT, FOR, IF/RAISE EXCEPTION. No return,
+        // exception handler, assignment, EXECUTE or mutating statement can bypass
+        // the checks or replace their captured binding. All callees are builtins
+        // under the pinned pg_catalog-first search path.
+        const builtins=new Set('acldefault aclexplode array_fill coalesce convert_to count current_database current_setting encode has_function_privilege has_schema_privilege has_table_privilege jsonb_agg jsonb_array_length jsonb_each jsonb_each_text jsonb_typeof left length pg_backend_pid pg_current_xact_id_if_assigned pg_get_constraintdef pg_get_expr pg_get_functiondef pg_get_indexdef quote_ident regexp_matches regexp_replace sha256 split_part starts_with string_agg substring to_jsonb to_regclass to_regprocedure to_regrole unnest'.split(' '));
+        const syntax=new Set('and array e exists from if in not or roles select values z'.split(' '));
+        for (const {statement} of parsed) {
+            const tokens=sqlTokens(statement[1].value);
+            if(tokens.some((t,i)=>t.kind==='word' && tokens[i+1]?.value==='(' && !builtins.has(t.value) && !syntax.has(t.value))) return [];
+            if(tokens.some((t,i)=>t.kind==='word' && tokens[i+1]?.value==='(' && tokens[i-1]?.value==='.' && tokens[i-2]?.value!=='pg_catalog')) return [];
+            if(tokens.some((t,i)=>['e','roles','z'].includes(t.value) && tokens[i+1]?.value==='(' && ![')','as','ordinality'].includes(tokens[i-1]?.value)))return [];
+        }
+        const block=parsed.find(p=>p.nodes.some(n=>n.op==='for' && same(n.head,"v_entry IN SELECT key,value FROM jsonb_each(binding->'functions')")));
+        if(!block) return [];
+        const loopIndex=block.nodes.findIndex(n=>n.op==='for' && same(n.head,"v_entry IN SELECT key,value FROM jsonb_each(binding->'functions')"));
+        const loop=block.nodes[loopIndex];
+        if(loop.nodes.length!==2 || !same(loop.nodes[0].tokens,'SELECT * INTO v_fn FROM pg_proc WHERE oid=to_regprocedure(v_entry.key)') || !refuses(loop.nodes[1]) || loop.nodes[1].branches.length!==1) return [];
+        const condition=terms(loop.nodes[1].branches[0].condition);
+        for(const required of [
+            'v_fn.oid IS NULL',
+            "v_fn.oid IS DISTINCT FROM (v_entry.value->>'oid')::oid",
+            "v_fn.proowner IS DISTINCT FROM (v_entry.value->>'owner')::oid",
+            "encode(sha256(convert_to(v_fn.prosrc,'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'body_hash'",
+            "(SELECT count(*) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=v_fn.proname)<>1",
+            "v_fn.prokind<>'f'",'v_fn.proretset','v_fn.proargmodes IS NOT NULL','v_fn.proallargtypes IS NOT NULL',
+        ]) if(!condition.includes(norm(required)))return [];
+        const hashTerm=condition.find(c=>c.includes('definition_hash'));
+        const verifier=hashTerm?.match(/v_entry \. key <> '([^']+)'/)?.[1];
+        if(!verifier || !functionIdentity(verifier) || !same(sqlTokens(hashTerm),`(v_entry.key<>'${verifier}' AND encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex') IS DISTINCT FROM v_entry.value->>'definition_hash')`)) return [];
+        const nodes=block.nodes.slice(0,loopIndex), texts=nodes.map(n=>tokenText(n.tokens??[]));
+        const capture=texts.indexOf(norm(`SELECT * INTO v_fn FROM pg_proc WHERE oid=to_regprocedure('${verifier}')`));
+        if(capture<0) return [];
+        const receipt=nodes[capture+1]?.tokens, receiptText=tokenText(receipt??[]);
+        const migration=receiptText.match(/where migration = '([0-9]+)'/)?.[1];
+        if(!migration || !same(receipt,`SELECT * INTO v_journal FROM public.migration_privilege_journal WHERE migration='${migration}' AND object_signature='${verifier}' AND grantee='service_role' AND privilege='EXECUTE' AND action='granted'`))return [];
+        const custody=nodes[capture+2];
+        if(!refuses(custody) || custody.branches.length!==1 || !equalTerms(custody.branches[0].condition,[
+            'v_fn.oid IS NULL','v_journal.object_oid IS DISTINCT FROM v_fn.oid','v_journal.object_owner IS DISTINCT FROM v_fn.proowner',
+            "v_journal.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to(pg_get_functiondef(v_fn.oid),'UTF8')),'hex')"
+        ]))return [];
+        const binding=nodes[capture+3]?.tokens, key=binding?.find(t=>t.kind==='string')?.value;
+        if(!key || !/^[a-z_][a-z0-9_]*\.[a-z_][a-z0-9_]*=$/.test(key) || !same(binding,`SELECT substring(config from length('${key}')+1)::jsonb INTO binding FROM unnest(v_fn.proconfig)config WHERE starts_with(config,'${key}')`))return [];
+        const allTokens=sqlTokens(block.statement[1].value);
+        if(allTokens.filter((t,i)=>t.value==='into' && allTokens[i+1]?.value==='binding').length!==1)return [];
+        const valid=nodes[capture+4];
+        const count=terms(valid?.branches?.[0]?.condition??[]).find(c=>c.includes('jsonb_each'))?.match(/<> ([0-9]+)$/)?.[1];
+        if(!refuses(valid) || valid.branches.length!==1 || !count || !equalTerms(valid.branches[0].condition,[
+            "jsonb_typeof(binding) IS DISTINCT FROM 'object'","binding->>'schema_version' IS DISTINCT FROM '1'",`(SELECT count(*) FROM jsonb_each(binding->'functions'))<>${count}`
+        ]))return [];
+        // The forward birth loop is finite, and each restored signature/name list
+        // must match its installed definition. Capture must include exactly that
+        // finite family, so deleting a member cannot turn the loop vacuous.
+        const forward=sqlStatements(forwardSql), birth=forward.find(s=>s[0]?.value==='do' && s[1]?.kind==='body' && s[1].value.includes(key.slice(0,-1)));
+        if(!birth)return [];
+        const tokens=sqlTokens(birth[1].value), begin=tokens.findIndex(t=>word(t,'begin'));
+        const loopStart=tokens.findIndex((t,i)=>i>begin && word(t,'for')), loopEnd=tokens.findIndex((t,i)=>i>loopStart && word(t,'loop'));
+        const rows=finiteRows(tokens.slice(loopStart+1,loopEnd), cell=>same(cell,'NULL')||same(cell,'NULL::text[]')?null:literalCell(cell)).rows;
+        const snapshot=tokenText(tokens).match(/'functions' , \( select jsonb_object_agg \( ([\s\S]*?) from pg_proc p where p \. pronamespace = 'public' :: regnamespace and p \. proname in \( ([\s\S]*?) \) \)/);
+        if(!snapshot || !snapshot[1].includes("pg_get_functiondef ( p . oid )"))return [];
+        const names=splitSqlList(sqlTokens(snapshot[2])).map(cell=>cell.length===1 && cell[0].kind==='string' ? cell[0].value:null);
+        if(names.some(n=>!n) || names.length!==Number(count) || new Set(names).size!==names.length)return [];
+        const forwardDefs=functionDefinitions(forwardSql);
+        return definitions.map(fn=>{
+            const row=rows.find(r=>r.signature && functionIdentity(r.signature)===fn.identity);
+            const current=forwardDefs.find(d=>d.identity===fn.identity);
+            if(!row || !current || !names.includes(fn.name) || JSON.stringify(row.arg_names)!==JSON.stringify(current.inputNames) || JSON.stringify(fn.inputNames)!==JSON.stringify(current.inputNames))throw Error('Unbound restored ABI');
+            return {identity:fn.identity,input_names:fn.inputNames,level:'historical-full-definition',guard_start:block.statement[0].start};
+        });
+    } catch {return [];}
 }

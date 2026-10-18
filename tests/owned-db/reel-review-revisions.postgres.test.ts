@@ -4,6 +4,7 @@
 // Actual production worker/PostgREST + owned PostgreSQL. Verified private media
 // and inspection rows below are explicit SUPERUSER SYNTHETIC FIXTURES, never
 // provider/custody/human playback evidence or an application-ready writer.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { randomUUID } from 'node:crypto';
@@ -720,7 +721,7 @@ async function withMerchantReelBrowser(run: (fixture: {
   const scriptFailures: unknown[] = [];
   const scriptNetwork: unknown[] = [];
   let outage = false, lose = false;
-  const evidence = `/private/tmp/letbuyy-n5-reel-browser-${owned.runId}-${randomUUID().slice(0, 8)}`; mkdirSync(evidence, { recursive: true });
+  const evidence = `${ownedTmpDir()}/letbuyy-n5-reel-browser-${owned.runId}-${randomUUID().slice(0, 8)}`; mkdirSync(evidence, { recursive: true });
   try {
     bridge = createServer(async (req, res) => {
       const chunks: Buffer[] = []; for await (const chunk of req) chunks.push(Buffer.from(chunk)); const body = Buffer.concat(chunks).toString(), headers = new Headers();

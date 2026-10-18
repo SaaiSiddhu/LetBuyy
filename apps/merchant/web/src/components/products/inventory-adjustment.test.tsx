@@ -66,7 +66,7 @@ async function mount(transport: Transport) {
 }
 
 test('a real stock row captures its actor, target bindings, signed delta and a new logical key per confirmed command',async()=>{
- let current=row(),calls:{body:any;headers:Headers}[]=[]
+ let current=row(); const calls:{body:any;headers:Headers}[]=[]
  const h=await mount(async(_url,init)=>{if(init?.method!=='POST')return json([current]);const body=JSON.parse(String(init.body));calls.push({body,headers:new Headers(init.headers)});current={...current,available:current.available+body.adjustment};return json(current)})
  try{await h.click('Adjust');await h.quantity('12');await h.click('Save');assert.equal(calls[0].body.adjustment,2);assert.equal(calls[0].body.product_id,id);assert.equal(calls[0].body.variant_id,variantId);assert.equal(calls[0].body.location_id,locationId);assert.equal(calls[0].headers.get('X-LetBuyy-Merchant-Context'),actorId);assert.equal(h.storage.length,0)
   await h.click('Adjust');await h.quantity('13');await h.click('Save');assert.equal(calls[1].body.adjustment,1);assert.notEqual(calls[1].headers.get('X-Idempotency-Key'),calls[0].headers.get('X-Idempotency-Key'));assert.match(h.text(),/Adjustment confirmed/)
@@ -75,7 +75,7 @@ test('a real stock row captures its actor, target bindings, signed delta and a n
 
 test('committed HTTP errors and network reply loss survive remount with the same body/key and preserve independent stock changes',async()=>{
  for(const fault of ['http','network']){
-  let current=row(),calls:{body:string;key:string|null}[]=[];const receipts=new Map<string,any>()
+  let current=row(); const calls:{body:string;key:string|null}[]=[];const receipts=new Map<string,any>()
   const h=await mount(async(_url,init)=>{
    if(init?.method!=='POST')return json([current]);const key=new Headers(init.headers).get('X-Idempotency-Key')!,body=JSON.parse(String(init.body));calls.push({body:String(init.body),key})
    if(receipts.has(key))return json(receipts.get(key))

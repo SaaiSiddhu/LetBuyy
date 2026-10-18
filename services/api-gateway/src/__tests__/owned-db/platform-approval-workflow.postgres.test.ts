@@ -168,12 +168,12 @@ test('an aged MFA cannot request; independent consent shortens to its real remai
 
 test('a mandatory audit outage rolls back site state and consumption, then the same approval recovers once', async () => {
     const j = await journey(), a = await approved(j);
-    owned.psql('ALTER TABLE public.audit_logs RENAME TO synthetic_approval_audit_outage;');
+    owned.script(`CREATE FUNCTION public.synthetic_audit_insertion_fault() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'synthetic mandatory audit outage';END$$;CREATE TRIGGER synthetic_audit_insertion_fault BEFORE INSERT ON public.audit_logs FOR EACH ROW EXECUTE FUNCTION public.synthetic_audit_insertion_fault();`);
     try {
         assert.equal((await j.apply(a.id)).status, 503);
         assert.equal(owned.psql(`SELECT status FROM sites WHERE id='${j.tenant.siteId}';`), 'published');
         assert.equal(owned.psql(`SELECT consumed_at IS NULL AND result IS NULL FROM sensitive_action_approvals WHERE id='${a.id}';`), 't');
-    } finally { owned.psql('ALTER TABLE public.synthetic_approval_audit_outage RENAME TO audit_logs;'); }
+    } finally { owned.script('DROP TRIGGER synthetic_audit_insertion_fault ON public.audit_logs;DROP FUNCTION public.synthetic_audit_insertion_fault();'); }
     assert.equal((await j.apply(a.id)).status, 200); assert.equal((await j.apply(a.id)).status, 200); assert.equal(j.count(), '1');
 });
 

@@ -10,6 +10,8 @@
 .history
 .svn/
 .swiftpm/
+# Flutter's generated Swift package bridge is local build output.
+apps/deferred/delivery/mobile/ios/Flutter/ephemeral/
 migrate_working_dir/
 
 # IntelliJ related
@@ -111,6 +113,8 @@ services/**/node_modules/
 packages/**/node_modules/
 .next/
 apps/**/.next/
+# Per-run owned Next browser fixtures are generated build output.
+**/.next-session-runtime-*/
 **/.next/
 .turbo/
 **/.turbo/

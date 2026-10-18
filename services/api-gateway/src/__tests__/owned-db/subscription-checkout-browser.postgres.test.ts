@@ -4,6 +4,7 @@
 // Normal subscription browser journey through Identity, Merchant BFF and real Gateway/ownedDB.
 // Existing verified synthetic accounts are fixture inputs, not proof of email/inbox delivery.
 // Official Turnstile test keys exercise the widget/Siteverify transport, not production anti-bot.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import test from 'node:test';
@@ -46,8 +47,13 @@ test('normal merchant checkout survives lost create response, reload, dismissal 
  const hash=await hashMerchantPassword(password),providerSecret='synthetic-subscription-browser-provider-secret';
  owned.psql(`INSERT INTO users_custom(id,email,email_verified,full_name,password_hash) VALUES('${ownerId}','${ownerEmail}',true,'Synthetic Subscriber','${hash}');
  UPDATE sites SET custom_user_id='${ownerId}' WHERE id='${tenant.siteId}';`);
+const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-only',profile_version:1,
+ approval_status:'approved',approval_reference:'synthetic-approval-not-live',registration_status:'registered',supply_category:'domestic_taxable_saas',rate_bps:1800,
+ supplier:{name:'Synthetic Platform Supplier',gstin:'27AAAAA0000A1Z5',state_code:'27',country:'IN',
+ address:{line1:'Synthetic Supplier Address',city:'Mumbai',state:'Maharashtra',zip:'400001',country:'IN'}}};
+ owned.psql(`UPDATE sites SET invoice_address='${JSON.stringify({line1:'Synthetic Buyer Address',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'})}'::jsonb WHERE id='${tenant.siteId}';`);
  const identityPort=await freePort(),merchantPort=await freePort(),identityOrigin=`http://localhost:${identityPort}`,merchantOrigin=`http://localhost:${merchantPort}`;
- const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,
+ const keys=await newIdentityKeys(),gateway=new Gateway(gatewayEnv(owned,keys,{LETBUYY_SUBSCRIPTION_TAX_PROFILE:JSON.stringify(profile),ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,NEXT_PUBLIC_ADMIN_URL:merchantOrigin,
   RAZORPAY_KEY_ID:'synthetic-browser-public-provider-key',RAZORPAY_KEY_SECRET:providerSecret}));
  const orders=new Map<string,{id:string;amount:number;currency:string;receipt:string;notes:Record<string,string>}>(),payments=new Map<string,unknown>();
  let createCount=0,loseCreate=true;const originalFetch=globalThis.fetch;
@@ -88,7 +94,7 @@ test('normal merchant checkout survives lost create response, reload, dismissal 
    constructor(options){window.__syntheticCheckout=options;}open(){window.__syntheticCheckoutOpen=true;}on(){}};`}));
   await signIn(page,identityOrigin,ownerEmail,password,merchantOrigin);
   const checkoutUrl=`${merchantOrigin}/${tenant.subdomain}/access_account/checkout/checkout?plan=growth&bp=MONTHLY&site_type=store`;
-  await page.goto(checkoutUrl);await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe/});
+  await page.goto(checkoutUrl);await expect(page.getByRole('complementary',{name:'Order summary'})).toContainText('₹699');const subscribe=page.getByRole('button',{name:/Subscribe|Continue saved checkout/});
   const [lost]=await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/subscribe')&&r.request().method()==='POST'),subscribe.click()]);assert.equal(lost.status(),503);
   await expect(page.locator('.checkout-error[role="alert"]')).toContainText('reconciliation');assert.equal(createCount,1);
   await page.reload();
@@ -119,7 +125,7 @@ test('normal merchant checkout survives lost create response, reload, dismissal 
   const createCalls=calls.filter(c=>c.path==='/v1/payments/subscription/order');assert.equal(new Set(createCalls.map(c=>c.key)).size,1);assert.ok(createCalls.every(c=>c.key?.startsWith('subscription-checkout:')));
   const verifyCalls=calls.filter(c=>c.path==='/v1/payments/subscription/verify');assert.equal(new Set(verifyCalls.map(c=>c.key)).size,1);
   assert.equal(await page.evaluate(()=>Object.keys((globalThis as unknown as {localStorage:Record<string,string>}).localStorage).filter(k=>k.startsWith('letbuyy:subscription-checkout:v1:')).length),0);
-  await page.screenshot({path:`/private/tmp/letbuyy-subscription-browser-${owned.runId}.png`});
+  await page.screenshot({path:`${ownedTmpDir()}/letbuyy-subscription-browser-${owned.runId}.png`});
   console.info('OWNED_SUBSCRIPTION_BROWSER '+JSON.stringify({providerFixtureOnly:true,providerCreates:createCount,normalCreateStatuses:createCalls.map(c=>c.status),normalVerifyStatuses:verifyCalls.map(c=>c.status),paidSubscriptions:1,paidInvoices:1}));
  }catch(error){console.info('OWNED_SUBSCRIPTION_BROWSER_FAILURE '+JSON.stringify({path:page?new URL(page.url()).pathname:null,text:await page?.locator('body').innerText().catch(()=>''),calls:calls.slice(-20).map(({path,status})=>({path,status})),errors:errors.slice(-5)}));throw error;
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();globalThis.fetch=originalFetch;

@@ -1,9 +1,9 @@
-// Nothing in this repository can record that a privacy request was FULFILLED.
+// Only the approved verified access-export transaction can record privacy fulfillment.
 //
 // services/api-gateway/src/routes/storefront/buyer-privacy-routes.ts reports a resolved or closed privacy request as 'fulfilled' only when
 // the ticket's metadata.fulfillment_outcome holds a recognised value, and as 'closed_no_fulfillment' otherwise. That is honest only while
 // nothing but a real export or erasure executor can write that key. Today there is no executor (export release and erasure are open
-// decisions: D05), so the key must have no writer anywhere. The database-backed proof is
+// decisions: D05). Migration330 now owns verified access-export release; erasure remains deferred. The database-backed proof is
 // services/api-gateway/src/__tests__/owned-db/privacy-support-visibility.postgres.test.ts: every route a staff member can use, sent hostile
 // payloads, never produces it. This is the repository-wide source tripwire behind that proof: the moment any other file mentions the key, or a
 // new file starts writing support tickets, a person has to decide whether it writes an outcome and write the contract that keeps it honest,
@@ -66,7 +66,7 @@ test('only reviewed support migrations write tickets; reply and operator metadat
         .filter((name) => name.endsWith('.sql'))
         .filter((name) => /\b(?:update|insert\s+into|delete\s+from)\s+(?:public\.)?support_tickets\b/i.test(sqlOf(name)))
         .sort();
-    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql', '265_operator_support_mutation_integrity.sql', '287_buyer_support_intake_atomic.sql', '330_verified_buyer_privacy_exports.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql', '265_operator_support_mutation_integrity.sql', '287_buyer_support_intake_atomic.sql', '330_verified_buyer_privacy_exports.sql', '348_buyer_support_mutation_receipts.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
     const intake=sqlOf('287_buyer_support_intake_atomic.sql');
     const intakeColumns=intake.match(/INSERT INTO public\.support_tickets\s*\(([\s\S]*?)\)\s*VALUES/i)?.[1]
         .split(',').map(column=>column.trim());
@@ -93,6 +93,13 @@ test('only reviewed support migrations write tickets; reply and operator metadat
     }
     assert.match(mutation, /p_operation='create' AND p_payload->>'topic'='privacy'/);
     assert.match(mutation, /Privacy requests use buyer intake/);
+    const buyerMutation=sqlOf('348_buyer_support_mutation_receipts.sql');
+    assert.doesNotMatch(buyerMutation,/fulfillment_outcome|privacy_request_type|p_metadata|p_topic/);
+    const buyerUpdates=buyerMutation.match(/UPDATE public\.support_tickets SET[\s\S]*?WHERE/gi) ?? [];
+    assert.equal(buyerUpdates.length,2);
+    assert.match(buyerUpdates[0],/SET metadata=metadata\|\|jsonb_build_object\('order_id',v_order\)\s+WHERE/);
+    assert.match(buyerUpdates[1],/SET last_customer_message_at=v_now,\s+status=CASE WHEN status='pending_customer' THEN 'pending_internal' ELSE status END\s+WHERE/);
+    assert.match(buyerMutation,/public\.open_buyer_support_ticket_with_complaint/);
     const approvedExport=sqlOf('330_verified_buyer_privacy_exports.sql');
     assert.match(approvedExport,/p_operation NOT IN \('inspect','consume'\)/);
     assert.match(approvedExport,/e\.buyer_session_sha256 IS DISTINCT FROM p_session_sha256/);

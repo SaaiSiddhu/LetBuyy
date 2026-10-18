@@ -176,9 +176,11 @@ test('every tenant-readable registered table returns zero rows without tenant co
     const actual=catalog();
     const tables=TENANT_TABLES.filter(entry=>actual.find(row=>row.table===entry.table)?.tenant_select);
     assert.ok(tables.length>250,'the probe covers the final catalog, not a small selected sample');
-    const counts=JSON.parse(owned.script(`BEGIN; SET LOCAL ROLE app_tenant;
-        SELECT set_config('app.site_id','',true);
+    const counts=JSON.parse(owned.script(`BEGIN;
         CREATE TEMP TABLE synthetic_tenant_probe_results(table_name text, visible_count bigint, refusal text) ON COMMIT DROP;
+        GRANT SELECT,INSERT ON synthetic_tenant_probe_results TO app_tenant;
+        SET LOCAL ROLE app_tenant;
+        SELECT set_config('app.site_id','',true);
         DO $probe$ DECLARE v_table text; v_count bigint;
         BEGIN
             FOREACH v_table IN ARRAY ARRAY[${tables.map(entry=>quote(entry.table)).join(',')}] LOOP
@@ -190,6 +192,7 @@ test('every tenant-readable registered table returns zero rows without tenant co
                 END;
             END LOOP;
         END $probe$;
+        RESET ROLE;
         SELECT jsonb_agg(row ORDER BY table_name) FROM synthetic_tenant_probe_results row;
         COMMIT;`).split('\n').at(-1)!);
     assert.deepEqual(counts.filter((row:{visible_count:number;refusal:string|null})=>row.visible_count!==0||row.refusal),[],

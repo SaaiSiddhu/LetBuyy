@@ -43,6 +43,11 @@ BEGIN
     AND (j.object_signature=v_signature OR starts_with(j.object_signature,v_signature||'.')) AND (
       object_oid IS DISTINCT FROM v_table OR object_owner IS DISTINCT FROM v_owner OR object_definition_hash IS DISTINCT FROM v_hash
       OR NOT((object_signature=v_signature AND grantee=pg_get_userbyid(v_owner) AND privilege='TABLE MUTATION FENCE' AND action='granted')
+       OR(action='granted' AND grantee='service_role' AND object_signature=v_signature
+        AND privilege=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE'])
+        AND EXISTS(SELECT 1 FROM pg_class bc CROSS JOIN LATERAL aclexplode(bc.relacl) ba
+          WHERE bc.oid=v_table AND ba.grantee='service_role'::regrole AND ba.grantor=v_owner
+            AND ba.privilege_type=j.privilege AND NOT ba.is_grantable))
        OR(action='revoked' AND grantee=ANY(ARRAY['PUBLIC','anon','authenticated','app_tenant'])
         AND((object_signature=v_signature AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN']))
           OR(starts_with(object_signature,v_signature||'.') AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['INSERT','UPDATE','REFERENCES'])
@@ -79,6 +84,12 @@ BEGIN
      substring(v_entry.object_signature FROM length(v_signature)+2),v_signature,v_role,v_option);
    END IF;
   END LOOP;
+ END LOOP;
+ -- Inherited authority is restored above before removing only the named backend
+ -- grants this migration added. Existing named service-role grants are retained.
+ FOR v_entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='319'
+   AND action='granted' AND grantee='service_role' ORDER BY object_signature,privilege LOOP
+  EXECUTE format('REVOKE %s ON TABLE %s FROM service_role RESTRICT',v_entry.privilege,v_entry.object_signature);
  END LOOP;
  DELETE FROM public.migration_privilege_journal WHERE migration='319';
 END $trust_fence$;

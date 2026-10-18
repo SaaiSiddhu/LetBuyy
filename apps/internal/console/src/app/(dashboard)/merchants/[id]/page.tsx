@@ -311,7 +311,7 @@ export default async function MerchantDetailPage({ params, searchParams }: PageP
                                         <option value="restore">Restore merchant</option>
                                     </select>
                                 </label>
-                                <input type="hidden" name="request_key" value={retryKey.success ? retryKey.data : crypto.randomUUID()} />
+                                <Input unstyled type="hidden" name="request_key" value={retryKey.success ? retryKey.data : crypto.randomUUID()} />
                                 <p className="text-sm">A different active platform super admin must review and approve the exact request before you can execute it.</p>
                                 <Textarea name="reason" label="Reason" minLength={8} required placeholder="Record the evidence and expected merchant impact." />
                                 <Button type="submit">Request independent approval</Button>

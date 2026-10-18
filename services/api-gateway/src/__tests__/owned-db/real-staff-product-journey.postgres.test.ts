@@ -48,7 +48,8 @@
 // not a row-level-security proof and not a browser-session proof.
 
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import test, {before,after} from 'node:test';
 import { Hono } from 'hono';
 import { createLetbuyyInternalIdentityHeaders } from '@letbuyy/auth-core';
 import { authMiddleware } from '../../middleware/auth';
@@ -58,17 +59,22 @@ import { executeMerchantPrincipalBackfill, executeStoreMembershipBackfill, type 
 import { executeStaffMembershipRoleAssignment, ensureStaffRole } from '../../identity-foundation/staff-role-backfill';
 import { getSupabaseAdmin } from '../../lib/supabase';
 import type { Env } from '../../index';
-import { requireOwnedDatabase } from './owned-db-support';
+import { requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy } from './owned-db-support';
 
 const owned = requireOwnedDatabase();
 const psql = owned.psql;
+let pooled:OwnedPooledSqlProxy;
+before(async()=>{pooled=await startOwnedPooledSqlProxy(owned);});
+after(async()=>{await closePooledSqlClients();await pooled?.stop();});
+function editBody(id:string,changes:Record<string,unknown>){return JSON.stringify({...changes,version:Number(psql(`SELECT version FROM products WHERE id='${id}';`)),idempotency_key:crypto.randomUUID()});}
+
 const script = owned.script;
 
 const INTERNAL_SECRET = 'internal-secret-for-real-staff-journey-tests';
 
 function env(overrides: Partial<Env> = {}): Env {
     return {
-        ...owned.restEnv(),
+        ...owned.restEnv(), ...pooled.env(),
         ENVIRONMENT: 'test',
         STAFF_PERMISSION_SHADOW: 'on',
         INTERNAL_API_SECRET: INTERNAL_SECRET,
@@ -223,7 +229,7 @@ test('D03 real staff product journey: independently authenticated staff, real em
         const { result: res, lines } = await capturingWarnLines(async () => gateway().request(`/products/${productId}`, {
             method: 'PATCH',
             headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: `Staff Disposable Product ${RUN} (edited)` }),
+            body: editBody(productId,{ name: `Staff Disposable Product ${RUN} (edited)` }),
         }, env()));
         const body = await readJson(res);
         assert.equal(res.status, 200, `staff product edit: ${JSON.stringify(body)}`);
@@ -275,7 +281,7 @@ test('D03 real staff product journey: independently authenticated staff, real em
         const res = await gateway().request(`/products/${PRODUCT_B}`, {
             method: 'PATCH',
             headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: 'should not be renamed by a stranger' }),
+            body: editBody(PRODUCT_B,{ name: 'should not be renamed by a stranger' }),
         }, env());
         const body = await readJson(res);
         assert.equal(res.status, 403, `mutating a real product at a store this staff member has no grant at must be refused: ${JSON.stringify(body)}`);
@@ -302,7 +308,7 @@ test('D03 real staff product journey: independently authenticated staff, real em
     const patchIndependenceProduct = async (name: string) => capturingWarnLines(async () => gateway().request(`/products/${independenceProductId}`, {
         method: 'PATCH',
         headers: { ...(await identityHeaders(STAFF, staffEmail)), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name }),
+        body: editBody(independenceProductId,{ name }),
     }, env()));
 
     // Baseline: real target role still matches the real legacy grant.

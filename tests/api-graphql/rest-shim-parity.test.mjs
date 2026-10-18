@@ -95,7 +95,9 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
     "router.get('/', validate('query', ListOrdersQuery)",
     "return c.json(cursorPaginated(rows, {",
     "router.get('/:id'",
-    "return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)))",
+    "return c.json(success({",
+    "...normalizeOrderRecord(rows[0] as unknown as OrderSourceRow),",
+    "refund_payment_id: candidates.length === 1 ? candidates[0].id : null,",
   ], 'orders REST parity routes');
 
   assertIncludesAll(pagesRouteSource, [

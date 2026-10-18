@@ -129,7 +129,10 @@ const rollbackBody361 = rollback361.replace(/^([\s\S]*?)\bBEGIN;/, '$1').replace
 function largeOwnedScript(sql:string) {
     // The support module owns every process and reuses the verified fixture;
     // raw JSON remains text with a fixed64MiB output ceiling.
-    return owned.scriptLarge(sql);
+    // Hundreds of snapshot subqueries otherwise trigger LLVM compilation for
+    // synthetic empty tables. Keep every byte/field and disable only JIT for
+    // this administrative test connection.
+    return owned.scriptLarge('SET jit=off;'+sql);
 }
 
 const userRelations361 = "SELECT c.oid FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE(n.nspname !~ '^pg_'AND n.nspname<>'information_schema')OR c.oid IN(SELECT p.reltoastrelid FROM pg_class p JOIN pg_namespace pn ON pn.oid=p.relnamespace WHERE pn.nspname !~ '^pg_'AND pn.nspname<>'information_schema')OR c.oid IN(SELECT i.indexrelid FROM pg_index i WHERE i.indrelid IN(SELECT p.reltoastrelid FROM pg_class p JOIN pg_namespace pn ON pn.oid=p.relnamespace WHERE pn.nspname !~ '^pg_'AND pn.nspname<>'information_schema'))";

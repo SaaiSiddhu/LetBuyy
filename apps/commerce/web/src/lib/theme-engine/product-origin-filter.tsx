@@ -1,3 +1,4 @@
+import { Input, Button } from '@letbuyy/ui';
 import type { StorefrontRouteContext } from './types';
 
 export function StorefrontProductOriginFilter({
@@ -22,9 +23,9 @@ export function StorefrontProductOriginFilter({
     return (
         <section className="lb-collection-filter" aria-label="Filter products by country of origin">
             <form className="lb-collection-filter__form" method="get" action={pathname}>
-                {preserved.map(([name, value]) => <input key={name} type="hidden" name={name} value={value} />)}
+                {preserved.map(([name, value]) => <Input unstyled key={name} type="hidden" name={name} value={value} />)}
                 <label className="lb-collection-filter__label" htmlFor="lb-product-origin-filter">Country of origin</label>
-                <input
+                <Input unstyled
                     id="lb-product-origin-filter"
                     className="lb-collection-filter__input"
                     name="country_of_origin"
@@ -34,7 +35,7 @@ export function StorefrontProductOriginFilter({
                     defaultValue={currentOrigin}
                     placeholder="Enter a country"
                 />
-                <button className="lb-collection-filter__submit" type="submit">Apply filter</button>
+                <Button unstyled className="lb-collection-filter__submit" type="submit">Apply filter</Button>
                 {currentOrigin && <a className="lb-collection-filter__clear" href={clearHref}>Clear origin filter</a>}
             </form>
         </section>

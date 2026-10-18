@@ -1,11 +1,16 @@
 // Actual internal Gateway/webhook activation path -> owned PostgREST/database.
 // Synthetic trusted captured-payment notifications; no provider capture or real spend proof.
 import assert from 'node:assert/strict';
+import {planSubscriptionTaxSnapshot} from '@letbuyy/billing-core';
 import test,{before,after} from 'node:test';
 import {readFileSync} from 'node:fs';
 import {Gateway,gatewayEnv,newIdentityKeys,INTERNAL_SECRET,tapRest} from './gateway-harness';
 import {requireOwnedDatabase} from './owned-db-support';
 import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
+const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-only',profile_version:1,
+ approval_status:'approved',approval_reference:'synthetic-approval-not-live',registration_status:'registered',supply_category:'domestic_taxable_saas',rate_bps:1800,
+ supplier:{name:'Synthetic Platform Supplier',gstin:'27AAAAA0000A1Z5',state_code:'27',country:'IN',
+ address:{line1:'Synthetic Supplier Address',city:'Mumbai',state:'Maharashtra',zip:'400001',country:'IN'}}};
 const owned=requireOwnedDatabase();let sequence=0;
 let diagnostic:ReturnType<typeof tapRest>;
 before(()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
@@ -29,10 +34,15 @@ async function fixture(){
  const sources=new Set<string>();
  const activate=(storeId:string,paymentId:string,extra:Record<string,unknown>={})=>{
   if(!sources.has(paymentId)){
-   owned.psql(`SELECT claim_merchant_subscription_checkout_v1('${owner}','${storeId}','core:${paymentId}',
-    '{"plan_slug":"growth","billing_period":"monthly"}'::jsonb,
-    jsonb_build_object('plan',to_jsonb(p),'mode','razorpay_order','amount_minor',99900,'currency','INR')) FROM plans p WHERE slug='growth' AND site_type='store';
-    SELECT bind_merchant_subscription_checkout_v1('${owner}','${storeId}',id,'order_${paymentId}') FROM billing_history WHERE subscription_checkout_key='core:${paymentId}';`);
+   const plan=JSON.parse(owned.psql("SELECT to_jsonb(p) FROM plans p WHERE slug='growth' AND site_type='store';"));
+   const key='core:'+paymentId,request={plan_slug:'growth',billing_period:'monthly'};
+   const tax=planSubscriptionTaxSnapshot({profile,recipient:{name:'Synthetic Recipient',gstin:null,state_code:'29',country:'IN',address:{line1:'Synthetic Buyer Address',city:'Bengaluru',state:'Karnataka',zip:'560001',country:'IN'}},
+    source:{actor_id:owner,site_id:storeId,request_key:key,plan_id:plan.id,plan_slug:'growth',billing_period:'monthly',price_version:'synthetic-'+plan.id,gross_before_discount_minor:99900,discount_minor:0,coupon_code:null},grossMinor:99900});
+   const quote={plan,mode:'razorpay_order',amount_minor:99900,currency:'INR',subscription_tax_snapshot:tax,response:{amount:99900,currency:'INR'},provider_input:{amount:99900}};
+   const literal=(v:unknown)=>"'"+JSON.stringify(v).replaceAll("'","''")+"'::jsonb";
+   const result=JSON.parse(owned.psql(`SELECT claim_merchant_subscription_checkout_v1('${owner}','${storeId}','${key}',${literal(request)},${literal(quote)});`));
+   assert.equal(result.accepted,true,JSON.stringify(result));
+   owned.psql(`SELECT bind_merchant_subscription_checkout_v1('${owner}','${storeId}','${result.charge.id}','order_${paymentId}');`);
    sources.add(paymentId);
   }
   return gateway.request('/v1/internal/billing/subscriptions/activate',{method:'POST',
@@ -45,8 +55,15 @@ async function fixture(){
 test('private activation supports clean rollback/reapply without deleting records and ordinary roles cannot execute it',()=>{
  const rows=()=>owned.psql('SELECT (SELECT count(*) FROM subscriptions),(SELECT count(*) FROM billing_history),(SELECT count(*) FROM audit_logs);');
  const retained=rows();
+ const current=owned.psql("SELECT pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::regprocedure);");
+ assert.match(owned.psqlExpectError(readFileSync('database/supabase/rollback/327_atomic_subscription_payment_ownership.rollback.sql','utf8')),/360 refuses/);
+ assert.equal(owned.psql("SELECT pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::regprocedure);"),current);
+ owned.script(readFileSync('database/supabase/rollback/360_subscription_tax_quote_snapshot.rollback.sql','utf8'));
+ owned.script(readFileSync('database/supabase/rollback/347_free_subscription_checkout_receipts.rollback.sql','utf8'));
  for(const rel of ['rollback/328_subscription_checkout_source.rollback.sql','rollback/327_atomic_subscription_payment_ownership.rollback.sql','migrations/327_atomic_subscription_payment_ownership.sql','migrations/328_subscription_checkout_source.sql'])
   owned.script(readFileSync(new URL('../../../../../database/supabase/'+rel,import.meta.url),'utf8'));
+ owned.script(readFileSync('database/supabase/migrations/347_free_subscription_checkout_receipts.sql','utf8'));
+ owned.script(readFileSync('database/supabase/migrations/360_subscription_tax_quote_snapshot.sql','utf8'));
  assert.equal(rows(),retained);
  for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.activate_merchant_subscription_v1('{}'::jsonb);`),/permission denied for function/);
 });
@@ -116,7 +133,7 @@ for(const failure of ['invoice','audit'])test('mandatory '+failure+' failure rol
 test('new private transaction clean rollback/reapply is exact and retained captures prevent guard reopening',async()=>{
  const j=await fixture(),payment='pay_syn_'+crypto.randomUUID();assert.equal((await j.activate(j.stores[0].siteId,payment)).status,200);
  const before=owned.psql("SELECT pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::regprocedure);");
- assert.match(owned.psqlExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/327_atomic_subscription_payment_ownership.rollback.sql',import.meta.url),'utf8')),/refuses retained captured subscription payments/);
+ assert.match(owned.psqlExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/327_atomic_subscription_payment_ownership.rollback.sql',import.meta.url),'utf8')),/360 refuses|refuses retained captured subscription payments/);
  assert.equal(owned.psql("SELECT pg_get_functiondef('public.activate_merchant_subscription_v1(jsonb)'::regprocedure);"),before);
  for(const role of ['anon','authenticated','app_tenant'])assert.match(owned.psqlExpectError(`SET ROLE ${role};SELECT public.activate_merchant_subscription_v1('{}'::jsonb);`),/permission denied for function/);
 });

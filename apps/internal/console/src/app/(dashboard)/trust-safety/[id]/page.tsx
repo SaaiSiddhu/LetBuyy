@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import type { InternalTrustSafetyCaseResult } from '@letbuyy/api-client';
-import { Button, Textarea } from '@letbuyy/ui';
+import { Input, Button, Textarea } from '@letbuyy/ui';
 import { ConsoleApprovalForm } from '@/components/ConsoleApprovalForm';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { ConsoleWorkspace, Panel, StatusPill } from '@/components/_local-ui/console-workspace';
@@ -50,7 +50,7 @@ export default async function TrustSafetyCasePage({ params, searchParams }: {
         </Panel>
         {canSuspend && <Panel title="Suspend this site" description="This action records the restriction and audit atomically. Subject email delivery remains pending an approved environment.">
             <ConsoleApprovalForm action="/api/approvals/enforce-trust" className="space-y-4">
-                <input type="hidden" name="case_id" value={id} /><input type="hidden" name="enforcement_key" value={enforcementKey.success ? enforcementKey.data : crypto.randomUUID()} />
+                <Input unstyled type="hidden" name="case_id" value={id} /><Input unstyled type="hidden" name="enforcement_key" value={enforcementKey.success ? enforcementKey.data : crypto.randomUUID()} />
                 <label className="block">Suspension reason<Textarea name="reason" minLength={8} maxLength={1000} required /></label>
                 <label className="block">Additional enforcement notes<Textarea name="operator_note" maxLength={2000} /></label>
                 <Button type="submit">Suspend site for this case</Button>
@@ -58,7 +58,7 @@ export default async function TrustSafetyCasePage({ params, searchParams }: {
         </Panel>}
         {canRequest && <Panel title="Request reinstatement" description="An active platform super admin must independently review this exact case, reason, notes and site restrictions. Approval expires after ten minutes or when the bound session or evidence changes.">
             <ConsoleApprovalForm action="/api/approvals/request-trust" className="space-y-4">
-                <input type="hidden" name="case_id" value={id} /><input type="hidden" name="request_key" value={requestKey.success ? requestKey.data : crypto.randomUUID()} />
+                <Input unstyled type="hidden" name="case_id" value={id} /><Input unstyled type="hidden" name="request_key" value={requestKey.success ? requestKey.data : crypto.randomUUID()} />
                 <label className="block">Reinstatement reason<Textarea name="reason" minLength={8} maxLength={1000} required /></label>
                 <label className="block">Additional reinstatement notes<Textarea name="operator_note" maxLength={2000} /></label>
                 <Button type="submit">Request independent reinstatement</Button>

@@ -85,6 +85,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-staff-invitation.postgres.test.ts",
         "merchant-staff-lifecycle.postgres.test.ts",
         "merchant-stepup-authority.postgres.test.ts",
+        "merchant-store-discovery-grants.postgres.test.ts",
         "merchant-tenant-predicate.test.ts",
         "operator-identity-exchange.postgres.test.ts",
         "operator-mutation-integrity.postgres.test.ts",
@@ -278,7 +279,7 @@ test('the package scripts keep three lanes apart: unit (fast, no database), data
     const gateway = JSON.parse(read(join(repoRoot, 'services/api-gateway/package.json'))).scripts;
     const root = JSON.parse(read(join(repoRoot, 'package.json'))).scripts;
     assert.equal(gateway['test:unit'], 'cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts', 'the unit glob does not descend, so owned-db/ is outside it');
-    assert.equal(gateway['test:db'], 'cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db');
+    assert.equal(gateway['test:db'], 'cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db --prepared-transactions 2');
     // `test` is the acceptance: the unit lane, the database lane, then the canonical contracts runner (the root's own
     // `test:contracts`, the command the root suite runs) from the repository root.
     assert.deepEqual(
@@ -355,4 +356,20 @@ test('every docker run the fixture makes is told never to pull, whatever the env
     const runs = source.match(/'run', '-d', [^\n]*/g) ?? [];
     assert.equal(runs.length, 3, 'the cluster (in its two forms: real daemon and the sandbox shim\'s) and the REST sidecar are the only containers the fixture starts');
     for (const line of runs) assert.match(line, /'--pull', 'never'/);
+});
+
+
+test('owned browser evidence uses the host temporary directory on fresh Linux and macOS runners',()=>{
+    for(const file of allOwnedSuites())assert.doesNotMatch(read(join(repoRoot,file)),/\/private\/tmp\//,`${file} must use node:os tmpdir for portable private evidence`);
+});
+
+test('historical SQL controls refuse unreviewed schema points and unannounced databases before Docker',()=>{
+    for(const [point,message] of [[314,'unreviewed historical schema point'],[315,'owned'],[357,'owned'],[358,'owned']]) {
+        const child=spawnSync(process.execPath,['--import','tsx','--input-type=module','-e',
+            `import * as fixture from './services/api-gateway/src/__tests__/owned-db/owned-db-support.ts';(fixture.requireOwnedHistoricalSqlDatabase??fixture.default.requireOwnedHistoricalSqlDatabase)(${point});`],
+            {cwd:repoRoot,encoding:'utf8',env:{PATH:process.env.PATH,HOME:process.env.HOME}});
+        assert.notEqual(child.status,0);
+        assert.match(child.stderr,new RegExp(message));
+        assert.doesNotMatch(child.stderr,/spawn.*docker|Cannot find|ERR_MODULE_NOT_FOUND/);
+    }
 });

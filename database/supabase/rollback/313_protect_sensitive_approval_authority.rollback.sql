@@ -30,11 +30,16 @@ BEGIN
   IF NOT EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='313'
       AND object_signature='public.sensitive_action_approvals' AND privilege='TABLE PRIVILEGE FENCE'
       AND grantee=pg_get_userbyid(v_owner) AND action='granted')
-    OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='313' AND (
+    OR EXISTS(SELECT 1 FROM public.migration_privilege_journal j WHERE migration='313' AND (
       object_oid IS DISTINCT FROM v_table OR object_owner IS DISTINCT FROM v_owner
       OR object_definition_hash IS DISTINCT FROM v_hash
       OR NOT ((object_signature='public.sensitive_action_approvals' AND privilege='TABLE PRIVILEGE FENCE'
         AND grantee=pg_get_userbyid(v_owner) AND action='granted')
+        OR (action='granted' AND grantee='service_role' AND object_signature='public.sensitive_action_approvals'
+          AND privilege=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE'])
+          AND EXISTS(SELECT 1 FROM pg_class bc CROSS JOIN LATERAL aclexplode(bc.relacl) ba
+            WHERE bc.oid=v_table AND ba.grantee='service_role'::regrole AND ba.grantor=v_owner
+              AND ba.privilege_type=j.privilege AND NOT ba.is_grantable))
         OR (action='revoked' AND grantee=ANY(ARRAY['PUBLIC','anon','authenticated','app_tenant'])
           AND ((object_signature='public.sensitive_action_approvals'
             AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN']))
@@ -72,6 +77,10 @@ BEGIN
       EXECUTE format('GRANT %s (%I) ON TABLE public.sensitive_action_approvals TO %s%s',
         split_part(v_entry.privilege,' WITH GRANT OPTION',1),substring(v_entry.object_signature FROM length('public.sensitive_action_approvals.')+1),v_role,v_option);
     END IF;
+  END LOOP;
+  FOR v_entry IN SELECT * FROM public.migration_privilege_journal WHERE migration='313'
+    AND action='granted' AND grantee='service_role' ORDER BY privilege LOOP
+    EXECUTE format('REVOKE %s ON TABLE public.sensitive_action_approvals FROM service_role RESTRICT',v_entry.privilege);
   END LOOP;
   DELETE FROM public.migration_privilege_journal WHERE migration='313';
 END;

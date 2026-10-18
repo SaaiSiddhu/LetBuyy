@@ -19,6 +19,7 @@ import type { CustomerReport, OperationalFinding, OperationalFact, LiveSignal } 
 const FIXED = '2026-06-21T00:00:00.000Z';
 const engine = createEngine();
 const svc = new CustomerOperationsService(engine, () => FIXED);
+const journey = engine.store.read<{stages: {stage: string; tables: number; rpcs: number}[]}>('customer-journey-intelligence');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -96,20 +97,22 @@ test('generateCustomerReport: per-stage-topology facts — one per stage, all CO
   }
 });
 
-test('generateCustomerReport: Payment stage topology has tables=16, rpcs=25', () => {
+test('generateCustomerReport: Payment stage preserves current table and RPC counts', () => {
   const r = svc.generateCustomerReport();
   const pay = r.facts.find((f) => f.kind === 'stage-topology' && f.subject === 'Payment');
   assert.ok(pay, 'Payment topology fact present');
-  assert.ok(String(pay!.value).includes('tables:16'), 'Payment has 16 tables');
-  assert.ok(String(pay!.value).includes('rpcs:25'), 'Payment has 25 RPCs');
+  const stage = journey.stages.find(row => row.stage === 'Payment')!;
+  assert.ok(String(pay!.value).includes(`tables:${stage.tables}`), 'Payment preserves the current table count');
+  assert.ok(String(pay!.value).includes(`rpcs:${stage.rpcs}`), 'Payment preserves the current RPC count');
 });
 
-test('generateCustomerReport: Refund stage topology has tables=7, rpcs=2', () => {
+test('generateCustomerReport: Refund stage preserves current table and RPC counts', () => {
   const r = svc.generateCustomerReport();
   const ref = r.facts.find((f) => f.kind === 'stage-topology' && f.subject === 'Refund');
   assert.ok(ref, 'Refund topology fact present');
-  assert.ok(String(ref!.value).includes('tables:7'), 'Refund has 7 tables');
-  assert.ok(String(ref!.value).includes('rpcs:2'), 'Refund has 2 RPCs');
+  const stage = journey.stages.find(row => row.stage === 'Refund')!;
+  assert.ok(String(ref!.value).includes(`tables:${stage.tables}`), 'Refund preserves the current table count');
+  assert.ok(String(ref!.value).includes(`rpcs:${stage.rpcs}`), 'Refund preserves the current RPC count');
 });
 
 // ── 4. Stage-dropoff facts — all NOT_CONNECTED ────────────────────────────────
@@ -297,7 +300,8 @@ test('detectAbandonment: Checkout complexity is critical+CONNECTED (money)', () 
   assert.ok(f, 'ABANDONMENT-CHECKOUT-COMPLEXITY present');
   assert.equal(f!.status, 'CONNECTED');
   assert.equal(f!.severity, 'critical');
-  assert.ok(f!.detail.includes('37'), 'checkout has 37 tables');
+  const stage = journey.stages.find(row => row.stage === 'Checkout')!;
+  assert.ok(f!.detail.includes(`${stage.tables} tables`), 'Checkout preserves the current table count');
 });
 
 // ── 11. Signals from registry ─────────────────────────────────────────────────

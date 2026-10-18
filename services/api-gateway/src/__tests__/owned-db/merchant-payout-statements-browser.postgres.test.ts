@@ -4,6 +4,7 @@
 // Normal Identity password login, maintained Next UI/proxies and real Gateway,
 // owned pooled SQL/PostgREST. Seed captures and intercepted transfer responses are
 // synthetic local evidence, never approved provider/bank settlement evidence.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createServer, type Server } from 'node:http';
@@ -91,7 +92,7 @@ test('normal merchant statement browser flow keeps fresh MFA, current context, d
         TOTP_ENCRYPTION_KEY: TOTP_SECRET, LETBUYY_IDENTITY_ISSUER: identityOrigin, ...proxy.env(),
         RAZORPAY_KEY_ID: 'rzp_test_synthetic_n7', RAZORPAY_ROUTE_KEY_SECRET: 'synthetic-n7-no-external-provider-secret',
         RAZORPAY_ROUTE_ACCOUNT_ID: 'acc_synthetic_n7', RAZORPAY_ROUTE_MODE: 'sandbox', RAZORPAY_ROUTE_PROVIDER_ENABLED: 'false' }));
-    const evidence = process.env.LETBUYY_N7_BROWSER_EVIDENCE_DIR || `/private/tmp/letbuyy-n7-browser-${owned.runId}`;
+    const evidence = process.env.LETBUYY_N7_BROWSER_EVIDENCE_DIR || `${ownedTmpDir()}/letbuyy-n7-browser-${owned.runId}`;
     mkdirSync(evidence, { recursive: true });
     const stages: string[] = [], calls: Array<{ path: string; status: number; key: string | null; errorCode?: string }> = [];
     const stage = (name: string) => { stages.push(name); writeFileSync(evidence + '/stages.json', JSON.stringify({ runId: owned.runId, stages }) + '\n'); console.info('N7_BROWSER_STAGE ' + name); };

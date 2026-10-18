@@ -69,18 +69,18 @@ test('normal product creation preserves persisted restrictions and actionable re
   const save=async()=>{const [r]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===endpoint&&r.request().method()==='POST'),page.getByRole('button',{name:'Save product',exact:true}).click()]);return r;};
   const before=state();
   await t.test('current persisted zero limit refuses normal UI/BFF creation403 with no effects',async()=>{
-   const r=await save();assert.equal(r.status(),403);assert.match(await r.text(),/Product limit reached/);
+   const r=await save();assert.equal(r.status(),403,await r.text());assert.match(await r.text(),/Product limit reached/);
    await expect(page.getByText('Product needs attention',{exact:true})).toBeVisible();assert.equal(new URL(page.url()).pathname,new URL(target).pathname);
    assert.deepEqual(state(),before);
   });
   await t.test('named resolver outage refuses normal UI/BFF creation503 with actionable failure and no effects',async()=>{
-   unavailable=true;const r=await save();assert.equal(r.status(),503);assert.match(await r.text(),/ENTITLEMENT_AUTHORITY_UNAVAILABLE/);
+   unavailable=true;const r=await save();assert.equal(r.status(),503,await r.text());assert.match(await r.text(),/ENTITLEMENT_AUTHORITY_UNAVAILABLE/);
    assert.ok(faults>0);await expect(page.getByText('Product needs attention',{exact:true})).toBeVisible();
    await expect(page.getByLabel('Title',{exact:true})).toHaveValue('Synthetic Restricted Product');assert.deepEqual(state(),before);
   });
   await t.test('restored persisted authority permits a new normal retry and exactly one product',async()=>{
    unavailable=false;owned.psql("UPDATE site_entitlement_overrides SET limits='{\"products\":2}'::jsonb WHERE id='"+restriction+"';");
-   const r=await save();assert.equal(r.status(),201);await page.waitForURL(u=>u.pathname==='/'+site.subdomain+'/products');
+   const r=await save();assert.equal(r.status(),201,await r.text());await page.waitForURL(u=>u.pathname==='/'+site.subdomain+'/products');
    const after=state();assert.equal(after.products.length,1);assert.equal(after.products[0].name,'Synthetic Restricted Product');assert.equal(after.products[0].store_id,site.siteId);
   });
   assert.deepEqual(external,[]);assert.deepEqual(browserProvider,[]);

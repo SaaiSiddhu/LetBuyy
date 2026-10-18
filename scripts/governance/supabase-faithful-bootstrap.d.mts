@@ -1,0 +1,1 @@
+export const SUPABASE_FAITHFUL_BOOTSTRAP_SQL: string;

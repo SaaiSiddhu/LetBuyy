@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Banner, Button, Card, Section } from '@letbuyy/ui'
+import { Input, Banner, Button, Card, Section } from '@letbuyy/ui'
 import { ReelUploadBeginSchema, ReelUploadCapabilitiesSchema, type ReelUploadBegin, type ReelUploadCapabilities, type ReelUploadReadback } from '@letbuyy/shared-types'
 import { bindPrivateIntakeReadback } from './private-intake-readback'
 type Pending = { command: ReelUploadBegin; id: string | null }
@@ -99,7 +99,7 @@ export function PrivateReelIntake({ store, actorId }: { store: string; actorId: 
     return <Card><Section title="Private original intake">
         {!capabilities?.private_upload_enabled ? <p>Private original upload is unavailable. Saved reel drafts remain available.</p> : <>
             <p>Accepted originals: {capabilities.accepted_types.join(', ')}; up to {capabilities.max_bytes} bytes. Receiving an original does not process, approve, or publish a reel.</p>
-            <label>Original video<input type="file" accept={capabilities.accepted_types.join(',')} disabled={busy} onChange={event => void choose(event.target.files?.[0])} /></label>
+            <label>Original video<Input unstyled type="file" accept={capabilities.accepted_types.join(',')} disabled={busy} onChange={event => void choose(event.target.files?.[0])} /></label>
             <Button disabled={busy || !command || !file.current} onClick={() => void act(false)}>Transfer same original</Button>
             <Button disabled={busy || !pending.current?.id} onClick={() => void act(true)}>Check same intake</Button>
             {row?.state === 'received_unprocessed' && <Button disabled={busy} onClick={() => { remember(null); file.current = null; setRow(null); setCommand(null); setNotice('Select a new original when ready.') }}>Start another original</Button>}

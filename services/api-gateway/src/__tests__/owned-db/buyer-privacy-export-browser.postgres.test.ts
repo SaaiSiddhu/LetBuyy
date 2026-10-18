@@ -4,6 +4,7 @@
 // Normal production-built Storefront -> Identity -> Gateway -> owned PostgreSQL.
 // Official Turnstile test keys exercise widget/Siteverify transport; local KMS
 // is explicitly synthetic. No positive cookie/token injection or API success fake.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createServer,type Server} from 'node:http';
@@ -20,7 +21,7 @@ async function port(){const s=createServer();await new Promise<void>(r=>s.listen
 async function ready(origin:string,path:string,app:OwnedClientProcess){const until=Date.now()+300000;while(Date.now()<until){if(app.exitCode!==null||app.signalCode!==null)throw new Error('Owned browser runtime stopped before readiness');try{if((await fetch(origin+path,{signal:AbortSignal.timeout(2500)})).status<500)return;}catch{}await new Promise(r=>setTimeout(r,100));}throw new Error('Owned browser runtime readiness timed out');}
 
 test('normal storefront privacy entry verifies password, recovers lost prepare/release replies, downloads exact own bytes, survives restart and refuses a second buyer',{timeout:900000},async()=>{
- const root='/private/tmp/letbuyy-buyer-export-browser-'+owned.runId;mkdirSync(root,{recursive:true});
+ const root=ownedTmpDir() + '/letbuyy-buyer-export-browser-'+owned.runId;mkdirSync(root,{recursive:true});
  const site=newSyntheticTenant('privacy-entry');seedSyntheticTenant(owned.psql,site);
  const a=seedBuyerAccount(owned.psql,'export-browser-a'),b=seedBuyerAccount(owned.psql,'export-browser-b'),password='Synthetic-browser-export-password-42';
  const hash=await bcrypt.hash(password,10);owned.psql(`UPDATE buyer_accounts SET password_hash='${hash}',full_name=CASE id WHEN '${a.id}' THEN 'Synthetic Tamil தமிழ் Buyer A' ELSE 'Synthetic Private Buyer B' END WHERE id IN ('${a.id}','${b.id}');`);

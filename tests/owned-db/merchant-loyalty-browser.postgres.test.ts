@@ -3,6 +3,7 @@
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal merchant password sign-in -> maintained web -> real Gateway/pooled DB.
 // Verified synthetic accounts are fixture inputs, not provider/inbox proof.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createServer,type Server} from 'node:http';
@@ -36,7 +37,7 @@ test('normal merchant configures rewards with owned retries, policy conflicts, s
  let bridge:Server|undefined,identity:OwnedClientProcess|undefined,merchant:OwnedClientProcess|undefined,browser:Awaited<ReturnType<typeof chromium.launch>>|undefined,page:Page|undefined;
  const calls:{path:string;status:number;key:string|null}[]=[],errors:string[]=[];
  let readOutage=true,loseSaveReply=false;
- const evidence=`/private/tmp/letbuyy-loyalty-web-evidence-${owned.runId}`;mkdirSync(evidence,{recursive:true});
+ const evidence=`${ownedTmpDir()}/letbuyy-loyalty-web-evidence-${owned.runId}`;mkdirSync(evidence,{recursive:true});
  try{
   bridge=createServer(async(req,res)=>{
    const chunks:Buffer[]=[];for await(const chunk of req)chunks.push(Buffer.from(chunk));const body=Buffer.concat(chunks).toString(),headers=new Headers();
@@ -138,6 +139,6 @@ test('normal merchant configures rewards with owned retries, policy conflicts, s
    syntheticPaidWorkerInput:true,earnedPoints:123,configurationAudits:4,normalBuyerCheckout:false,providerInboxProof:false,darkModeVerdict:'not verified: existing merchant root forces light even under OS dark preference',calls:calls.filter(call=>call.path==='/v1/loyalty/program')},null,2)+'\n');
   console.info('OWNED_LOYALTY_BROWSER '+JSON.stringify({runId:owned.runId,evidence,normalSignIns:2,configurationAudits:4,earnedPoints:123,syntheticPaidInput:true}));
   await otherContext.close();await context.close();
- }catch(error){console.info('OWNED_LOYALTY_BROWSER_FAILURE '+JSON.stringify({path:page?new URL(page.url()).pathname:null,visible:await page?.locator('body').innerText().catch(()=>''),calls:calls.slice(-25),errors:errors.slice(-8)}));await page?.screenshot({path:`/private/tmp/letbuyy-loyalty-browser-${owned.runId}.png`}).catch(()=>{});throw error;
+ }catch(error){console.info('OWNED_LOYALTY_BROWSER_FAILURE '+JSON.stringify({path:page?new URL(page.url()).pathname:null,visible:await page?.locator('body').innerText().catch(()=>''),calls:calls.slice(-25),errors:errors.slice(-8)}));await page?.screenshot({path:`${ownedTmpDir()}/letbuyy-loyalty-browser-${owned.runId}.png`}).catch(()=>{});throw error;
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();await proxy.stop();if(bridge){bridge.closeAllConnections();await new Promise<void>(resolve=>bridge!.close(()=>resolve()));}}
 });

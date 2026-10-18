@@ -49,9 +49,13 @@ test('a typed eligible approver ID cannot authorize reinstatement without indepe
 });
 test('a mandatory reinstatement audit failure rolls back the site, case and takedown together',async()=>{
     const j=await journey(),a=await approved(j);
-    owned.psql('ALTER TABLE audit_logs RENAME TO audit_logs_trust_fault;');
+    assert.match(owned.psqlExpectError('ALTER TABLE public.audit_logs RENAME TO synthetic_audit_outage;'), /360 refuses changed parent relation identity/);
+    owned.script(`CREATE FUNCTION public.synthetic_audit_insert_outage() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'synthetic mandatory audit insertion outage'; END $$;
+        CREATE TRIGGER synthetic_audit_insert_outage BEFORE INSERT ON public.audit_logs
+        FOR EACH ROW EXECUTE FUNCTION public.synthetic_audit_insert_outage();`);
     try{assert.equal((await j.apply(a.id)).status,503);j.unchanged();}
-    finally{owned.psql('ALTER TABLE audit_logs_trust_fault RENAME TO audit_logs;');}
+    finally{owned.script('DROP TRIGGER synthetic_audit_insert_outage ON public.audit_logs; DROP FUNCTION public.synthetic_audit_insert_outage();');}
     assert.equal((await j.apply(a.id)).status,200);
 });
 test('reinstatement cannot republish a site while an independent active safety restriction remains',async()=>{

@@ -126,6 +126,7 @@ function seedFixtures() {
     COMMIT;
     BEGIN;
     SELECT set_config('app.site_id', '', true);
+    SELECT * FROM public.claim_marketplace_listing_review(${sqlString(SITE)}::uuid,${sqlString(LISTING)}::uuid,${sqlString(OPERATOR)}::uuid,'Fixture reviewer will inspect this product.','detail-claim:approved',(SELECT version FROM channel_listings WHERE id=${sqlString(LISTING)}::uuid));
     SELECT * FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(LISTING)}::uuid, 'approved', 'operator', ${sqlString(OPERATOR)}::uuid, 'Review passed.', 'detail-approve:approved');
     COMMIT;`);
 }
@@ -188,6 +189,7 @@ test('an operator decision reaches this read: pending, rejected and taken-down l
     // through transition_channel_listing exactly as ADM-1's operator routes do.
     assert.equal(detailCount(PENDING_LISTING), 0, 'a listing awaiting review must not be publicly readable');
 
+    psql(`SELECT * FROM public.claim_marketplace_listing_review(${sqlString(SITE)},${sqlString(PENDING_LISTING)},${sqlString(OPERATOR)},'Fixture reviewer will inspect the pending product.','detail-claim:rejected',(SELECT version FROM channel_listings WHERE id=${sqlString(PENDING_LISTING)}));`);
     const reject = `SELECT 1 FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(PENDING_LISTING)}::uuid, 'rejected', 'operator', ${sqlString(OPERATOR)}::uuid, 'Counterfeit brand mark in the images.', 'probe-reject')`;
     assert.equal(visibleAfter(reject, PENDING_LISTING), 0, 'a rejected listing must not be publicly readable');
 

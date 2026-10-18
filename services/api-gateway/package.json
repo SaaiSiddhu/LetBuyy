@@ -8,7 +8,7 @@
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit",
     "test:unit": "cd ../.. && tsx --test services/api-gateway/src/__tests__/*.test.ts",
-    "test:db": "cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db",
+    "test:db": "cd ../.. && node scripts/governance/run-executable-suites.mjs --gateway-db --prepared-transactions 2",
     "test": "pnpm run test:unit && pnpm run test:db && cd ../.. && tsx --test tests/contracts/*.test.ts"
   },
   "dependencies": {

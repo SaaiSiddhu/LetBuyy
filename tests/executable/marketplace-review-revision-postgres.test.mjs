@@ -16,6 +16,7 @@ const sharedDatabase = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_ex
 const databaseName = `${sharedDatabase}_review_revision`;
 const runnable = databaseName !== 'letbuyy_executable';
 const skip = runnable ? false : 'refusing to recreate the shared executable database';
+const historicalDatabase = 'letbuyy_review_revision_at275';
 const REVISION_MIGRATION = '275_marketplace_revision_bound_approval.sql';
 const SITE = 'a1111111-1111-4111-8111-111111111111';
 const OTHER_SITE = 'b1111111-1111-4111-8111-111111111111';
@@ -36,7 +37,7 @@ function psql(sql, targetDatabase = databaseName) {
 }
 
 const sqlString = (value) => `'${String(value).replaceAll("'", "''")}'`;
-const applySql = (relativePath) => psql(readFileSync(join(repoRoot, relativePath), 'utf8'));
+const applySql = (relativePath,targetDatabase=databaseName) => psql(readFileSync(join(repoRoot, relativePath), 'utf8'),targetDatabase);
 
 function listMigrations() {
   return readdirSync(join(repoRoot, 'database/supabase/migrations'))
@@ -47,7 +48,7 @@ function listMigrations() {
 function bootstrap() {
   psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
   psql(SUPABASE_FAITHFUL_BOOTSTRAP_SQL);
-  for (const name of listMigrations().filter((name) => name !== REVISION_MIGRATION)) {
+  for (const name of listMigrations().filter((name) => parseInt(name,10)<275)) {
     const source = readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')
       .replace(/^SET transaction_timeout = 0;\s*$/m, '');
     try { psql(source); } catch (error) { throw new Error(`migration ${name} failed: ${error.message}`); }
@@ -87,6 +88,13 @@ function bootstrap() {
   assert.equal(psql(`SELECT approved_product_snapshot->'product'->>'name' FROM public.channel_listings WHERE id=${sqlString(LISTING)}::uuid;`), 'Review product');
   assert.equal(psql(`SELECT submitted_product_snapshot = approved_product_snapshot FROM public.channel_listings WHERE id=${sqlString(LISTING)}::uuid;`), 't');
   assert.equal(psql(`SELECT submitted_product_snapshot ? 'product' AND submitted_product_snapshot ? 'variants' AND submitted_product_snapshot ? 'options' FROM public.channel_listings WHERE id=${sqlString(LISTING)}::uuid;`), 't');
+  // Retain275 for its historical rollback. Later ABI fences must observe275
+  // in real order, rather than being applied before their own prerequisite.
+  psql(`DROP DATABASE IF EXISTS "${historicalDatabase}"; CREATE DATABASE "${historicalDatabase}" TEMPLATE "${databaseName}";`,'postgres');
+  for(const name of listMigrations().filter(name=>parseInt(name,10)>275)) {
+    psql(readFileSync(join(repoRoot,'database/supabase/migrations',name),'utf8').replace(/^SET transaction_timeout = 0;\s*$/m,''));
+  }
+
 }
 
 function transition(toStatus, realm, key, reason = null, operatorId = OPERATOR) {
@@ -148,7 +156,7 @@ const eventCount = (reason) => psql(`SELECT count(*) FROM public.channel_listing
 before(() => { if (runnable) bootstrap(); });
 after(() => {
   if (!runnable) return;
-  try { psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`, 'postgres'); } catch { /* runner owns recovery */ }
+  try { psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE); DROP DATABASE IF EXISTS "${historicalDatabase}" WITH (FORCE);`, 'postgres'); } catch { /* runner owns recovery */ }
 });
 
 test('stock, inventory and activation changes preserve the reviewed material revision', { skip }, () => {
@@ -364,10 +372,12 @@ test('direct inserts cannot create an already-approved listing and rollback revo
 
   transition('pending_review', 'merchant', 'submit-before-rollback');
   transition('approved', 'operator', 'approve-before-rollback', 'Review passed.');
-  applySql('database/supabase/rollback/275_marketplace_revision_bound_approval.rollback.sql');
-  assert.equal(listingStatus(), 'draft', 'rollback is fail-closed and requires resubmission');
-  assert.equal(psql("SELECT to_regprocedure('public.marketplace_listing_review_fingerprint(uuid)') IS NULL;"), 't');
-  assert.equal(psql("SELECT count(*) FROM information_schema.columns WHERE table_name='channel_listings' AND column_name='approved_product_fingerprint';"), '0');
-  assert.equal(psql("SELECT count(*) FROM information_schema.columns WHERE table_name='channel_listings' AND column_name IN ('submitted_product_snapshot','approved_product_snapshot');"), '0');
-  assert.equal(psql("SELECT to_regprocedure('public.marketplace_listing_review_snapshot(uuid)') IS NULL;"), 't');
+  const currentWriter=psql("SELECT md5(pg_get_functiondef('public.transition_channel_listing(uuid,uuid,text,text,uuid,text,text)'::regprocedure));");
+  applySql('database/supabase/rollback/275_marketplace_revision_bound_approval.rollback.sql',historicalDatabase);
+  assert.equal(psql(`SELECT status FROM channel_listings WHERE id=${sqlString(LISTING)};`,historicalDatabase), 'draft', 'historical rollback is fail-closed and requires resubmission');
+  assert.equal(psql("SELECT md5(pg_get_functiondef('public.transition_channel_listing(uuid,uuid,text,text,uuid,text,text)'::regprocedure));"),currentWriter,'historical recovery cannot replace the current writer');
+  assert.equal(psql("SELECT to_regprocedure('public.marketplace_listing_review_fingerprint(uuid)') IS NULL;",historicalDatabase), 't');
+  assert.equal(psql("SELECT count(*) FROM information_schema.columns WHERE table_name='channel_listings' AND column_name='approved_product_fingerprint';",historicalDatabase), '0');
+  assert.equal(psql("SELECT count(*) FROM information_schema.columns WHERE table_name='channel_listings' AND column_name IN ('submitted_product_snapshot','approved_product_snapshot');",historicalDatabase), '0');
+  assert.equal(psql("SELECT to_regprocedure('public.marketplace_listing_review_snapshot(uuid)') IS NULL;",historicalDatabase), 't');
 });

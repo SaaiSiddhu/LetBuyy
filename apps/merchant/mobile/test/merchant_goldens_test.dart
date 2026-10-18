@@ -151,7 +151,7 @@ List<SingleChildWidget> _storeProviders(_GoldenApiClient api) {
 List<SingleChildWidget> _orderProviders(_GoldenApiClient api) {
   final appBadgeService = const AppBadgeService();
   return [
-    Provider<ApiClient>.value(value: api),
+    ..._storeProviders(api),
     ChangeNotifierProvider<OrderService>(
       create: (_) => OrderService(
         api: api,

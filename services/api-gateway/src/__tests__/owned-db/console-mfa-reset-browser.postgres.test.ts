@@ -1,6 +1,7 @@
 // Three actual normal local-development operator sign-ins and configured TOTP
 // factors. Actual Console/Gateway/PostgREST/database; no positive credential
 // injection, MFA bypass, provider email or hosted configuration change.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {mkdirSync,writeFileSync} from 'node:fs';
@@ -11,8 +12,8 @@ import {requireOwnedDatabase} from './owned-db-support';
 const owned=requireOwnedDatabase();
 
 test('normal Console recovery binds three real sign-ins, survives lost request/effect replies, retires the old factor and accepts only the configured replacement',{timeout:600_000},async()=>{
- const evidenceRoot='/private/tmp/letbuyy-mfa-reset-browser-'+owned.runId;mkdirSync(evidenceRoot,{recursive:true});
- await withConsoleBrowser(owned,async({origin,actors:[maker,checker,target],login,calls,loseNextApprovalReply,loseNextMfaExecutionReply,rotateConfiguredFactor})=>{
+ const evidenceRoot=ownedTmpDir() + '/letbuyy-mfa-reset-browser-'+owned.runId;mkdirSync(evidenceRoot,{recursive:true});
+ await withConsoleBrowser(owned,async({origin,identityOrigin,actors:[maker,checker,target],login,calls,loseNextApprovalReply,loseNextMfaExecutionReply,rotateConfiguredFactor})=>{
   assert.ok(target);assert.notEqual(maker.factor,checker.factor);assert.notEqual(checker.factor,target.factor);const originalFactor=target.factor;
   const a=await login(maker),b=await login(checker),t=await login(target);
   // Finish on-demand protected route compilation using the cookie obtained by
@@ -66,7 +67,7 @@ test('normal Console recovery binds three real sign-ins, survives lost request/e
   const signedOut=await a.context.request.get(origin+'/dashboard',{maxRedirects:0});assert.ok([303,307].includes(signedOut.status()));
   // With no operator or merchant cookie, the existing proxy returns the
   // canonical Accounts lookup entry. Inspect the redirect without visiting it.
-  const signIn=new URL(signedOut.headers().location!);assert.equal(signIn.origin,new URL(origin).protocol+'//accounts.letbuyy.com');assert.equal(signIn.pathname,'/lookup');assert.equal(signIn.searchParams.get('return_to'),origin+'/dashboard');
+  const signIn=new URL(signedOut.headers().location!);assert.equal(signIn.origin,new URL(identityOrigin).origin);assert.equal(signIn.pathname,'/lookup');assert.equal(signIn.searchParams.get('return_to'),origin+'/dashboard');
   await rotateConfiguredFactor(maker,'MFRGGZDFMZTWQ2LK');
   const last=Number(owned.psql(`SELECT metadata->'console_mfa_guard'->>'last_counter' FROM principals WHERE realm='admin' AND legacy_user_id='${maker.id}';`));
   while(Math.floor(Date.now()/30000)<=last)await new Promise(resolve=>setTimeout(resolve,100));

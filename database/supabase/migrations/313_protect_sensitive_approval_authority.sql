@@ -7,7 +7,7 @@ SET LOCAL search_path=pg_catalog,public;
 DO $approval_fence$
 DECLARE
   v_table oid := 'public.sensitive_action_approvals'::regclass;
-  v_owner oid; v_hash text; v_role text; v_permission text; v_entry record;
+  v_owner oid; v_hash text; v_role text; v_permission text; v_entry record; v_backend_grant record;
   v_grantee text; v_privilege text; v_signature text;
 BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended('letbuyy:migration:313:approval-table',0));
@@ -33,11 +33,16 @@ BEGIN
     IF NOT EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='313'
       AND object_signature='public.sensitive_action_approvals' AND privilege='TABLE PRIVILEGE FENCE'
       AND grantee=pg_get_userbyid(v_owner) AND action='granted')
-    OR EXISTS(SELECT 1 FROM public.migration_privilege_journal WHERE migration='313' AND (
+    OR EXISTS(SELECT 1 FROM public.migration_privilege_journal j WHERE migration='313' AND (
       object_oid IS DISTINCT FROM v_table OR object_owner IS DISTINCT FROM v_owner
       OR object_definition_hash IS DISTINCT FROM v_hash
       OR NOT ((object_signature='public.sensitive_action_approvals' AND privilege='TABLE PRIVILEGE FENCE'
         AND grantee=pg_get_userbyid(v_owner) AND action='granted')
+        OR (action='granted' AND grantee='service_role' AND object_signature='public.sensitive_action_approvals'
+          AND privilege=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE'])
+          AND EXISTS(SELECT 1 FROM pg_class bc CROSS JOIN LATERAL aclexplode(bc.relacl) ba
+            WHERE bc.oid=v_table AND ba.grantee='service_role'::regrole AND ba.grantor=v_owner
+              AND ba.privilege_type=j.privilege AND NOT ba.is_grantable))
         OR (action='revoked' AND grantee=ANY(ARRAY['PUBLIC','anon','authenticated','app_tenant'])
           AND ((object_signature='public.sensitive_action_approvals'
             AND split_part(privilege,' WITH GRANT OPTION',1)=ANY(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER','MAINTAIN']))
@@ -66,6 +71,21 @@ BEGIN
   END IF;
     RETURN;
   END IF;
+  -- Preserve only backend privileges already inherited through app_tenant.
+  -- Ordinary roles still lose all approval authority. Journal each added named
+  -- backend grant so paired recovery restores the exact prior semantic ACL.
+  FOR v_backend_grant IN SELECT * FROM (VALUES
+    ('public.sensitive_action_approvals','SELECT'),('public.sensitive_action_approvals','INSERT'),
+    ('public.sensitive_action_approvals','UPDATE'),('public.sensitive_action_approvals','DELETE')
+  ) AS backend(signature,permission) LOOP
+    IF has_table_privilege('service_role',v_table,v_backend_grant.permission) AND NOT EXISTS(
+      SELECT 1 FROM pg_class c CROSS JOIN LATERAL aclexplode(c.relacl) a
+      WHERE c.oid=v_table AND a.grantee='service_role'::regrole AND a.privilege_type=v_backend_grant.permission) THEN
+      INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
+        VALUES('313','public.sensitive_action_approvals','service_role',v_backend_grant.permission,'granted',v_table,v_owner,v_hash);
+      EXECUTE format('GRANT %s ON TABLE %s TO service_role',v_backend_grant.permission,v_backend_grant.signature);
+    END IF;
+  END LOOP;
   -- Do not guess how to replay a delegated grantor's authority. RESTRICT also
   -- refuses dependent grants rather than changing a third role as a side effect.
   FOR v_entry IN

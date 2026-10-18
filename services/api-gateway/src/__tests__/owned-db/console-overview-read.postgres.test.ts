@@ -24,7 +24,14 @@ test('live MFA super-admin and existing exec:view viewer read only cross-site ag
 test('counts agree with retained canonical records and do not enumerate merchant or employee rows',async()=>{
  const f=await consoleFixture(owned),actor=await f.actor();
  for(const tag of ['console-count-a','console-count-b'])seedSyntheticTenant(owned.psql,newSyntheticTenant(tag));
- owned.psql(`INSERT INTO subscriptions(user_id,plan,status,amount_paid) VALUES('${actor.id}','starter','active',12345),('${actor.id}','starter','cancelled',67890);`);
+ // Model retained legacy billing through the real empty360 retirement/reapply.
+ // The current positive-insert guard remains active for all Gateway reads.
+ const retireTax=readFileSync('database/supabase/rollback/360_subscription_tax_quote_snapshot.rollback.sql','utf8');
+ const applyTax=readFileSync('database/supabase/migrations/360_subscription_tax_quote_snapshot.sql','utf8');
+ owned.script(retireTax);
+ try {owned.psql(`INSERT INTO subscriptions(user_id,plan,status,amount_paid) VALUES('${actor.id}','starter','active',12345),('${actor.id}','starter','cancelled',67890);`);}
+ finally {owned.script(applyTax);}
+ assert.match(owned.psqlExpectError(`INSERT INTO subscriptions(user_id,plan,status,amount_paid)VALUES('${actor.id}','starter','active',1);`),/positive subscription requires the current canonical activation writer/);
  const r=await f.gateway.request(paths[0],{headers:actor.headers});assert.equal(r.status,200,r.text);
  assert.equal(r.json?.data.total_stores,Number(owned.psql('SELECT count(*) FROM sites;')));
  assert.equal(r.json?.data.total_users,Number(owned.psql('SELECT count(*) FROM users_custom;')));

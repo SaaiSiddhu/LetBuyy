@@ -733,10 +733,12 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
         fireEvent.click(screen.getAllByLabelText('Select row 1')[0]);
         fireEvent.click(screen.getByRole('button', { name: 'Archive' }));
-        fireEvent.click(screen.getAllByRole('button', { name: 'Open' })[0]);
+        const desktopOrder = screen.getAllByText('#1001').find((element) => element.closest('tr'));
+        const desktopRow = desktopOrder?.closest('tr');
+        expect(desktopRow).toBeTruthy();
+        fireEvent.click(desktopOrder!);
         fireEvent.click(screen.getByRole('button', { name: 'Next' }));
 
-        const desktopRow = screen.getAllByText('#1001').find((element) => element.closest('tr'))?.closest('tr');
         expect(screen.getByRole('link', { name: 'Home' }).getAttribute('href')).toBe('/');
         expect(screen.getByRole('link', { name: 'Export' }).getAttribute('href')).toBe('/exports');
         expect(desktopRow?.getAttribute('aria-selected')).toBe('true');

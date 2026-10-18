@@ -57,7 +57,7 @@ test('gateway and merchant proxy routes preserve selected template keys', () => 
 
   assert.match(gatewayRouteSource, /template_key: c\.req\.query\('template_key'\) \|\| c\.req\.query\('template'\) \|\| 'index'/);
   assert.match(gatewayRouteSource, /service\.loadEditor\(slug, parsed\.data\.store_id, customUser\.id, parsed\.data\.template_key\)/);
-  assert.match(gatewayRouteSource, /service\.deleteDraft\(slug, parsed\.data\.store_id, customUser\.id, getRequestId\(c\), parsed\.data\.template_key\)/);
+  assert.match(gatewayRouteSource, /service\.deleteDraft\(slug, parsed\.data\.store_id, customUser\.id, getRequestId\(c\), parsed\.data\.template_key, parsed\.data\)/);
 
   assert.match(editorRouteSource, /function readTemplateKey\(value: unknown\): string/);
   assert.match(editorRouteSource, /query: \{ template_key: templateKey \}/);
@@ -66,7 +66,7 @@ test('gateway and merchant proxy routes preserve selected template keys', () => 
 
   assert.match(draftRouteSource, /function readTemplateKey\(value: unknown\): string/);
   assert.match(draftRouteSource, /template_key: templateKey/);
-  assert.match(draftRouteSource, /query: \{ template_key: templateKey \}/);
+  assert.match(draftRouteSource, /query: \{ template_key: templateKey, base_version: parsed\.data\.base_version, idempotency_key: parsed\.data\.idempotency_key \}/);
   assert.match(draftRouteSource, /templateKey/);
 });
 
@@ -91,10 +91,12 @@ test('web and mobile editors can save Liquid bundles and canary state through dr
   assert.match(editorRouteSource, /body\.liquidBundle/);
   assert.match(editorRouteSource, /body\.liquidRenderingCanary/);
   assert.match(editorRouteSource, /template_config: templateConfig/);
-  assert.match(editorPageSource, /const templateConfig = buildDraftConfig\(baseConfig, themeId, editorState, selectedTemplateKey\)/);
-  assert.match(editorPageSource, /body: JSON\.stringify\(\{[\s\S]*templateConfig,/);
-  assert.match(executionSource, /const suppliedPublishConfig = hasRenderableThemeTemplate\(input\.template_config\)/);
-  assert.match(executionSource, /mergeThemeIdentity\(suppliedPublishConfig, theme\)/);
+  assert.match(editorPageSource, /const draftConfig = buildDraftConfig\(baseConfig, themeId, snapshot, selectedTemplateKey\)/);
+  assert.match(editorPageSource, /client\.save\(draftConfig, reviewedVersion\)/);
+  assert.match(editorPageSource, /client\.publish\(async \(intent\) =>/);
+  assert.match(editorPageSource, /body: JSON\.stringify\(\{ templateKey: selectedTemplateKey, \.\.\.intent, actorId: client\.actorId, storeId: client\.storeId \}\)/);
+  assert.match(executionSource, /const templateConfig = asRecord\(state\.template_config\)/);
+  assert.match(executionSource, /state\.has_draft && state\.version === input\.base_version/);
 
   assert.match(mobileThemeServiceSource, /Future<ThemeDraftSaveResult> saveLiquidDraft/);
   assert.match(mobileThemeServiceSource, /required Map<String, dynamic> liquidBundle/);
@@ -102,7 +104,7 @@ test('web and mobile editors can save Liquid bundles and canary state through dr
   assert.match(mobileThemeServiceSource, /'liquidRenderingCanary': liquidRenderingCanary/);
   assert.match(mobileThemeServiceSource, /Map<String, dynamic>\? templateConfig/);
   assert.match(mobileThemeServiceSource, /Map<String, dynamic>\? liquidBundle/);
-  assert.match(mobileThemeServiceSource, /'template_config': publishConfig/);
+  assert.match(mobileThemeServiceSource, /'template_config': jsonDecode\(jsonEncode\(templateConfig\)\)/);
 });
 
 test('theme execution stores and publishes drafts by template key', () => {
@@ -112,10 +114,10 @@ test('theme execution stores and publishes drafts by template key', () => {
   assert.match(source, /\{ key: 'product', label: 'Product page', type: 'product' \}/);
   assert.match(source, /function listThemeTemplateOptions\(templateConfig: DbRecord\)/);
   assert.match(source, /\.select\('id, draft_config, template_key, version, auto_saved_at'\)[\s\S]*\.eq\('template_key', templateKey\)/);
-  assert.match(source, /\.upsert\(draftPayload, \{ onConflict: 'store_id,theme_id,template_key' \}\)/);
-  assert.match(source, /idempotencyKey: `theme\.draft\.saved:\$\{input\.store_id\}:\$\{theme\.slug\}:\$\{templateKey\}:\$\{version\}`/);
+  assert.match(source, /this\.draftRpc\('mutate_owned_theme_draft_v1', \{[\s\S]*?p_template_key: templateKey, p_base_version: input\.base_version, p_key: input\.idempotency_key,[\s\S]*?p_operation: 'save'/);
+  assert.match(source, /p_operation: 'publish', p_config: input\.template_config \|\| null/);
   assert.match(source, /template_key: templateKey/);
-  assert.match(source, /deleteDraft\(theme\.slug, input\.store_id, userId, requestId, templateKey\)/);
+  assert.match(source, /p_template_key: normalizeThemeTemplateKey\(templateKeyInput\), p_base_version: intent\.base_version/);
 });
 
 test('merchant editor exposes a real template selector and saves the selected template', () => {
@@ -127,7 +129,7 @@ test('merchant editor exposes a real template selector and saves the selected te
   assert.match(source, /\{ key: 'cart', label: 'Cart page', type: 'cart' \}/);
   assert.match(source, /function normalizeTemplateOptions\(value: unknown, templateConfig: JsonRecord\)/);
   assert.match(source, /function buildDraftConfig\(baseConfig: JsonRecord, themeId: string, state: EditorState, templateKey = 'index'\)/);
-  assert.match(source, /buildDraftConfig\(baseConfig, themeId, editorState, selectedTemplateKey\)/);
+  assert.match(source, /buildDraftConfig\(baseConfig, themeId, snapshot, selectedTemplateKey\)/);
   assert.match(source, /handleTemplateChange/);
   assert.match(source, /<select[\s\S]*value=\{selectedTemplateKey\}[\s\S]*templateOptions\.map/);
   assert.doesNotMatch(source, /<span>Home page<\/span>/);

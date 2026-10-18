@@ -92,6 +92,7 @@ test('Docker discovery/removal errors remain explicit failures rather than false
 });
 test('proposed CLI validates scopes and publishes a new ownership receipt before any Docker probe',()=>{
     const source=readFileSync(new URL('../../scripts/governance/run-executable-suites.mjs',import.meta.url),'utf8');
+    assert.ok(source.indexOf('const reapRunIds = parseReapRunIds(args)')>=0);
     assert.ok(source.indexOf('const reapRunIds = parseReapRunIds(args)')<source.indexOf("realDaemon = docker(['info']"));
     assert.ok(source.indexOf('writeFileSync(path, JSON.stringify({ runId, runnerPid: process.pid')<source.indexOf("realDaemon = docker(['info']"));
     assert.match(source,/flag: 'wx', mode: 0o600/);

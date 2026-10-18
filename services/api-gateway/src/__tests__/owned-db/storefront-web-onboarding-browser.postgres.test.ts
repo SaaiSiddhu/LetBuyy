@@ -1,5 +1,6 @@
 // Actual Identity onboarding UI, authenticated merchant session, Gateway worker and owned Postgres in Chromium.
 import assert from 'node:assert/strict';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
 import { existsSync, lstatSync, symlinkSync, unlinkSync } from 'node:fs';
 import { createServer, type IncomingMessage } from 'node:http';
 import { once } from 'node:events';
@@ -10,9 +11,10 @@ import { exportJWK, SignJWT } from 'jose';
 import { createLetbuyyInternalAppHeaders, LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core';
 import worker from '../../index';
 import { gatewayEnv, IDENTITY_ISSUER, INTERNAL_SECRET, MERCHANT_SESSION_AUDIENCE, newIdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
+import { requireOwnedDatabase, startOwnedPooledSqlProxy, type OwnedPooledSqlProxy, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
 
 const owned = requireOwnedDatabase();
+let pooled:OwnedPooledSqlProxy;
 const ownerId = crypto.randomUUID();
 const email = `browser-onboarding-${ownerId}@example.invalid`;
 const subdomain = `browser-onboard-${ownerId.slice(0, 8)}`;
@@ -74,6 +76,7 @@ async function waitForMerchant(origin: string): Promise<void> {
 }
 
 before(async () => {
+    pooled=await startOwnedPooledSqlProxy(owned);
     owned.psql(`INSERT INTO users_custom (id,email,email_verified,full_name) VALUES ('${ownerId}','${email}',true,'Synthetic Browser Merchant');`);
     const keys = await newIdentityKeys('owned-db-onboarding-browser');
     const privateJwk = { ...(await exportJWK(keys.privateKey)), alg: 'ES256', kid: 'owned-db-onboarding-browser' };
@@ -93,7 +96,7 @@ before(async () => {
             method: 'POST',
             headers: { ...accountsHeaders.headers, 'Content-Type': 'application/json', 'CF-Connecting-IP': '2001:db8:beef::1' },
             body: JSON.stringify({ user_id: ownerId, token: issuedToken }),
-        }), gatewayEnv(owned, keys), {
+        }), gatewayEnv(owned, keys, pooled.env()), {
             waitUntil: (work: Promise<unknown>) => { background.push(Promise.resolve(work).catch(() => undefined)); },
             passThroughOnException: () => undefined,
         } as never);
@@ -114,7 +117,7 @@ before(async () => {
                 method: req.method,
                 headers,
                 ...(body.length && req.method !== 'GET' && req.method !== 'HEAD' ? { body, duplex: 'half' as const } : {}),
-            }), gatewayEnv(owned, keys), {
+            }), gatewayEnv(owned, keys, pooled.env()), {
                 waitUntil: (work: Promise<unknown>) => background.push(Promise.resolve(work).catch(() => undefined)),
                 passThroughOnException: () => undefined,
             } as never);
@@ -158,8 +161,8 @@ before(async () => {
             INTERNAL_API_SECRET: INTERNAL_SECRET,
             LETBUYY_IDENTITY_PRIVATE_JWK: JSON.stringify(privateJwk),
             LETBUYY_IDENTITY_ISSUER: IDENTITY_ISSUER,
-            NEXT_PUBLIC_ACCOUNTS_URL: `http://127.0.0.1:${appPort}`,
-            NEXT_PUBLIC_ADMIN_URL: `http://127.0.0.1:${merchantPort}`,
+            NEXT_PUBLIC_ACCOUNTS_URL: `http://localhost:${appPort}`,
+            NEXT_PUBLIC_ADMIN_URL: `http://localhost:${merchantPort}`,
             LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'true',
             NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'true',
             NEXT_PUBLIC_TURNSTILE_SITE_KEY: '',
@@ -168,7 +171,7 @@ before(async () => {
             COOKIE_DOMAIN: '',
         },
     });
-    await waitForIdentity(`http://127.0.0.1:${appPort}`);
+    await waitForIdentity(`http://localhost:${appPort}`);
 
     if (!existsSync(merchantModules)) {
         assert.ok(existsSync(commerceModules), 'the workspace-installed Next dependencies are required to launch Merchant');
@@ -185,12 +188,12 @@ before(async () => {
             LETBUYY_API_URL: `http://127.0.0.1:${gatewayPort}/v1`,
             NEXT_PUBLIC_API_URL: `http://127.0.0.1:${gatewayPort}/v1`,
             INTERNAL_API_SECRET: INTERNAL_SECRET,
-            NEXT_PUBLIC_ACCOUNTS_URL: `http://127.0.0.1:${appPort}`,
-            NEXT_PUBLIC_ADMIN_URL: `http://127.0.0.1:${merchantPort}`,
+            NEXT_PUBLIC_ACCOUNTS_URL: `http://localhost:${appPort}`,
+            NEXT_PUBLIC_ADMIN_URL: `http://localhost:${merchantPort}`,
             COOKIE_DOMAIN: '',
         },
     });
-    const merchantOrigin = `http://127.0.0.1:${merchantPort}`;
+    const merchantOrigin = `http://localhost:${merchantPort}`;
     await waitForMerchant(merchantOrigin);
     browser = await chromium.launch({ headless: true });
 });
@@ -201,17 +204,18 @@ after(async () => {
     await stopOwnedClientRuntime(merchantApp);
     if (server?.listening) await new Promise<void>(resolve => server.close(() => resolve()));
     await Promise.allSettled(background.splice(0));
+    await closePooledSqlClients();await pooled?.stop();
     if (temporaryDependencyLink) unlinkSync(join(identityRoot, 'node_modules'));
     if (temporaryMerchantDependencyLink) unlinkSync(join(merchantRoot, 'node_modules'));
 });
 
 test('merchant resumes the real onboarding form and creates one completed store', async () => {
     assert.ok(browser);
-    const merchantOrigin = `http://127.0.0.1:${merchantPort}`;
+    const merchantOrigin = `http://localhost:${merchantPort}`;
     const context = await browser.newContext();
     await context.addCookies([
-        { name: sessionCookie, value: sessionToken, url: `http://127.0.0.1:${appPort}`, httpOnly: true, sameSite: 'Lax' },
-        { name: csrfCookie, value: csrfToken, url: `http://127.0.0.1:${appPort}`, sameSite: 'Strict' },
+        { name: sessionCookie, value: sessionToken, url: `http://localhost:${appPort}`, httpOnly: true, sameSite: 'Lax' },
+        { name: csrfCookie, value: csrfToken, url: `http://localhost:${appPort}`, sameSite: 'Strict' },
     ]);
     const planWarmup = await context.newPage();
     const warmupResponse = await planWarmup.goto(`${merchantOrigin}/${subdomain}/access_account/checkout/select-plan`, { waitUntil: 'domcontentloaded' });
@@ -224,7 +228,7 @@ test('merchant resumes the real onboarding form and creates one completed store'
         if (route.request().method() === 'GET') await new Promise(resolve => setTimeout(resolve, 350));
         await route.continue();
     });
-    await firstPage.goto(`http://127.0.0.1:${appPort}/onboarding`, { waitUntil: 'domcontentloaded' });
+    await firstPage.goto(`http://localhost:${appPort}/onboarding`, { waitUntil: 'domcontentloaded' });
     await firstPage.getByText('Loading…', { exact: true }).waitFor({ state: 'visible' });
     assert.equal(await firstPage.getByRole('heading', { name: 'What do you want to build?' }).count(), 0,
         'the wizard must not accept input before the account-bound draft response resolves');
@@ -320,7 +324,7 @@ test('merchant resumes the real onboarding form and creates one completed store'
     const page = await context.newPage();
     const pageErrors: string[] = [];
     page.on('pageerror', error => pageErrors.push(error.message));
-    await page.goto(`http://127.0.0.1:${appPort}/onboarding`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`http://localhost:${appPort}/onboarding`, { waitUntil: 'domcontentloaded' });
     await page.getByText('Your saved progress has been restored.').waitFor({ timeout: 20_000 });
     await page.getByRole('heading', { name: 'Review & Create' }).waitFor();
     const restoredReview = await page.locator('.onboard-review-rows').innerText();
@@ -422,7 +426,8 @@ test('merchant resumes the real onboarding form and creates one completed store'
     inventoryPage.on('pageerror', error => inventoryErrors.push(error.message));
     await inventoryPage.goto(`${merchantOrigin}/${subdomain}/products/inventory`, { waitUntil: 'domcontentloaded' });
     await inventoryPage.getByRole('heading', { name: 'Inventory', level: 1 }).waitFor({ timeout: 30_000 });
-    await inventoryPage.getByRole('table').getByText('Browser inventory product', { exact: true }).waitFor({ timeout: 20_000 });
+    try {await inventoryPage.getByRole('table').getByText('Browser inventory product', { exact: true }).waitFor({ timeout: 20_000 });}
+    catch(error){console.info('OWNED_ONBOARDING_INVENTORY_FAILURE '+JSON.stringify({body:await inventoryPage.locator('body').innerText(),response:await inventoryPage.evaluate(async({slug,actor})=>{const r=await fetch('/api/stores/'+slug+'/inventory/levels?limit=100',{headers:{'X-LetBuyy-Merchant-Context':actor}});return{status:r.status,body:await r.text()};},{slug:subdomain,actor:ownerId})}));throw error;}
     await inventoryPage.getByRole('button', { name: 'Adjust', exact: true }).click();
     await inventoryPage.locator('input[aria-label="Available quantity"]:visible').first().fill('9');
     const inventoryResponse = inventoryPage.waitForResponse(response => response.url().endsWith(`/api/stores/${subdomain}/inventory/adjust`)
@@ -430,12 +435,13 @@ test('merchant resumes the real onboarding form and creates one completed store'
     await inventoryPage.getByRole('button', { name: 'Save', exact: true }).click();
     const inventoryResult = await inventoryResponse;
     assert.equal(inventoryResult.status(), 200, await inventoryResult.text());
-    await inventoryPage.getByText('Browser inventory product now has 9 available.', { exact: true }).waitFor({ timeout: 20_000 });
+    await inventoryPage.getByText('Browser inventory product: stock change +5 confirmed.', { exact: true }).waitFor({ timeout: 20_000 });
     assert.equal(owned.psql(`SELECT available FROM inventory_levels WHERE product_id='${inventoryProductId}';`), '9');
     assert.equal(owned.psql(`SELECT count(*)||'|'||sum(quantity_change)||'|'||min(created_by::text) FROM inventory_adjustments WHERE product_id='${inventoryProductId}';`), `1|5|${ownerId}`);
     assert.equal(owned.psql(`SELECT count(*) FROM outbox_events WHERE store_id='${storeId}' AND aggregate_id='${inventoryProductId}' AND event_type='inventory.level.adjusted';`), '1');
     await inventoryPage.reload({ waitUntil: 'domcontentloaded' });
-    await inventoryPage.getByRole('table').getByText('Browser inventory product', { exact: true }).waitFor({ timeout: 20_000 });
+    try {await inventoryPage.getByRole('table').getByText('Browser inventory product', { exact: true }).waitFor({ timeout: 20_000 });}
+    catch(error){console.info('OWNED_ONBOARDING_INVENTORY_FAILURE '+JSON.stringify({body:await inventoryPage.locator('body').innerText(),response:await inventoryPage.evaluate(async({slug,actor})=>{const r=await fetch('/api/stores/'+slug+'/inventory/levels?limit=100',{headers:{'X-LetBuyy-Merchant-Context':actor}});return{status:r.status,body:await r.text()};},{slug:subdomain,actor:ownerId})}));throw error;}
     assert.ok(await inventoryPage.getByText('9', { exact: true }).count() >= 1,
         'the refreshed inventory screen displays the persisted available quantity');
     assert.deepEqual(inventoryErrors, []);

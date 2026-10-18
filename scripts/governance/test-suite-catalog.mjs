@@ -27,6 +27,7 @@ import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
 export const LIVE_EXTERNAL_SUITES = [];
+export const EXPLICIT_RUNTIME_SUITES = ['tests/runtime/reel-private-r2.workerd.test.mjs'];
 
 export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db';
 export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
@@ -110,7 +111,7 @@ export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
         for (const file of readdirSync(join(repoRoot, 'tests', dir.name), { withFileTypes: true })) {
             if (file.isFile() && file.name.endsWith('.test.mjs')) {
                 const suite = `tests/${dir.name}/${file.name}`;
-                all.push(suite);
+                if (!EXPLICIT_RUNTIME_SUITES.includes(suite)) all.push(suite);
             }
         }
     }

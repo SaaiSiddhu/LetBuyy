@@ -153,6 +153,6 @@ test('the bootstrap cannot overwrite an existing auth.uid(): a database that has
     assert.equal(sqlstateOf(statement), '42723', 'CREATE FUNCTION must fail with duplicate_function, not replace');
     assert.equal(psql("SELECT md5(pg_get_functiondef('auth.uid'::regproc));"), before, 'the existing function is untouched');
 
-    const source = readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'supabase-faithful-bootstrap.mjs'), 'utf8');
+    const source = readFileSync(fileURLToPath(new URL('../../scripts/governance/supabase-faithful-bootstrap.mjs',import.meta.url)), 'utf8');
     assert.doesNotMatch(source, /OR\s+REPLACE\s+FUNCTION\s+auth\./i, 'no auth function is ever created with OR REPLACE');
 });

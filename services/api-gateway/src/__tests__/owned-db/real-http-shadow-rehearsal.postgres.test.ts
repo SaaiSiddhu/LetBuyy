@@ -30,7 +30,8 @@
 // result.
 
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import {closePooledSqlClients} from '@letbuyy/infrastructure/pooled-sql-adapter';
+import test, {before,after} from 'node:test';
 import { Hono } from 'hono';
 import productsRouter from '../../routes/products';
 import { executeMerchantPrincipalBackfill, executeStoreMembershipBackfill } from '../../identity-foundation/backfill-executor';
@@ -38,14 +39,19 @@ import { ensureOwnerRole, executeSiteOwnerMembershipBackfill } from '../../ident
 import { getSupabaseAdmin, getSupabaseAdminUnguarded } from '../../lib/supabase';
 import type { Env } from '../../index';
 import type { BackfillExecutorDb } from '../../identity-foundation/backfill-executor';
-import { requireOwnedDatabase } from './owned-db-support';
+import { requireOwnedDatabase,startOwnedPooledSqlProxy,type OwnedPooledSqlProxy } from './owned-db-support';
 
 const owned = requireOwnedDatabase();
 const psql = owned.psql;
+let pooled:OwnedPooledSqlProxy;
+before(async()=>{pooled=await startOwnedPooledSqlProxy(owned);});
+after(async()=>{await closePooledSqlClients();await pooled?.stop();});
+function editBody(id:string,changes:Record<string,unknown>){return JSON.stringify({...changes,version:Number(psql(`SELECT version FROM products WHERE id='${id}';`)),idempotency_key:crypto.randomUUID()});}
+
 const script = owned.script;
 
 function env(overrides: Partial<Env> = {}): Env {
-    return { ...owned.restEnv(), ENVIRONMENT: 'test', STAFF_PERMISSION_SHADOW: 'on', ...overrides } as unknown as Env;
+    return { ...owned.restEnv(), ...pooled.env(), ENVIRONMENT: 'test', STAFF_PERMISSION_SHADOW: 'on', ...overrides } as unknown as Env;
 }
 
 function appAs(userId: string, storeId?: string) {
@@ -188,7 +194,7 @@ test('D03 real HTTP-to-database shadow rehearsal', async () => {
             appAs(STAFF_FULL).request(`/products/${PRODUCT_A}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: `Rehearsal Product ${RUN} (updated by staff)` }),
+                body: editBody(PRODUCT_A,{ name: `Rehearsal Product ${RUN} (updated by staff)` }),
             }, env()));
         const body = await readJson(res) as { data?: { name?: string } };
         assert.equal(res.status, 200, `staff mutation: ${JSON.stringify(body)}`);

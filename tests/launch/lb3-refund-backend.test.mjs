@@ -68,10 +68,13 @@ test('LB-3-A: payments.ts refund route initiates Razorpay refund when provider_r
     assert.ok(refundRouteStart > -1, 'refund route must be present');
     const refundRouteBlock = src.slice(refundRouteStart);
     const providerCallIndex = refundRouteBlock.indexOf('razorpayProvider.refund(');
-    const reservationIndex = refundRouteBlock.indexOf("rpc('reserve_payment_refund_attempt'");
+    const reservationIndex = refundRouteBlock.indexOf("rpc('reserve_owned_payment_refund_v1'");
     const ledgerCallIndex = refundRouteBlock.indexOf("rpc('reconcile_payment_refund_attempt'");
     assert.ok(providerCallIndex > -1, 'razorpayProvider.refund call must exist in refund route block');
     assert.ok(reservationIndex > -1 && reservationIndex < providerCallIndex,'durable reservation precedes the provider effect');
+    assert.match(refundRouteBlock.slice(reservationIndex, providerCallIndex), /p_site_id: payment\.site_id/);
+    assert.match(refundRouteBlock.slice(reservationIndex, providerCallIndex), /p_step_up: stepUp\.metadata/);
+    assert.match(refundRouteBlock.slice(reservationIndex, providerCallIndex), /p_actor_id: customUser\.id/);
     assert.ok(ledgerCallIndex > -1, 'the atomic provider-refund reconciler must exist in the refund route');
     assert.ok(
         providerCallIndex < ledgerCallIndex,
@@ -85,8 +88,8 @@ test('LB-3-B: payments.ts refund route still contains step-up gate and ledger po
 
     assert.match(
         src,
-        /verifySensitiveActionStepUp/,
-        'verifySensitiveActionStepUp must be called in payments.ts',
+        /verifyMerchantStepUp/,
+        'verifyMerchantStepUp must be called in payments.ts',
     );
 
     assert.match(

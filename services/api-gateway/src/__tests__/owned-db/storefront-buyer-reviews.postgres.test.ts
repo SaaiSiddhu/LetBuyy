@@ -6,10 +6,11 @@ import { createHash } from 'node:crypto';
 import test, { afterEach, before } from 'node:test';
 import { issueCustomerSession, LETBUYY_CUSTOMER_SESSION_COOKIE, LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { Gateway, gatewayEnv, mintSession, newBarrier, newIdentityKeys, seedBuyerAccount, tapRest, type IdentityKeys, type RestCall } from './gateway-harness';
-import { requireOwnedDatabase } from './owned-db-support';
+import { requireOwnedDatabase,requireOwnedHistoricalSqlDatabase } from './owned-db-support';
 import { newSyntheticTenant, seedSyntheticTenant } from './synthetic-tenant';
 
 const owned = requireOwnedDatabase();
+let sql:ReturnType<typeof requireOwnedHistoricalSqlDatabase>;
 const { psql } = owned;
 const site = newSyntheticTenant('buyer-reviews');
 let keys: IdentityKeys;
@@ -21,6 +22,12 @@ before(async () => {
     seedSyntheticTenant(psql, site);
     productId = crypto.randomUUID();
     psql(`INSERT INTO products (id,store_id,name,price,is_active,status) VALUES ('${productId}','${site.siteId}','Synthetic review product',19.99,true,'active');`);
+    const head=owned.psql("SELECT pg_get_functiondef('public.create_storefront_buyer_review_v1(uuid,uuid,integer,uuid,integer,text,text)'::regprocedure);");
+    assert.match(owned.psqlExpectError(readFileSync('database/supabase/rollback/357_buyer_review_ownership.rollback.sql','utf8')),/rollback357 refuses changed schema/);
+    assert.equal(owned.psql("SELECT pg_get_functiondef('public.create_storefront_buyer_review_v1(uuid,uuid,integer,uuid,integer,text,text)'::regprocedure);"),head);
+    sql=requireOwnedHistoricalSqlDatabase(357);
+    seedSyntheticTenant(sql.psql,site);
+    sql.psql(`INSERT INTO products(id,store_id,name,price,is_active,status) VALUES('${productId}','${site.siteId}','Synthetic review source writer',19.99,true,'active');`);
     // The local-only bypass is accepted by the real Turnstile verifier only in an explicitly local runtime.
     gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'development', CUSTOMER_SESSION_SECRET: 'synthetic-review-customer-session-secret' }));
 });
@@ -50,9 +57,9 @@ const family357 = ['create_storefront_buyer_review_v1', 'protect_buyer_review_li
 const sqlQuote = (value: unknown) => "'" + String(value).replaceAll("'", "''") + "'";
 const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 function maintenanceState357(): string {
-    const edgeExists = owned.psql("SELECT to_regclass('public.buyer_review_links') IS NOT NULL;") === 't';
-    const edge = edgeExists ? owned.script("SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY review_id),'[]'::jsonb)::text FROM buyer_review_links e;") : 'absent';
-    const metadata = owned.script(`SELECT jsonb_build_object(
+    const edgeExists = sql.psql("SELECT to_regclass('public.buyer_review_links') IS NOT NULL;") === 't';
+    const edge = edgeExists ? sql.script("SELECT coalesce(jsonb_agg(to_jsonb(e) ORDER BY review_id),'[]'::jsonb)::text FROM buyer_review_links e;") : 'absent';
+    const metadata = sql.script(`SELECT jsonb_build_object(
       'functions',(SELECT jsonb_agg(jsonb_build_array(oid,proowner,proacl,pg_get_functiondef(oid)) ORDER BY oid) FROM pg_proc WHERE pronamespace='public'::regnamespace AND proname=ANY(ARRAY[${family357.map(sqlQuote).join(',')}])),
       'relations',(SELECT jsonb_agg(jsonb_build_array(oid,relname,relowner,relacl,relrowsecurity,relforcerowsecurity) ORDER BY oid) FROM pg_class WHERE relnamespace='public'::regnamespace AND relname IN('buyer_review_links','product_reviews_buyer_ownership_key','store_customers_buyer_review_scope_key')),
       'journal',(SELECT jsonb_agg(to_jsonb(j) ORDER BY object_signature) FROM migration_privilege_journal j WHERE migration='357'),
@@ -63,39 +70,39 @@ function maintenanceState357(): string {
 
 test('357 empty rollback and reapply preserve legacy content and exact private runtime authority', async () => {
     await gateway.settle();
-    const content = owned.psql("SELECT count(*) FROM product_reviews;");
-    assert.equal(owned.psql('SELECT count(*) FROM buyer_review_links;'), '0');
-    owned.script(rollback357);
-    assert.equal(owned.psql("SELECT to_regclass('public.buyer_review_links') IS NULL;"), 't');
-    assert.equal(owned.psql("SELECT count(*) FROM migration_privilege_journal WHERE migration='357';"), '0');
-    owned.script(migration357);
-    assert.equal(owned.psql('SELECT count(*) FROM product_reviews;'), content);
-    assert.equal(owned.psql("SELECT relrowsecurity AND relforcerowsecurity FROM pg_class WHERE oid='public.buyer_review_links'::regclass;"), 't');
-    assert.equal(owned.psql("SELECT has_function_privilege('service_role','public.create_storefront_buyer_review_v1(uuid,uuid,integer,uuid,integer,text,text)','EXECUTE');"), 't');
-    assert.equal(owned.psql("SELECT count(*) FROM migration_privilege_journal WHERE migration='357';"), '3');
+    const content = sql.psql("SELECT count(*) FROM product_reviews;");
+    assert.equal(sql.psql('SELECT count(*) FROM buyer_review_links;'), '0');
+    sql.script(rollback357);
+    assert.equal(sql.psql("SELECT to_regclass('public.buyer_review_links') IS NULL;"), 't');
+    assert.equal(sql.psql("SELECT count(*) FROM migration_privilege_journal WHERE migration='357';"), '0');
+    sql.script(migration357);
+    assert.equal(sql.psql('SELECT count(*) FROM product_reviews;'), content);
+    assert.equal(sql.psql("SELECT relrowsecurity AND relforcerowsecurity FROM pg_class WHERE oid='public.buyer_review_links'::regclass;"), 't');
+    assert.equal(sql.psql("SELECT has_function_privilege('service_role','public.create_storefront_buyer_review_v1(uuid,uuid,integer,uuid,integer,text,text)','EXECUTE');"), 't');
+    assert.equal(sql.psql("SELECT count(*) FROM migration_privilege_journal WHERE migration='357';"), '3');
 });
 
 for (const family of family357) {
     test('357 rollback refuses an unknown overload of ' + family, () => {
         const args = family === 'protect_buyer_review_link_v1' ? 'integer' : '';
-        owned.script(`CREATE FUNCTION public.${family}(${args}) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`);
+        sql.script(`CREATE FUNCTION public.${family}(${args}) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`);
         const before = maintenanceState357();
         try {
-            assert.match(owned.psqlExpectError(rollback357), /rollback357 refuses unexpected ownership function family/);
+            assert.match(sql.psqlExpectError(rollback357), /rollback357 refuses unexpected ownership function family/);
             assert.equal(maintenanceState357(), before);
-        } finally { owned.script(`DROP FUNCTION public.${family}(${args}) RESTRICT;`); }
+        } finally { sql.script(`DROP FUNCTION public.${family}(${args}) RESTRICT;`); }
     });
     test('357 forward refuses a preexisting ' + family + ' family without changing it', () => {
-        owned.script(rollback357);
+        sql.script(rollback357);
         const args = family === 'protect_buyer_review_link_v1' ? 'integer' : '';
-        owned.script(`CREATE FUNCTION public.${family}(${args}) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`);
+        sql.script(`CREATE FUNCTION public.${family}(${args}) RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`);
         const before = maintenanceState357();
         try {
-            assert.match(owned.psqlExpectError(migration357), /migration357 refuses preexisting ownership schema, function family or provenance/);
+            assert.match(sql.psqlExpectError(migration357), /migration357 refuses preexisting ownership schema, function family or provenance/);
             assert.equal(maintenanceState357(), before);
         } finally {
-            owned.script(`DROP FUNCTION public.${family}(${args}) RESTRICT;`);
-            owned.script(migration357);
+            sql.script(`DROP FUNCTION public.${family}(${args}) RESTRICT;`);
+            sql.script(migration357);
         }
     });
 }
@@ -114,7 +121,7 @@ const rollbackDrifts357 = [
 ] as const;
 for (const [label, change] of rollbackDrifts357) test('357 rollback refuses changed ' + label + ' before any retained authority is removed', () => {
     const before = maintenanceState357();
-    assert.match(owned.psqlExpectError('BEGIN;' + change + rollback357), /rollback357 refuses/);
+    assert.match(sql.psqlExpectError('BEGIN;' + change + rollback357), /rollback357 refuses/);
     assert.equal(maintenanceState357(), before, 'the failed transaction restores the exact source, grants and journal');
 });
 
@@ -123,35 +130,35 @@ for (const [label, change] of [
     ['role profile', 'ALTER ROLE service_role SUPERUSER;'],
     ['default grants', 'ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO authenticator;'],
 ] as const) test('357 forward refuses ' + label + ' before DDL', () => {
-    owned.script(rollback357);
+    sql.script(rollback357);
     const before = maintenanceState357();
     try {
-        assert.match(owned.psqlExpectError('BEGIN;' + change + migration357), /migration357 refuses/);
+        assert.match(sql.psqlExpectError('BEGIN;' + change + migration357), /migration357 refuses/);
         assert.equal(maintenanceState357(), before);
-    } finally { owned.script(migration357); }
+    } finally { sql.script(migration357); }
 });
 
 for (const direction of ['forward', 'rollback'] as const) test('357 ' + direction + ' refuses a stale or non-read-committed maintenance snapshot', () => {
-    if (direction === 'forward') owned.script(rollback357);
+    if (direction === 'forward') sql.script(rollback357);
     try {
         for (const isolation of ['REPEATABLE READ', 'SERIALIZABLE', 'READ UNCOMMITTED']) {
             const before = maintenanceState357();
-            assert.match(owned.psqlExpectError('BEGIN ISOLATION LEVEL ' + isolation + ';SELECT count(*) FROM pg_proc;' + (direction === 'forward' ? migration357 : rollback357)), /357 refuses concurrent\/prepared writes or non-read-committed state/);
+            assert.match(sql.psqlExpectError('BEGIN ISOLATION LEVEL ' + isolation + ';SELECT count(*) FROM pg_proc;' + (direction === 'forward' ? migration357 : rollback357)), /357 refuses concurrent\/prepared writes or non-read-committed state/);
             assert.equal(maintenanceState357(), before);
         }
-    } finally { if (direction === 'forward') owned.script(migration357); }
+    } finally { if (direction === 'forward') sql.script(migration357); }
 });
 
 for (const kind of ['catalog', 'source'] as const) for (const direction of ['forward', 'rollback'] as const) test('357 ' + direction + ' refuses a natural uncommitted ' + kind + ' writer without a cooperative catalog lock', { timeout: 40000 }, async () => {
-    if (direction === 'forward') owned.script(rollback357);
+    if (direction === 'forward') sql.script(rollback357);
     const token = crypto.randomUUID().replaceAll('-', '');
     const table = 'syn_review_gate_' + token;
     const holderName = 'syn-review-hold-' + token;
     const creatorName = 'syn-review-create-' + token;
     const key = crypto.getRandomValues(new Uint32Array(1))[0] % 1000000000 + 1000000000;
     const before = maintenanceState357();
-    owned.script(`CREATE TABLE public.${table}(released boolean NOT NULL);INSERT INTO public.${table} VALUES(false);`);
-    const holder = owned.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${holderName}';SELECT pg_advisory_xact_lock(${key}::bigint);
+    sql.script(`CREATE TABLE public.${table}(released boolean NOT NULL);INSERT INTO public.${table} VALUES(false);`);
+    const holder = sql.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${holderName}';SELECT pg_advisory_xact_lock(${key}::bigint);
       DO $$DECLARE deadline timestamptz:=clock_timestamp()+interval '15 seconds';BEGIN
        WHILE NOT(SELECT released FROM public.${table}) LOOP
         IF clock_timestamp()>deadline THEN RAISE EXCEPTION 'Synthetic review gate not released';END IF;PERFORM pg_sleep(0.01);
@@ -159,31 +166,32 @@ for (const kind of ['catalog', 'source'] as const) for (const direction of ['for
     let creator: Promise<Error | null> | undefined;
     try {
         const deadline = Date.now() + 5000;
-        while (owned.psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${holderName}' AND a.datname=current_database() AND l.locktype='advisory' AND l.objid=${key} AND l.granted);`) !== 't') {
+        while (sql.psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${holderName}' AND a.datname=current_database() AND l.locktype='advisory' AND l.objid=${key} AND l.granted);`) !== 't') {
             assert.ok(Date.now() < deadline); await new Promise(resolve => setTimeout(resolve, 25));
         }
         const statement = kind === 'catalog' ? `CREATE FUNCTION public.create_storefront_buyer_review_v1() RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;`
             : `UPDATE products SET name=name WHERE id='${productId}';`;
-        creator = owned.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${creatorName}';${statement}SELECT pg_advisory_xact_lock(${key}::bigint);${kind === 'catalog' ? 'COMMIT' : 'ROLLBACK'};`).then(() => null, (e: Error) => e);
+        creator = sql.psqlAsync(`BEGIN;SET LOCAL statement_timeout='20s';SET LOCAL application_name='${creatorName}';${statement}SELECT pg_advisory_xact_lock(${key}::bigint);${kind === 'catalog' ? 'COMMIT' : 'ROLLBACK'};`).then(() => null, (e: Error) => e);
         const creatorDeadline = Date.now() + 5000;
-        while (owned.psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND a.datname=current_database() AND l.locktype='advisory' AND l.objid=${key} AND NOT l.granted)
+        while (sql.psql(`SELECT EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND a.datname=current_database() AND l.locktype='advisory' AND l.objid=${key} AND NOT l.granted)
           AND EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted);`) !== 't') {
             assert.ok(Date.now() < creatorDeadline); await new Promise(resolve => setTimeout(resolve, 25));
         }
-        assert.equal(owned.psql(`SELECT count(*) FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.relation='pg_proc'::regclass AND l.granted;`), '0');
-        assert.match(owned.psqlExpectError("SET statement_timeout='3s';" + (direction === 'forward' ? migration357 : rollback357)), /357 refuses concurrent\/prepared writes or non-read-committed state|canceling statement due to statement timeout/);
+        assert.equal(sql.psql(`SELECT count(*) FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.relation='pg_proc'::regclass AND l.granted;`), '0');
+        assert.match(sql.psqlExpectError("SET statement_timeout='3s';" + (direction === 'forward' ? migration357 : rollback357)), /357 refuses concurrent\/prepared writes or non-read-committed state|canceling statement due to statement timeout/);
         assert.equal(maintenanceState357(), before, 'committed function/role/schema/data authority is conserved while the native writer remains invisible');
     } finally {
-        owned.script(`UPDATE public.${table} SET released=true;`);
+        sql.script(`UPDATE public.${table} SET released=true;`);
         const results = await Promise.all([holder, ...(creator ? [creator] : [])]);
         assert.ok(results.every(result => result === null));
-        if (kind === 'catalog') owned.script('DROP FUNCTION public.create_storefront_buyer_review_v1() RESTRICT;');
-        owned.script(`DROP TABLE public.${table};`);
-        if (direction === 'forward') owned.script(migration357);
+        if (kind === 'catalog') sql.script('DROP FUNCTION public.create_storefront_buyer_review_v1() RESTRICT;');
+        sql.script(`DROP TABLE public.${table};`);
+        if (direction === 'forward') sql.script(migration357);
     }
 });
 
 test('357 paired reapply exposes the real typed RPC through the current PostgREST schema cache', { timeout: 15000 }, async () => {
+    sql=owned;
     const buyer = seedBuyerAccount(psql, 'review-ready');
     const deadline = Date.now() + 10000;
     const statuses: number[] = [];

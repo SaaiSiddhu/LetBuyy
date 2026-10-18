@@ -110,11 +110,11 @@ test('concurrent creation and separate-worker execution return one request and o
 });
 test('a failed mandatory audit rolls back annotation and receipt, then recovers on the same approval', async () => {
     const j = await journey(), a = await approved(j);
-    owned.psql('ALTER TABLE audit_logs RENAME TO audit_logs_money_fault;');
+    owned.script(`CREATE FUNCTION public.synthetic_audit_insertion_fault() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'synthetic mandatory audit outage';END$$;CREATE TRIGGER synthetic_audit_insertion_fault BEFORE INSERT ON public.audit_logs FOR EACH ROW EXECUTE FUNCTION public.synthetic_audit_insertion_fault();`);
     try { assert.equal((await j.apply(j.maker.headers,{ approval_id: a.id })).status,503);
         assert.equal(owned.psql(`SELECT count(*) FROM money_ledger_site_reconciliations WHERE site_id='${j.tenant.siteId}' AND metadata ? 'operator_resolution';`),'0');
         assert.equal(owned.psql(`SELECT count(*) FROM sensitive_action_approvals WHERE id='${a.id}' AND consumed_at IS NOT NULL;`),'0');
-    } finally { owned.psql('ALTER TABLE audit_logs_money_fault RENAME TO audit_logs;'); }
+    } finally { owned.script('DROP TRIGGER synthetic_audit_insertion_fault ON public.audit_logs;DROP FUNCTION public.synthetic_audit_insertion_fault();'); }
     assert.equal((await j.apply(j.maker.headers,{ approval_id: a.id })).status,200);
 });
 test('revoked checker membership cannot revive old money consent after re-addition', async () => {

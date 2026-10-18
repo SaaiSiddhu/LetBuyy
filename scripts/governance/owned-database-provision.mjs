@@ -17,7 +17,7 @@
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from '../../tests/executable/supabase-faithful-bootstrap.mjs';
+import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.mjs';
 import { RUN_ID_PATTERN, dockerAsync } from './executable-pg-fixture.mjs';
 
 export const GATEWAY_TEMPLATE_DATABASE = 'letbuyy_tpl_gateway';

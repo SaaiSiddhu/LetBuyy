@@ -16,6 +16,10 @@ let svc: ArchitectureService;
 let hasDomainIntel: boolean;
 let hasDbIntel: boolean;
 let hasInfraIntel: boolean;
+const domainData=()=>store.read<{summary:{crossDomainEdges:number};domains:{key:string;counts:{rpcs:number;tables:number}}[];edges:{from:string;to:string;strength:number}[]}>('domain-intel');
+const dbSummary=()=>store.read<{summary:{functions:number;securityDefiner:number}}>('db-intel').summary;
+const inventoryEdge=()=>domainData().edges.find(e=>e.from==='orders'&&e.to==='inventory')!;
+
 
 before(() => {
   store = ArtifactStore.default();
@@ -70,11 +74,11 @@ describe('explainDomain("payments")', () => {
     );
   });
 
-  it('detail references 18 RPCs and 11 tables', { skip: !hasDomainIntel }, async () => {
+  it('detail references the generated payment RPC and table counts', { skip: !hasDomainIntel }, async () => {
     const result = await svc.explainDomain('payments');
-    // counts.rpcs === 18, counts.tables === 11 per domain-intel.json
+    const counts=domainData().domains.find(d=>d.key==='payments')!.counts;
     assert.ok(
-      result.detail?.includes('18') && result.detail?.includes('11'),
+      result.detail?.includes(String(counts.rpcs)) && result.detail?.includes(String(counts.tables)),
       `expected RPC count 18 and table count 11 in detail, got: ${result.detail?.slice(0, 300)}`,
     );
   });
@@ -158,11 +162,11 @@ describe('explainArchitecture()', () => {
     assert.equal(ev.detail, '22');
   });
 
-  it('evidence cites summary.crossDomainEdges=49', { skip: !hasDomainIntel }, async () => {
+  it('evidence cites the generated cross-domain edge count', { skip: !hasDomainIntel }, async () => {
     const result = await svc.explainArchitecture();
     const ev = result.evidence.find((e) => e.ref === 'summary.crossDomainEdges');
     assert.ok(ev, 'evidence must cite summary.crossDomainEdges');
-    assert.equal(ev.detail, '49');
+    assert.equal(ev.detail, String(domainData().summary.crossDomainEdges));
   });
 
   it('evidence cites db-intel summary fields', { skip: !(hasDomainIntel && hasDbIntel) }, async () => {
@@ -170,14 +174,14 @@ describe('explainArchitecture()', () => {
     assertEvidence(result.evidence, 'db-intel.json');
     const fnEv = result.evidence.find((e) => e.ref === 'summary.functions' && (e.source ?? '').includes('db-intel'));
     assert.ok(fnEv, 'evidence must cite summary.functions from db-intel.json');
-    assert.equal(fnEv.detail, '164');
+    assert.equal(fnEv.detail, String(dbSummary().functions));
   });
 
-  it('evidence cites summary.securityDefiner=136 from db-intel.json', { skip: !(hasDomainIntel && hasDbIntel) }, async () => {
+  it('evidence cites the generated security-definer count', { skip: !(hasDomainIntel && hasDbIntel) }, async () => {
     const result = await svc.explainArchitecture();
     const ev = result.evidence.find((e) => e.ref === 'summary.securityDefiner' && (e.source ?? '').includes('db-intel'));
     assert.ok(ev, 'evidence must cite summary.securityDefiner');
-    assert.equal(ev.detail, '136');
+    assert.equal(ev.detail, String(dbSummary().securityDefiner));
   });
 
   it('evidence cites infra-intel summary fields', { skip: !(hasDomainIntel && hasInfraIntel) }, async () => {
@@ -216,19 +220,19 @@ describe('explainDependency("orders", "inventory")', () => {
     assert.equal(result.subject, 'orders→inventory');
   });
 
-  it('summary includes strength 8', { skip: !hasDomainIntel }, async () => {
+  it('summary includes the generated dependency strength', { skip: !hasDomainIntel }, async () => {
     const result = await svc.explainDependency('orders', 'inventory');
     assert.ok(
-      result.summary.includes('8'),
+      result.summary.includes(String(inventoryEdge().strength)),
       `expected strength 8 in summary, got: ${result.summary}`,
     );
   });
 
-  it('evidence cites edges[from=orders,to=inventory].strength=8', { skip: !hasDomainIntel }, async () => {
+  it('evidence cites the generated orders-to-inventory strength', { skip: !hasDomainIntel }, async () => {
     const result = await svc.explainDependency('orders', 'inventory');
     const ev = result.evidence.find((e) => e.ref.includes('edges[from=orders,to=inventory].strength'));
     assert.ok(ev, 'evidence must cite edges[from=orders,to=inventory].strength');
-    assert.equal(ev.detail, '8');
+    assert.equal(ev.detail, String(inventoryEdge().strength));
   });
 
   it('detail lists all 8 via strings', { skip: !hasDomainIntel }, async () => {

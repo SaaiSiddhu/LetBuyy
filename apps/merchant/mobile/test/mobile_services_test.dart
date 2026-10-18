@@ -7167,18 +7167,19 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
     }
 
+    final currentProduct = {
+      ..._productJson(),
+      'version': 1,
+      'description': 'A cotton tee for the edit journey.',
+      'images': ['https://cdn.test/products/cotton-tee.jpg'],
+      'country_of_origin': 'Japan',
+      'importer_details': 'Example Imports, Mumbai',
+    };
     final api = _FakeApiClient(
+      json: {'/products/prod_1': currentProduct},
       paginated: {
         '/stores': [_storeJson()],
-        '/products': [
-          {
-            ..._productJson(),
-            'description': 'A cotton tee for the edit journey.',
-            'images': ['https://cdn.test/products/cotton-tee.jpg'],
-            'country_of_origin': 'Japan',
-            'importer_details': 'Example Imports, Mumbai',
-          },
-        ],
+        '/products': [currentProduct],
       },
     );
 

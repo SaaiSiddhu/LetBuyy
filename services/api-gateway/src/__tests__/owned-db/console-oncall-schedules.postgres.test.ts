@@ -113,7 +113,9 @@ for (const kind of ['catalog', 'source'] as const) for (const direction of ['for
           AND EXISTS(SELECT 1 FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted);`) !== 't') {
             assert.ok(Date.now() < creatorDeadline); await new Promise(resolve => setTimeout(resolve, 25));
         }
-        assert.equal(owned.psql(`SELECT count(*) FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.relation='pg_proc'::regclass AND l.granted;`), '0');
+        //360's native DDL guard may read pg_proc. AccessShareLock does not
+        // serialize this writer with the maintenance ShareRowExclusive lock.
+        assert.equal(owned.psql(`SELECT count(*) FROM pg_locks l JOIN pg_stat_activity a ON a.pid=l.pid WHERE a.application_name='${creatorName}' AND l.relation='pg_proc'::regclass AND l.granted AND l.mode<>'AccessShareLock';`), '0');
         assert.match(owned.psqlExpectError("SET statement_timeout='3s';" + (direction === 'forward' ? migration362 : rollback362)), /362 refuses concurrent\/prepared writes or non-read-committed state|canceling statement due to statement timeout/);
         assert.equal(maintenanceState(), before, 'committed function/role/schema/data authority is conserved while the native writer remains invisible');
     } finally {

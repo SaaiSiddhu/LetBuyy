@@ -55,8 +55,8 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
 
                 <form action="/api/console-auth/mfa" method="post" className="space-y-4">
                     {stepUp && <>
-                        <input type="hidden" name="step_up" value="1" />
-                        <input type="hidden" name="return_to" value={returnTo} />
+                        <Input unstyled type="hidden" name="step_up" value="1" />
+                        <Input unstyled type="hidden" name="return_to" value={returnTo} />
                         <p className="text-sm text-zinc-300">Verify a new code for this protected action. Requests tied to your earlier sign-in will need a new approval request.</p>
                     </>}
                     <div>

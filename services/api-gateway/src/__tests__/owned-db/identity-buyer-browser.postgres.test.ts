@@ -4,6 +4,7 @@
 // N1.3: normal Chromium UI -> Identity issuer -> Commerce PKCE callback -> actual Gateway/ownedDB.
 // Cloudflare's official test keys exercise real widget/Siteverify transport. They cannot prove
 // production anti-bot behavior. No app dev auth bypass, token injection, fake API or route interception.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import {createServer,type Server} from 'node:http';
 import test from 'node:test';
@@ -151,7 +152,7 @@ test('built Commerce and Identity support normal registration/consent/PKCE, acco
   await context.close();
  }catch(error){
   console.info(JSON.stringify({diagnostic:'normal_browser_failure',url:page?new URL(page.url()).origin+new URL(page.url()).pathname:null,text:await page?.locator('body').innerText().catch(()=>''),frames:page?.frames().map(frame=>{try{const url=new URL(frame.url());return url.origin+url.pathname;}catch{return 'initial-frame';}}),networkFailures:failures,navigationResponses,nextRequests:nextRequests.slice(-20),gatewayCalls:calls.slice(-15),nextErrors:nextErrors.slice(-8),consoleErrors,inputLengths:await page?.locator('input').evaluateAll(nodes=>nodes.map(node=>({name:(node as {name:string;type:string;value:string}).name,type:(node as {name:string;type:string;value:string}).type,length:(node as {name:string;type:string;value:string}).value.length}))).catch(()=>[])}));
-  await page?.screenshot({path:`/private/tmp/letbuyy-n1-browser-${owned.runId}.png`}).catch(()=>undefined);throw error;
+  await page?.screenshot({path:`${ownedTmpDir()}/letbuyy-n1-browser-${owned.runId}.png`}).catch(()=>undefined);throw error;
  }finally{
   await browser?.close();await stopOwnedClientRuntime(commerce);await stopOwnedClientRuntime(identity);await gateway.settle();
   if(adapter){adapter.closeAllConnections();await new Promise<void>(resolve=>adapter!.close(()=>resolve()));}

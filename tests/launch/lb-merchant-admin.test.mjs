@@ -111,7 +111,7 @@ test('Staff RBAC: products write routes are wired to the staff guard', () => {
   const products = read('services/api-gateway/src/routes/products.ts');
   assert.match(products, /import \{ assertStaffPermission \} from '\.\.\/middleware\/staff-permission'/);
   // every product write delegates to the guard with products:write
-  const hits = products.match(/assertStaffPermission\(c, [^,]+, customUser\.id, 'products:write'\)/g) || [];
+  const hits = products.match(/assertStaffPermission\(c, [^,]+, customUser\.id, 'products:write'(?:, 'enforce')?\)/g) || [];
   assert.ok(hits.length >= 4, `expected >=4 wired product write routes, found ${hits.length}`);
 });
 

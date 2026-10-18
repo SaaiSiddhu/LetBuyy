@@ -86,7 +86,7 @@ function runOwnedClusterGroups(postgresSuites, gatewaySuites) {
             { kind: 'gateway-db', stats: newStats('gateway database (owned)', gatewaySuites.length) },
         ];
         const jsonOut = join(mkdtempSync(join(tmpdir(), 'letbuyy-pg-group-')), 'runner.json');
-        const child = spawn('node', ['scripts/governance/run-executable-suites.mjs', '--json-out', jsonOut], { cwd: repoRoot, env: childEnv(), stdio: 'inherit' });
+        const child = spawn('node', ['scripts/governance/run-executable-suites.mjs', '--prepared-transactions', '2', '--json-out', jsonOut, '--log-dir', join(dirname(jsonOut), 'suite-logs')], { cwd: repoRoot, env: childEnv(), stdio: 'inherit' });
         child.on('close', (code, signal) => {
             const exit = code ?? (signal ? 128 : 1);
             const runLevelFailure = exit === 70 || exit === 71 || signal ? exit : 0;

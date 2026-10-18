@@ -65,18 +65,17 @@ test('LB-5b: product-execution.adapter creates variants on create', () => {
     assert.match(src, /planProductCreate/, 'adapter must use planProductCreate');
 });
 
-test('LB-5b: adapter diffs variants on update via replaceProductVariants', () => {
-    const src = readFileSync(
-        path.join(repoRoot, 'services/api-gateway/src/execution/product-execution.adapter.ts'),
-        'utf8',
-    );
-    assert.match(
-        src,
-        /hasVariantUpdates.*replaceProductVariants|replaceProductVariants.*hasVariantUpdates/s,
-        'adapter must call replaceProductVariants when hasVariantUpdates',
-    );
-    // The diff logic: insert new rows, update changed, delete obsolete
-    assert.match(src, /obsoleteIds/, 'adapter must handle obsolete (deleted) variant rows');
+test('LB-5b: adapter diffs variants through the owned atomic product edit', () => {
+    const read = file => readFileSync(path.join(repoRoot,file),'utf8');
+    const src=read('services/api-gateway/src/execution/product-execution.adapter.ts');
+    assert.match(src,/return executeProductMutation\(this\.options\.mutationEnv, storeId, productId, userId, updates, requestId\)/);
+    const transaction=read('services/api-gateway/src/execution/product-mutation.adapter.ts');
+    assert.match(transaction,/SELECT public\.apply_product_edit_v1\(\$1::uuid,\$2::uuid,\$3::uuid,\$4::integer,\$5::uuid/);
+    assert.match(transaction,/\[storeId, productId, actorId, plan\.expectedVersion, plan\.idempotencyKey, JSON\.stringify\(plan\.mutation\)\]/);
+    const sql=read('database/supabase/migrations/346_product_atomic_edits.sql');
+    assert.match(sql,/INSERT INTO public\.product_variants/);
+    assert.match(sql,/UPDATE public\.product_variants SET/);
+    assert.match(sql,/DELETE FROM public\.product_variants WHERE product_id=p_product_id AND id=ANY\(removed\)/);
 });
 
 // (c) cart-context no longer hardcodes variant_id: null

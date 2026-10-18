@@ -125,7 +125,7 @@ test('every registered name exists, so the lists cannot decay into fiction', () 
 });
 
 test('the shared module still carries all three fidelity fixes', () => {
-    const module = readFileSync(join(executableDir, 'supabase-faithful-bootstrap.mjs'), 'utf8');
+    const module = readFileSync(fileURLToPath(new URL('../../scripts/governance/supabase-faithful-bootstrap.mjs',import.meta.url)), 'utf8');
     assert.match(module, /CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions/);
     assert.match(module, /ALTER DATABASE %I SET search_path = public, extensions/);
     assert.match(module, /ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres, anon, authenticated, service_role/);

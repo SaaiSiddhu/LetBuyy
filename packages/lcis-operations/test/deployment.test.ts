@@ -662,22 +662,28 @@ test('real-data: 3 SPOFs are returned by detectFailedDeploys', () => {
   assert.equal(spofFindings.length, 3, `expected 3 SPOF findings, got ${spofFindings.length}`);
 });
 
-test('real-data: migration #174 is referenced in declared state facts', () => {
+test('real-data: latest source migration is referenced in declared state facts', () => {
   const report = svc.generateDeploymentReport();
   const migFact = report.facts.find((f) => f.kind === 'latest-migration');
   assert.ok(migFact, 'latest-migration fact present');
-  assert.equal(migFact.value, 174, 'migration number is 174');
+  const state = createEngine().store.read<{declared: {latestMigration: {n: number}}}>('deployment-state');
+  assert.equal(migFact.value, state.declared.latestMigration.n, 'latest source migration is reported exactly');
 });
 
-test('real-data: 6 subdomain facts from deployment-intelligence-v5 subdomains array', () => {
+test('real-data: all declared subdomains appear exactly in the report', () => {
   const report = svc.generateDeploymentReport();
   const subFacts = report.facts.filter((f) => f.kind === 'subdomain');
-  assert.equal(subFacts.length, 6, `expected 6 subdomain facts, got ${subFacts.length}`);
+  const intel = createEngine().store.read<{subdomains: {app: string}[]}>('deployment-intelligence-v5');
+  assert.ok(intel.subdomains.length > 0);
+  assert.deepEqual(subFacts.map(f => f.subject).sort(), intel.subdomains.map(row => row.app).sort());
 });
 
-test('real-data: customer-web subdomain fact is present', () => {
+test('real-data: every source-declared subdomain fact is connected', () => {
   const report = svc.generateDeploymentReport();
-  const sf = report.facts.find((f) => f.kind === 'subdomain' && f.subject === 'customer-web');
-  assert.ok(sf, 'customer-web subdomain fact present');
-  assert.equal(sf.status, 'CONNECTED');
+  const declared = createEngine().store.read<{subdomains: {app: string}[]}>('deployment-intelligence-v5');
+  for (const row of declared.subdomains) {
+    const sf = report.facts.find(f => f.kind === 'subdomain' && f.subject === row.app);
+    assert.ok(sf, `declared subdomain fact for ${row.app} is present`);
+    assert.equal(sf.status, 'CONNECTED');
+  }
 });

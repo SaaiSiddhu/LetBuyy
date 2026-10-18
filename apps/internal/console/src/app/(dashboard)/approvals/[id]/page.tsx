@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ConsoleApprovalForm } from '@/components/ConsoleApprovalForm';
 import { z } from 'zod';
 import { InternalSensitiveApprovalSchema, InternalMoneyResolutionDetailsSchema, type InternalSensitiveApproval } from '@letbuyy/shared-types';
-import { Button } from '@letbuyy/ui';
+import { Input, Button } from '@letbuyy/ui';
 import { ConsoleWorkspace, Panel } from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatDateTime, formatMoneyFromPaise, readSearchParam, type ConsoleDataResponse } from '@/lib/console-api';
@@ -102,15 +102,15 @@ export default async function ApprovalPage({ params, searchParams }: {
                 {approval.checker_actor_id && <div><dt>Decision by</dt><dd>{approval.checker_actor_id}</dd></div>}
             </dl>
             {!expired && !executed && approval.status === 'pending' && <ConsoleApprovalForm action="/api/approvals/decision" className="mt-6 space-y-4">
-                <input type="hidden" name="approval_id" value={id} /><input type="hidden" name="payload_hash" value={approval.payload_hash} />
+                <Input unstyled type="hidden" name="approval_id" value={id} /><Input unstyled type="hidden" name="payload_hash" value={approval.payload_hash} />
                 {mine||affectedOperator ? <><p>{affectedOperator?'The affected operator cannot decide this recovery.':'A different active platform super admin must decide this request.'}</p>{mine&&<Button type="submit" name="decision" value="cancel">Cancel request</Button>}</> : <>
-                    <label className="flex gap-2"><input type="checkbox" name="reviewed" value="yes" required />{jobRecovery ? 'I reviewed this job, original order, recorded points and one-attempt retry.' : mfa ? 'I independently verified this operator recovery request and reviewed the account, reason and reset effect.' : trust ? 'I reviewed this case, evidence, restrictions, reason and notes.' : money ? 'I reviewed this money break, resolution and reason.' : 'I reviewed this merchant, action and reason.'}</label>
+                    <label className="flex gap-2"><Input unstyled type="checkbox" name="reviewed" value="yes" required />{jobRecovery ? 'I reviewed this job, original order, recorded points and one-attempt retry.' : mfa ? 'I independently verified this operator recovery request and reviewed the account, reason and reset effect.' : trust ? 'I reviewed this case, evidence, restrictions, reason and notes.' : money ? 'I reviewed this money break, resolution and reason.' : 'I reviewed this merchant, action and reason.'}</label>
                     <div className="flex gap-4"><Button type="submit" name="decision" value="approve">Approve this request</Button>
                         <Button type="submit" name="decision" value="reject">Reject this request</Button></div>
                 </>}
             </ConsoleApprovalForm>}
             {!expired && !executed && mine && approval.status === 'approved' && (!jobRecovery || jobReviewEligible) && <ConsoleApprovalForm action="/api/approvals/execute" className="mt-6">
-                <input type="hidden" name="approval_id" value={id} /><Button type="submit">Execute approved action</Button>
+                <Input unstyled type="hidden" name="approval_id" value={id} /><Button type="submit">Execute approved action</Button>
             </ConsoleApprovalForm>}
             {executed && <p className="mt-4">Executed at {formatDateTime(approval.consumed_at)}. A retry cannot create a second effect.</p>}
             {jobRecovery && !executed && !jobReviewEligible && <p>The current job source or recovery state changed. Review it again before requesting a new action.</p>}

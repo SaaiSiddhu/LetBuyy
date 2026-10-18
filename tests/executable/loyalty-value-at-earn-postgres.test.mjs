@@ -163,6 +163,7 @@ test('a refund credit carries the value the ORIGINAL redemption used', { skip },
     // Not the current rate: a refund returns what was actually spent, and if the rate moved in
     // between, those are different numbers.
     psql(`SELECT public.set_loyalty_program(${sqlString(SITE_ID)}::uuid, p_point_value_minor => 200);`);
+    psql(`UPDATE public.orders SET status='refunded' WHERE id=${sqlString(ORDER_ID)}::uuid;`);
     psql(`SELECT public.restore_loyalty_on_refund(${sqlString(SITE_ID)}::uuid, ${sqlString(ORDER_ID)}::uuid, NULL, 'req-loy5');`);
 
     assert.equal(meta('refund_credit', 'point_value_minor_at_redemption'), '150',
