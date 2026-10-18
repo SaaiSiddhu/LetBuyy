@@ -1,19 +1,13 @@
 'use client'
 
-import { useEffect } from 'react'
 import { Button } from '@letbuyy/ui'
 
 export default function MerchantError({
     error,
-    reset,
 }: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    useEffect(() => {
-        console.error(error)
-    }, [error])
-
     return (
         <div
             style={{
@@ -52,7 +46,9 @@ export default function MerchantError({
                 ) : null}
                 <Button
                     type="button"
-                    onClick={reset}
+                    // A boundary reset can replay the failed server payload.
+                    // Reload to fetch the session and store list again.
+                    onClick={() => window.location.reload()}
                     unstyled
                     style={{
                         display: 'inline-flex',
