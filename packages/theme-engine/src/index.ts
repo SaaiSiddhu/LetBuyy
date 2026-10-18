@@ -267,6 +267,8 @@ export interface ThemeEditorPayload {
 }
 
 export interface ThemeDraftSaveResult {
+  replayed: boolean;
+  current_version: number;
   saved_at: string;
   version: number;
   draft: {
@@ -277,6 +279,9 @@ export interface ThemeDraftSaveResult {
 }
 
 export interface ThemePublishResult {
+  version: number;
+  replayed: boolean;
+  current_version: number;
   store: {
     id: string;
     status: string;
@@ -989,22 +994,39 @@ export const InstallThemeSchema = z.object({
   config_overrides: z.record(z.string(), z.unknown()).default({}),
 });
 
+const ThemeDraftIntentKeySchema = z.string().min(8).max(200).refine(
+  (value) => value === value.trim() && !/[\u0000-\u001f\u007f]/.test(value),
+  'Use a stable retry key without surrounding whitespace or control characters',
+);
+
 export const SaveThemeDraftSchema = z.object({
   store_id: UuidSchema,
   template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
   template_config: z.record(z.string(), z.unknown()),
-  base_version: z.number().int().positive().optional(),
+  base_version: z.number().int().nonnegative().max(2_147_483_646),
+  idempotency_key: ThemeDraftIntentKeySchema,
   client: z.enum(['admin-web', 'flutter-builder', 'api']).default('api'),
+});
+
+export const ReorderThemeDraftSchema = SaveThemeDraftSchema.omit({ template_config: true }).extend({
+  section_order: z.array(z.string().min(1).max(200)).max(500).refine(
+    (ids) => new Set(ids).size === ids.length, 'Section IDs must be distinct',
+  ),
 });
 
 export const PublishThemeSchema = z.object({
   store_id: UuidSchema,
   template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
   template_config: z.record(z.string(), z.unknown()).optional(),
-  base_version: z.number().int().positive().optional(),
+  base_version: z.number().int().positive().max(2_147_483_646),
   make_store_live: z.boolean().default(true),
   publish_message: z.string().max(500).optional(),
-  idempotency_key: z.string().min(8).max(200).optional(),
+  idempotency_key: ThemeDraftIntentKeySchema,
+});
+
+export const DiscardThemeDraftSchema = ThemeStoreQuerySchema.extend({
+  base_version: z.number().int().nonnegative().max(2_147_483_646),
+  idempotency_key: ThemeDraftIntentKeySchema,
 });
 
 export const PreviewTokenSchema = z.object({
@@ -1106,6 +1128,7 @@ export interface ThemeHydrationContract {
 
 export type InstallThemeInput = z.infer<typeof InstallThemeSchema>;
 export type SaveThemeDraftInput = z.infer<typeof SaveThemeDraftSchema>;
+export type ReorderThemeDraftInput = z.infer<typeof ReorderThemeDraftSchema>;
 export type PublishThemeInput = z.infer<typeof PublishThemeSchema>;
 export type PreviewTokenInput = z.infer<typeof PreviewTokenSchema>;
 export type RollbackThemeReleaseInput = z.infer<typeof RollbackThemeReleaseSchema>;

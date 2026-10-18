@@ -255,7 +255,7 @@ router.post('/shipping', validate('json', CreateShippingRateSchema), async (c) =
 
     const { data, error } = await db
         .from('shipping_rates')
-        .insert(plan.rateInsert)
+        .insert({ ...plan.rateInsert, site_id: ownedZone.store_id, cod_enabled: true })
         .select()
         .single();
 

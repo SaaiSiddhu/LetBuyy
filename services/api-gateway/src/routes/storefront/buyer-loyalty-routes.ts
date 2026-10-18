@@ -14,6 +14,7 @@ import type { Hono } from 'hono';
 import type { Env } from '../../index';
 import { dbFailureBody, success } from '../../lib/supabase';
 import { getBuyerSession, requireBuyerSession } from '../../middleware/buyer-session';
+import { getStorefrontBuyerSession, requireStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
 import type { AppContext } from './customer-engagement-routes';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -21,7 +22,7 @@ const MAX_HISTORY = 100;
 
 export interface LoyaltySummary {
     site_id: string;
-    balance: number;
+    balance: number | string;
     is_active: boolean;
     earn_rate_bps: number;
     redeem_cap_bps: number;
@@ -31,8 +32,8 @@ export interface LoyaltySummary {
 export interface LoyaltyEntryRow {
     id: string;
     entry_type: string;
-    points: number;
-    balance_after: number;
+    points: number | string;
+    balance_after: number | string;
     order_id: string | null;
     created_at: string;
 }
@@ -54,6 +55,30 @@ export function registerBuyerLoyaltyRoutes(
     deps: BuyerLoyaltyRoutesDeps,
 ): void {
     const { loadSummary, listEntries } = deps;
+
+    // The account page runs on the merchant's origin and only has a site-bound storefront token.
+    // Its site comes from signed state, never a caller-selected path segment. These routes are
+    // deliberately read-only; the checkout/ledger RPCs remain the only money mutation authority.
+    router.get('/buyer/storefront-loyalty', requireStorefrontBuyerSession, async (c) => {
+        const session = getStorefrontBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+
+        const { data, error } = await loadSummary(c, session.buyerAccountId, session.siteId);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!data) return c.json(success({ site_id: session.siteId, enrolled: false, balance: null }));
+        return c.json(success({ ...data, enrolled: true }));
+    });
+
+    router.get('/buyer/storefront-loyalty/history', requireStorefrontBuyerSession, async (c) => {
+        const session = getStorefrontBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
+
+        const requested = Number.parseInt(c.req.query('limit') || '', 10);
+        const limit = Number.isFinite(requested) && requested > 0 ? Math.min(requested, MAX_HISTORY) : 25;
+        const { data, error } = await listEntries(c, session.buyerAccountId, session.siteId, limit);
+        if (error) return c.json(dbFailureBody(), 500);
+        return c.json(success(data || []));
+    });
 
     // GET /storefront/buyer/loyalty/:siteId
     router.get('/buyer/loyalty/:siteId', requireBuyerSession, async (c) => {

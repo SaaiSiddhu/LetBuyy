@@ -344,6 +344,9 @@ export interface LetbuyyPlatformSessionPayload {
   email: string;
   userId: string | null;
   mfaVerified: boolean;
+  /** Durable Console session identity; legacy cookies lack this binding. */
+  sessionId?: string;
+  mfaVerifiedAt?: number | null;
   issuedAt: number;
   exp: number;
 }
@@ -1033,6 +1036,8 @@ export async function createLetbuyyPlatformSessionToken(
       email: normalizeAuthEmail(input.email),
       userId: input.userId || null,
       mfaVerified: input.mfaVerified,
+      sessionId: crypto.randomUUID(),
+      mfaVerifiedAt: input.mfaVerified ? nowSeconds : null,
       issuedAt: nowSeconds,
       exp: nowSeconds + ttlSeconds,
     } satisfies LetbuyyPlatformSessionPayload,
@@ -1400,6 +1405,9 @@ function isPlatformSessionPayload(value: unknown): value is LetbuyyPlatformSessi
     isSafeAuthEmail(payload.email) &&
     (payload.userId === null || typeof payload.userId === 'string') &&
     typeof payload.mfaVerified === 'boolean' &&
+    (payload.sessionId === undefined || (typeof payload.sessionId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.sessionId))) &&
+    (payload.mfaVerifiedAt === undefined || payload.mfaVerifiedAt === null ||
+      (payload.mfaVerified && Number.isSafeInteger(payload.mfaVerifiedAt) && payload.mfaVerifiedAt >= payload.issuedAt && payload.mfaVerifiedAt < payload.exp)) &&
     Number.isFinite(payload.issuedAt) &&
     Number.isFinite(payload.exp),
   );
@@ -1527,6 +1535,21 @@ export function planCustomUserEnsure(body: Record<string, unknown>, updatedAt: s
   };
 }
 
+export const LETBUYY_STAFF_INVITATION_TTL_MS = 24 * 60 * 60 * 1000;
+const STAFF_INVITE_PREFIX = 'lb-staff-invite-v1';
+export async function createMerchantStaffInvitationToken(inviteId: string, secret: string): Promise<string> {
+  if (!isAuthUuid(inviteId) || secret.length < 32) throw new Error('Staff invitation signing is unavailable');
+  const payload = `${STAFF_INVITE_PREFIX}.${inviteId}`;
+  return `${payload}.${await hmacSha256Hex(secret, payload)}`;
+}
+export async function verifyMerchantStaffInvitationToken(token: unknown, secret: string): Promise<string | null> {
+  if (typeof token !== 'string' || secret.length < 32) return null;
+  const parts = token.split('.');
+  if (parts.length !== 3 || parts[0] !== STAFF_INVITE_PREFIX || !isAuthUuid(parts[1]) || !/^[a-f0-9]{64}$/.test(parts[2])) return null;
+  const expected = await createMerchantStaffInvitationToken(parts[1], secret);
+  return timingSafeEqualHex(expected.split('.')[2], parts[2]) ? parts[1] : null;
+}
+
 export function isEmployeeInviteExpired(invite: EmployeeInviteRecord, now: Date): boolean {
   return new Date(invite.expires_at) < now;
 }
@@ -1556,14 +1579,28 @@ export const LETBUYY_STORE_STAFF_PERMISSIONS = [
   'content:write', 'marketing:write', 'shipping:write', 'returns:write', 'reports:read', 'settings:write',
 ] as const;
 
+/** Server-owned defaults for the maintained staff role choices. Explicit
+ * owner-selected store grants remain supported; unknown/platform roles grant nothing. */
+export const LETBUYY_STORE_STAFF_ROLE_PERMISSIONS: Readonly<Record<(typeof LETBUYY_STORE_STAFF_ROLES)[number], readonly string[]>> = {
+  manager: ['products:write','orders:write','customers:write','content:write','marketing:write','shipping:write','returns:write','reports:read','settings:write'],
+  editor: ['products:write','content:write','reports:read'],
+  fulfillment: ['orders:write','shipping:write','reports:read'],
+  marketing: ['marketing:write','customers:read','reports:read'],
+  support: ['orders:read','customers:write','returns:write'],
+  viewer: ['products:read','orders:read','reports:read'],
+  staff: [],
+};
+export function permissionsForStoreStaffRole(value: string): { granted: string[] } {
+  return { granted: isStoreStaffRole(value) ? [...LETBUYY_STORE_STAFF_ROLE_PERMISSIONS[value]] : [] };
+}
+
 function isStoreStaffRole(value: unknown): value is (typeof LETBUYY_STORE_STAFF_ROLES)[number] {
   return typeof value === 'string' && (LETBUYY_STORE_STAFF_ROLES as readonly string[]).includes(value);
 }
 
 // Shared by planEmployeeStaffCreate and planEmployeeUpdate: { granted: [...] }, store permission
 // keys only, no extra properties on the wrapper object. Absent (undefined) is a valid "no opinion"
-// signal for create (falls to the employees.permissions column default, {}); the caller decides
-// whether that is acceptable for its own route.
+// signal: role changes and creates use the server-owned default for the chosen role.
 function parseStaffPermissions(body: Record<string, unknown>): AuthPlanResult<{ granted: string[] } | undefined> {
   if (body.permissions === undefined) return { ok: true, value: undefined };
   const permissions = body.permissions as { granted?: unknown } | null;
@@ -1600,18 +1637,21 @@ export function planEmployeeStaffCreate(
   // enforces, not a looser one for create.
   const permissionsResult = parseStaffPermissions(body);
   if (!permissionsResult.ok) return permissionsResult;
+  if (body.full_name !== undefined && (typeof body.full_name !== 'string' || body.full_name.trim().length > 120)) {
+    return { ok: false, message: 'full_name must be text of at most 120 characters' };
+  }
 
   return {
     ok: true,
     value: {
       store_id: storeId,
       email,
-      full_name: email,
+      full_name: typeof body.full_name === 'string' && body.full_name.trim() ? body.full_name.trim() : email,
       role,
       status: 'invited',
       is_active: true,
       created_by: createdBy,
-      ...(permissionsResult.value ? { permissions: permissionsResult.value } : {}),
+      permissions: permissionsResult.value ?? permissionsForStoreStaffRole(role),
     },
   };
 }
@@ -1651,6 +1691,7 @@ export function planEmployeeUpdate(body: Record<string, unknown>): AuthPlanResul
       return { ok: false, message: `role must be one of ${LETBUYY_STORE_STAFF_ROLES.join(', ')}` };
     }
     updates.role = body.role;
+    if (body.permissions === undefined) updates.permissions = permissionsForStoreStaffRole(body.role);
   }
   if (body.permissions !== undefined) {
     const permissionsResult = parseStaffPermissions(body);

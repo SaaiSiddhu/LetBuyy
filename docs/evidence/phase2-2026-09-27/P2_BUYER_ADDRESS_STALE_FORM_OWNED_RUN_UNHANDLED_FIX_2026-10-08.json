@@ -1,0 +1,84 @@
+{
+  "runId": "08a260ba2513",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-16960-muzfdj91-f2f0aa"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 12,
+  "assertionsPassed": 10,
+  "assertionsFailed": 2,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 1011.7,
+  "suiteSeconds": 948.3,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-customer-profile.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-16960-muzfdj91-f2f0aa",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 12,
+      "pass": 10,
+      "fail": 2,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 948.3,
+      "firstFailure": "not ok 11 - real Next Commerce login cookie completes a session and profile read through the rea",
+      "failures": [
+        "not ok 11 - real Next Commerce login cookie completes a session and profile read through the real Gateway worker",
+        "not ok 12 - atomic buyer intake rolls back its ticket when the first complaint insert fails"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_customer_profile_postgres",
+      "templateSeconds": 225.6,
+      "provisionSeconds": 35.3,
+      "rest": {
+        "container": "letbuyy-exec-08a260ba2513-rest-1",
+        "upstreamPort": 50562,
+        "proxyPort": 50563
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 205,
+        "refused": 0,
+        "upstreamErrors": 17
+      }
+    }
+  ]
+}

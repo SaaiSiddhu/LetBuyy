@@ -74,3 +74,51 @@ The Liquid account hub, profile/settings and address templates can now render a 
 | Diff whitespace | Passed |
 
 These are local source and contract checks. No live browser/PKCE, real session, deployed gateway or hosted storefront journey is claimed. Theme example regeneration is package output, not an app/store publication. Phase 2 and the eleven-phase goal remain active.
+
+## Follow-on — explicit store-customer relationship action (4 October 2026)
+
+React and Liquid buyer settings now offer a separate, explicit “Connect this store account” action. It requires a same-origin POST and fresh LetBuyy PKCE sign-in; the callback uses the new signed storefront session to call the existing verified relationship transaction for only the signed store. The outcome is shown without disclosing another account's identity. A failed link does not discard the valid storefront session. Historical orders remain a separate verified action: the React and Liquid order lists offer “Find past orders”, routed through the existing `/api/buyer/orders` handler to the claim transaction for only the signed store. JSON errors are sanitized, and native Liquid form submissions return to the same safe account path with a status code.
+
+Gateway relationship/claim tests passed 21/21, storefront buyer proxy tests passed 45/45, PKCE/link flow tests passed 5/5 (including a mocked callback journey), Liquid/theme SSR/runtime contracts passed 48/48, and canonical Liquid orders passed 5/5. Targeted ESLint and the commerce-web TypeScript check passed. The gateway-wide TypeScript check remains non-clean on unrelated dependency/type diagnostics. No live browser, identity-provider, real-database, deployed gateway or hosted journey is claimed. This does not close Phase 2 or the eleven-phase goal.
+
+## Follow-on — linked buyer wishlist (4 October 2026)
+
+The React account wishlist is now available to canonical buyers only through the existing verified store-customer relationship and remains site-scoped. See [buyer store wishlist acceptance](P2_BUYER_STORE_WISHLIST_ACCEPTANCE.md) for local PostgreSQL, gateway, proxy and UI evidence. Live browser authentication, and the remaining loyalty/reviews/checkout journeys, are still open.
+
+## Follow-on — React order views revalidate after buyer switches (8 October 2026)
+
+The linked-order list and detail client previously fetched only on mount. The
+account chrome hid its child tree during cross-tab session revalidation, but
+kept it mounted; after another buyer's session was verified, the old list/detail
+could therefore become visible again without a request under the new buyer.
+Both clients now bind rendered results to `buyerSessionRevision`, reload after
+each verified generation, and hide results until the matching read completes.
+The list aborts and ignores stale reads, clears the prior page before reload,
+and ignores an in-flight historical-order claim result after the session
+generation changes. The detail stores results with the order ID and session
+generation, aborts obsolete reads, and renders the new buyer's 404/unavailable
+state instead of retaining the prior order.
+
+Mounted React tests run the real account chrome and buyer-session/wishlist
+providers with synthetic API responses. They verify buyer A's order list/detail,
+the hidden loading boundary during a held cross-tab revalidation, buyer B's
+empty list or denied detail, and session-check 503 without exposing A's order.
+The focused test passes **2/2**. `pnpm --dir apps/commerce/web test` passes all
+three stages (**101/101**, **123/123**, **947/947**; zero failures, skips,
+cancellations or TODOs). Commerce typecheck, focused ESLint (0 errors/warnings)
+and `git diff --check` pass. This is local jsdom and synthetic BFF coverage,
+not Chromium, Gateway/Postgres or hosted acceptance. Session-lifetime policy,
+hosted telemetry/drain, D03/D04/D05 and the remaining Phase 2/3–11 requirements
+remain open; no identity, issuer or lifetime policy changed.
+
+## 10 October continuation — owned cross-tab order visibility journey passes locally
+
+The owned Gateway/Postgres browser suite seeds one synthetic linked order for buyer A and first reads the buyer-A list and detail through the real Commerce BFF. After a sibling tab completes a real local Identity sign-in as buyer B, Chromium rehydrates those captured buyer-A responses to model already-rendered client state, holds session revalidation, and verifies the order is hidden while the replacement session is unresolved. Releasing the hold sends the list/detail reads through the real Commerce BFF, Gateway and Postgres: buyer B receives an empty list and a 404/unavailable detail. SQL assertions preserve buyer A's ownership link and confirm buyer B has none. This covers the stale-read privacy race locally; it changes no production behavior or session policy.
+
+The first runner attempt stopped at Docker preflight before tests; later retries exposed and corrected test-harness assumptions about closed background tabs and headless focus refresh. The final focused executable suite passes **12/12**, with zero failures, skips, cancellations or TODOs. The owned report records empty cleanup: no runner-owned containers, networks or volumes remain. Smoke-script syntax, Commerce typecheck, and `git diff --check` pass. The successful report is [`P2_BUYER_ORDER_STALE_CROSS_TAB_OWNED_RUN_RETRY10_2026-10-10.json`](P2_BUYER_ORDER_STALE_CROSS_TAB_OWNED_RUN_RETRY10_2026-10-10.json); the initial zero-test report and intermediate retry reports remain preserved for audit.
+
+```text
+node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --kind gateway-db --jobs 1 --log-dir /private/tmp/letbuyy-order-cross-tab-owned-20261010-retry10 --json-out docs/evidence/phase2-2026-09-27/P2_BUYER_ORDER_STALE_CROSS_TAB_OWNED_RUN_RETRY10_2026-10-10.json
+```
+
+The standalone mounted React test remains 2/2 jsdom/synthetic-BFF evidence; the run above adds local Chromium, Gateway and Postgres evidence. Neither local result establishes hosted behavior. The seven-day versus thirty-minute session-lifetime decision, issuer transition, telemetry/drain, unlinked-customer recovery and remaining Phase 2/3–11 requirements remain open.

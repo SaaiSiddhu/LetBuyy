@@ -22,6 +22,7 @@ import { loadBuyerSessionState, type BuyerSessionStateLoader } from './buyer-ses
 export interface StorefrontBuyerSessionContext {
     buyerAccountId: string;
     siteId: string;
+    sessionEpoch: number;
 }
 
 declare module 'hono' {
@@ -37,16 +38,16 @@ export function getStorefrontBuyerSession(c: Context): StorefrontBuyerSessionCon
 const unauthorized = (c: Context) =>
     c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A storefront sign-in is required.' } }, 401);
 
-export const requireStorefrontBuyerSession = createMiddleware<{ Bindings: Env }>(async (c, next) => {
-    const token = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
-    if (!token) return unauthorized(c);
-
+/** Verify and attach a storefront session after the route has resolved its canonical site. */
+export async function authenticateStorefrontBuyerSession(
+    c: Context<{ Bindings: Env }>,
+    token: string,
+    requestedSite: string,
+): Promise<Response | null> {
     const resolved = await resolveIdentityIssuedStorefrontSession(c.env, token);
     if (!resolved.ok) return unauthorized(c);
 
-    // Before the account read, so a token presented at the wrong store costs no database work.
-    const requestedSite = (c.req.query('store_id') || '').toLowerCase();
-    if (!requestedSite || requestedSite !== resolved.siteId) return unauthorized(c);
+    if (!requestedSite || requestedSite.toLowerCase() !== resolved.siteId.toLowerCase()) return unauthorized(c);
 
     const loader: BuyerSessionStateLoader = c.get('buyerSessionStateLoader') ?? loadBuyerSessionState;
     let state: Awaited<ReturnType<BuyerSessionStateLoader>>;
@@ -63,6 +64,19 @@ export const requireStorefrontBuyerSession = createMiddleware<{ Bindings: Env }>
         return c.json({ success: false, error: { code: 'BUYER_DISABLED', message: 'Account is disabled.' } }, 403);
     }
 
-    c.set('storefrontBuyerSession', { buyerAccountId: resolved.buyerAccountId, siteId: resolved.siteId });
+    c.set('storefrontBuyerSession', {
+        buyerAccountId: resolved.buyerAccountId,
+        siteId: resolved.siteId,
+        sessionEpoch: resolved.sessionEpoch,
+    });
+    return null;
+}
+
+export const requireStorefrontBuyerSession = createMiddleware<{ Bindings: Env }>(async (c, next) => {
+    const token = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
+    if (!token) return unauthorized(c);
+    const requestedSite = (c.req.query('store_id') || '').toLowerCase();
+    const rejected = await authenticateStorefrontBuyerSession(c, token, requestedSite);
+    if (rejected) return rejected;
     await next();
 });

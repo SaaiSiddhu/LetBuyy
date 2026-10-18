@@ -27,8 +27,6 @@ interface CustomerAuthContextType {
     // Actions
     login: (email: string, password: string, storeId: string, turnstileToken?: string | null) => Promise<LoginResult>;
     setPassword: (email: string, password: string, storeId: string, resetToken?: string) => Promise<LoginResult>;
-    register: (email: string, password: string, storeId: string, fullName?: string | null, turnstileToken?: string | null) => Promise<LoginResult>;
-    checkEmail: (email: string, storeId: string) => Promise<EmailCheckResult>;
     logout: () => Promise<void>;
     refreshSession: () => Promise<void>;
 }
@@ -39,17 +37,16 @@ interface LoginResult {
     customer?: CustomerInfo;
 }
 
-interface EmailCheckResult {
-    exists: boolean;
-    hasPassword: boolean;
-    status: string;
-}
-
 // ============================================================
 // Context
 // ============================================================
 
 const CustomerAuthContext = createContext<CustomerAuthContextType | null>(null);
+
+export async function requestStoreCustomerLogout(fetcher: typeof fetch = fetch): Promise<void> {
+    const response = await fetcher('/api/customer/logout', { method: 'POST' });
+    if (!response.ok) throw new Error('Store customer sign-out failed');
+}
 
 export function useCustomerAuth(): CustomerAuthContextType {
     const context = useContext(CustomerAuthContext);
@@ -93,17 +90,6 @@ export function CustomerAuthProvider({ children }: Props) {
     useEffect(() => {
         refreshSession();
     }, [refreshSession]);
-
-    // ── Check Email ─────────────────────────────────────────
-    const checkEmail = useCallback(async (
-        email: string,
-        sid: string
-    ): Promise<EmailCheckResult> => {
-        const res = await fetch(
-            `/api/customer/check?email=${encodeURIComponent(email)}&storeId=${sid}`
-        );
-        return res.json();
-    }, []);
 
     // ── Login ───────────────────────────────────────────────
     const login = useCallback(async (
@@ -171,43 +157,10 @@ export function CustomerAuthProvider({ children }: Props) {
         }
     }, []);
 
-    // ── Register (First-time account, LB-12) ────────────────
-    const register = useCallback(async (
-        email: string,
-        password: string,
-        sid: string,
-        fullName?: string | null,
-        turnstileToken?: string | null
-    ): Promise<LoginResult> => {
-        try {
-            const res = await fetch('/api/customer/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, storeId: sid, fullName, turnstileToken }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                return { success: false, error: data.error || 'Registration failed' };
-            }
-
-            setCustomer(data.customer);
-            syncLocalWishlist();
-
-            return { success: true, customer: data.customer };
-        } catch {
-            return { success: false, error: 'Network error. Please try again.' };
-        }
-    }, []);
-
     // ── Logout ──────────────────────────────────────────────
     const logout = useCallback(async () => {
-        try {
-            await fetch('/api/customer/logout', { method: 'POST' });
-        } finally {
-            setCustomer(null);
-        }
+        await requestStoreCustomerLogout();
+        setCustomer(null);
     }, []);
 
     // ── Sync Local Wishlist on Login ────────────────────────
@@ -239,8 +192,6 @@ export function CustomerAuthProvider({ children }: Props) {
         isLoading,
         login,
         setPassword,
-        register,
-        checkEmail,
         logout,
         refreshSession,
     };

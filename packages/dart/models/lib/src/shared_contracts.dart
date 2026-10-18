@@ -214,6 +214,7 @@ class ProductVariantContract extends SharedTypeContract {
 class ProductContract extends SharedTypeContract {
   static const ownFields = <String>[
     'store_id',
+    'version',
     'name',
     'slug',
     'description',
@@ -241,6 +242,7 @@ class ProductContract extends SharedTypeContract {
     'hs_code',
     'hsn_code',
     'country_of_origin',
+    'importer_details',
     'seo_title',
     'seo_description',
     'metadata',
@@ -257,6 +259,12 @@ class ProductContract extends SharedTypeContract {
 
   String get id => stringValue('id');
   String get storeId => stringValue('store_id');
+  // An absent/invalid revision is not a locally fabricated editable version.
+  int? get version {
+    final value = this['version'];
+    return value is int && value > 0 ? value : null;
+  }
+
   String get name => stringValue('name');
   String get slug => stringValue('slug');
   String get description => stringValue('description');
@@ -268,6 +276,8 @@ class ProductContract extends SharedTypeContract {
   String? get sku => optionalString('sku');
   String? get barcode => optionalString('barcode');
   String? get category => optionalString('category');
+  String? get countryOfOrigin => optionalString('country_of_origin');
+  String? get importerDetails => optionalString('importer_details');
   int get stock => intValue('stock');
   bool get isActive => boolValue('is_active');
   bool get isFeatured => boolValue('is_featured');

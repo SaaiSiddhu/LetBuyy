@@ -24,12 +24,11 @@ const routeBandSource = (extractedSource || storefrontSource) + addressRoutesSou
 const registrationHostSource = publicRoutesSource || storefrontSource;
 
 const expectedRoutes = [
-    { method: 'post', path: '/customer/find-or-create' },
+    { method: 'post', path: '/customer/from-order' },
     { method: 'post', path: '/customer/password' },
     { method: 'post', path: '/customer/password/request-reset' },
     { method: 'post', path: '/customer/password/confirm-reset' },
     { method: 'get', path: '/customer/by-email' },
-    { method: 'get', path: '/customer/status' },
     { method: 'post', path: '/customer/login' },
     { method: 'post', path: '/customer/login-success' },
     { method: 'post', path: '/customer/order-credential' },
@@ -94,7 +93,7 @@ test('storefront customer engagement band stays after page routes and before blo
     const inlineBlogIndex = registrationHostSource.indexOf("router.get('/:subdomain/blog'");
     const afterIndex = blogRegistrationIndex === -1 ? inlineBlogIndex : blogRegistrationIndex;
     const extractedCallIndex = registrationHostSource.indexOf('registerStorefrontCustomerEngagementRoutes(router');
-    const inlineFirstRouteIndex = registrationHostSource.indexOf("router.post('/customer/find-or-create'");
+    const inlineFirstRouteIndex = registrationHostSource.indexOf("router.post('/customer/from-order'");
 
     assert.notEqual(beforeIndex, -1, 'page route marker should exist');
     assert.notEqual(afterIndex, -1, 'the blog band should exist, inline or registered');

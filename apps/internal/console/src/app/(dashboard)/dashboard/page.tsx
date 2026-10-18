@@ -1,3 +1,4 @@
+import type { InternalConsoleSummary as ConsoleSummary, InternalConsoleAnalytics as ConsoleAnalytics } from '@letbuyy/shared-types';
 import type { ExecutiveCompanyHealth, ExecutiveMrrAnalytics } from '@letbuyy/shared-types';
 import {
     ConsoleWorkspace,
@@ -11,25 +12,7 @@ import {
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatMoneyFromPaise, type ConsoleDataResponse } from '@/lib/console-api';
 
-type ConsoleSummary = {
-    total_users: number;
-    total_stores: number;
-    active_stores: number;
-    total_subscriptions: number;
-    active_subscriptions: number;
-    total_employees: number;
-    total_audit_logs: number;
-    monthly_revenue_paise: number;
-};
 
-type ConsoleAnalytics = {
-    period_days: number;
-    new_signups: number;
-    stores_created: number;
-    subscriptions_created: number;
-    audit_events: number;
-    signup_to_store_conversion_percent: number;
-};
 
 function freshnessTone(stale?: boolean): 'success' | 'warning' {
     return stale ? 'warning' : 'success';
@@ -66,11 +49,11 @@ export default async function ConsoleDashboardRoutePage() {
                 <LeadershipMetric label="Merchant stores" value={activeStoreRatio} detail="Published / total sites" tone="success" />
                 <LeadershipMetric
                     label="MRR"
-                    value={formatMoneyFromPaise(latest?.mrr_paise || summary?.monthly_revenue_paise || 0)}
-                    detail={`${mrr?.freshness.stale ? 'stale' : 'fresh'} · ${latest?.period_date || 'summary fallback'}`}
-                    tone={freshnessTone(mrr?.freshness.stale)}
+                    value={latest ? formatMoneyFromPaise(latest.mrr_paise) : 'Unavailable'}
+                    detail={latest ? `${mrr?.freshness.stale ? 'stale' : 'fresh'} · ${latest.period_date}` : 'No MRR rollup'}
+                    tone={latest ? freshnessTone(mrr?.freshness.stale) : 'warning'}
                 />
-                <LeadershipMetric label="ARR" value={formatMoneyFromPaise(latest?.arr_paise || 0)} />
+                <LeadershipMetric label="ARR" value={latest ? formatMoneyFromPaise(latest.arr_paise) : 'Unavailable'} />
                 <LeadershipMetric label="Subscriptions" value={activeSubscriptionRatio} detail="Active / total plans" />
             </MetricGrid>
 

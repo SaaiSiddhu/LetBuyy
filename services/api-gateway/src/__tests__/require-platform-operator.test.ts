@@ -87,21 +87,21 @@ function tables(): Record<string, Row[]> {
         ],
         employees: [
             // Real platform operators: store_id IS NULL.
-            { id: 'plat-1', user_id: PLATFORM_VIEWER, store_id: null, role: 'viewer', status: 'active', deleted_at: null },
-            { id: 'plat-2', user_id: PLATFORM_OPERATOR_TIER, store_id: null, role: 'support', status: 'active', deleted_at: null },
-            { id: 'plat-3', user_id: PLATFORM_INACTIVE, store_id: null, role: 'viewer', status: 'removed', deleted_at: '2026-09-01T00:00:00Z' },
-            { id: 'plat-4', user_id: PLATFORM_LEAD, store_id: null, role: 'manager', status: 'active', deleted_at: null },
+            { id: 'plat-1', user_id: PLATFORM_VIEWER, store_id: null, role: 'viewer', status: 'active', is_active: true, deleted_at: null },
+            { id: 'plat-2', user_id: PLATFORM_OPERATOR_TIER, store_id: null, role: 'support', status: 'active', is_active: true, deleted_at: null },
+            { id: 'plat-3', user_id: PLATFORM_INACTIVE, store_id: null, role: 'viewer', status: 'removed', is_active: false, deleted_at: '2026-09-01T00:00:00Z' },
+            { id: 'plat-4', user_id: PLATFORM_LEAD, store_id: null, role: 'manager', status: 'active', is_active: true, deleted_at: null },
             // A platform role whose default tier is admin, with NO allowlist entry: a tier the support queue does not admit.
-            { id: 'plat-5', user_id: PLATFORM_ADMIN_ROLE, store_id: null, role: 'admin', status: 'active', deleted_at: null },
+            { id: 'plat-5', user_id: PLATFORM_ADMIN_ROLE, store_id: null, role: 'admin', status: 'active', is_active: true, deleted_at: null },
             // A role the tier map does not know (the table's CHECK forbids it; the gate must fail closed anyway).
-            { id: 'plat-6', user_id: PLATFORM_UNKNOWN_ROLE, store_id: null, role: 'contractor', status: 'active', deleted_at: null },
-            { id: 'plat-7', user_id: SUPERADMIN_WITH_ADMIN_ROW, store_id: null, role: 'admin', status: 'active', deleted_at: null },
+            { id: 'plat-6', user_id: PLATFORM_UNKNOWN_ROLE, store_id: null, role: 'contractor', status: 'active', is_active: true, deleted_at: null },
+            { id: 'plat-7', user_id: SUPERADMIN_WITH_ADMIN_ROW, store_id: null, role: 'admin', status: 'active', is_active: true, deleted_at: null },
             // A merchant's OWN store-scoped staff, deliberately given a role/permission that LOOKS
             // platform-adjacent (role literally named 'support', a support:*-shaped permission, and
             // even a wildcard) -- must still be denied, because store_id is NOT NULL.
             {
                 id: 'merch-1', user_id: MERCHANT_STAFF_LOOKALIKE, store_id: 'some-real-store-id', role: 'support',
-                status: 'active', deleted_at: null, permissions: { granted: ['support:manage', '*'] },
+                status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['support:manage', '*'] },
             },
         ],
     };
@@ -215,4 +215,12 @@ test('admittedTiers follows the role on every request: a lead whose role becomes
     row.role = 'viewer';
     steps.push(await answer(PLATFORM_LEAD, '/queue'));
     assert.deepEqual(steps, [[200, null], [403, 'Platform operator tier not admitted'], [200, null]]);
+});
+
+// Both canonical active signals must agree; a stale textual status cannot grant access.
+test('is_active revocation denies an otherwise active platform employee on the next request', async (t) => {
+    const data = tables(), fake = installFakePostgrest(data); t.after(fake.restore);
+    assert.equal((await appWithAuth(PLATFORM_VIEWER).request('/probe')).status, 200);
+    data.employees.find(row => row.user_id === PLATFORM_VIEWER)!.is_active = false;
+    assert.equal((await appWithAuth(PLATFORM_VIEWER).request('/probe')).status, 403);
 });

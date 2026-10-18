@@ -3,6 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { MarketplaceReviewPanel, type MarketplaceListingStatus } from '@/components/products/MarketplaceReviewPanel'
+import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
+import {
+    keepMarketplaceResubmissionKeyForReason,
+    retainMarketplaceResubmissionKey,
+} from '@/lib/marketplace-resubmission-key'
 import { Button, Input,
     ArrowLeft,
     Badge,
@@ -62,13 +68,14 @@ interface ProductFormSnapshot {
     weight: string
     weightUnit: string
     countryOfOrigin: string
+    importerDetails: string
     hsCode: string
     variantOptions: VariantOption[]
     variantMatrix: VariantRow[]
     seoTitle: string
     seoDescription: string
     urlHandle: string
-    status: 'active' | 'draft'
+    status: 'active' | 'draft' | 'archived'
     productType: string
     vendor: string
     tags: string
@@ -92,6 +99,7 @@ const defaultProductSnapshot: ProductFormSnapshot = {
     weight: '',
     weightUnit: 'kg',
     countryOfOrigin: '',
+    importerDetails: '',
     hsCode: '',
     variantOptions: [],
     variantMatrix: [],
@@ -169,6 +177,8 @@ const weightUnitOptions = [
     { label: 'oz', value: 'oz' },
 ]
 
+const editStatusOptions = [{ label: 'Archived', value: 'archived' }]
+
 const statusOptions = [
     { label: 'Active', value: 'active' },
     { label: 'Draft', value: 'draft' },
@@ -176,6 +186,42 @@ const statusOptions = [
 
 function createFormSignature(snapshot: ProductFormSnapshot) {
     return JSON.stringify(snapshot)
+}
+
+interface ProductEditIntent {
+    scope: string
+    key: string
+    version: number
+    payload: string
+    signature: string
+    variantSignature: string
+    hasNewVariants: boolean
+}
+
+// This is a per-tab recovery record, never authority. SQL still verifies the
+// current actor/store, exact version and complete request binding on every retry.
+function restoreProductEdit(raw: string, scope: string): { intent: ProductEditIntent; draft: ProductFormSnapshot } {
+    const saved = JSON.parse(raw) as ProductEditIntent & { draftSignature?: string }
+    if (saved.scope !== scope || typeof saved.key !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(saved.key)
+        || !Number.isInteger(saved.version) || saved.version <= 0 || typeof saved.payload !== 'string'
+        || typeof saved.signature !== 'string' || typeof saved.variantSignature !== 'string' || typeof saved.hasNewVariants !== 'boolean') {
+        throw new Error('The pending product request is unreadable. Keep this page open and review the saved request before continuing.')
+    }
+    const body = JSON.parse(saved.payload) as Record<string, unknown>
+    const draft = JSON.parse(saved.draftSignature ?? saved.signature) as ProductFormSnapshot
+    const validDraft = draft && typeof draft === 'object' && Object.entries(defaultProductSnapshot).every(([key, value]) => {
+        const stored = draft[key as keyof ProductFormSnapshot]
+        return Array.isArray(value) ? Array.isArray(stored) : typeof stored === typeof value
+    }) && draft.images.every(value => typeof value === 'string')
+        && draft.variantOptions.every(option => option && typeof option.name === 'string' && Array.isArray(option.values) && option.values.every(value => typeof value === 'string'))
+        && draft.variantMatrix.every(row => row && ['title', 'price', 'comparePrice', 'sku', 'stock'].every(key => typeof row[key as keyof VariantRow] === 'string')
+            && ['option1', 'option2', 'option3'].every(key => row[key as keyof VariantRow] === null || typeof row[key as keyof VariantRow] === 'string')
+            && (row.id === undefined || typeof row.id === 'string'))
+    if (!validDraft || !['active', 'draft', 'archived'].includes(draft.status) || !body || body.version !== saved.version || body.idempotency_key !== saved.key) {
+        throw new Error('The pending product request is unreadable. Keep this page open and review the saved request before continuing.')
+    }
+    const { draftSignature: _draft, ...intent } = saved
+    return { intent, draft }
 }
 
 function generateHandle(text: string) {
@@ -243,13 +289,14 @@ function normalizeProductSnapshot(product: Record<string, unknown>): ProductForm
         weight: normalizeNumberInput(product.weight),
         weightUnit: normalizeString(product.weight_unit) || 'kg',
         countryOfOrigin: normalizeString(product.country_of_origin),
+        importerDetails: normalizeString(product.importer_details),
         hsCode: normalizeString(product.hs_code),
         variantOptions: productOptions,
         variantMatrix,
         seoTitle: normalizeString(product.seo_title),
         seoDescription: normalizeString(product.seo_description),
         urlHandle: normalizeString(product.url_handle || product.slug),
-        status: product.is_active === false || product.status === 'draft' ? 'draft' : 'active',
+        status: product.status === 'archived' ? 'archived' : product.is_active === false || product.status === 'draft' ? 'draft' : 'active',
         productType: normalizeString(product.product_type),
         vendor: normalizeString(product.vendor),
         tags: Array.isArray(product.tags) ? product.tags.filter((tag): tag is string => typeof tag === 'string').join(', ') : '',
@@ -286,6 +333,7 @@ function CheckboxControl({
 
 export default function AddProductPage() {
     const { store, productId } = useParams<{ store: string; productId?: string }>()
+    const { actorId } = useMerchantSecurityContext(store)
     const router = useRouter()
     const { notify } = useToast()
     const fileInputRef = useRef<HTMLInputElement>(null)
@@ -309,6 +357,7 @@ export default function AddProductPage() {
     const [weight, setWeight] = useState(defaultProductSnapshot.weight)
     const [weightUnit, setWeightUnit] = useState(defaultProductSnapshot.weightUnit)
     const [countryOfOrigin, setCountryOfOrigin] = useState(defaultProductSnapshot.countryOfOrigin)
+    const [importerDetails, setImporterDetails] = useState(defaultProductSnapshot.importerDetails)
     const [hsCode, setHsCode] = useState(defaultProductSnapshot.hsCode)
     const [variantOptions, setVariantOptions] = useState<VariantOption[]>(defaultProductSnapshot.variantOptions)
     const [variantMatrix, setVariantMatrix] = useState<VariantRow[]>(defaultProductSnapshot.variantMatrix)
@@ -319,14 +368,39 @@ export default function AddProductPage() {
     const [seoTitle, setSeoTitle] = useState(defaultProductSnapshot.seoTitle)
     const [seoDescription, setSeoDescription] = useState(defaultProductSnapshot.seoDescription)
     const [urlHandle, setUrlHandle] = useState(defaultProductSnapshot.urlHandle)
-    const [status, setStatus] = useState<'active' | 'draft'>(defaultProductSnapshot.status)
+    const [status, setStatus] = useState<ProductFormSnapshot['status']>(defaultProductSnapshot.status)
     const [productType, setProductType] = useState(defaultProductSnapshot.productType)
     const [vendor, setVendor] = useState(defaultProductSnapshot.vendor)
     const [tags, setTags] = useState(defaultProductSnapshot.tags)
     const [saving, setSaving] = useState(false)
+    const scopeKey = `${actorId}:${store}:${productId ?? 'new'}`
+    const pendingStorageKey = `letbuyy.product-edit.v1:${scopeKey}`
+    const activeScope = useRef(scopeKey)
+    activeScope.current = scopeKey
+    const requestLifecycle = useRef({ mounted: false, generation: 0 })
+    useEffect(() => {
+        requestLifecycle.current.mounted = true
+        requestLifecycle.current.generation += 1
+        return () => {
+            requestLifecycle.current.mounted = false
+            requestLifecycle.current.generation += 1
+        }
+    }, [scopeKey])
+    const loadedScope = useRef<string | null>(null)
+    const [productVersion, setProductVersion] = useState<number | null>(null)
+    const [editBlocked, setEditBlocked] = useState(false)
+    const [contextChanged, setContextChanged] = useState(false)
+    const [productConflict, setProductConflict] = useState<Record<string, unknown> | null>(null)
+    const editIntent = useRef<ProductEditIntent | null>(null)
     const [loadingProduct, setLoadingProduct] = useState(isEditing)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
+    const [marketplaceListing, setMarketplaceListing] = useState<MarketplaceListingStatus | null>(null)
+    const [marketplaceListingLoaded, setMarketplaceListingLoaded] = useState(false)
+    const [marketplaceCorrection, setMarketplaceCorrection] = useState('')
+    const [marketplaceCorrectionError, setMarketplaceCorrectionError] = useState<string | null>(null)
+    const [resubmittingMarketplaceListing, setResubmittingMarketplaceListing] = useState(false)
+    const marketplaceResubmitKey = useRef<ReturnType<typeof retainMarketplaceResubmissionKey> | null>(null)
     const [savedSignature, setSavedSignature] = useState<string | null>(() => (
         isEditing ? null : createFormSignature(defaultProductSnapshot)
     ))
@@ -349,6 +423,7 @@ export default function AddProductPage() {
         weight,
         weightUnit,
         countryOfOrigin,
+        importerDetails,
         hsCode,
         variantOptions,
         variantMatrix,
@@ -366,6 +441,7 @@ export default function AddProductPage() {
         comparePrice,
         costPerItem,
         countryOfOrigin,
+        importerDetails,
         description,
         hsCode,
         images,
@@ -390,8 +466,37 @@ export default function AddProductPage() {
     ])
 
     const currentSignature = useMemo(() => createFormSignature(currentSnapshot), [currentSnapshot])
-    const hasUnsavedChanges = Boolean(savedSignature && currentSignature !== savedSignature)
+    const latestSignature = useRef(currentSignature)
+    latestSignature.current = currentSignature
+    const latestVariants = useRef(variantMatrix)
+    latestVariants.current = variantMatrix
+    const hasUnsavedChanges = Boolean(editIntent.current?.scope === scopeKey || (savedSignature && currentSignature !== savedSignature))
     const saveState = saving ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+    const saveBlocked = isEditing && (editBlocked || productVersion === null || loadedScope.current !== scopeKey)
+    const forgetEditIntent = useCallback((expectedIntent: ProductEditIntent | null = editIntent.current) => {
+        const stored = window.sessionStorage.getItem(pendingStorageKey)
+        if (expectedIntent && stored !== null) {
+            // A different editor instance may already be retaining a newer save.
+            // Draft changes do not alter the identity of the immutable command.
+            const retained: unknown = JSON.parse(stored)
+            if (!retained || typeof retained !== 'object'
+                || !['scope', 'key', 'version', 'signature', 'variantSignature', 'hasNewVariants', 'payload']
+                    .every(field => (retained as Record<string, unknown>)[field] === expectedIntent[field as keyof ProductEditIntent])) {
+                throw new Error('Another pending save is retained. Reload and review it before clearing this request.')
+            }
+        }
+        window.sessionStorage.removeItem(pendingStorageKey)
+        if (editIntent.current === expectedIntent) editIntent.current = null
+    }, [pendingStorageKey])
+
+    useEffect(() => {
+        if (editIntent.current?.scope !== scopeKey) return
+        try {
+            window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...editIntent.current, draftSignature: currentSignature }))
+        } catch {
+            setError('Your newer draft could not be retained across reload. Keep this page open and recover the pending save.')
+        }
+    }, [currentSignature, pendingStorageKey, scopeKey])
 
     const applySnapshot = useCallback((snapshot: ProductFormSnapshot) => {
         setTitle(snapshot.title)
@@ -411,6 +516,7 @@ export default function AddProductPage() {
         setWeight(snapshot.weight)
         setWeightUnit(snapshot.weightUnit)
         setCountryOfOrigin(snapshot.countryOfOrigin)
+        setImporterDetails(snapshot.importerDetails)
         setHsCode(snapshot.hsCode)
         setVariantOptions(snapshot.variantOptions)
         setVariantMatrix(snapshot.variantMatrix)
@@ -426,20 +532,44 @@ export default function AddProductPage() {
 
     const loadProduct = useCallback(async () => {
         if (!isEditing || !productId) return
-
+        const requestScope = scopeKey
+        const requestGeneration = requestLifecycle.current.generation
         setLoadingProduct(true)
+        setProductVersion(null)
+        loadedScope.current = null
+        editIntent.current = null
+        setProductConflict(null)
+        setEditBlocked(false)
+        setContextChanged(false)
+        setSaving(false)
         setError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`)
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId } })
             const payload = await response.json().catch(() => null)
+            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
 
             if (!response.ok || !payload?.data) {
                 throw new Error(getPayloadError(payload, 'Unable to load product'))
             }
-
-            applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+            if (!Number.isInteger(payload.data.version) || payload.data.version <= 0 || payload.data.id !== productId) {
+                throw new Error('The current product version could not be loaded. Retry before saving.')
+            }
+            loadedScope.current = requestScope
+            setProductVersion(payload.data.version)
+            const stored = window.sessionStorage.getItem(pendingStorageKey)
+            if (stored !== null) {
+                const recovered = restoreProductEdit(stored, requestScope)
+                editIntent.current = recovered.intent
+                applySnapshot(recovered.draft)
+                setSavedSignature(recovered.intent.signature)
+                setError('An earlier save still needs confirmation. Retry pending save to recover it; your draft is kept.')
+            } else {
+                applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+            }
         } catch (err) {
+            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            setEditBlocked(true)
             const message = err instanceof Error ? err.message : 'Unable to load product'
             setError(message)
             notify({
@@ -448,13 +578,69 @@ export default function AddProductPage() {
                 variant: 'critical',
             })
         } finally {
-            setLoadingProduct(false)
+            if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setLoadingProduct(false)
         }
-    }, [applySnapshot, isEditing, notify, productId, store])
+    }, [actorId, applySnapshot, isEditing, notify, pendingStorageKey, productId, store, scopeKey])
 
     useEffect(() => {
         void loadProduct()
     }, [loadProduct])
+
+    const loadMarketplaceListing = useCallback(async () => {
+        if (!isEditing || !productId) return
+        setMarketplaceListingLoaded(false)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/marketplace-listings/${encodeURIComponent(productId)}`, { cache: 'no-store' })
+            const payload = await response.json().catch(() => null)
+            if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to load marketplace review status'))
+            setMarketplaceListing(payload?.data && typeof payload.data === 'object' ? payload.data as MarketplaceListingStatus : null)
+        } catch (err) {
+            setMarketplaceCorrectionError(err instanceof Error ? err.message : 'Unable to load marketplace review status')
+        } finally {
+            setMarketplaceListingLoaded(true)
+        }
+    }, [isEditing, productId, store])
+
+    useEffect(() => {
+        void loadMarketplaceListing()
+    }, [loadMarketplaceListing])
+
+    const resubmitMarketplaceListing = async () => {
+        if (!productId || !marketplaceListing || marketplaceListing.status !== 'rejected') return
+        if (hasUnsavedChanges) {
+            setMarketplaceCorrectionError('Save the corrected product first, then resubmit it for review.')
+            return
+        }
+        const reason = marketplaceCorrection.trim()
+        if (reason.length < 8 || reason.length > 500) {
+            setMarketplaceCorrectionError('Describe the corrections in 8 to 500 characters.')
+            return
+        }
+        marketplaceResubmitKey.current = retainMarketplaceResubmissionKey(
+            marketplaceResubmitKey.current,
+            reason,
+            () => crypto.randomUUID(),
+        )
+        setResubmittingMarketplaceListing(true)
+        setMarketplaceCorrectionError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/marketplace-listings/${encodeURIComponent(productId)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason, idempotency_key: marketplaceResubmitKey.current.key }),
+            })
+            const payload = await response.json().catch(() => null)
+            if (!response.ok) throw new Error(getPayloadError(payload, 'Unable to resubmit marketplace listing'))
+            marketplaceResubmitKey.current = null
+            setMarketplaceCorrection('')
+            await loadMarketplaceListing()
+            notify({ title: 'Marketplace listing resubmitted', description: 'The corrected product revision is back in the review queue.', variant: 'success' })
+        } catch (err) {
+            setMarketplaceCorrectionError(err instanceof Error ? err.message : 'Unable to resubmit marketplace listing')
+        } finally {
+            setResubmittingMarketplaceListing(false)
+        }
+    }
 
     const handleTitleChange = (value: string) => {
         setTitle(value)
@@ -568,9 +754,44 @@ export default function AddProductPage() {
         if (editingOptionIndex === index) setEditingOptionIndex(null)
     }
 
+    const checkLatestProduct = useCallback(async () => {
+        if (!productId) return
+        const requestScope = scopeKey
+        const requestGeneration = requestLifecycle.current.generation
+        setProductConflict(null)
+        setEditBlocked(true)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`, { cache: 'no-store', headers: { 'X-LetBuyy-Merchant-Context': actorId } })
+            const payload = await response.json().catch(() => null)
+            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            if (!response.ok || !payload?.data || payload.data.id !== productId || !Number.isInteger(payload.data.version) || payload.data.version <= 0) {
+                throw new Error(getPayloadError(payload, 'The latest product could not be checked. Your draft is kept.'))
+            }
+            setProductConflict(payload.data)
+        } catch (error) {
+            if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setError(error instanceof Error ? error.message : 'The latest product could not be checked. Your draft is kept.')
+        }
+    }, [actorId, productId, scopeKey, store])
+
+    const reloadLatestProduct = () => {
+        if (!productConflict || !Number.isInteger(productConflict.version) || Number(productConflict.version) <= 0) return
+        try { forgetEditIntent() } catch { setError('The pending save could not be cleared. Keep this page open and retry.'); return }
+        applySnapshot(normalizeProductSnapshot(productConflict))
+        setProductVersion(Number(productConflict.version))
+        loadedScope.current = scopeKey
+        setProductConflict(null)
+        setEditBlocked(false)
+        setError(null)
+        setSuccess(null)
+    }
+
     const handleSave = useCallback(async () => {
+        const requestScope = scopeKey
+        const requestGeneration = requestLifecycle.current.generation
+        const pending = editIntent.current?.scope === requestScope ? editIntent.current : null
+        if (saving || contextChanged || (isEditing && saveBlocked && !pending)) return
         const productTitle = title.trim()
-        if (!productTitle) {
+        if (!pending && !productTitle) {
             const message = 'Add a product title before saving.'
             setError(message)
             notify({
@@ -590,14 +811,11 @@ export default function AddProductPage() {
                 ? `/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`
                 : `/api/stores/${encodeURIComponent(store)}/products`
 
-            const response = await fetch(endpoint, {
-                method: isEditing ? 'PATCH' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const fields = {
                     name: productTitle,
                     description: description.trim(),
                     images,
-                    category: category || null,
+                    category: category || undefined,
                     price: parseFloat(price) || 0,
                     compare_price: parseFloat(comparePrice) || null,
                     cost_per_item: parseFloat(costPerItem) || null,
@@ -610,7 +828,8 @@ export default function AddProductPage() {
                     is_physical: isPhysical,
                     weight: parseFloat(weight) || null,
                     weight_unit: weightUnit,
-                    country_of_origin: countryOfOrigin || null,
+                    country_of_origin: countryOfOrigin.trim() || null,
+                    importer_details: importerDetails.trim() || null,
                     hs_code: hsCode || null,
                     url_handle: urlHandle || null,
                     seo_title: seoTitle || null,
@@ -625,6 +844,7 @@ export default function AddProductPage() {
                         values: option.values,
                     })),
                     variants: variantMatrix.map((row, index) => ({
+                        ...(isEditing && row.id ? { id: row.id } : {}),
                         title: row.title,
                         price: parseFloat(row.price) || parseFloat(price) || 0,
                         compare_price: parseFloat(row.comparePrice) || null,
@@ -643,25 +863,63 @@ export default function AddProductPage() {
                             .reduce<Record<string, string>>((acc, [k, v]) => { acc[k] = v; return acc }, {}),
                         position: index,
                     })),
-                }),
+                }
+            let intent = pending
+            if (isEditing && !intent) {
+                const key = crypto.randomUUID()
+                intent = { scope: requestScope, key, version: productVersion!, signature: currentSignature,
+                    variantSignature: JSON.stringify(variantMatrix), hasNewVariants: variantMatrix.some(row => !row.id),
+                    payload: JSON.stringify({ ...fields, status, version: productVersion, idempotency_key: key }) }
+            }
+            if (intent) {
+                // Persist the immutable command before allowing its first effect.
+                // Later draft edits update only draftSignature, never this payload/key.
+                try { window.sessionStorage.setItem(pendingStorageKey, JSON.stringify({ ...intent, draftSignature: currentSignature })) }
+                catch { throw new Error('This browser could not retain the save request. Allow session storage before saving.') }
+                editIntent.current = intent
+            }
+            const response = await fetch(endpoint, {
+                method: isEditing ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json', ...(intent ? { 'X-LetBuyy-Merchant-Context': actorId, 'X-Idempotency-Key': intent.key } : {}) },
+                body: intent?.payload ?? JSON.stringify(fields),
             })
 
             const payload = await response.json().catch(() => null)
+            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
 
             if (!response.ok) {
+                if (isEditing && payload?.error?.code === 'SESSION_CONTEXT_CHANGED') { setContextChanged(true); setEditBlocked(true) }
+                if (isEditing && response.status < 500) forgetEditIntent(intent)
+                if (isEditing && (['PRODUCT_VERSION_CONFLICT', 'PRODUCT_EDIT_KEY_CONFLICT', 'PRODUCT_VARIANT_IN_USE'].includes(payload?.error?.code))) {
+                    await checkLatestProduct()
+                } else if (isEditing && [401, 403, 404].includes(response.status)) {
+                    setEditBlocked(true)
+                }
                 throw new Error(getPayloadError(payload, 'Failed to save product'))
             }
 
             if (isEditing) {
-                if (payload?.data) {
+                if (!payload?.data || payload.data.id !== productId || !Number.isInteger(payload.data.version) || payload.data.version <= 0) {
+                    throw new Error('The save response could not be confirmed. Retry the pending save.')
+                }
+                setProductVersion(payload.data.version)
+                loadedScope.current = requestScope
+                forgetEditIntent(intent)
+                const newerDraft = intent?.signature !== latestSignature.current
+                if (!newerDraft) {
                     applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
                 } else {
-                    setSavedSignature(currentSignature)
+                    setSavedSignature(intent?.signature ?? currentSignature)
+                    if (intent?.variantSignature === JSON.stringify(latestVariants.current)) {
+                        setVariantMatrix(normalizeApiVariants(payload.data.variants))
+                    } else if (intent?.hasNewVariants) {
+                        void checkLatestProduct()
+                    }
                 }
-                setSuccess('Product saved')
+                setSuccess(newerDraft ? 'The earlier save is confirmed. Your newer draft is kept; review it and save again.' : 'Product saved')
                 notify({
                     title: 'Product saved',
-                    description: `${productTitle} is up to date.`,
+                    description: newerDraft ? 'Your newer draft still needs saving.' : `${productTitle} is up to date.`,
                     variant: 'success',
                 })
             } else {
@@ -674,7 +932,10 @@ export default function AddProductPage() {
                 router.push(`/${store}/products`)
             }
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : 'Failed to save product'
+            if (!requestLifecycle.current.mounted || requestLifecycle.current.generation !== requestGeneration || activeScope.current !== requestScope) return
+            const message = editIntent.current?.scope === requestScope
+                ? 'The save result is not confirmed. Retry pending save to recover it. Your draft is kept.'
+                : err instanceof Error ? err.message : 'Failed to save product'
             setError(message)
             notify({
                 title: 'Could not save product',
@@ -682,16 +943,26 @@ export default function AddProductPage() {
                 variant: 'critical',
             })
         } finally {
-            setSaving(false)
+            if (requestLifecycle.current.mounted && requestLifecycle.current.generation === requestGeneration && activeScope.current === requestScope) setSaving(false)
         }
     }, [
+        actorId,
         applySnapshot,
+        checkLatestProduct,
+        contextChanged,
+        forgetEditIntent,
+        pendingStorageKey,
+        productVersion,
+        saveBlocked,
+        saving,
+        scopeKey,
         barcode,
         category,
         chargeTax,
         comparePrice,
         costPerItem,
         countryOfOrigin,
+        importerDetails,
         currentSignature,
         description,
         hsCode,
@@ -754,10 +1025,10 @@ export default function AddProductPage() {
                 description={isEditing ? 'Update product details, media, pricing, inventory, and search metadata.' : 'Create a catalog-ready product with the details shoppers need.'}
                 breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: isEditing ? 'Edit product' : 'Add product' }]}
                 primaryAction={{
-                    label: saving ? 'Saving' : 'Save product',
+                    label: saving ? 'Saving' : editIntent.current?.scope === scopeKey ? 'Retry pending save' : 'Save product',
                     onClick: () => void handleSave(),
                     icon: <Save className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                    disabled: saving,
+                    disabled: saving || saveBlocked,
                 }}
                 secondaryActions={[{
                     label: 'Discard',
@@ -770,6 +1041,20 @@ export default function AddProductPage() {
             {error && (
                 <Banner variant="critical" title="Product needs attention">
                     {error}
+                </Banner>
+            )}
+
+            {contextChanged && <Banner variant="critical" title="Account or store access changed">
+                Reload this page before continuing. <Button onClick={() => window.location.reload()}>Reload page</Button>
+            </Banner>}
+
+            {isEditing && editBlocked && !productConflict && !contextChanged && (
+                <Button onClick={() => void checkLatestProduct()}>Check latest product</Button>
+            )}
+            {productConflict && (
+                <Banner variant="warning" title="This product changed">
+                    <p>Latest: {String(productConflict.name)}, price {String(productConflict.price)}, stock {String(productConflict.stock)}. Your draft is kept.</p>
+                    <Button onClick={reloadLatestProduct}>Reload latest and discard my edits</Button>
                 </Banner>
             )}
 
@@ -975,12 +1260,22 @@ export default function AddProductPage() {
                                             onChange={(event) => setWeightUnit(event.target.value)}
                                         />
                                     </div>
+                                    <Textarea
+                                        label="Importer details (for imported products)"
+                                        placeholder="Enter the importer name and contact/address details shown on the product package, when applicable."
+                                        value={importerDetails}
+                                        onChange={(event) => setImporterDetails(event.target.value.slice(0, 1000))}
+                                        maxLength={1000}
+                                    />
+                                    <p className="m-0 text-sm text-[var(--lb-color-text-subdued)]">
+                                        This information is shown publicly. Enter only details intended for a product listing; it is seller-provided and not independently verified.
+                                    </p>
                                     <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                                         <Input
                                             label="Country/Region of origin"
                                             placeholder="India"
                                             value={countryOfOrigin}
-                                            onChange={(event) => setCountryOfOrigin(event.target.value)}
+                                            onChange={(event) => setCountryOfOrigin(event.target.value.slice(0, 100))}
                                         />
                                         <Input
                                             label="HS (Harmonized System) code"
@@ -1233,12 +1528,12 @@ export default function AddProductPage() {
                             <Select
                                 label="Product status"
                                 value={status}
-                                options={statusOptions}
-                                onChange={(event) => setStatus(event.target.value as 'active' | 'draft')}
+                                options={isEditing ? [...statusOptions, ...editStatusOptions] : statusOptions}
+                                onChange={(event) => setStatus(event.target.value as ProductFormSnapshot['status'])}
                             />
                             <Badge
-                                label={status === 'active' ? 'Visible on storefront' : 'Draft product'}
-                                variant={status === 'active' ? 'success' : 'warning'}
+                                label={isEditing && status === 'archived' ? 'Archived product' : status === 'active' ? 'Visible on storefront' : 'Draft product'}
+                                variant={isEditing && status === 'archived' ? 'critical' : status === 'active' ? 'success' : 'warning'}
                             />
                         </Section>
                     </Card>
@@ -1285,15 +1580,33 @@ export default function AddProductPage() {
                             </div>
                         </Section>
                     </Card>
+
+                    {isEditing && <MarketplaceReviewPanel
+                        listing={marketplaceListingLoaded ? marketplaceListing : null}
+                        loaded={marketplaceListingLoaded}
+                        correction={marketplaceCorrection}
+                        error={marketplaceCorrectionError}
+                        submitting={resubmittingMarketplaceListing}
+                        hasUnsavedChanges={hasUnsavedChanges}
+                        onCorrectionChange={(value) => {
+                            marketplaceResubmitKey.current = keepMarketplaceResubmissionKeyForReason(
+                                marketplaceResubmitKey.current,
+                                value,
+                            )
+                            setMarketplaceCorrection(value)
+                            setMarketplaceCorrectionError(null)
+                        }}
+                        onResubmit={() => void resubmitMarketplaceListing()}
+                    />}
                 </aside>
             </div>
 
-            <SaveBar
+            {!saveBlocked && <SaveBar
                 state={saveState}
                 onSave={() => void handleSave()}
                 onDiscard={discardChanges}
-                saveLabel={isEditing ? 'Save product' : 'Create product'}
-            />
+                saveLabel={editIntent.current?.scope === scopeKey ? 'Retry pending save' : isEditing ? 'Save product' : 'Create product'}
+            />}
 
             {saving && <span className="sr-only" aria-live="polite">Saving product</span>}
         </Page>

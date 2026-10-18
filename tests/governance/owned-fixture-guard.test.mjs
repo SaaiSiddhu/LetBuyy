@@ -32,6 +32,7 @@ import {
     ROLE_LABEL,
     RUN_ID_LABEL,
 } from '../../scripts/governance/executable-pg-fixture.mjs';
+import { ownedDatabaseNameFor } from '../../scripts/governance/owned-database-name.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -57,6 +58,16 @@ const goodEnv = () => ({
     [ENV.restContainer]: REST,
     [ENV.restUpstreamPort]: String(REST_PORT),
     [ENV.restServiceKey]: 'not-a-real-key',
+});
+
+test('owned runner preserves long suite-name tails within PostgreSQL and ownership-guard limits', () => {
+    const database = ownedDatabaseNameFor('services/api-gateway/src/__tests__/owned-db/storefront-customer-address-atomicity.postgres.test.ts');
+    assert.equal(database, 'letbuyy_exec_storefront_customer_address_atomicity_postgres');
+    assert.ok(database.length <= 63);
+    assert.doesNotThrow(() => parseOwnedFixtureEnv({ ...goodEnv(), [ENV.pgDatabase]: database }));
+    const maximum = ownedDatabaseNameFor(`/${'a'.repeat(63)}.test.ts`);
+    assert.ok(maximum.length <= 63);
+    assert.doesNotThrow(() => parseOwnedFixtureEnv({ ...goodEnv(), [ENV.pgDatabase]: maximum }));
 });
 
 const labels = (role, overrides = {}) => ({
@@ -171,7 +182,7 @@ test('an announcement that is incomplete or malformed is refused before any dock
         [ENV.pgDatabase, 'postgres', 'NOT_OWNED_NAME'],
         [ENV.pgDatabase, 'letbuyy_executable', 'NOT_OWNED_NAME'],
         [ENV.pgDatabase, 'letbuyy_exec_Upper', 'NOT_OWNED_NAME'],
-        [ENV.pgDatabase, `letbuyy_exec_${'x'.repeat(41)}`, 'NOT_OWNED_NAME'],
+        [ENV.pgDatabase, `letbuyy_exec_${'x'.repeat(51)}`, 'NOT_OWNED_NAME'],
     ];
     for (const [name, value, code] of malformed) {
         assert.throws(() => parseOwnedFixtureEnv({ ...goodEnv(), [name]: value }), (error) => error instanceof OwnershipError && error.code === code, `${name}=${value} -> ${code}`);

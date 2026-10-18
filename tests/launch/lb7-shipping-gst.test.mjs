@@ -174,13 +174,15 @@ test('LB-7: checkout-payment route imports calculateGstLine', () => {
     );
 });
 
-test('LB-7: checkout-payment route calls resolveShippingRate', () => {
+test('LB-7: checkout-payment route resolves current destination rates and rejects changed reviewed amounts', () => {
     const src = readFileSync(CHECKOUT_PAYMENT_ROUTE, 'utf8');
     assert.match(
         src,
-        /resolveShippingRate/,
-        'checkout-payment-routes.ts must call resolveShippingRate',
+        /listStorefrontShippingRates\(db, store\.id,/,
+        'checkout-payment-routes.ts resolves merchant rates at the exact destination',
     );
+    assert.match(src,/options\.find\(\(option\) => option\.id === body\.shippingRateId\)/);
+    assert.match(src,/selected\.amount_minor !== body\.shippingAmountMinor/);
 });
 
 test('LB-7: checkout-payment route does NOT trust client-supplied shipping amount directly', () => {
@@ -211,13 +213,17 @@ test('LB-7: hosted checkout delivery step uses server_resolved flag', () => {
     );
 });
 
-test('LB-7: hosted checkout delivery step calls resolveShippingRate', () => {
+test('LB-7: hosted checkout resolves COD and prepaid delivery from the signed site and current rate', () => {
     const src = readFileSync(HOSTED_CHECKOUT_ROUTE, 'utf8');
     assert.match(
         src,
-        /resolveShippingRate/,
-        'checkout.ts delivery step must call resolveShippingRate',
+        /checkoutDeliveryOptions\(/,
+        'COD uses current COD-capable delivery options',
     );
+    assert.match(src,/listStorefrontShippingRates\(/);
+    assert.match(src,/verified\.handoff\.siteId/);
+    assert.match(src,/rates\.find\(\(rate\) => rate\.id === shippingRateId\)/);
+    assert.match(src,/Math\.round\(reviewedAmount \* 100\) !== selectedRate\.amount_minor/);
 });
 
 // ---------------------------------------------------------------------------
@@ -263,13 +269,15 @@ test('LB-7: storefront /api/shipping/rates proxy route exists', () => {
     );
 });
 
-test('LB-7: storefront rates proxy uses internalStorefrontApiFetch (never trusts client headers)', () => {
+test('LB-7: storefront rates proxy uses canonical public destination transport without forwarding browser authority', () => {
     const src = readFileSync(STOREFRONT_RATES_PROXY, 'utf8');
     assert.match(
         src,
-        /internalStorefrontApiFetch/,
-        'storefront rates proxy must use internalStorefrontApiFetch to add internal API secret',
+        /storefrontApiFetch\(`\/storefront\/\$\{encodeURIComponent\(subdomain\)\}\/shipping-rates\?/,
+        'the canonical public storefront route resolves seller configuration',
     );
+    assert.match(src,/request\.headers\.get\('origin'\) !== request\.nextUrl\.origin/);
+    assert.doesNotMatch(src,/headers:\s*request\.headers|store_id:\s*body\./);
 });
 
 // ---------------------------------------------------------------------------

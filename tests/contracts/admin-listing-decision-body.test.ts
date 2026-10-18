@@ -20,6 +20,7 @@ import {
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const LISTING = 'cccccccc-0000-4000-8000-0000000000c1';
+const OPERATOR = 'dddddddd-0000-4000-8000-0000000000d1';
 const REASON = 'Images show a counterfeit brand mark.';
 
 test('every body the moderation queue builds is accepted by the gateway schema', () => {
@@ -28,13 +29,14 @@ test('every body the moderation queue builds is accepted by the gateway schema',
             decision,
             reason: decision === 'approve' ? '' : REASON,
             idempotencyKey: newListingDecisionKey(decision, LISTING),
+            operatorUserId: OPERATOR,
         });
         const parsed = OperatorListingDecisionSchema.safeParse(body);
         assert.ok(parsed.success, `${decision}: ${JSON.stringify(parsed.error?.issues)}`);
     }
     // An approve may carry an optional note; it must still parse.
     assert.ok(OperatorListingDecisionSchema.safeParse(buildListingDecisionBody({
-        decision: 'approve', reason: 'Checked against the brand register.', idempotencyKey: newListingDecisionKey('approve', LISTING),
+        decision: 'approve', reason: 'Checked against the brand register.', idempotencyKey: newListingDecisionKey('approve', LISTING), operatorUserId: OPERATOR,
     })).success);
 });
 
@@ -49,14 +51,21 @@ test('keys are per form and fit the gateway bound; a negative decision without a
     const second = newListingDecisionKey('approve', LISTING);
     assert.notEqual(first, second, 'each rendered form gets its own key');
     assert.ok(first.length <= 200, 'within the schema max');
-    assert.throws(() => buildListingDecisionBody({ decision: 'reject', reason: 'short', idempotencyKey: first }), /requires a reason/);
-    assert.throws(() => buildListingDecisionBody({ decision: 'approve', reason: '', idempotencyKey: '   ' }), /could not be submitted/);
+    assert.throws(() => buildListingDecisionBody({ decision: 'reject', reason: 'short', idempotencyKey: first, operatorUserId: OPERATOR }), /requires a reason/);
+    assert.throws(() => buildListingDecisionBody({ decision: 'approve', reason: '', idempotencyKey: '   ', operatorUserId: OPERATOR }), /could not be submitted/);
 });
 
-test('the page builds its body through buildListingDecisionBody and renders a key into every decision form', () => {
-    const page = readFileSync(join(testDir, '../../apps/internal/console/src/app/(dashboard)/marketplace-listings/page.tsx'), 'utf8');
-    assert.match(page, /const body = buildListingDecisionBody\(\{/);
-    assert.match(page, /\{ method: 'POST', body \}/);
-    assert.doesNotMatch(page, /body: reason \? \{ reason \} : \{\}/, 'the old key-less body must not come back');
-    assert.equal((page.match(/name="idempotency_key"/g) || []).length, 3, 'approve, reject and take-down each carry a key');
+test('MFA-gated detail actions bind the server-session operator identity into each decision request', () => {
+    const actions = readFileSync(join(testDir, '../../apps/internal/console/src/app/(dashboard)/marketplace-listings/actions.ts'), 'utf8');
+    const detail = readFileSync(join(testDir, '../../apps/internal/console/src/app/(dashboard)/marketplace-listings/[id]/page.tsx'), 'utf8');
+    assert.match(actions, /const body = buildListingDecisionBody\(\{/);
+    assert.match(actions, /operatorUserId,/);
+    assert.match(actions, /requireConsoleSession\(\{ mfa: true \}\)/);
+    assert.match(actions, /\{ method: 'POST', body \}/);
+    assert.doesNotMatch(actions, /body: reason \? \{ reason \} : \{\}/, 'the old key-less body must not come back');
+    assert.equal((detail.match(/name="idempotency_key"/g) || []).length, 3, 'claim, assignment and decision forms each carry a stable idempotency key');
+    assert.match(detail, /assignListingReviewer/);
+    assert.match(actions, /export async function assignListingReviewer/);
+    assert.match(detail, /newListingDecisionKey\(decision, listingId\)/);
+    for (const decision of ['approve', 'reject', 'take-down']) assert.match(detail, new RegExp(`decision="${decision}"`));
 });

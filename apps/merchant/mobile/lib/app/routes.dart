@@ -23,7 +23,9 @@ import '../screens/settings/localization_markets_screen.dart';
 import '../screens/settings/custom_data_screen.dart';
 import '../screens/settings/notifications_screen.dart';
 import '../screens/settings/staff_screen.dart';
+import '../screens/settings/accept_staff_invitation_screen.dart';
 import '../screens/settings/billing_screen.dart';
+import '../screens/settings/loyalty_screen.dart';
 import '../screens/marketing/reviews_screen.dart';
 import '../screens/marketing/leads_screen.dart';
 import '../screens/marketing/email_campaigns_screen.dart';
@@ -79,7 +81,9 @@ enum AppRouteId {
   storeHealth,
   notifications,
   staff,
+  acceptStaffInvitation,
   billing,
+  loyalty,
   reviews,
   leads,
   emailCampaigns,
@@ -208,7 +212,9 @@ class AppRoutes {
   static const String storeHealth = '/store-health';
   static const String notifications = '/notifications';
   static const String staff = '/staff';
+  static const String acceptStaffInvitation = '/accept-invite';
   static const String billing = '/billing';
+  static const String loyalty = '/loyalty';
   static const String reviews = '/reviews';
   static const String leads = '/leads';
   static const String emailCampaigns = '/email-campaigns';
@@ -386,9 +392,19 @@ class AppRoutes {
       builder: (_) => const NotificationsScreen(),
     ),
     AppRouteSpec(
+      id: AppRouteId.acceptStaffInvitation,
+      path: acceptStaffInvitation,
+      builder: (_) => const AcceptStaffInvitationScreen(),
+    ),
+    AppRouteSpec(
       id: AppRouteId.staff,
       path: staff,
       builder: (_) => const StaffScreen(),
+    ),
+    AppRouteSpec(
+      id: AppRouteId.loyalty,
+      path: loyalty,
+      builder: (_) => const LoyaltyScreen(),
     ),
     AppRouteSpec(
       id: AppRouteId.billing,

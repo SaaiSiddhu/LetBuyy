@@ -1005,7 +1005,7 @@ const LIQUID_PRODUCT_CARD = [
   '    <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}">',
   '      <button type="button" class="lb-product-card__cta" data-lb-add-to-cart{% if item.available == false %} disabled{% endif %}>{% if item.available == false %}Sold out{% else %}Quick add{% endif %}</button>',
   '    </lb-add-to-cart>',
-  '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ item.title }} to wishlist"></lb-wishlist-toggle>',
+          '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ item.title }} to wishlist"></lb-wishlist-toggle>',
   '  </div>',
   '</article>',
 ].join('');
@@ -1582,7 +1582,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '      <button type="button" class="lb-product-detail__cta lb-product-detail__cta--secondary" data-lb-buy-now{% if product.available == false %} disabled{% endif %}>Buy now</button>',
         '      <span data-lb-add-to-cart-status aria-live="polite"></span>',
         '    </lb-add-to-cart>',
-        '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %} aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>',
+        '    <lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ product.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if product.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}" aria-label="Add {{ product.title }} to wishlist"></lb-wishlist-toggle>',
         '  </div>',
         // T6/W3 — description, shipping and returns as <details> accordions (confirmed to survive the
         // sanitizer, matching faq-accordion.liquid's own established pattern). Shipping/returns are
@@ -1627,7 +1627,7 @@ export function createLiquidParitySectionFiles(): Record<string, ThemeLiquidSect
         '  <h2>{{ section.settings.title }}</h2>',
         '  {% if section.settings.subtitle %}<p>{{ section.settings.subtitle }}</p>{% endif %}',
         '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
-        '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if customer %} data-authenticated="true"{% endif %}></lb-wishlist-toggle></article>{% endfor %}',
+        '    {% for item in collection.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-add-to-cart data-lb-island="add-to-cart" data-product-id="{{ item.id }}" data-product-name="{{ item.title }}" data-product-price="{{ item.price }}" data-product-currency="{{ item.currency }}" data-product-url="{{ item.url }}"><button type="button" data-lb-add-to-cart>Add to cart</button></lb-add-to-cart><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="{% if item.in_wishlist %}true{% endif %}"{% if buyer_wishlist.authenticated %} data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="{% if buyer_wishlist.linked %}true{% endif %}" data-buyer-unavailable="{% if buyer_wishlist.unavailable or buyer_wishlist.storeAccountUnavailable %}true{% endif %}"{% elsif customer %} data-authenticated="true" data-account-type="store_customer"{% endif %} data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}',
         '  </div>',
         '</section>',
       ],
@@ -3059,6 +3059,8 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           // Storefront order ownership is the verified canonical buyer-order link,
           // never a store-customer email match.
           '  {% if buyer_unavailable %}<p class="lb-orders__error" role="alert">Orders are temporarily unavailable. Please try again.</p>{% elsif buyer %}',
+          '  <form class="lb-orders__claim" method="post" action="/api/buyer/orders"><input type="hidden" name="return_to" value="{{ routes.account_orders_url }}"><p>Find past orders from this store placed with your verified LetBuyy email.</p><button type="submit">Find past orders</button></form>',
+          '  {% if request.query.buyer_claim == "complete" %}<p role="status" aria-live="polite">The verified orders for this store have been checked and linked.</p>{% elsif request.query.buyer_claim == "partial" %}<p role="status" aria-live="polite">Some eligible orders could not be linked. Contact the store for help.</p>{% elsif request.query.buyer_claim == "unverified" %}<p role="status" aria-live="polite">Verify your LetBuyy email before claiming historical orders.</p>{% elsif request.query.buyer_claim == "unavailable" %}<p role="status" aria-live="polite">Historical orders could not be checked right now. Please try again.</p>{% elsif request.query.buyer_claim == "unauthorized" %}<p role="status" aria-live="polite">Sign in to LetBuyy before claiming past orders.</p>{% endif %}',
           '  {% if buyer.orders and buyer.orders.size > 0 %}',
           '  <ul class="lb-orders__list">{% for order in buyer.orders %}<li class="lb-orders__row"><a href="{{ routes.account_orders_url }}/{{ order.id }}"><span class="lb-orders__num">#{{ order.number }}</span><span class="lb-orders__status">{{ order.status }}</span><span class="lb-orders__total">{{ order.total | money_with_currency: order.currency }}</span></a></li>{% endfor %}</ul>',
           '  {% if buyer.has_more and buyer.next_cursor %}<a class="lb-orders__next" href="{{ routes.account_orders_url }}?cursor={{ buyer.next_cursor }}">Older orders</a>{% endif %}',
@@ -3098,7 +3100,7 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  {% if buyer %}',
           '  <h1>{{ section.settings.heading }}</h1>',
           '  <p class="lb-account__hello">Signed in to LetBuyy as {{ buyer.full_name | default: buyer.email }}</p>',
-          '  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_settings_url }}">Settings</a><form method="post" action="/api/buyer-auth/logout?return_to={{ routes.account_url }}"><button type="submit" class="lb-account__nav-link">Sign out at this store</button></form></nav>',
+          '  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_url }}/loyalty">Rewards</a><a href="{{ routes.account_settings_url }}">Settings</a><form method="post" action="/api/buyer-auth/logout?return_to={{ routes.account_url }}"><button type="submit" class="lb-account__nav-link">Sign out at this store</button></form></nav>',
           '  {% elsif buyer_unavailable %}<p class="lb-account__unavailable" role="status">We could not load your LetBuyy account right now. Please refresh and try again.</p>',
           '  {% elsif customer %}',
           '  <h1>{{ section.settings.heading }}</h1>',
@@ -3141,7 +3143,16 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
           '  </form>',
           '  <a href="{{ routes.customer_register_url }}">Create an account</a>',
           // APPID-P4c: sign in with the buyer's LetBuyy account instead, through identity-platform.
-          '  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start">Continue with LetBuyy</a></p>',
+          '  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start?return_to={{ routes.account_url }}">Continue with LetBuyy</a></p>',
+          // An existing store-only customer can connect from this entry point without first minting
+          // another legacy password session; the callback still requires verified buyer email.
+          '  <p>Have an older store account? Connect it with your verified LetBuyy account.</p>',
+          '  <form class="lb-auth__link-store" method="post" action="/api/buyer-auth/start">',
+          // `action` is treated as a DOM-clobbering name by the Liquid HTML sanitizer; use intent.
+          '    <input type="hidden" name="intent" value="link_store_customer">',
+          '    <input type="hidden" name="return_to" value="{{ routes.account_url }}">',
+          '    <button type="submit">Connect my store account</button>',
+          '  </form>',
           '</section>',
         ],
       }),
@@ -3152,21 +3163,9 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         body: [
           '<section class="lb-auth lb-auth--register" data-section-id="{{ section.id }}">',
           '  <h1>{{ section.settings.heading }}</h1>',
-          '  {% if request.error %}<p class="lb-auth__error" role="alert">{% case request.error %}{% when "missing_fields" %}Please fill in all required fields.{% when "invalid_credentials" %}Incorrect email or password.{% when "account_exists" %}An account with this email already exists. Please sign in.{% when "rate_limited" %}Too many attempts. Please try again shortly.{% when "bot_verification" %}We could not verify you are not a robot. Please try again.{% else %}Something went wrong. Please try again.{% endcase %}</p>{% endif %}',
-          '  <form class="lb-auth__form" method="post" action="/api/customer/register">',
-          '    <input type="hidden" name="storeId" value="{{ shop.id }}">',
-          '    <input type="hidden" name="turnstileToken" value="">',
-          '    <lb-turnstile data-lb-island="turnstile"></lb-turnstile>',
-          // Field is named "fullName" (not "name"): DOMPurify 3.x DOM-clobbering protection strips
-          // name="name" from an <input> because the value "name" collides with the HTMLInputElement.name
-          // property, which would silently drop the customer name from a no-JS POST. The register route
-          // reads form.get("fullName") first (falling back to "name"), so this is the correct field name.
-          '    <label>Name<input type="text" name="fullName" autocomplete="name"></label>',
-          '    <label>Email<input type="email" name="email" autocomplete="email" required></label>',
-          '    <label>Password<input type="password" name="password" autocomplete="new-password" required></label>',
-          '    <button type="submit">Create account</button>',
-          '  </form>',
-          '  <a href="{{ routes.customer_login_url }}">Already have an account?</a>',
+          '  <p>Create one LetBuyy account to use across participating storefronts.</p>',
+          '  <p class="lb-auth__letbuyy"><a href="/api/buyer-auth/start?return_to={{ routes.account_url }}">Create or sign in with LetBuyy</a></p>',
+          '  <p>Have an older store-only account? <a href="{{ routes.customer_login_url }}">Sign in to connect it with your verified LetBuyy account</a>.</p>',
           '</section>',
         ],
       }),
@@ -3208,10 +3207,17 @@ export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBu
         settings: [liquidSetting('heading', 'text', 'Heading', { default: 'Your wishlist' })],
         body: [
           '<section class="lb-wishlist" data-section-id="{{ section.id }}">',
-          '  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class="lb-wishlist__count">({{ customer.wishlist_products.size }})</span>{% endif %}</h1>',
-          '  {% if customer.wishlist_products and customer.wishlist_products.size > 0 %}',
+          '  <h1>{{ section.settings.heading }}{% if customer.wishlist_products.size > 0 %} <span class="lb-wishlist__count">({{ customer.wishlist_products.size }})</span>{% elsif buyer_wishlist.products.size > 0 %} <span class="lb-wishlist__count">({{ buyer_wishlist.products.size }})</span>{% endif %}</h1>',
+          '  {% if buyer_wishlist.authenticated %}',
+          '    {% if buyer_wishlist.unavailable %}<p class="lb-wishlist__unavailable" role="status">Your wishlist is temporarily unavailable. Please try again.</p>',
+          '    {% elsif buyer_wishlist.storeAccountUnavailable %}<p class="lb-wishlist__unavailable" role="status">This store account is unavailable. Contact the store for help.</p>',
+          '    {% elsif buyer_wishlist.linked and buyer_wishlist.products.size > 0 %}',
+          '      <div class="lb-product-grid__items">{% for item in buyer_wishlist.products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-account-type="buyer" data-buyer-id="{{ buyer_wishlist.buyerId }}" data-buyer-linked="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}</div>',
+          '    {% elsif buyer_wishlist.linked %}<p class="lb-wishlist__empty">Your wishlist is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>',
+          '    {% else %}<p class="lb-wishlist__guest">Connect your verified store account in <a href="{{ routes.account_settings_url }}">account settings</a> to use this store wishlist.</p>{% endif %}',
+          '  {% elsif customer.wishlist_products and customer.wishlist_products.size > 0 %}',
           '  <div class="lb-product-grid__items">',
-          '    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}',
+          '    {% for item in customer.wishlist_products %}<article class="lb-product-card"><a href="{{ item.url }}"><strong>{{ item.title }}</strong><span>{{ item.price | times: 100 | money_with_currency: item.currency }}</span></a><lb-wishlist-toggle data-lb-island="wishlist-toggle" data-product-id="{{ item.id }}" data-store-id="{{ shop.id }}" data-in-wishlist="true" data-authenticated="true" data-account-type="store_customer" data-base-path="/store/{{ shop.subdomain }}"></lb-wishlist-toggle></article>{% endfor %}',
           '  </div>',
           '  {% elsif customer %}',
           '  <p class="lb-wishlist__empty">Your wishlist is empty. <a href="{{ routes.all_products_collection_url }}">Browse products</a></p>',

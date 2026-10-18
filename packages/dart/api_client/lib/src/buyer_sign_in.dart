@@ -141,6 +141,15 @@ class BuyerSignInException implements Exception {
 }
 
 /// The protocol: begin an attempt, build the address to open, read the callback, exchange the code.
+/// The account id is a refusal-only hint; no session/code/download capability
+/// enters the browser address. Password entry stays at Identity's own origin.
+Uri buildBuyerPrivacyUri({required String identityBaseUrl, required String buyerAccountId}) {
+  if (!RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(buyerAccountId)) {
+    throw ArgumentError('A current buyer account id is required');
+  }
+  return BuyerSignInClient._identityOrigin(identityBaseUrl).replace(path: '/buyer/privacy', queryParameters: {'buyer_hint': buyerAccountId.toLowerCase()});
+}
+
 class BuyerSignInClient {
   BuyerSignInClient({required String identityBaseUrl, Dio? dio, Random? random, DateTime Function()? clock})
       : _identity = _identityOrigin(identityBaseUrl),

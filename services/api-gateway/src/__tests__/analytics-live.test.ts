@@ -26,7 +26,7 @@ const mobileScreenSource = readFileSync(
 
 test('analytics live route is tenant checked and rollup backed', () => {
     assert.match(routeSource, /router\.get\('\/live'/);
-    assert.match(routeSource, /canAccessStore\(db,\s*auth\.user,\s*storeId\)/);
+    assert.match(routeSource, /assertStoreReportAccess\(c,\s*auth\.user,\s*storeId\)/);
     assert.match(routeSource, /LIVE_VIEW_METRICS/);
     assert.match(routeSource, /analytics_rollups_daily/);
     assert.match(routeSource, /updated_at/);

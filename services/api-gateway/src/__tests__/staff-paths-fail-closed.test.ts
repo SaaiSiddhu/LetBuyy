@@ -81,6 +81,7 @@ function installFakePostgrest(tables: Record<string, Row[]>, failing: Set<string
         requests.push({ method, table, query: url.search });
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
         if (failing.has(table)) return json({ code: 'XX000', message: 'database unavailable' }, 500);
+        if (table === 'rpc/consume_internal_auth_replay_jti') return json(true);
 
         const rows = (tables[table] ?? []).filter((row) => matches(row, url.searchParams));
         if (method === 'PATCH') {
@@ -238,7 +239,7 @@ test("through the real auth and permission layers, a store admin is refused an o
     t.after(fake.restore);
     const res = await operatorGateway().request('/operations/marketplace-listings', { headers: await identity(STORE_ADMIN, 'admin@shop.test') });
     assert.equal(res.status, 403);
-    assert.equal(((await res.json()) as { error: { code: string } }).error.code, 'PERMISSION_SCOPE_DENIED');
+    assert.equal(((await res.json()) as { error: { code: string } }).error.code, 'FORBIDDEN');
     assert.ok(!fake.requests.some((r) => r.table === 'channel_listings'), 'nothing is read for a refused caller');
 });
 

@@ -17,7 +17,9 @@ export async function POST(request: NextRequest) {
         });
     }
 
-    await clearConsoleSessionCookie();
+    if (!await clearConsoleSessionCookie()) {
+        return NextResponse.redirect(new URL('/login?error=logout_unavailable', request.url), 303);
+    }
 
     return NextResponse.redirect(new URL('/login?loggedOut=1', request.url), 303);
 }

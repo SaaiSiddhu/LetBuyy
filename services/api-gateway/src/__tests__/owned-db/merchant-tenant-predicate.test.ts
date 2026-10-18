@@ -47,6 +47,24 @@ function client() {
     return createTenantGuardedSupabaseClient(raw as never);
 }
 
+test('a scoped OR branch cannot expose the other tenant through an unscoped branch or embedded filter',async()=>{
+    const expression=`store_id.eq.${STORE_ID},order_id.eq.${rivalOrderId}`;
+    const raw=createSupabaseServiceClient(owned.restEnv());
+    const control=await raw.from('order_items').select('store_id').or(expression);
+    assert.equal(control.error,null);
+    assert.deepEqual([...new Set((control.data ?? []).map(row=>row.store_id))].sort(),[STORE_ID,rival.siteId].sort(),
+        'the unguarded query actually exposes both tenants, so a missing guard is observable');
+    await assert.rejects(Promise.resolve(client().from('order_items').select('store_id').or(expression)),/requires a tenant\/owner predicate/);
+    await assert.rejects(Promise.resolve(client().from('order_items').select('store_id,orders!inner(store_id)')
+        .or(`store_id.eq.${STORE_ID}`,{referencedTable:'orders'})),/requires a tenant\/owner predicate/);
+    const bounded=await client().from('order_items').select('store_id').eq('store_id',STORE_ID).or(expression);
+    assert.equal(bounded.error,null);assert.ok(bounded.data?.length);
+    assert.ok(bounded.data?.every(row=>row.store_id===STORE_ID));
+    const fullyScoped=await client().from('order_items').select('store_id').or(`store_id.eq.${STORE_ID},store_id.is.null`);
+    assert.equal(fullyScoped.error,null);assert.ok(fullyScoped.data?.length);
+    assert.ok(fullyScoped.data?.every(row=>row.store_id===STORE_ID));
+});
+
 test(
     'hydrateOrderItems\' exact query shape: no predicate throws, the real fix (scoped by store_id) loads real rows, and cross-tenant sees nothing',
     async () => {
@@ -167,6 +185,22 @@ test(
             });
         assert.equal(insertError, null, 'a store_id-scoped insert must be accepted by the guard');
 
+        const scopedLine={
+            store_id:testStoreId, order_id:orderId, product_id:productId,
+            name:'Synthetic scoped bulk line', title:'Synthetic scoped bulk line',
+            quantity:1, price:150, unit_price:150, total:150,
+        };
+        const bulk=await guarded.from('order_items').insert([scopedLine,scopedLine]);
+        assert.equal(bulk.error,null,'all scoped rows in a bulk insert still persist');
+        const {store_id: _scope,...unscopedLine}=scopedLine;
+        for(const method of ['insert','upsert'] as const) {
+            const table=guarded.from('order_items');
+            const write=method==='insert'?table.insert([scopedLine,unscopedLine]):table.upsert([scopedLine,unscopedLine]);
+            await assert.rejects(Promise.resolve(write
+                .eq('store_id',testStoreId)),/requires a tenant\/owner predicate/,
+                `${method}: a parent filter cannot bind the unscoped payload row`);
+        }
+
         const { data: readBack, error: readError } = await guarded
             .from('order_items')
             .select('id, order_id, total')
@@ -174,7 +208,7 @@ test(
             .eq('order_id', orderId)
             .is('deleted_at', null);
         assert.equal(readError, null);
-        assert.equal(readBack?.length, 1);
+        assert.equal(readBack?.length, 3,'refused mixed payloads persist no additional line');
         assert.equal(readBack?.[0].total, 150);
     },
 );

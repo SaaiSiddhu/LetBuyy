@@ -4,7 +4,9 @@
 // ============================================================
 
 import 'server-only';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { resolveStorefrontAccessContext } from './storefront-access';
+import { customerSessionMatchesRequestStore } from './customer-session-store-scope';
 import {
     LETBUYY_CUSTOMER_SESSION_COOKIE,
     createHostOnlyShopperIdentityProvider,
@@ -12,7 +14,6 @@ import {
     type CustomerFederationTokenStore,
     type LetbuyyCustomerFederationRedemptionResult,
     type LetbuyyCustomerSessionPayload,
-    type ShopperIdentityProvider,
 } from '@letbuyy/auth-core';
 
 // ============================================================
@@ -38,8 +39,67 @@ function getSecret(): string {
     return secret;
 }
 
-function shopperIdentityProvider(): ShopperIdentityProvider {
-    return createHostOnlyShopperIdentityProvider(getSecret());
+type StorefrontSessionHeaders = { get(name: string): string | null };
+type StorefrontCustomerCookieOptions = {
+    httpOnly: true;
+    secure: boolean;
+    sameSite: 'lax';
+    maxAge: number;
+    path: '/';
+};
+
+interface StorefrontCustomerSessionScope {
+    headers: StorefrontSessionHeaders;
+    resolveStoreIdForHost: (host: string) => Promise<string | null>;
+}
+
+/** Issue the Commerce compatibility cookie only when the request host resolves to the signed store. */
+export async function issueStorefrontCustomerSession(input: {
+    customer: { id: string; storeId: string; email: string; fullName: string | null };
+    scope: StorefrontCustomerSessionScope;
+    secret: string | null | undefined;
+    secure: boolean;
+    setCookie: (name: string, value: string, options: StorefrontCustomerCookieOptions) => void;
+}): Promise<string> {
+    const matchesStore = await customerSessionMatchesRequestStore({
+        headers: input.scope.headers,
+        storeId: input.customer.storeId,
+        resolveStoreIdForHost: input.scope.resolveStoreIdForHost,
+    });
+    if (!matchesStore) throw new Error('Store customer identity does not match this storefront');
+
+    const provider = createHostOnlyShopperIdentityProvider(input.secret);
+    const token = await provider.issueSessionToken(input.customer);
+    input.setCookie(provider.cookie.name, token, {
+        httpOnly: true,
+        secure: input.secure,
+        sameSite: provider.cookie.sameSite,
+        maxAge: provider.cookie.ttlSeconds,
+        path: provider.cookie.path,
+    });
+    return token;
+}
+
+/** Verify the Commerce compatibility cookie and bind its signed store to the current host. */
+export async function verifyStorefrontCustomerSession(input: {
+    token: string | null | undefined;
+    scope: StorefrontCustomerSessionScope;
+    secret: string | null | undefined;
+}): Promise<CustomerSessionPayload | null> {
+    const provider = createHostOnlyShopperIdentityProvider(input.secret);
+    const verification = await provider.verifySessionToken(input.token);
+    if (!verification.accepted || !verification.payload) return null;
+
+    const matchesStore = await customerSessionMatchesRequestStore({
+        headers: input.scope.headers,
+        storeId: verification.payload.storeId,
+        resolveStoreIdForHost: input.scope.resolveStoreIdForHost,
+    });
+    return matchesStore ? verification.payload : null;
+}
+
+function resolveStoreIdForHost(host: string): Promise<string | null> {
+    return resolveStorefrontAccessContext(host).then(context => context?.site_id ?? null);
 }
 
 // ============================================================
@@ -52,16 +112,13 @@ export async function createSession(customer: {
     email: string;
     fullName: string | null;
 }): Promise<string> {
-    const provider = shopperIdentityProvider();
-    const token = await provider.issueSessionToken(customer);
-
-    const cookieStore = await cookies();
-    cookieStore.set(COOKIE_NAME, token, {
-        httpOnly: true,
+    const [requestHeaders, cookieStore] = await Promise.all([headers(), cookies()]);
+    const token = await issueStorefrontCustomerSession({
+        customer,
+        scope: { headers: requestHeaders, resolveStoreIdForHost },
+        secret: getSecret(),
         secure: process.env.NODE_ENV === 'production',
-        sameSite: provider.cookie.sameSite,
-        maxAge: provider.cookie.ttlSeconds,
-        path: provider.cookie.path,
+        setCookie: (name, value, options) => cookieStore.set(name, value, options),
     });
 
     return token;
@@ -76,10 +133,12 @@ export async function getSession(): Promise<CustomerSessionPayload | null> {
         const cookieStore = await cookies();
         const cookie = cookieStore.get(COOKIE_NAME);
         if (!cookie?.value) return null;
-
-        const provider = shopperIdentityProvider();
-        const verification = await provider.verifySessionToken(cookie.value);
-        return verification.accepted && verification.payload ? verification.payload : null;
+        const requestHeaders = await headers();
+        return verifyStorefrontCustomerSession({
+            token: cookie.value,
+            scope: { headers: requestHeaders, resolveStoreIdForHost },
+            secret: getSecret(),
+        });
     } catch {
         return null;
     }

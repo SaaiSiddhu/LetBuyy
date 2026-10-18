@@ -1,0 +1,26 @@
+{
+  "runId": "520ada39e6f0",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payment-refund-reconciliation.postgres.test.ts",
+  "lane": "gateway-db",
+  "image": "postgres:16-alpine",
+  "status": "passed",
+  "tests": 9,
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "todo": 0,
+  "manualUpiRefundAssertions": {
+    "injectedTransientFinalizerFailure": true,
+    "failureResponseStatus": 503,
+    "attemptRemainsPendingAfterFailure": true,
+    "ledgerEntriesAfterFailure": 0,
+    "sameKeyRetryStatus": 200,
+    "subsequentReplayStatus": 200,
+    "subsequentReplayHeader": "X-Idempotent-Replay: true",
+    "finalLedgerTransactions": 1,
+    "ledgerBalanced": true,
+    "canonicalOutboxEvents": 1
+  },
+  "scope": "Synthetic UPI payment, merchant, order and provider refund reference; no external PSP or live transaction."
+}

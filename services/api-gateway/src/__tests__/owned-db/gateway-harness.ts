@@ -96,8 +96,8 @@ export async function buyerHeaders(keys: IdentityKeys, buyerAccountId: string, o
 }
 
 /** A fresh signed internal identity (merchant staff or platform operator), per request, as a server-side LetBuyy app sends it. */
-export async function signedIdentityHeaders(userId: string, email: string): Promise<Record<string, string>> {
-    const plan = await createLetbuyyInternalIdentityHeaders({ userId, email, secret: INTERNAL_SECRET });
+export async function signedIdentityHeaders(userId: string, email: string, storeId?: string): Promise<Record<string, string>> {
+    const plan = await createLetbuyyInternalIdentityHeaders({ userId, email, storeId, secret: INTERNAL_SECRET });
     if (!plan.ok) throw new Error(`could not sign an internal identity: ${plan.status}`);
     return { ...(plan as { headers: Record<string, string> }).headers, 'Content-Type': 'application/json' };
 }

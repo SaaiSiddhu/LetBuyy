@@ -13,7 +13,7 @@ import {
 } from '@letbuyy/shared-types';
 import type { Env } from '../../index';
 import { ValidationError } from '../../lib/errors';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated, shouldReturnEmptyForMissingLocalSchema, success } from '../../lib/supabase';
 import {
     logSensitiveRead,
     requirePermission,
@@ -312,7 +312,9 @@ async function scoreAndPersistEntity(
 }
 
 router.get('/overview', requirePermission('risk:view'), async (c) => {
-    const db = getSupabaseAdmin(c);
+    // This permission-gated platform dashboard intentionally aggregates across sites. Keep the
+    // default tenant guard for every tenant-scoped operation; bypass it only for this bounded read.
+    const db = getSupabaseAdminForOperatorRead(c);
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 

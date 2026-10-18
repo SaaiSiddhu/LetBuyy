@@ -98,7 +98,10 @@ class _WebHomeScreenState extends State<WebHomeScreen>
 
     try {
       await Future.wait([
-        Provider.of<ProductProvider>(context, listen: false).loadProducts(),
+        // Home sections render directly from the shared feed provider; bypass its
+        // loaded-feed dedup guard so a previously mounted route cannot reuse old approval.
+        Provider.of<ProductProvider>(context, listen: false)
+            .loadProducts(forceReload: true),
         Provider.of<CategoryProvider>(context, listen: false).loadCategories(),
       ]);
 
@@ -135,14 +138,21 @@ class _WebHomeScreenState extends State<WebHomeScreen>
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(message,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                child: Text(
+                  message,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ],
           ),
           backgroundColor: isSuccess ? AppColors.success : AppColors.error,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           duration: Duration(seconds: isSuccess ? 2 : 3),
           margin: const EdgeInsets.only(bottom: 70, left: 16, right: 16),
           action: !isSuccess
@@ -157,8 +167,11 @@ class _WebHomeScreenState extends State<WebHomeScreen>
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(0,
-        duration: const Duration(milliseconds: 600), curve: Curves.easeOutCubic);
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -180,22 +193,29 @@ class _WebHomeScreenState extends State<WebHomeScreen>
 
     return Scaffold(
       resizeToAvoidBottomInset: false, // 🔥 KEYBOARD FIX
-      backgroundColor: isDark ? const Color(0xFF080B12) : const Color(0xFFF0F4F8),
+      backgroundColor: isDark
+          ? const Color(0xFF080B12)
+          : const Color(0xFFF0F4F8),
       extendBodyBehindAppBar: false,
       appBar: const WebHeader(),
       body: Stack(
         children: [
           // Animated Background Gradient
-          _buildAnimatedBackground(isDark), // Assuming this method exists elsewhere or will be added
-
+          _buildAnimatedBackground(
+            isDark,
+          ), // Assuming this method exists elsewhere or will be added
           // Grid Pattern Overlay
           Positioned.fill(
-            child: CustomPaint(painter: _GridPatternPainter(isDark: isDark)), // Assuming this class exists elsewhere or will be added
+            child: CustomPaint(
+              painter: _GridPatternPainter(isDark: isDark),
+            ), // Assuming this class exists elsewhere or will be added
           ),
 
           // Floating Orbs
-          ..._buildFloatingOrbs(isDark, MediaQuery.of(context).size), // Assuming this method exists elsewhere or will be added
-
+          ..._buildFloatingOrbs(
+            isDark,
+            MediaQuery.of(context).size,
+          ), // Assuming this method exists elsewhere or will be added
           // Main Content
           RefreshIndicator(
             onRefresh: _loadData,
@@ -262,13 +282,13 @@ class _WebHomeScreenState extends State<WebHomeScreen>
     );
 
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 0.03),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _sectionAnimationController,
-        curve: interval,
-      )),
+      position: Tween<Offset>(begin: const Offset(0, 0.03), end: Offset.zero)
+          .animate(
+            CurvedAnimation(
+              parent: _sectionAnimationController,
+              curve: interval,
+            ),
+          ),
       child: FadeTransition(
         opacity: CurvedAnimation(
           parent: _sectionAnimationController,
@@ -393,12 +413,12 @@ class _WebHomeScreenState extends State<WebHomeScreen>
     final crossAxisCount = screenWidth > 1800
         ? 6
         : screenWidth > 1400
-            ? 5
-            : screenWidth > 1200
-                ? 4
-                : screenWidth > 900
-                    ? 3
-                    : 2;
+        ? 5
+        : screenWidth > 1200
+        ? 4
+        : screenWidth > 900
+        ? 3
+        : 2;
 
     final maxWidth = _getMaxWidth(screenWidth);
     final padding = _getPadding(screenWidth);
@@ -424,22 +444,20 @@ class _WebHomeScreenState extends State<WebHomeScreen>
               crossAxisSpacing: screenWidth > 1200 ? 16 : 12,
               mainAxisSpacing: screenWidth > 1200 ? 16 : 12,
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return Center(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(maxWidth: maxWidth / crossAxisCount),
-                    child: _ProductCard(
-                      product: productProvider.products[index],
-                      isDark: isDark,
-                      isCompact: screenWidth <= 1200,
-                    ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: maxWidth / crossAxisCount,
                   ),
-                );
-              },
-              childCount: productProvider.products.length,
-            ),
+                  child: _ProductCard(
+                    product: productProvider.products[index],
+                    isDark: isDark,
+                    isCompact: screenWidth <= 1200,
+                  ),
+                ),
+              );
+            }, childCount: productProvider.products.length),
           );
         },
       ),
@@ -544,7 +562,11 @@ class _WebHomeScreenState extends State<WebHomeScreen>
         backgroundColor: AppColors.primary,
         elevation: 4,
         mini: true,
-        child: const Icon(Icons.keyboard_arrow_up, color: Colors.white, size: 24),
+        child: const Icon(
+          Icons.keyboard_arrow_up,
+          color: Colors.white,
+          size: 24,
+        ),
       ),
     );
   }
@@ -580,11 +602,17 @@ class _WebHomeScreenState extends State<WebHomeScreen>
   // ═══════════════════════════════════════════════════════════════════════════
   // HELPERS
   // ═══════════════════════════════════════════════════════════════════════════
-  double _getMaxWidth(double screenWidth) =>
-      screenWidth > 1800 ? 1600.0 : screenWidth > 1400 ? 1400.0 : 1200.0;
+  double _getMaxWidth(double screenWidth) => screenWidth > 1800
+      ? 1600.0
+      : screenWidth > 1400
+      ? 1400.0
+      : 1200.0;
 
-  double _getPadding(double screenWidth) =>
-      screenWidth > 1400 ? 40.0 : screenWidth > 1200 ? 32.0 : 20.0;
+  double _getPadding(double screenWidth) => screenWidth > 1400
+      ? 40.0
+      : screenWidth > 1200
+      ? 32.0
+      : 20.0;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // ANIMATED BACKGROUND - Radial gradient that shifts over time
@@ -602,8 +630,16 @@ class _WebHomeScreenState extends State<WebHomeScreen>
               ),
               radius: 1.5,
               colors: isDark
-                  ? [const Color(0xFF1E293B), const Color(0xFF0F172A), const Color(0xFF020617)]
-                  : [const Color(0xFFF0F9FF), const Color(0xFFE0F2FE), const Color(0xFFF8FAFC)],
+                  ? [
+                      const Color(0xFF1E293B),
+                      const Color(0xFF0F172A),
+                      const Color(0xFF020617),
+                    ]
+                  : [
+                      const Color(0xFFF0F9FF),
+                      const Color(0xFFE0F2FE),
+                      const Color(0xFFF8FAFC),
+                    ],
             ),
           ),
         );
@@ -665,7 +701,9 @@ class _WebHomeScreenState extends State<WebHomeScreen>
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFF8B5CF6).withValues(alpha: isDark ? 0.1 : 0.06),
+                      const Color(
+                        0xFF8B5CF6,
+                      ).withValues(alpha: isDark ? 0.1 : 0.06),
                       Colors.transparent,
                     ],
                   ),
@@ -717,8 +755,11 @@ class _CategoryChipState extends State<_CategoryChip> {
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
         onTap: () {
-          AppRoutes.navigateTo(context, AppRoutes.categories,
-              arguments: widget.category.id);
+          AppRoutes.navigateTo(
+            context,
+            AppRoutes.categories,
+            arguments: widget.category.id,
+          );
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -728,8 +769,14 @@ class _CategoryChipState extends State<_CategoryChip> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: _isHovered
-                  ? [AppColors.primary.withValues(alpha: 0.15), AppColors.primaryLight.withValues(alpha: 0.1)]
-                  : [AppColors.primary.withValues(alpha: 0.08), AppColors.primaryLight.withValues(alpha: 0.04)],
+                  ? [
+                      AppColors.primary.withValues(alpha: 0.15),
+                      AppColors.primaryLight.withValues(alpha: 0.1),
+                    ]
+                  : [
+                      AppColors.primary.withValues(alpha: 0.08),
+                      AppColors.primaryLight.withValues(alpha: 0.04),
+                    ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -774,7 +821,9 @@ class _CategoryChipState extends State<_CategoryChip> {
                 style: TextStyle(
                   fontSize: widget.isLarge ? 13 : 12,
                   fontWeight: FontWeight.w700,
-                  color: widget.isDark ? Colors.grey[200] : AppColors.textPrimary,
+                  color: widget.isDark
+                      ? Colors.grey[200]
+                      : AppColors.textPrimary,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -822,8 +871,11 @@ class _ProductCardState extends State<_ProductCard> {
           onExit: (_) => setState(() => _isHovered = false),
           child: GestureDetector(
             onTap: () {
-              AppRoutes.navigateTo(context, AppRoutes.productDetails,
-                  arguments: widget.product.id);
+              AppRoutes.navigateTo(
+                context,
+                AppRoutes.productDetails,
+                arguments: widget.product.id,
+              );
             },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
@@ -836,7 +888,9 @@ class _ProductCardState extends State<_ProductCard> {
                 border: Border.all(
                   color: _isHovered
                       ? AppColors.primary.withValues(alpha: 0.3)
-                      : (widget.isDark ? Colors.grey[800]! : Colors.grey.shade200),
+                      : (widget.isDark
+                            ? Colors.grey[800]!
+                            : Colors.grey.shade200),
                   width: _isHovered ? 1.5 : 1,
                 ),
                 boxShadow: _isHovered
@@ -849,7 +903,9 @@ class _ProductCardState extends State<_ProductCard> {
                       ]
                     : [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: widget.isDark ? 0.3 : 0.04),
+                          color: Colors.black.withValues(
+                            alpha: widget.isDark ? 0.3 : 0.04,
+                          ),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -864,24 +920,30 @@ class _ProductCardState extends State<_ProductCard> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            color: widget.isDark ? Colors.grey[850] : Colors.grey[50],
+                            color: widget.isDark
+                                ? Colors.grey[850]
+                                : Colors.grey[50],
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(widget.isCompact ? 13 : 15),
                             ),
                             image: widget.product.imageUrl != null
                                 ? DecorationImage(
-                                    image: NetworkImage(widget.product.imageUrl!),
+                                    image: NetworkImage(
+                                      widget.product.imageUrl!,
+                                    ),
                                     fit: BoxFit.cover,
                                   )
                                 : null,
                           ),
                           child: widget.product.imageUrl == null
                               ? Center(
-                                  child: Icon(Icons.shopping_bag_outlined,
-                                      size: 40,
-                                      color: widget.isDark
-                                          ? Colors.grey[700]
-                                          : Colors.grey[300]),
+                                  child: Icon(
+                                    Icons.shopping_bag_outlined,
+                                    size: 40,
+                                    color: widget.isDark
+                                        ? Colors.grey[700]
+                                        : Colors.grey[300],
+                                  ),
                                 )
                               : null,
                         ),
@@ -893,15 +955,22 @@ class _ProductCardState extends State<_ProductCard> {
                             left: 8,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [AppColors.error, AppColors.error.withValues(alpha: 0.8)],
+                                  colors: [
+                                    AppColors.error,
+                                    AppColors.error.withValues(alpha: 0.8),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.error.withValues(alpha: 0.3),
+                                    color: AppColors.error.withValues(
+                                      alpha: 0.3,
+                                    ),
                                     blurRadius: 8,
                                   ),
                                 ],
@@ -924,8 +993,9 @@ class _ProductCardState extends State<_ProductCard> {
                           child: GestureDetector(
                             onTap: () async {
                               if (isInWishlist) {
-                                await wishlistProvider
-                                    .removeItem(widget.product.id);
+                                await wishlistProvider.removeItem(
+                                  widget.product.id,
+                                );
                               } else {
                                 await wishlistProvider.addItem(widget.product);
                               }
@@ -951,8 +1021,8 @@ class _ProductCardState extends State<_ProductCard> {
                                 color: isInWishlist
                                     ? AppColors.error
                                     : (widget.isDark
-                                        ? Colors.grey[400]
-                                        : AppColors.textSecondary),
+                                          ? Colors.grey[400]
+                                          : AppColors.textSecondary),
                                 size: 16,
                               ),
                             ),
@@ -991,7 +1061,11 @@ class _ProductCardState extends State<_ProductCard> {
                             padding: const EdgeInsets.only(bottom: 6),
                             child: Row(
                               children: [
-                                Icon(Icons.star, size: 14, color: Colors.amber[700]),
+                                Icon(
+                                  Icons.star,
+                                  size: 14,
+                                  color: Colors.amber[700],
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
                                   widget.product.rating.toStringAsFixed(1),
@@ -1018,13 +1092,11 @@ class _ProductCardState extends State<_ProductCard> {
                                 color: AppColors.primary,
                               ),
                             ),
-                            if (widget.product.originalPrice != null &&
-                                widget.product.originalPrice! >
-                                    widget.product.price)
+                            if (widget.product.hasDisplayableReferencePrice)
                               Padding(
                                 padding: const EdgeInsets.only(left: 6),
                                 child: Text(
-                                  '₹${widget.product.originalPrice!.toStringAsFixed(0)}',
+                                  '${widget.product.hasPriorThirtyDayLow ? '30-day low ' : 'M.R.P. '}₹${widget.product.originalPrice!.toStringAsFixed(0)}',
                                   style: TextStyle(
                                     fontSize: 12,
                                     decoration: TextDecoration.lineThrough,
@@ -1047,8 +1119,10 @@ class _ProductCardState extends State<_ProductCard> {
                               if (isInCart) {
                                 AppRoutes.navigateTo(context, AppRoutes.cart);
                               } else {
-                                await cartProvider.addItem(widget.product,
-                                    quantity: 1);
+                                await cartProvider.addItem(
+                                  widget.product,
+                                  quantity: 1,
+                                );
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -1111,7 +1185,9 @@ class _ShimmerCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
+        border: Border.all(
+          color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1120,8 +1196,9 @@ class _ShimmerCard extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: shimmerColor,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(13)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(13),
+                ),
               ),
             ),
           ),
@@ -1177,7 +1254,9 @@ class _GridPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: opacity)
+      ..color = (isDark ? Colors.white : Colors.black).withValues(
+        alpha: opacity,
+      )
       ..strokeWidth = 0.5;
 
     const double gridSize = 50;

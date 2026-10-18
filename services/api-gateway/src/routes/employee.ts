@@ -3,99 +3,55 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded, success, paginated } from '../lib/supabase';
 import {
-    employeeRemovalPatch,
     planEmployeeStaffCreate,
     planEmployeeUpdate,
 } from '@letbuyy/auth-core';
-import { applyStorePlanTierDefaults, type BillingPlanCatalogRecord } from '@letbuyy/billing-core';
+import { z } from 'zod';
+import { executeStaffMutation, readStaffSeatPolicy } from '../execution/staff-execution.adapter';
+import { AppError } from '../lib/errors';
+import { createStaffInvitation, previewStaffInvitation, acceptStaffInvitation } from '../execution/staff-invitation-execution.adapter';
+import { getRequestId } from '../lib/tenant-context';
 
 const router = new Hono<{ Bindings: Env }>();
 
-/** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
-const UNIQUE_VIOLATION = '23505';
-
-// ============================================================
-// STAFF SEAT LIMITS — plan-driven, server-authoritative
-// The merchant's plan caps how many staff (employees, excluding the owner) a
-// store may have. The limit comes from the plan catalog (or its tier default);
-// null means unlimited (e.g. Enterprise). Both the create and invite paths
-// enforce this so the UI cap can never be bypassed.
-// ============================================================
-
-interface StoreStaffLimit {
-    limit: number | null;
-    plan_slug: string;
-    plan_name: string;
+async function mutationBody(c: Context<{ Bindings: Env }>): Promise<Record<string, unknown>> {
+    let body: unknown;
+    try { body = await c.req.json(); } catch { throw new AppError('A JSON staff request is required.', 400, 'VALIDATION'); }
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new AppError('A JSON object staff request is required.', 400, 'VALIDATION');
+    return body as Record<string, unknown>;
 }
-
-async function resolveStoreStaffLimit(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    storeId: string,
-): Promise<StoreStaffLimit> {
-    const { data: site } = await db
-        .from('sites')
-        .select('site_type')
-        .eq('id', storeId)
-        .maybeSingle();
-    const siteType = typeof site?.site_type === 'string' && site.site_type ? site.site_type : 'store';
-
-    // Active (or dunning) subscription decides the plan; trial/no-sub falls back to free.
-    const { data: sub } = await db
-        .from('subscriptions')
-        .select('plan')
-        .eq('store_id', storeId)
-        .in('status', ['active', 'past_due', 'failed'])
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-    const slug = typeof sub?.plan === 'string' && sub.plan ? sub.plan : 'free';
-
-    const { data: planRow } = await db
-        .from('plans')
-        .select('*')
-        .eq('site_type', siteType)
-        .eq('slug', slug)
-        .eq('is_active', true)
-        .maybeSingle();
-
-    const plan = applyStorePlanTierDefaults(
-        (planRow as BillingPlanCatalogRecord) ||
-            ({ slug, site_type: siteType, name: slug } as unknown as BillingPlanCatalogRecord),
-    );
-
-    return {
-        limit: typeof plan.staff_limit === 'number' ? plan.staff_limit : null,
-        plan_slug: plan.slug || slug,
-        plan_name: plan.name || slug,
-    };
+type ActiveEmployeeProfile = { id: string; role: string; store_id?: string; [key: string]: unknown };
+async function activeEmployeeProfile(db: ReturnType<typeof getSupabaseAdmin>, user: WorkerAuthUser, columns: string) {
+    let query = db.from('employees').select(columns).eq('user_id', user.id)
+        .eq('status', 'active').eq('is_active', true).is('deleted_at', null);
+    if (user.storeId) query = query.eq('store_id', user.storeId);
+    const result = await query.single();
+    if (result.error && result.error.code !== 'PGRST116') throw new AppError('Staff state is unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
+    return { data: result.data as unknown as ActiveEmployeeProfile | null, error: result.error };
+}
+function mutationKey(c: Context<{ Bindings: Env }>): string {
+    const key = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key') || '';
+    if (key.length < 8 || key.length > 200) throw new AppError('A stable staff request key of 8–200 characters is required.', 400, 'IDEMPOTENCY_KEY_REQUIRED');
+    return key;
+}
+function expectedVersion(body: Record<string, unknown>): string {
+    const version = z.string().datetime({ offset: true }).safeParse(body.expected_updated_at);
+    if (!version.success) throw new AppError('The current staff updated_at is required.', 400, 'STAFF_VERSION_REQUIRED');
+    return version.data;
 }
 
 async function countStoreStaff(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string,
 ): Promise<number> {
-    const { count } = await db
+    const { count, error } = await db
         .from('employees')
         .select('id', { count: 'exact', head: true })
         .eq('store_id', storeId)
         .neq('status', 'removed')
         .is('deleted_at', null);
-    return count || 0;
-}
-
-/**
- * Returns a 409 body when adding one more staff member would exceed the plan
- * seat limit, or null when there is room. null limit = unlimited.
- */
-async function staffSeatExceeded(
-    db: ReturnType<typeof getSupabaseAdmin>,
-    storeId: string,
-): Promise<{ limit: number; plan_name: string; used: number } | null> {
-    const { limit, plan_name } = await resolveStoreStaffLimit(db, storeId);
-    if (limit === null) return null;
-    const used = await countStoreStaff(db, storeId);
-    if (used < limit) return null;
-    return { limit, plan_name, used };
+    if (error || !Number.isSafeInteger(count)) throw new AppError('Staff usage is unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
+    return count as number;
 }
 
 function isMissingColumnError(
@@ -119,38 +75,6 @@ function isMissingEmployeeDeletedAtColumn(error: { message?: string } | null | u
 
 function isMissingSitesDeletedAtColumn(error: { message?: string } | null | undefined): boolean {
     return isMissingColumnError(error, 'sites', 'deleted_at');
-}
-
-// Phase-4.5 — traceability for staff lifecycle changes. Best-effort: an audit
-// failure must never fail the underlying employee mutation.
-async function writeEmployeeAudit(
-    c: Context<{ Bindings: Env }>,
-    db: ReturnType<typeof getSupabaseAdmin>,
-    action: string,
-    resourceId: string,
-    metadata: Record<string, unknown> = {},
-): Promise<void> {
-    try {
-        const auth = c.get('auth');
-        await db.from('audit_logs').insert({
-            actor_id: auth?.user?.id || null,
-            actor_type: 'merchant',
-            actor_email: auth?.user?.email || null,
-            action,
-            resource_type: 'employee',
-            resource_id: resourceId || null,
-            metadata,
-            ip_address: c.req.header('CF-Connecting-IP') || null,
-            user_agent: c.req.header('User-Agent') || null,
-        });
-    } catch (err) {
-        console.error(JSON.stringify({
-            level: 'error',
-            event: 'employee_audit_failed',
-            action,
-            message: err instanceof Error ? err.message : String(err),
-        }));
-    }
 }
 
 // ============================================================
@@ -201,113 +125,33 @@ router.get('/', async (c) => {
     return c.json(success(data || []));
 });
 
-// POST /employees — Create an invited store staff record from merchant admin
+// POST /employees — Provision verified staff or retain an unlinked pending record.
 router.post('/', async (c) => {
     const auth = c.get('auth');
-    const body = await c.req.json() as Record<string, unknown>;
+    const body = await mutationBody(c);
+    const key = mutationKey(c);
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
-    const createPlan = planEmployeeStaffCreate(body, customUser?.id || '');
-
-    if (!createPlan.ok) {
-        return c.json({ error: { code: 'VALIDATION', message: createPlan.message } }, 400);
+    const plan = planEmployeeStaffCreate(body, customUser?.id || '');
+    if (!plan.ok || !z.string().uuid().safeParse(plan.ok && plan.value.store_id).success) {
+        return c.json({ error: { code: 'VALIDATION', message: plan.ok ? 'A valid store_id is required.' : plan.message } }, 400);
     }
-
-    if (!customUser || !(await verifySiteOwnership(db, createPlan.value.store_id, customUser.id, auth.user.storeId))) {
+    if (!customUser || !(await verifySiteOwnership(db, plan.value.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
-
-    const seatExceeded = await staffSeatExceeded(db, createPlan.value.store_id);
-    if (seatExceeded) {
-        return c.json({
-            error: {
-                code: 'STAFF_LIMIT_REACHED',
-                message: `Your ${seatExceeded.plan_name} plan includes ${seatExceeded.limit} staff ${seatExceeded.limit === 1 ? 'account' : 'accounts'}. Upgrade your plan to add more staff.`,
-                details: { staff_limit: seatExceeded.limit, staff_used: seatExceeded.used },
-            },
-        }, 409);
-    }
-
-    // Confirmed accepted policy (apps/merchant/web/src/app/accept-invite/page.tsx, Phase N3): there
-    // is no acceptance step. "Ask the store owner to add you as staff directly ... instead of
-    // sending an email invite" is the product's own stated replacement for the retired self-service
-    // invite flow. What that page does not by itself resolve is proof of identity for the link --
-    // an owner types in an email; that alone is not evidence the typed email belongs to whoever the
-    // owner intends. So: link and activate immediately ONLY when the email already belongs to an
-    // EMAIL-VERIFIED account (email_verified stays false for an unclaimed or unconfirmed address,
-    // so an owner cannot grant access to an address nobody has proven control of). An unmatched or
-    // unverified email leaves the row exactly as before this change: user_id null, status
-    // 'invited' -- there is no accept-invite flow left to complete it, so this case remains a named,
-    // narrow limitation (D03-adjacent: closing it fully means deciding how a not-yet-registered
-    // invitee's later signup should reconcile with an existing 'invited' row), not silently hidden.
-    const { data: matchedUser } = await db
-        .from('users_custom')
-        .select('id, email_verified')
-        .eq('email', createPlan.value.email)
-        .maybeSingle();
-
-    const insertValue = matchedUser?.email_verified
-        ? { ...createPlan.value, user_id: matchedUser.id, status: 'active' }
-        : createPlan.value;
-
-    const { data, error } = await db
-        .from('employees')
-        .insert(insertValue)
-        .select()
-        .single();
-
-    if (isMissingEmployeeStoreColumn(error)) {
-        return c.json(
-            {
-                error: {
-                    code: 'EMPLOYEE_SCHEMA_MISSING',
-                    message: 'Staff invites require store-scoped employee columns before they can be created',
-                },
-            },
-            503
-        );
-    }
-
-    // employees.email is unique PLATFORM-WIDE (one person, one staff identity), so re-adding an
-    // email already staffed anywhere -- including a removed or disabled row, which the constraint
-    // does not distinguish -- fails here. Previously fell through to a generic 500 with the raw
-    // Postgres message (constraint name, the email itself, in the response body). A duplicate is
-    // not a server failure; report it as the conflict it is, without repeating the email back.
-    if ((error as { code?: string } | null)?.code === UNIQUE_VIOLATION) {
-        return c.json({ error: { code: 'EMPLOYEE_ALREADY_EXISTS', message: 'This email is already registered as staff.' } }, 409);
-    }
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    await writeEmployeeAudit(c, db, 'employee.created', String((data as { id?: string }).id || ''), {
-        store_id: createPlan.value.store_id,
-    });
-
-    return c.json(success(data), 201);
+    const result = await executeStaffMutation({ db, actor: auth.user, storeId: plan.value.store_id,
+        operation: 'create', intent: { email: plan.value.email, full_name: plan.value.full_name,
+            role: plan.value.role, permissions: plan.value.permissions }, key, requestId: getRequestId(c) });
+    if (result.replayed) c.header('X-Idempotent-Replay', 'true');
+    return c.json(result.body, result.status);
 });
 
-// GET /employees/me — Current employee info.
-// Phase N3: structurally unreachable pending a future employee-realm
-// design (Phase N2's spike). Migration 208 repointed `employees.user_id`
-// to `users_custom(id)` (it referenced `auth.users(id)`, Supabase Auth,
-// until then), so the FK is no longer the blocker -- but no write path
-// populates `employees.user_id` yet (POST / only sets created_by; the
-// column stays NULL until staff-account activation exists). This still
-// always 404s today, honestly (no employee row will ever match), not
-// silently. Left in place rather than deleted -- not dead code, a route
-// awaiting its correct auth wiring per Phase N2's recommended design.
+// GET /employees/me — Only a current active canonical membership can enter.
 router.get('/me', async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
 
-    const { data, error } = await db
-        .from('employees')
-        .select('*, sites(store_name, subdomain)')
-        .eq('user_id', auth.user.id)
-        .eq('status', 'active')
-        .single();
+    const { data, error } = await activeEmployeeProfile(db, auth.user, '*, sites(store_name, subdomain)');
 
     if (error || !data) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Employee profile not found' } }, 404);
@@ -330,7 +174,7 @@ router.get('/limits', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
-    const { limit, plan_slug, plan_name } = await resolveStoreStaffLimit(db, storeId);
+    const { limit, plan_slug, plan_name } = await readStaffSeatPolicy(db, auth.user, storeId);
     const used = await countStoreStaff(db, storeId);
 
     return c.json(success({
@@ -341,20 +185,30 @@ router.get('/limits', async (c) => {
     }));
 });
 
-// POST /employees/invite — Staff self-service invite. Phase N3 retired the
-// only completion path for an invite (the GoTrue-backed accept-invite
-// endpoint and its email link never worked end-to-end -- see the Phase N3
-// report). Rather than create an employee_invites row and send an email
-// that can never be completed (ANTI-R9: a stub must never read as success),
-// this fails closed with an explicit, honest error. Use POST /employees
-// (direct staff creation, unaffected by this) to add staff instead.
+// Explicit owner invitation; no membership is activated until the invited verified account consents.
 router.post('/invite', async (c) => {
-    return c.json({
-        error: {
-            code: 'STAFF_INVITE_UNAVAILABLE',
-            message: 'Staff self-service invites are not available. Add staff directly instead.',
-        },
-    }, 503);
+    const body=await mutationBody(c),key=mutationKey(c),auth=c.get('auth'),db=getSupabaseAdmin(c);
+    const customUser=await resolveCustomUser(db,auth.user),plan=planEmployeeStaffCreate(body,customUser?.id || '');
+    if(!plan.ok || !z.string().uuid().safeParse(plan.ok && plan.value.store_id).success) return c.json({error:{code:'VALIDATION',message:plan.ok?'A valid store_id is required.':plan.message}},400);
+    if(!customUser || !(await verifySiteOwnership(db,plan.value.store_id,customUser.id,auth.user.storeId))) return c.json({error:{code:'FORBIDDEN',message:'Not authorized for this store'}},403);
+    let employeeId: string|undefined,version:string|undefined;
+    if(body.employee_id !== undefined) {
+        const id=z.string().uuid().safeParse(body.employee_id);if(!id.success)return c.json({error:{code:'VALIDATION',message:'A valid employee_id is required.'}},400);
+        employeeId=id.data;version=expectedVersion(body);
+    }
+    const result=await createStaffInvitation({db,env:c.env,actor:auth.user,storeId:plan.value.store_id,key,
+        intent:{email:plan.value.email,full_name:plan.value.full_name,role:plan.value.role,permissions:plan.value.permissions},
+        employeeId,expectedUpdatedAt:version,requestId:getRequestId(c)});
+    if(result.replayed)c.header('X-Idempotent-Replay','true');return c.json(success(result.data),result.status);
+});
+router.post('/invitations/preview',async(c)=>{
+    const body=await mutationBody(c);const data=await previewStaffInvitation({db:getSupabaseAdmin(c),env:c.env,actor:c.get('auth').user,token:body.token});
+    return c.json(success(data));
+});
+router.post('/auth/accept-invite',async(c)=>{
+    const body=await mutationBody(c),key=mutationKey(c);
+    const result=await acceptStaffInvitation({db:getSupabaseAdmin(c),env:c.env,actor:c.get('auth').user,token:body.token,key,requestId:getRequestId(c)});
+    if(result.replayed)c.header('X-Idempotent-Replay','true');return c.json(success(result.data),result.status);
 });
 
 // ============================================================
@@ -371,12 +225,7 @@ router.get('/tickets', async (c) => {
     const to = from + limit - 1;
 
     // Verify employee
-    const { data: employee } = await db
-        .from('employees')
-        .select('id, role, store_id')
-        .eq('user_id', auth.user.id)
-        .eq('status', 'active')
-        .single();
+    const { data: employee } = await activeEmployeeProfile(db, auth.user, 'id, role, store_id');
 
     if (!employee?.store_id) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Employee access required' } }, 403);
@@ -424,12 +273,7 @@ router.get('/analytics', async (c) => {
     const db = getSupabaseAdmin(c);
 
     // Verify employee with marketing role
-    const { data: employee } = await db
-        .from('employees')
-        .select('id, role')
-        .eq('user_id', auth.user.id)
-        .eq('status', 'active')
-        .single();
+    const { data: employee } = await activeEmployeeProfile(db, auth.user, 'id, role');
 
     if (!employee) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Employee access required' } }, 403);
@@ -449,65 +293,38 @@ router.get('/analytics', async (c) => {
     }));
 });
 
-// PATCH /employees/:id — Update employee role
+// PATCH /employees/:id — Exact-version role/grant update with a retained retry receipt.
 router.patch('/:id', async (c) => {
-    const auth = c.get('auth');
-    const employeeId = c.req.param('id');
-    const body = await c.req.json() as Record<string, unknown>;
+    const auth = c.get('auth'), employeeId = c.req.param('id');
+    const body = await mutationBody(c);
+    const key = mutationKey(c), version = expectedVersion(body);
     const db = getSupabaseAdmin(c);
-
     const ownership = await verifyEmployeeOwnership(db, getSupabaseAdminUnguarded(c), employeeId, auth.user);
-    if (!ownership) {
+    if (!ownership || (body.store_id && body.store_id !== ownership.storeId)) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
-
     const plan = planEmployeeUpdate(body);
-    if (!plan.ok) {
-        return c.json({ error: { code: 'VALIDATION', message: plan.message } }, 400);
-    }
-    const updates = plan.value;
-
-    const { data, error } = await db
-        .from('employees')
-        .update(updates)
-        .eq('id', employeeId)
-        .eq('store_id', ownership.storeId)
-        .select()
-        .single();
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    await writeEmployeeAudit(c, db, 'employee.updated', employeeId, { updates });
-
-    return c.json(success(data));
+    if (!plan.ok) return c.json({ error: { code: 'VALIDATION', message: plan.message } }, 400);
+    const result = await executeStaffMutation({ db, actor: auth.user, storeId: ownership.storeId, employeeId,
+        operation: 'update', intent: plan.value, key, expectedUpdatedAt: version, requestId: getRequestId(c) });
+    if (result.replayed) c.header('X-Idempotent-Replay', 'true');
+    return c.json(result.body, result.status);
 });
 
-// DELETE /employees/:id — Remove an employee
+// DELETE /employees/:id — Removal revokes runtime grants in the same audited transaction.
 router.delete('/:id', async (c) => {
-    const auth = c.get('auth');
-    const employeeId = c.req.param('id');
+    const auth = c.get('auth'), employeeId = c.req.param('id');
+    const body = await mutationBody(c);
+    const key = mutationKey(c), version = expectedVersion(body);
     const db = getSupabaseAdmin(c);
-
     const ownership = await verifyEmployeeOwnership(db, getSupabaseAdminUnguarded(c), employeeId, auth.user);
-    if (!ownership) {
+    if (!ownership || (body.store_id && body.store_id !== ownership.storeId)) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
-
-    const { error } = await db
-        .from('employees')
-        .update(employeeRemovalPatch(new Date().toISOString()))
-        .eq('id', employeeId)
-        .eq('store_id', ownership.storeId);
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    await writeEmployeeAudit(c, db, 'employee.removed', employeeId, {});
-
-    return c.json({ data: { deleted: true } });
+    const result = await executeStaffMutation({ db, actor: auth.user, storeId: ownership.storeId, employeeId,
+        operation: 'remove', intent: {}, key, expectedUpdatedAt: version, requestId: getRequestId(c) });
+    if (result.replayed) c.header('X-Idempotent-Replay', 'true');
+    return c.json(result.body, result.status);
 });
 
 // Phase 2 / F2.5: returns the employee's store_id (not just a boolean) so PATCH/DELETE can scope
@@ -530,22 +347,10 @@ async function verifyEmployeeOwnership(
     // tenant scope predicate -- is known. Bounded to one row (.single()), and the result is
     // re-verified via verifySiteOwnership below before it is trusted for anything: matches the
     // documented getSupabaseAdminUnguarded contract (lib/supabase.ts).
-    const buildEmployeeQuery = (includeDeletedAtFilter: boolean) => {
-        const query = unguardedDb
-            .from('employees')
-            .select('store_id')
-            .eq('id', employeeId);
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data, error } = await buildEmployeeQuery(true).single();
-
-    if (isMissingEmployeeDeletedAtColumn(error)) {
-        ({ data, error } = await buildEmployeeQuery(false).single());
-    }
-
-    if (isMissingEmployeeStoreColumn(error)) return null;
+    // Retain removed rows for authorized lost-removal-reply recovery; the SQL
+    // transaction distinguishes an exact receipt replay from a new stale write.
+    const { data, error } = await unguardedDb.from('employees').select('store_id').eq('id', employeeId).single();
+    if (error && error.code !== 'PGRST116') throw new AppError('Staff state is unavailable.', 503, 'STAFF_STATE_UNAVAILABLE');
 
     const employee = data as { store_id?: string | null } | null;
     if (!employee?.store_id) return null;

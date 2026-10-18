@@ -158,6 +158,15 @@ function encodeBasicAuth(keyId: string, keySecret: string): string {
   return `Basic ${btoa(`${keyId}:${keySecret}`)}`;
 }
 
+async function providerIdempotencyKey(input: InitiatePayoutTransferInput): Promise<string> {
+  const material = `letbuyy:razorpay-route:direct-transfer:${input.siteId}:${input.statementId}:${input.idempotencyKey}`;
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(material));
+  const hex = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  // Razorpay Route accepts 4–36 characters from [A-Za-z0-9_-]. Keep a
+  // deterministic, tenant/statement-scoped key within that provider limit.
+  return `lb_${hex.slice(0, 32)}`;
+}
+
 function resolveFetch(fetchOverride: FetchLike | undefined): FetchLike {
   const runtimeFetch = globalThis.fetch as unknown as FetchLike | undefined;
   const fetcher = fetchOverride || runtimeFetch;
@@ -180,13 +189,14 @@ export function createRazorpayRoutePayoutProviderClient(
       if (!keyId || !keySecret || !accountId) {
         throw new PayoutProviderUnavailable('Razorpay Route payout credentials are not configured');
       }
+      const transferIdempotencyKey = await providerIdempotencyKey(input);
 
       const response = await fetcher(`${baseUrl}/transfers`, {
         method: 'POST',
         headers: {
           Authorization: encodeBasicAuth(keyId, keySecret),
           'Content-Type': 'application/json',
-          'Idempotency-Key': input.idempotencyKey,
+          'X-Transfer-Idempotency': transferIdempotencyKey,
         },
         body: JSON.stringify({
           account: accountId,
@@ -198,7 +208,6 @@ export function createRazorpayRoutePayoutProviderClient(
             beneficiary_name: input.beneficiaryName || undefined,
             ...(input.metadata || {}),
           },
-          reference_id: input.idempotencyKey,
         }),
       });
 
@@ -207,6 +216,17 @@ export function createRazorpayRoutePayoutProviderClient(
         return text ? { description: text } : {};
       }));
       if (!response.ok) {
+        if (response.status === 409 || response.status === 429 || response.status >= 500) {
+          // A concurrent idempotent request, rate limit, or server error does
+          // not prove that the provider did not create the transfer. Keep the
+          // durable claim retryable; retry with the same key and exact body.
+          return {
+            status: 'processing',
+            providerReference: stringValue(payload.id) || null,
+            utr: stringValue(payload.utr) || null,
+            failureReason: null,
+          };
+        }
         return {
           status: 'failed',
           providerReference: stringValue(payload.id) || null,

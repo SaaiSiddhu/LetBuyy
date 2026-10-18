@@ -52,8 +52,10 @@ export async function GET(request: NextRequest) {
     if (res.status === 401 || res.status === 403) return signedOut(true);
     if (!res.ok) return NextResponse.json({ error: 'Your sign-in could not be checked right now.' }, { status: 503, headers: NO_STORE });
 
-    const payload = await res.json().catch(() => null) as { data?: { buyer?: { email?: string; email_verified?: boolean } | null } | null } | null;
+    const payload = await res.json().catch(() => null) as { data?: { buyer?: { id?: string; email?: string; email_verified?: boolean } | null } | null } | null;
     const buyer = payload?.data?.buyer;
-    if (!buyer?.email) return signedOut(true);
-    return NextResponse.json({ buyer: { email: buyer.email, emailVerified: Boolean(buyer.email_verified) } }, { headers: NO_STORE });
+    if (typeof buyer?.id !== 'string' || !buyer.id || typeof buyer.email !== 'string' || !buyer.email) {
+        return NextResponse.json({ error: 'Your sign-in could not be checked right now.' }, { status: 503, headers: NO_STORE });
+    }
+    return NextResponse.json({ buyer: { id: buyer.id, email: buyer.email, emailVerified: Boolean(buyer.email_verified) } }, { headers: NO_STORE });
 }

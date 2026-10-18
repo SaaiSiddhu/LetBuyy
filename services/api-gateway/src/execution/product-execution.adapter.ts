@@ -8,12 +8,13 @@ import {
     COMMERCE_EXECUTION_PIPELINES,
     defineRuntimeBridge,
 } from '@letbuyy/shared-types';
-import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
+import { NotFoundError, ForbiddenError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
-import { SaasExecutionAdapter } from './saas-execution.adapter';
+import { SaasExecutionAdapter, assertResolvedCreationEntitlements } from './saas-execution.adapter';
+import type { Env } from '../index';
+import { executeProductMutation } from './product-mutation.adapter';
 import {
     planProductCreate,
-    planProductUpdate,
     type CreateProductCommand,
     type ProductOptionInput,
     type ProductVariantInput,
@@ -66,6 +67,7 @@ interface ProductVariantInventoryLevel {
 
 interface ProductExecutionAdapterOptions {
     variantDiffEnabled?: boolean;
+    mutationEnv?: Env;
 }
 
 function normalizedText(value: unknown): string | null {
@@ -186,62 +188,11 @@ export class ProductExecutionAdapter {
         storeId: string,
         userId: string,
         updates: Record<string, unknown>,
+        requestId = crypto.randomUUID(),
     ) {
-        const ownedProduct = await this.loadProductScopedToStore(productId, storeId);
-
-        const updatePlan = planProductUpdate(updates);
-        if (Object.keys(updatePlan.safeUpdates).length === 0 && !updatePlan.hasOptionUpdates) {
-            throw new ValidationError('No valid fields to update');
-        }
-
-        let data: Record<string, unknown> | null = null;
-        let refreshedVariantCache: Record<string, unknown>[] | null = null;
-        if (Object.keys(updatePlan.safeUpdates).length > 0) {
-            const result = await this.db
-                .from('products')
-                .update(updatePlan.safeUpdates)
-                .eq('id', productId)
-                .eq('store_id', ownedProduct.store_id)
-                .select()
-                .single();
-
-            if (result.error) throw new Error(`Product update failed: ${result.error.message}`);
-            data = result.data as Record<string, unknown>;
-        }
-
-        if (updatePlan.hasOptionUpdates && Array.isArray(updates.product_options)) {
-            await this.replaceProductOptions(productId, updates.product_options as ProductOptionInput[]);
-        }
-
-        if (updatePlan.hasVariantUpdates && Array.isArray(updates.variants)) {
-            const basePrice = typeof updatePlan.safeUpdates.price === 'number'
-                ? updatePlan.safeUpdates.price
-                : Number(data?.price ?? ownedProduct.price ?? 0);
-            await this.replaceProductVariants(productId, basePrice, updates.variants as ProductVariantInput[], userId);
-            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId, ownedProduct.store_id);
-        }
-
-        if (updatePlan.hasInventoryUpdate && typeof updates.stock === 'number') {
-            await this.setInventoryAvailable(productId, null, updates.stock, userId, 'product.update');
-        }
-
-        if (!data) {
-            const { data: refreshed, error } = await this.db
-                .from('products')
-                .select()
-                .eq('id', productId)
-                .eq('store_id', ownedProduct.store_id)
-                .single();
-
-            if (error) throw new Error(`Product refresh failed: ${error.message}`);
-            data = refreshed as Record<string, unknown>;
-        }
-
-        if (refreshedVariantCache) {
-            data = { ...data, variants: refreshedVariantCache };
-        }
-
-        return data;
+        // The database owns the live actor check, compare-and-swap, all effects and receipt.
+        // Creation/import keep their existing writer; no edit can enter its legacy diff branch.
+        return executeProductMutation(this.options.mutationEnv, storeId, productId, userId, updates, requestId);
     }
 
     /**
@@ -404,6 +355,7 @@ export class ProductExecutionAdapter {
 
     private async assertProductQuota(storeId: string): Promise<void> {
         const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(storeId);
+        assertResolvedCreationEntitlements(entitlements);
         const rawLimit = entitlements.limits.products;
         if (rawLimit === null || rawLimit === undefined) return;
         const productLimit = typeof rawLimit === 'number' ? rawLimit : Number(rawLimit);

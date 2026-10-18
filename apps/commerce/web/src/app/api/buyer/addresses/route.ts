@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
+import { verifyExpectedBuyerIdentity } from '@/lib/buyer-auth/expected-buyer';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
@@ -34,6 +35,11 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => null);
     if (!body) return NextResponse.json({ error: 'A JSON body is required' }, { status: 400, headers: NO_STORE });
+    const identityFailure = await verifyExpectedBuyerIdentity(session, request.headers.get('x-letbuyy-expected-buyer-id'), {
+        missing: 'Reload your account before changing saved addresses.',
+        unavailable: 'Your account could not be checked before changing saved addresses.',
+    });
+    if (identityFailure) return identityFailure;
 
     let res: Response;
     try {

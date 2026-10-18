@@ -123,6 +123,30 @@ void main() {
       expect(provider.isInCart('b-item'), isFalse);
     });
 
+    test('checkout snapshot cleanup cannot mutate whichever buyer signed in afterward', () async {
+      final provider = CartProvider();
+      await Future<void>.delayed(Duration.zero);
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('a-purchased-item'), quantity: 2);
+      final originalBuyerSnapshot = List<CartItemModel>.of(provider.items);
+
+      provider.updateUserId('buyer-b');
+      await Future<void>.delayed(Duration.zero);
+      await provider.addItem(_product('b-item'));
+      final removed = await provider.removeSnapshot(
+        originalBuyerSnapshot,
+        expectedBuyerId: 'buyer-a',
+      );
+
+      expect(removed, isFalse);
+      expect(provider.isInCart('b-item'), isTrue);
+      provider.updateUserId('buyer-a');
+      await Future<void>.delayed(Duration.zero);
+      expect(provider.isInCart('a-purchased-item'), isTrue);
+      expect(provider.getItemQuantity('a-purchased-item'), 2);
+    });
+
     test('a fresh CartProvider reads back a specific buyer\'s own cart after a real restart', () async {
       final first = CartProvider();
       await Future<void>.delayed(Duration.zero);

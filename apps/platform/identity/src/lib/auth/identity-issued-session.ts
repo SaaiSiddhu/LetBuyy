@@ -97,11 +97,75 @@ export async function createIdentityIssuedMerchantSessionToken(input: {
 /// `sep` is the account's session epoch when the token is issued (APPID-P4a, migration 257). The
 /// gateway refuses a token once the account has moved to a later epoch, which is how a password
 /// reset and "sign out everywhere" end sessions that are still signed and unexpired.
-export async function createIdentityIssuedBuyerSessionToken(input: {
+type BuyerSessionInput = {
     buyerAccountId: string
     sessionEpoch: number
     deviceId?: string | null
-}): Promise<string | null> {
+}
+
+export class IdentitySessionIssuanceUnavailableError extends Error {
+    constructor() {
+        super('Buyer session issuance is unavailable')
+        this.name = 'IdentitySessionIssuanceUnavailableError'
+    }
+}
+
+export async function prepareIdentitySigningKey() {
+    const privateJwk = parsePrivateJwk()
+    if (!privateJwk) throw new IdentitySessionIssuanceUnavailableError()
+    const alg = resolveAlgorithm(privateJwk)
+    let key: CryptoKey
+    try {
+        const imported = await importJWK(privateJwk, alg)
+        if (imported instanceof Uint8Array || imported.type !== 'private' || !imported.usages.includes('sign')) {
+            throw new IdentitySessionIssuanceUnavailableError()
+        }
+        const algorithm = imported.algorithm as KeyAlgorithm & { namedCurve?: string }
+        if (alg === 'ES256'
+            ? algorithm.name !== 'ECDSA' || algorithm.namedCurve !== 'P-256'
+            : algorithm.name !== 'Ed25519') {
+            throw new IdentitySessionIssuanceUnavailableError()
+        }
+        key = imported
+    } catch {
+        throw new IdentitySessionIssuanceUnavailableError()
+    }
+    const issuer = identityIssuer()
+    const kid = typeof privateJwk.kid === 'string' ? privateJwk.kid : 'identity-platform-active'
+    const publicJwks = JSON.stringify({keys:[{kty:privateJwk.kty,crv:privateJwk.crv,x:privateJwk.x,...(privateJwk.y?{y:privateJwk.y}:{}),alg,kid,key_ops:['verify']}]})
+    return {key, alg, issuer, kid, publicJwks}
+}
+
+/** Prepare the sole issuer before registration/reset effects; no account or token is created here. */
+export async function prepareIdentityIssuedBuyerSession(): Promise<(input: BuyerSessionInput) => Promise<string>> {
+    const {key, alg, kid, issuer} = await prepareIdentitySigningKey()
+    return async (input) => {
+        if (!Number.isInteger(input.sessionEpoch) || input.sessionEpoch < 1) {
+            throw new Error('A buyer session token needs the account session epoch')
+        }
+        const nowSeconds = Math.floor(Date.now() / 1000)
+        return new SignJWT({
+            realm: 'buyer',
+            token_use: 'buyer_session',
+            device_id: input.deviceId || null,
+            [LETBUYY_BUYER_SESSION_EPOCH_CLAIM]: input.sessionEpoch,
+        })
+            .setProtectedHeader({
+                alg,
+                typ: 'JWT',
+                kid,
+            })
+            .setIssuer(issuer)
+            .setAudience(BUYER_SESSION_AUDIENCE)
+            .setSubject(input.buyerAccountId)
+            .setIssuedAt(nowSeconds)
+            .setExpirationTime(nowSeconds + BUYER_SESSION_TTL_SECONDS)
+            .setJti(crypto.randomUUID())
+            .sign(key)
+    }
+}
+
+export async function createIdentityIssuedBuyerSessionToken(input: BuyerSessionInput): Promise<string | null> {
     if (!Number.isInteger(input.sessionEpoch) || input.sessionEpoch < 1) {
         throw new Error('A buyer session token needs the account session epoch')
     }
@@ -113,28 +177,8 @@ export async function createIdentityIssuedBuyerSessionToken(input: {
         return null
     }
 
-    const alg = resolveAlgorithm(privateJwk)
-    const key = await importJWK(privateJwk, alg)
-    const nowSeconds = Math.floor(Date.now() / 1000)
-
-    return new SignJWT({
-        realm: 'buyer',
-        token_use: 'buyer_session',
-        device_id: input.deviceId || null,
-        [LETBUYY_BUYER_SESSION_EPOCH_CLAIM]: input.sessionEpoch,
-    })
-        .setProtectedHeader({
-            alg,
-            typ: 'JWT',
-            kid: typeof privateJwk.kid === 'string' ? privateJwk.kid : 'identity-platform-active',
-        })
-        .setIssuer(identityIssuer())
-        .setAudience(BUYER_SESSION_AUDIENCE)
-        .setSubject(input.buyerAccountId)
-        .setIssuedAt(nowSeconds)
-        .setExpirationTime(nowSeconds + BUYER_SESSION_TTL_SECONDS)
-        .setJti(crypto.randomUUID())
-        .sign(key)
+    const issue = await prepareIdentityIssuedBuyerSession()
+    return issue(input)
 }
 
 /// Mints a buyer's session AT ONE STOREFRONT (APPID-P4b), after the storefront's server redeemed a

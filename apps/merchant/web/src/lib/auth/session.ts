@@ -124,6 +124,7 @@ export const getStoreForUser = cache(async (
     theme_id: string
     theme_settings: Record<string, unknown> | null
     custom_domain: string | null
+    custom_domain_status: string | null
 } | null> => {
     try {
         const data = await retryMerchantRead(() => createMerchantApiClient().stores.getByHandle(storeName))
@@ -142,6 +143,7 @@ export const getStoreForUser = cache(async (
             theme_id: data.theme_id || 'modern',
             theme_settings: data.theme_settings || null,
             custom_domain: data.custom_domain || null,
+            custom_domain_status: data.custom_domain_status || 'none',
         }
     } catch (error) {
         // 401/403 (no access) and 404 (missing store) → not found.

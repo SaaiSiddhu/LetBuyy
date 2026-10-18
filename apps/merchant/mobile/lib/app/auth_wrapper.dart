@@ -1,9 +1,12 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'store_context.dart';
 import '../services/store_auth_service.dart';
+import '../services/staff_service.dart';
+import '../screens/settings/accept_staff_invitation_screen.dart';
 import '../services/theme_provider.dart';
 import '../theme/app_theme_colors.dart';
 import '../screens/auth/login_screen.dart';
@@ -11,7 +14,7 @@ import '../screens/auth/error_screen.dart';
 import '../screens/main/store_main_screen.dart';
 import '../screens/wizard/create_store_wizard.dart';
 
-enum _AuthState { loading, login, wizard, main, error }
+enum _AuthState { loading, login, invitation, wizard, main, error }
 
 /// Auth Wrapper Widget
 /// Unified auth flow: Login → Store Check → Wizard or Main
@@ -25,6 +28,8 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   _AuthState _authState = _AuthState.loading;
   bool _isChecking = false;
+  int _checkVersion = 0;
+  String? _checkingActor;
   String _loadingStatus = 'Initializing...';
   String? _errorTitle;
   String? _errorMessage;
@@ -49,7 +54,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void _initAuthCheck() {
     final authService = context.read<StoreAuthService>();
 
-    if (authService.isSignedIn) {
+    if (context.read<StaffService>().pendingInvitation != null) {
+      setState(() => _authState = _AuthState.invitation);
+    } else if (authService.isSignedIn) {
       _checkUserState();
     } else {
       setState(() => _authState = _AuthState.login);
@@ -64,9 +71,14 @@ class _AuthWrapperState extends State<AuthWrapper> {
       if (event == AuthChangeEvent.signedOut ||
           event == AuthChangeEvent.sessionExpired ||
           session == null) {
-        unawaited(context.read<StoreContext>().clearSelection());
+        _checkVersion++;
+        _isChecking = false;
+        _checkingActor = null;
+        unawaited(context.read<StoreContext>().bindActor(null));
         setState(() {
-          _authState = _AuthState.login;
+          _authState = context.read<StaffService>().pendingInvitation == null
+              ? _AuthState.login
+              : _AuthState.invitation;
           _loginNotice = event == AuthChangeEvent.sessionExpired
               ? 'Your session expired. Please sign in again.'
               : null;
@@ -80,14 +92,27 @@ class _AuthWrapperState extends State<AuthWrapper> {
   }
 
   Future<void> _checkUserState() async {
-    if (_isChecking) return;
+    final auth = context.read<StoreAuthService>(),
+        actor = context.read<StoreAuthService>().currentUser?.id;
+    if (_isChecking && _checkingActor == actor) return;
+    final version = ++_checkVersion;
     _isChecking = true;
+    _checkingActor = actor;
+    bool alive() =>
+        mounted && version == _checkVersion && auth.currentUser?.id == actor;
 
     try {
-      setState(() => _loadingStatus = 'Loading store...');
-      final store = await context.read<StoreContext>().ensureSelectedStore();
+      if (context.read<StaffService>().pendingInvitation != null) {
+        setState(() => _authState = _AuthState.invitation);
+        return;
+      }
+      setState(() { _authState = _AuthState.loading; _loadingStatus = 'Loading store...'; });
+      if (actor == null) throw StateError('Sign in again');
+      final store = await context
+          .read<StoreContext>()
+          .ensureSelectedStoreForActor(actor);
 
-      if (!mounted) return;
+      if (!alive()) return;
 
       if (store != null) {
         setState(() => _authState = _AuthState.main);
@@ -96,15 +121,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
       }
     } catch (e) {
       debugPrint('Error checking auth state: $e');
-      if (mounted) {
+      if (alive()) {
         setState(() {
           _authState = _AuthState.error;
           _errorTitle = 'Error';
           _errorMessage = 'Something went wrong. Please try again.';
         });
       }
+    } finally {
+      if (version == _checkVersion) {
+        _isChecking = false;
+        _checkingActor = null;
+      }
     }
-    _isChecking = false;
   }
 
   /// Force refresh auth state
@@ -147,6 +176,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
         );
       case _AuthState.login:
         return LoginScreen(sessionNotice: _loginNotice);
+      case _AuthState.invitation:
+        return const AcceptStaffInvitationScreen();
       case _AuthState.wizard:
         return const CreateStoreWizard();
       case _AuthState.main:

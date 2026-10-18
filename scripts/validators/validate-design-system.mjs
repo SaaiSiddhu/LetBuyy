@@ -31,9 +31,10 @@
  *   node scripts/validators/validate-design-system.mjs --update   # refresh the ratchet baseline
  */
 
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
+import { isIgnoredDirectoryName } from './governance-common.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const APPS_DIR = join(ROOT, 'apps');
@@ -52,12 +53,12 @@ const SKIP_DIRS = new Set(['node_modules', '.next', '.turbo', 'dist', 'build', '
 
 function walk(dir, exts, out = []) {
     if (!existsSync(dir)) return out;
-    for (const entry of readdirSync(dir)) {
-        if (SKIP_DIRS.has(entry)) continue;
-        const full = join(dir, entry);
-        const st = statSync(full);
-        if (st.isDirectory()) walk(full, exts, out);
-        else if (exts.some((e) => entry.endsWith(e))) out.push(full);
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (SKIP_DIRS.has(entry.name) || isIgnoredDirectoryName(entry.name)) continue;
+        const full = join(dir, entry.name);
+        // Dirent does not follow links (including stale Flutter plugin links).
+        if (entry.isDirectory()) walk(full, exts, out);
+        else if (entry.isFile() && exts.some((e) => entry.name.endsWith(e))) out.push(full);
     }
     return out;
 }

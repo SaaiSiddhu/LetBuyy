@@ -52,6 +52,9 @@ class MoneyService extends ChangeNotifier {
     return _payoutSummary!;
   }
 
+  Future<Map<String, dynamic>> fetchPayoutStatement(String payoutId) =>
+      _api.payouts.get(payoutId);
+
   Future<Map<String, dynamic>> createPayoutStatement(String storeId) async {
     final payout = await _api.payouts.create({
       'store_id': storeId,

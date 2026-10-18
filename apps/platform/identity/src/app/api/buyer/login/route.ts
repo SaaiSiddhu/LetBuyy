@@ -3,7 +3,7 @@ import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { validateCsrf } from '@/lib/auth/csrf'
-import { createIdentityIssuedBuyerSessionToken } from '@/lib/auth/identity-issued-session'
+import { IdentitySessionIssuanceUnavailableError, prepareIdentityIssuedBuyerSession } from '@/lib/auth/identity-issued-session'
 import { buyerSessionEpoch, setBuyerSessionCookie } from '@/lib/auth/buyer-session'
 
 /**
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Bot verification failed.' }, { status: 403 })
         }
 
+        const issueSession = await prepareIdentityIssuedBuyerSession()
         const verified = await identityApiRequest('/storefront/buyer/verify-credentials', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
@@ -55,14 +56,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 })
         }
 
-        const token = await createIdentityIssuedBuyerSessionToken({
+        const token = await issueSession({
             buyerAccountId: buyer.id,
             sessionEpoch: buyerSessionEpoch(buyer.session_epoch),
         })
-        if (token) await setBuyerSessionCookie(token)
+        await setBuyerSessionCookie(token)
 
         return NextResponse.json({ buyer: { id: buyer.id, email: buyer.email, status: buyer.status } })
-    } catch {
+    } catch (error) {
+        if (error instanceof IdentitySessionIssuanceUnavailableError) {
+            return NextResponse.json({ error: 'Sign-in is unavailable right now. Try again in a moment.' }, { status: 503 })
+        }
         return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 })
     }
 }

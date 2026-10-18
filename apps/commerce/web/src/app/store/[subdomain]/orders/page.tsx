@@ -1,6 +1,5 @@
 import { StoreService } from '@/lib/store-service';
-import { notFound } from 'next/navigation';
-import OrdersClient from './orders-client';
+import { notFound, redirect } from 'next/navigation';
 
 export default async function OrdersPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const { subdomain } = await params;
@@ -10,10 +9,7 @@ export default async function OrdersPage({ params }: { params: Promise<{ subdoma
         return notFound();
     }
 
-    return (
-        <OrdersClient
-            subdomain={subdomain}
-            storeName={store.name}
-        />
-    );
+    // Keep legacy storefront links useful while sending every order-history
+    // request through signed buyer ownership and explicit verified-email claim.
+    redirect(`/store/${encodeURIComponent(subdomain)}/account/orders`);
 }

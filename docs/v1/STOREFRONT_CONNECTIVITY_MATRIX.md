@@ -32,7 +32,7 @@
 | GST / tax | ✅ gst tables | ✅ server-computed in RPC | — | 🟡 not shown at cart | ✅ server-authoritative | ✅ invoice | 🟡 |
 | Orders pipeline | ✅ `orders`/`order_items` | ✅ gateway-owned `order-service.ts:3` | — | ✅ read-only | ✅ | ✅ create→confirm→fulfil | ✅ |
 | Order tracking / fulfillment | ✅ `tracking_number` | ✅ order payload | — | ✅ account/orders | — | ✅ `order-service.ts:152-155` | ✅ |
-| Customer register/login | ✅ `store_customers`/`customer_credentials` | ✅ `findOrCreateCustomer`/`verifyCustomerPassword` | — | ✅ `customer-service.ts:46,148` | ✅ guest auto-create | ✅ | ✅ |
+| Customer register/login | ✅ `store_customers`/`customer_credentials` | ✅ `verifyCustomerPassword`; guest auto-create derives fields from a tenant-scoped order | — | ✅ Commerce customer service | ✅ order-bound guest auto-create | ✅ | ✅ |
 | Customer profile/addresses | ✅ `customer_addresses` | ✅ `customerAddresses`/`createCustomerAddress` | — | ✅ account pages | ✅ ship-to | — | ✅ |
 | Customer order history | ✅ `orders` | ✅ `customerOrders` `:230` | — | ✅ `account/orders` | — | ✅ | ✅ |
 | Wishlist | ✅ `wishlists`/`customer_wishlists` | ✅ wishlist CRUD `:169-224` | — | ✅ `wishlist-context.tsx` | — | — | ✅ |

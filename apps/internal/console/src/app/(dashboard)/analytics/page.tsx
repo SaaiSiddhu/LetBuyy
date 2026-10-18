@@ -1,3 +1,4 @@
+import type { InternalConsoleAnalytics as ConsoleAnalytics } from '@letbuyy/shared-types';
 import Link from 'next/link';
 import type {
     ExecutiveCohortAnalytics,
@@ -23,14 +24,6 @@ import {
     type ConsoleDataResponse,
 } from '@/lib/console-api';
 
-type ConsoleAnalytics = {
-    period_days: number;
-    new_signups: number;
-    stores_created: number;
-    subscriptions_created: number;
-    audit_events: number;
-    signup_to_store_conversion_percent: number;
-};
 
 type CohortMerchant = {
     id: string;

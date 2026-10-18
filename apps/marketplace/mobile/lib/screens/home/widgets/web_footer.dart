@@ -356,7 +356,9 @@ class WebFooter extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 _SocialIconButton(icon: FontAwesomeIcons.facebook),
                 _SocialIconButton(icon: FontAwesomeIcons.xTwitter),
@@ -374,7 +376,9 @@ class WebFooter extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            Row(
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
               children: [
                 _buildAppStoreButton(
                   icon: Icons.apple,

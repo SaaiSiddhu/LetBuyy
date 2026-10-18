@@ -69,6 +69,9 @@ const REPLY_RPC = 'rpc/execute_operator_support_mutation';
 const REPLY_SIGNATURE = 'public.reply_to_support_ticket(uuid, uuid, text, text, text, text, uuid, jsonb, jsonb, text)';
 const MIGRATION = new URL('../../../../../database/supabase/migrations/264_support_ticket_reply_atomic.sql', import.meta.url);
 const ROLLBACK = new URL('../../../../../database/supabase/rollback/264_support_ticket_reply_atomic.rollback.sql', import.meta.url);
+const REPLAY_SIGNATURE = 'public.consume_internal_auth_replay_jti(text, text, integer)';
+const REPLAY_MIGRATION = new URL('../../../../../database/supabase/migrations/307_internal_auth_replay_claims.sql', import.meta.url);
+const REPLAY_ROLLBACK = new URL('../../../../../database/supabase/rollback/307_internal_auth_replay_claims.rollback.sql', import.meta.url);
 // What a refusal or failure must never carry: database or schema internals, the reply function's name, a stack frame, or the
 // text of a fault this suite injected.
 const INTERNALS = /PGRST|SQLSTATE|duplicate key|violates|constraint|_uidx|support_tickets|ticket_messages|ticket_sla_clocks|audit_logs|ts_cases|reply_to_support_ticket|ZodError|\bat \S+\.(?:ts|js|mjs):\d+|owned fault|injected/i;
@@ -1173,8 +1176,10 @@ test('G. incident-command and every sibling /operations route keep their protect
     // /operations router mounted after it. Several of those (buyer-links, marketplace-listings, -categories, -banners) declare no
     // gate of their own and carry only per-route scopes (support:view, review:view, ...) that the reviewer, operator and lead
     // tiers hold -- so they rely on that inherited gate. The queue was opened to the tiers WITHOUT touching it: these are the
-    // routes that must not have moved. The app platform's two routers sit behind its kill switch (404 to everyone while the flag
-    // is off); they are probed with the flag on, to reach their own gates.
+    // routes that must not have moved. Marketplace listing review is intentionally mounted before
+    // this broad gate and has its own active-reviewer tier/permission checks (F6.2); that route is
+    // asserted separately below. The app platform's two routers sit behind its kill switch (404 to
+    // everyone while the flag is off); they are probed with the flag on, to reach their own gates.
     const appPlatformOn = gatewayEnv(owned, keys, { FEATURE_APP_PLATFORM: 'true' });
     const probes: Array<[string, string, boolean]> = [
         ['incident-command: on-call now', '/v1/operations/oncall/current', false],
@@ -1183,7 +1188,6 @@ test('G. incident-command and every sibling /operations route keep their protect
         ['risk: rules', '/v1/operations/risk/rules', false],
         ['trust & safety: policies', '/v1/operations/trust-safety/policies', false],
         ['buyer links: conflicts', '/v1/operations/buyer-links/conflicts', false],
-        ['marketplace listings', '/v1/operations/marketplace-listings', false],
         ['marketplace categories', '/v1/operations/marketplace-categories', false],
         ['marketplace banners', '/v1/operations/marketplace-banners', false],
         ['rbac: break-glass grants', '/v1/operations/rbac/break-glass', false],
@@ -1215,13 +1219,78 @@ test('G. incident-command and every sibling /operations route keep their protect
     assert.deepEqual(observed, Object.fromEntries(probes.map(([route]) => [route, Object.fromEntries(refusedAlike.map(([name]) => [name, refusal]))])), 'every queue tier is refused on every sibling route exactly as a stranger is');
     // The positive control: the gate is not "deny everyone" -- the super admin passes it on every route.
     assert.deepEqual(adminStatuses, Object.fromEntries(probes.map(([route]) => [route, 200])), 'the super admin passes every sibling gate');
+
+    // The listing workbench has a distinct F6.2 gate. Active viewer/operator/lead reviewers may
+    // read the queue, while the excluded admin tier and a user without active platform membership
+    // are refused. Its separate gate must not be mistaken for removal of incident-command's gate.
+    const listingReviewerStatuses: Record<string, number> = {};
+    for (const [name, person] of refusedAlike) {
+        listingReviewerStatuses[name] = (await answer(person, '/v1/operations/marketplace-listings', false)).status;
+    }
+    assert.deepEqual(listingReviewerStatuses, {
+        'a platform reviewer': 200,
+        'a platform operator': 200,
+        'a platform lead': 200,
+        'an admin-tier platform role': 403,
+        'a user with no employee row': 403,
+    }, 'marketplace listing review keeps its own active reviewer tier gate');
+    assert.equal(adminStatuses['marketplace listings'] ?? (await answer(admin, '/v1/operations/marketplace-listings', false)).status, 200,
+        'the allowlisted super admin remains an explicit listing-workbench positive control');
+});
+
+test('signed identity JTIs are single-use across worker instances and actual replay-RPC permission failure denies access', async () => {
+    const admin = seedSuperAdmin('replay-admin');
+    const firstWorker = new Gateway(gatewayEnv(owned, keys));
+    const secondWorker = new Gateway(gatewayEnv(owned, keys));
+    const headers = await signedIdentityHeaders(admin.id, admin.email);
+    const jti = headers['X-LetBuyy-Internal-JTI'];
+    const path = `${OPS}/overview`;
+
+    try {
+        const raced = await Promise.all([
+            firstWorker.request(path, { headers }),
+            secondWorker.request(path, { headers }),
+        ]);
+        assert.deepEqual(raced.map((response) => response.status).sort(), [200, 401], 'one concurrent claim is accepted and the duplicate is denied');
+        assert.equal(Number(psql(`SELECT count(*) FROM internal_auth_replay_claims WHERE auth_kind = 'identity' AND jti = '${jti}';`)), 1, 'the accepted credential has one durable claim');
+        assert.equal((await secondWorker.request(path, { headers })).status, 401, 'a replay after the race is still denied');
+
+        const healthyControl = await firstWorker.request(path, { headers: await signedIdentityHeaders(admin.id, admin.email) });
+        assert.equal(healthyControl.status, 200, 'a fresh credential still passes the authorization gates');
+
+        const outageHeaders = await signedIdentityHeaders(admin.id, admin.email);
+        const outageJti = outageHeaders['X-LetBuyy-Internal-JTI'];
+        // Fail the actual PostgreSQL RPC boundary in this verified owned database.
+        // PostgREST and both production workers remain live; no response is stubbed.
+        const previousAcl = psql(`SELECT proacl::text FROM pg_proc WHERE oid = '${REPLAY_SIGNATURE}'::regprocedure;`);
+        psql(`REVOKE EXECUTE ON FUNCTION ${REPLAY_SIGNATURE} FROM service_role;`);
+        try {
+            const denied = await firstWorker.request(path, { headers: outageHeaders });
+            assert.equal(denied.status, 401, 'an unavailable replay claim service fails closed');
+            assert.doesNotMatch(denied.text, INTERNALS, 'the storage failure is sanitized');
+        } finally {
+            psql(`GRANT EXECUTE ON FUNCTION ${REPLAY_SIGNATURE} TO service_role;`);
+        }
+        assert.equal(psql(`SELECT proacl::text FROM pg_proc WHERE oid = '${REPLAY_SIGNATURE}'::regprocedure;`), previousAcl, 'recovery restores the original RPC ACL exactly');
+        assert.equal(Number(psql(`SELECT count(*) FROM internal_auth_replay_claims WHERE auth_kind = 'identity' AND jti = '${outageJti}';`)), 0, 'an unavailable claim is not treated as consumed or accepted');
+        assert.equal((await firstWorker.request(path, { headers: outageHeaders })).status, 200, 'the unclaimed credential may be retried after storage recovers');
+        assert.equal((await secondWorker.request(path, { headers: outageHeaders })).status, 401, 'the successful recovery retry becomes single-use across workers too');
+
+        const invalidHeaders = await signedIdentityHeaders(admin.id, admin.email);
+        const invalidJti = invalidHeaders['X-LetBuyy-Internal-JTI'];
+        assert.equal((await firstWorker.request(path, { headers: { ...invalidHeaders, 'X-LetBuyy-Internal-Signature': '0'.repeat(64) } })).status, 401);
+        assert.equal(psql(`SELECT count(*) FROM internal_auth_replay_claims WHERE auth_kind = 'identity' AND jti = '${invalidJti}';`), '0', 'an invalid signature cannot pre-consume the real signed credential');
+        assert.equal((await secondWorker.request(path, { headers: invalidHeaders })).status, 200);
+    } finally {
+        await Promise.all([firstWorker.settle(), secondWorker.settle()]);
+    }
 });
 
 // --------------------------------------------------------------------------------------------------------------------
-// The database function: least privilege and rollback. LAST: it drops and re-creates the function in this database.
+// The database functions: least privilege and rollback. LAST: they are restored after the checks.
 // --------------------------------------------------------------------------------------------------------------------
 
-test('the reply function is SECURITY DEFINER with a fixed search_path, executable by the backend role alone; migration 264 rolls back and re-applies cleanly', () => {
+test('the operator reply and internal replay functions have narrow database privileges and migrations 264/307 roll back cleanly', () => {
     const facts = () => queryJson(psql, `
         SELECT jsonb_build_object(
           'service_role', has_function_privilege('service_role', '${REPLY_SIGNATURE}', 'EXECUTE'),
@@ -1254,4 +1323,43 @@ test('the reply function is SECURITY DEFINER with a fixed search_path, executabl
     owned.script(migration);
     owned.script(migration);
     assert.deepEqual(facts(), expected);
+
+    const replayFacts = () => queryJson(psql, `
+        SELECT jsonb_build_object(
+          'service_role_exec', has_function_privilege('service_role', '${REPLAY_SIGNATURE}', 'EXECUTE'),
+          'anon_exec', has_function_privilege('anon', '${REPLAY_SIGNATURE}', 'EXECUTE'),
+          'authenticated_exec', has_function_privilege('authenticated', '${REPLAY_SIGNATURE}', 'EXECUTE'),
+          'app_tenant_exec', has_function_privilege('app_tenant', '${REPLAY_SIGNATURE}', 'EXECUTE'),
+          'public_exec', (SELECT CASE WHEN p.proacl IS NULL THEN true
+                                      ELSE EXISTS (SELECT 1 FROM aclexplode(p.proacl) a WHERE a.grantee = 0 AND a.privilege_type = 'EXECUTE') END
+                         FROM pg_proc p WHERE p.oid = '${REPLAY_SIGNATURE}'::regprocedure),
+          'definer', (SELECT prosecdef FROM pg_proc WHERE oid = '${REPLAY_SIGNATURE}'::regprocedure),
+          'config', (SELECT array_to_string(proconfig, ';') FROM pg_proc WHERE oid = '${REPLAY_SIGNATURE}'::regprocedure),
+          'rls', (SELECT relrowsecurity FROM pg_class WHERE oid = 'public.internal_auth_replay_claims'::regclass),
+          'service_role_table_access', has_table_privilege('service_role', 'public.internal_auth_replay_claims', 'SELECT,INSERT,UPDATE,DELETE'),
+          'anon_table_access', has_table_privilege('anon', 'public.internal_auth_replay_claims', 'SELECT,INSERT,UPDATE,DELETE'),
+          'overloads', (SELECT count(*) FROM pg_proc WHERE proname = 'consume_internal_auth_replay_jti')
+        )::text;
+    `);
+    const replayExpected = {
+        service_role_exec: true,
+        anon_exec: false,
+        authenticated_exec: false,
+        app_tenant_exec: false,
+        public_exec: false,
+        definer: true,
+        config: 'search_path=pg_catalog, public',
+        rls: true,
+        service_role_table_access: false,
+        anon_table_access: false,
+        overloads: 1,
+    };
+    assert.deepEqual(replayFacts(), replayExpected);
+    assert.match(owned.psqlExpectError(`SET ROLE anon; SELECT public.consume_internal_auth_replay_jti('identity', '0123456789abcdef', 300);`), /permission denied for function consume_internal_auth_replay_jti/);
+    assert.match(owned.psqlExpectError(`SET ROLE service_role; SELECT public.consume_internal_auth_replay_jti('identity', 'short', 300);`), /invalid internal auth replay claim/);
+
+    owned.script(readFileSync(REPLAY_ROLLBACK, 'utf8'));
+    assert.equal(psql(`SELECT to_regprocedure('${REPLAY_SIGNATURE}') IS NULL AND to_regclass('public.internal_auth_replay_claims') IS NULL;`), 't');
+    owned.script(readFileSync(REPLAY_MIGRATION, 'utf8'));
+    assert.deepEqual(replayFacts(), replayExpected);
 });

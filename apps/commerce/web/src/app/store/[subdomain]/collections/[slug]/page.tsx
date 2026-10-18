@@ -13,14 +13,18 @@ export const revalidate = 30;
 
 const COLLECTION_REVALIDATE_SECONDS = 30;
 
-async function loadCollectionWithProducts(subdomain: string, slug: string) {
+async function loadCollectionWithProducts(
+    subdomain: string,
+    slug: string,
+    query: { country_of_origin?: string; category?: string; search?: string; page?: string } = {},
+) {
     try {
         const result = await createStorefrontApiClient(
             storefrontReadInit(COLLECTION_REVALIDATE_SECONDS, [
                 `storefront:${subdomain}:collections`,
                 `storefront:${subdomain}:collection:${slug}`,
             ]),
-        ).storefront.getCollectionWithProducts(subdomain, slug);
+        ).storefront.getCollectionWithProducts(subdomain, slug, { query });
         return result;
     } catch (err) {
         if (err instanceof StorefrontApiRequestError && err.status === 404) return null;
@@ -50,12 +54,22 @@ export async function generateMetadata(
 }
 
 export default async function CollectionPage(
-    { params }: { params: Promise<{ subdomain: string; slug: string }> },
+    { params, searchParams }: {
+        params: Promise<{ subdomain: string; slug: string }>;
+        searchParams?: Promise<{ country_of_origin?: string; category?: string; search?: string; page?: string }>;
+    },
 ) {
     const { subdomain, slug } = await params;
+    const query = await searchParams;
+    const filters = {
+        ...(query?.country_of_origin?.trim() ? { country_of_origin: query.country_of_origin.trim().slice(0, 100) } : {}),
+        ...(query?.category?.trim() ? { category: query.category.trim().slice(0, 100) } : {}),
+        ...(query?.search?.trim() ? { search: query.search.trim().slice(0, 100) } : {}),
+        ...(query?.page?.trim() ? { page: String(Math.max(1, Number(query.page) || 1)) } : {}),
+    };
 
     const [payload, store] = await Promise.all([
-        loadCollectionWithProducts(subdomain, slug),
+        loadCollectionWithProducts(subdomain, slug, filters),
         StoreService.getStoreBySubdomain(subdomain),
     ]);
 
@@ -81,6 +95,7 @@ export default async function CollectionPage(
             category: r.category as string | undefined,
             tags: (r.tags as string[]) ?? [],
             variants: ((r.variants as ProductModel['variants']) ?? []),
+            countryOfOrigin: r.country_of_origin as string | undefined,
             stock: r.stock !== undefined && r.stock !== null ? Number(r.stock) : 999,
             seoTitle: r.seo_title as string | undefined,
             seoDescription: r.seo_description as string | undefined,
@@ -96,6 +111,10 @@ export default async function CollectionPage(
         path: `/store/${subdomain}/collections/${slug}`,
         subdomain,
         resourceId: slug,
+        searchParams: {
+            ...filters,
+            ...(query?.page?.trim() ? { page: query.page.trim().slice(0, 6) } : {}),
+        },
         fallbackSections: [createProductListingFallbackSection(collection.title)],
     });
 

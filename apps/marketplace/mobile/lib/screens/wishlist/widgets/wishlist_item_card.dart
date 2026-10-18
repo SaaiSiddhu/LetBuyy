@@ -58,7 +58,9 @@ class WishlistItemCard extends StatelessWidget {
                       // Product Image
                       Container(
                         decoration: BoxDecoration(
-                          color: isDark ? AppColors.surfaceDarkVariant : AppColors.surfaceVariant,
+                          color: isDark
+                              ? AppColors.surfaceDarkVariant
+                              : AppColors.surfaceVariant,
                           borderRadius: const BorderRadius.vertical(
                             top: Radius.circular(16),
                           ),
@@ -74,7 +76,9 @@ class WishlistItemCard extends StatelessWidget {
                                 child: Icon(
                                   Icons.shopping_bag_outlined,
                                   size: 48,
-                                  color: isDark ? AppColors.textLightHint : AppColors.textHint,
+                                  color: isDark
+                                      ? AppColors.textLightHint
+                                      : AppColors.textHint,
                                 ),
                               )
                             : null,
@@ -85,7 +89,9 @@ class WishlistItemCard extends StatelessWidget {
                         top: 12,
                         right: 12,
                         child: Material(
-                          color: isDark ? AppColors.surfaceDark : AppColors.surface,
+                          color: isDark
+                              ? AppColors.surfaceDark
+                              : AppColors.surface,
                           elevation: 4,
                           shape: const CircleBorder(),
                           child: InkWell(
@@ -185,7 +191,9 @@ class WishlistItemCard extends StatelessWidget {
                                 product.rating.toStringAsFixed(1),
                                 style: AppTextStyles.bodySmall.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: isDark ? AppColors.textLight : AppColors.textPrimary,
+                                  color: isDark
+                                      ? AppColors.textLight
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -200,18 +208,21 @@ class WishlistItemCard extends StatelessWidget {
                               '₹${product.price.toStringAsFixed(0)}',
                               style: AppTextStyles.titleMedium.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? AppColors.primaryLight : AppColors.primary,
+                                color: isDark
+                                    ? AppColors.primaryLight
+                                    : AppColors.primary,
                               ),
                             ),
-                            if (product.originalPrice != null &&
-                                product.originalPrice! > product.price)
+                            if (product.hasDisplayableReferencePrice)
                               Padding(
                                 padding: const EdgeInsets.only(left: 6),
                                 child: Text(
-                                  '₹${product.originalPrice!.toStringAsFixed(0)}',
+                                  '${product.hasPriorThirtyDayLow ? '30-day low ' : 'M.R.P. '}₹${product.originalPrice!.toStringAsFixed(0)}',
                                   style: AppTextStyles.bodySmall.copyWith(
                                     decoration: TextDecoration.lineThrough,
-                                    color: isDark ? AppColors.textLightSecondary : AppColors.textSecondary,
+                                    color: isDark
+                                        ? AppColors.textLightSecondary
+                                        : AppColors.textSecondary,
                                   ),
                                 ),
                               ),
@@ -228,7 +239,10 @@ class WishlistItemCard extends StatelessWidget {
                               ? ElevatedButton.icon(
                                   onPressed: () {
                                     HapticFeedback.lightImpact();
-                                    AppRoutes.navigateTo(context, AppRoutes.cart);
+                                    AppRoutes.navigateTo(
+                                      context,
+                                      AppRoutes.cart,
+                                    );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.success,
@@ -238,7 +252,10 @@ class WishlistItemCard extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  icon: const Icon(Icons.check_circle, size: 18),
+                                  icon: const Icon(
+                                    Icons.check_circle,
+                                    size: 18,
+                                  ),
                                   label: const Text(
                                     'In Cart',
                                     style: TextStyle(
@@ -250,30 +267,48 @@ class WishlistItemCard extends StatelessWidget {
                               : ElevatedButton.icon(
                                   onPressed: () async {
                                     HapticFeedback.mediumImpact();
-                                    final added = await cartProvider.addItem(product, quantity: 1);
+                                    final added = await cartProvider.addItem(
+                                      product,
+                                      quantity: 1,
+                                    );
 
                                     if (context.mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: Text(added ? 'Added to cart 🛒' : 'Could not add to cart'),
-                                          backgroundColor: added ? AppColors.success : AppColors.error,
+                                          content: Text(
+                                            added
+                                                ? 'Added to cart 🛒'
+                                                : 'Could not add to cart',
+                                          ),
+                                          backgroundColor: added
+                                              ? AppColors.success
+                                              : AppColors.error,
                                           behavior: SnackBarBehavior.floating,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                           ),
                                         ),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: isDark ? AppColors.primaryLight : AppColors.primary,
+                                    backgroundColor: isDark
+                                        ? AppColors.primaryLight
+                                        : AppColors.primary,
                                     foregroundColor: AppColors.white,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
-                                  icon: const Icon(Icons.add_shopping_cart, size: 18),
+                                  icon: const Icon(
+                                    Icons.add_shopping_cart,
+                                    size: 18,
+                                  ),
                                   label: const Text(
                                     'Add to Cart',
                                     style: TextStyle(

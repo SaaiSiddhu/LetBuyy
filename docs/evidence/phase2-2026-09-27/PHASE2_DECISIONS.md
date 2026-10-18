@@ -228,6 +228,25 @@ could mean the console UI for them has not been built yet, or that they are reac
 outside this repository. This is a fact worth the owner's attention before any D04 decision is
 finalized, not a gap this pass can resolve by more reading.
 
+> **Correction (2026-10-04 — current caller inventory).** The no-caller observation above was
+> accurate for its source snapshot and is now superseded. The current Merchant 360 detail page
+> (`apps/internal/console/src/app/(dashboard)/merchants/[id]/page.tsx`) exposes real server actions
+> for impersonation start/end and merchant suspend/restore; each calls `requireConsoleSession({
+> mfa: true })` before the typed Gateway request. Its navigation and merchant-list links make the
+> page reachable. `internal-os-merchant-360.test.ts` passes 4/4 and asserts the routes, typed client,
+> console controls and shared MFA-gated caller. This resolves the D04.9 question “does a caller
+> exist?” as **yes, in this repository**.
+>
+> This does not certify the privileged backend boundary or an effective read-only impersonation
+> journey. The Gateway global internal perimeter checks allowlisted source IP (when configured) and
+> credential presence; impersonation start/end do not independently verify operator authority.
+> Merchant moderation checks a shared console/service credential and accepts actor and approver IDs
+> from the body. `checkSegregationOfDuty` rejects a missing or identical second ID but does not
+> authenticate that approver or verify active membership. The console action discards the returned
+> impersonation token, and no in-repository consumer uses it to enter a merchant view. D04.6
+> high-risk approval and operator identity/authority therefore remain unresolved; this correction
+> does not approve enabling, expanding or deprecating either capability.
+
 ### Implemented this pass: `requirePlatformOperator()`, replacing the router-level superadmin-only gate
 
 `operations/support.ts`'s blanket `requireRoleCategory('ops')` + `requireSuperAdmin` (every route,
@@ -457,7 +476,7 @@ IMPLEMENTED / LOCAL VERIFIED / BLOCKED / CLOSED), not an invented scale. Rows ou
 | D04 console session revocation (the allowlist-membership dimension, the "8-hour gap") | **IMPLEMENTED, LOCAL VERIFIED** (2026-09-28) — verified the gap was real (neither `proxy.ts` nor `requireConsoleSession()` re-checked `PLATFORM_CONSOLE_ALLOWED_EMAILS` per request), fixed both layers, 6 tests against the real `proxy()` function. Precisely characterized this pass (2026-09-28 follow-up), not just claimed fixed: `PLATFORM_CONSOLE_ALLOWED_EMAILS` is read fresh from `process.env` on every call with NO caching layer of this repo's own construction, so the fix's guarantee is "the very next request after the deployed process's environment actually changes is denied" -- in most real hosting models that means after a redeploy/restart, not instantly on an env-var edit alone; a rolling multi-instance deployment can have instances briefly disagree during that rollout (inherent to env-var-based config generally, not something this fix changes); `proxy.ts` and `console-auth-server.ts` are CONFIRMED to call the identical `isConsoleEmailAllowed` from the identical `console-access-allowlist.ts` module (one source of truth, not two policies that could drift); re-adding a removed email makes any STILL-UNEXPIRED session cookie for that email valid again immediately -- "removal" is membership state, not a permanent per-session kill; `services/api-gateway`'s own `internal-console.ts` routes do NOT themselves re-verify per-operator membership -- they trust `PLATFORM_CONSOLE_API_TOKEN`, a shared service-level credential common to every console-originated call, so the person-level check lives ENTIRELY in the console app's own layer (which this fix covers). Per-session-jti revocation (killing one specific already-issued token before its natural expiry, independent of allowlist membership) remains unsupported — a named limitation, not fabricated as tested. |
 | D04 unauthenticated static-token-only API routes (NEW finding, 2026-09-28 follow-up) | **FIXED, LOCAL VERIFIED** — `founding/action` (pause/disable the founding-merchant program, reallocate site slots) and `founding/export` (CSV export of allocation data) had **no session check of any kind** and are not covered by `proxy.ts`'s protected-path matcher; they relied solely on `PLATFORM_CONSOLE_API_TOKEN`, a shared service-level credential proving "this call came from the console app," never "this specific operator is still allowed." A genuine pre-existing defect, not a theoretical one — found and fixed in this pass per its explicit authorization to fix authentication/authorization defects. New `lib/console-api-auth.ts` (reads the session directly from the `NextRequest`, deliberately avoiding `console-auth-server.ts`'s `server-only` marker so the gate is testable without a real Next.js SSR context) wired into both routes; 6 tests (no-session/revoked-allowlist/no-MFA/authorized-passes-through × 2 routes); negative control confirmed load-bearing. |
 | D04.8 console delivery boundary | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (adapter interface + capture transport; no sender chosen, no provider wired) |
-| D04.9 moderation/impersonation route callers | **BLOCKED** on the owner confirming whether a real caller exists |
+| D04.9 moderation/impersonation route callers | **CALLER EXISTENCE RESOLVED (2026-10-04):** current Merchant 360 UI invokes the routes; backend actor/approver authority and an end-to-end read-only impersonation consumer remain unverified (dated correction above) |
 | D05 export field contract | **IMPLEMENTED, LOCAL VERIFIED, NOT ACTIVE** (`BUYER_EXPORT_GENERATION_AVAILABLE = false`) — corrected against the real schema this pass (orders.total, not the never-existent total_minor) |
 | D05 real query wiring (read-only, against actual tables) | **IMPLEMENTED, LOCAL VERIFIED** (Mandate 7) — 4 tests against two real synthetic buyer accounts in the owned local Postgres; still not wired into any route |
 | D05 export execution against real requests / route exposure | **BLOCKED** on D05 decisions 2-3 (requester verification; release/download protection) — explicitly excluded from the D05 approval's own scope |
@@ -471,4 +490,3 @@ IMPLEMENTED / LOCAL VERIFIED / BLOCKED / CLOSED), not an invented scale. Rows ou
 > needed an owner decision. What that work surfaced instead — the theme tables' privilege posture, and rows the gateway lane left in
 > the local Supabase stack — is in `PHASE2_LOCAL_QUALITY_AND_THEME_ISOLATION.md` §5, §6.4 and §10. The current acceptance matrix is §8
 > there.
-

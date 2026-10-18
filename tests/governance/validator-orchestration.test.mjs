@@ -330,6 +330,23 @@ test("validators outside the selected lane are NOT_APPLICABLE with a reason, not
 
 /* --------------------------------------------- generated-artifact cleanup */
 
+test("Next session runtime cleanup planning is narrow and preserves tracked or linked roots", () => {
+  const root = makeTempDir("cleanup-next-runtime");
+  const outside = makeTempDir("cleanup-next-runtime-outside");
+  for (const name of [".next-session-runtime-123-commerce-next", ".next-session-runtime-456-identity-next", ".next-source", ".next-session-runtime_invalid"]) {
+    fs.mkdirSync(path.join(root, "apps", "web", name), {recursive:true});
+  }
+  fs.symlinkSync(outside, path.join(root, "apps", "web", ".next-session-runtime-789-linked"), "dir");
+  const plan = planGeneratedArtifactCleanup({
+    repoRoot:root,
+    isTracked:relPath => relPath === "apps/web/.next-session-runtime-456-identity-next",
+  });
+  assert.deepEqual(plan.targets.map(target => target.relPath), ["apps/web/.next-session-runtime-123-commerce-next"]);
+  assert.ok(plan.refusals.some(refusal => refusal.relPath.endsWith("456-identity-next") && /git-tracked/.test(refusal.reason)));
+  assert.ok(plan.refusals.some(refusal => refusal.relPath.endsWith("789-linked") && /symlink/.test(refusal.reason)));
+  assert.equal(fs.existsSync(path.join(root, "apps", "web", ".next-source")),true);
+});
+
 test("cleanup only targets generated directory names inside the repository root", () => {
   const root = makeTempDir("cleanup-scope");
   fs.mkdirSync(path.join(root, "apps", "web", "node_modules", "pkg"), { recursive: true });

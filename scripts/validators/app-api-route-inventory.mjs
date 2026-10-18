@@ -37,6 +37,8 @@ export function listAppApiRoutes(files = listWorkspaceFiles(["apps"])) {
 }
 
 export function classifyAppApiRoute(file) {
+  if (file === 'apps/platform/identity/src/app/api/buyer/privacy/[operation]/route.ts') return 'gateway-proxy';
+  if (file === "apps/platform/identity/src/app/api/operator/console/route.ts") return "app-local-operator-auth";
   if (file.startsWith("apps/platform/identity/src/app/api/auth/")) return "app-local-auth";
   // D-8 (2026-09-05): the marketplace buyer realm. A SEPARATE class from app-local-auth, not a
   // widening of it -- buyer auth must never grant merchant rights (ART-05, SEC-R7), and keeping the
@@ -104,7 +106,20 @@ export function classifyAppApiRoute(file) {
 // The count stays 204: the inventory already held them; only the lint-side mirror had been missed.
 // P2-STOREFRONT-BUYER-ORDERS (2026-10-03) — 205: canonical own-order proxy.
 // Uses host-bound storefront credentials and verified links; no local commerce.
-export const APP_API_ROUTE_RATCHET = 205;
+// P2-STOREFRONT-BUYER-WISHLIST (2026-10-04) — 206: store wishlist proxy for a buyer with an
+// explicit verified store-customer link. Host/session resolution stays at the BFF; the gateway owns
+// link, active customer, and store-scoped wishlist checks.
+// N1.1 (2026-10-14) — 213: reconcile seven existing candidate BFF routes after
+// reviewing their complete forwarding/host/ownership boundaries. Buyer loyalty
+// (balance/history), buyer support (tickets/messages), hosted checkout (handoff/
+// step), and merchant listing resubmission are gateway-proxy; no new issuer or
+// app-local commerce owner. Their paths also enter the ESLint baseline.
+// N1.6 (2026-10-15) — 214: finite protected-approval form proxy; live
+// session, consent, permissions and atomic effect remain Gateway/DB-owned.
+// N1.7 — 215: finite privacy transport; Gateway owns proof, snapshot and single-use release.
+// N1.5 (2026-10-16): merchant loyalty settings proxy; all authority stays in Gateway334.
+// N5-PERSIST-01 (reviewed 2026-10-18): two owned-store private reel Gateway proxies.
+export const APP_API_ROUTE_RATCHET = 219;
 
 export function ownershipCounts(routes) {
   const counts = new Map();

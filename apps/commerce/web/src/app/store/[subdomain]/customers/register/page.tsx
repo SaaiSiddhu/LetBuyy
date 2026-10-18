@@ -1,10 +1,7 @@
 // /store/[subdomain]/customers/register — Dedicated register page for Liquid-engine stores.
-// Mirrors customers/login/page.tsx exactly (see that file for why a dedicated page is required:
-// the catch-all only handles single-segment paths).
-//
-// The customer-register.liquid section posts a plain HTML form to the EXISTING
-// /api/customer/register route (LB-12) — no new auth path, no new session minting here. That
-// route also 303-redirects failed no-JS submissions back to this exact path.
+// The dedicated page exists so the Liquid theme can offer canonical buyer sign-in/registration at
+// this store's account entry point. Existing per-store password customers can still use login and
+// link their verified account from settings.
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { StoreService } from '@/lib/store-service';

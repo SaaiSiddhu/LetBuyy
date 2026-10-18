@@ -21,8 +21,10 @@ import 'package:flutter/material.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../auth/buyer_sign_in_controller.dart';
+import '../../config/app_config.dart';
 
 /// ApiClient never lets a connection failure reach a screen as a bare exception -- it always wraps
 /// it as an ApiException first (code NETWORK_ERROR/TIMEOUT, statusCode 0/408), the same convention
@@ -46,6 +48,7 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
   final _phoneController = TextEditingController();
   bool _savingProfile = false;
   String? _profileError;
+  bool _openingPrivacy = false;
 
   final Set<String> _mutatingAddressIds = {};
 
@@ -264,6 +267,7 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
     final saved = await showModalBottomSheet<BuyerAddress>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       builder: (context) => _AddressEditorSheet(existing: existing, token: token, api: _addressApi),
     );
     if (saved == null || !mounted || !_stillCurrent(token)) return;
@@ -319,6 +323,8 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
                           children: [
                             _profileSection(),
                             const SizedBox(height: 24),
+                            _privacySection(),
+                            const SizedBox(height: 24),
                             _addressesSection(),
                           ],
                         ),
@@ -364,6 +370,31 @@ class _LetBuyyAccountScreenState extends State<LetBuyyAccountScreen> {
         ),
       ),
     );
+  }
+
+  Widget _privacySection() {
+    final controller = context.read<BuyerSignInController>();
+    final buyerId = controller.buyerId;
+    return Card(child: Padding(padding: const EdgeInsets.all(16), child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text('Your data access', style: AppTextStyles.headlineSmall),
+      const SizedBox(height: 8),
+      const Text('Request a restricted export in your secure LetBuyy account. Password entry and the single-use download stay in your system browser.'),
+      const SizedBox(height: 12),
+      OutlinedButton.icon(onPressed: _openingPrivacy || buyerId == null || _account?.id != buyerId ? null : () => _openPrivacy(buyerId), icon: const Icon(Icons.privacy_tip_outlined), label: Text(_openingPrivacy ? 'Opening…' : 'Manage data access')),
+    ])));
+  }
+
+  Future<void> _openPrivacy(String buyerId) async {
+    final controller = context.read<BuyerSignInController>();
+    final token = controller.token;
+    if (_openingPrivacy || token == null || controller.buyerId != buyerId || _account?.id != buyerId) return;
+    setState(() => _openingPrivacy = true);
+    try {
+      final uri = buildBuyerPrivacyUri(identityBaseUrl: AppConfig.identityBaseUrl, buyerAccountId: buyerId);
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) throw StateError('Browser unavailable');
+    } catch (_) {
+      if (mounted && controller.token == token && controller.buyerId == buyerId) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('The secure data access page could not be opened. Try again.')));
+    } finally { if (mounted) setState(() => _openingPrivacy = false); }
   }
 
   Widget _addressesSection() {

@@ -45,6 +45,10 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
       if (!mounted) return;
       final wishlistProvider = Provider.of<WishlistProvider>(context, listen: false);
       wishlistProvider.loadWishlist();
+      // Wishlist cards are resolved from ProductProvider's canonical eligible feed.
+      // Bypass its loaded-feed deduplication so a revoked listing is not kept on
+      // screen just because this provider already had a cached page.
+      context.read<ProductProvider>().loadProducts(forceReload: true);
     });
   }
 
@@ -175,7 +179,7 @@ class _MobileWishlistScreenState extends State<MobileWishlistScreen>
             onRefresh: () async {
               HapticFeedback.lightImpact();
               wishlistProvider.loadWishlist();
-              await Future.delayed(const Duration(milliseconds: 500));
+              await productProvider.loadProducts(forceReload: true);
             },
             child: CustomScrollView(
               physics: const BouncingScrollPhysics(),

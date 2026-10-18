@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
@@ -167,6 +168,7 @@ function extractLocalDevOtp(payload: unknown): string | null {
 
 function SignupContent() {
     const searchParams = useSearchParams()
+    const returnTo = safePlatformReturnTo(searchParams.get('return_to'))
     const [step, setStep] = useState<Step>('email')
     const [email, setEmail] = useState('')
     const [emailTouched, setEmailTouched] = useState(false)
@@ -269,7 +271,7 @@ function SignupContent() {
             if (!res.ok) {
                 if (res.status === 429) setError(t.rateLimited)
                 else if (res.status === 409) {
-                    window.location.href = `/lookup?email=${encodeURIComponent(trimmedEmail)}&from=signup`
+                    window.location.href = authPathWithReturnTo(`/lookup?email=${encodeURIComponent(trimmedEmail)}&from=signup`, returnTo)
                     return
                 }
                 else if (res.status === 403) setError(data.error || 'Verification failed')
@@ -451,7 +453,7 @@ function SignupContent() {
             }
 
             if (data.redirectTo) {
-                window.location.href = data.redirectTo
+                window.location.href = returnTo || data.redirectTo
             }
         } catch {
             setError('Something went wrong. Please try again.')

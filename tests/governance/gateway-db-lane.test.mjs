@@ -13,7 +13,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GATEWAY_DB_SUITE_DIR, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
+import { GATEWAY_DB_SUITE_DIR, ROOT_GATEWAY_DB_SUITE_DIR, discoverSuites, isGatewayDatabaseSuite } from '../../scripts/governance/test-suite-catalog.mjs';
 import { pullsAllowed, requireImagePresent } from '../../scripts/governance/executable-pg-fixture.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -25,32 +25,143 @@ const read = (path) => readFileSync(path, 'utf8');
 const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, '').split('\n').filter((line) => !/^\s*\/\//.test(line)).join('\n');
 const ownedSuites = () => readdirSync(ownedDir).filter((name) => name.endsWith('.test.ts')).sort();
 const ownedFiles = () => readdirSync(ownedDir).filter((name) => name.endsWith('.ts')).sort();
+const rootOwnedSuites = () => readdirSync(join(repoRoot, ROOT_GATEWAY_DB_SUITE_DIR)).filter(name => name.endsWith('.test.ts')).sort();
+const allOwnedSuites = () => [...ownedSuites().map(name => `${GATEWAY_DB_SUITE_DIR}/${name}`), ...rootOwnedSuites().map(name => `${ROOT_GATEWAY_DB_SUITE_DIR}/${name}`)].sort();
 const unitTests = () => readdirSync(testsDir, { withFileTypes: true }).filter((entry) => entry.isFile() && entry.name.endsWith('.test.ts')).map((entry) => entry.name).sort();
 
-test('the lane holds the fifteen gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
+test('the reviewed lane inventory holds the gateway suites that need a real database, and the catalog finds exactly the files that are there', () => {
     assert.deepEqual(
         ownedSuites(),
         [
+            'authenticated-checkout.postgres.test.ts',
             'backfill-and-target-shadow.postgres.test.ts',
+            'buyer-privacy-export-browser.postgres.test.ts',
+            'buyer-privacy-export.postgres.test.ts',
             'buyer-privacy-intake.postgres.test.ts',
+            'buyer-support-readback.postgres.test.ts',
+            'checkout-browser.postgres.test.ts',
+            'cod-collection.postgres.test.ts',
+            'console-current-oncall.postgres.test.ts',
+            'console-identity-issuer-browser.postgres.test.ts',
+            'console-mfa-reset-browser.postgres.test.ts',
+            'console-mfa-state.postgres.test.ts',
+            'console-oncall-schedules.postgres.test.ts',
+            'console-overview-read.postgres.test.ts',
+            'console-runtime-command-history.postgres.test.ts',
+            'current-entitlement-authority.postgres.test.ts',
+            'customer-password-reset.postgres.test.ts',
+            'final-definer-role-access.postgres.test.ts',
+            'final-tenant-table-access.postgres.test.ts',
             'gift-card-money-path.test.ts',
             'gst-invoice-issuance.test.ts',
             'gst-tax-computation.test.ts',
+            'hosted-checkout-buyer-ownership.postgres.test.ts',
+            'identity-buyer-browser.postgres.test.ts',
+            'identity-buyer-session.postgres.test.ts',
+            'inventory-adjustment-audit.postgres.test.ts',
             'inventory-reservation-lifecycle.test.ts',
+            'ledger-source-resolution.postgres.test.ts',
+            'loyalty-program-authority.postgres.test.ts',
+            'loyalty-refund-rollback.postgres.test.ts',
+            'marketplace-buyer-orders.postgres.test.ts',
+            'marketplace-cart-origin.postgres.test.ts',
+            'marketplace-origin-filter.postgres.test.ts',
+            'marketplace-seller-feed.postgres.test.ts',
+            'merchant-challenge-authority.postgres.test.ts',
+            'merchant-challenge-rollback.postgres.test.ts',
+            'merchant-challenge-source-corruption.postgres.test.ts',
+            'merchant-factor-rollback.postgres.test.ts',
+            'merchant-mfa-browser.postgres.test.ts',
+            'merchant-money-approval.postgres.test.ts',
+            'merchant-money-rollback.postgres.test.ts',
+            'merchant-order-detail-authority.postgres.test.ts',
+            'merchant-payout-statements-browser.postgres.test.ts',
+            'merchant-staff-browser.postgres.test.ts',
+            'merchant-staff-invitation-browser.postgres.test.ts',
+            'merchant-staff-invitation.postgres.test.ts',
+            'merchant-staff-lifecycle.postgres.test.ts',
+            'merchant-stepup-authority.postgres.test.ts',
             'merchant-tenant-predicate.test.ts',
+            'operator-identity-exchange.postgres.test.ts',
             'operator-mutation-integrity.postgres.test.ts',
+            'operator-overview-tenant-guard.postgres.test.ts',
             'operator-queue-correctness.postgres.test.ts',
+            'order-reference-rollback.postgres.test.ts',
+            'order-reference-uniqueness.postgres.test.ts',
+            'owned-client-runtime.postgres.test.ts',
+            'owned-refund-rollback.postgres.test.ts',
+            'platform-approval-browser.postgres.test.ts',
+            'platform-approval-roles.postgres.test.ts',
+            'platform-approval-workflow.postgres.test.ts',
+            'platform-approval.postgres.test.ts',
+            'platform-console-browser.postgres.test.ts',
+            'platform-console-session.postgres.test.ts',
+            'platform-money-approval.postgres.test.ts',
+            'platform-money-browser.postgres.test.ts',
+            'platform-queue-authority-recovery.postgres.test.ts',
+            'platform-runtime-claim-recovery.postgres.test.ts',
+            'platform-runtime-command.postgres.test.ts',
+            'platform-trust-approval.postgres.test.ts',
+            'platform-trust-authority-recovery.postgres.test.ts',
+            'platform-trust-authority.postgres.test.ts',
+            'platform-trust-browser.postgres.test.ts',
+            'pooled-tenant-context.postgres.test.ts',
             'privacy-support-visibility.postgres.test.ts',
+            'product-atomic-edits.postgres.test.ts',
+            'product-importer-disclosure.postgres.test.ts',
+            'product-price-observations.postgres.test.ts',
             'real-http-shadow-rehearsal.postgres.test.ts',
             'real-staff-product-journey.postgres.test.ts',
+            'return-refund-authority.postgres.test.ts',
+            'smart-collection-preview.postgres.test.ts',
+            'store-creation-idempotency.postgres.test.ts',
             'storefront-buyer-data.postgres.test.ts',
+            'storefront-buyer-link.postgres.test.ts',
+            'storefront-buyer-loyalty.postgres.test.ts',
             'storefront-buyer-orders.postgres.test.ts',
+            'storefront-buyer-reviews.postgres.test.ts',
+            'storefront-buyer-wishlist.postgres.test.ts',
+            'storefront-customer-address-atomicity.postgres.test.ts',
+            'storefront-customer-profile.postgres.test.ts',
+            'storefront-web-onboarding-browser.postgres.test.ts',
+            'storefront-web-onboarding-draft.postgres.test.ts',
+            'subscription-checkout-browser.postgres.test.ts',
+            'subscription-payment-ownership.postgres.test.ts',
+            'subscription-single-activation.postgres.test.ts',
+            'theme-draft-browser.postgres.test.ts',
+            'theme-draft-cas.postgres.test.ts',
             'verification-token-redemption.postgres.test.ts',
         ],
         'a suite added to or removed from the lane is a decision: name it here',
     );
+    assert.deepEqual(rootOwnedSuites(), [
+        "ad-credit-purchase.postgres.test.ts",
+        "console-current-oncall-browser.postgres.test.ts",
+        "console-mfa-reset-delivery.postgres.test.ts",
+        "console-mfa-reset.postgres.test.ts",
+        "console-oncall-schedules-browser.postgres.test.ts",
+        "console-runtime-command-history-browser.postgres.test.ts",
+        "loyalty-earn-worker.postgres.test.ts",
+        "loyalty-refund-scheduler.postgres.test.ts",
+        "loyalty-reversal-recovery.postgres.test.ts",
+        "merchant-dashboard-access.postgres.test.ts",
+        "merchant-entitlement-authority-browser.postgres.test.ts",
+        "merchant-inventory-adjustment-browser.postgres.test.ts",
+        "merchant-loyalty-browser.postgres.test.ts",
+        "merchant-mobile-mfa-transport.postgres.test.ts",
+        "merchant-product-edit-browser.postgres.test.ts",
+        "merchant-product-status-browser.postgres.test.ts",
+        "merchant-smart-collection-preview-browser.postgres.test.ts",
+        "merchant-staff-invitation-delivery.postgres.test.ts",
+        "money-ledger-reconciliation-traversal.postgres.test.ts",
+        "payment-refund-reconciliation.postgres.test.ts",
+        "payout-statement-replay.postgres.test.ts",
+        "platform-job-recovery-browser.postgres.test.ts",
+        "platform-job-recovery.postgres.test.ts",
+        "reel-review-revisions.postgres.test.ts"
+], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
-    assert.deepEqual(gatewayDb, ownedSuites().map((name) => `${GATEWAY_DB_SUITE_DIR}/${name}`));
+    assert.deepEqual(gatewayDb, allOwnedSuites());
     assert.ok(gatewayDb.every(isGatewayDatabaseSuite));
     // The lane is a separate partition: it does not disturb the tests/*/*.test.mjs one.
     assert.equal(pure.length + postgres.length + live.length, all.length);
@@ -78,8 +189,8 @@ test('a lane suite reaches a database only through requireOwnedDatabase(), and t
         [/['"]docker['"]/, 'naming docker directly'],
         [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i, 'a hard-coded id: a suite builds its own tenant and depends on no existing row'],
     ];
-    for (const name of ownedSuites()) {
-        const source = stripComments(read(join(ownedDir, name)));
+    for (const name of allOwnedSuites()) {
+        const source = stripComments(read(join(repoRoot, name)));
         assert.match(source, /requireOwnedDatabase\s*\(\s*\)/, `${name} must obtain its database through requireOwnedDatabase()`);
         for (const [pattern, what] of forbidden) assert.doesNotMatch(source, pattern, `${name} uses ${what}`);
     }
@@ -87,8 +198,8 @@ test('a lane suite reaches a database only through requireOwnedDatabase(), and t
 
 test('a lane suite cannot skip: it has no skip, todo or conditional-execution construct', () => {
     const skipping = /\bskip\s*:|\.skip\s*\(|\btodo\s*:|\.todo\s*\(|\bxit\s*\(|\bxtest\s*\(|\bxdescribe\s*\(|\bonly\s*:|\.only\s*\(|t\.diagnostic\(\s*['"`]skip/;
-    for (const name of ownedSuites()) {
-        assert.doesNotMatch(stripComments(read(join(ownedDir, name))), skipping, `${name} must always run or fail`);
+    for (const name of allOwnedSuites()) {
+        assert.doesNotMatch(stripComments(read(join(repoRoot, name))), skipping, `${name} must always run or fail`);
     }
     // The support module has no "no database, so skip" branch either: without an announcement it throws.
     const support = stripComments(read(join(ownedDir, 'owned-db-support.ts')));
@@ -114,6 +225,7 @@ test('only the support module may run docker, and only the guard may decide what
     for (const name of ownedFiles().filter((file) => file !== 'owned-db-support.ts')) {
         assert.doesNotMatch(stripComments(read(join(ownedDir, name))), /child_process|['"]docker['"]/, `${name} must not run processes`);
     }
+    for (const name of rootOwnedSuites()) assert.doesNotMatch(stripComments(read(join(repoRoot, ROOT_GATEWAY_DB_SUITE_DIR, name))), /child_process|['"]docker['"]/, `${name} must not run processes`);
     const support = stripComments(read(join(ownedDir, 'owned-db-support.ts')));
     assert.match(support, /owned-fixture-guard\.mjs/, 'the support module asks the guard, in a separate process');
     assert.match(support, /'--verify'/);

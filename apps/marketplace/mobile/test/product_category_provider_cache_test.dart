@@ -7,12 +7,10 @@
 // list, from cache or otherwise, the real canonical source was never consulted again without an
 // explicit forceReload somewhere else in the call chain.
 //
-// Deliberately isolated from CacheService/SharedPreferences: the bug is in the interaction between
-// loadProducts's own dedup guard and a non-empty list, which is exactly as true right after a
-// first successful loadProducts() call as it is after cache hydration populates the same field --
-// CacheService is how _products got non-empty on a real device, not what the bug depends on. This
-// keeps the test to a plain Dart unit test (no widget tree, no SharedPreferences mock lifecycle,
-// no risk of the CacheService singleton's own state leaking across test files in the same process).
+// The refresh-dedup tests below deliberately isolate the bug from CacheService: the relevant
+// condition is a non-empty list, whether it came from cache or a successful first request. The
+// separate startup regression test seeds mocked SharedPreferences and exercises the provider's
+// forced-feed request while a stale persisted snapshot exists; it is not a device or Gateway test.
 //
 // Exercises refreshProducts()/refreshCategories() specifically, not loadProducts()/loadCategories()
 // directly -- forceReload itself was never broken (loadProducts(forceReload: true) already bypassed
@@ -25,10 +23,14 @@
 // populated CacheService/SharedPreferences -- refreshProducts/refreshCategories cover the same
 // one-line fix without that dependency.
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// A minimal stand-in for the gateway's marketplace feed/categories routes -- just enough to
 /// control what a second fetch returns and prove whether it actually ran.
@@ -78,6 +80,54 @@ Map<String, Object?> _category(String id, String slug, String name) => {
     };
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
+  test('mobile home startup validates marketplace listings before exposing cards', () {
+    final source = File('lib/screens/home/mobile_home_screen.dart').readAsStringSync();
+
+    expect(
+      source,
+      contains('productProvider.loadProducts(forceReload: true)'),
+    );
+    expect(source, isNot(contains('productProvider.initializeFromCache()')));
+  });
+
+  test('forced canonical fetch returns the current feed while a stale snapshot exists', () async {
+    SharedPreferences.setMockInitialValues({
+      'cache_products_v3': jsonEncode([
+        {
+          'id': 'revoked-listing',
+          'marketplaceListingId': 'revoked-listing',
+          'catalogProductId': 'catalog-revoked',
+          'sellerId': 'seller-1',
+          'name': 'Previously approved item',
+          'description': '',
+          'salePrice': 250,
+          'categoryId': 'bags',
+          'images': <String>[],
+          'createdAt': 0,
+          'updatedAt': 0,
+        },
+      ]),
+    });
+    final gateway = _FakeMarketplaceGateway()
+      ..feedItems = [_feedItem('currently-approved', 'Current item')];
+    final provider = ProductProvider(
+      client: ApiClient(
+        baseUrl: 'https://gateway.test/v1',
+        dio: gateway.dio(),
+        maxRetries: 0,
+      ),
+    );
+
+    expect(provider.products, isEmpty);
+    await provider.loadProducts(forceReload: true);
+
+    expect(gateway.feedRequests, 1);
+    expect(provider.products.map((product) => product.id), ['currently-approved']);
+  });
+
   test('ProductProvider.refreshProducts() actually re-fetches once products are already loaded', () async {
     final gateway = _FakeMarketplaceGateway()..feedItems = [_feedItem('p1', 'Seed Product')];
     final client = ApiClient(baseUrl: 'https://gateway.test/v1', dio: gateway.dio(), maxRetries: 0);

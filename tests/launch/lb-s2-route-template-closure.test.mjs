@@ -167,13 +167,17 @@ test('W2: customers/register/page.tsx never mints a session or touches the custo
   assert.doesNotMatch(src, /createSession/);
 });
 
-test('W2: the register form posts to the EXISTING /api/customer/register route, not a new one', () => {
+test('W2: the register template directs new accounts to canonical Identity; stale forms retain the compatibility bridge', () => {
   assert.ok(
     exists('apps/commerce/web/src/app/api/customer/register/route.ts'),
     'the register API route must already exist — this phase does not add a new auth path',
   );
   const registerSection = read('packages/theme-engine/examples/letbuyy-core-liquid/files/sections/customer-register.liquid');
-  assert.match(registerSection, /action="\/api\/customer\/register"/);
+  assert.match(registerSection,/href="\/api\/buyer-auth\/start\?return_to=\{\{ routes\.account_url \}\}"/);
+  assert.doesNotMatch(registerSection,/action="\/api\/customer\/register"|name="password"/);
+  const bridge=read('apps/commerce/web/src/app/api/customer/register/route.ts');
+  assert.match(bridge,/NextResponse\.redirect\(redirectTo, 303\)/);
+  assert.match(bridge,/status: 410/);
 });
 
 test('W2: the search route matches the exact path + query param the lb-search island already submits to', () => {

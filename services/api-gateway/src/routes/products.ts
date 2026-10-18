@@ -6,6 +6,8 @@ import { validate } from '../middleware/validation';
 import { assertStaffPermission } from '../middleware/staff-permission';
 import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { readProductForEdit } from '../execution/product-mutation.adapter';
+import { ValidationError } from '../lib/errors';
 import { registerGiftCardRoutes } from './gift-cards';
 import {
     CreateProductSchema,
@@ -70,6 +72,7 @@ const PRODUCT_LIST_COLUMN_NAMES = [
     'weight',
     'weight_unit',
     'country_of_origin',
+    'importer_details',
     'hs_code',
     'hsn_code',
     'version',
@@ -108,6 +111,7 @@ type DatabaseErrorLike = {
 function createProductExecutionAdapter(db: ReturnType<typeof getSupabaseAdmin>, env: Env): ProductExecutionAdapter {
     return new ProductExecutionAdapter(db, {
         variantDiffEnabled: isProductVariantDiffEnabled(env),
+        mutationEnv: env,
     });
 }
 
@@ -478,6 +482,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.category) dbQuery = dbQuery.eq('category', query.category);
         if (query.status === 'active') dbQuery = dbQuery.eq('is_active', true);
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
+        if (query.status === 'draft' || query.status === 'archived') dbQuery = dbQuery.eq('status', query.status);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
         if (decodedCursor) {
             dbQuery = query.order === 'asc'
@@ -1118,11 +1123,11 @@ router.get('/:id', async (c) => {
         if (staffBlock) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    const rows = productVariantRelationalReadsEnabled(c.env)
-        ? await hydrateProductVariants(db, [product])
-        : [product];
-
-    return c.json(success(rows[0]));
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== storeId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const data = await readProductForEdit(c.env, storeId, productId, customUser.id,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
+    return c.json(success(data));
 });
 
 // POST /products — Create a product
@@ -1173,17 +1178,16 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
     const productStoreId = String(product.store_id);
-    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write');
+    const selectedStore = c.req.header('X-Store-ID');
+    if (selectedStore && selectedStore !== productStoreId) return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
+    const headerKey = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
+    if (headerKey && headerKey.toLowerCase() !== body.idempotency_key.toLowerCase()) throw new ValidationError('The save key must match the edit intent.');
+    const staffBlock = await assertStaffPermission(c, productStoreId, customUser.id, 'products:write', 'enforce');
     if (staffBlock) return staffBlock;
 
     const service = createProductExecutionAdapter(db, c.env);
-    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>);
-    await emitProductEvent(db, {
-        eventType: 'product.updated',
-        product: data,
-        actorId: customUser.id,
-        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
-    });
+    const data = await service.updateProduct(productId, productStoreId, customUser.id, body as Record<string, unknown>,
+        c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID());
 
     return c.json(success(data));
 });

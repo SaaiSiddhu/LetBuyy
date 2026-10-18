@@ -1,3 +1,4 @@
+import type { InternalConsoleSummary as ConsoleSummary } from '@letbuyy/shared-types';
 import type { ExecutiveMrrAnalytics } from '@letbuyy/shared-types';
 import { Table } from '@letbuyy/ui';
 import {
@@ -17,11 +18,6 @@ import {
     type ConsolePaginatedResponse,
 } from '@/lib/console-api';
 
-type ConsoleSummary = {
-    active_subscriptions: number;
-    total_subscriptions: number;
-    monthly_revenue_paise: number;
-};
 
 type ConsoleSubscription = {
     id: string;
@@ -68,11 +64,11 @@ export default async function RevenuePage() {
             <MetricGrid>
                 <LeadershipMetric
                     label="MRR"
-                    value={formatMoneyFromPaise(latest?.mrr_paise || summary?.monthly_revenue_paise || 0)}
-                    detail={`${mrr?.freshness.stale ? 'stale' : 'fresh'} · ${latest?.period_date || 'summary fallback'}`}
-                    tone={freshnessTone(mrr?.freshness.stale)}
+                    value={latest ? formatMoneyFromPaise(latest.mrr_paise) : 'Unavailable'}
+                    detail={latest ? `${mrr?.freshness.stale ? 'stale' : 'fresh'} · ${latest.period_date}` : 'No MRR rollup'}
+                    tone={latest ? freshnessTone(mrr?.freshness.stale) : 'warning'}
                 />
-                <LeadershipMetric label="ARR" value={formatMoneyFromPaise(latest?.arr_paise || 0)} />
+                <LeadershipMetric label="ARR" value={latest ? formatMoneyFromPaise(latest.arr_paise) : 'Unavailable'} />
                 <LeadershipMetric label="Active subscriptions" value={`${latest?.active_subscriptions || summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`} />
                 <LeadershipMetric label="Logo churn" value={String(latest?.logo_churn_count || 0)} tone="warning" />
             </MetricGrid>

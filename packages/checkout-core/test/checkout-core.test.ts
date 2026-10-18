@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  CheckoutConfirmSchema,
   CheckoutPaymentIntentSchema,
+  StorefrontCartLineInputSchema,
   CreateDraftOrderSchema,
   CreateOrderSchema,
   StorefrontCreateOrderSchema,
@@ -56,6 +58,19 @@ test('storefront order creation requires idempotency and bounded cart lines', ()
   assert.equal(StorefrontCreateOrderSchema.safeParse({ ...validOrder, paymentMethod: 'razorpay' }).success, true);
 });
 
+test('marketplace cart line binds listing identity independently from catalog product identity', () => {
+  const line = {
+    product_id: PRODUCT_ID,
+    marketplace_listing_id: STORE_ID,
+    variant_id: null,
+    quantity: 1,
+    properties: {},
+  };
+  assert.equal(StorefrontCartLineInputSchema.safeParse(line).success, true);
+  assert.equal(StorefrontCartLineInputSchema.safeParse({ ...line, marketplace_listing_id: 'not-a-uuid' }).success, false);
+  assert.equal(StorefrontCartLineInputSchema.safeParse({ ...line, unit_price: 10 }).success, false);
+});
+
 test('Phase M1: the admin/draft order and hosted-checkout payment-intent schemas admit only canonical rails', () => {
   const orderBase = {
     store_id: STORE_ID,
@@ -85,6 +100,18 @@ test('Phase M1: the admin/draft order and hosted-checkout payment-intent schemas
   assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'cod' }).success, true);
   assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'cashfree' }).success, false);
   assert.equal(CheckoutPaymentIntentSchema.safeParse({ ...intentBase, provider: 'stripe' }).success, false);
+});
+
+test('hosted checkout confirmation accepts explicit Razorpay proof fields and rejects generic payment IDs', () => {
+  const base = { idempotency_key: 'hosted-confirm-001' };
+  assert.equal(CheckoutConfirmSchema.safeParse({
+    ...base,
+    payment_intent_id: 'intent_123',
+    razorpay_order_id: 'order_123',
+    razorpay_payment_id: 'pay_123',
+    razorpay_signature: 'a'.repeat(64),
+  }).success, true);
+  assert.equal(CheckoutConfirmSchema.safeParse({ ...base, provider_payment_id: 'pay_unverified' }).success, false);
 });
 
 test('GST invoice generation separates intra-state CGST/SGST from inter-state IGST', () => {

@@ -78,7 +78,7 @@ test('product updates and deletes resolve the real store first, then check owner
     // docs/evidence/phase2-2026-09-27/D03_PERMISSION_EQUIVALENCE_AND_RUNTIME_REHEARSAL.md Section D.
     assert.match(routeSource, /router\.patch\('\/:id',\s*validate\('json',\s*UpdateProductSchema\)/);
     assert.match(routeSource, /const \{ product, error: lookupError \} = await loadProductByIdUnguarded\(c,\s*productId\)/);
-    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>\)/);
+    assert.match(routeSource, /service\.updateProduct\(productId,\s*productStoreId,\s*customUser\.id,\s*body as Record<string, unknown>,/);
     assert.match(routeSource, /router\.delete\('\/:id'/);
     assert.match(routeSource, /service\.softDelete\(productId,\s*productStoreId,\s*customUser\.id\)/);
     assert.match(adapterSource, /private async loadProductScopedToStore/);
@@ -87,10 +87,15 @@ test('product updates and deletes resolve the real store first, then check owner
     // discovered by ownership) instead of fetching the row unscoped and checking ownership after --
     // the unscoped shape is refused outright by the tenant query guard, not merely "not proven isolated".
     assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*storeId\)\s*[\s\S]*\.is\('deleted_at',\s*null\)/);
-    // The write and refresh-select that follow loadProductScopedToStore repeat the same id-only shape
-    // unless each one also carries the store predicate the guard requires.
-    assert.match(adapterSource, /\.update\(updatePlan\.safeUpdates\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
-    assert.match(adapterSource, /\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)\s*\.single\(\)/);
+    // Edit effects now share one tenant transaction. Retain exact product/store fencing
+    // at the SQL owner, plus live actor checks and an under-lock version comparison.
+    const helperSource = source('execution/product-mutation.adapter.ts');
+    const migration = repositorySource('database/supabase/migrations/346_product_atomic_edits.sql');
+    assert.match(adapterSource, /executeProductMutation\(this\.options\.mutationEnv, storeId, productId, userId, updates, requestId\)/);
+    assert.match(helperSource, /withTenantTx\(env, \{ siteId: storeId, requestId \}/);
+    assert.match(migration, /id = p_product_id AND store_id = p_store_id AND deleted_at IS NULL FOR UPDATE/);
+    assert.match(migration, /assert_product_edit_actor_v1\(p_store_id, p_actor_id, 'products:write'\)/);
+    assert.match(migration, /p\.version IS DISTINCT FROM p_expected_version/);
     assert.match(adapterSource, /deleted_at:\s*new Date\(\)\.toISOString\(\),\s*\}\)\s*\.eq\('id',\s*productId\)\s*\.eq\('store_id',\s*ownedProduct\.store_id\)/);
 });
 
@@ -114,7 +119,15 @@ test('merchant product proxies resolve the URL store to sites.id before worker c
     assert.match(listRoute, /store_id:\s*resolved\.storeId/);
     assert.match(listRoute, /createMerchantApiClient\(\)\.products\.list\(query\)/);
     assert.match(listRoute, /createMerchantApiClient\(\)\.products\.create\(\{\s*[\s\S]*\.\.\.body,\s*[\s\S]*store_id:\s*resolved\.storeId/);
-    assert.match(itemRoute, /product\.store_id !== resolved\.storeId/);
+    const securityScope = repositorySource('apps/merchant/web/src/lib/api/merchant-security-scope.ts');
+    assert.match(itemRoute, /merchantSecurityScope\(request, params, false\)/);
+    assert.match(itemRoute, /if \(scope\.error\) return scope\.error/);
+    assert.match(securityScope, /resolveOwnedStoreId\(decodeURIComponent\(store\)\)/);
+    assert.match(securityScope, /storeId: resolved\.storeId!/);
+    assert.match(securityScope, /request\.headers\.get\('X-LetBuyy-Merchant-Context'\) !== session\.user\.id/);
+    assert.match(itemRoute, /product\.store_id !== scope\.storeId/);
+    assert.match(itemRoute, /products\.get\(productId, \{ storeId: scope\.storeId \}\)/);
+    assert.match(itemRoute, /products\.update\(productId, body, \{ storeId: scope\.storeId \}\)/);
     assert.match(itemRoute, /return NextResponse\.json\(\{ error:\s*'Product not found' \},\s*\{ status:\s*404 \}\)/);
 });
 

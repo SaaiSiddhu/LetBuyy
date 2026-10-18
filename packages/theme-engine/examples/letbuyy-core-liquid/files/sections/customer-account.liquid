@@ -2,7 +2,7 @@
   {% if buyer %}
   <h1>{{ section.settings.heading }}</h1>
   <p class="lb-account__hello">Signed in to LetBuyy as {{ buyer.full_name | default: buyer.email }}</p>
-  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_settings_url }}">Settings</a><form method="post" action="/api/buyer-auth/logout?return_to={{ routes.account_url }}"><button type="submit" class="lb-account__nav-link">Sign out at this store</button></form></nav>
+  <nav class="lb-account__nav"><a href="{{ routes.account_orders_url }}">Orders</a><a href="{{ routes.account_addresses_url }}">Addresses</a><a href="{{ routes.account_url }}/loyalty">Rewards</a><a href="{{ routes.account_settings_url }}">Settings</a><form method="post" action="/api/buyer-auth/logout?return_to={{ routes.account_url }}"><button type="submit" class="lb-account__nav-link">Sign out at this store</button></form></nav>
   {% elsif buyer_unavailable %}<p class="lb-account__unavailable" role="status">We could not load your LetBuyy account right now. Please refresh and try again.</p>
   {% elsif customer %}
   <h1>{{ section.settings.heading }}</h1>

@@ -63,7 +63,7 @@
 --   change to the reservation lineage; the conservative outcome here is refund-owed, never oversell.
 -- * It does not execute the refund. LetBuyy's code records the obligation; the provider refund is
 --   issued by whoever operates the capturing Razorpay account (that is D-2, open with counsel), and the
---   provider's refund.created webhook reconciles it through the existing
+--   provider's refund.processed webhook reconciles it through the existing
 --   record_order_payment_failure_with_ledger path — proven to net merchant_payable to zero by the suite.
 -- * It does not change who holds money, any account code, any fee, or any grant.
 --
@@ -267,7 +267,7 @@ BEGIN
       RETURNING id INTO v_payment_transaction_id;
     END IF;
 
-    -- Booked exactly as a normal capture, so the provider's refund.created reverses it through the
+    -- Booked exactly as a normal capture, so the provider's refund.processed reverses it through the
     -- existing path (merchant_payable debit / refund_clearing credit) and nets to zero.
     IF v_amount_minor > 0 THEN
       v_ledger_transaction_id := public.post_settlement_ledger_transaction(

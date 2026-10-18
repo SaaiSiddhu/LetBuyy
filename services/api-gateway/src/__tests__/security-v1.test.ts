@@ -36,7 +36,11 @@ test('Task 015 security route is mounted with DSR export/erase and cryptographic
     assert.match(securityRoute, /updateDataSubjectRequest/);
     assert.match(securityRoute, /encryptFieldWithKms/);
     assert.match(securityRoute, /customer\.dsr_requested/);
-    assert.match(securityRoute, /auth\.stepup/);
+    const challengeSql = repositorySource('database/supabase/migrations/340_merchant_step_up_challenges.sql');
+    assert.match(securityRoute, /db\.rpc\('issue_merchant_step_up_v1'/);
+    assert.match(challengeSql, /auth\.stepup/);
+    assert.match(challengeSql, /INSERT INTO public\.audit_logs[\s\S]*INSERT INTO public\.outbox_events/);
+    assert.doesNotMatch(securityRoute, /\.from\('step_up_challenges'\)[\s\S]*\.update\(/);
 });
 
 test('Task 015 payout and refund sensitive actions require shared step-up evidence', () => {
@@ -49,10 +53,11 @@ test('Task 015 payout and refund sensitive actions require shared step-up eviden
     assert.match(securityControls, /HMAC/);
     assert.match(securityControls, /STEP_UP_SIGNING_SECRET_REQUIRED/);
     assert.match(securityControls, /STEP_UP_WINDOW_MS = 10 \* 60 \* 1000/);
-    assert.match(paymentsRoute, /await verifySensitiveActionStepUp\(\{[\s\S]*action: 'refund\.approve'/);
+    assert.match(source('lib/merchant-step-up.ts'), /await verifySensitiveActionStepUp\(input\)/);
+    assert.match(paymentsRoute, /await verifyMerchantStepUp\(db, \{[\s\S]*action: 'refund\.approve'/);
     assert.match(paymentsRoute, /signingSecret: c\.env\.STEP_UP_SIGNING_SECRET/);
     assert.match(paymentsRoute, /STEP_UP_REQUIRED|stepUpErrorBody/);
-    assert.match(payoutsRoute, /await verifySensitiveActionStepUp\(\{[\s\S]*action: 'payout\.release'/);
+    assert.match(payoutsRoute, /await verifyMerchantStepUp\(db, \{[\s\S]*action: 'payout\.release'/);
     assert.match(payoutsRoute, /signingSecret: c\.env\.STEP_UP_SIGNING_SECRET/);
     assert.match(payoutsRoute, /STEP_UP_REQUIRED|stepUpErrorBody/);
 });

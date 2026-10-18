@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { merchantApiFetch, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope, privateSecurityResponse } from '@/lib/api/merchant-security-scope'
 
 // GET /api/stores/:store/security/two-factor → GET /2fa (overview: factors + sessions)
 export async function GET(
-    _request: NextRequest,
+    request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+        const resolved = await merchantSecurityScope(request, params, false)
         if (resolved.error) return resolved.error
 
-        const response = await merchantApiFetch('/2fa', { requireSession: true })
+        const response = await merchantApiFetch('/2fa', { requireSession: true, headers: resolved.headers })
         const payload = await response.json().catch(() => null)
-        return NextResponse.json(payload, { status: response.status })
+        return privateSecurityResponse(NextResponse.json(payload, { status: response.status }))
     } catch (err) {
-        return merchantApiErrorResponse(err, 'Unable to load 2FA status')
+        return privateSecurityResponse(merchantApiErrorResponse(err, 'Unable to load 2FA status'))
     }
 }

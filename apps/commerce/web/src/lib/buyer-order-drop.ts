@@ -15,6 +15,75 @@ export interface LiquidBuyerDrop {
     next_cursor: string | null;
 }
 
+export interface LiquidBuyerWishlistDrop {
+    authenticated: boolean;
+    /** Verified by the gateway from the signed buyer token; used only as a write compare value. */
+    buyerId: string | null;
+    linked: boolean;
+    unavailable: boolean;
+    storeAccountUnavailable: boolean;
+    productIds: string[];
+    products: Array<Record<string, unknown>>;
+}
+
+interface BuyerWishlistRenderDependencies {
+    resolveSession: typeof resolveBuyerDataSessionForRender;
+    apiFetch: typeof storefrontApiFetch;
+}
+
+/** Read this store's existing wishlist only through the signed buyer/site relationship route. */
+export async function getStorefrontBuyerWishlistDrop(
+    storeId: string,
+    dependencies: BuyerWishlistRenderDependencies = {
+        resolveSession: resolveBuyerDataSessionForRender,
+        apiFetch: storefrontApiFetch,
+    },
+): Promise<LiquidBuyerWishlistDrop> {
+    const empty = (authenticated: boolean, unavailable = false): LiquidBuyerWishlistDrop => ({
+        authenticated, buyerId: null, linked: false, unavailable, storeAccountUnavailable: false, productIds: [], products: [],
+    });
+    const session = await dependencies.resolveSession(storeId);
+    if (!session) return empty(false);
+    if ('unavailable' in session) return empty(true, true);
+
+    try {
+        const [profileResponse, wishlistResponse] = await Promise.all([
+            dependencies.apiFetch(`/storefront/buyer/profile?store_id=${encodeURIComponent(session.siteId)}`, {
+                method: 'GET', headers: session.headers, cache: 'no-store',
+            }),
+            dependencies.apiFetch(`/storefront/buyer/wishlist?store_id=${encodeURIComponent(session.siteId)}`, {
+                method: 'GET', headers: session.headers, cache: 'no-store',
+            }),
+        ]);
+        if ([profileResponse, wishlistResponse].some((response) => response.status === 401 || response.status === 403)) return empty(true, true);
+        if (!profileResponse.ok || !wishlistResponse.ok) return empty(true, true);
+        const [profilePayload, payload] = await Promise.all([
+            profileResponse.json().catch(() => null) as Promise<{ data?: { buyer?: { id?: unknown } } } | null>,
+            wishlistResponse.json().catch(() => null) as Promise<{
+            data?: { linked?: unknown; reason?: unknown; product_ids?: unknown };
+            } | null>,
+        ]);
+        const buyerId = profilePayload?.data?.buyer?.id;
+        const result = payload?.data;
+        if (typeof buyerId !== 'string' || !buyerId.trim() || typeof result?.linked !== 'boolean' || !Array.isArray(result.product_ids)
+            || result.product_ids.some((id) => typeof id !== 'string')
+            || (!result.linked && !['not_linked', 'store_account_unavailable'].includes(String(result.reason)))) {
+            return empty(true, true);
+        }
+        return {
+            authenticated: true,
+            buyerId,
+            linked: result.linked,
+            unavailable: false,
+            storeAccountUnavailable: result.reason === 'store_account_unavailable',
+            productIds: result.linked ? result.product_ids as string[] : [],
+            products: [],
+        };
+    } catch {
+        return empty(true, true);
+    }
+}
+
 export async function getStorefrontBuyerAccountDrop(
     storeId: string,
 ): Promise<{ buyer: LiquidBuyerDrop | null; unavailable: boolean }> {

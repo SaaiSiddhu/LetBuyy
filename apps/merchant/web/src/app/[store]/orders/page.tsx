@@ -441,7 +441,7 @@ export default function OrdersPage() {
                 `/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(refundingOrderId)}/refund`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', 'X-LetBuyy-Merchant-Context': result.actorId, 'X-Idempotency-Key': stableIdempotencyKey(`refund-${refundingOrderId}-${amountMinor ?? 'full'}`) },
                     body: JSON.stringify({
                         // Amount is part of the identity: two refunds of different amounts are
                         // different financial events and must NOT share a key, while a
@@ -461,6 +461,14 @@ export default function OrdersPage() {
                 const message = getErrorMessage(payload, 'Unable to process refund')
                 setActionError(message)
                 notify({ title: 'Refund failed', description: message, variant: 'critical' })
+                return
+            }
+            if (response.status === 202 || payload?.data?.pending === true) {
+                const message = payload?.data?.reconciliation === 'operator_attention_required'
+                    ? 'The refund outcome needs reconciliation. Review the existing attempt before trying another refund.'
+                    : 'The provider has not confirmed this refund yet. Wait for confirmation before recording another refund.'
+                setActionError(message)
+                notify({ title: 'Refund awaiting confirmation', description: message, variant: 'warning' })
                 return
             }
             notify({ title: 'Refund recorded', description: 'The refund has been submitted successfully.', variant: 'success' })

@@ -27,11 +27,13 @@ import {
     CreateChannelListingSchema,
     GetChannelListingQuery,
     ListChannelListingsQuery,
+    ResubmitRejectedChannelListingSchema,
     TransitionChannelListingSchema,
     UpdateChannelListingSchema,
     type CreateChannelListingInput,
     type GetChannelListingInput,
     type ListChannelListingsInput,
+    type ResubmitRejectedChannelListingInput,
     type TransitionChannelListingInput,
     type UpdateChannelListingInput,
 } from '../schemas/channel-listing.schema';
@@ -43,6 +45,7 @@ export const CHANNEL_LISTING_COLUMNS =
     'id, site_id, product_id, channel, status, visibility, marketplace_category_id, pricing_policy, compliance_flags, submitted_at, approved_at, reviewed_at, rejection_reason, version, created_at, updated_at';
 // The seven positional parameters of transition_channel_listing, in 217's declared order.
 export const TRANSITION_SQL = `select listing_id, from_status, to_status, event_id, replayed from public.${TRANSITION_CHANNEL_LISTING_RPC}($1, $2, $3, $4, $5, $6, $7)`;
+export const RESUBMIT_CHANNEL_LISTING_SQL = 'select listing_id, from_status, to_status, event_id, replayed from public.resubmit_rejected_marketplace_listing($1, $2, $3, $4, $5)';
 
 export type TenantSql = { unsafe: (query: string, parameters?: unknown[]) => Promise<unknown> };
 export type ChannelListingScope = Pick<OwnedStoreScope, 'siteId' | 'customUser' | 'tenant'>;
@@ -73,10 +76,15 @@ function listingIdParam(c: AppContext): string {
 export function mapChannelListingDatabaseError(error: unknown): AppError | null {
     const message = error instanceof Error ? error.message : String(error ?? '');
     const code = typeof (error as { code?: unknown })?.code === 'string' ? (error as { code: string }).code : '';
+    if (/idempotency_key_conflict/.test(message)) return new ConflictError('this resubmission key was already used for a different correction request');
     if (code === '23505') return new ConflictError('a listing for this product and channel already exists');
     if (code === '42501' || /row-level security/i.test(message)) return new ForbiddenError('Not authorized for this store');
     if (/must match the product's site/.test(message)) return new AppError('product does not belong to this store', 422, 'UNPROCESSABLE');
     if (/invalid_transition/.test(message)) return new ConflictError('this transition is not allowed from the listing\'s current status');
+    if (/listing_already_claimed/.test(message)) return new ConflictError('this listing has already been claimed by another reviewer');
+    if (/stale_listing_version/.test(message)) return new ConflictError('this listing changed; refresh before claiming it');
+    if (/idempotency_key_conflict/.test(message)) return new ConflictError('this idempotency key was already used for a different reviewer claim');
+    if (/listing is not awaiting review/.test(message)) return new ConflictError('only pending marketplace listings can be claimed');
     if (/listing not found/.test(message)) return new NotFoundError('Listing not found');
     if (/marketplace_category_id/.test(message)) return new AppError('a marketplace category is required before review', 422, 'UNPROCESSABLE');
     if (/product is not sellable/.test(message)) return new AppError('the product is inactive or deleted', 422, 'UNPROCESSABLE');
@@ -110,12 +118,12 @@ export function createChannelListingsRouter(deps: ChannelListingRouteDependencie
             const offset = (query.page - 1) * query.limit;
             const { rows, total } = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
                 const rows = (await sql.unsafe(
-                    `select ${CHANNEL_LISTING_COLUMNS} from public.channel_listings where site_id = $1 and ($2::text is null or channel = $2) and ($3::text is null or status = $3) order by created_at desc, id desc limit $4 offset $5`,
-                    [scope.siteId, query.channel ?? null, query.status ?? null, query.limit, offset],
+                    `select ${CHANNEL_LISTING_COLUMNS} from public.channel_listings where site_id = $1 and ($2::text is null or channel = $2) and ($3::text is null or status = $3) and ($4::uuid is null or product_id = $4) order by created_at desc, id desc limit $5 offset $6`,
+                    [scope.siteId, query.channel ?? null, query.status ?? null, query.product_id ?? null, query.limit, offset],
                 )) as ChannelListingRow[];
                 const counted = (await sql.unsafe(
-                    'select count(*)::int as total from public.channel_listings where site_id = $1 and ($2::text is null or channel = $2) and ($3::text is null or status = $3)',
-                    [scope.siteId, query.channel ?? null, query.status ?? null],
+                    'select count(*)::int as total from public.channel_listings where site_id = $1 and ($2::text is null or channel = $2) and ($3::text is null or status = $3) and ($4::uuid is null or product_id = $4)',
+                    [scope.siteId, query.channel ?? null, query.status ?? null, query.product_id ?? null],
                 )) as Array<{ total: number }>;
                 return { rows, total: counted[0]?.total ?? rows.length };
             });
@@ -217,6 +225,30 @@ export function createChannelListingsRouter(deps: ChannelListingRouteDependencie
                     'merchant',
                     scope.customUser.id,
                     body.reason ?? null,
+                    body.idempotency_key,
+                ])) as Array<{ listing_id: string; from_status: string; to_status: string; event_id: string; replayed: boolean }>;
+                return rows[0] ?? null;
+            });
+            if (!result) throw new NotFoundError('Listing not found');
+            return c.json(success(result));
+        } catch (error) {
+            return respond(c, error);
+        }
+    });
+
+    // Resubmit a rejected marketplace revision atomically. The RPC runs inside the same validated
+    // tenant transaction and records the merchant's correction note with the new submitted snapshot.
+    router.post('/:id/resubmit', validate('json', ResubmitRejectedChannelListingSchema), async (c) => {
+        const body = c.get('validatedBody') as ResubmitRejectedChannelListingInput;
+        try {
+            const id = listingIdParam(c);
+            const scope = await deps.resolveOwnedStoreScope(c, body.store_id);
+            const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
+                const rows = (await sql.unsafe(RESUBMIT_CHANNEL_LISTING_SQL, [
+                    scope.siteId,
+                    id,
+                    scope.customUser.id,
+                    body.reason,
                     body.idempotency_key,
                 ])) as Array<{ listing_id: string; from_status: string; to_status: string; event_id: string; replayed: boolean }>;
                 return rows[0] ?? null;

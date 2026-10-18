@@ -21,6 +21,9 @@ import {
 import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
 import type { CustomDomainHealth } from '@letbuyy/shared-types';
 import { registerStoreLocalizationRoutes } from './stores-localization';
+import { canonicalizeExecutionPayload } from '@letbuyy/event-core';
+import { z } from 'zod';
+import { AppError, ValidationError } from '../lib/errors';
 
 const router = new Hono<{ Bindings: Env }>();
 registerStoreLocalizationRoutes(router);
@@ -50,6 +53,50 @@ async function emitStoreCreatedEvent(
         requestId: input.requestId,
         actorId: input.ownerUserId,
     });
+}
+
+async function storeCreationRequestHash(input: unknown): Promise<string> {
+    const digest = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(canonicalizeExecutionPayload(input)),
+    );
+    return [...new Uint8Array(digest)]
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+function storeCreationIdempotencyKey(c: { req: { header: (name: string) => string | undefined } }): {
+    key: string | null;
+    error: 'conflicting_headers' | 'invalid_length' | null;
+} {
+    const primary = c.req.header('X-Idempotency-Key')?.trim() || null;
+    const alternate = c.req.header('Idempotency-Key')?.trim() || null;
+    if (primary && alternate && primary !== alternate) {
+        return { key: null, error: 'conflicting_headers' };
+    }
+    const key = primary || alternate;
+    if (key && (key.length < 8 || key.length > 200)) {
+        return { key: null, error: 'invalid_length' };
+    }
+    return { key, error: null };
+}
+
+async function lookupStoreCreationReplay(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    customUserId: string,
+    key: string,
+) {
+    return db
+        .from('sites')
+        .select('*')
+        .eq('custom_user_id', customUserId)
+        .eq('store_creation_idempotency_key', key)
+        .is('deleted_at', null)
+        .maybeSingle();
+}
+
+function isUniqueViolation(error: { code?: string | null } | null): boolean {
+    return error?.code === '23505';
 }
 
 function isMissingDeletedAtError(error: { message?: string } | null | undefined): boolean {
@@ -506,9 +553,10 @@ router.post('/:id/payment-config', validate('json', PaymentConfigSchema), async 
 // GET /stores — List all stores for the authenticated user
 router.get('/', async (c) => {
     const auth = c.get('auth');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
-    const offset = (page - 1) * limit;
+    const parsed = z.object({ page: z.coerce.number().int().min(1).max(100000).default(1),
+        limit: z.coerce.number().int().min(1).max(50).default(10) }).safeParse(c.req.query());
+    if (!parsed.success) throw new ValidationError('Invalid store list pagination.');
+    const { page, limit } = parsed.data;
 
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -517,27 +565,14 @@ router.get('/', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const buildListQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
-            .from('sites')
-            .select('*', { count: 'exact' })
-            .or(ownedByCustomUserFilter(customUser.id))
-            .order('created_at', { ascending: false });
-
-        return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-    };
-
-    let { data, error, count } = await buildListQuery(true).range(offset, offset + limit - 1);
-
-    if (isMissingDeletedAtError(error)) {
-        ({ data, error, count } = await buildListQuery(false).range(offset, offset + limit - 1));
+    // One database snapshot joins ownership and active staff membership, so
+    // counts/pagination cannot omit staff stores or duplicate an owned store.
+    // The actor ID comes only from the current canonical account, never query.
+    const { data, error } = await db.rpc('list_merchant_accessible_sites_v1', { p_actor_id: customUser.id, p_page: page, p_limit: limit, p_site_id: auth.user.storeId || null });
+    if (error || !data || !Array.isArray(data.items) || !Number.isSafeInteger(data.total)) {
+        throw new AppError('The store list is temporarily unavailable. Retry this request.', 503, 'STORE_LIST_UNAVAILABLE');
     }
-
-    if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
-    }
-
-    return c.json(paginated(data || [], count || 0, page, limit));
+    return c.json(paginated(data.items, data.total, page, limit));
 });
 
 // GET /stores/public/:subdomain — Public store data (no auth required)
@@ -582,12 +617,13 @@ router.get('/handle/:handle', async (c) => {
     // takes a raw PostgREST filter string, so a handle carrying a comma or parenthesis rewrote the
     // predicate; .eq() is parameter-encoded, so the handle can only ever be a value.
     const buildHandleQuery = (includeDeletedAtFilter: boolean) => {
-        const query = db
+        let query = db
             .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain')
+            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain, custom_domain_status')
             .eq('subdomain', handle)
             .or(ownedByCustomUserFilter(customUser.id));
 
+        if (auth.user.storeId) query = query.eq('id', auth.user.storeId);
         return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
     };
 
@@ -598,7 +634,7 @@ router.get('/handle/:handle', async (c) => {
     }
 
     if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        throw new AppError('The store is temporarily unavailable.', 503, 'STORE_STATE_UNAVAILABLE');
     }
 
     // Phase 2 / F2.5: this ownership-only query is the one gate merchant-web's [store]/layout.tsx
@@ -609,15 +645,16 @@ router.get('/handle/:handle', async (c) => {
     // permission check runs. Mirrors ownsStore()'s pattern: existence only, no permission key --
     // per-action authorization still runs at each route via assertStaffPermission.
     if (!data) {
-        const { data: site, error: siteError } = await db
+        let siteQuery = db
             .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain')
+            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain, custom_domain_status')
             .eq('subdomain', handle)
-            .is('deleted_at', null)
-            .maybeSingle();
+            .is('deleted_at', null);
+        if (auth.user.storeId) siteQuery = siteQuery.eq('id', auth.user.storeId);
+        const { data: site, error: siteError } = await siteQuery.maybeSingle();
 
         if (siteError) {
-            return c.json({ error: { code: 'DB_ERROR', message: siteError.message } }, 500);
+            throw new AppError('The store is temporarily unavailable.', 503, 'STORE_STATE_UNAVAILABLE');
         }
 
         if (site) {
@@ -627,11 +664,12 @@ router.get('/handle/:handle', async (c) => {
                 .eq('store_id', site.id)
                 .eq('user_id', customUser.id)
                 .eq('status', 'active')
+                .eq('is_active', true)
                 .is('deleted_at', null)
                 .maybeSingle();
 
             if (membershipError) {
-                return c.json({ error: { code: 'DB_ERROR', message: membershipError.message } }, 500);
+                throw new AppError('The store is temporarily unavailable.', 503, 'STORE_STATE_UNAVAILABLE');
             }
 
             if (membership) {
@@ -640,6 +678,7 @@ router.get('/handle/:handle', async (c) => {
         }
     }
 
+    if (data && auth.user.storeId && data.id !== auth.user.storeId) data = null;
     if (!data) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     }
@@ -651,6 +690,9 @@ router.get('/handle/:handle', async (c) => {
 router.get('/:id', async (c) => {
     const auth = c.get('auth');
     const storeId = c.req.param('id');
+    if (!z.string().uuid().safeParse(storeId).success || (auth.user.storeId && auth.user.storeId !== storeId)) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    }
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -674,8 +716,12 @@ router.get('/:id', async (c) => {
         ({ data, error } = await buildStoreQuery(false).single());
     }
 
-    if (error || !data) {
-        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    if (error && error.code !== 'PGRST116') throw new AppError('The store is temporarily unavailable.',503,'STORE_UNAVAILABLE');
+    if (!data) {
+        const result = await db.rpc('list_merchant_accessible_sites_v1', { p_actor_id: customUser.id, p_page: 1, p_limit: 1, p_site_id: storeId });
+        if (result.error || !result.data || !Array.isArray(result.data.items)) throw new AppError('The store is temporarily unavailable.',503,'STORE_UNAVAILABLE');
+        if (!result.data.items.length) return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } },404);
+        return c.json(success(result.data.items[0]));
     }
 
     return c.json(success(data));
@@ -696,12 +742,79 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    if (customUser.email_verified !== true) {
+        return c.json({
+            error: {
+                code: 'EMAIL_VERIFICATION_REQUIRED',
+                message: 'Verify your account email before creating a storefront.',
+            },
+        }, 403);
+    }
+
     if (isComingSoonSiteType(body.site_type)) {
         return c.json(comingSoonSiteTypeCreationResponse(body.site_type), 403);
     }
 
     if (isLegacySiteType(body.site_type) && !legacySiteTypeCreationAllowed(c.env)) {
         return c.json(legacySiteTypeCreationResponse(body.site_type), 403);
+    }
+
+    const idempotency = storeCreationIdempotencyKey(c);
+    if (idempotency.error) {
+        return c.json({
+            error: {
+                code: idempotency.error === 'conflicting_headers'
+                    ? 'IDEMPOTENCY_KEY_CONFLICT'
+                    : 'IDEMPOTENCY_KEY_INVALID',
+                message: idempotency.error === 'conflicting_headers'
+                    ? 'Idempotency headers must match.'
+                    : 'Idempotency key must be 8-200 characters.',
+            },
+        }, 400);
+    }
+    const idempotencyKey = idempotency.key;
+    const requestHash = idempotencyKey
+        ? await storeCreationRequestHash({
+            name: body.name,
+            subdomain: body.subdomain.toLowerCase().replace(/[^a-z0-9-]/g, ''),
+            site_type: body.site_type,
+            tagline: body.tagline ?? null,
+            locale: body.locale ?? null,
+            theme_id: body.theme_id,
+            template_config: body.template_config ?? {},
+        })
+        : null;
+
+    const replayStore = async (store: Record<string, any>) => {
+        if (store.store_creation_request_hash !== requestHash) {
+            return c.json({
+                error: {
+                    code: 'IDEMPOTENCY_KEY_CONFLICT',
+                    message: 'Idempotency key was already used with a different store request.',
+                },
+            }, 409);
+        }
+        await emitStoreCreatedEvent(db, {
+            store,
+            ownerUserId: customUser.id,
+            requestId: getRequestId(c),
+        });
+        c.header('X-Idempotent-Replay', 'true');
+        return c.json(success(store), 201);
+    };
+
+    if (idempotencyKey) {
+        const { data: priorStore, error: replayLookupError } = await lookupStoreCreationReplay(
+            db,
+            customUser.id,
+            idempotencyKey,
+        );
+        if (replayLookupError) {
+            return c.json({
+                error: { code: 'IDEMPOTENCY_LOOKUP_UNAVAILABLE', message: 'Store creation could not be safely retried.' },
+            }, 503);
+        }
+        if (priorStore) return replayStore(priorStore);
     }
 
     // Check subdomain uniqueness. Both handle columns carry their own UNIQUE constraint
@@ -767,11 +880,33 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             locale: body.locale || 'en-IN',
             theme_id: body.theme_id,
             template_config: templateConfig,
+            ...(idempotencyKey && requestHash
+                ? {
+                    store_creation_idempotency_key: idempotencyKey,
+                    store_creation_request_hash: requestHash,
+                }
+                : {}),
         })
         .select()
         .single();
 
     if (error) {
+        if (isUniqueViolation(error) && idempotencyKey) {
+            const { data: priorStore, error: replayLookupError } = await lookupStoreCreationReplay(
+                db,
+                customUser.id,
+                idempotencyKey,
+            );
+            if (replayLookupError) {
+                return c.json({
+                    error: { code: 'IDEMPOTENCY_LOOKUP_UNAVAILABLE', message: 'Store creation could not be safely retried.' },
+                }, 503);
+            }
+            if (priorStore) return replayStore(priorStore);
+        }
+        if (isUniqueViolation(error)) {
+            return c.json({ error: { code: 'CONFLICT', message: 'Subdomain already taken' } }, 409);
+        }
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 

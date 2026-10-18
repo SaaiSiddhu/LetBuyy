@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, relative } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import { webcrypto } from 'node:crypto';
@@ -8,6 +9,14 @@ import ts from 'typescript';
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
 const AUTH_CORE_CUSTOMER_SESSION_SOURCE = 'packages/auth-core/src/customer-session.ts';
 const AUTH_CORE_STOREFRONT_ACCESS_SOURCE = 'packages/auth-core/src/storefront-access.ts';
+
+function sourceFiles(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) return sourceFiles(path);
+    return /\.(?:ts|tsx)$/.test(entry.name) ? [path] : [];
+  });
+}
 
 function transpileTypeScript(sourcePath) {
   return ts.transpileModule(readFileSync(sourcePath, 'utf8'), {
@@ -372,4 +381,45 @@ test('storefront exposes customer federation redemption through the shared verif
   assert.match(source, /createSessionFromFederationToken/);
   assert.match(source, /redeemCustomerFederationToken/);
   assert.match(source, /CustomerFederationTokenStore/);
+});
+
+test('legacy storefront customer-session issuance remains limited to the inventoried login and reset paths', () => {
+  const roots = [
+    'apps/commerce/web/src/app/api/customer',
+    'services/api-gateway/src/routes/storefront',
+  ];
+  const issuers = [];
+
+  for (const root of roots) {
+    for (const path of sourceFiles(root)) {
+      const source = readFileSync(path, 'utf8');
+      const commerceIssuances = source.match(/\bcreateSession\s*\(/g)?.length ?? 0;
+      const gatewayIssuances = source.match(/\bissueCustomerSession\s*\(/g)?.length ?? 0;
+      if (commerceIssuances + gatewayIssuances > 0) {
+        issuers.push({
+          path: relative('.', path).replaceAll('\\', '/'),
+          commerceIssuances,
+          gatewayIssuances,
+        });
+      }
+    }
+  }
+
+  assert.deepEqual(issuers.sort((left, right) => left.path.localeCompare(right.path)), [
+    {
+      path: 'apps/commerce/web/src/app/api/customer/login/route.ts',
+      commerceIssuances: 1,
+      gatewayIssuances: 0,
+    },
+    {
+      path: 'apps/commerce/web/src/app/api/customer/set-password/route.ts',
+      commerceIssuances: 1,
+      gatewayIssuances: 0,
+    },
+    {
+      path: 'services/api-gateway/src/routes/storefront/customer-engagement-routes.ts',
+      commerceIssuances: 0,
+      gatewayIssuances: 2,
+    },
+  ], 'any new legacy issuance path needs an explicit F2.1 inventory and transition review');
 });

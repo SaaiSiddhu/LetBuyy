@@ -1,3 +1,4 @@
+import {createConsoleSessionCookieValue,identityUnitConfig} from '../../../../__tests__/identity-issuer-fixture';
 // Auth hardening follow-up, Section 13: founding/action and founding/export had NO session check at
 // all -- reachable by anyone who could reach the console app's HTTP surface, using only the shared
 // PLATFORM_CONSOLE_API_TOKEN service credential. These tests prove the fix directly, at the real
@@ -7,11 +8,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NextRequest } from 'next/server';
-import { createConsoleSessionCookieValue, CONSOLE_SESSION_COOKIE } from '../../../../lib/console-session';
+import { CONSOLE_SESSION_COOKIE } from '../../../../lib/console-session';
 
 const SESSION_SECRET = 'test-only-console-session-secret-for-founding-route-tests-0123456789';
 
 async function withEnv<T>(vars: Record<string, string | undefined>, fn: () => Promise<T> | T): Promise<T> {
+    vars={...identityUnitConfig,...vars};
     const previous: Record<string, string | undefined> = {};
     for (const key of Object.keys(vars)) previous[key] = process.env[key];
     for (const [key, value] of Object.entries(vars)) {
@@ -69,11 +71,10 @@ test('POST /api/founding/action: a valid session without MFA verified is refused
     assert.equal(res.status, 401);
 });
 
-test('POST /api/founding/action: a fully valid, allowed, MFA-verified session is NOT rejected by the auth gate (reaches the gateway call, which then fails cleanly since none is configured in this test)', async () => {
+test('POST /api/founding/action: a signed MFA cookie cannot grant access when durable session verification is unconfigured', async () => {
     const cookie = await sessionCookieFor('operator@example.test', true);
     const { POST } = await import('./route');
     const res = await withEnv({ PLATFORM_CONSOLE_SESSION_SECRET: SESSION_SECRET, PLATFORM_CONSOLE_ALLOWED_EMAILS: 'operator@example.test', PLATFORM_CONSOLE_API_TOKEN: undefined }, () =>
         POST(requestWithCookie(cookie)));
-    assert.notEqual(res.status, 401, 'a fully authorized caller must not be blocked by the auth gate itself');
-    assert.notEqual(res.status, 403);
+    assert.equal(res.status, 401, 'the cookie signature alone is no longer current session authority');
 });

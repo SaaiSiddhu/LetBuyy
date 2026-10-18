@@ -1,17 +1,20 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
+import { InternalMoneyResolutionExecuteSchema } from '@letbuyy/shared-types';
+import { consoleApprovalRpc, consolePermission, credentialArguments, requireConsolePermission } from '../../identity-foundation/console-approval-repository';
+import { AppError } from '../../lib/errors';
 import type { Env } from '../../index';
 import { ValidationError } from '../../lib/errors';
-import { getSupabaseAdmin, paginated, shouldReturnEmptyForMissingLocalSchema } from '../../lib/supabase';
-import { checkSegregationOfDuty, validateSensitiveReason } from '../../middleware/rbac';
+import { getSupabaseAdmin, getSupabaseAdminForOperatorRead, paginated } from '../../lib/supabase';
+import { validateSensitiveReason } from '../../middleware/rbac';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 type DbRecord = Record<string, unknown>;
 
 const MoneyReconciliationQuerySchema = z.object({
-    page: z.coerce.number().int().min(1).default(1),
+    page: z.coerce.number().int().min(1).max(10000).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(25),
     status: z.enum(['verified', 'mismatch']).optional(),
     site_id: z.string().uuid().optional(),
@@ -19,18 +22,7 @@ const MoneyReconciliationQuerySchema = z.object({
     actor_email: z.string().email().optional(),
     reason: z.string().trim().max(1000).optional(),
 });
-const MoneyReconciliationResolveSchema = z.object({
-    actor_id: z.string().uuid(),
-    actor_email: z.string().email().nullable().optional(),
-    secondary_approver_id: z.string().uuid(),
-    reason: z.string().trim().min(8).max(1000),
-    resolution: z.enum(['acknowledge_suspense', 'provider_explained', 'request_recheck']),
-    provider_reference: z.string().trim().max(160).nullable().optional(),
-    suspense_ledger_transaction_id: z.string().uuid().nullable().optional(),
-});
-
 type MoneyReconciliationQuery = z.infer<typeof MoneyReconciliationQuerySchema>;
-type MoneyReconciliationResolveInput = z.infer<typeof MoneyReconciliationResolveSchema>;
 
 function cleanOptional(value: string | undefined): string | undefined {
     const trimmed = value?.trim();
@@ -40,28 +32,6 @@ function cleanOptional(value: string | undefined): string | undefined {
 function rangeFor(query: MoneyReconciliationQuery) {
     const offset = (query.page - 1) * query.limit;
     return { from: offset, to: offset + query.limit - 1 };
-}
-
-function dbError(message: string) {
-    return {
-        error: {
-            code: 'DB_ERROR',
-            message,
-        },
-    };
-}
-
-function asRecord(value: unknown): DbRecord {
-    return value && typeof value === 'object' && !Array.isArray(value) ? value as DbRecord : {};
-}
-
-function numberValue(value: unknown): number {
-    if (typeof value === 'number' && Number.isFinite(value)) return value;
-    if (typeof value === 'string' && value.trim()) {
-        const parsed = Number(value);
-        if (Number.isFinite(parsed)) return parsed;
-    }
-    return 0;
 }
 
 function parseMoneyReconciliationQuery(c: AppContext): MoneyReconciliationQuery {
@@ -82,28 +52,9 @@ function parseMoneyReconciliationQuery(c: AppContext): MoneyReconciliationQuery 
     return parsed.data;
 }
 
-function resolutionAuditAction(resolution: MoneyReconciliationResolveInput['resolution']): string {
-    if (resolution === 'request_recheck') return 'money_ledger.reconciliation.recheck_requested';
-    return 'money_ledger.breaks.resolve';
-}
-
-function resolutionRecord(input: MoneyReconciliationResolveInput, row: DbRecord, reason: string, now: string): DbRecord {
-    return {
-        resolution: input.resolution,
-        reason,
-        actor_id: input.actor_id,
-        actor_email: input.actor_email || null,
-        secondary_approver_id: input.secondary_approver_id,
-        provider_reference: input.provider_reference || null,
-        suspense_ledger_transaction_id: input.suspense_ledger_transaction_id || null,
-        variance_minor: numberValue(row.variance_minor),
-        resolved_at: now,
-        source: 'admin-web',
-    };
-}
-
 async function writeConsoleAudit(c: AppContext, input: {
     actorId?: string | null;
+    actorType: 'employee' | 'super_admin';
     actorEmail?: string | null;
     action: string;
     resourceType: string;
@@ -112,9 +63,9 @@ async function writeConsoleAudit(c: AppContext, input: {
     metadata?: DbRecord;
 }) {
     const db = getSupabaseAdmin(c);
-    await db.from('audit_logs').insert({
+    const { error } = await db.from('audit_logs').insert({
         actor_id: input.actorId || null,
-        actor_type: 'super_admin',
+        actor_type: input.actorType,
         actor_email: input.actorEmail || null,
         action: input.action,
         resource_type: input.resourceType,
@@ -127,12 +78,14 @@ async function writeConsoleAudit(c: AppContext, input: {
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,
     });
+    if (error) throw new AppError('The required money review audit could not be saved.',503,'AUDIT_UNAVAILABLE');
 }
 
-router.get('/reconciliation', async (c) => {
+router.get('/reconciliation', consolePermission('payout:view'), async (c) => {
+    const { state: operator } = await requireConsolePermission(c, 'payout:view', false);
     const query = parseMoneyReconciliationQuery(c);
     const { from, to } = rangeFor(query);
-    const db = getSupabaseAdmin(c);
+    const db = getSupabaseAdminForOperatorRead(c);
 
     if (query.status === 'mismatch') {
         const reason = validateSensitiveReason(query.reason);
@@ -149,6 +102,7 @@ router.get('/reconciliation', async (c) => {
     let request = db
         .from('money_ledger_site_reconciliations')
         .select('site_id, status, wallet_available_minor, ledger_merchant_payable_minor, variance_minor, verified_at, updated_at, sites(id, name, store_name, subdomain)', { count: 'exact' })
+        .is('deleted_at', null)
         .order('updated_at', { ascending: false })
         .range(from, to);
 
@@ -157,16 +111,12 @@ router.get('/reconciliation', async (c) => {
 
     const { data, error, count } = await request;
 
-    if (error) {
-        if (shouldReturnEmptyForMissingLocalSchema(c.env, error)) {
-            return c.json(paginated([], 0, query.page, query.limit));
-        }
-        return c.json(dbError(error.message), 500);
-    }
+    if (error) throw new AppError('Money reconciliation is unavailable. Retry this review.',503,'MONEY_RECONCILIATION_UNAVAILABLE');
 
     await writeConsoleAudit(c, {
-        actorId: query.actor_id || null,
-        actorEmail: query.actor_email || null,
+        actorId: operator.actor_id,
+        actorType: operator.is_super_admin ? 'super_admin' : 'employee',
+        actorEmail: operator.email,
         action: query.status === 'mismatch' ? 'money_ledger.breaks.read' : 'money_ledger.reconciliation.read',
         resourceType: 'money_ledger_site_reconciliation',
         resourceId: query.site_id || null,
@@ -182,107 +132,17 @@ router.get('/reconciliation', async (c) => {
 });
 
 router.post('/reconciliation/:siteId/resolve', async (c) => {
-    const body = await c.req.json().catch(() => null);
-    const parsed = MoneyReconciliationResolveSchema.safeParse(body);
-    if (!parsed.success) throw new ValidationError('Invalid money ledger reconciliation resolution payload', parsed.error.flatten());
-
-    const reason = validateSensitiveReason(parsed.data.reason);
-    if (!reason) {
-        return c.json({
-            error: {
-                code: 'REASON_REQUIRED',
-                message: 'A reason of at least 8 characters is required for money ledger break resolution.',
-            },
-        }, 400);
-    }
-
-    const sod = checkSegregationOfDuty({
-        actorId: parsed.data.actor_id,
-        secondaryApproverId: parsed.data.secondary_approver_id,
-        targetAction: 'money.reconciliation.resolve',
+    const parsed = InternalMoneyResolutionExecuteSchema.safeParse(await c.req.json().catch(() => null));
+    const site = z.string().uuid().safeParse(c.req.param('siteId'));
+    if (!parsed.success || !site.success) throw new ValidationError('Invalid money reconciliation resolution payload.');
+    const { credential, state, witness } = await requireConsolePermission(c, 'money:reconcile');
+    if (parsed.data.actor_id && parsed.data.actor_id !== state.actor_id) throw new AppError('The action actor does not match this session.',403,'ACTOR_MISMATCH');
+    if (!parsed.data.approval_id) throw new AppError('An independently approved request is required before this action.',428,'INDEPENDENT_APPROVAL_REQUIRED');
+    const result = await consoleApprovalRpc(c, 'execute_console_money_resolution_v1', {
+        ...credentialArguments(credential), p_permission_hash: witness, p_id: parsed.data.approval_id,
+        p_site_id: site.data, p_reason: parsed.data.reason, p_details: { resolution: parsed.data.resolution,
+            provider_reference: parsed.data.provider_reference, suspense_ledger_transaction_id: parsed.data.suspense_ledger_transaction_id },
     });
-    if (!sod.ok) {
-        return c.json({ error: { code: sod.code || 'SEGREGATION_OF_DUTY_FAILED', message: sod.message || 'Segregation of duty failed.' } }, 403);
-    }
-
-    const siteIdResult = z.string().uuid().safeParse(c.req.param('siteId'));
-    if (!siteIdResult.success) {
-        return c.json({ error: { code: 'INVALID_SITE_ID', message: 'Money reconciliation site id must be a UUID.' } }, 400);
-    }
-    const siteId = siteIdResult.data;
-    const db = getSupabaseAdmin(c);
-    const { data: existing, error: lookupError } = await db
-        .from('money_ledger_site_reconciliations')
-        .select('site_id, status, wallet_available_minor, ledger_merchant_payable_minor, variance_minor, metadata, verified_at, updated_at')
-        .eq('site_id', siteId)
-        .maybeSingle();
-
-    if (lookupError) {
-        if (shouldReturnEmptyForMissingLocalSchema(c.env, lookupError)) {
-            return c.json({ error: { code: 'NOT_FOUND', message: 'Money ledger reconciliation row not found.' } }, 404);
-        }
-        return c.json(dbError(lookupError.message), 500);
-    }
-    if (!existing) return c.json({ error: { code: 'NOT_FOUND', message: 'Money ledger reconciliation row not found.' } }, 404);
-
-    const existingRow = existing as DbRecord;
-    if (String(existingRow.status) === 'verified' || numberValue(existingRow.variance_minor) === 0) {
-        return c.json({
-            error: {
-                code: 'MONEY_RECONCILIATION_ALREADY_VERIFIED',
-                message: 'Verified reconciliation rows do not require operator break resolution.',
-            },
-        }, 409);
-    }
-
-    const now = new Date().toISOString();
-    const resolution = resolutionRecord(parsed.data, existingRow, reason, now);
-    let updated: unknown = null;
-
-    if (parsed.data.resolution === 'request_recheck') {
-        const { data, error } = await db.rpc('refresh_money_ledger_site_reconciliation', { p_site_id: siteId });
-        if (error) return c.json(dbError(error.message), 500);
-        updated = data;
-    } else {
-        const { data, error } = await db
-            .from('money_ledger_site_reconciliations')
-            .update({
-                metadata: {
-                    ...asRecord(existingRow.metadata),
-                    operator_resolution: resolution,
-                },
-                updated_by: parsed.data.actor_id,
-                updated_at: now,
-            })
-            .eq('site_id', siteId)
-            .eq('status', 'mismatch')
-            .select('site_id, status, wallet_available_minor, ledger_merchant_payable_minor, variance_minor, metadata, verified_at, updated_at')
-            .single();
-        if (error || !data) return c.json(dbError(error?.message || 'Money ledger reconciliation resolution update failed'), 500);
-        updated = data;
-    }
-
-    await writeConsoleAudit(c, {
-        actorId: parsed.data.actor_id,
-        actorEmail: parsed.data.actor_email || null,
-        action: resolutionAuditAction(parsed.data.resolution),
-        resourceType: 'money_ledger_site_reconciliation',
-        resourceId: siteId,
-        reason,
-        metadata: {
-            resolution,
-            status_before: existingRow.status || null,
-            variance_before_minor: numberValue(existingRow.variance_minor),
-        },
-    });
-
-    return c.json({
-        success: true,
-        data: {
-            reconciliation: updated,
-            resolution,
-        },
-    });
+    return c.json({ success: true, data: result.result });
 });
-
 export default router;

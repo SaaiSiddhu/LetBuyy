@@ -32,7 +32,9 @@ import {
     extractGstStateCode,
 } from '@letbuyy/checkout-core';
 import type { PublishedStoreRecord } from '@letbuyy/tenant-core';
-import { resolveShippingRate } from '../../lib/shipping-rate-resolver';
+import { listStorefrontShippingRates, loadStorefrontSubtotalMinor } from '../../lib/storefront-shipping';
+import { authenticateStorefrontBuyerSession, getStorefrontBuyerSession } from '../../middleware/storefront-buyer-session';
+import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
@@ -139,6 +141,35 @@ export function registerStorefrontCheckoutPaymentRoutes(
 ): void {
     const { loadPublishedStore, getRequestId, emitStorefrontOrderPaidEvent } = dependencies;
 
+    router.get('/:subdomain/shipping-rates', async (c) => {
+        const pincode = c.req.query('pincode')?.trim() || '';
+        const state = c.req.query('state')?.trim() || '';
+        const stateCode = c.req.query('state_code')?.trim() || '';
+        const subtotalMinor = Number(c.req.query('subtotal_minor'));
+        if (!/^[1-9][0-9]{5}$/.test(pincode) || !state || state.length > 100
+            || !Number.isSafeInteger(subtotalMinor) || subtotalMinor < 0) {
+            return c.json({ success: false, error: { code: 'VALIDATION', message: 'A valid India delivery address and cart subtotal are required.' } }, 400);
+        }
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+        try {
+            const rates = await listStorefrontShippingRates(getSupabaseAdmin(c), store.id, {
+                country: 'IN', state, stateCode, pincode,
+            }, subtotalMinor);
+            return c.json(success({
+                serviceability: {
+                    serviceable: rates.length > 0,
+                    source: 'seller_zone_configuration',
+                    carrier_confirmed: false,
+                },
+                rates,
+            }));
+        } catch {
+            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, 503);
+        }
+    });
+
     router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema), async (c) => {
         const db = getSupabaseAdmin(c);
         const subdomain = c.req.param('subdomain');
@@ -152,6 +183,58 @@ export function registerStorefrontCheckoutPaymentRoutes(
             );
         }
 
+        // A supplied token is never downgraded to a guest checkout. Its site binding is checked
+        // against the store resolved from the route, and the live account epoch is revalidated
+        // before any idempotency replay or order write.
+        const buyerToken = c.req.header(LETBUYY_STOREFRONT_SESSION_HEADER);
+        if (buyerToken) {
+            const rejected = await authenticateStorefrontBuyerSession(c, buyerToken, store.id);
+            if (rejected) return rejected;
+        }
+        const buyerSession = getStorefrontBuyerSession(c);
+
+        const shippingAddress = {
+            name: body.customer.name,
+            line1: body.customer.address.address,
+            city: body.customer.address.city,
+            state: body.customer.address.state,
+            state_code: body.customer.address.stateCode,
+            zip: body.customer.address.pincode,
+            country: 'IN',
+            phone: body.customer.phone,
+            gstin: body.customer.gstin,
+        };
+        if (!body.shippingRateId || !Number.isSafeInteger(body.shippingAmountMinor) || body.shippingAmountMinor === null || body.shippingAmountMinor === undefined) {
+            return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_RATE_REQUIRED', message: 'Choose an available delivery option before placing the order.' } }, 409);
+        }
+        let resolvedRate: { id: string; amount: number; codAvailable: boolean };
+        try {
+            const subtotalMinor = await loadStorefrontSubtotalMinor(db, store.id, body.items);
+            const options = await listStorefrontShippingRates(db, store.id, {
+                country: 'IN',
+                state: body.customer.address.state,
+                stateCode: body.customer.address.stateCode,
+                pincode: body.customer.address.pincode,
+            }, subtotalMinor);
+            const selected = options.find((option) => option.id === body.shippingRateId);
+            if (!selected) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_CHANGED', message: 'That delivery option is no longer available for this address. Refresh delivery options and try again.' } }, 409);
+            }
+            if (selected.amount_minor !== body.shippingAmountMinor) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_SHIPPING_CHANGED', message: 'The delivery price changed. Review the updated delivery option and try again.' } }, 409);
+            }
+            if (body.paymentMethod === 'cod' && !selected.cod_available) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_COD_UNAVAILABLE', message: 'Cash on delivery is not available for the selected delivery option.' } }, 409);
+            }
+            resolvedRate = { id: selected.id, amount: selected.amount_minor / 100, codAvailable: selected.cod_available };
+        } catch (error) {
+            const message = error instanceof Error ? error.message : '';
+            if (message.includes('Checkout item is no longer available')) {
+                return c.json({ success: false, error: { code: 'CHECKOUT_ITEM_UNAVAILABLE', message: 'An item changed before checkout. Refresh your cart and try again.' } }, 409);
+            }
+            return c.json({ success: false, error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Delivery options could not be verified. Please retry.' } }, 503);
+        }
+
         const service = new OrderExecutionAdapter(db);
         const tenant = await createPublicStorefrontTenantContext(c, store.id);
         const idempotency = new IdempotencyExecutionAdapter(db);
@@ -159,7 +242,7 @@ export function registerStorefrontCheckoutPaymentRoutes(
             siteId: store.id,
             key: body.idempotencyKey,
             scope: 'storefront.checkout.order.create',
-            requestBody: { ...body, resolvedStoreId: store.id },
+            requestBody: { ...body, resolvedStoreId: store.id, buyerAccountId: buyerSession?.buyerAccountId ?? null },
             requestId: tenant.requestId,
         });
 
@@ -168,21 +251,6 @@ export function registerStorefrontCheckoutPaymentRoutes(
         }
 
         try {
-            const shippingAddress = {
-                name: body.customer.name,
-                line1: body.customer.address.address,
-                city: body.customer.address.city,
-                state: body.customer.address.state,
-                state_code: body.customer.address.stateCode,
-                zip: body.customer.address.pincode,
-                country: 'IN',
-                phone: body.customer.phone,
-                gstin: body.customer.gstin,
-            };
-
-            // V1 server-side shipping rate resolution — never trust client price.
-            const resolvedRate = await resolveShippingRate(db, store.id, body.shippingRateId ?? null);
-
             // T13/W0-W3 — server-side GST computation, recomputed entirely from DB rows this
             // request, never trusted from the client. Three legs, each read fresh:
             //   supplier state <- sites.gstin/gst_state_code (T13: was tax_registrations, a
@@ -358,9 +426,12 @@ export function registerStorefrontCheckoutPaymentRoutes(
 
             const orderCommand: CreateCheckoutOrderCommand & {
                 shipping_rate_id?: string | null;
+                expected_shipping_amount?: number | null;
                 tax_amount?: number | null;
                 place_of_supply_state?: string | null;
                 tax_lines?: Array<{ title: string; rate: number; amount: number; jurisdiction?: Record<string, unknown> }> | null;
+                buyer_account_id?: string | null;
+                buyer_session_epoch?: number | null;
             } = {
                 customer_name: body.customer.name,
                 customer_email: body.customer.email,
@@ -379,9 +450,12 @@ export function registerStorefrontCheckoutPaymentRoutes(
                 gift_card_code: body.giftCardCode,
                 idempotency_key: body.idempotencyKey,
                 shipping_rate_id: resolvedRate ? resolvedRate.id : (body.shippingRateId ?? null),
+                expected_shipping_amount: resolvedRate.amount,
                 tax_amount: computedTaxAmount,
                 place_of_supply_state: placeOfSupplyStateCode,
                 tax_lines: computedTaxLines,
+                buyer_account_id: buyerSession?.buyerAccountId ?? null,
+                buyer_session_epoch: buyerSession?.sessionEpoch ?? null,
             };
             const deferPostCommit = isCheckoutPostCommitDeferralEnabled(c.env);
             const order = await service.createOrder(orderCommand, tenant, { deferPostCommit }) as OrderRpcResult;

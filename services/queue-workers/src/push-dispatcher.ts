@@ -181,9 +181,9 @@ async function signJwt(
   header: JsonObject,
   payload: JsonObject,
   privateKeyPem: string,
-  algorithm: AlgorithmIdentifier | RsaHashedImportParams | EcKeyImportParams,
-  keyUsages: KeyUsage[],
-  signAlgorithm: AlgorithmIdentifier | RsaPssParams | EcdsaParams,
+  algorithm: Parameters<SubtleCrypto['importKey']>[2],
+  keyUsages: Parameters<SubtleCrypto['importKey']>[4],
+  signAlgorithm: Parameters<SubtleCrypto['sign']>[0],
 ): Promise<string> {
   const encodedHeader = base64UrlJson(header);
   const encodedPayload = base64UrlJson(payload);

@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../../app/store_context.dart';
 import '../../services/return_service.dart';
+import '../../services/two_factor_service.dart';
+import '../security/two_factor_screen.dart';
 import '../../theme/app_theme_colors.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
 
 class ReturnsScreen extends StatefulWidget {
@@ -20,6 +23,20 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
   String? _storeId;
   String? _error;
   late AppThemeColors colors;
+  Object? _observedContext;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.watch<StoreContext>();
+    final current = context.read<ReturnService>().requestContext;
+    if (_observedContext != null && current != _observedContext) {
+      _storeId = null;
+      _isLoading = false;
+      _isMutating = false;
+      _error = 'Account or store access changed. Reload returns.';
+    }
+    _observedContext = current;
+  }
 
   @override
   void initState() {
@@ -90,17 +107,36 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
   }
 
   Future<void> _completeRefund(MerchantReturn record) async {
-    final providerRefundId = await _showRefundReferenceDialog(record);
-    if (providerRefundId == null) return;
-
-    setState(() => _isMutating = true);
+    if (_isMutating) return;
     try {
+      final captured = context.read<TwoFactorService>().capture();
+      final pending = await context
+          .read<ReturnService>()
+          .pendingRefundCompletion(record.id, captured);
+      if (!mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      final reference = await _showRefundReferenceDialog(
+        record,
+        initial: pending?['provider_refund_id']?.toString(),
+      );
+      if (reference == null || !mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      final proof = await TwoFactorScreen.approve(context);
+      if (proof == null || !mounted) return;
+      context.read<TwoFactorService>().check(captured);
+      if (proof.context != captured) throw TwoFactorService.changed();
+      setState(() => _isMutating = true);
       await context.read<ReturnService>().completeRefund(
         record.id,
-        refundId: record.refundId.isEmpty ? null : record.refundId,
-        providerRefundId: providerRefundId,
+        approval: proof,
+        refundId:
+            pending?['refund_id']?.toString() ??
+            (record.refundId.isEmpty ? null : record.refundId),
+        providerRefundId: reference,
+        notes: pending?['notes']?.toString(),
       );
-      if (mounted) _showSnackBar('Refund completed');
+      if (mounted && context.read<TwoFactorService>().isCurrent(captured))
+        _showSnackBar('Refund completed');
     } catch (error) {
       if (mounted) _showSnackBar(error.toString(), isError: true);
     } finally {
@@ -420,8 +456,11 @@ class _ReturnsScreenState extends State<ReturnsScreen> {
     );
   }
 
-  Future<String?> _showRefundReferenceDialog(MerchantReturn record) {
-    final controller = TextEditingController();
+  Future<String?> _showRefundReferenceDialog(
+    MerchantReturn record, {
+    String? initial,
+  }) {
+    final controller = TextEditingController(text: initial);
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(

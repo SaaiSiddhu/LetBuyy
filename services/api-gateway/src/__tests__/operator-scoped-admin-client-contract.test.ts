@@ -24,12 +24,13 @@ import { fileURLToPath } from 'node:url';
 const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 type BoundedBy =
-    | { kind: 'schema-limit'; schemaFile: string; schemaLimitField: string }
+    | { kind: 'schema-limit'; schemaFile: string; schemaLimitField: string; queryLimitExpression?: string }
+    | { kind: 'fixed-query-bounds'; limits: number[]; note: string }
     | { kind: 'single-row-by-id'; note: string }
     | { kind: 'count-only'; note: string };
 
 interface CallSite {
-    requiredScope: string;
+    requiredScope: string | null;
     routeRegistration: string;
     boundedIn: { symbol: string } & BoundedBy;
 }
@@ -38,6 +39,21 @@ interface CallSite {
 // file or a call site is a deliberate security decision: re-read getSupabaseAdminForOperatorRead's
 // four documented conditions in lib/supabase.ts before doing so.
 const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
+    'routes/internal-console/money-reconciliation.ts': {
+        why: 'The live-session payout:view gate permits the platform money-break queue. The client is used only for this paginated projection read, not mutations or ledger writes; action authority separately requires money:reconcile and independent consent.',
+        calls: [{ requiredScope: 'payout:view', routeRegistration: "router.get('/reconciliation', consolePermission('payout:view')",
+            boundedIn: { symbol: 'money reconciliation queue', kind: 'schema-limit', schemaFile: 'routes/internal-console/money-reconciliation.ts',
+                schemaLimitField: 'limit: z.coerce.number().int().min(1).max(100).default(25)', queryLimitExpression: '.range(from, to)' } }],
+    },
+    'routes/internal-console.ts': {
+        why: 'Merchant 360 risk records are keyed by platform entity_type/entity_id and may have no site_id. The real Console cookie/durable-session risk:view gate and merchant:pii check precede the single risk-only client; all other merchant queries retain the ordinary tenant guard.',
+        calls: [{
+            requiredScope: 'risk:view',
+            routeRegistration: "router.get('/merchants/:id/overview', consolePermission('risk:view')",
+            boundedIn: { symbol: 'Merchant 360 risk record', kind: 'fixed-query-bounds', limits: [1],
+                note: 'riskDb is used only for risk_scores filtered by entity_type=site and exact resolved site.id, ordered and capped at one; the other guarded client is unchanged' },
+        }],
+    },
     'routes/operations/marketplace-listings.ts': {
         why: 'the operator moderation queue lists pending listings across every site by design -- narrowing to one site_id would hide every other site\'s queue from review, not make it safer',
         calls: [
@@ -71,6 +87,66 @@ const ALLOWED_CALLERS: Record<string, { why: string; calls: CallSite[] }> = {
                 routeRegistration: "router.get('/tickets/:id', requirePermission('support:view')",
                 boundedIn: { symbol: 'fetchTicket via GET /tickets/:id', kind: 'single-row-by-id', note: 'fetchTicket queries .eq(\'id\', ticketId).maybeSingle() -- id is the primary key, so this can never return or touch more than the one named row regardless of tenant' },
             },
+        ],
+    },
+    'routes/operations.ts': {
+        why: 'the outbox and dead-letter queues remain super-admin-only through this router’s explicit ops/super-admin middleware; each platform-wide read is bounded by the shared 1..200 list schema',
+        calls: [
+            {
+                requiredScope: null,
+                routeRegistration: "router.get('/outbox', async (c) =>",
+                boundedIn: {
+                    symbol: 'outbox list',
+                    kind: 'schema-limit',
+                    schemaFile: 'packages/event-core/src/index.ts',
+                    schemaLimitField: 'limit: z.coerce.number().int().min(1).max(200).default(50)',
+                    queryLimitExpression: '.limit(query.limit)',
+                },
+            },
+            {
+                requiredScope: null,
+                routeRegistration: "router.get('/outbox/dead-letters', async (c) =>",
+                boundedIn: {
+                    symbol: 'dead-letter list',
+                    kind: 'schema-limit',
+                    schemaFile: 'packages/event-core/src/index.ts',
+                    schemaLimitField: 'limit: z.coerce.number().int().min(1).max(200).default(50)',
+                    queryLimitExpression: '.limit(query.limit)',
+                },
+            },
+        ],
+    },
+    'routes/operations/risk.ts': {
+        why: 'risk overview is a bounded cross-site operator dashboard; its exact route requires risk:view and remains behind the router super-admin gate',
+        calls: [
+            {
+                requiredScope: 'risk:view',
+                routeRegistration: "router.get('/overview', requirePermission('risk:view')",
+                boundedIn: {
+                    symbol: 'risk overview',
+                    kind: 'fixed-query-bounds',
+                    limits: [25, 500, 15],
+                    note: 'all four dashboard reads have fixed limits: 25 scores, 1 count-only query, 500 signals and 15 recent actions',
+                },
+            },
+        ],
+    },
+    'routes/operations/trust-safety.ts': {
+        why: 'trust-and-safety reads/actions require actual active platform-operator eligibility and exact per-route scopes. The private Console facade also binds its durable MFA session; public legacy auth remains independently verified.',
+        calls: [
+            {
+                requiredScope: 'ts:view',
+                routeRegistration: "router.get('/overview', requirePermission('ts:view')",
+                boundedIn: {
+                    symbol: 'trust-and-safety overview',
+                    kind: 'fixed-query-bounds',
+                    limits: [25],
+                    note: 'all four dashboard reads have a fixed 25-row cap',
+                },
+            },
+            { requiredScope:'ts:view',routeRegistration:"router.get('/cases/:id', requirePermission('ts:view')",
+              boundedIn:{symbol:'trust case detail',kind:'fixed-query-bounds',limits:[100,25],
+                note:'one case primary key and named case-owned collections capped100 events/evidence and25 appeals/takedowns'} },
         ],
     },
 };
@@ -136,18 +212,26 @@ test('every allowlisted call site is gated by requirePermission for its declared
             // Raw (un-stripped) source here, deliberately: the registration text this checks
             // INCLUDES the quoted scope literal, which code() would blank out along with every
             // other string.
+            const routeIndex = rawBody.indexOf(call.routeRegistration);
             assert.ok(
-                rawBody.includes(call.routeRegistration),
+                routeIndex >= 0,
                 `${rel} must register its route exactly as documented for ${call.boundedIn.symbol} (${JSON.stringify(call.routeRegistration)}), so this test is actually looking at the gated handler`,
             );
-            assert.match(
-                call.routeRegistration,
-                // Matches both this codebase's two permission-check spellings: `deps.permission(...)`
-                // (marketplace-listings.ts) and `requirePermission(...)` (operations/support.ts) --
-                // [Pp] is the only case-sensitivity needed since both end in "...ermission(".
-                new RegExp(`[Pp]ermission\\(\\s*['"]${call.requiredScope}['"]\\s*\\)`),
-                `${rel}'s route registration for ${call.boundedIn.symbol} must call a permission check for '${call.requiredScope}'`,
-            );
+            if (call.requiredScope) {
+                assert.match(
+                    call.routeRegistration,
+                    // Matches both this codebase's two permission-check spellings: `deps.permission(...)`
+                    // (marketplace-listings.ts) and `requirePermission(...)` (operations/support.ts).
+                    new RegExp(`[Pp]ermission\\(\\s*['"]${call.requiredScope}['"]\\s*\\)`),
+                    `${rel}'s route registration for ${call.boundedIn.symbol} must call a permission check for '${call.requiredScope}'`,
+                );
+            } else {
+                const routerGate = "router.use('*', requireRoleCategory('ops'), requireSuperAdmin);";
+                assert.ok(
+                    rawBody.indexOf(routerGate) >= 0 && rawBody.indexOf(routerGate) < routeIndex,
+                    `${rel}'s ${call.boundedIn.symbol} must be registered after the router-level ops/super-admin gate`,
+                );
+            }
         }
     }
 });
@@ -159,12 +243,19 @@ test('every allowlisted cross-site read/write is bounded -- by an enforced page-
             if (boundedIn.kind === 'schema-limit') {
                 const schemaFile: string = boundedIn.schemaFile;
                 const schemaLimitField: string = boundedIn.schemaLimitField;
-                const schemaHost = files.find((f) => f.rel === schemaFile);
-                assert.ok(schemaHost, `${schemaFile} should exist`);
+                const schemaHost = files.find((f) => f.rel === schemaFile)
+                    || { body: readFileSync(join(SRC, '../../..', schemaFile), 'utf8') };
                 assert.ok(
-                    code(schemaHost!.body).includes(schemaLimitField),
+                    code(schemaHost.body).includes(schemaLimitField),
                     `${schemaFile} must cap the page size exactly as documented for ${rel}'s ${boundedIn.symbol} -- an uncapped page size on a cross-site query can enumerate the whole table`,
                 );
+                if (boundedIn.queryLimitExpression) {
+                    const rawBody = files.find((f) => f.rel === rel)!.body;
+                    const start = rawBody.indexOf(call.routeRegistration);
+                    const nextRoute = rawBody.indexOf('\nrouter.', start + call.routeRegistration.length);
+                    const handler = rawBody.slice(start, nextRoute === -1 ? undefined : nextRoute);
+                    assert.ok(handler.includes(boundedIn.queryLimitExpression), `${rel}'s ${boundedIn.symbol} must apply its validated list limit to the database query`);
+                }
             } else if (boundedIn.kind === 'single-row-by-id' || boundedIn.kind === 'count-only') {
                 // These two kinds are bounded by construction (a primary-key equality predicate can
                 // only ever match its one row; a head:true count query returns no rows at all), not
@@ -172,6 +263,16 @@ test('every allowlisted cross-site read/write is bounded -- by an enforced page-
                 // reviewed justification. Nothing further to assert here without re-implementing the
                 // query itself; this branch exists so a THIRD, unbounded kind cannot be added
                 // silently (the exhaustiveness check below catches that).
+                assert.ok(boundedIn.note.length > 0, `${rel}'s ${boundedIn.symbol} must state its bounding justification`);
+            } else if (boundedIn.kind === 'fixed-query-bounds') {
+                const rawBody = files.find((f) => f.rel === rel)!.body;
+                const start = rawBody.indexOf(call.routeRegistration);
+                assert.notEqual(start, -1, `${rel}'s bounded handler must still be registered behind its exact permission`);
+                const nextRoute = rawBody.indexOf('\nrouter.', start + call.routeRegistration.length);
+                const handler = rawBody.slice(start, nextRoute === -1 ? undefined : nextRoute);
+                for (const limit of boundedIn.limits) {
+                    assert.match(handler, new RegExp(`\\.limit\\(${limit}\\)`), `${rel}'s ${boundedIn.symbol} must retain fixed .limit(${limit}) bounding`);
+                }
                 assert.ok(boundedIn.note.length > 0, `${rel}'s ${boundedIn.symbol} must state its bounding justification`);
             } else {
                 assert.fail(`Unknown boundedIn.kind for ${rel}'s ${(boundedIn as { symbol: string }).symbol} -- add a case above, do not fall through unchecked`);

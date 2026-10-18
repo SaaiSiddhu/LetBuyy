@@ -78,10 +78,10 @@ export const BUYER_EXPORT_CONTRACT: readonly ExportSectionSpec[] = [
   {
     section: 'authored_requests',
     fields: [
-      { field: 'ticket_reference', canonicalSource: 'support_tickets.ticket_ref', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'topic', canonicalSource: 'support_tickets.topic', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'created_at', canonicalSource: 'support_tickets.created_at', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
-      { field: 'authored_messages', canonicalSource: 'ticket_messages.body', ownershipPredicate: 'ticket_messages.ticket_id IN (buyer\'s own tickets) AND ticket_messages.author_type = requester', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'ticket_reference', canonicalSource: 'support_tickets.ticket_ref', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer AND support_tickets.deleted_at IS NULL', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'topic', canonicalSource: 'support_tickets.topic', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer AND support_tickets.deleted_at IS NULL', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'created_at', canonicalSource: 'support_tickets.created_at', ownershipPredicate: 'support_tickets.requester_user_id = :buyerAccountId AND support_tickets.requester_type = customer AND support_tickets.deleted_at IS NULL', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
+      { field: 'authored_messages', canonicalSource: 'ticket_messages.body', ownershipPredicate: 'ticket_messages.ticket_id IN (buyer\'s own, non-deleted tickets) AND ticket_messages.author_type = requester AND ticket_messages.deleted_at IS NULL', transformation: 'verbatim', nullBehavior: 'omit_key', since: V1 },
       { field: 'agent_notes', canonicalSource: 'ticket_messages.body (author_type=agent, visibility=internal)', ownershipPredicate: 'n/a', transformation: 'omitted', rationale: 'the platform\'s/merchant\'s own internal operational content, not the buyer\'s authored data', nullBehavior: 'omit_key', since: V1 },
     ],
   },

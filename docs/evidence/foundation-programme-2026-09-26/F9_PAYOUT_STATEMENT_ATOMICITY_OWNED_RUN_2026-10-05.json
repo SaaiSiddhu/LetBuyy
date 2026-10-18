@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/payout-statement-replay.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "12f331d46017",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "wallet insert failure rolls statement, wallet and ledger writes back",
+    "fee journal failure rolls statement and wallet writes back",
+    "exact retry creates one statement, matching pending wallet credit and balanced fee journal",
+    "concurrent different-key claims for one source order produce one winner and one conflict",
+    "settlement payout wallet failure rolls back the payout statement transaction",
+    "same settlement request resumes payout instruction, payout item and outbox effects",
+    "exact settlement replay keeps one payout instruction, payout item and outbox event per key",
+    "changed settlement metadata under an existing key is rejected",
+    "migration 295 rollback removes the RPC and reapply recreates it"
+  ],
+  "cleanup": "runner completed without cleanup warnings; disposable database resources removed",
+  "externalProviderOrLiveMoney": false
+}

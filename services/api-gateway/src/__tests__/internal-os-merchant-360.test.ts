@@ -48,11 +48,15 @@ test('merchant 360 gateway routes aggregate context and audit sensitive reads/ac
     assert.match(routeSource, /action:\s*'merchant\.view'/);
     assert.match(routeSource, /action:\s*'merchant\.impersonation\.start'/);
     assert.match(routeSource, /action:\s*'merchant\.impersonation\.end'/);
-    assert.match(routeSource, /'merchant\.suspend'/);
-    assert.match(routeSource, /'merchant\.restore'/);
+    const protocol = repositorySource('database/supabase/migrations/315_session_bound_sensitive_approvals.sql');
+    assert.match(protocol, /'merchant\.suspend'/);
+    assert.match(protocol, /'merchant\.restore'/);
     assert.match(routeSource, /validateSensitiveReason/);
-    assert.match(routeSource, /checkSegregationOfDuty/);
-    assert.match(routeSource, /targetAction:\s*'merchant\.suspend'/);
+    assert.match(routeSource, /execute_console_merchant_moderation_v1/);
+    assert.match(routeSource, /requireConsolePermission/);
+    assert.match(protocol, /approver_session_id/);
+    assert.match(protocol, /INDEPENDENT_APPROVAL_REQUIRED/);
+    assert.doesNotMatch(routeSource, /checkSegregationOfDuty/);
     // S1 (SEC-R7): the impersonation token is a CSPRNG-generated opaque
     // credential, not an AUTH_SECRET-signed HMAC -- the signature was never
     // verified anywhere, so a random token gives the same real guarantee
@@ -90,8 +94,9 @@ test('merchant 360 console surfaces replace placeholders with real links and act
     assert.match(detailPageSource, /\/internal\/console\/merchants\/\$\{id\}\/overview/);
     assert.match(detailPageSource, /startMerchantImpersonation/);
     assert.match(detailPageSource, /endMerchantImpersonation/);
-    assert.match(detailPageSource, /moderateMerchant/);
-    assert.match(detailPageSource, /secondary_approver_id/);
+    assert.match(detailPageSource, /ConsoleApprovalForm action="\/api\/approvals\/request"/);
+    assert.match(detailPageSource, /request_key/);
+    assert.doesNotMatch(detailPageSource, /secondary_approver_id/);
     assert.match(detailPageSource, /No support tickets are linked to this merchant/);
     assert.doesNotMatch(detailPageSource, /SkipBackendPanel/);
     assert.match(storesPageSource, /href=\{`\/merchants\/\$\{row\.id\}`\}/);

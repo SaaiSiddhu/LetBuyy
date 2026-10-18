@@ -20,10 +20,11 @@ import {
     type LiquidCustomerDrop,
     type LiquidCustomerOrderDetail,
 } from '@/lib/customer-drop';
-import { getStorefrontBuyerAccountDrop, getStorefrontBuyerOrderDrop, type LiquidBuyerDrop } from '@/lib/buyer-order-drop';
+import { getStorefrontBuyerAccountDrop, getStorefrontBuyerOrderDrop, getStorefrontBuyerWishlistDrop, type LiquidBuyerDrop, type LiquidBuyerWishlistDrop } from '@/lib/buyer-order-drop';
 import { ProductService } from '@/lib/product-service';
 import { ContentService } from '@/lib/content-service';
 import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
+import { StorefrontProductOriginFilter } from './product-origin-filter';
 
 function RenderSectionList({
     store,
@@ -431,6 +432,7 @@ async function buildLiquidCommerceContext({
     sectionData,
     customer,
     buyer,
+    buyerWishlist,
     buyerUnavailable,
     orderDetail,
     page,
@@ -440,6 +442,7 @@ async function buildLiquidCommerceContext({
     sectionData: Map<string, SectionRenderData>;
     customer: LiquidCustomerDrop | null;
     buyer?: LiquidBuyerDrop | null;
+    buyerWishlist: LiquidBuyerWishlistDrop;
     buyerUnavailable?: boolean;
     orderDetail?: LiquidCustomerOrderDetail | null;
     page?: Record<string, unknown> | null;
@@ -453,7 +456,7 @@ async function buildLiquidCommerceContext({
         product.rating = reviewData.rating || product.rating || 0;
         product.review_count = reviewData.reviewCount || product.review_count || 0;
     }
-    const wishlistSet = new Set(customer?.wishlist ?? []);
+    const wishlistSet = new Set(customer?.wishlist ?? (buyerWishlist.linked ? buyerWishlist.productIds : []));
     for (const entry of products) {
         entry.in_wishlist = wishlistSet.has(String(entry.id));
     }
@@ -487,12 +490,19 @@ async function buildLiquidCommerceContext({
     let searchDrop: Record<string, unknown> | null = null;
     const routePath = plan.route.path ?? '';
     const searchTermMatch = routePath.match(/[?&]search=([^&]*)/);
-    const searchTerm = searchTermMatch ? decodeURIComponent(searchTermMatch[1] || '') : '';
+    const searchTerm = plan.route.searchParams?.search
+        || (searchTermMatch ? decodeURIComponent(searchTermMatch[1] || '') : '');
     if ((plan.route.type === 'search' || searchTerm) && searchTerm.trim()) {
         try {
             const searchResults = await createStorefrontApiClient(
                 storefrontReadInit(30, [`storefront:${plan.route.subdomain}:search`]),
-            ).storefront.listProducts(plan.route.subdomain, { search: searchTerm.trim(), limit: 50 });
+            ).storefront.listProducts(plan.route.subdomain, {
+                search: searchTerm.trim(),
+                limit: 50,
+                ...(plan.route.searchParams?.category ? { category: plan.route.searchParams.category } : {}),
+                ...(plan.route.searchParams?.country_of_origin ? { country_of_origin: plan.route.searchParams.country_of_origin } : {}),
+                ...(plan.route.searchParams?.page ? { page: Number(plan.route.searchParams.page) || 1 } : {}),
+            });
             const resultProducts = (searchResults?.data ?? []).map((p) => productToLiquidDrop(p as unknown as SectionRenderData['product'], basePath)).filter(Boolean);
             searchDrop = {
                 terms: searchTerm.trim(),
@@ -584,6 +594,7 @@ async function buildLiquidCommerceContext({
         cart: collectLiquidCart(sectionData, plan),
         customer,
         buyer,
+        buyer_wishlist: buyerWishlist,
         buyer_unavailable: buyerUnavailable === true,
         order: orderDetail ?? null,
         search: searchDrop,
@@ -619,14 +630,22 @@ async function renderLiquidPlan({
     const buyerAccountRoute = plan.route.type === 'customer_account'
         || plan.route.type === 'customer_addresses'
         || plan.route.type === 'customer_settings';
+    const buyerWishlistRoute = plan.route.type === 'customer_wishlist'
+        || plan.route.type === 'index'
+        || plan.route.type === 'product'
+        || plan.route.type === 'collection'
+        || plan.route.type === 'search';
     // Store-customer identity and LetBuyy buyer identity are separate principals.
     // Canonical orders come only from the verified buyer_order_links surface.
     let customer = orderRoute ? null : await getStorefrontCustomerDrop(store.id);
     const orderId = plan.route.type === 'customer_order' ? plan.route.path.split('/').filter(Boolean).at(-1) : undefined;
     const buyerOrderView = orderRoute ? await getStorefrontBuyerOrderDrop(store.id, orderId, plan.route.searchParams?.cursor) : null;
     const buyerAccountView = buyerAccountRoute ? await getStorefrontBuyerAccountDrop(store.id) : null;
+    let buyerWishlist = buyerWishlistRoute
+        ? await getStorefrontBuyerWishlistDrop(store.id)
+        : { authenticated: false, buyerId: null, linked: false, unavailable: false, storeAccountUnavailable: false, productIds: [], products: [] };
     const buyer = buyerOrderView?.buyer ?? buyerAccountView?.buyer ?? null;
-    if (buyer) customer = null;
+    if (buyer || buyerWishlist.authenticated) customer = null;
     const buyerUnavailable = buyerOrderView?.unavailable ?? buyerAccountView?.unavailable ?? false;
     const orderDetail = buyerOrderView?.order ?? null;
 
@@ -634,6 +653,16 @@ async function renderLiquidPlan({
     if (plan.route.type === 'customer_wishlist' && customer && customer.wishlist.length > 0) {
         const enriched = await ProductService.getProductsByIds(customer.wishlist, plan.route.subdomain);
         customer.wishlist_products = enriched.map((p) => productToLiquidDrop(p, `/store/${plan.route.subdomain}`));
+    }
+    if (plan.route.type === 'customer_wishlist' && buyerWishlist.linked && buyerWishlist.productIds.length > 0) {
+        const enriched = await ProductService.getProductsByIds(buyerWishlist.productIds, plan.route.subdomain);
+        buyerWishlist = {
+            ...buyerWishlist,
+            products: enriched.flatMap((p) => {
+                const drop = productToLiquidDrop(p, `/store/${plan.route.subdomain}`);
+                return drop ? [drop] : [];
+            }),
+        };
     }
 
     const renderer = createThemeRenderer('liquid');
@@ -661,7 +690,7 @@ async function renderLiquidPlan({
             liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
             liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
             liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
-            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerUnavailable, orderDetail, page: liquidPage }),
+            liquidContext: await buildLiquidCommerceContext({ store, plan, sectionData, customer, buyer, buyerWishlist, buyerUnavailable, orderDetail, page: liquidPage }),
         });
 
         if (result.status !== 'rendered' || !result.liquid) return null;
@@ -725,13 +754,16 @@ export default async function StorefrontCompositionEngine({
 
     if (liquidResult) {
         return (
-            <LiquidRenderedHtml
-                html={liquidResult.html}
-                headStyleText={liquidResult.headStyleText}
-                editorMode={editorMode}
-                basePath={`/store/${plan.route.subdomain}`}
-                storeId={store.id}
-            />
+            <>
+                <StorefrontProductOriginFilter route={plan.route} editorMode={editorMode} />
+                <LiquidRenderedHtml
+                    html={liquidResult.html}
+                    headStyleText={liquidResult.headStyleText}
+                    editorMode={editorMode}
+                    basePath={`/store/${plan.route.subdomain}`}
+                    storeId={store.id}
+                />
+            </>
         );
     }
 
@@ -763,6 +795,7 @@ export default async function StorefrontCompositionEngine({
                     editorMode={editorMode}
                 />
                 <main className="flex-grow">
+                    <StorefrontProductOriginFilter route={plan.route} editorMode={editorMode} />
                     <RenderSectionList
                         store={store}
                         plan={plan}
@@ -783,13 +816,16 @@ export default async function StorefrontCompositionEngine({
     }
 
     return (
-        <RenderSectionList
-            store={store}
-            plan={plan}
-            sections={plan.template.sections}
-            sectionData={sectionData}
-            editorMode={editorMode}
-        />
+        <>
+            <StorefrontProductOriginFilter route={plan.route} editorMode={editorMode} />
+            <RenderSectionList
+                store={store}
+                plan={plan}
+                sections={plan.template.sections}
+                sectionData={sectionData}
+                editorMode={editorMode}
+            />
+        </>
     );
 }
 

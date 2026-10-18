@@ -113,6 +113,25 @@ class ProductService extends ChangeNotifier {
     }
   }
 
+  /// Edit/reload must use a fresh version and complete relational option/variant identity.
+  /// A cached detail remains useful for viewing, but cannot confirm conflict recovery.
+  Future<ProductContract> fetchProductForEdit(String id, String storeId) async {
+    final product = ProductContract.fromJson(
+      await _api.products.get(id, options: ApiRequestOptions(storeId: storeId)),
+    );
+    if (product.id != id ||
+        product.storeId != storeId ||
+        product.version == null) {
+      throw const ApiException(
+        message:
+            'The current product could not be loaded. Keep your draft and retry.',
+        statusCode: 502,
+        code: 'PRODUCT_EDIT_INVALID_RESPONSE',
+      );
+    }
+    return product;
+  }
+
   // ── Create ───────────────────────────────────────────────
 
   /// Create a new product.
@@ -134,6 +153,8 @@ class ProductService extends ChangeNotifier {
     bool isFeatured = false,
     String? productType,
     String? vendor,
+    String? countryOfOrigin,
+    String? importerDetails,
     List<String>? tags,
     Map<String, dynamic>? metadata,
     List<Map<String, dynamic>>? variants,
@@ -159,6 +180,10 @@ class ProductService extends ChangeNotifier {
         if (productType != null && productType.trim().isNotEmpty)
           'product_type': productType.trim(),
         if (vendor != null && vendor.trim().isNotEmpty) 'vendor': vendor.trim(),
+        if (countryOfOrigin != null && countryOfOrigin.trim().isNotEmpty)
+          'country_of_origin': countryOfOrigin.trim(),
+        if (importerDetails != null && importerDetails.trim().isNotEmpty)
+          'importer_details': importerDetails.trim(),
         'stock': stock,
         'is_active': isActive,
         'is_featured': isFeatured,
@@ -203,11 +228,30 @@ class ProductService extends ChangeNotifier {
   /// Update product fields.
   Future<Map<String, dynamic>> updateProduct(
     String id,
-    Map<String, dynamic> fields,
-  ) async {
+    Map<String, dynamic> fields, {
+    required String storeId,
+    required int version,
+    required String idempotencyKey,
+  }) async {
     final contract = ProductContract.fromJson(
-      await _api.products.update(id, fields),
+      await _api.products.update(
+        id,
+        fields,
+        version: version,
+        idempotencyKey: idempotencyKey,
+        options: ApiRequestOptions(storeId: storeId),
+      ),
     );
+    if (contract.id != id ||
+        contract.storeId != storeId ||
+        contract.version == null) {
+      throw const ApiException(
+        message:
+            'The save response could not be confirmed. Retry the same save.',
+        statusCode: 502,
+        code: 'PRODUCT_EDIT_INVALID_RESPONSE',
+      );
+    }
     final updated = contract.toJson();
     final contractIdx = _productContracts.indexWhere((p) => p.id == id);
     if (contractIdx != -1) _productContracts[contractIdx] = contract;

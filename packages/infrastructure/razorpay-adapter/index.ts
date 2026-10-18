@@ -34,6 +34,22 @@ export interface RazorpayOrderCreateResult {
   error?: { description?: string };
 }
 
+export interface RazorpayOrderRecord {
+  id?: string;
+  entity?: string;
+  amount?: number;
+  currency?: string;
+  receipt?: string | null;
+  status?: string;
+  notes?: Record<string, unknown>;
+}
+
+export interface RazorpayOrderSearchResult {
+  items?: RazorpayOrderRecord[];
+  count?: number;
+  error?: { description?: string };
+}
+
 export interface RazorpaySubscriptionAddon {
   item: {
     name: string;
@@ -111,6 +127,32 @@ export async function createRazorpayOrder(
     return {
       ...data,
       error: data.error || { description: `Razorpay order create failed with ${response.status}` },
+    };
+  }
+  return data;
+}
+
+/**
+ * Look up the provider order for an exact receipt after an ambiguous create response.
+ * The caller must still validate tenant/order metadata and amount before binding it.
+ */
+export async function fetchRazorpayOrdersByReceipt(
+  credentials: RazorpayCredentials,
+  receipt: string,
+  options: { fetch?: RazorpayFetch } = {},
+): Promise<RazorpayOrderSearchResult> {
+  const fetchImpl = options.fetch ?? fetch;
+  const query = new URLSearchParams({ receipt, count: '2' });
+  const response = await fetchImpl(`https://api.razorpay.com/v1/orders?${query.toString()}`, {
+    method: 'GET',
+    headers: { Authorization: basicAuth(credentials) },
+  });
+
+  const data = await response.json().catch(() => ({})) as RazorpayOrderSearchResult;
+  if (!response.ok) {
+    return {
+      ...data,
+      error: data.error || { description: `Razorpay order lookup failed with ${response.status}` },
     };
   }
   return data;
@@ -410,18 +452,19 @@ export function createRazorpayPaymentProvider(
           notes: metadataNotes(input.metadata),
         },
       );
-      const refunded = refund.status === 'processed' || refund.status === 'created';
+      const refunded = refund.status === 'processed';
+      const failed = refund.status === 'failed';
 
       return {
         provider: 'razorpay',
-        status: refunded ? 'refunded' : 'failed',
+        status: refunded ? 'refunded' : failed ? 'failed' : 'pending',
         refundedAmount: inrMoney(refund.amount ?? amount.amountMinor),
         references: {
           providerPaymentId: refund.payment_id || input.paymentId,
           providerRefundId: refund.id,
         },
-        failureCode: refunded ? undefined : refund.error?.code || 'RAZORPAY_REFUND_FAILED',
-        failureMessage: refunded ? undefined : refund.error?.description || 'Razorpay refund failed',
+        failureCode: refunded || !failed ? undefined : refund.error?.code || 'RAZORPAY_REFUND_FAILED',
+        failureMessage: refunded || !failed ? undefined : refund.error?.description || 'Razorpay refund failed',
         metadata: input.metadata,
       };
     },
@@ -441,9 +484,10 @@ export function createRazorpayPaymentProvider(
       const verified = timingSafeEqual(expected, signature);
       const payload = jsonPayload(input.rawBody);
       const payment = asRecord(asRecord(asRecord(payload.payload).payment).entity);
+      const refund = asRecord(asRecord(asRecord(payload.payload).refund).entity);
       const order = asRecord(asRecord(asRecord(payload.payload).order).entity);
       const eventType = textValue(payload.event) || 'unknown';
-      const eventId = textValue(payload.id) || `${eventType}:${textValue(payment.id) || textValue(order.id) || input.receivedAt}`;
+      const eventId = textValue(payload.id) || `${eventType}:${textValue(refund.id) || textValue(payment.id) || textValue(order.id) || input.receivedAt}`;
 
       return {
         provider: 'razorpay',
@@ -460,6 +504,7 @@ export function createRazorpayPaymentProvider(
               providerEventId: eventId,
               providerOrderId: textValue(payment.order_id) || textValue(order.id),
               providerPaymentId: textValue(payment.id),
+              providerRefundId: textValue(refund.id),
             },
             payload,
           }

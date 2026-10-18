@@ -1,29 +1,9 @@
-// GET /api/customer/check — Check if customer exists and has a password
-import { NextRequest, NextResponse } from 'next/server';
-import { createStorefrontApiClient } from '@/lib/api/client';
+// GET /api/customer/check — retired because public account-existence checks leak customer data.
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const email = searchParams.get('email');
-        const storeId = searchParams.get('storeId');
-
-        if (!email || !storeId) {
-            return NextResponse.json(
-                { error: 'Email and storeId are required' },
-                { status: 400 }
-            );
-        }
-
-        const result = await createStorefrontApiClient()
-            .storefront
-            .customerStatus({ store_id: storeId, email });
-        return NextResponse.json(result);
-    } catch (error) {
-        console.error('[API] /customer/check error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
-    }
+export async function GET() {
+    return NextResponse.json(
+        { error: 'Account lookup is unavailable. Continue with LetBuyy or choose existing store-account sign-in.' },
+        { status: 410, headers: { 'Cache-Control': 'no-store' } },
+    );
 }

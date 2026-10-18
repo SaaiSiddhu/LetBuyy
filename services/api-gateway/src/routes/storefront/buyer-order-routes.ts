@@ -36,7 +36,7 @@ export interface BuyerOrderSummaryRow {
 }
 
 export interface BuyerOrderRoutesDeps {
-    loadBuyerOrderDetail: (c: AppContext, buyerAccountId: string, siteId: string, orderId: string) => Promise<{ data: Record<string, unknown> | null; error: unknown }>;
+    loadBuyerOrderDetail: (c: AppContext, buyerAccountId: string, siteId: string | undefined, orderId: string) => Promise<{ data: Record<string, unknown> | null; error: unknown }>;
     listBuyerOrders: (
         c: AppContext,
         buyerAccountId: string,
@@ -50,16 +50,24 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 export async function loadBuyerOrderDetailFromDatabase(
-    db: SupabaseClient, buyerAccountId: string, siteId: string, orderId: string, relationalItems: boolean,
+    db: SupabaseClient, buyerAccountId: string, siteId: string | undefined, orderId: string, relationalItems: boolean,
 ): Promise<{ data: Record<string, unknown> | null; error: unknown }> {
-    const link = await db.from('buyer_order_links').select('order_id')
-        .eq('buyer_account_id', buyerAccountId).eq('site_id', siteId).eq('order_id', orderId).maybeSingle();
+    const ownedLink = db.from('buyer_order_links').select('order_id,site_id')
+        .eq('buyer_account_id', buyerAccountId).eq('order_id', orderId);
+    // Storefront credentials remain bound to their signed site. A platform buyer
+    // has cross-store scope, but its site must come from this exact owned link.
+    if (siteId !== undefined) ownedLink.eq('site_id', siteId);
+    const link = await ownedLink.maybeSingle();
     if (link.error || !link.data) return { data: null, error: link.error };
+    const linkedSiteId = link.data.site_id;
+    if (typeof linkedSiteId !== 'string' || !UUID.test(linkedSiteId)) {
+        return { data: null, error: new Error('Order ownership link is unavailable') };
+    }
     // Same view fields used by the existing storefront detail renderer; no
     // payment provider metadata, internal notes or customer-email authorization.
     const columns = 'id,site_id,store_id,order_number,status,total,tax,gst_invoice_number,created_at,subtotal,discount,shipping_cost,payment_method,payment_status,tracking_number,carrier,shipping_address,currency';
     return db.from('orders').select(relationalItems ? columns : `${columns},items`)
-        .eq('id', orderId).eq('site_id', siteId).maybeSingle();
+        .eq('id', orderId).eq('site_id', linkedSiteId).maybeSingle();
 }
 
 /// The actual query, shared by production wiring (buyer-realm-wiring.ts, given the request's real
@@ -165,6 +173,17 @@ export function registerBuyerOrderRoutes(
         const session = getBuyerSession(c);
         if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
         return readOrders(c, session.buyerAccountId);
+    });
+
+    router.get('/buyer/orders/:orderId', requireBuyerSession, async (c) => {
+        const session = getBuyerSession(c);
+        if (!session) return c.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'A buyer session is required.' } }, 401);
+        const orderId = c.req.param('orderId');
+        if (!UUID.test(orderId)) return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order id.' } }, 400);
+        const { data, error } = await loadBuyerOrderDetail(c, session.buyerAccountId, undefined, orderId);
+        if (error) return c.json(dbFailureBody(), 500);
+        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Order not found.' } }, 404);
+        return c.json(success({ order: data }));
     });
 
     // A storefront's token is authorized only at its signed site, with the same

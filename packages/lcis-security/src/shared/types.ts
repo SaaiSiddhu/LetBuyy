@@ -83,8 +83,11 @@ export interface SecretPosture {
 }
 
 export interface TokenPosture {
-  /** The two constitutional issuers: customer HS256, merchant ES256. */
-  readonly issuer: 'customer-session' | 'merchant-identity' | 'step-up' | 'queue-envelope';
+  /**
+   * Identity/token-signature family. `customer-session` is a transitional legacy
+   * HS256 bridge; step-up and queue-envelope are signatures, not user issuers.
+   */
+  readonly issuer: 'customer-session' | 'identity-platform' | 'step-up' | 'queue-envelope';
   readonly algorithm: string;
   readonly requiredEnv: readonly string[];
   readonly present: boolean;

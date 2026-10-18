@@ -36,6 +36,8 @@ export interface ResendEmailInput {
    * header, hitting Reply answers the robot. With it, it answers the customer.
    */
   replyTo?: string | string[];
+  /** Stable provider key for ambiguous delivery retries; keep the message unchanged. */
+  idempotencyKey?: string;
 }
 
 export function getResendClient(apiKey = readProcessEnv('RESEND_API_KEY')): Resend {
@@ -64,7 +66,7 @@ export async function sendResendEmail(input: ResendEmailInput): Promise<{ succes
     ...(input.replyTo ? { replyTo: input.replyTo } : {}),
   } as Parameters<Resend['emails']['send']>[0];
 
-  const response = await getResendClient(input.apiKey).emails.send(message) as {
+  const response = await getResendClient(input.apiKey).emails.send(message, input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : undefined) as {
     data?: { id?: string | null } | null;
     error?: { message?: string | null } | null;
   };

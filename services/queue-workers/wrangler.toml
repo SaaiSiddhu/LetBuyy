@@ -14,7 +14,7 @@ head_sampling_rate = 0.1
 invocation_logs = true
 
 [triggers]
-crons = ["17 */6 * * *"]
+crons = ["17 */6 * * *", "* * * * *"]
 
 [vars]
 ENVIRONMENT = "staging"
@@ -120,7 +120,7 @@ head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.staging.triggers]
-crons = ["17 */6 * * *"]
+crons = ["17 */6 * * *", "* * * * *"]
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -234,7 +234,7 @@ head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.production.triggers]
-crons = ["17 */6 * * *"]
+crons = ["17 */6 * * *", "* * * * *"]
 
 [env.production.vars]
 ENVIRONMENT = "production"

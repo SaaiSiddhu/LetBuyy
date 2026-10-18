@@ -537,3 +537,20 @@ Each block is the whole of one control: the file, and the lines removed (`-`) an
 + export const SupportTicketTopicSchema = z.enum(['billing', 'technical', 'abuse', 'onboarding', 'payments', 'orders', 'themes', 'apps', 'general', 'privacy']);
 ```
 
+## 4 October correction — buyer-export source excludes deleted request content
+
+The O8 source-path defect is fixed locally. `fetchBuyerExportSourceData` now adds
+`deleted_at IS NULL` to both the buyer-owned support-ticket query and the
+requester-authored message query; the draft field contract records those same
+predicates. A focused synthetic query test proves a soft-deleted ticket, a
+soft-deleted message, an agent-authored message, and a message on a deleted
+ticket are absent from the source payload while an active requester message is
+retained.
+
+The existing contract guard still proves
+`BUYER_EXPORT_GENERATION_AVAILABLE === false`, and no route imports this source.
+Focused contract/source tests pass 12/12, Gateway typecheck passes, and the
+changed-file whitespace check passes. This closes only the deleted-row query
+gap; no export is generated or released, and requester verification, download
+protection, retention, erasure exceptions, legal hold and incident ownership
+remain open under D05.

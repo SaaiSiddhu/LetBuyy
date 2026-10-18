@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storefrontApiFetch } from '@/lib/api/client';
 import { resolveBuyerDataSession } from '@/lib/buyer-auth/data-session';
+import { verifyExpectedBuyerIdentity } from '@/lib/buyer-auth/expected-buyer';
 
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
@@ -34,9 +35,8 @@ export async function PATCH(request: NextRequest) {
     const session = await resolveBuyerDataSession(request);
     if ('response' in session) return session.response;
 
-    const body = await request.json().catch(() => null) as { fullName?: unknown; phone?: unknown } | null;
+    const body = await request.json().catch(() => null) as { fullName?: unknown; phone?: unknown; expectedBuyerId?: unknown } | null;
     if (!body) return NextResponse.json({ error: 'A JSON body is required' }, { status: 400, headers: NO_STORE });
-
     // Allowlisted here too, not just at the gateway: defence in depth, and it keeps this file's
     // own contract explicit about what a caller of THIS route may change.
     const update: Record<string, unknown> = {};
@@ -45,6 +45,15 @@ export async function PATCH(request: NextRequest) {
     if (Object.keys(update).length === 0) {
         return NextResponse.json({ error: 'fullName or phone is required' }, { status: 400, headers: NO_STORE });
     }
+    // Bind this write to the principal whose profile the form displayed. A same-origin
+    // tab can change the shared host-only cookie between rendering/submission, so the
+    // ID from the body is only a compare value: read the current principal using the
+    // captured signed token and refuse a mismatch before forwarding any mutation.
+    const identityFailure = await verifyExpectedBuyerIdentity(session, body.expectedBuyerId, {
+        missing: 'Reload your account before saving profile changes.',
+        unavailable: 'Your profile could not be checked right now.',
+    });
+    if (identityFailure) return identityFailure;
 
     let res: Response;
     try {

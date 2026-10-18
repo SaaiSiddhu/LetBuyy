@@ -138,6 +138,38 @@ test('canonical storefront order detail requires this buyer link and this signed
     assert.equal(Object.hasOwn(relational.json?.data.order.items[0], 'product_snapshot'), false);
 });
 
+test('the canonical app buyer reads linked details across stores without an email or client-supplied site authority', async () => {
+    const buyer = seedBuyerAccount(psql, 'app-detail-own');
+    const otherBuyer = seedBuyerAccount(psql, 'app-detail-other');
+    const ownIds = [linked(buyer.id), linked(buyer.id, otherSite)];
+    const foreignId = linked(otherBuyer.id);
+    const unlinkedId = seedSyntheticOrder(psql, site).orderId;
+    const auth = await buyerHeaders(keys, buyer.id, { epoch: 1 });
+    const list = await gateway.request(`${base}/orders`, { headers: auth });
+    assert.equal(list.status, 200);
+    assert.deepEqual(new Set(list.json?.data.orders.map((order: { id: string }) => order.id)), new Set(ownIds));
+    for (const id of ownIds) {
+        const detail = await gateway.request(`${base}/orders/${id}?site_id=${crypto.randomUUID()}&buyer_account_id=${otherBuyer.id}`, { headers: auth });
+        assert.equal(detail.status, 200, 'an owned app-list entry must have an owned detail read');
+        assert.equal(detail.json?.data.order.id, id);
+        assert.equal(detail.json?.data.order.items.length, 1);
+        assert.equal(Object.hasOwn(detail.json?.data.order, 'customer_email'), false);
+        assert.equal(Object.hasOwn(detail.json?.data.order, 'store_id'), false);
+    }
+    for (const id of [foreignId, unlinkedId, crypto.randomUUID()]) {
+        const result = await gateway.request(`${base}/orders/${id}`, { headers: auth });
+        assert.equal(result.status, 404);
+        assert.doesNotMatch(result.text, /shipping_address|customer_email|subtotal/);
+    }
+    assert.equal((await gateway.request(`${base}/orders/not-a-uuid`, { headers: auth })).status, 400);
+    assert.equal((await gateway.request(`${base}/orders/${ownIds[0]}`)).status, 401);
+    assert.equal((await gateway.request(`${base}/orders/${ownIds[0]}`, { headers: await headers(buyer.id) })).status, 401);
+    psql(`DELETE FROM buyer_order_links WHERE buyer_account_id='${buyer.id}' AND order_id='${ownIds[0]}';`);
+    assert.equal((await gateway.request(`${base}/orders/${ownIds[0]}`, { headers: auth })).status, 404, 'removing ownership takes effect on the existing session');
+    psql(`UPDATE buyer_accounts SET session_epoch=2 WHERE id='${buyer.id}';`);
+    assert.equal((await gateway.request(`${base}/orders/${ownIds[1]}`, { headers: auth })).status, 401);
+});
+
 test('order detail database failures are sanitized and do not become a misleading 404', async () => {
     const buyer = seedBuyerAccount(psql, 'detail-fault');
     const id = linked(buyer.id);

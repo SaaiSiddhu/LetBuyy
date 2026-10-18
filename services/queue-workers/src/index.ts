@@ -4,7 +4,7 @@ import {
   type RuntimeTelemetryDatasetBinding,
 } from '@letbuyy/infrastructure/runtime-telemetry-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
-import { consumePlatformQueuesForCloudflareQueue } from './platform-queue-consumer';
+import { consumePlatformQueuesForCloudflareQueue, consumeNotificationJobs, consumeLoyaltyRefundJobs } from './platform-queue-consumer';
 import type { PushProviderEnv } from './push-dispatcher';
 import { processComplianceDeliveries, runComplianceAuditExportDryRun } from './compliance';
 import { processExecutiveAnalyticsDeliveries, runExecutiveAnalyticsRollup } from './executive-analytics';
@@ -67,6 +67,7 @@ export interface Env extends SupabaseServiceEnv, PushProviderEnv {
   QUEUE_TENANT_ENVELOPE_SECRET?: string;
   CUSTOM_DOMAIN_RECONCILE_BATCH_LIMIT?: string;
   RESEND_API_KEY?: string;
+  STAFF_INVITATION_SIGNING_SECRET?: string;
   RESEND_FROM_EMAIL?: string;
 }
 
@@ -632,6 +633,15 @@ export default {
   },
   async scheduled(controller, env, ctx) {
     const cron = controller.cron || 'manual';
+    // Dedicated minute tick recovers lost wakeups and due retries within the
+    // invitation lifetime. Other established sweepers retain their own cadence.
+    ctx.waitUntil(consumeNotificationJobs(env,`scheduled:notifications:${cron}:${Date.now()}`)
+      .then(result=>writeQueueLog('info',{route:'scheduled.notifications',result}))
+      .catch(()=>writeQueueLog('error',{route:'scheduled.notifications',status:'unavailable'})));
+    ctx.waitUntil(consumeLoyaltyRefundJobs(env, `scheduled:loyalty-refunds:${cron}:${Date.now()}`)
+      .then(result => writeQueueLog('info', { route: 'scheduled.loyalty_refunds', result }))
+      .catch(() => writeQueueLog('error', { route: 'scheduled.loyalty_refunds', status: 'unavailable' })));
+    if (cron === '* * * * *') return;
     ctx.waitUntil(triggerCustomDomainReconciler(env, cron));
     ctx.waitUntil(
       runInventoryReservationSweeper(env, {
@@ -680,11 +690,11 @@ export default {
     );
     ctx.waitUntil(
       runMoneyLedgerReconciliation(env, {
-        requestId: `scheduled:money-ledger-reconciliation:${cron}:${Date.now()}`,
+        requestId: `scheduled:money-ledger-reconciliation:${cron}:${controller.scheduledTime}`,
       })
         .then((result) => writeQueueLog('info', {
           route: 'scheduled.money_ledger_reconciliation',
-          status: 'completed',
+          status: result.status,
           result,
         }))
         .catch((error) => writeQueueLog('error', {

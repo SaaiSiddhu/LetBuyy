@@ -29,6 +29,7 @@ class MarketplaceFeedItem {
     this.price,
     this.comparePrice,
     this.categorySlug,
+    this.countryOfOrigin,
   });
 
   factory MarketplaceFeedItem.fromJson(JsonMap json) {
@@ -45,6 +46,7 @@ class MarketplaceFeedItem {
       price: _number(json['price']),
       comparePrice: _number(json['compare_price']),
       categorySlug: _string(json['category_slug']),
+      countryOfOrigin: _string(json['country_of_origin']),
     );
   }
 
@@ -60,20 +62,27 @@ class MarketplaceFeedItem {
   final num? price;
   final num? comparePrice;
   final String? categorySlug;
+  final String? countryOfOrigin;
 }
 
 /// The keyset cursor the feed hands back. Both halves travel together or not at all — the gateway
 /// rejects a half cursor, and reconstructing one from the last item is how a client drifts out of
 /// step with the server's ordering.
 class MarketplaceFeedCursor {
-  const MarketplaceFeedCursor({required this.afterApprovedAt, required this.afterId});
+  const MarketplaceFeedCursor({
+    required this.afterApprovedAt,
+    required this.afterId,
+  });
 
   static MarketplaceFeedCursor? fromJson(Object? json) {
     if (json is! Map) return null;
     final afterApprovedAt = _string(json['after_approved_at']);
     final afterId = _string(json['after_id']);
     if (afterApprovedAt == null || afterId == null) return null;
-    return MarketplaceFeedCursor(afterApprovedAt: afterApprovedAt, afterId: afterId);
+    return MarketplaceFeedCursor(
+      afterApprovedAt: afterApprovedAt,
+      afterId: afterId,
+    );
   }
 
   final String afterApprovedAt;
@@ -181,6 +190,8 @@ class MarketplaceListingDetail {
     this.seoTitle,
     this.seoDescription,
     this.categorySlug,
+    this.countryOfOrigin,
+    this.importerDetails,
     this.approvedAt,
     this.variants = const <MarketplaceVariant>[],
   });
@@ -203,16 +214,24 @@ class MarketplaceListingDetail {
       tags: _stringList(json['tags']),
       thumbnailUrl: _string(json['thumbnail_url']),
       stock: _number(json['stock'])?.toInt(),
-      trackInventory: json['track_inventory'] is bool ? json['track_inventory'] as bool : null,
+      trackInventory: json['track_inventory'] is bool
+          ? json['track_inventory'] as bool
+          : null,
       seoTitle: _string(json['seo_title']),
       seoDescription: _string(json['seo_description']),
       categorySlug: _string(json['category_slug']),
+      countryOfOrigin: _string(json['country_of_origin']),
+      importerDetails: _string(json['importer_details']),
       approvedAt: _string(json['approved_at']),
       variants: rawVariants is List
           ? rawVariants
-              .whereType<Map>()
-              .map((variant) => MarketplaceVariant.fromJson(Map<String, dynamic>.from(variant)))
-              .toList(growable: false)
+                .whereType<Map>()
+                .map(
+                  (variant) => MarketplaceVariant.fromJson(
+                    Map<String, dynamic>.from(variant),
+                  ),
+                )
+                .toList(growable: false)
           : const <MarketplaceVariant>[],
     );
   }
@@ -236,6 +255,8 @@ class MarketplaceListingDetail {
   final String? seoTitle;
   final String? seoDescription;
   final String? categorySlug;
+  final String? countryOfOrigin;
+  final String? importerDetails;
   final String? approvedAt;
   final List<MarketplaceVariant> variants;
 }

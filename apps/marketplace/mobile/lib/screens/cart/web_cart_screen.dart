@@ -7,6 +7,7 @@ import 'package:letbuyy_marketplace_core/letbuyy_marketplace_core.dart';
 import 'widgets/cart_item_card.dart';
 import 'widgets/cart_summary.dart';
 import 'widgets/empty_cart.dart';
+import '../checkout/checkout_screen.dart';
 
 class WebCartScreen extends StatefulWidget {
   const WebCartScreen({super.key});
@@ -452,8 +453,10 @@ class _WebCartScreenState extends State<WebCartScreen>
       child: ElevatedButton(
         onPressed: () {
           HapticFeedback.heavyImpact();
-          // AppRoutes.navigateTo(context, AppRoutes.checkout);
-          SnackbarHelper.showInfo(context, 'Checkout coming soon!');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CheckoutScreen()),
+          );
         },
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 20),

@@ -994,6 +994,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
             ),
           ),
           IconButton(
+            icon: Icon(
+              Icons.assignment_return_outlined,
+              color: colors.textSecondary,
+            ),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.returns),
+            tooltip: 'Returns',
+          ),
+          IconButton(
             icon: Icon(Icons.refresh_rounded, color: colors.textSecondary),
             onPressed: _loadOrders,
             tooltip: 'Refresh',
@@ -1204,7 +1212,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
       children: [
         // Status filter chips
         Container(
-          height: 44,
+          height: 52,
           margin: const EdgeInsets.only(top: 12),
           child: ListView(
             scrollDirection: Axis.horizontal,
@@ -1361,13 +1369,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
 
     return AccessibleTapRegion(
+      key: ValueKey('order-filter-$value'),
       label: '$label orders filter',
       hint: isActive ? 'Current filter' : 'Show $label orders',
       onTap: applyFilter,
       selected: isActive,
       excludeChildSemantics: true,
-      child: GestureDetector(
+      child: InkWell(
+        excludeFromSemantics: true,
         onTap: applyFilter,
+        borderRadius: BorderRadius.circular(20),
         child: Container(
           margin: const EdgeInsets.only(right: 8),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -1448,220 +1459,259 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final statusColor = _statusColor(status);
     final isSelected = _selectedOrderIds.contains(order.id);
 
-    return GestureDetector(
-      onTap: () {
-        if (_isSelectionMode) {
-          _toggleOrderSelection(order.id);
-        } else {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.orderDetail,
-            arguments: {'orderId': order.id, 'order': order},
-          ).then((_) => _loadOrders());
-        }
-      },
-      onLongPress: () {
-        if (!_isSelectionMode) {
-          _toggleSelectionMode();
-          _toggleOrderSelection(order.id);
-        }
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: colors.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected ? AppColors.lavender : colors.cardBorder,
-            width: isSelected ? 2 : 1,
+    void handleTap() {
+      if (_isSelectionMode) {
+        _toggleOrderSelection(order.id);
+      } else {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.orderDetail,
+          arguments: {'orderId': order.id, 'order': order},
+        ).then((_) => _loadOrders());
+      }
+    }
+
+    return Semantics(
+      key: ValueKey('order-card-${order.id}'),
+      container: true,
+      explicitChildNodes: true,
+      label: [
+        'Order ${_orderNumber(order)}',
+        _statusLabel(status),
+        'Customer ${_orderCustomerName(order)}',
+        'Total INR ${_orderTotal(order).toStringAsFixed(0)}',
+        '${_orderItemCount(order)} items',
+      ].join(', '),
+      hint: _isSelectionMode
+          ? isSelected
+                ? 'Tap to deselect order'
+                : 'Tap to select order'
+          : 'Opens order details',
+      selected: _isSelectionMode ? isSelected : null,
+      button: true,
+      enabled: true,
+      onTap: handleTap,
+      child: InkWell(
+        excludeFromSemantics: true,
+        onTap: handleTap,
+        onLongPress: () {
+          if (!_isSelectionMode) {
+            _toggleSelectionMode();
+            _toggleOrderSelection(order.id);
+          }
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: colors.card,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? AppColors.lavender : colors.cardBorder,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppColors.lavender.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.lavender.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          children: [
-            // Header row
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                children: [
-                  // Selection checkbox
-                  if (_isSelectionMode) ...[
-                    GestureDetector(
-                      onTap: () => _toggleOrderSelection(order.id),
-                      child: Container(
-                        width: 22,
-                        height: 22,
-                        margin: const EdgeInsets.only(right: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.lavender
-                              : Colors.transparent,
+          child: Column(
+            children: [
+              // Header row
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  children: [
+                    // Selection checkbox
+                    if (_isSelectionMode) ...[
+                      AccessibleTapRegion(
+                        key: ValueKey('order-select-${order.id}'),
+                        label: isSelected
+                            ? 'Deselect order ${_orderNumber(order)}'
+                            : 'Select order ${_orderNumber(order)}',
+                        hint: isSelected ? 'Selected' : 'Not selected',
+                        selected: isSelected,
+                        onTap: () => _toggleOrderSelection(order.id),
+                        excludeChildSemantics: true,
+                        child: InkWell(
+                          excludeFromSemantics: true,
+                          onTap: () => _toggleOrderSelection(order.id),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.lavender
-                                : colors.divider,
-                            width: 2,
-                          ),
-                        ),
-                        child: isSelected
-                            ? const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 14,
-                              )
-                            : null,
-                      ),
-                    ),
-                  ],
-                  // Order info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              _orderNumber(order),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: colors.textPrimary,
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.lavender
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.lavender
+                                    : colors.divider,
+                                width: 2,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: statusColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                _statusLabel(status),
-                                style: TextStyle(
-                                  color: statusColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _formatOrderDate(order),
-                          style: TextStyle(
-                            color: colors.textSecondary,
-                            fontSize: 11,
+                            child: isSelected
+                                ? const Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 14,
+                                  )
+                                : null,
                           ),
-                        ),
-                        if (_hasRiskSignal(order)) ...[
-                          const SizedBox(height: 6),
-                          _buildRiskBadge(order),
-                        ],
-                      ],
-                    ),
-                  ),
-                  // Total
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '₹${_orderTotal(order).toStringAsFixed(0)}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: AppColors.lavender,
-                        ),
-                      ),
-                      Text(
-                        '${_orderItemCount(order)} items',
-                        style: TextStyle(
-                          color: colors.textSecondary,
-                          fontSize: 10,
                         ),
                       ),
                     ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Customer + Actions row
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: colors.surfaceVariant.withValues(alpha: 0.5),
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(13),
+                    // Order info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                _orderNumber(order),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: colors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  _statusLabel(status),
+                                  style: TextStyle(
+                                    color: statusColor,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _formatOrderDate(order),
+                            style: TextStyle(
+                              color: colors.textSecondary,
+                              fontSize: 11,
+                            ),
+                          ),
+                          if (_hasRiskSignal(order)) ...[
+                            const SizedBox(height: 6),
+                            _buildRiskBadge(order),
+                          ],
+                        ],
+                      ),
+                    ),
+                    // Total
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '₹${_orderTotal(order).toStringAsFixed(0)}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: AppColors.lavender,
+                          ),
+                        ),
+                        Text(
+                          '${_orderItemCount(order)} items',
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 16,
-                    color: colors.textSecondary,
+
+              // Customer + Actions row
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.surfaceVariant.withValues(alpha: 0.5),
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(13),
                   ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      '${_orderCustomerName(order)} • ${_orderCustomerPhone(order)}',
-                      style: TextStyle(
-                        color: colors.textSecondary,
-                        fontSize: 12,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 16,
+                      color: colors.textSecondary,
                     ),
-                  ),
-                  // Quick action
-                  if (!_isSelectionMode &&
-                      status != 'delivered' &&
-                      status != 'cancelled')
-                    PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_horiz,
-                        color: colors.textSecondary,
-                        size: 20,
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${_orderCustomerName(order)} • ${_orderCustomerPhone(order)}',
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 12,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      padding: EdgeInsets.zero,
-                      itemBuilder: (context) => _getStatusOptions(status)
-                          .map(
-                            (option) => PopupMenuItem(
-                              value: option,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _getStatusIcon(option),
-                                    size: 18,
-                                    color: _statusColor(option),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(_statusLabel(option)),
-                                ],
+                    ),
+                    // Quick action
+                    if (!_isSelectionMode &&
+                        status != 'delivered' &&
+                        status != 'cancelled')
+                      PopupMenuButton<String>(
+                        icon: Icon(
+                          Icons.more_horiz,
+                          color: colors.textSecondary,
+                          size: 20,
+                        ),
+                        padding: EdgeInsets.zero,
+                        itemBuilder: (context) => _getStatusOptions(status)
+                            .map(
+                              (option) => PopupMenuItem(
+                                value: option,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      _getStatusIcon(option),
+                                      size: 18,
+                                      color: _statusColor(option),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(_statusLabel(option)),
+                                  ],
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
-                      onSelected: (option) =>
-                          _handleStatusChange(order, option),
-                    ),
-                ],
+                            )
+                            .toList(),
+                        onSelected: (option) =>
+                            _handleStatusChange(order, option),
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1912,12 +1962,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
         children: [
           // Selection info
           AccessibleTapRegion(
+            key: const ValueKey('orders-select-all-visible'),
             label: '${_selectedOrderIds.length} orders selected',
             hint: 'Select all visible orders',
             onTap: _selectAll,
             excludeChildSemantics: true,
-            child: GestureDetector(
+            child: InkWell(
+              excludeFromSemantics: true,
               onTap: _selectAll,
+              borderRadius: BorderRadius.circular(8),
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,

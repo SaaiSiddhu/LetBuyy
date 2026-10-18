@@ -27,16 +27,49 @@ class StoreService extends ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+  int _sessionEpoch = 0;
+  Future<void> _cacheReset = Future<void>.value();
+
+  void _checkSessionEpoch(int epoch) {
+    if (epoch != _sessionEpoch)
+      throw const ApiException(
+        message: 'The signed-in account changed. Reload store access.',
+        statusCode: 409,
+        code: 'SESSION_CONTEXT_CHANGED',
+      );
+  }
+
+  bool _allowCachedStore(Object error) =>
+      error is! ApiException ||
+      (error.code != 'SESSION_CONTEXT_CHANGED' &&
+          (error.statusCode >= 500 || error.statusCode == 0));
+
+  Future<void> clearSessionStores() {
+    _sessionEpoch++;
+    _stores = [];
+    _currentStore = null;
+    _isLoading = false;
+    // CacheService owns read projections only, not pending commands/receipts.
+    _cacheReset = _cacheReset.then((_) async {
+      await _cache?.clear();
+    });
+    notifyListeners();
+    return _cacheReset;
+  }
 
   // ── Read ─────────────────────────────────────────────────
 
   /// Fetch all stores for the current user.
   Future<List<StoreModel>> fetchStores() async {
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
     _isLoading = true;
     notifyListeners();
 
     try {
       final page = await _api.stores.list();
+      _checkSessionEpoch(epoch);
       _stores = page.data.map(StoreModel.fromJson).toList();
       if (_stores.isNotEmpty && _currentStore == null) {
         _currentStore = _stores.first;
@@ -46,13 +79,20 @@ class StoreService extends ChangeNotifier {
         _stores.map((store) => store.toJson()).toList(growable: false),
       );
       for (final store in _stores) {
+        _checkSessionEpoch(epoch);
         await _cache?.writeJson(
           CacheService.storeDetailKey(store.id),
           _storeCachePayload(store),
         );
       }
+      _checkSessionEpoch(epoch);
       return _stores;
     } catch (e) {
+      _checkSessionEpoch(epoch);
+      if (!_allowCachedStore(e)) {
+        await clearSessionStores();
+        rethrow;
+      }
       debugPrint('❌ fetchStores error: $e');
       final cachedRows = _cache?.readJsonList(CacheService.storesKey) ?? [];
       if (cachedRows.isNotEmpty) {
@@ -62,23 +102,35 @@ class StoreService extends ChangeNotifier {
       }
       rethrow;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (epoch == _sessionEpoch) {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
 
   /// Get a single store by ID.
   Future<StoreModel> fetchStore(String id) async {
+    final epoch = _sessionEpoch;
+    await _cacheReset;
+    _checkSessionEpoch(epoch);
     try {
       final store = StoreModel.fromJson(await _api.stores.get(id));
+      _checkSessionEpoch(epoch);
       _currentStore = store;
       await _cache?.writeJson(
         CacheService.storeDetailKey(id),
         _storeCachePayload(store),
       );
+      _checkSessionEpoch(epoch);
       notifyListeners();
       return store;
     } catch (e) {
+      _checkSessionEpoch(epoch);
+      if (!_allowCachedStore(e)) {
+        await clearSessionStores();
+        rethrow;
+      }
       debugPrint('❌ fetchStore error: $e');
       final cached = _cache?.readJsonMap(CacheService.storeDetailKey(id));
       if (cached != null) {
@@ -188,6 +240,7 @@ class StoreService extends ChangeNotifier {
   Future<StoreModel> createStore({
     required String name,
     required String subdomain,
+    required String idempotencyKey,
     String siteType = 'store',
     String? tagline,
     String? themeId,
@@ -204,7 +257,7 @@ class StoreService extends ChangeNotifier {
         if (tagline != null) 'tagline': tagline,
         'theme_id': themeId ?? 'modern',
         if (templateConfig != null) 'template_config': templateConfig,
-      }),
+      }, options: ApiRequestOptions(idempotencyKey: idempotencyKey)),
     );
     _stores.add(store);
     _currentStore = store;
@@ -348,15 +401,15 @@ class StoreLocalizationSummary {
       defaultLocale: json['default_locale']?.toString() ?? 'en-IN',
       currency: json['currency']?.toString() ?? 'INR',
       timezone: json['timezone']?.toString() ?? 'Asia/Kolkata',
-      markets: _jsonList(
-        json['markets'],
-      ).map(StoreMarket.fromJson).toList(growable: false),
-      locales: _jsonList(
-        json['locales'],
-      ).map(StorefrontLocale.fromJson).toList(growable: false),
-      translations: _jsonList(
-        json['translations'],
-      ).map(StorefrontTranslation.fromJson).toList(growable: false),
+      markets: _jsonList(json['markets'])
+          .map(StoreMarket.fromJson)
+          .toList(growable: false),
+      locales: _jsonList(json['locales'])
+          .map(StorefrontLocale.fromJson)
+          .toList(growable: false),
+      translations: _jsonList(json['translations'])
+          .map(StorefrontTranslation.fromJson)
+          .toList(growable: false),
       schemaReady: json['schema_ready'] != false,
     );
   }

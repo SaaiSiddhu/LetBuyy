@@ -57,6 +57,32 @@ test('payment event envelopes reject raw uncontracted or mismatched payloads', (
   );
 });
 
+test('scheduled merchant payout events require the tenant settlement and typed INR minor-unit amount', () => {
+  const siteId = '11111111-1111-4111-8111-111111111111';
+  const payoutId = '22222222-2222-4222-8222-222222222222';
+  const settlementId = '33333333-3333-4333-8333-333333333333';
+  assert.deepEqual(parseDomainEventPayload('payout.scheduled', {
+    site_id: siteId,
+    payout_id: payoutId,
+    settlement_id: settlementId,
+    amount: { amount_minor: 9882, currency: 'INR' },
+    rail: 'razorpay_route',
+  }), {
+    site_id: siteId,
+    payout_id: payoutId,
+    settlement_id: settlementId,
+    amount: { amount_minor: 9882, currency: 'INR' },
+    rail: 'razorpay_route',
+  });
+  assert.throws(() => parseDomainEventPayload('payout.scheduled', {
+    site_id: siteId,
+    payout_id: payoutId,
+    settlement_id: settlementId,
+    amount: 9882,
+    rail: 'razorpay_route',
+  }));
+});
+
 test('V1 executable event catalog includes cart, checkout, settlement, notification, whatsapp, and audit contracts', () => {
   for (const eventType of [
     'cart.created',

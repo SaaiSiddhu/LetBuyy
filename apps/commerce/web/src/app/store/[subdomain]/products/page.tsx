@@ -32,7 +32,7 @@ export default async function StorefrontProductsPage({
     searchParams,
 }: {
     params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<{ theme_preview_token?: string }>;
+    searchParams?: Promise<{ theme_preview_token?: string; country_of_origin?: string; category?: string; search?: string; page?: string }>;
 }) {
     const { subdomain } = await params;
     const query = await searchParams;
@@ -49,6 +49,12 @@ export default async function StorefrontProductsPage({
         path: `/store/${subdomain}/products`,
         subdomain,
         resourceSlug: 'all-products',
+        searchParams: {
+            ...(query?.country_of_origin?.trim() ? { country_of_origin: query.country_of_origin.trim().slice(0, 100) } : {}),
+            ...(query?.category?.trim() ? { category: query.category.trim().slice(0, 100) } : {}),
+            ...(query?.search?.trim() ? { search: query.search.trim().slice(0, 100) } : {}),
+            ...(query?.page?.trim() ? { page: query.page.trim().slice(0, 6) } : {}),
+        },
         fallbackSections: [createProductListingFallbackSection('All Products')],
     });
     const sectionData = await buildSectionDataPlan({

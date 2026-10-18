@@ -61,29 +61,63 @@ test('Razorpay Route payout client posts an idempotent transfer and maps provide
         now: () => new Date('2026-06-11T00:00:00.000Z'),
     });
 
-    const result = await adapter.initiateTransfer(payoutInput());
+    const input = payoutInput();
+    const result = await adapter.initiateTransfer(input);
+    const replay = await adapter.initiateTransfer(input);
 
     assert.equal(result.status, 'released');
+    assert.deepEqual(replay, result);
     assert.equal(result.providerReference, 'trf_Route123');
     assert.equal(result.utr, 'RZPUTR123');
     assert.equal(result.failureReason, null);
     assert.equal(result.processedAt, '2024-05-31T16:08:37.000Z');
-    assert.equal(calls.length, 1);
+    assert.equal(calls.length, 2);
     assert.equal(calls[0]?.input, 'https://api.example.test/v1/transfers');
     assert.equal(calls[0]?.init.method, 'POST');
     assert.equal(calls[0]?.init.headers.Authorization, `Basic ${btoa('rzp_test_key:route_secret')}`);
-    assert.equal(calls[0]?.init.headers['Idempotency-Key'], 'payout-release:statement-001');
+    const providerKey = calls[0]?.init.headers['X-Transfer-Idempotency'] || '';
+    assert.match(providerKey, /^lb_[a-f0-9]{32}$/);
+    assert.ok(providerKey.length >= 4 && providerKey.length <= 36);
+    assert.equal(calls[1]?.init.headers['X-Transfer-Idempotency'], providerKey);
+    assert.deepEqual(calls[1]?.init, calls[0]?.init, 'same release retry must send the same provider payload');
     const payload = JSON.parse(calls[0]?.init.body || '{}') as Record<string, unknown>;
     assert.equal(payload.account, 'acc_linked_merchant');
     assert.equal(payload.amount, 125000);
     assert.equal(payload.currency, 'INR');
-    assert.equal(payload.reference_id, 'payout-release:statement-001');
+    assert.equal('reference_id' in payload, false);
     assert.deepEqual(payload.notes, {
         site_id: '54c4b8aa-4940-4725-b2a0-3715695389a7',
         statement_id: '4d2ad7ad-6d1a-49e0-a7de-416d9a69e3b3',
         beneficiary_name: 'Demo Merchant',
         statement_number: 'PYT-DEMO-001',
     });
+});
+
+test('Razorpay Route concurrent idempotent request and server errors remain retryable', async () => {
+    for (const status of [409, 429, 503]) {
+        const adapter = createPayoutTransferAdapter({
+            mode: 'sandbox',
+            rail: 'razorpay_route',
+            credentials: {
+                keyId: 'rzp_test_key',
+                keySecret: 'route_secret',
+                accountId: 'acc_linked_merchant',
+            },
+            provider: createRazorpayRoutePayoutProviderClient({
+                fetch: async () => ({
+                    ok: false,
+                    status,
+                    statusText: 'Temporary provider response',
+                    async json() { return { error: { description: 'transfer may still be processing' } }; },
+                    async text() { return ''; },
+                }),
+            }),
+        });
+
+        const result = await adapter.initiateTransfer(payoutInput());
+        assert.equal(result.status, 'processing', `HTTP ${status} must not be treated as a definitive transfer failure`);
+        assert.equal(result.failureReason, null);
+    }
 });
 
 test('Razorpay Route payout client records provider rejection as failed, not released', async () => {

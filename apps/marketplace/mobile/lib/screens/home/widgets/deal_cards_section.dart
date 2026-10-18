@@ -255,7 +255,7 @@ class _DealCardsSectionState extends State<DealCardsSection> {
                   // Discount Label
                   if (discount > 0)
                     Text(
-                      'Up to $discount% Off',
+                      '$discount% below prior 30-day low',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,

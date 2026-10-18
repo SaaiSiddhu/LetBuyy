@@ -197,7 +197,7 @@ function failPayment(orderId, eventId) {
         'req-fail', ${sqlString(`payment-webhook:razorpay:${eventId}:failed`)});`);
 }
 
-// webhook-service markOrderRefunded → the provider's refund.created reconciles the ledger.
+// webhook-service markOrderRefunded → the provider's refund.processed reconciles the ledger.
 function reconcileProviderRefund(orderId, eventId) {
     psql(`SELECT public.record_order_payment_failure_with_ledger(
         ${sqlString(orderId)}::uuid, 'razorpay', ${sqlString(eventId)}, 'refunded', 'refunded', 'refund_created', false,
@@ -500,7 +500,7 @@ test('a sweep that arrives while a capture is in flight skips the order and neve
     }
 });
 
-test('recovery: the provider refund reconciles a late capture to zero and restocks nothing twice', () => {
+test('recovery: only the provider-processed refund reconciles a late capture to zero and restocks nothing twice', () => {
     const product = seedProduct({ stock: 1 });
     const orderId = placeRazorpayOrder({ product, key: nextId('recover') });
     attachProviderOrder(orderId, 'order_RZP_recover');
@@ -510,7 +510,7 @@ test('recovery: the provider refund reconciles a late capture to zero and restoc
     assert.equal(merchantPayableNet(orderId), 50000, 'the captured money is on the ledger until it is returned');
     assert.equal(available(product), 1);
 
-    // The refund is executed at the provider; its refund.created webhook runs the existing
+    // The refund is executed at the provider; only its refund.processed webhook runs the existing
     // reconciliation (webhook-service markOrderRefunded requires payment_status 'paid', which 252 sets).
     reconcileProviderRefund(orderId, 'evt_recover_refund');
 

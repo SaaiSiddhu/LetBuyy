@@ -3,6 +3,7 @@
 // No card wrapper · Landscape logo · Inline Turnstile · Social OAuth buttons
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +13,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../app/store_context.dart';
 import '../../services/store_auth_service.dart';
+import '../../services/staff_service.dart';
 import '../../services/language_service.dart';
 import '../../services/theme_provider.dart';
 import '../../theme/app_theme_colors.dart';
@@ -40,6 +42,10 @@ class _LoginScreenState extends State<LoginScreen>
   // Controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _mfaController = TextEditingController();
+  final _mfaFocus = FocusNode();
+  bool _mfaRequired = false;
+  String? _mfaEmail;
   final _confirmPasswordController = TextEditingController();
   final _emailFocus = FocusNode();
   final _passwordFocus = FocusNode();
@@ -88,6 +94,16 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
 
+    _emailController.addListener(() {
+      if (_mfaRequired &&
+          _mfaEmail != _emailController.text.trim().toLowerCase() &&
+          mounted)
+        setState(() {
+          _mfaRequired = false;
+          _mfaController.clear();
+          _mfaEmail = null;
+        });
+    });
     _loadSavedEmail();
     _sessionNotice = widget.sessionNotice;
 
@@ -130,53 +146,52 @@ class _LoginScreenState extends State<LoginScreen>
     if (!AppConfig.hasTurnstileSiteKey) return;
     final isDark = AppThemeColors.of(context).isDark;
 
-    _turnstileController =
-        WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..setBackgroundColor(Colors.transparent)
-          ..setNavigationDelegate(
-            NavigationDelegate(
-              onPageFinished: (_) {
-                if (mounted) setState(() => _turnstileWidgetReady = true);
-              },
-              onWebResourceError: (_) {
-                if (mounted) setState(() => _turnstileError = true);
-              },
-            ),
-          )
-          ..addJavaScriptChannel(
-            'TurnstileToken',
-            onMessageReceived: (msg) {
-              final token = msg.message.trim();
-              if (token.isNotEmpty && mounted) {
-                setState(() {
-                  _turnstileToken = token;
-                  _turnstileExpired = false;
-                });
-              }
-            },
-          )
-          ..addJavaScriptChannel(
-            'TurnstileError',
-            onMessageReceived: (_) {
-              if (mounted) setState(() => _turnstileError = true);
-            },
-          )
-          ..addJavaScriptChannel(
-            'TurnstileExpired',
-            onMessageReceived: (_) {
-              if (mounted) {
-                setState(() {
-                  _turnstileToken = null;
-                  _turnstileExpired = true;
-                });
-              }
-            },
-          )
-          ..loadHtmlString(
-            _turnstileHtml(AppConfig.turnstileSiteKey, isDark: isDark),
-            baseUrl: AppConfig.identityBaseUrl,
-          );
+    _turnstileController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.transparent)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) {
+            if (mounted) setState(() => _turnstileWidgetReady = true);
+          },
+          onWebResourceError: (_) {
+            if (mounted) setState(() => _turnstileError = true);
+          },
+        ),
+      )
+      ..addJavaScriptChannel(
+        'TurnstileToken',
+        onMessageReceived: (msg) {
+          final token = msg.message.trim();
+          if (token.isNotEmpty && mounted) {
+            setState(() {
+              _turnstileToken = token;
+              _turnstileExpired = false;
+            });
+          }
+        },
+      )
+      ..addJavaScriptChannel(
+        'TurnstileError',
+        onMessageReceived: (_) {
+          if (mounted) setState(() => _turnstileError = true);
+        },
+      )
+      ..addJavaScriptChannel(
+        'TurnstileExpired',
+        onMessageReceived: (_) {
+          if (mounted) {
+            setState(() {
+              _turnstileToken = null;
+              _turnstileExpired = true;
+            });
+          }
+        },
+      )
+      ..loadHtmlString(
+        _turnstileHtml(AppConfig.turnstileSiteKey, isDark: isDark),
+        baseUrl: AppConfig.identityBaseUrl,
+      );
   }
 
   @override
@@ -184,6 +199,9 @@ class _LoginScreenState extends State<LoginScreen>
     _authSub?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
+    _mfaController.clear();
+    _mfaController.dispose();
+    _mfaFocus.dispose();
     _confirmPasswordController.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
@@ -247,6 +265,7 @@ class _LoginScreenState extends State<LoginScreen>
             email,
             password,
             turnstileToken: token,
+            mfaCode: _mfaRequired ? _mfaController.text.trim() : null,
           );
           if (user == null) throw Exception('Sign-in failed');
           final prefs = await SharedPreferences.getInstance();
@@ -272,6 +291,23 @@ class _LoginScreenState extends State<LoginScreen>
           rethrow;
         }
       }
+    } on MerchantMfaRequiredException {
+      if (!mounted) return;
+      setState(() {
+        _mfaRequired = true;
+        _mfaEmail = email.toLowerCase();
+        _mfaController.clear();
+        _errorMessage = 'Enter your current authenticator code to sign in.';
+        _turnstileToken = null;
+        _turnstileExpired = true;
+      });
+      // The first password attempt consumed its bot challenge. Recreate the
+      // existing widget so the MFA retry carries a fresh proof.
+      if (AppConfig.hasTurnstileSiteKey) {
+        _turnstileController = null;
+        _initTurnstile();
+      }
+      _mfaFocus.requestFocus();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -289,22 +325,47 @@ class _LoginScreenState extends State<LoginScreen>
     // 2. Token already solved inline
     if (_turnstileToken != null) return _turnstileToken;
     // 3. Fallback to dedicated challenge screen
-    final token = await Navigator.pushNamed(context, AppRoutes.turnstileChallenge);
+    final token = await Navigator.pushNamed(
+      context,
+      AppRoutes.turnstileChallenge,
+    );
     return token as String?;
   }
 
+  bool _navigatingAfterAuth = false;
+  bool _storeAccessNeedsRetry = false;
   Future<void> _navigateAfterAuth() async {
+    if (_navigatingAfterAuth || ModalRoute.of(context)?.isCurrent != true)
+      return;
+    _navigatingAfterAuth = true;
+    setState(() => _isLoading = true);
+    if (context.read<StaffService>().pendingInvitation != null) {
+      Navigator.pushNamedAndRemoveUntil(context, AppRoutes.auth, (_) => false);
+      return;
+    }
+    final auth = context.read<StoreAuthService>(),
+        actor = context.read<StoreAuthService>().currentUser?.id;
     try {
-      final store = await context.read<StoreContext>().ensureSelectedStore();
-      if (!mounted) return;
+      if (actor == null) throw StateError('Sign in again');
+      final store = await context
+          .read<StoreContext>()
+          .ensureSelectedStoreForActor(actor);
+      if (!mounted || auth.currentUser?.id != actor) return;
       if (store != null) {
         Navigator.pushReplacementNamed(context, AppRoutes.main);
       } else {
         Navigator.pushReplacementNamed(context, AppRoutes.wizard);
       }
     } catch (_) {
-      if (!mounted) return;
-      Navigator.pushReplacementNamed(context, AppRoutes.wizard);
+      if (!mounted || auth.currentUser?.id != actor) return;
+      setState(() {
+        _storeAccessNeedsRetry = true;
+        _errorMessage =
+            'You are signed in. Store access could not load. Retry loading your store.';
+      });
+    } finally {
+      _navigatingAfterAuth = false;
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -330,8 +391,8 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       // Exact identity web app --bg color
       backgroundColor: isDark
-          ? const Color(0xFF0A0912)   // rgb(10,9,18)
-          : const Color(0xFFFAF9FF),  // rgb(250,249,255)
+          ? const Color(0xFF0A0912) // rgb(10,9,18)
+          : const Color(0xFFFAF9FF), // rgb(250,249,255)
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -368,15 +429,28 @@ class _LoginScreenState extends State<LoginScreen>
 
                             // ── Notices ──────────────────────
                             if (_sessionNotice != null) ...[
-                              _buildNoticeBanner(_sessionNotice!, colors,
-                                  icon: Icons.lock_clock_rounded,
-                                  isAccent: true),
+                              _buildNoticeBanner(
+                                _sessionNotice!,
+                                colors,
+                                icon: Icons.lock_clock_rounded,
+                                isAccent: true,
+                              ),
                               const SizedBox(height: 20),
                             ],
                             if (_errorMessage != null) ...[
-                              _buildNoticeBanner(_errorMessage!, colors,
-                                  icon: Icons.error_outline_rounded,
-                                  isError: true),
+                              _buildNoticeBanner(
+                                _errorMessage!,
+                                colors,
+                                icon: Icons.error_outline_rounded,
+                                isError: true,
+                              ),
+                              if (_storeAccessNeedsRetry)
+                                TextButton(
+                                  onPressed: _isLoading || _navigatingAfterAuth
+                                      ? null
+                                      : _navigateAfterAuth,
+                                  child: const Text('Retry loading your store'),
+                                ),
                               const SizedBox(height: 20),
                             ],
 
@@ -398,8 +472,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     validator: (v) {
                                       if (v == null || v.trim().isEmpty)
                                         return langService.emailRequired;
-                                      if (!v.contains('@') ||
-                                          !v.contains('.'))
+                                      if (!v.contains('@') || !v.contains('.'))
                                         return langService.validEmail;
                                       return null;
                                     },
@@ -415,11 +488,13 @@ class _LoginScreenState extends State<LoginScreen>
                                     isDark: isDark,
                                     colors: colors,
                                     suffixIcon: _visibilityToggle(
-                                        _obscurePassword,
-                                        () => setState(() =>
-                                            _obscurePassword =
-                                                !_obscurePassword),
-                                        isDark),
+                                      _obscurePassword,
+                                      () => setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      ),
+                                      isDark,
+                                    ),
                                     validator: (v) {
                                       if (v == null || v.isEmpty)
                                         return langService.passwordRequired;
@@ -427,15 +502,39 @@ class _LoginScreenState extends State<LoginScreen>
                                         if (v.length < 8)
                                           return langService.passwordMinLength;
                                         if (!RegExp(r'[a-zA-Z]').hasMatch(v))
-                                          return langService.passwordNeedsLetter;
+                                          return langService
+                                              .passwordNeedsLetter;
                                         if (!RegExp(r'[0-9]').hasMatch(v))
-                                          return langService.passwordNeedsNumber;
+                                          return langService
+                                              .passwordNeedsNumber;
                                       }
                                       return null;
                                     },
-                                    onSubmitted:
-                                        _isSignUpMode ? null : (_) => _handleSubmit(),
+                                    onSubmitted: _isSignUpMode
+                                        ? null
+                                        : (_) => _handleSubmit(),
                                   ),
+                                  if (_mfaRequired && !_isSignUpMode) ...[
+                                    const SizedBox(height: 14),
+                                    _buildField(
+                                      controller: _mfaController,
+                                      focusNode: _mfaFocus,
+                                      hint: 'Authenticator code',
+                                      icon: Icons.security_outlined,
+                                      obscureText: true,
+                                      keyboardType: TextInputType.number,
+                                      isFocused: false,
+                                      isDark: isDark,
+                                      colors: colors,
+                                      validator: (value) =>
+                                          RegExp(
+                                            r'^\d{6}$',
+                                          ).hasMatch(value ?? '')
+                                          ? null
+                                          : 'Enter your 6-digit authenticator code.',
+                                      onSubmitted: (_) => _handleSubmit(),
+                                    ),
+                                  ],
                                   if (_isSignUpMode) ...[
                                     const SizedBox(height: 14),
                                     _buildField(
@@ -448,16 +547,20 @@ class _LoginScreenState extends State<LoginScreen>
                                       isDark: isDark,
                                       colors: colors,
                                       suffixIcon: _visibilityToggle(
-                                          _obscureConfirmPassword,
-                                          () => setState(() =>
-                                              _obscureConfirmPassword =
-                                                  !_obscureConfirmPassword),
-                                          isDark),
+                                        _obscureConfirmPassword,
+                                        () => setState(
+                                          () => _obscureConfirmPassword =
+                                              !_obscureConfirmPassword,
+                                        ),
+                                        isDark,
+                                      ),
                                       validator: (v) {
                                         if (v == null || v.isEmpty)
-                                          return langService.confirmPasswordRequired;
+                                          return langService
+                                              .confirmPasswordRequired;
                                         if (v != _passwordController.text)
-                                          return langService.passwordsDoNotMatch;
+                                          return langService
+                                              .passwordsDoNotMatch;
                                         return null;
                                       },
                                       onSubmitted: (_) => _handleSubmit(),
@@ -512,6 +615,13 @@ class _LoginScreenState extends State<LoginScreen>
 
                             const SizedBox(height: 36),
 
+                            TextButton(
+                              onPressed: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.acceptStaffInvitation,
+                              ),
+                              child: const Text('Have a staff invitation?'),
+                            ),
                             // ── Footer ─────────────────────────
                             _buildFooter(langService, isDark, colors),
 
@@ -627,17 +737,15 @@ class _LoginScreenState extends State<LoginScreen>
                     langService.languageNameFor(l),
                     style: TextStyle(
                       color: isDark ? Colors.white : Colors.black87,
-                      fontWeight:
-                          langService.currentLanguage == l
-                              ? FontWeight.w600
-                              : FontWeight.w400,
+                      fontWeight: langService.currentLanguage == l
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                       fontSize: 13,
                     ),
                   ),
                   if (langService.currentLanguage == l) ...[
                     const Spacer(),
-                    const Icon(Icons.check_rounded,
-                        size: 15, color: _kPrimary),
+                    const Icon(Icons.check_rounded, size: 15, color: _kPrimary),
                   ],
                 ],
               ),
@@ -660,9 +768,11 @@ class _LoginScreenState extends State<LoginScreen>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.public_rounded,
-                size: 14,
-                color: isDark ? Colors.white60 : Colors.black54),
+            Icon(
+              Icons.public_rounded,
+              size: 14,
+              color: isDark ? Colors.white60 : Colors.black54,
+            ),
             const SizedBox(width: 5),
             Text(
               langService.languageName,
@@ -673,9 +783,11 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
             const SizedBox(width: 3),
-            Icon(Icons.expand_more_rounded,
-                size: 14,
-                color: isDark ? Colors.white38 : Colors.black38),
+            Icon(
+              Icons.expand_more_rounded,
+              size: 14,
+              color: isDark ? Colors.white38 : Colors.black38,
+            ),
           ],
         ),
       ),
@@ -699,7 +811,10 @@ class _LoginScreenState extends State<LoginScreen>
   // ── Header ────────────────────────────────────────────────
 
   Widget _buildHeader(
-      LanguageService lang, bool isDark, AppThemeColors colors) {
+    LanguageService lang,
+    bool isDark,
+    AppThemeColors colors,
+  ) {
     return Column(
       children: [
         Text(
@@ -784,8 +899,8 @@ class _LoginScreenState extends State<LoginScreen>
         // dark: rgb(13,11,22)  light: rgb(255,255,255)
         filled: true,
         fillColor: isDark
-            ? const Color(0xFF0D0B16)   // rgb(13,11,22)
-            : const Color(0xFFFFFFFF),  // rgb(255,255,255)
+            ? const Color(0xFF0D0B16) // rgb(13,11,22)
+            : const Color(0xFFFFFFFF), // rgb(255,255,255)
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
         border: OutlineInputBorder(
           borderRadius: borderRadius,
@@ -805,8 +920,7 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: borderRadius,
-          borderSide:
-              const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
         ),
         errorStyle: const TextStyle(color: Color(0xFFEF4444), fontSize: 11.5),
       ),
@@ -822,9 +936,7 @@ class _LoginScreenState extends State<LoginScreen>
       child: Padding(
         padding: const EdgeInsets.only(right: 16),
         child: Icon(
-          isHidden
-              ? Icons.visibility_off_outlined
-              : Icons.visibility_outlined,
+          isHidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
           color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
           size: 19,
         ),
@@ -1047,7 +1159,10 @@ class _LoginScreenState extends State<LoginScreen>
   // ── Footer ────────────────────────────────────────────────
 
   Widget _buildFooter(
-      LanguageService lang, bool isDark, AppThemeColors colors) {
+    LanguageService lang,
+    bool isDark,
+    AppThemeColors colors,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -1155,24 +1270,32 @@ class _BlobPainter extends CustomPainter {
     // Exact identity web app CSS variables
     // dark:  --bg: rgb(10 9 18)   light: --bg: rgb(250 249 255)
     final base = isDark
-        ? const Color(0xFF0A0912)   // rgb(10,9,18)
-        : const Color(0xFFFAF9FF);  // rgb(250,249,255)
+        ? const Color(0xFF0A0912) // rgb(10,9,18)
+        : const Color(0xFFFAF9FF); // rgb(250,249,255)
     canvas.drawRect(
-        Rect.fromLTWH(0, 0, s.width, s.height), Paint()..color = base);
+      Rect.fromLTWH(0, 0, s.width, s.height),
+      Paint()..color = base,
+    );
 
     // Top-left blob
     final p1 = Paint()
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 90)
       ..color = _kPrimary.withValues(alpha: isDark ? 0.16 : 0.07);
     canvas.drawCircle(
-        Offset(s.width * 0.10, s.height * 0.07), s.width * 0.52, p1);
+      Offset(s.width * 0.10, s.height * 0.07),
+      s.width * 0.52,
+      p1,
+    );
 
     // Bottom-right blob
     final p2 = Paint()
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 110)
       ..color = const Color(0xFF1A56DB).withValues(alpha: isDark ? 0.10 : 0.05);
     canvas.drawCircle(
-        Offset(s.width * 0.90, s.height * 0.84), s.width * 0.58, p2);
+      Offset(s.width * 0.90, s.height * 0.84),
+      s.width * 0.58,
+      p2,
+    );
   }
 
   @override
@@ -1206,16 +1329,18 @@ class _SocialButtonState extends State<_SocialButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown:
-          widget.disabled ? null : (_) => setState(() => _pressed = true),
+      onTapDown: widget.disabled
+          ? null
+          : (_) => setState(() => _pressed = true),
       onTapUp: widget.disabled
           ? null
           : (_) {
               setState(() => _pressed = false);
               widget.onTap();
             },
-      onTapCancel:
-          widget.disabled ? null : () => setState(() => _pressed = false),
+      onTapCancel: widget.disabled
+          ? null
+          : () => setState(() => _pressed = false),
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1.0,
         duration: const Duration(milliseconds: 120),
@@ -1228,8 +1353,12 @@ class _SocialButtonState extends State<_SocialButton> {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: widget.isDark
-                  ? Colors.white.withValues(alpha: widget.disabled ? 0.07 : 0.11)
-                  : Colors.black.withValues(alpha: widget.disabled ? 0.05 : 0.09),
+                  ? Colors.white.withValues(
+                      alpha: widget.disabled ? 0.07 : 0.11,
+                    )
+                  : Colors.black.withValues(
+                      alpha: widget.disabled ? 0.05 : 0.09,
+                    ),
             ),
           ),
           child: widget.child,
@@ -1275,13 +1404,17 @@ class _TurnstileSuccessChip extends StatelessWidget {
         color: const Color(0xFF10B981).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: const Color(0xFF10B981).withValues(alpha: 0.20)),
+          color: const Color(0xFF10B981).withValues(alpha: 0.20),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.verified_rounded,
-              color: Color(0xFF10B981), size: 15),
+          const Icon(
+            Icons.verified_rounded,
+            color: Color(0xFF10B981),
+            size: 15,
+          ),
           const SizedBox(width: 8),
           Text(
             'Security check passed',

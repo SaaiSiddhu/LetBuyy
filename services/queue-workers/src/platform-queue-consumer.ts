@@ -1,3 +1,5 @@
+import {sendOperatorMfaResetEmail,type OperatorMfaResetEmailEnv,type OperatorMfaResetDelivery} from './operator-mfa-reset-email';
+import { sendStaffInvitationEmail, type StaffInvitationDelivery, type StaffInvitationEmailEnv } from './staff-invitation-email';
 import {
   eventRetryDelaySeconds,
   getDomainEventContract,
@@ -39,7 +41,7 @@ import {
 } from './push-dispatcher';
 
 type JsonObject = Record<string, unknown>;
-export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
+export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events' | 'notification-jobs' | 'loyalty-refunds';
 
 interface PlatformQueueJob {
   id: string;
@@ -187,7 +189,7 @@ export interface PlatformQueueConsumeResult {
   error?: string;
 }
 
-export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv, PushProviderEnv {
+export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv, PushProviderEnv, StaffInvitationEmailEnv, OperatorMfaResetEmailEnv {
   API_GATEWAY_SERVICE?: GatewayServiceBinding;
   INTERNAL_API_SECRET?: string;
   WHATSAPP_PROVIDER_MODE?: string;
@@ -372,7 +374,8 @@ export function platformQueueNamesForCloudflareQueue(
   if (queueName.includes('dead-letter')) return [];
   if (queueName.includes('search')) return ['search-indexing'];
   if (queueName.includes('payment')) return ['payment-events'];
-  if (queueName.includes('analytics') || queueName.includes('notification')) return ['analytics-events'];
+  if (queueName.includes('notification')) return ['notification-jobs','analytics-events'];
+  if (queueName.includes('analytics')) return ['analytics-events'];
   return options.allowGenericFanout ? ['analytics-events', 'search-indexing', 'payment-events'] : [];
 }
 
@@ -390,6 +393,23 @@ export async function consumePlatformQueuesForCloudflareQueue(
   const workerId = input.workerId || `queue-workers:${input.cloudflareQueueName}:${crypto.randomUUID()}`;
   return consumer.consumeQueues(workerId, queueNames, drainBudget(env, input.limit));
 }
+
+/** Scheduled catch-up ensures a lost native queue wakeup cannot lose a durable invitation. */
+export async function consumeNotificationJobs(env: PlatformQueueConsumerEnv, workerId: string) {
+  return new PlatformQueueConsumer(createSupabaseServiceClient(env),env).consumeQueues(workerId,['notification-jobs'],25);
+}
+
+/** Bounded scheduled recovery. Ledger discovery is authoritative; no external
+ * provider or frozen app/payment queue is activated by this logical queue. */
+export async function consumeLoyaltyRefundJobs(env: PlatformQueueConsumerEnv, workerId: string) {
+  const db = createSupabaseServiceClient(env);
+  const { error } = await db.rpc('enqueue_pending_loyalty_refunds_v1', { p_limit: 25 });
+  if (error) throw new Error('Loyalty refund discovery is unavailable');
+  return new PlatformQueueConsumer(db, env).consumeQueues(workerId, ['loyalty-refunds'], 25);
+}
+
+// Existing callers keep the same single notification consumer owner.
+export const consumeStaffInvitationJobs=consumeNotificationJobs;
 
 class PlatformQueueConsumer {
   constructor(
@@ -437,6 +457,16 @@ class PlatformQueueConsumer {
   }
 
   private async consumeQueue(workerId: string, queueName: PlatformQueueName, limit: number): Promise<PlatformQueueConsumeResult> {
+    if (queueName === 'loyalty-refunds') {
+      const { error } = await this.db.rpc('recover_expired_loyalty_refund_jobs_v1', { p_limit: limit });
+      if (error) throw new Error('Loyalty refund lease recovery is unavailable');
+    }
+    if (queueName === 'notification-jobs') {
+      const { error } = await this.db.rpc('recover_expired_staff_invitation_jobs_v1', { p_limit: limit });
+      if (error) throw new Error('Staff invitation lease recovery is unavailable');
+      const {error:securityError}=await this.db.rpc('recover_expired_console_security_email_jobs_v1',{p_limit:limit});
+      if(securityError)throw new Error('Operator notification lease recovery is unavailable');
+    }
     const jobs = await this.claimJobs(workerId, queueName, limit);
     const result: PlatformQueueConsumeResult = {
       worker_id: workerId,
@@ -451,13 +481,15 @@ class PlatformQueueConsumer {
 
     for (const job of jobs) {
       try {
-        const processed = queueName === 'analytics-events'
+        const notification = queueName === 'loyalty-refunds' ? await this.processLoyaltyRefundJob(workerId, job)
+          : queueName === 'notification-jobs' ? await this.processNotificationJob(workerId,job) : null;
+        const processed = notification ? notification.processed === true : queueName === 'analytics-events'
           ? await this.processAnalyticsJob(job)
           : queueName === 'search-indexing'
             ? await this.processSearchJob(job)
             : await this.processPaymentJob(job);
 
-        await this.completeJob(workerId, job.id, { processed, consumer_runtime: 'services/queue-workers' });
+        await this.completeJob(workerId, job.id, { ...notification, processed, consumer_runtime: 'services/queue-workers' });
         if (processed) {
           result.succeeded += 1;
         } else {
@@ -476,6 +508,38 @@ class PlatformQueueConsumer {
     }
 
     return result;
+  }
+
+  private async processLoyaltyRefundJob(workerId: string, job: PlatformQueueJob): Promise<JsonObject> {
+    if (job.job_type !== 'loyalty.restore_redeemed' || !job.site_id || job.schema_version !== 1)
+      throw deterministicQueueJobError('Unsupported loyalty refund source');
+    const { data, error } = await this.db.rpc('recover_loyalty_refund_job_v1', { p_job_id: job.id, p_worker_id: workerId });
+    if (error?.code === '22023') throw deterministicQueueJobError('Loyalty refund source mismatch');
+    if (error || !data) throw new Error('Loyalty refund recovery is unavailable');
+    if (data.processed !== true || data.job_id !== job.id || data.site_id !== job.site_id
+      || data.redeemed_entry_id !== job.event_id || data.order_id !== job.payload.order_id)
+      throw deterministicQueueJobError('Loyalty refund recovery receipt mismatch');
+    return data as JsonObject;
+  }
+
+  private async processNotificationJob(workerId:string,job:PlatformQueueJob):Promise<JsonObject>{
+    if(job.job_type==='email.employee_invite')return this.processStaffInvitationJob(job);
+    if(job.job_type!=='email.operator_mfa_reset'||job.site_id!==null||typeof job.payload.approval_id!=='string')
+      throw deterministicQueueJobError('Unsupported notification source');
+    const {data,error}=await this.db.rpc('console_mfa_reset_delivery_v1',{p_job_id:job.id,p_worker_id:workerId,p_sender:this.env.RESEND_FROM_EMAIL??null});
+    if(error||!data)throw new Error('Operator notification delivery state is unavailable');
+    if(data.job_id!==job.id||data.approval_id!==job.payload.approval_id)throw deterministicQueueJobError('Operator notification source mismatch');
+    return sendOperatorMfaResetEmail(this.env,data as OperatorMfaResetDelivery);
+  }
+
+  private async processStaffInvitationJob(job: PlatformQueueJob): Promise<JsonObject> {
+    if(job.job_type !== 'email.employee_invite' || typeof job.payload.invitation_id !== 'string'
+      || !/^[0-9a-f-]{36}$/i.test(job.payload.invitation_id)) throw deterministicQueueJobError('Unsupported notification job or invitation ID');
+    const {data,error}=await this.db.rpc('merchant_staff_invitation_delivery_v1',{p_invite_id:job.payload.invitation_id});
+    if(error)throw new Error('Staff invitation delivery state is unavailable');
+    if(!data)return {processed:false,reason:'invitation_expired_revoked_or_consumed'};
+    if(data.id !== job.payload.invitation_id || data.store_id !== job.site_id) throw deterministicQueueJobError('Staff invitation job scope mismatch');
+    return sendStaffInvitationEmail(this.env,data as StaffInvitationDelivery);
   }
 
   private async claimJobs(workerId: string, queueName: PlatformQueueName, limit: number): Promise<PlatformQueueJob[]> {

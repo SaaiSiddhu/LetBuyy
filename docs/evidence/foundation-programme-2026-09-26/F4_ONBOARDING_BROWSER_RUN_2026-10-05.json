@@ -1,0 +1,52 @@
+{
+  "recorded_on": "2026-10-05",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+  "owned_runner_id": "e2e4acc16c73",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts --jobs 1",
+  "result": {
+    "suite_count": 1,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "duration_seconds": 44.9,
+    "postgres_image": "postgres:16-alpine",
+    "postgrest_image": "public.ecr.aws/supabase/postgrest:v16.2"
+  },
+  "cleanup": {
+    "database_removed": true,
+    "postgrest_removed": true,
+    "remaining_runner_resources": 0,
+    "temporary_identity_dependency_link_removed": true,
+    "temporary_merchant_dependency_link_removed": true
+  },
+  "journey": [
+    "waits for the authenticated account-bound draft read before enabling wizard interaction",
+    "uses Tab and Enter to choose store type; uses keyboard input for name/subdomain; traverses all five sales-channel checkboxes with Tab and selects channels with Space",
+    "validates an available synthetic subdomain through the real Identity BFF/Gateway path",
+    "persists the selected channel set, resumes the saved review step after reload, and verifies the restored choices",
+    "uses keyboard type-ahead in the industry select, then Tab and Enter to create one store through the Identity BFF",
+    "verifies the completed onboarding attempt against owned Postgres",
+    "opens Merchant web with the same signed-in owner session and verifies the real five-card first-store checklist plus draft-publication status",
+    "verifies one page-level H1 followed by setup-card H2 headings in the activating dashboard",
+    "verifies the account-owned trial-aware plan-selection page and canonical plan catalog after Identity's automatic redirect",
+    "changes the billing-period control to Annual and verifies its accessible pressed state without selecting a plan or opening checkout",
+    "confirms a signed-out browser is redirected to Identity sign-in and receives no plan catalog content",
+    "checks that the visible Subdomain label names its input and that availability feedback is programmatically associated with a polite status region",
+    "rejects a reserved dashboard subdomain and verifies aria-invalid plus readable live feedback before accepting the next available value",
+    "checks contextual heading focus through entry, step changes, review and success",
+    "completes the tested create journey without mouse activation"
+  ],
+  "limits": [
+    "The browser uses a synthetic pre-minted merchant session; normal sign-in and email verification delivery are outside this suite.",
+    "No outbound email was delivered because no provider credential was configured.",
+    "This is local disposable-stack acceptance, not hosted, production, screen-reader/WCAG conformance or Phase 4 acceptance.",
+    "The plan catalog and trial display are verified; plan selection, checkout, payment, subscription purchase and provider flows are not exercised."
+  ]
+}

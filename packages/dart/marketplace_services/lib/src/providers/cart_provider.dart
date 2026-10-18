@@ -79,6 +79,7 @@ class CartProvider with ChangeNotifier {
   /// from a session token or an email address (both reviewed and rejected as namespace keys: a
   /// token rotates per session, and email is not this app's canonical buyer identifier).
   String? _activeBuyerId;
+  int _identityGeneration = 0;
 
   late Future<void> _ready;
 
@@ -90,14 +91,16 @@ class CartProvider with ChangeNotifier {
   bool _disposed = false;
 
   static CartModel _empty() => CartModel(
-        id: _localCartId,
-        userId: _localCartId,
-        items: const [],
-        updatedAt: DateTime.now(),
-      );
+    id: _localCartId,
+    userId: _localCartId,
+    items: const [],
+    updatedAt: DateTime.now(),
+  );
 
   CartModel? get cart => _cart;
   bool get isLoading => _isLoading;
+  /// Local UI continuation guard; never authentication or backend authority.
+  int get identityRevision => _identityGeneration;
   String? get error => _error;
 
   int get itemCount => _cart.totalItems;
@@ -123,38 +126,47 @@ class CartProvider with ChangeNotifier {
     super.dispose();
   }
 
-  String _keyFor(String? buyerId) => buyerId == null ? _guestPrefsKey : '$_guestPrefsKey:buyer:$buyerId';
+  String _keyFor(String? buyerId) =>
+      buyerId == null ? _guestPrefsKey : '$_guestPrefsKey:buyer:$buyerId';
 
   /// D-BUYER-SCOPE: switches this provider's active local namespace to [buyerId]'s own cart (or
   /// back to the shared guest basket, for `null`). A no-op if already active, so a rebuild that
-  /// re-notifies with the same identity never forces a redundant reload. The actual switch is
-  /// enqueued behind whatever is already pending -- it can never interleave with (and neither
-  /// stomp nor be stomped by) an in-flight mutation for the previous identity.
+  /// re-notifies with the same identity never forces a redundant reload. The visible identity switches
+  /// immediately; its read waits in the queue. Generation-bound mutations refuse
+  /// stale results and can never write through the replacement buyer’s key.
   void updateUserId(String? buyerId) {
     if (buyerId == _activeBuyerId) return;
     _activeBuyerId = buyerId;
+    _identityGeneration++;
+    // Consumers such as badges/product cards read getters without isLoading.
+    // Clear the prior buyer immediately, before notifying the new identity.
+    _cart = _empty();
+    _error = null;
     _isLoading = true;
     _notify();
     _ready = _enqueue(_loadActive);
   }
 
   Future<void> _loadActive() async {
+    final buyerId = _activeBuyerId;
+    final generation = _identityGeneration;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_keyFor(_activeBuyerId));
+      final jsonString = prefs.getString(_keyFor(buyerId));
+      if (generation != _identityGeneration) return;
       _cart = jsonString != null
           ? CartModel.fromMap(jsonDecode(jsonString) as Map<String, dynamic>, _localCartId)
           : _empty();
       _error = null;
     } catch (e) {
-      // Corrupt persisted data (or any other read failure) falls back to an honestly empty cart
-      // for this namespace rather than crashing or surfacing garbage.
-      debugPrint('❌ CartProvider: error loading local cart: $e');
+      if (generation != _identityGeneration) return;
       _cart = _empty();
-      _error = e.toString();
+      _error = 'Could not load your cart on this device.';
     } finally {
-      _isLoading = false;
-      _notify();
+      if (generation == _identityGeneration) {
+        _isLoading = false;
+        _notify();
+      }
     }
   }
 
@@ -183,12 +195,33 @@ class CartProvider with ChangeNotifier {
   /// touched, and _cart only ever moves forward to a candidate that is confirmed durably saved. A
   /// failure never touches _cart at all -- it just doesn't commit -- so it can never erase a
   /// different, already-committed operation's result.
-  Future<bool> _mutate(CartModel Function(CartModel current) transform) {
+  Future<bool> _mutate(
+    CartModel Function(CartModel current) transform, {
+    String? expectedBuyerId,
+    bool requireBuyerMatch = false,
+  }) {
+    // Bind at submission, not when an earlier queued write happens to finish.
+    final buyerId = _activeBuyerId;
+    final generation = _identityGeneration;
+    bool currentIdentity() =>
+        generation == _identityGeneration && buyerId == _activeBuyerId;
     return _enqueue(() async {
+      if (!currentIdentity() ||
+          (requireBuyerMatch && buyerId != expectedBuyerId)) {
+        return false;
+      }
       final candidate = transform(_cart);
       try {
         final prefs = await SharedPreferences.getInstance();
-        final persisted = await prefs.setString(_keyFor(_activeBuyerId), jsonEncode(candidate.toMap()));
+        if (!currentIdentity()) return false;
+        final persisted = await prefs.setString(
+          _keyFor(buyerId),
+          jsonEncode(candidate.toMap()),
+        );
+        // A write already handed to the platform may finish after logout. Its
+        // captured storage key stays with its original buyer; its late result
+        // must never repopulate or report success in the replacement identity.
+        if (!currentIdentity()) return false;
         if (persisted) {
           _cart = candidate;
           _error = null;
@@ -199,9 +232,10 @@ class CartProvider with ChangeNotifier {
         _notify();
         return false;
       } catch (e) {
-        debugPrint('❌ CartProvider: error saving local cart: $e');
-        _error = e.toString();
-        _notify();
+        if (currentIdentity()) {
+          _error = 'Could not save your cart on this device.';
+          _notify();
+        }
         return false;
       }
     });
@@ -217,10 +251,15 @@ class CartProvider with ChangeNotifier {
     ProductModel product, {
     int quantity = 1,
     String? variant,
+    String? variantId,
+    bool replaceExisting = false,
   }) {
     final cartItem = CartItemModel(
       id: _uuid.v4(),
       productId: product.id,
+      marketplaceListingId: product.marketplaceListingId,
+      catalogProductId: product.catalogProductId,
+      variantId: variantId,
       productName: product.name,
       productImage: product.primaryImage,
       price: product.salePrice,
@@ -231,11 +270,15 @@ class CartProvider with ChangeNotifier {
       sellerName: product.storeName,
       variant: variant,
       originalPrice: product.originalPrice,
-      discountPercentage: product.originalPrice != null && product.originalPrice! > product.salePrice
-          ? ((product.originalPrice! - product.salePrice) / product.originalPrice! * 100)
+      discountPercentage:
+          product.originalPrice != null &&
+              product.originalPrice! > product.salePrice
+          ? ((product.originalPrice! - product.salePrice) /
+                product.originalPrice! *
+                100)
           : 0.0,
     );
-    return _mutate((current) => current.addItem(cartItem));
+    return _mutate((current) => (replaceExisting ? _empty() : current).addItem(cartItem));
   }
 
   Future<bool> addOrderItems(List<CartItemModel> orderItems) {
@@ -247,11 +290,13 @@ class CartProvider with ChangeNotifier {
     return _mutate((current) {
       var cart = current;
       for (final orderItem in orderItems) {
-        cart = cart.addItem(orderItem.copyWith(
-          id: _uuid.v4(),
-          userId: _localCartId,
-          addedAt: DateTime.now(),
-        ));
+        cart = cart.addItem(
+          orderItem.copyWith(
+            id: _uuid.v4(),
+            userId: _localCartId,
+            addedAt: DateTime.now(),
+          ),
+        );
       }
       return cart;
     });
@@ -266,17 +311,30 @@ class CartProvider with ChangeNotifier {
   }
 
   Future<bool> removeItem(String productId, {String? variant}) {
-    return _mutate((current) => current.removeItem(productId, variant: variant));
+    return _mutate(
+      (current) => current.removeItem(productId, variant: variant),
+    );
   }
 
-  Future<bool> updateQuantity(String productId, int quantity, {String? variant}) {
+  Future<bool> updateQuantity(
+    String productId,
+    int quantity, {
+    String? variant,
+  }) {
     if (quantity <= 0) return removeItem(productId, variant: variant);
-    return _mutate((current) => current.updateItemQuantity(productId, quantity, variant: variant));
+    return _mutate(
+      (current) =>
+          current.updateItemQuantity(productId, quantity, variant: variant),
+    );
   }
 
   Future<bool> incrementQuantity(String productId, {String? variant}) async {
     final currentQuantity = getItemQuantity(productId, variant: variant);
-    return await updateQuantity(productId, currentQuantity + 1, variant: variant);
+    return await updateQuantity(
+      productId,
+      currentQuantity + 1,
+      variant: variant,
+    );
   }
 
   Future<bool> decrementQuantity(String productId, {String? variant}) async {
@@ -284,10 +342,26 @@ class CartProvider with ChangeNotifier {
     if (currentQuantity <= 1) {
       return await removeItem(productId, variant: variant);
     }
-    return await updateQuantity(productId, currentQuantity - 1, variant: variant);
+    return await updateQuantity(
+      productId,
+      currentQuantity - 1,
+      variant: variant,
+    );
   }
 
   Future<bool> clearCart() => _mutate((current) => current.clearCart());
+
+  /// Removes exactly the quantities captured when checkout began. Items added or changed while
+  /// the server request was in flight remain in the local cart.
+  Future<bool> removeSnapshot(
+    List<CartItemModel> snapshot, {
+    required String? expectedBuyerId,
+  }) =>
+      _mutate(
+        (current) => current.subtractSnapshot(snapshot),
+        expectedBuyerId: expectedBuyerId,
+        requireBuyerMatch: true,
+      );
 
   double calculateTotal({
     double discount = 0.0,
@@ -307,7 +381,8 @@ class CartProvider with ChangeNotifier {
     return savings;
   }
 
-  bool isInCart(String productId, {String? variant}) => _cart.hasProduct(productId, variant: variant);
+  bool isInCart(String productId, {String? variant}) =>
+      _cart.hasProduct(productId, variant: variant);
 
   int getItemQuantity(String productId, {String? variant}) =>
       _cart.getItemByProductId(productId, variant: variant)?.quantity ?? 0;
@@ -364,7 +439,10 @@ class CartProvider with ChangeNotifier {
             guestSnapshot: guestCart.items,
             buyerSnapshot: buyerCart.items,
           );
-          final written = await prefs.setString(_transferReceiptKey, jsonEncode(receipt.toMap()));
+          final written = await prefs.setString(
+            _transferReceiptKey,
+            jsonEncode(receipt.toMap()),
+          );
           if (!written) {
             _error = 'Could not start moving your guest cart on this device.';
             _notify();
@@ -373,7 +451,9 @@ class CartProvider with ChangeNotifier {
         }
 
         final done = await _completeReceipt(prefs, receipt);
-        _error = done ? null : 'Your guest cart is being moved -- try again to finish.';
+        _error = done
+            ? null
+            : 'Your guest cart is being moved -- try again to finish.';
         _notify();
         return done;
       } catch (e) {
@@ -404,7 +484,10 @@ class CartProvider with ChangeNotifier {
     final json = prefs.getString(key);
     if (json == null) return _empty();
     try {
-      return CartModel.fromMap(jsonDecode(json) as Map<String, dynamic>, _localCartId);
+      return CartModel.fromMap(
+        jsonDecode(json) as Map<String, dynamic>,
+        _localCartId,
+      );
     } catch (e) {
       debugPrint('❌ CartProvider: corrupt cart at $key, treating as empty: $e');
       return _empty();
@@ -416,7 +499,10 @@ class CartProvider with ChangeNotifier {
   /// out. Phase B (merge) is a pure function of the receipt's two frozen snapshots, so it is safe
   /// to recompute and rewrite on every call. Phase C (guest subtraction) is guarded by its own
   /// completion marker so it only ever runs once per transferId.
-  Future<bool> _completeReceipt(SharedPreferences prefs, _TransferReceipt receipt) async {
+  Future<bool> _completeReceipt(
+    SharedPreferences prefs,
+    _TransferReceipt receipt,
+  ) async {
     var merged = CartModel(
       id: _localCartId,
       userId: _localCartId,
@@ -426,7 +512,10 @@ class CartProvider with ChangeNotifier {
     for (final item in receipt.guestSnapshot) {
       merged = merged.addItem(item);
     }
-    final buyerWritten = await prefs.setString(_keyFor(receipt.buyerId), jsonEncode(merged.toMap()));
+    final buyerWritten = await prefs.setString(
+      _keyFor(receipt.buyerId),
+      jsonEncode(merged.toMap()),
+    );
     if (!buyerWritten) return false;
     if (receipt.buyerId == _activeBuyerId) {
       _cart = merged;
@@ -436,10 +525,18 @@ class CartProvider with ChangeNotifier {
     final subtractionMarker = prefs.getString(_guestSubtractionMarkerKey);
     if (subtractionMarker != receipt.transferId) {
       final currentGuestCart = await _readCart(prefs, _guestPrefsKey);
-      final newGuestCart = currentGuestCart.subtractSnapshot(receipt.guestSnapshot);
-      final guestWritten = await prefs.setString(_guestPrefsKey, jsonEncode(newGuestCart.toMap()));
+      final newGuestCart = currentGuestCart.subtractSnapshot(
+        receipt.guestSnapshot,
+      );
+      final guestWritten = await prefs.setString(
+        _guestPrefsKey,
+        jsonEncode(newGuestCart.toMap()),
+      );
       if (!guestWritten) return false;
-      final markerWritten = await prefs.setString(_guestSubtractionMarkerKey, receipt.transferId);
+      final markerWritten = await prefs.setString(
+        _guestSubtractionMarkerKey,
+        receipt.transferId,
+      );
       if (!markerWritten) return false;
     }
 
@@ -483,11 +580,11 @@ class _TransferReceipt {
   final List<CartItemModel> buyerSnapshot;
 
   Map<String, dynamic> toMap() => {
-        'transferId': transferId,
-        'buyerId': buyerId,
-        'guestSnapshot': guestSnapshot.map((i) => i.toMap()).toList(),
-        'buyerSnapshot': buyerSnapshot.map((i) => i.toMap()).toList(),
-      };
+    'transferId': transferId,
+    'buyerId': buyerId,
+    'guestSnapshot': guestSnapshot.map((i) => i.toMap()).toList(),
+    'buyerSnapshot': buyerSnapshot.map((i) => i.toMap()).toList(),
+  };
 
   factory _TransferReceipt.fromMap(Map<String, dynamic> map) {
     return _TransferReceipt(

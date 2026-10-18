@@ -12,7 +12,9 @@ import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/cli
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const payload = await createMerchantApiClient().payments.subscription.verify(body as VerifySubscriptionInput)
+        const payload = await createMerchantApiClient().payments.subscription.verify(body as VerifySubscriptionInput, {
+            idempotencyKey: request.headers.get('X-Idempotency-Key'),
+        })
 
         return NextResponse.json({
             success: true,

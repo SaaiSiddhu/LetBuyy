@@ -124,6 +124,27 @@ test('verifyInternalAppRequest delegates to getSecretsForCaller', () => {
     assert.match(internalAuthSource, /getSecretsForCaller\(c\.env,\s*callerId\)/);
 });
 
+test('single-use internal credentials use the shared replay-claim RPC, never an isolate-local Map', () => {
+    assert.doesNotMatch(internalAuthSource, /new Map\s*</);
+    assert.match(internalAuthSource, /claimInternalAuthReplayJti\(input\.env,/);
+    assert.match(internalAuthSource, /kind: 'session'/);
+    assert.match(internalAuthSource, /kind: 'identity'/);
+    assert.match(internalAuthSource, /kind: `app:\$\{app\}`/);
+    const supabaseSource = readFileSync(new URL('../lib/supabase.ts', import.meta.url), 'utf8');
+    assert.match(supabaseSource, /rpc\('consume_internal_auth_replay_jti'/);
+    assert.match(supabaseSource, /data === true/);
+    assert.match(supabaseSource, /data === false/);
+    const migration = readFileSync(new URL('../../../../database/supabase/migrations/307_internal_auth_replay_claims.sql', import.meta.url), 'utf8');
+    assert.match(migration, /CREATE TABLE IF NOT EXISTS public\.internal_auth_replay_claims/);
+    assert.match(migration, /PRIMARY KEY \(auth_kind, jti\)/);
+    assert.match(migration, /ENABLE ROW LEVEL SECURITY/);
+    assert.match(migration, /SECURITY DEFINER\s+SET search_path TO pg_catalog, public/);
+    assert.match(migration, /ON CONFLICT \(auth_kind, jti\) DO UPDATE/);
+    assert.match(migration, /LIMIT 100/);
+    assert.match(migration, /REVOKE ALL ON TABLE public\.internal_auth_replay_claims FROM PUBLIC, anon, authenticated, app_tenant, service_role/);
+    assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.consume_internal_auth_replay_jti\(text, text, integer\) TO service_role/);
+});
+
 test('sunset comment present on INTERNAL_AUTH_LEGACY_ACCEPT', () => {
     assert.match(internalAuthSource, /HR-SECRET-ROTATION/);
 });

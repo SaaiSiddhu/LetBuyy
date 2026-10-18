@@ -21,6 +21,36 @@ export type PaymentLifecycleStatus = SharedPaymentStatus;
 export type PaymentMetadata = Record<string, unknown>;
 export type PaymentWebhookHeaders = Record<string, string | string[] | undefined>;
 export type PaymentProviderMode = 'sandbox' | 'live';
+export type LivePASplitProvider = 'razorpay_route' | 'cashfree';
+
+/**
+ * Validate the shape of a non-secret approval evidence reference used to gate live PA-split paths.
+ * This is only a fail-closed configuration check; it does not validate the referenced provider
+ * contract, legal review, or account eligibility. Those remain independent human acceptance gates.
+ */
+export function isValidLivePASplitApprovalReference(value: string | null | undefined): value is string {
+  if (typeof value !== 'string') return false;
+  const reference = value.trim();
+  return reference.length >= 8
+    && reference.length <= 128
+    && /^[a-z0-9][a-z0-9._:-]+$/i.test(reference)
+    && !/skip_needs_human|replace[-_ ]?with|todo|^(none|null)$/i.test(reference);
+}
+
+export function livePASplitProviderHasApproval(
+  provider: LivePASplitProvider,
+  references: Partial<Record<LivePASplitProvider, string | null | undefined>>,
+): boolean {
+  return isValidLivePASplitApprovalReference(references[provider]);
+}
+
+export function isLivePASplitProviderReady(
+  provider: LivePASplitProvider,
+  references: Partial<Record<LivePASplitProvider, string | null | undefined>>,
+  providerConfigurationReady: boolean,
+): boolean {
+  return providerConfigurationReady && livePASplitProviderHasApproval(provider, references);
+}
 // Phase M1 (DOC 03 row 11 "Payments"): Razorpay + COD are the only live
 // money-in rails; 'cashfree' is a retired non-canonical aggregator.
 export type V1PaymentSessionProvider = Extract<PaymentProviderName, 'razorpay' | 'upi' | 'cod'>;
@@ -147,7 +177,7 @@ export interface PaymentRefundInput extends PaymentProviderReference {
 
 export interface PaymentRefundResult {
   provider: PaymentProviderName;
-  status: Extract<PaymentLifecycleStatus, 'refunded' | 'partially_refunded' | 'failed'>;
+  status: Extract<PaymentLifecycleStatus, 'pending' | 'refunded' | 'partially_refunded' | 'failed'>;
   refundedAmount: PaymentMoney;
   references: PaymentProviderReference;
   failureCode?: string;

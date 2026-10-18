@@ -89,6 +89,13 @@ export function getConsoleTotpSecretForPrincipal(email: string): string | null {
     return null;
 }
 
+/** Non-secret key identifier, bound to the effective HOTP key and account. The
+ * factor itself remains configured on the trusted Console server. */
+export function getConsoleFactorFingerprint(email:string):string|null {
+    const secret=getConsoleTotpSecretForPrincipal(email);
+    if(!secret)return null;
+    return createHmac('sha256',Buffer.from(decodeBase32(secret))).update('letbuyy-console-factor-v1\0'+normalizeConsoleEmail(email)).digest('hex');
+}
 function decodeBase32(secret: string) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     const normalized = secret.replace(/=+$/g, '').replace(/\s+/g, '').toUpperCase();
@@ -129,90 +136,28 @@ function hotp(secret: Uint8Array, counter: number) {
     return code.toString().padStart(6, '0');
 }
 
-export type MfaVerificationResult =
-    | { ok: true }
-    | { ok: false; reason: 'invalid' | 'locked' };
-
-// SUSTAINED-E: verifyConsoleTotp had none of the three things an OTP check needs against a live
-// guesser -- a lockout, replay rejection and a constant-time comparison. A caller holding only the
-// pre-MFA session cookie (set the moment step 1's magic link is followed, before MFA) could POST
-// /api/console-auth/mfa without limit: 10^6 codes, 3 valid 30s windows accepted per submission,
-// and nothing counted a failure. `===` also leaks per-character timing. None of that needs the
-// bigger identity-platform migration decision (BRANCH_DISPOSITIONS.md's row for this phase) to
-// fix -- it is a property of this endpoint alone.
-//
-// Process-local by design and documented as a floor, not the final answer: a real multi-instance
-// deployment needs a shared store (KV/Postgres) for both maps below, the same way any of this
-// repository's other rate limits do once they leave a single process. `apps/internal/console` has
-// no such store wired today (no identity-platform integration at all -- see the BLOCKED_DECISION
-// row for this phase), so this is the improvement available without inventing one.
-const MFA_MAX_ATTEMPTS = 5;
-const MFA_LOCKOUT_MS = 5 * 60_000;
-const mfaAttempts = new Map<string, { failures: number; lockedUntil: number }>();
-const mfaLastAcceptedCounter = new Map<string, number>();
+export type ConsoleTotpMatch =
+    | { ok: true; counter: number }
+    | { ok: false; reason: 'invalid' | 'unavailable' };
 
 function constantTimeEquals(a: string, b: string): boolean {
-    const bufA = Buffer.from(a);
-    const bufB = Buffer.from(b);
-    if (bufA.length !== bufB.length) return false;
-    return timingSafeEqual(bufA, bufB);
+    const left=Buffer.from(a),right=Buffer.from(b);
+    return left.length===right.length && timingSafeEqual(left,right);
 }
 
-function recordMfaFailure(principal: string, now: number): void {
-    const current = mfaAttempts.get(principal) ?? { failures: 0, lockedUntil: 0 };
-    const failures = current.failures + 1;
-    mfaAttempts.set(principal, {
-        failures,
-        lockedUntil: failures >= MFA_MAX_ATTEMPTS ? now + MFA_LOCKOUT_MS : 0,
-    });
-}
-
-/// Test-only: clears this module's in-memory MFA guard state so tests do not bleed into each other.
-export function resetConsoleMfaGuardStateForTests(): void {
-    mfaAttempts.clear();
-    mfaLastAcceptedCounter.clear();
-}
-
-export function verifyConsoleTotp(code: string, email: string): MfaVerificationResult {
-    const principal = normalizeConsoleEmail(email);
-    const now = Date.now();
-
-    const lockState = mfaAttempts.get(principal);
-    if (lockState && lockState.lockedUntil > now) {
-        return { ok: false, reason: 'locked' };
+/** Pure configured-factor matching only. This is never authorization: the
+ * Gateway's durable actor/session transaction owns attempts and one-use state. */
+export function matchConsoleTotpCounter(code: string, email: string): ConsoleTotpMatch {
+    const value=code.trim(),counter=Math.floor(Date.now()/30000);
+    const devCode=process.env.PLATFORM_CONSOLE_DEV_MFA_CODE;
+    if(canUseConsoleDevMfaBypass() && devCode && constantTimeEquals(value,devCode))return {ok:true,counter};
+    const secret=getConsoleTotpSecretForPrincipal(email);
+    if(!secret)return {ok:false,reason:'unavailable'};
+    if(!/^\d{6}$/.test(value))return {ok:false,reason:'invalid'};
+    const bytes=decodeBase32(secret);
+    for(const offset of [-1,0,1]) {
+        const candidate=counter+offset;
+        if(constantTimeEquals(hotp(bytes,candidate),value))return {ok:true,counter:candidate};
     }
-
-    const normalizedCode = code.trim();
-    const devCode = process.env.PLATFORM_CONSOLE_DEV_MFA_CODE;
-
-    if (canUseConsoleDevMfaBypass() && devCode && constantTimeEquals(normalizedCode, devCode)) {
-        mfaAttempts.delete(principal);
-        return { ok: true };
-    }
-
-    const secret = getConsoleTotpSecretForPrincipal(email);
-    if (!secret || !/^\d{6}$/.test(normalizedCode)) {
-        recordMfaFailure(principal, now);
-        return { ok: false, reason: 'invalid' };
-    }
-
-    const secretBytes = decodeBase32(secret);
-    const counter = Math.floor(now / 30_000);
-    const priorAccepted = mfaLastAcceptedCounter.get(principal) ?? -1;
-
-    for (let offset = -1; offset <= 1; offset += 1) {
-        const candidateCounter = counter + offset;
-        // A code already accepted for this or an earlier window is a replay, not a fresh proof --
-        // checked even before the comparison, so a resubmitted VALID code costs nothing extra but
-        // is still refused.
-        if (candidateCounter <= priorAccepted) continue;
-        if (constantTimeEquals(hotp(secretBytes, candidateCounter), normalizedCode)) {
-            mfaLastAcceptedCounter.set(principal, candidateCounter);
-            mfaAttempts.delete(principal);
-            return { ok: true };
-        }
-    }
-
-    recordMfaFailure(principal, now);
-    return { ok: false, reason: 'invalid' };
+    return {ok:false,reason:'invalid'};
 }

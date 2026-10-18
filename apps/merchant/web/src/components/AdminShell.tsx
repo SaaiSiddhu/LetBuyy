@@ -7,6 +7,7 @@ import HeaderBar from './HeaderBar'
 import TrialBanner from './TrialBanner'
 import CommandPalette from './CommandPalette'
 import AISidebar from './AISidebar'
+import { MerchantSecurityContext } from './security/MerchantSecurityContext'
 import type { SessionUser } from '@/lib/auth/session'
 import { AppNavigation, Button, LayoutDashboard, MaterialIcon, Navigation, ToastProvider, acquireScrollLock, isNavItemActive, type AppNavigationSection, type NavigationItem } from '@letbuyy/ui'
 import { getMerchantNavigation, type MerchantNavItem } from './merchantNavigation'
@@ -152,7 +153,9 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {
-        return <ToastProvider>{children}</ToastProvider>
+        return <ToastProvider><MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+                                    {children}
+                                </MerchantSecurityContext.Provider></ToastProvider>
     }
 
     // Settings routes reuse the SAME shell and the SAME drawer — only the nav
@@ -266,7 +269,9 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                 </div>
                             )}
 
-                            {children}
+                            <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+                                    {children}
+                                </MerchantSecurityContext.Provider>
                         </div>
                     ) : (
                         // min-h-full, not h-full: the scrollport is definite now, so
@@ -285,7 +290,9 @@ export default function MerchantControlPlaneShell({ store, storeData, user, user
                                     </div>
                                 )}
 
-                                {children}
+                                <MerchantSecurityContext.Provider key={`${user.id}:${store}`} value={{ actorId: user.id, store }}>
+                                    {children}
+                                </MerchantSecurityContext.Provider>
 
                                 {pathname?.endsWith('/dashboard') && (
                                     <TrialBanner

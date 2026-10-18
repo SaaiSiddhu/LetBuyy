@@ -7,8 +7,8 @@
  *                       SIGNAL_CATALOG. Deduped by sorted(requiredEnv).join(','), ordered by
  *                       the deduped key. present = creds.check(requiredEnv).present.
  *
- *  tokens()           — FIXED list of the 4 constitutional token issuers (HS256/ES256/HMAC).
- *                       Derived from CLAUDE.md and types.ts TokenPosture.issuer union.
+ *  tokens()           — FIXED list of four identity/token-signature posture families.
+ *                       Includes the legacy customer-session bridge and non-user HMAC signatures.
  *
  *  identitySurfaces() — FIXED structural list of auth surfaces. Live metrics always
  *                       NOT_CONNECTED with exact liveSource naming the ops service + env vars.
@@ -33,7 +33,7 @@ function envKey(envVars: readonly string[]): string {
   return [...envVars].sort().join(',');
 }
 
-// ── FIXED token issuer definitions ───────────────────────────────────────────
+// ── FIXED identity/token-signature posture definitions ──────────────────────
 
 interface IssuerDef {
   readonly issuer: TokenPosture['issuer'];
@@ -48,18 +48,19 @@ const ISSUER_DEFS: readonly IssuerDef[] = [
     algorithm: 'HS256',
     requiredEnv: ['CUSTOMER_SESSION_SECRET'],
     detail:
-      'Customer session tokens — HS256 symmetric HMAC. ' +
-      'Issued by identity-platform via issueCustomerSession(). ' +
-      'Consumers: customer-web, merchant-web customer auth.',
+      'Legacy store-customer session bridge — HS256 symmetric HMAC using CUSTOMER_SESSION_SECRET. ' +
+      'Gateway and Commerce currently issue compatible store-scoped customer cookies; ' +
+      'this is not the canonical identity-platform issuer. Treat as transitional until ' +
+      'consumer migration and hosted usage observation are accepted.',
   },
   {
-    issuer: 'merchant-identity',
-    algorithm: 'ES256',
+    issuer: 'identity-platform',
+    algorithm: 'EdDSA (ES256 fallback)',
     requiredEnv: ['LETBUYY_IDENTITY_PUBLIC_JWKS'],
     detail:
-      'Merchant identity tokens — ES256 asymmetric ECDSA. ' +
-      'Issued by identity-platform; verified via LETBUYY_IDENTITY_PUBLIC_JWKS. ' +
-      'Consumers: api-gateway verifySiteOwnership, merchant-web.',
+      'Canonical identity-platform user sessions use asymmetric signing (EdDSA with ES256 fallback) ' +
+      'for merchant, buyer, and storefront realms. LETBUYY_IDENTITY_PUBLIC_JWKS is a verifier key ' +
+      'configuration, not proof of a live issuer key or hosted deployment.',
   },
   {
     issuer: 'step-up',
@@ -93,18 +94,18 @@ const SURFACE_DEFS: readonly SurfaceDef[] = [
   {
     surface: 'customer-login',
     detail:
-      'Storefront customer login — email/password + HS256 session token issuance. ' +
+      'Legacy store-customer email/password login issues an HS256 compatibility session. ' +
+      'The canonical buyer sign-in is the identity-platform asymmetric flow; these are distinct paths. ' +
       'Protected by Turnstile bot gate and Upstash Redis rate-limit. ' +
-      'Structural: issueCustomerSession() in identity-platform confirmed.',
+      'Hosted traffic and live enforcement metrics are not connected here.',
     liveSource:
       'lcis-operations SecurityOperationsService (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)',
   },
   {
     surface: 'merchant-oauth',
     detail:
-      'Merchant OAuth login — ES256 identity token via identity-platform. ' +
-      'PKCE flow; verified by api-gateway verifySiteOwnership + LETBUYY_IDENTITY_PUBLIC_JWKS. ' +
-      'Structural: ES256 issuer confirmed in architecture.',
+      'Canonical merchant identity sessions are issued by identity-platform using asymmetric signing ' +
+      '(EdDSA with ES256 fallback). PKCE client flow; verifier configuration is not proof of hosted key presence.',
     liveSource:
       'lcis-operations SecurityOperationsService (SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)',
   },
@@ -193,8 +194,8 @@ export class IdentitySecretService {
   }
 
   /**
-   * FIXED list of the 4 constitutional token issuers.
-   * Order matches the frozen TokenPosture.issuer union declaration.
+   * Fixed list of identity/token-signature posture families.
+   * Step-up and queue-envelope entries are signatures, not user identity issuers.
    */
   tokens(): readonly TokenPosture[] {
     return ISSUER_DEFS.map((def): TokenPosture => {

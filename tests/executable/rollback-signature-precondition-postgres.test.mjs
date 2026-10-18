@@ -50,6 +50,25 @@ const GUARDED_ROLLBACKS = new Map([
     [219, '219_purchase_parent_child_orders'],
 ]);
 
+// Candidate restorers keep their original bodies. Each is exercised at the exact
+// migration where it belongs, not against a later body that happens to share its ABI.
+const CANDIDATE_ROLLBACKS = new Map([
+    [280, '280_price_reference_preceding_announcement'],
+    [285, '285_storefront_web_onboarding_completion_status'],
+    [288, '288_ledger_idempotency_payload_conflict'],
+    [291, '291_ad_credit_idempotency_payload_conflict'],
+    [293, '293_ad_credit_purchase_canonical_liability'],
+    [294, '294_payout_release_payable_reservation'],
+    [296, '296_marketplace_order_category_snapshot'],
+    [303, '303_canonical_wallet_reconciliation_projection'],
+    [305, '305_restore_payment_transaction_ledger_source_resolution'],
+    [318, '318_session_bound_trust_reinstatement'],
+    [324, '324_canonical_merchant_staff_invitations'],
+    [328, '328_subscription_checkout_source'],
+    [329, '329_approved_operator_mfa_reset'],
+]);
+const ALL_SNAPSHOTS = new Map([...GUARDED_ROLLBACKS, ...CANDIDATE_ROLLBACKS]);
+
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -100,7 +119,7 @@ before(() => {
     for (const migration of listMigrations()) {
         psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', migration), 'utf8')));
         const number = migrationNumber(migration);
-        if (GUARDED_ROLLBACKS.has(number)) {
+        if (ALL_SNAPSHOTS.has(number)) {
             // TEMPLATE copies the database as it stands, which is far cheaper than replaying the
             // migrations six times over. It needs no open connections to the source — every psql
             // call above has already disconnected.
@@ -118,11 +137,77 @@ before(() => {
 
 after(() => {
     if (skip) return;
-    for (const number of GUARDED_ROLLBACKS.keys()) {
+    for (const number of ALL_SNAPSHOTS.keys()) {
         try { psql(`DROP DATABASE IF EXISTS "${snapshotFor(number)}";`, 'postgres'); } catch { /* leave for inspection */ }
     }
     try { psql(`DROP DATABASE IF EXISTS "${ROUND_TRIP_219}";`, 'postgres'); } catch { /* leave for inspection */ }
     try { psql(`DROP DATABASE IF EXISTS "${databaseName}";`, 'postgres'); } catch { /* leave for inspection */ }
+});
+
+const quote = (value) => `'${value.replaceAll("'", "''")}'`;
+const transactionBody = (sql) => sql.replace(/^BEGIN;\s*$/gm, '').replace(/^COMMIT;\s*$/gm, '');
+const stripPrecondition = (sql) => sql.replace(/DO \$rollback_precondition\$[\s\S]*?\$rollback_precondition\$;\n/, '');
+const functionState = (db) => psql(`SELECT coalesce(jsonb_agg(jsonb_build_object(
+    'signature', p.oid::regprocedure::text, 'definition_hash', md5(pg_get_functiondef(p.oid)),
+    'owner', p.proowner::regrole::text, 'acl', p.proacl::text) ORDER BY p.oid::regprocedure::text),'[]'::jsonb)
+    FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.prokind='f';`, db);
+const restoredFunctions = (sql, db) => {
+    const names = [...new Set([...sql.matchAll(/CREATE OR REPLACE FUNCTION public\.([a-z0-9_]+)\s*\(/gi)].map(match => match[1]))];
+    return JSON.parse(psql(`SELECT jsonb_agg(jsonb_build_object(
+        'name', p.proname, 'signature', p.oid::regprocedure::text,
+        'definition', pg_get_functiondef(p.oid), 'input_names', p.proargnames[1:p.pronargs],
+        'arguments', (SELECT string_agg(format('%I %s', p.proargnames[i+1], format_type(p.proargtypes[i],NULL)), ', ' ORDER BY i)
+            FROM generate_series(0,p.pronargs-1) i)) ORDER BY p.proname)
+        FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+        WHERE n.nspname='public' AND p.proname IN (${names.map(quote).join(',')});`, db));
+};
+
+test('candidate rollback/forward pairs work at their own migration points and restore bodies, owners and ACLs', { skip }, () => {
+    for (const [number, name] of CANDIDATE_ROLLBACKS) {
+        const db = snapshotFor(number);
+        const before = functionState(db);
+        psql(rollbackSql(name), db);
+        if (number === 296) assert.equal(psql("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='order_items' AND column_name='marketplace_category_id');",db),'f');
+        const forward = listMigrations().find(file => migrationNumber(file) === number);
+        psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot,'database/supabase/migrations',forward),'utf8')),db);
+        assert.equal(functionState(db),before,`rollback ${number}: paired forward restores every public function body/owner/ACL`);
+        if (number === 296) assert.equal(psql("SELECT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='order_items' AND column_name='marketplace_category_id');",db),'t');
+    }
+});
+
+test('every candidate restorer refuses an extra overload, changed typed ABI, input names and result ABI atomically', { skip }, () => {
+    let checked = 0;
+    for (const [number, name] of CANDIDATE_ROLLBACKS) {
+        const db = snapshotFor(number), rollback = transactionBody(rollbackSql(name));
+        for (const fn of restoredFunctions(rollback,db)) {
+            const before = functionState(db);
+            const stub = `CREATE FUNCTION public.${fn.name}(synthetic_argument integer) RETURNS integer LANGUAGE sql AS $$ SELECT 1 $$;`;
+            for (const drift of [stub, `DROP FUNCTION ${fn.signature} CASCADE; ${stub}`,
+                `DROP FUNCTION ${fn.signature} CASCADE; CREATE FUNCTION public.${fn.name}(${fn.arguments ?? ''}) RETURNS text LANGUAGE sql AS $$ SELECT 'synthetic ABI drift'::text $$;`]) {
+                const error = psqlExpectingFailure(`BEGIN; ${drift}\n${rollback}\nCOMMIT;`,db);
+                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run`),`${number}/${fn.name}: drift must be refused by the guard`);
+                assert.equal(functionState(db),before,`${number}/${fn.name}: refusal preserves all function bodies/owners/ACLs`);
+            }
+            if (fn.input_names?.length) {
+                const renamed = fn.definition.replace(new RegExp(`\\b${fn.input_names[0]}\\b`,'g'),'synthetic_renamed_input');
+                const error = psqlExpectingFailure(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${renamed};\n${rollback}\nCOMMIT;`,db);
+                assert.match(error ?? '',new RegExp(`rollback ${number} refuses to run: .*input names`));
+                assert.equal(functionState(db),before);
+            }
+            // A negative control proves that the historical script itself accepts a
+            // different typed ABI and adds its original overload when the guard is absent.
+            const withoutGuard = stripPrecondition(rollback);
+            assert.ok(!withoutGuard.includes('$rollback_precondition$'));
+            const result = psql(`BEGIN; DROP FUNCTION ${fn.signature} CASCADE; ${stub}\n${withoutGuard}
+                SELECT count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+                WHERE n.nspname='public' AND p.proname=${quote(fn.name)}; ROLLBACK;`,db);
+            assert.equal(result.split('\n').at(-1),'2',`${number}/${fn.name}: removing the guard reproduces two overloads`);
+            assert.equal(functionState(db),before,'negative control rolls back its own synthetic drift and effects');
+            checked += 1;
+        }
+    }
+    assert.equal(checked,20,'each of the 20 current restored signatures receives real database drift/negative controls, including both intentional MFA overloads');
 });
 
 test('the database starts clean: exactly one create_checkout_order, taking 20 parameters', { skip }, () => {
@@ -227,13 +312,17 @@ test('no OTHER function in the schema has this exposure', { skip }, () => {
     // their inputs matched their rollbacks exactly. Counting outputs as parameters would have widened
     // this phase's scope on a measurement error.
     const live = new Map();
+    const liveSignatures = new Map();
+    const normalizeSignature = (signature) => signature.replace(/^public\./, '').replace(/\s+/g, '').toLowerCase();
     for (const row of psql(`
-        SELECT p.proname || E'\\x01' || p.pronargs
+        SELECT p.proname || E'\\x01' || p.pronargs || E'\\x01' || p.oid::regprocedure::text
         FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
         WHERE n.nspname = 'public' AND p.prokind = 'f';`).split('\n').filter(Boolean)) {
-        const [name, count] = row.split('\x01');
+        const [name, count, signature] = row.split('\x01');
         if (!live.has(name)) live.set(name, new Set());
         live.get(name).add(Number(count));
+        if (!liveSignatures.has(name)) liveSignatures.set(name, new Set());
+        liveSignatures.get(name).add(normalizeSignature(signature));
     }
 
     const offenders = [];
@@ -250,7 +339,9 @@ test('no OTHER function in the schema has this exposure', { skip }, () => {
                 else if (sql[index] === ')') { depth -= 1; if (!depth) break; }
                 index += 1;
             }
-            const params = sql.slice(start, index);
+            // Whole-line comments are not arguments. In rollback 291 a comma in
+            // the explanation of NULL made the old scanner report 7 instead of 6.
+            const params = sql.slice(start, index).split('\n').filter(line => !/^\s*--/.test(line)).join('\n');
             let created = 0, nesting = 0, current = '';
             for (const character of params) {
                 if (character === '(') nesting += 1;
@@ -262,6 +353,12 @@ test('no OTHER function in the schema has this exposure', { skip }, () => {
 
             if (live.get(name).has(created)) continue;                 // matches a live signature: replaces
             if (sql.includes('$rollback_precondition$')) continue;     // guarded: refuses instead
+            // An intentional signature change can drop the current function first.
+            // Require exact DROP targets for ALL live overloads, not just a DROP
+            // somewhere in the file. 284 drops six arguments before restoring five.
+            const dropped = new Set([...sql.matchAll(/DROP\s+FUNCTION\s+(?:IF\s+EXISTS\s+)?public\.([a-z0-9_]+)\s*\(([^)]*)\)\s*;/gi)]
+                .map(drop => normalizeSignature(`${drop[1]}(${drop[2]})`)));
+            if ([...liveSignatures.get(name)].every(signature => dropped.has(signature))) continue;
             offenders.push(`${file}: ${name} creates ${created} parameters, live has [${[...live.get(name)]}]`);
         }
     }

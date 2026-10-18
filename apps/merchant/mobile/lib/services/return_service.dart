@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 
 import 'api_client.dart';
+import 'security_command_store.dart';
+import 'two_factor_service.dart';
 
 class MerchantReturn {
   MerchantReturn(this._json);
@@ -28,12 +30,34 @@ class MerchantReturn {
 }
 
 class ReturnService extends ChangeNotifier {
-  ReturnService({required ApiClient api}) : _api = api;
+  ReturnService({
+    required ApiClient api,
+    SecurityCommandStore? securityCommands,
+  }) : _api = api,
+       _commands = securityCommands ?? SecurityCommandStore();
+  final SecurityCommandStore _commands;
+  Object? _returnsContext;
+  Object? get requestContext => _api.captureRequestContext();
+  void _check(MerchantSecurityContext c) {
+    if (c.version == null || requestContext != c.version)
+      throw TwoFactorService.changed();
+  }
+
+  Future<JsonMap?> pendingRefundCompletion(
+    String id,
+    MerchantSecurityContext c,
+  ) async => (await _commands.read(
+    c,
+    'complete-return:$id',
+    check: () => _check(c),
+  ))?.intent;
 
   final ApiClient _api;
 
   List<MerchantReturn> _returns = [];
-  List<MerchantReturn> get returns => List.unmodifiable(_returns);
+  List<MerchantReturn> get returns => _returnsContext == requestContext
+      ? List.unmodifiable(_returns)
+      : const [];
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -44,10 +68,15 @@ class ReturnService extends ChangeNotifier {
     int page = 1,
     int limit = 20,
   }) async {
+    final captured = requestContext;
     _isLoading = true;
     notifyListeners();
     try {
       final result = await _api.returns.list(
+        options: ApiRequestOptions(
+          expectedContextVersion: captured,
+          storeId: storeId,
+        ),
         query: {
           'store_id': storeId,
           'status': status,
@@ -55,6 +84,8 @@ class ReturnService extends ChangeNotifier {
           'limit': limit,
         },
       );
+      if (captured != requestContext) throw TwoFactorService.changed();
+      _returnsContext = captured;
       _returns = result.data
           .map(MerchantReturn.fromJson)
           .toList(growable: false);
@@ -73,17 +104,27 @@ class ReturnService extends ChangeNotifier {
     List<JsonMap>? lines,
     String? idempotencyKey,
   }) async {
+    final captured = requestContext;
     final key =
         idempotencyKey ??
         'mobile-return-$orderId-${DateTime.now().microsecondsSinceEpoch}';
-    final data = await _api.returns.create({
-      'order_id': orderId,
-      'idempotency_key': key,
-      if (lines != null && lines.isNotEmpty) 'lines': lines,
-      if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
-      'refund_method': refundMethod,
-      'restock': restock,
-    });
+    final data = await _api.returns.create(
+      {
+        'order_id': orderId,
+        'idempotency_key': key,
+        if (lines != null && lines.isNotEmpty) 'lines': lines,
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+        'refund_method': refundMethod,
+        'restock': restock,
+      },
+      options: ApiRequestOptions(
+        expectedContextVersion: captured,
+        idempotencyKey: key,
+      ),
+    );
+    if (captured != requestContext) throw TwoFactorService.changed();
+    if (_returnsContext != captured) _returns = [];
+    _returnsContext = captured;
     final created = MerchantReturn.fromJson(data);
     _upsert(created);
     return created;
@@ -94,10 +135,14 @@ class ReturnService extends ChangeNotifier {
     required String status,
     String? notes,
   }) async {
+    final captured = requestContext;
     final data = await _api.returns.update(returnId, {
       'status': status,
       if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
-    });
+    }, options: ApiRequestOptions(expectedContextVersion: captured));
+    if (captured != requestContext) throw TwoFactorService.changed();
+    if (_returnsContext != captured) _returns = [];
+    _returnsContext = captured;
     final updated = MerchantReturn.fromJson(data);
     _upsert(updated);
     return updated;
@@ -105,25 +150,54 @@ class ReturnService extends ChangeNotifier {
 
   Future<MerchantReturn> completeRefund(
     String returnId, {
+    required MerchantStepUpProof approval,
     String? refundId,
     String? providerRefundId,
     String? notes,
-    String? idempotencyKey,
-  }) async {
-    final key =
-        idempotencyKey ??
-        'mobile-return-refund-$returnId-${DateTime.now().microsecondsSinceEpoch}';
-    final data = await _api.returns.completeRefund(returnId, {
-      'idempotency_key': key,
+  }) {
+    approval.ensureCurrent(_api);
+    final c = approval.context;
+    final intent = <String, dynamic>{
       if (refundId != null && refundId.trim().isNotEmpty)
         'refund_id': refundId.trim(),
       if (providerRefundId != null && providerRefundId.trim().isNotEmpty)
         'provider_refund_id': providerRefundId.trim(),
       if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+    };
+    return _commands.serialized(() async {
+      approval.ensureCurrent(_api);
+      final pending = await _commands.prepare(
+        c,
+        'complete-return:$returnId',
+        intent,
+        check: () => approval.ensureCurrent(_api),
+      );
+      final data = await _api.returns.completeRefund(returnId, {
+        ...pending.intent,
+        'idempotency_key': pending.key,
+      }, options: approval.options(pending.key));
+      approval.ensureCurrent(_api);
+      final updated = MerchantReturn.fromJson(data);
+      if (updated.id != returnId ||
+          updated.storeId != c.storeId ||
+          updated.refundStatus != 'succeeded' ||
+          (refundId != null &&
+              refundId.isNotEmpty &&
+              updated.refundId != refundId))
+        throw const FormatException(
+          'Refund completion is not confirmed. Retry the original request.',
+        );
+      await _commands.complete(
+        c,
+        pending,
+        check: () => approval.ensureCurrent(_api),
+      );
+      approval.ensureCurrent(_api);
+      if (_returnsContext != requestContext) _returns = [];
+      _returnsContext = requestContext;
+      _upsert(updated);
+      return updated;
     });
-    final updated = MerchantReturn.fromJson(data);
-    _upsert(updated);
-    return updated;
   }
 
   void _upsert(MerchantReturn record) {

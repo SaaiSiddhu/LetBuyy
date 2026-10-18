@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { AppError } from './errors';
 
 export interface WorkerAuthUser {
     id: string;
@@ -11,6 +12,7 @@ export interface CustomUser {
     id: string;
     email: string;
     full_name?: string | null;
+    email_verified?: boolean;
 }
 
 function isMissingDeletedAtError(error: { message?: string } | null | undefined): boolean {
@@ -18,41 +20,21 @@ function isMissingDeletedAtError(error: { message?: string } | null | undefined)
 }
 
 export async function resolveCustomUser(db: SupabaseClient, authUser: WorkerAuthUser): Promise<CustomUser | null> {
+    if (!authUser.id) return null;
     try {
-        const { data: userById } = await db
+        const { data: userById, error } = await db
             .from('users_custom')
-            .select('id, email, full_name')
+            .select('id, email, full_name, email_verified')
             .eq('id', authUser.id)
             .maybeSingle();
 
-        if (userById) {
-            return userById as CustomUser;
-        }
-
-        if (authUser.email) {
-            const { data: userByEmail } = await db
-                .from('users_custom')
-                .select('id, email, full_name')
-                .eq('email', authUser.email.toLowerCase())
-                .maybeSingle();
-
-            if (userByEmail) {
-                return userByEmail as CustomUser;
-            }
-        }
+        if (error) throw new Error('Canonical account lookup failed');
+        // The issuer's subject is the canonical account ID. An asserted email
+        // is neither an account link nor permission to assume another subject.
+        return userById ? userById as CustomUser : null;
     } catch {
-        // DB connection error — fall through to authUser fallback
+        throw new AppError('The account is temporarily unavailable. Retry this request.', 503, 'ACCOUNT_STATE_UNAVAILABLE');
     }
-
-    if (authUser.id || authUser.email) {
-        return {
-            id: authUser.id || 'dev-local-user-id',
-            email: authUser.email || 'saaisiddu@gmail.com',
-            full_name: 'Local Merchant',
-        };
-    }
-
-    return null;
 }
 
 export async function verifySiteOwnership(

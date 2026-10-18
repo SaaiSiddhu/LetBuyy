@@ -1,7 +1,9 @@
+import {z} from 'zod';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import {
     createRazorpayOrder,
     createRazorpaySubscription,
+    fetchRazorpayOrdersByReceipt,
 } from '@letbuyy/infrastructure/razorpay-adapter';
 import {
     applyStorePlanTierDefaults,
@@ -14,7 +16,8 @@ import {
 } from '@letbuyy/billing-core';
 import { resolveFoundingCheckoutLock, isPlanPurchasable } from './founding-pricing';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
-import { NotFoundError } from './errors';
+import { subscriptionCheckoutRpc, type SubscriptionCheckoutCharge } from './subscription-checkout-source';
+import { AppError, NotFoundError } from './errors';
 import { errorBody } from './supabase';
 
 type SubscriptionCheckoutEnv = {
@@ -29,6 +32,7 @@ export type SubscriptionCheckoutResult = {
 
 type SubscriptionCheckoutInput = {
     db: SupabaseClient;
+    idempotencyKey: string;
     env: SubscriptionCheckoutEnv;
     userId: string;
     storeId: string;
@@ -40,6 +44,11 @@ type SubscriptionCheckoutInput = {
 };
 
 export async function createMerchantSubscriptionCheckout(input: SubscriptionCheckoutInput): Promise<SubscriptionCheckoutResult> {
+    const request={plan_slug:input.planSlug,site_type:input.siteType,billing_period:input.billingPeriod,
+        approved_usage_charges:normalizeMerchantApprovedUsageCharges(input.approvedUsageCharges),coupon_code:input.couponCode||null};
+    const claimArgs={p_actor:input.userId,p_site:input.storeId,p_key:input.idempotencyKey,p_request:request};
+    const retained=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',claimArgs);
+    if(retained.charge)return resumeCheckout(input,retained.charge,false);
     const { data: rawPlan } = await input.db
         .from('plans')
         .select('*')
@@ -123,41 +132,13 @@ export async function createMerchantSubscriptionCheckout(input: SubscriptionChec
     }
 
     if (checkout.mode === 'razorpay_subscription' && checkout.subscription) {
-        if (input.couponCode) {
-            return {
-                status: 400,
-                body: errorBody('COUPON_NOT_SUPPORTED', 'Coupons are not supported for auto-renewing subscriptions on this plan'),
-            };
-        }
-        const subscription = await createRazorpaySubscription(
-            { keyId: input.env.RAZORPAY_KEY_ID, keySecret: input.env.RAZORPAY_KEY_SECRET },
-            checkout.subscription,
-        );
-
-        if (!subscription.id) {
-            return {
-                status: 502,
-                body: errorBody('PAYMENT_PROVIDER_ERROR', subscription.error?.description || 'Failed to create recurring subscription'),
-            };
-        }
-
-        return {
-            body: {
-                data: {
-                    razorpay_order_id: null,
-                    razorpay_subscription_id: subscription.id,
-                    checkout_mode: checkout.mode,
-                    amount: checkout.amount_minor,
-                    currency: checkout.currency,
-                    key_id: input.env.RAZORPAY_KEY_ID,
-                    plan: checkout.plan_payload,
-                    billing_period: checkout.billing_period,
-                    is_promo: checkout.is_promo,
-                    recurring: true,
-                    short_url: subscription.short_url || null,
-                },
-            },
-        };
+        if(input.couponCode)return {status:400,body:errorBody('COUPON_NOT_SUPPORTED','Coupons are not supported for auto-renewing subscriptions on this plan')};
+        const claimed=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
+            mode:checkout.mode,plan:effectivePlan,amount_minor:checkout.amount_minor,currency:checkout.currency,
+            provider_input:checkout.subscription,response:{checkout_mode:checkout.mode,amount:checkout.amount_minor,currency:checkout.currency,
+                plan:checkout.plan_payload,billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:true}}});
+        if(!claimed.charge)throw new AppError('Checkout state is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
+        return resumeCheckout(input,claimed.charge,claimed.claimed===true);
     }
 
     if (!checkout.order) {
@@ -204,35 +185,51 @@ export async function createMerchantSubscriptionCheckout(input: SubscriptionChec
         };
     }
 
-    const order = await createRazorpayOrder(
-        { keyId: input.env.RAZORPAY_KEY_ID, keySecret: input.env.RAZORPAY_KEY_SECRET },
-        orderSpec,
-    );
+    const claimed=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
+        mode:checkout.mode,plan:effectivePlan,amount_minor:orderSpec.amount,currency:checkout.currency,provider_input:orderSpec,
+        response:{checkout_mode:checkout.mode,amount:orderSpec.amount,currency:checkout.currency,plan:checkout.plan_payload,
+            billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:false,...(couponData?{coupon:couponData}:{})}}});
+    if(!claimed.charge)throw new AppError('Checkout state is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
+    return resumeCheckout(input,claimed.charge,claimed.claimed===true);
+}
 
-    if (!order.id) {
-        return {
-            status: 502,
-            body: errorBody('PAYMENT_PROVIDER_ERROR', 'Failed to create subscription payment order'),
-        };
+async function resumeCheckout(input:SubscriptionCheckoutInput,charge:SubscriptionCheckoutCharge,claimed:boolean):Promise<SubscriptionCheckoutResult>{
+    const quote=charge.subscription_checkout;
+    if(!input.env.RAZORPAY_KEY_ID||!input.env.RAZORPAY_KEY_SECRET)throw new AppError('Razorpay is not configured.',503,'PAYMENT_UNAVAILABLE');
+    const credentials={keyId:input.env.RAZORPAY_KEY_ID,keySecret:input.env.RAZORPAY_KEY_SECRET};
+    let reference=charge.subscription_checkout_reference,shortUrl=typeof quote.short_url==='string'?quote.short_url:null;
+    const receipt='sub-'+charge.id;
+    const pending=()=>new AppError('Checkout creation is awaiting provider reconciliation. Retry this same request key; no new payment was created by this retry.',503,'SUBSCRIPTION_CHECKOUT_PENDING');
+    if(!reference){
+        if(!quote.provider_input||!charge.id)throw pending();
+        const notes={...((quote.provider_input.notes||{}) as Record<string,string>),subscription_checkout_id:charge.id};
+        if(!claimed){
+            // A missing result never authorizes another POST. Reconcile an exact order receipt.
+            if(quote.mode!=='razorpay_order')throw pending();
+            const found=await fetchRazorpayOrdersByReceipt(credentials,receipt).catch(()=>null);
+            const matches=found?.items?.filter(row=>row.receipt===receipt&&row.amount===charge.amount&&row.currency===charge.currency
+                &&row.notes?.subscription_checkout_id===charge.id&&row.notes?.store_id===input.storeId&&row.notes?.user_id===input.userId);
+            if(found?.error||found?.items?.length!==1||matches?.length!==1||!matches[0].id)throw pending();
+            reference=matches[0].id;
+        }else{
+            try{
+                if(quote.mode==='razorpay_subscription'){
+                    const created=await createRazorpaySubscription(credentials,{...z.object({plan_id:z.string(),total_count:z.number().int().positive(),quantity:z.number().optional(),customer_notify:z.boolean().optional(),addons:z.array(z.object({item:z.object({name:z.string(),amount:z.number(),currency:z.string()}),quantity:z.number().optional()})).optional()}).parse(quote.provider_input),notes});
+                    if(!created.id||created.error||created.plan_id!==quote.provider_input.plan_id)throw pending();
+                    reference=created.id;shortUrl=created.short_url||null;
+                }else{
+                    const created=await createRazorpayOrder(credentials,{...z.object({amount:z.number().int().positive(),currency:z.literal('INR')}).parse(quote.provider_input),receipt,notes});
+                    if(!created.id||created.error||created.amount!==charge.amount||created.currency!==charge.currency)throw pending();
+                    reference=created.id;
+                }
+            }catch{throw pending();}
+        }
+        await subscriptionCheckoutRpc(input.db,'bind_merchant_subscription_checkout_v1',{p_actor:input.userId,p_site:input.storeId,
+            p_charge:charge.id,p_reference:reference,p_short_url:shortUrl});
     }
-
-    return {
-        body: {
-            data: {
-                razorpay_order_id: order.id,
-                razorpay_subscription_id: null,
-                checkout_mode: checkout.mode,
-                amount: order.amount ?? orderSpec.amount,
-                currency: order.currency || 'INR',
-                key_id: input.env.RAZORPAY_KEY_ID,
-                plan: checkout.plan_payload,
-                billing_period: checkout.billing_period,
-                is_promo: checkout.is_promo,
-                recurring: false,
-                ...(couponData ? { coupon: couponData } : {}),
-            },
-        },
-    };
+    return {body:{data:{...quote.response,key_id:input.env.RAZORPAY_KEY_ID,
+        razorpay_order_id:quote.mode==='razorpay_order'?reference:null,
+        razorpay_subscription_id:quote.mode==='razorpay_subscription'?reference:null,...(shortUrl?{short_url:shortUrl}:{})}}};
 }
 
 /**

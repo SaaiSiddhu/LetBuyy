@@ -42,6 +42,8 @@ This document records app-local API route authority for the P4 product remediati
 
 2026-10-03, P2-STOREFRONT-BUYER-ORDERS: inventory and lint baseline 204 → 205. `apps/commerce/web/src/app/api/buyer/orders/route.ts` is a gateway-proxy for `/v1/storefront/buyer/storefront-orders`. It resolves the host, forwards the existing site-bound identity token and only cursor/limit inputs; the gateway owns account state, signed site, verified buyer/order links and pagination. It performs no database, local commerce or email-based ownership operation. Normal UI connection and legacy retirement remain separate acceptance work.
 
+2026-10-04, P2-STOREFRONT-BUYER-WISHLIST: inventory and lint baseline 205 → 206. `apps/commerce/web/src/app/api/buyer/wishlist/route.ts` is a thin gateway proxy for a buyer's store-specific wishlist. It forwards only a host-bound storefront session and product fields; the gateway resolves the explicit verified `buyer_store_customers` link, checks the linked store-customer is active at the signed site, and owns all wishlist reads/writes. It does not infer a relationship from the buyer UUID or email.
+
 App-local API routes and their app-local `src/lib` support files must not import Supabase clients, service-role helpers, Prisma/Drizzle clients, raw SQL helpers, payment signature SDK logic, or direct commerce mutation logic. Commerce, checkout, customer, payment, theme, and marketplace behavior must live in the Hono gateway and package contracts.
 
 - 2026-09-29 (Phase 2 local quality, ESLint baseline reconciliation): inventory unchanged at 204; `config/eslint/boundary-baseline.json` 200 → 204. Four `gateway-proxy` routes were counted in the inventory but had never been added to the lint-side baseline, because the inventory's change log said that allowlist was "for app-local-* classes only". It is not: `letbuyy-boundaries/no-new-next-api-route` reports every app API route file absent from the baseline. Each was reviewed, not just registered:
@@ -49,10 +51,88 @@ App-local API routes and their app-local `src/lib` support files must not import
   - `apps/commerce/web/src/app/api/store/[subdomain]/search-suggest` (T5/W3, CAP-C28; the standing exception CAP-C76 named): a public read over the gateway's tenant-safe products route. It resolves no tenant itself (the route segment is the only input), holds no data, inherits the gateway's rate limiting, and only projects the result to six public suggestion fields, including a storefront URL the gateway has no business knowing. The alternative CAP-C76 names as remedy (a), moving the behaviour into the gateway and deleting the route, would also change how the browser reaches storefront search (directly against the gateway origin, or through another proxy); that choice stays open, and the standing exception is now filed instead of unfiled.
   All four now have route tests (normal, unauthenticated, upstream-unauthorised, forwarding, error mapping, header non-leakage; 22 + 9 tests, each property revert-and-watched). While writing them, the three buyer routes were found to relay a gateway error *message* on any failure, including 5xx, after already generalising the *status*; that is fixed (client-error messages still pass through; a 5xx body never does). `tests/federation/app-api-route-ownership.test.mjs` now pins that the baseline and the inventory list exactly the same routes, in both directions.
 
-The only remaining classified legacy presentation adapter is the storefront order lookup trio:
+### 15 October 2026 N1.6 protected-approval form transport
+
+The inventory and ESLint baseline advance together to 214 with
+`apps/internal/console/src/app/api/approvals/[operation]/route.ts`, classified
+by the existing Console `gateway-proxy` rule. Its finite request/request-money/decision/execute
+operations validate same-origin forms, the real durable Console session and
+shared transport schemas, then forward to canonical Gateway approvals. It has
+no database access, token issuance, independent consent store or business-effect
+writer. The Gateway resolves live permissions; its existing PostgreSQL owner
+binds consent and commits effect/audit/receipt atomically. Native HTTP 303 form
+responses use the existing auth-form transport pattern. A thin client form can
+negotiate JSON from the same route to retain its input/request key across a
+lost post-commit reply. Both transports pass the same Origin/session/schema
+gates; normal two-operator browser execution and both replays are verified in
+the current N1.6 evidence. No app-local domain owner is introduced.
+
+The dynamic operation is an explicit four-value dispatch, not an arbitrary
+proxy target. Missing/cross-origin POSTs fail before any service credential is
+used; same-site sibling merchants cannot manufacture operator consent. Provider
+delivery, hosted operation and complete N1.6 acceptance remain separately gated.
+
+### 14 October 2026 N1.1 reconciliation details
+
+Inventory and ESLint baseline move together from 206 to 213. These seven
+existing candidate routes were reviewed as `gateway-proxy` adapters:
+
+- `apps/commerce/web/src/app/api/buyer/loyalty/route.ts`
+- `apps/commerce/web/src/app/api/buyer/loyalty/history/route.ts`
+- `apps/commerce/web/src/app/api/buyer/support/tickets/route.ts`
+- `apps/commerce/web/src/app/api/buyer/support/tickets/[ticketId]/messages/route.ts`
+- `apps/commerce/web/src/app/api/checkout-handoff/route.ts`
+- `apps/commerce/web/src/app/api/checkout/[cartId]/[step]/route.ts`
+- `apps/merchant/web/src/app/api/stores/[store]/marketplace-listings/[productId]/route.ts`
+
+Buyer routes resolve the host-bound session and project Gateway responses;
+loyalty uses the verified store-customer link and support keeps private/internal
+messages at the Gateway. Checkout forwards the canonical signed cart capability
+and validated step, with same-origin and safe-output checks. Merchant listing
+resubmission resolves the owned store and delegates the existing review RPC path
+through the Gateway. None writes a database, verifies a payment-provider
+signature or issues an identity token locally. This is classification of the
+candidate, not provider, hosted or release acceptance.
+
+The former storefront order lookup trio remains on disk as explicit 410
+responses in this candidate:
 
 - `apps/commerce/web/src/app/api/orders/check/route.ts`
 - `apps/commerce/web/src/app/api/orders/login/route.ts`
 - `apps/commerce/web/src/app/api/orders/set-password/route.ts`
 
-These routes may import `@/lib/order-service` only while the storefront order-history UI expects the current camelCase presentation model. They must still call the worker through the typed storefront API client and must not access the database directly.
+The obsolete `order-service` import exception is removed. Every app API route
+must now avoid it; supported private order reads use the canonical buyer
+transport. No hosted retirement was performed by this reconciliation.
+
+The runtime ownership scan excludes explicit `.test`/`.spec` files, whose
+negative response-leakage fixtures deliberately mention forbidden fields.
+Handlers and support modules stay scanned. A planted runtime credential field
+still makes the actual validator fail, and an otherwise identical test fixture
+does not become an app-local credential owner. The auto-create assertion now
+follows its route-to-handler delegation and retains the persisted, site-scoped
+order-contact checks.
+
+
+15 October2026 N1.6 money extension:the same dynamic proxy now validates the shared money-review intent and forwards it to the existing Gateway approval owner. Execution re-reads the retained approved intent and calls the canonical money-resolution endpoint. The app owns no financial mutation, permission policy or approval evidence. The route count stays214. Money review leaves mismatches open, and projection outages are displayed as unavailable; the actual Gateway/database owns the refresh/audit/receipt transaction.
+
+N1.6 (2026-10-15): The existing `apps/internal/console/src/app/api/approvals/[operation]/route.ts` thin Gateway proxy now has six finite operations: request, request-money, request-trust, enforce-trust, decision and execute. Trust execution re-reads the canonical approval, forwards its bound case/reason/notes and never grants authority from form actor IDs. Strict same-origin and durable MFA checks precede every operation. Route inventory remains 214.
+
+
+N1.7 (2026-10-15): adds `apps/platform/identity/src/app/api/buyer/privacy/[operation]/route.ts`, classified gateway-proxy before the broad buyer-auth rule. Its finite account/request/prepare/export/download operations forward the captured canonical buyer credential with fresh signed Identity app headers. Origin/CSRF and expected-account mismatch checks belong to transport. Password comparison, proof/attempt state, coherent restricted data, encryption, single-use release and mandatory audit stay in Gateway/PostgreSQL; this app neither mints another credential nor accesses a database. Exact-text forwarding uses the existing API client so downloaded JSON bytes are preserved. Route count215 and lint baseline name the same addition. Erasure/retention and provider/hosted acceptance remain separate.
+
+### N1.3 operator issuer consolidation — 2026-10-16
+
+`apps/platform/identity/src/app/api/operator/console/route.ts` is the private first-party operator authentication endpoint (`app-local-operator-auth`). Identity alone signs purpose/audience-bound asymmetric magic and session credentials and matches configured factors. Console routes are form/proxy adapters; no Console/Gateway human signing secret remains in that path. Gateway owns atomic one-use exchange, durable MFA counters/attempts and live session/permission checks; existing approved reset and independent super-admin policy are preserved. This does not activate deferred general OIDC discovery. Approved provider/inbox proof remains pending.
+
+
+### N1.5 merchant loyalty settings — 2026-10-16
+
+`apps/merchant/web/src/app/api/stores/[store]/loyalty/route.ts` is a thin `gateway-proxy`, increasing the reviewed inventory and matching lint baseline from216 to217. It resolves the signed-in merchant and store, refuses stale captured-account forms and cross-origin mutations, and forwards GET/PUT through the shared API client with the exact version and stable retry key. Gateway334 retains live ownership, point-value policy, concurrency, private aggregate reads, audit and atomic receipts. No local database access, balance, provider action or issuer is added. The shared merchant-origin guard now also backs the existing staff compatibility wrapper.
+
+
+### N5 private reel review transport — 2026-10-18
+
+`apps/merchant/web/src/app/api/stores/[store]/reels/route.ts` and `apps/merchant/web/src/app/api/stores/[store]/reels/[reelId]/route.ts` are thin `gateway-proxy` routes, taking the reviewed inventory and matching lint baseline from217 to219. They resolve the current signed-in merchant and owned store, reject stale captured-account forms and cross-origin mutations, bound the request bytes and forward the CMS-owned command through the shared SDK. Gateway345 owns live scope, canonical media/listing/variant resolution, immutable revisions, assigned reviewer/CAS checks and the atomic receipt/audit/outbox transaction. The app has no database writer, ready-receipt authority, public feed, upload, playback or provider action. Provider custody, actual inspection/rights policy and phase acceptance remain separate.
+
+The main coordinator reviewed and granted these scoped registry edits on 18 October 2026 under N5-PERSIST-ROUTE-OWNERS. This records transport ownership review only; package, provider and release acceptance remain open.

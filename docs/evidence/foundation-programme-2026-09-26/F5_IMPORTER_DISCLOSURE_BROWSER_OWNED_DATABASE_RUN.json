@@ -1,0 +1,26 @@
+{
+  "suite": "storefront-customer-profile.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs --gateway-db --filter storefront-customer-profile --timeout 900 --jobs 1",
+  "runId": "25331169be81",
+  "runtime": {
+    "postgres": "16-alpine",
+    "postgrest": "v16.2",
+    "ownershipVerifiedBeforeStart": true,
+    "syntheticDataOnly": true
+  },
+  "tests": {
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0
+  },
+  "cleanup": {
+    "database": true,
+    "postgrest": true,
+    "containers": true,
+    "networks": true,
+    "volumes": true
+  },
+  "scope": "Local Commerce Chromium, real Gateway worker and isolated Postgres/PostgREST; no hosted environment or live customer data."
+}

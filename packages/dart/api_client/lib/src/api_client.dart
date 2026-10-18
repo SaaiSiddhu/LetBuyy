@@ -16,6 +16,7 @@ class ApiClient {
     String? storeId,
     ApiTokenProvider? tokenProvider,
     ApiStoreIdProvider? storeIdProvider,
+    Object? Function()? contextVersionProvider,
     Map<String, String>? headers,
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
@@ -29,6 +30,7 @@ class ApiClient {
        _defaultStoreId = storeId,
        _tokenProvider = tokenProvider,
        _storeIdProvider = storeIdProvider,
+       _contextVersionProvider = contextVersionProvider,
        _defaultHeaders = Map.unmodifiable(headers ?? const {}),
        _requestIdFactory = requestIdFactory,
        _unauthorizedHandler = unauthorizedHandler,
@@ -64,6 +66,7 @@ class ApiClient {
         defaultHeaders: _defaultHeaders,
         requestIdFactory: _requestIdFactory,
         attachSessionCookie: _attachSessionCookie,
+        contextVersionProvider: _contextVersionProvider,
       ),
     );
   }
@@ -83,6 +86,7 @@ class ApiClient {
   late final CodApi cod = CodApi(this);
   late final KycApi kyc = KycApi(this);
   late final TwoFactorApi twoFactor = TwoFactorApi(this);
+  late final MerchantSecurityApi security = MerchantSecurityApi(this);
   late final CustomersApi customers = CustomersApi(this);
   late final ThemesApi themes = ThemesApi(this);
   late final PaymentsApi payments = PaymentsApi(this);
@@ -98,6 +102,7 @@ class ApiClient {
   late final ShippingApi shipping = ShippingApi(this);
   late final TaxesApi taxes = TaxesApi(this);
   late final CouponsApi coupons = CouponsApi(this);
+  late final MerchantLoyaltyApi loyalty = MerchantLoyaltyApi(this);
   late final NotificationsApi notifications = NotificationsApi(this);
   late final WhatsAppApi whatsapp = WhatsAppApi(this);
   late final MarketingApi marketing = MarketingApi(this);
@@ -116,6 +121,7 @@ class ApiClient {
   final String? _defaultStoreId;
   final ApiTokenProvider? _tokenProvider;
   final ApiStoreIdProvider? _storeIdProvider;
+  final Object? Function()? _contextVersionProvider;
   final Map<String, String> _defaultHeaders;
   final RequestIdFactory? _requestIdFactory;
   final ApiUnauthorizedHandler? _unauthorizedHandler;
@@ -129,6 +135,9 @@ class ApiClient {
   String get apiRootUrl => _baseUrl;
   Dio get dio => _dio;
 
+  /// Read-only context snapshot; contains no credential or grant of authority.
+  Object? captureRequestContext() => _contextVersionProvider?.call();
+
   ApiClient withOptions({
     String? baseUrl,
     String? apiVersionPath,
@@ -136,6 +145,7 @@ class ApiClient {
     String? storeId,
     ApiTokenProvider? tokenProvider,
     ApiStoreIdProvider? storeIdProvider,
+    Object? Function()? contextVersionProvider,
     Map<String, String>? headers,
     RequestIdFactory? requestIdFactory,
     ApiUnauthorizedHandler? unauthorizedHandler,
@@ -150,6 +160,7 @@ class ApiClient {
       storeId: storeId ?? _defaultStoreId,
       tokenProvider: tokenProvider ?? _tokenProvider,
       storeIdProvider: storeIdProvider ?? _storeIdProvider,
+      contextVersionProvider: contextVersionProvider ?? _contextVersionProvider,
       headers: headers ?? _defaultHeaders,
       requestIdFactory: requestIdFactory ?? _requestIdFactory,
       unauthorizedHandler: unauthorizedHandler ?? _unauthorizedHandler,
@@ -174,53 +185,101 @@ class ApiClient {
   // (migration 217's seven predicates, shared by the feed and the detail), so the client never
   // filters — it asks and renders what it is given.
 
-  /// One page of the marketplace grid, across merchants.
+  /// One page of the marketplace grid, optionally scoped to one seller's canonical site ID.
+  /// Seller scope is a public listing filter; it never grants access to a seller profile.
   ///
   /// [cursor] must come from a previous page's [MarketplaceFeedPage.nextCursor]; its two halves are
   /// sent together or not at all, because the gateway rejects a half cursor and a client that
   /// rebuilds one from the last item drifts out of step with the server's ordering.
   Future<MarketplaceFeedPage> marketplaceFeed({
+    String? sellerSiteId,
     String? category,
     String? search,
+    String? countryOfOrigin,
     int? limit,
     MarketplaceFeedCursor? cursor,
     ApiRequestOptions? options,
   }) async {
     final query = <String, dynamic>{
+      if (sellerSiteId != null) 'site_id': sellerSiteId,
       if (category != null && category.isNotEmpty) 'category': category,
       if (search != null && search.isNotEmpty) 'search': search,
+      if (countryOfOrigin != null && countryOfOrigin.isNotEmpty)
+        'country_of_origin': countryOfOrigin,
       if (limit != null) 'limit': limit,
       if (cursor != null) ...<String, dynamic>{
         'after_approved_at': cursor.afterApprovedAt,
         'after_id': cursor.afterId,
       },
     };
-    final body = await get('/storefront/marketplace/feed', query: query, options: options);
-    final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+    final body = await get(
+      '/storefront/marketplace/feed',
+      query: query,
+      options: options,
+    );
+    final envelope = body is Map
+        ? Map<String, dynamic>.from(body)
+        : const <String, dynamic>{};
     final data = envelope['data'];
     final meta = envelope['meta'];
     final items = data is List
         ? data
-            .whereType<Map>()
-            .map((row) => MarketplaceFeedItem.fromJson(Map<String, dynamic>.from(row)))
-            .toList(growable: false)
+              .whereType<Map>()
+              .map(
+                (row) => MarketplaceFeedItem.fromJson(
+                  Map<String, dynamic>.from(row),
+                ),
+              )
+              .toList(growable: false)
         : const <MarketplaceFeedItem>[];
     return MarketplaceFeedPage(
       items: items,
-      nextCursor: meta is Map ? MarketplaceFeedCursor.fromJson(meta['next_cursor']) : null,
-      limit: meta is Map && meta['limit'] is num ? (meta['limit'] as num).toInt() : null,
+      nextCursor: meta is Map
+          ? MarketplaceFeedCursor.fromJson(meta['next_cursor'])
+          : null,
+      limit: meta is Map && meta['limit'] is num
+          ? (meta['limit'] as num).toInt()
+          : null,
     );
+  }
+  /// Sorted origin choices from currently visible marketplace listings.
+  Future<List<String>> marketplaceOrigins({ApiRequestOptions? options}) async {
+    final body = await get('/storefront/marketplace/origins', options: options);
+    final envelope = body is Map
+        ? Map<String, dynamic>.from(body)
+        : const <String, dynamic>{};
+    final data = envelope['data'];
+    if (data is! List) return const <String>[];
+    return data
+        .whereType<Map>()
+        .map((row) {
+          final value = Map<String, dynamic>.from(row)['country_of_origin'];
+          return value is String && value.trim().isNotEmpty
+              ? value.trim()
+              : null;
+        })
+        .whereType<String>()
+        .toList(growable: false);
   }
 
   /// The live platform taxonomy. Inactive categories are never returned by the gateway.
-  Future<List<MarketplaceCategory>> marketplaceCategories({ApiRequestOptions? options}) async {
-    final body = await get('/storefront/marketplace/categories', options: options);
-    final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+  Future<List<MarketplaceCategory>> marketplaceCategories({
+    ApiRequestOptions? options,
+  }) async {
+    final body = await get(
+      '/storefront/marketplace/categories',
+      options: options,
+    );
+    final envelope = body is Map
+        ? Map<String, dynamic>.from(body)
+        : const <String, dynamic>{};
     final data = envelope['data'];
     if (data is! List) return const <MarketplaceCategory>[];
     return data
         .whereType<Map>()
-        .map((row) => MarketplaceCategory.fromJson(Map<String, dynamic>.from(row)))
+        .map(
+          (row) => MarketplaceCategory.fromJson(Map<String, dynamic>.from(row)),
+        )
         .toList(growable: false);
   }
 
@@ -234,8 +293,13 @@ class ApiClient {
     ApiRequestOptions? options,
   }) async {
     try {
-      final body = await get('/storefront/marketplace/listings/$listingId', options: options);
-      final envelope = body is Map ? Map<String, dynamic>.from(body) : const <String, dynamic>{};
+      final body = await get(
+        '/storefront/marketplace/listings/$listingId',
+        options: options,
+      );
+      final envelope = body is Map
+          ? Map<String, dynamic>.from(body)
+          : const <String, dynamic>{};
       final data = envelope['data'];
       if (data is! Map) return null;
       return MarketplaceListingDetail.fromJson(Map<String, dynamic>.from(data));
@@ -379,6 +443,20 @@ class ApiClient {
   }
 
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
+    final contextVersion =
+        options?.expectedContextVersion ?? _contextVersionProvider?.call();
+    void checkContext() {
+      if (_contextVersionProvider != null &&
+          _contextVersionProvider() != contextVersion) {
+        throw const ApiException(
+          message:
+              'The signed-in context changed. Retry from the current account.',
+          statusCode: 409,
+          code: 'SESSION_CONTEXT_CHANGED',
+        );
+      }
+    }
+
     final requestOptions = _withAutomaticIdempotency(
       path,
       options ?? const ApiRequestOptions(),
@@ -387,6 +465,7 @@ class ApiClient {
     var unauthorizedRetried = false;
 
     for (var attempt = 0; attempt <= maxRetries; attempt += 1) {
+      checkContext();
       try {
         final response = await _dio.request<Object?>(
           _buildUrl(path, requestOptions),
@@ -399,10 +478,12 @@ class ApiClient {
               _extraToken: requestOptions.token,
               _extraStoreId: requestOptions.storeId,
               _extraIdempotencyKey: requestOptions.idempotencyKey,
+              _extraContextVersion: contextVersion,
             },
           ),
         );
 
+        checkContext();
         final requestId = _requestIdFromResponse(response);
         if (_isRetryableStatus(response.statusCode) &&
             attempt < maxRetries &&
@@ -441,6 +522,7 @@ class ApiClient {
       } on ApiException {
         rethrow;
       } on DioException catch (error) {
+        checkContext();
         if (attempt < maxRetries &&
             _isRetryableDioError(error) &&
             _canRetry(requestOptions)) {
@@ -811,11 +893,28 @@ class ProductsApi {
   Future<JsonMap> update(
     String id,
     JsonMap input, {
+    required int version,
+    required String idempotencyKey,
     ApiRequestOptions? options,
-  }) => _client.requestJson(
-    '/products/${_encodePathSegment(id)}',
-    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
-  );
+  }) {
+    if (version <= 0 ||
+        !RegExp(
+          r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+        ).hasMatch(idempotencyKey)) {
+      throw ArgumentError(
+        'A current product version and stable save UUID are required.',
+      );
+    }
+    return _client.requestJson(
+      '/products/${_encodePathSegment(id)}',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.patch,
+        body: {...input, 'version': version, 'idempotency_key': idempotencyKey},
+        idempotencyKey: idempotencyKey,
+      ),
+    );
+  }
 
   Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
       _client.requestJson(
@@ -1207,6 +1306,16 @@ class TwoFactorApi {
   Future<JsonMap> disable(JsonMap input, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/2fa/disable',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+}
+
+class MerchantSecurityApi {
+  const MerchantSecurityApi(this._client);
+  final ApiClient _client;
+  Future<JsonMap> challenge(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/security/step-up/challenges',
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
       );
 }
@@ -1703,7 +1812,7 @@ class ThemesApi {
     options: _mergeOptions(
       options,
       method: HttpMethod.delete,
-      query: {'store_id': storeId},
+      query: {...?options?.query, 'store_id': storeId},
     ),
   );
 
@@ -1852,6 +1961,76 @@ class StorefrontApi {
         '/storefront/${_encodePathSegment(subdomain)}/status',
         options: options,
       );
+
+  /// Creates or refreshes a seller-bound marketplace cart using server prices and listing state.
+  Future<JsonMap> createMarketplaceCart(
+    String subdomain,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/storefront/${_encodePathSegment(subdomain)}/marketplace-cart',
+    options: _mergeOptions(options, method: HttpMethod.post, body: input),
+  );
+
+  /// Creates the signed handoff for the server cart. The returned URL contains bearer-like
+  /// signature material and callers must keep it in memory only.
+  Future<JsonMap> createCheckoutHandoff(
+    String subdomain,
+    String cartToken, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/storefront/${_encodePathSegment(subdomain)}/cart/${_encodePathSegment(cartToken)}/checkout-url',
+    options: _mergeOptions(options, method: HttpMethod.post),
+  );
+
+  /// Returns the minimal completion receipt for a cart token, used to recover a confirmed COD
+  /// order if the app closed after the server committed but before local cart cleanup.
+  Future<JsonMap> checkoutStatus(
+    String subdomain,
+    String cartToken, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/storefront/${_encodePathSegment(subdomain)}/cart/${_encodePathSegment(cartToken)}/checkout-status',
+    options: options,
+  );
+
+  /// Lists seller-configured rates that cover the signed checkout destination.
+  Future<JsonMap> checkoutDeliveryOptions(
+    String cartId,
+    QueryParams handoff,
+    QueryParams address, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/checkout/${_encodePathSegment(cartId)}/delivery-options',
+    options: _mergeOptions(options, query: {...handoff, ...address}),
+  );
+
+  /// Executes one signed hosted-checkout state-machine step through the canonical Gateway.
+  Future<JsonMap> checkoutStep(
+    String cartId,
+    String step,
+    QueryParams handoff,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) {
+    const allowedSteps = {'contact', 'delivery', 'payment-intent', 'confirm'};
+    if (!allowedSteps.contains(step)) {
+      throw ArgumentError.value(
+        step,
+        'step',
+        'Unsupported hosted checkout step',
+      );
+    }
+    return _client.requestJson(
+      '/checkout/${_encodePathSegment(cartId)}/$step',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.post,
+        query: handoff,
+        body: input,
+      ),
+    );
+  }
 
   Future<JsonMap> themePreview(
     String subdomain,
@@ -2632,6 +2811,134 @@ class TaxesApi {
       );
 }
 
+/// Merchant-only configuration of the canonical per-store loyalty programme.
+/// JSON integer/version strings are kept exact; no local balance is computed.
+class MerchantLoyaltyApi {
+  MerchantLoyaltyApi(this._client);
+  final ApiClient _client;
+  static final _uuid = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+  );
+  static final _integer = RegExp(r'^-?(0|[1-9][0-9]*)$');
+  static final _positive = RegExp(r'^[1-9][0-9]{0,18}$');
+  static bool _bps(Object? value) =>
+      value is int && value >= 0 && value <= 10000;
+  static bool _minor(Object? value) =>
+      value is String &&
+      _positive.hasMatch(value) &&
+      BigInt.parse(value) <= BigInt.parse('9223372036854775807');
+  static bool _version(Object? value) =>
+      value is String &&
+      value.contains('T') &&
+      DateTime.tryParse(value) != null;
+  static ApiException _invalid() => const ApiException(
+    message: 'Loyalty settings returned an incomplete response. Retry loading.',
+    statusCode: 502,
+    code: 'INVALID_RESPONSE',
+  );
+  static void _site(String site) {
+    if (!_uuid.hasMatch(site))
+      throw ArgumentError.value(site, 'storeId', 'must be a store UUID');
+  }
+
+  static JsonMap _program(Object? value, String site) {
+    if (value is! Map ||
+        value['site_id'] != site ||
+        value['is_active'] is! bool ||
+        !_bps(value['earn_rate_bps']) ||
+        !_bps(value['redeem_cap_bps']) ||
+        !_minor(value['point_value_minor']) ||
+        !_version(value['updated_at']))
+      throw _invalid();
+    return Map<String, dynamic>.unmodifiable(asJsonMap(value));
+  }
+
+  static void _aggregate(JsonMap value) {
+    if (value['outstanding_points'] is! String ||
+        !_integer.hasMatch(value['outstanding_points'] as String) ||
+        value['valuation_policy'] != 'block_decrease_while_outstanding' ||
+        value['value_decrease_allowed'] is! bool)
+      throw _invalid();
+  }
+
+  Future<JsonMap> program(String storeId, {ApiRequestOptions? options}) async {
+    _site(storeId);
+    final value = await _client.requestJson(
+      '/loyalty/program',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.get,
+        query: {'store_id': storeId},
+      ).copyWith(storeId: storeId),
+    );
+    _aggregate(value);
+    if (value['store_id'] != storeId ||
+        value['enrolled'] is! bool ||
+        (value['enrolled'] == false && value['program'] != null))
+      throw _invalid();
+    return Map<String, dynamic>.unmodifiable({
+      ...value,
+      'program': value['enrolled'] == true
+          ? _program(value['program'], storeId)
+          : null,
+    });
+  }
+
+  Future<JsonMap> setProgram(
+    JsonMap input, {
+    required String idempotencyKey,
+    ApiRequestOptions? options,
+  }) async {
+    final storeId = input['store_id'];
+    if (storeId is! String) throw ArgumentError('store_id is required');
+    _site(storeId);
+    const fields = [
+      'is_active',
+      'earn_rate_bps',
+      'redeem_cap_bps',
+      'point_value_minor',
+    ];
+    if (!input.containsKey('expected_updated_at') ||
+        (input['expected_updated_at'] != null &&
+            !_version(input['expected_updated_at'])) ||
+        input.keys.any(
+          (key) =>
+              key != 'store_id' &&
+              key != 'expected_updated_at' &&
+              !fields.contains(key),
+        ) ||
+        !fields.any(input.containsKey) ||
+        (input.containsKey('is_active') && input['is_active'] is! bool) ||
+        (input.containsKey('earn_rate_bps') && !_bps(input['earn_rate_bps'])) ||
+        (input.containsKey('redeem_cap_bps') &&
+            !_bps(input['redeem_cap_bps'])) ||
+        (input.containsKey('point_value_minor') &&
+            !_minor(input['point_value_minor'])) ||
+        idempotencyKey.length < 8 ||
+        idempotencyKey.length > 200 ||
+        idempotencyKey.trim() != idempotencyKey ||
+        RegExp(r'[\x00-\x1f\x7f]').hasMatch(idempotencyKey))
+      throw ArgumentError('Invalid loyalty save intent or retry key');
+    final value = await _client.requestJson(
+      '/loyalty/program',
+      options: _mergeOptions(
+        options,
+        method: HttpMethod.put,
+        body: Map<String, dynamic>.unmodifiable(input),
+        idempotencyKey: idempotencyKey,
+      ).copyWith(storeId: storeId),
+    );
+    _aggregate(value);
+    _program(value, storeId);
+    if (value['created'] is! bool ||
+        (value['liability_delta_minor'] != null &&
+            (value['liability_delta_minor'] is! String ||
+                !_integer.hasMatch(value['liability_delta_minor'] as String))))
+      throw _invalid();
+    return Map<String, dynamic>.unmodifiable(value);
+  }
+}
+
 class CouponsApi {
   const CouponsApi(this._client);
 
@@ -2794,6 +3101,34 @@ class EmployeesApi {
       _client.requestJson(
         '/employees',
         options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> invite(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees/invite',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  // Invitation consent is account-scoped. An unrelated selected store is not
+  // the destination; the server validates the invitation's store and account.
+  Future<JsonMap> previewInvite(String token, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees/invitations/preview',
+        options: _mergeOptions(
+          options,
+          method: HttpMethod.post,
+          body: {'token': token},
+        ).copyWith(storeId: ''),
+      );
+
+  Future<JsonMap> acceptInvite(String token, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/employees/auth/accept-invite',
+        options: _mergeOptions(
+          options,
+          method: HttpMethod.post,
+          body: {'token': token},
+        ).copyWith(storeId: ''),
       );
 
   Future<JsonMap> update(
@@ -3048,6 +3383,7 @@ class _AuthHeaderInterceptor extends Interceptor {
     required this.defaultHeaders,
     required this.requestIdFactory,
     required this.attachSessionCookie,
+    required this.contextVersionProvider,
   });
 
   final String? defaultToken;
@@ -3057,6 +3393,7 @@ class _AuthHeaderInterceptor extends Interceptor {
   final Map<String, String> defaultHeaders;
   final RequestIdFactory? requestIdFactory;
   final bool attachSessionCookie;
+  final Object? Function()? contextVersionProvider;
 
   @override
   Future<void> onRequest(
@@ -3103,6 +3440,24 @@ class _AuthHeaderInterceptor extends Interceptor {
       options.headers['X-Request-ID'] = requestIdFactory!.call();
     }
 
+    // Token/store lookup can await. Refuse before Dio dispatches bytes, not
+    // merely after a response whose mutation may already have committed.
+    if (contextVersionProvider != null &&
+        contextVersionProvider!() != options.extra[_extraContextVersion]) {
+      handler.reject(
+        DioException(
+          requestOptions: options,
+          type: DioExceptionType.cancel,
+          error: const ApiException(
+            message:
+                'The signed-in context changed. Retry from the current account.',
+            statusCode: 409,
+            code: 'SESSION_CONTEXT_CHANGED',
+          ),
+        ),
+      );
+      return;
+    }
     handler.next(options);
   }
 }
@@ -3243,3 +3598,4 @@ String _encodePathSegment(String value) {
 const _extraToken = 'letbuyy.token';
 const _extraStoreId = 'letbuyy.storeId';
 const _extraIdempotencyKey = 'letbuyy.idempotencyKey';
+const _extraContextVersion = 'letbuyy.contextVersion';

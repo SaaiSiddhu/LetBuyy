@@ -5,12 +5,12 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 
 import '../../auth/buyer_sign_in_controller.dart';
-import '../../auth/buyer_sign_in_wiring.dart';
 import '../../widgets/letbuyy_account_card.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 import '../../widgets/premium_scaffold.dart';
@@ -44,10 +44,12 @@ class _ProfileScreenState extends State<ProfileScreen>
   int? _ordersCount;
   int? _wishlistCount;
   int _addressesCount = 0;
+  bool _addressesKnown = false;
   bool _isLoadingStats = true;
   bool _isCheckingAuth = true;
   BuyerSignInController? _signIn;
-  BuyerSignInStatus? _lastSignInStatus;
+  String? _statsToken;
+  int _statsGeneration = 0;
 
   bool _showToast = false;
   String _toastMessage = '';
@@ -120,12 +122,22 @@ class _ProfileScreenState extends State<ProfileScreen>
   void _onSignInChanged() {
     if (!mounted) return;
     final status = _signIn!.status;
-    setState(() => _isCheckingAuth = status == BuyerSignInStatus.restoring);
-    if (status == BuyerSignInStatus.signedIn && _lastSignInStatus != BuyerSignInStatus.signedIn) {
+    final token = _signIn!.token;
+    final changed = token != _statsToken;
+    setState(() {
+      _isCheckingAuth = status == BuyerSignInStatus.restoring;
+      if (changed) {
+        _statsToken = token;
+        _statsGeneration++;
+        _addressesCount = 0;
+        _addressesKnown = false;
+        _isLoadingStats = token != null;
+      }
+    });
+    if (changed && token != null) {
       _animationController.forward();
       _loadUserStats();
     }
-    _lastSignInStatus = status;
   }
 
   // Phase 1R: orders were a Firestore collection keyed by the Firebase uid, with no canonical
@@ -136,26 +148,33 @@ class _ProfileScreenState extends State<ProfileScreen>
   // the C3 corrective comment on that menu tile), so it never needed a slot here.
   Future<void> _loadUserStats() async {
     final token = _signIn?.token;
-    if (token == null) {
-      if (mounted) setState(() => _isLoadingStats = false);
-      return;
-    }
+    if (token == null) return;
+    final generation = ++_statsGeneration;
+    setState(() { _isLoadingStats = true; _addressesKnown = false; });
     try {
-      final addresses = await buildBuyerAddressApi().list(token);
-      if (mounted) {
+      final addresses = await context.read<BuyerAddressApi>().list(token);
+      if (mounted && _signIn?.token == token && generation == _statsGeneration) {
         setState(() {
           _addressesCount = addresses.length;
+          _addressesKnown = true;
           _isLoadingStats = false;
         });
       }
-    } catch (e) {
-      if (mounted) setState(() => _isLoadingStats = false);
+    } catch (_) {
+      if (mounted && _signIn?.token == token && generation == _statsGeneration) {
+        setState(() { _isLoadingStats = false; _addressesKnown = false; });
+      }
     }
   }
 
-  void _navigateToRoute(String routeName) {
+  Future<void> _navigateToRoute(String routeName) async {
     HapticFeedback.lightImpact();
-    Navigator.pushNamed(context, routeName);
+    final token = _signIn?.token;
+    await Navigator.pushNamed(context, routeName);
+    if (mounted && token != null && _signIn?.token == token &&
+        (routeName == AppRoutes.letbuyyAccount || routeName == AppRoutes.addresses)) {
+      _loadUserStats();
+    }
   }
 
   Future<void> _logout(bool isDark) async {
@@ -330,7 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       _buildPremiumMenuTile(
                         icon: Icons.shopping_bag_rounded,
                         title: 'My Orders',
-                        subtitle: _ordersCount == null ? 'Not available' : '$_ordersCount orders',
+                        subtitle: _ordersCount == null ? 'View your purchases' : '$_ordersCount orders',
                         iconColor: const Color(0xFF3B82F6),
                         onTap: () => _navigateToRoute(AppRoutes.orders),
                         isDark: isDark,
@@ -383,7 +402,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       _buildPremiumMenuTile(
                         icon: Icons.location_on_rounded,
                         title: 'Addresses',
-                        subtitle: '$_addressesCount saved',
+                        subtitle: _isLoadingStats ? 'Loading addresses…' : _addressesKnown ? '$_addressesCount saved' : 'Manage addresses',
                         iconColor: const Color(0xFF10B981),
                         // Phase 1R corrective (C3): was AppRoutes.addresses (SavedAddressesScreen),
                         // which C2 already disconnected to an unconditional "No Saved Addresses"

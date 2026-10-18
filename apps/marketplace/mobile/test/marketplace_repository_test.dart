@@ -94,6 +94,8 @@ void main() {
         'product_id': 'p1',
         'site_id': 's1',
         'name': 'Canvas Tote',
+        'country_of_origin': 'Japan',
+        'importer_details': 'Example Imports, Mumbai',
         'variants': [
           {'id': 'v1', 'title': 'Small', 'price': 999, 'stock': 7, 'position': 1},
           {'id': 'v2', 'title': 'Large', 'price': 1099, 'stock': 2, 'position': 2},
@@ -101,7 +103,10 @@ void main() {
       },
     });
     final listing = await h.repository.listing('l1');
-    expect(listing!.variants.map((v) => v.title), ['Small', 'Large']);
+    expect(listing!.countryOfOrigin, 'Japan');
+    expect(listing.importerDetails, 'Example Imports, Mumbai');
+    expect(listing.variants.map((v) => v.title), ['Small', 'Large']);
+    expect(h.requests.single.path, contains('/storefront/marketplace/listings/l1'));
   });
 
   test('categories reach the canonical taxonomy endpoint', () async {

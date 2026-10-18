@@ -26,6 +26,7 @@
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { DEFAULT_IMAGE, DEFAULT_REST_IMAGE, FIXTURE_LABEL, OWNER_PID_LABEL, RUN_ID_LABEL, ROLE_LABEL, RUN_ID_PATTERN } from './executable-pg-fixture.mjs';
+import { isOwnedDatabaseName } from './owned-database-name.mjs';
 
 export const OWNED_FIXTURE_ENV = Object.freeze({
     runId: 'LETBUYY_EXECUTABLE_RUN_ID',
@@ -47,7 +48,6 @@ export class OwnershipError extends Error {
 }
 
 const CONTAINER_NAME = /^letbuyy-exec-[A-Za-z0-9][A-Za-z0-9.-]*$/;
-const DATABASE_NAME = /^letbuyy_exec_[a-z0-9_]{1,40}$/;
 const REST_URL = /^http:\/\/127\.0\.0\.1:(\d{2,5})$/;
 const RUNNER_COMMAND = 'run-executable-suites';
 const DATA_DIR = '/var/lib/postgresql/data';
@@ -121,7 +121,7 @@ export function parseOwnedFixtureEnv(env) {
     if (pgContainer === restContainer) throw new OwnershipError('ENV_MALFORMED', 'the cluster and the REST sidecar cannot be one container');
 
     const database = read(OWNED_FIXTURE_ENV.pgDatabase);
-    if (!DATABASE_NAME.test(database)) throw new OwnershipError('NOT_OWNED_NAME', `database "${database}" is not a name this runner allocates`);
+    if (!isOwnedDatabaseName(database)) throw new OwnershipError('NOT_OWNED_NAME', `database "${database}" is not a name this runner allocates`);
 
     return { runId, runnerPid, pgContainer, restContainer, database, restUrl, restPort: Number(urlMatch[1]), upstreamPort, serviceKey: read(OWNED_FIXTURE_ENV.restServiceKey) };
 }

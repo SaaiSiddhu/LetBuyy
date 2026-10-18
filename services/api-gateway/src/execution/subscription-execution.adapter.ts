@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { AppError } from '../lib/errors';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import {
     BILLING_APPLICATION_WORKFLOWS,
@@ -9,16 +11,13 @@ import type { BillingPlanCatalogRecord, SubscriptionBillingPeriod } from '@letbu
 export type SubscriptionPaymentGateway = 'razorpay' | 'stripe' | null;
 export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trialing';
 
-type SubscriptionActivationRow = {
-    id: string;
-    plan: string;
-    status: SubscriptionStatus;
-    billing_period: SubscriptionBillingPeriod;
-    current_period_end: string | null;
-    promo_ends_at: string | null;
-    external_subscription_id: string | null;
-    amount_paid: number | null;
-};
+const SubscriptionActivationResultSchema=z.object({
+    accepted:z.literal(true),replayed:z.boolean(),subscription:z.object({
+        id:z.string().uuid(),plan:z.string(),status:z.enum(['active','cancelled','past_due','trialing']),
+        billing_period:z.enum(['monthly','yearly']),current_period_end:z.string().nullable(),promo_ends_at:z.string().nullable(),
+        external_subscription_id:z.string().nullable(),amount_paid:z.number().nullable(),
+    }),
+});
 
 export function subscriptionPeriodEnd(now: Date, billingPeriod: SubscriptionBillingPeriod): Date {
     const periodEnd = new Date(now);
@@ -73,107 +72,40 @@ export class SubscriptionExecutionAdapter {
         const periodEnd = subscriptionPeriodEnd(now, input.billingPeriod);
         const promoEndsAt = subscriptionPromoEnd(now, input.plan, input.billingPeriod);
 
-        // LB-BIL-001 (F-BIL1-1): one provider payment activates one subscription. The merchant's verify
-        // route and the Razorpay webhook both call this for the same payment, seconds apart, and each call
-        // used to cancel the store's subscription, insert another and invoice it again. A payment that has
-        // already activated a subscription for this store gets that subscription back, whatever its status
-        // since, so replaying a payment cannot buy a second period. Two calls that race past that lookup
-        // are split by the database: the insert carries the payment as its idempotency key, and
-        // subscriptions_site_id_idempotency_key_idx (migration 152) admits one row per store and key.
-        const paymentKey = input.razorpayPaymentId ? `razorpay_payment:${input.razorpayPaymentId}` : null;
-        if (input.razorpayPaymentId) {
-            const applied = await this.findActivationForPayment(input.storeId, input.razorpayPaymentId);
-            if (applied) return this.replayedActivation(applied, input);
-        }
-
-        const { data: subscription, error: subError } = await this.db
-            .from('subscriptions')
-            .insert({
-                user_id: input.userId,
-                store_id: input.storeId,
-                site_id: input.storeId,
-                plan: input.plan.slug,
-                plan_id: input.plan.id,
-                status: 'active',
-                billing_period: input.billingPeriod,
-                current_period_start: now.toISOString(),
-                current_period_end: periodEnd.toISOString(),
-                promo_ends_at: promoEndsAt,
-                payment_gateway: input.paymentGateway || null,
-                external_subscription_id: input.externalSubscriptionId || null,
-                razorpay_order_id: input.razorpayOrderId || null,
-                razorpay_payment_id: input.razorpayPaymentId || null,
-                amount_paid: input.amountPaid,
-                currency: 'INR',
-                products_limit: input.plan.products_limit,
-                stores_limit: 1,
-                idempotency_key: paymentKey,
-            })
-            .select()
-            .single();
-
-        if (subError || !subscription) {
-            if (paymentKey && subError?.code === '23505') {
-                // The other activation of this payment won the insert. Answer with its subscription.
-                const applied = await this.findActivationForPayment(input.storeId, input.razorpayPaymentId as string);
-                if (applied) return this.replayedActivation(applied, input);
-            }
-            throw new Error('Failed to create subscription');
-        }
-
-        // Only the activation that holds the payment retires the store's previous subscription, and it
-        // never retires the one it just created.
-        await this.db
-            .from('subscriptions')
-            .update({ status: 'cancelled', cancelled_at: now.toISOString() })
-            .eq('store_id', input.storeId)
-            .eq('status', 'active')
-            .neq('id', subscription.id);
-
-        await this.db
-            .from('sites')
-            .update({ trial_status: input.amountPaid > 0 ? 'paid' : 'active', updated_at: now.toISOString() })
-            .eq('id', input.storeId);
-
-        await this.recordSubscriptionInvoice({
-            userId: input.userId,
-            storeId: input.storeId,
-            subscriptionId: subscription.id,
-            invoiceNumber: invoiceNumber('INV', now),
-            description: `${input.plan.name} plan - ${input.billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
-            amount: input.amountPaid,
-            currency: 'INR',
-            taxAmount: Math.round(input.amountPaid * 0.18),
-            totalAmount: input.amountPaid + Math.round(input.amountPaid * 0.18),
-            paymentGateway: input.paymentGateway || null,
-            paymentId: input.razorpayPaymentId || input.externalSubscriptionId || input.razorpayOrderId || null,
-            paymentStatus: 'paid',
-            billingPeriod: input.billingPeriod,
-            periodStart: now.toISOString(),
-            periodEnd: periodEnd.toISOString(),
+        const result = await this.db.rpc('activate_merchant_subscription_v1', {
+            p_input: {
+                user_id:input.userId,store_id:input.storeId,plan_id:input.plan.id,plan_slug:input.plan.slug,plan_name:input.plan.name,
+                billing_period:input.billingPeriod,amount_paid:input.amountPaid,payment_gateway:input.paymentGateway??null,
+                external_subscription_id:input.externalSubscriptionId??null,razorpay_order_id:input.razorpayOrderId??null,
+                razorpay_payment_id:input.razorpayPaymentId??null,period_start:now.toISOString(),period_end:periodEnd.toISOString(),
+                promo_ends_at:promoEndsAt,products_limit:input.plan.products_limit,
+                invoice_number:invoiceNumber('INV',now),invoice_description:`${input.plan.name} plan - ${input.billingPeriod==='yearly'?'Annual':'Monthly'}`,
+                tax_amount:Math.round(input.amountPaid*0.18),total_amount:input.amountPaid+Math.round(input.amountPaid*0.18),
+            },
         });
-
-        // Founding Merchant allocation — the SINGLE chokepoint (every paid activation
-        // path funnels through this adapter). Non-fatal + idempotent: the SECURITY
-        // DEFINER RPC re-checks eligibility (status='active' AND amount_paid>0 AND
-        // sites.trial_status='paid') and a failure / {allocated:false} NEVER affects
-        // the already-committed paid subscription. See docs/v1/FOUNDING_ALLOCATION_DEFINITION.md.
-        let founding: Record<string, unknown> | null = null;
-        if (input.amountPaid > 0) {
-            founding = await this.allocateFounding(input.storeId, subscription.id);
+        if(result.error)throw new AppError('Subscription activation is temporarily unavailable. Retry the same payment.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
+        const parsed=SubscriptionActivationResultSchema.safeParse(result.data);
+        if(!parsed.success) {
+            const denied=z.object({accepted:z.literal(false),code:z.string()}).safeParse(result.data);
+            const code=denied.success?denied.data.code:'SUBSCRIPTION_RESPONSE_UNAVAILABLE';
+            const errors:Record<string,{status:number;message:string}>={
+                SUBSCRIPTION_CHECKOUT_CONFLICT:{status:409,message:'This payment does not match the saved subscription checkout.'},
+                SUBSCRIPTION_PAYMENT_CONFLICT:{status:409,message:'This payment is already bound to another subscription request.'},
+                SUBSCRIPTION_OWNER_REQUIRED:{status:403,message:'The current store owner is required.'},
+                SUBSCRIPTION_PLAN_CHANGED:{status:409,message:'The selected plan changed. Review the current plan.'},
+                SUBSCRIPTION_CONTEXT_INVALID:{status:400,message:'Subscription activation details are invalid.'},
+            };
+            const error=errors[code]??{status:503,message:'Subscription activation state is unavailable.'};
+            throw new AppError(error.message,error.status,code);
         }
-
+        const row=parsed.data.subscription;
+        // Founding allocation deliberately remains its existing nonfatal,
+        // idempotent post-activation owner. A retry can recover it after reply loss.
+        const founding=row.status==='active'&&Number(row.amount_paid||0)>0?await this.allocateFounding(input.storeId,row.id):null;
         return {
-            id: subscription.id,
-            plan: input.plan.slug,
-            plan_name: input.plan.name,
-            status: 'active',
-            billing_period: input.billingPeriod,
-            current_period_end: periodEnd.toISOString(),
-            promo_ends_at: promoEndsAt,
-            external_subscription_id: input.externalSubscriptionId || null,
-            founding,
-            replayed: false,
+            id:row.id,plan:row.plan,plan_name:row.plan===input.plan.slug?input.plan.name:row.plan,status:row.status,
+            billing_period:row.billing_period,current_period_end:row.current_period_end,promo_ends_at:row.promo_ends_at,
+            external_subscription_id:row.external_subscription_id,founding,replayed:parsed.data.replayed,
         };
     }
 
@@ -188,41 +120,6 @@ export class SubscriptionExecutionAdapter {
         } catch {
             return null;
         }
-    }
-
-    private async findActivationForPayment(storeId: string, razorpayPaymentId: string): Promise<SubscriptionActivationRow | null> {
-        const { data, error } = await this.db
-            .from('subscriptions')
-            .select('id, plan, status, billing_period, current_period_end, promo_ends_at, external_subscription_id, amount_paid')
-            .eq('store_id', storeId)
-            .eq('razorpay_payment_id', razorpayPaymentId)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-        if (error) {
-            throw new Error(`Subscription payment lookup failed: ${error.message}`);
-        }
-        return (data as SubscriptionActivationRow | null) ?? null;
-    }
-
-    // The activation a payment already made, in the shape of a new one. Nothing is written: no second
-    // subscription, no second invoice, no cancellation. The founding allocation is asked again because
-    // the RPC answers per store, returning the existing allocation. The verify route sends the founding
-    // welcome only when its activation reports one, so with the webhook first it still does.
-    private async replayedActivation(row: SubscriptionActivationRow, input: { storeId: string; plan: BillingPlanCatalogRecord }) {
-        const live = row.status === 'active' && Number(row.amount_paid || 0) > 0;
-        return {
-            id: row.id,
-            plan: row.plan,
-            plan_name: row.plan === input.plan.slug ? input.plan.name : row.plan,
-            status: row.status,
-            billing_period: row.billing_period,
-            current_period_end: row.current_period_end,
-            promo_ends_at: row.promo_ends_at,
-            external_subscription_id: row.external_subscription_id,
-            founding: live ? await this.allocateFounding(input.storeId, row.id) : null,
-            replayed: true,
-        };
     }
 
     async syncProviderSubscription(input: {

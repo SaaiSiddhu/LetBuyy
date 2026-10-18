@@ -143,7 +143,7 @@ function listTypeScriptFiles(dir) {
 }
 
 function stringLiteralText(node) {
-  return ts.isStringLiteralLike(node) ? node.text : null;
+  return node && ts.isStringLiteralLike(node) ? node.text : null;
 }
 
 function routeMethodName(expression) {
@@ -192,6 +192,146 @@ function importsOwnershipGateFromCanonicalModule(sourceFile, filePath, identifie
   return false;
 }
 
+// These paths use an actual imported guard rather than one of the legacy text
+// signals above. Recognize only direct, ordered calls and exact query bindings;
+// a comment, unused import, callback, swallowed error or presumed mount is not proof.
+function canonicalCall(call, sourceFile, filePath, exportName, modulePath, contextName, handler) {
+  if (!call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression) ||
+      !call.arguments[0] || !ts.isIdentifier(call.arguments[0]) || call.arguments[0].text !== contextName) return false;
+  const localName = call.expression.text;
+  let shadowed = false;
+  function check(node) {
+    if ((ts.isVariableDeclaration(node) || ts.isFunctionDeclaration(node) || ts.isParameter(node)) &&
+        node.name && ts.isIdentifier(node.name) && node.name.text === localName) shadowed = true;
+    ts.forEachChild(node, check);
+  }
+  check(handler);
+  for (let scope = handler.parent; scope && scope !== sourceFile; scope = scope.parent) {
+    for (const parameter of scope.parameters ?? []) {
+      if (ts.isIdentifier(parameter.name) && parameter.name.text === localName) shadowed = true;
+    }
+    if (ts.isBlock(scope)) {
+      for (const statement of scope.statements) {
+        if (ts.isVariableStatement(statement) && statement.declarationList.declarations.some(declaration =>
+            ts.isIdentifier(declaration.name) && declaration.name.text === localName)) shadowed = true;
+        if (ts.isFunctionDeclaration(statement) && statement.name?.text === localName) shadowed = true;
+      }
+    }
+  }
+  if (shadowed) return false;
+  return sourceFile.statements.some(statement => {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) return false;
+    const bindings = statement.importClause?.namedBindings;
+    if (!bindings || !ts.isNamedImports(bindings)) return false;
+    const specifier = statement.moduleSpecifier.text;
+    if (!specifier.startsWith('.')) return false;
+    const resolved = path.resolve(path.dirname(filePath), specifier).replace(/\.(?:ts|js)$/, '');
+    const expected = path.join(repoRoot, 'services/api-gateway/src', modulePath);
+    return resolved === expected && existsSync(`${expected}.ts`) && bindings.elements.some(element =>
+      !element.isTypeOnly && !statement.importClause.isTypeOnly && element.name.text === localName &&
+      (element.propertyName ?? element.name).text === exportName);
+  });
+}
+
+function boundedCanonicalGuard(sourceFile, filePath, handler) {
+  if (!ts.isBlock(handler.body) || !handler.parameters[0] || !ts.isIdentifier(handler.parameters[0].name)) return false;
+  const contextName = handler.parameters[0].name.text;
+  const statements = [...handler.body.statements];
+  const writesBinding = (node, name) => {
+    if (!ts.isBinaryExpression(node) || node.operatorToken.kind < ts.SyntaxKind.FirstAssignment ||
+        node.operatorToken.kind > ts.SyntaxKind.LastAssignment) return false;
+    let target = node.left;
+    while (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) target = target.expression;
+    return ts.isIdentifier(target) && target.text === name;
+  };
+  let contextChanged = false, customerContextWritten = false;
+  function inspectContext(node) {
+    if (writesBinding(node, contextName)) contextChanged = true;
+    if (ts.isVariableDeclaration(node) && node.initializer &&
+        ts.isIdentifier(node.initializer) && node.initializer.text === contextName) contextChanged = true;
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) &&
+        ts.isIdentifier(node.expression.expression) && node.expression.expression.text === contextName &&
+        node.expression.name.text === 'set' && stringLiteralText(node.arguments[0]) === 'customer') customerContextWritten = true;
+    ts.forEachChild(node, inspectContext);
+  }
+  inspectContext(handler.body);
+  if (contextChanged) return false;
+  const firstRead = statements.findIndex(statement => containsTenantTable(statement.getText(sourceFile)));
+  if (firstRead < 0) return false;
+  const calls = (statement) => {
+    if (ts.isExpressionStatement(statement)) return [statement.expression];
+    if (ts.isVariableStatement(statement)) return statement.declarationList.declarations.map(d => d.initializer).filter(Boolean);
+    return [];
+  };
+  for (const statement of statements.slice(0, firstRead)) {
+    for (const expression of calls(statement)) {
+      if (ts.isAwaitExpression(expression) && canonicalCall(expression.expression, sourceFile, filePath,
+          'requireConsolePermission', 'identity-foundation/console-approval-repository', contextName, handler) &&
+          expression.expression.arguments[1] && ts.isStringLiteral(expression.expression.arguments[1]) &&
+          expression.expression.arguments[1].text.length > 0) return true;
+    }
+  }
+
+  // getCustomerSession is only a context accessor. It becomes a bounded read
+  // gate with an unconditional missing-session return BEFORE the read and both
+  // customer/store predicates sourced from that same unmodified session.
+  for (let i = 0; i < firstRead; i++) {
+    const statement = statements[i];
+    if (!ts.isVariableStatement(statement) || !(statement.declarationList.flags & ts.NodeFlags.Const)) continue;
+    for (const declaration of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name) || !declaration.initializer ||
+          !canonicalCall(declaration.initializer, sourceFile, filePath, 'getCustomerSession',
+            'middleware/customer-session', contextName, handler)) continue;
+      const name = declaration.name.text;
+      const allowedSessionReferences = new Set([declaration.name]);
+      const refused = statements.slice(i + 1, firstRead).some(node => {
+        if (!ts.isIfStatement(node) || node.elseStatement || !ts.isPrefixUnaryExpression(node.expression) ||
+            node.expression.operator !== ts.SyntaxKind.ExclamationToken ||
+            !ts.isIdentifier(node.expression.operand) || node.expression.operand.text !== name) return false;
+        const branch = ts.isBlock(node.thenStatement) ? [...node.thenStatement.statements] : [node.thenStatement];
+        const exits = branch.length === 1 && (ts.isReturnStatement(branch[0]) || ts.isThrowStatement(branch[0]));
+        if (exits) allowedSessionReferences.add(node.expression.operand);
+        return exits;
+      });
+      if (!refused || customerContextWritten) continue;
+      let invalid = false, queryCount = 0;
+      function inspect(node) {
+        if (writesBinding(node, name)) invalid = true;
+        if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === 'from') {
+          queryCount++;
+          if (stringLiteralText(node.arguments[0]) !== 'store_customers') { invalid = true; return; }
+          let current = node, customer = false, store = false, selected = false;
+          while (ts.isPropertyAccessExpression(current.parent) && current.parent.expression === current &&
+                 ts.isCallExpression(current.parent.parent)) {
+            const next = current.parent.parent, method = current.parent.name.text;
+            if (!['select', 'eq', 'is', 'maybeSingle', 'single', 'limit', 'order'].includes(method)) invalid = true;
+            if (method === 'select') selected = true;
+            if (method === 'eq' && next.arguments[1] && ts.isPropertyAccessExpression(next.arguments[1]) &&
+                ts.isIdentifier(next.arguments[1].expression) && next.arguments[1].expression.text === name) {
+              customer ||= stringLiteralText(next.arguments[0]) === 'id' && next.arguments[1].name.text === 'customerId';
+              store ||= stringLiteralText(next.arguments[0]) === 'store_id' && next.arguments[1].name.text === 'storeId';
+              allowedSessionReferences.add(next.arguments[1].expression);
+            }
+            current = next;
+          }
+          if (!customer || !store || !selected) invalid = true;
+        }
+        ts.forEachChild(node, inspect);
+      }
+      inspect(handler.body);
+      function inspectReferences(node) {
+        if (ts.isIdentifier(node) && node.text === name && !allowedSessionReferences.has(node)) invalid = true;
+        ts.forEachChild(node, inspectReferences);
+      }
+      inspectReferences(handler.body);
+      // Raw SQL has no supported query-builder binding proof in this analysis.
+      const rawSql = tenantTables.some(table => new RegExp(`\\b(?:from|into|update|join)\\s+(?:public\\.)?${table}\\b`, 'i').test(handler.getText(sourceFile)));
+      if (!invalid && queryCount > 0 && !rawSql) return true;
+    }
+  }
+  return false;
+}
+
 const knownOwnershipGateNames = ['requireOwnedSite', 'requireOwnedSiteOrError'];
 const duplicateGuardDefinitions = [];
 const violations = [];
@@ -236,6 +376,7 @@ for (const filePath of listTypeScriptFiles(routesRoot)) {
         if (
           containsTenantTable(handlerText) &&
           !containsGuard(handlerText) &&
+          !boundedCanonicalGuard(sourceFile, filePath, handler) &&
           !explicitAllowlist.has(key)
         ) {
           const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;

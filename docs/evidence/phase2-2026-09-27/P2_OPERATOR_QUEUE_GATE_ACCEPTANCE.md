@@ -342,3 +342,31 @@ search:
 ```
 "test": "pnpm run test:unit && pnpm run test:db && cd ../.. && tsx --test tests/contracts/storefront-buyer-auth.test.ts"
 ```
+
+## 4 October correction — operator overview tenant-guard failures repaired locally
+
+The three route failures recorded in §8 are now reproduced and fixed locally. The read paths were registered behind the existing super-admin gate (outbox) or both the existing `requirePermission` scope and super-admin gate (risk and Trust & Safety), but used the default tenant-guarded service client for intentional cross-site operator reads. They now use `getSupabaseAdminForOperatorRead` only in those bounded read handlers. No mutation route was switched to the unguarded client. The allowlist contract checks each exact route's gate and either the shared 1–200 pagination cap or fixed dashboard query limits.
+
+The owned-worker proof reaches the real worker and disposable Postgres/PostgREST. An initial harness attempt reused a single-use signed internal credential across routes and was rejected before the handlers; it is excluded. The corrected reproduction minted fresh credentials per request and observed all three original 500s with the expected `risk_scores`, `ts_cases`, and `outbox_events` tenant-guard messages. After the fix, four reads—outbox, dead letters, risk overview, and Trust & Safety overview—return 200 for the synthetic allowlisted super-admin; each returns 403 for a non-allowlisted identity. Both overview audit records are persisted. This service-role suite does not prove RLS.
+
+| Check | Result |
+|---|---|
+| `pnpm --filter @letbuyy/api-gateway typecheck` | exit 0 |
+| Focused risk, Trust & Safety, and operator-client allowlist tests | 14/14 pass |
+| Owned worker/Postgres route suite | 1/1 pass; 0 fail/skip/TODO; final seeded-row run `8bd2e30c3a08`; see [`P2_OPERATOR_OVERVIEW_TENANT_GUARD_DATABASE_RUN.json`](P2_OPERATOR_OVERVIEW_TENANT_GUARD_DATABASE_RUN.json) |
+| Gateway DB lane governance | 12/12 pass after pinning the new owned suite in the exact lane catalog |
+| Diff validation | pass |
+
+The final owned run seeded synthetic outbox and dead-letter rows, one risk score and one Trust & Safety case, and checked each route returned its fixture. The source fix preserves route authorization and bounded list/dashboard query size. It does not change operator tier policy, add privileges, migrate data, access hosted state, or activate a console. Browser/hosted acceptance remains open.
+
+## 8 October correction — internal identity replay claims now have a shared-store implementation
+
+The source-level gap recorded in §8 is corrected locally. `verifyInternalIdentityPayload`, `verifyInternalSessionHeaders`, and `verifyInternalAppRequest` still verify the signed payload before claiming its JTI; the claim now calls the narrow `consume_internal_auth_replay_jti` Postgres RPC. Migration 307 adds a unique `(auth_kind, jti)` key, a five-minute default claim window, bounded expiry cleanup, RLS, no direct table grants (including `service_role`), and a `SECURITY DEFINER` function with fixed `pg_catalog, public` search path that is executable only by `service_role`. Concurrent duplicate claims return one `true` and subsequent claims return `false`. The gateway treats RPC errors or non-boolean results as unavailable and rejects the credential without disclosing storage details. This removes the isolate-local `Map` as replay authority; it does not replace request/action idempotency.
+
+The source contract suite passes **18/18**, Gateway typecheck passes, and `git diff --check` passes. The migration-safety validator passes against the tracked migration history; the new migration is still an untracked owner change and its local source contract is also asserted by the focused unit test. The owned-worker/Postgres suite was invoked through the required executable-suite runner but did not start because no real Docker daemon answered `docker info` (`306e14aaa493`). Therefore the new migration has **not** yet been applied to an owned database, and the concurrent real-worker proof plus rollback/re-apply and database privilege assertions remain unverified. No hosted migration or cutover was attempted. Phase 2 and the eleven-phase goal remain active.
+
+The broader `definer-function-api-roles.test.mjs` currently fails on 31 pre-existing functions found in other untracked migrations 271–305; migration 307's new replay function is not among the reported offenders. Those unrelated migration changes were left untouched.
+
+**8 October verification follow-up:** after updating the gateway unit-test PostgREST fakes to model the new signed-app replay RPC, the six directly affected auth/consumer test files pass **66/66**. The complete Gateway unit lane passes **1,422/1,422 assertions** with one existing TODO and zero failures. These are deterministic unit tests; they do not replace the still-blocked real Postgres concurrency, migration, ACL, or rollback proof.
+
+**8 October owned-Postgres follow-up:** with the local Docker daemon available, the executable-suite runner completed `operator-queue-correctness.postgres.test.ts` **22/22**, run `7bae03fad00b`, with zero failures, skips, TODOs, or cleanup errors. It proves the same identity JTI is denied across two Gateway instances after one winner, a fresh credential is accepted, replay-store outages fail closed and recover, and migration 307's function privileges and rollback/reapply behavior. The first integration attempt exposed a stale test assumption: F6.2 intentionally mounts `/operations/marketplace-listings` before the broad incident-command gate and gives it its own active-reviewer gate. The owned test now verifies that separate reviewer allow/deny matrix while retaining the inherited-gate checks for all other sibling routes. See the [sanitized run record](P2_INTERNAL_AUTH_REPLAY_OWNED_RUN_2026-10-08.json). The suite is local synthetic evidence only; hosted migration/deployment and the remaining Phase 2 decisions are still open.

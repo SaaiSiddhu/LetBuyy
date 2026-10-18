@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-05",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "sourceHead": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/marketplace-cart-origin.postgres.test.ts",
+  "runner": "scripts/governance/run-executable-suites.mjs",
+  "runId": "22cdc47bd42e",
+  "database": "runner-owned disposable PostgreSQL 16 with PostgREST",
+  "result": {
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "todo": 0,
+    "cancelled": 0
+  },
+  "verified": [
+    "marketplace checkout stores category from the approved seller listing on the order item",
+    "post-checkout category edits are denied",
+    "existing listing identity immutability remains enforced",
+    "migration 296 rollback succeeds only before snapshot evidence exists and reapply succeeds",
+    "mixed-seller marketplace checkout remains denied",
+    "buyer-owned order and COD checkout paths remain functional"
+  ],
+  "cleanup": "runner completed without cleanup warnings; disposable database resources removed",
+  "externalProviderOrLiveMoney": false
+}

@@ -69,15 +69,15 @@ test('incident command routes are mounted with scope guards, reason capture, pag
     assert.match(routeSource, /production_incident_events/);
     assert.match(operationsSource, /router\.patch\('\/runtime\/incidents\/:incidentId\/status',\s*requirePermission\('incident:command'\)/);
     assert.match(operationsSource, /POSTMORTEM_REQUIRED/);
-    assert.match(operationsSource, /checkSegregationOfDuty/);
-    assert.match(operationsSource, /runtime\.control-command/);
-    assert.match(operationsSource, /secondary_approver_id/);
-    assert.match(operationsSource, /incident\.runtime_control_command\.submit/);
+    assert.match(operationsSource, /RUNTIME_CONTROL_UNAVAILABLE/);
+    assert.match(operationsSource, /No command was accepted/);
+    const commandHandler = operationsSource.split("router.post('/runtime/control-commands'")[1].split("router.get('/runtime/incidents'")[0];
+    assert.doesNotMatch(commandHandler, /\.insert\(|dual_control:\s*true|approved_at:/);
     assert.match(eventCoreSource, /secondary_approver_id/);
     assert.match(eventCoreSource, /reason: z\.string\(\)\.trim\(\)\.min\(8\)\.max\(500\)\.optional\(\)/);
 });
 
-test('api client and platform console expose the incident command surface without unavailable placeholders', () => {
+test('api client preserves incident contracts while the console labels unimplemented runtime control truthfully', () => {
     const clientSource = repositorySource('packages/typescript/api-client/src/index.ts');
     const operationsPage = repositorySource('apps/internal/console/src/app/(dashboard)/operations/page.tsx');
 
@@ -105,7 +105,8 @@ test('api client and platform console expose the incident command surface withou
     assert.match(operationsPage, /On-Call/);
     assert.match(operationsPage, /Postmortems/);
     assert.match(operationsPage, /createIncident/);
-    assert.match(operationsPage, /submitRuntimeControlCommand/);
+    assert.match(operationsPage, /No runtime command can be submitted here/);
+    assert.doesNotMatch(operationsPage, /Second approver employee ID|form action=\{submitRuntimeControlCommand\}/);
     assert.match(operationsPage, /createOncallSchedule/);
     assert.match(operationsPage, /createPostmortem/);
     assert.doesNotMatch(operationsPage, /SkipBackendPanel/);

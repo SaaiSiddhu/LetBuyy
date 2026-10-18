@@ -4,33 +4,106 @@
 
 'use client';
 
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import { useWishlist } from '@/context/wishlist-context';
+import { buyerPrivacyUrl } from '@/lib/buyer-auth/flow';
 import { Button, Input,
-    User as UserIcon, Lock, Loader2, Check, Eye, EyeOff, Save, AlertCircle, Mail, Phone,
+    User as UserIcon, Lock, Loader2, Check, Save, AlertCircle, Mail, Phone,
 } from '@letbuyy/ui';
+
+function StoreCustomerLinkForm({ returnTo, label, borderColor }: { returnTo: string; label: string; borderColor: string }) {
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
+
+    const startLink = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (submitting) return;
+        setSubmitting(true);
+        setError('');
+        try {
+            const response = await fetch('/api/buyer-auth/start', {
+                method: 'POST',
+                headers: { Accept: 'application/json' },
+                body: new FormData(event.currentTarget),
+                credentials: 'same-origin',
+                cache: 'no-store',
+            });
+            const payload = await response.json() as { redirectTo?: unknown };
+            if (!response.ok || typeof payload.redirectTo !== 'string') {
+                throw new Error('We could not start account connection. Please try again.');
+            }
+            const destination = new URL(payload.redirectTo);
+            if (destination.pathname !== '/buyer/authorize' || destination.username || destination.password) {
+                throw new Error('We could not verify the account connection destination.');
+            }
+            window.location.assign(destination.toString());
+        } catch (reason) {
+            setError(reason instanceof Error ? reason.message : 'Network error. Please try again.');
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <>
+            {error && <p role="alert" className="mb-2 text-sm text-red-600">{error}</p>}
+            <form method="post" action="/api/buyer-auth/start" onSubmit={startLink}>
+                <Input unstyled type="hidden" name="intent" value="link_store_customer" />
+                <Input unstyled type="hidden" name="return_to" value={returnTo} />
+                <Button unstyled type="submit" disabled={submitting} className="px-5 py-2.5 rounded-xl border text-sm font-semibold disabled:opacity-50" style={{ borderColor }}>
+                    {submitting ? 'Connecting…' : label}
+                </Button>
+            </form>
+        </>
+    );
+}
 
 function StoreCustomerSettings() {
     const { customer, refreshSession } = useCustomerAuth();
+    const pathname = usePathname();
 
     // Profile edit state
     const [fullName, setFullName] = useState(customer?.fullName || '');
     const [phone, setPhone] = useState('');
     const [acceptsMarketing, setAcceptsMarketing] = useState(false);
+    const [profileLoading, setProfileLoading] = useState(true);
+    const [profileLoadError, setProfileLoadError] = useState('');
     const [profileSaving, setProfileSaving] = useState(false);
     const [profileSaved, setProfileSaved] = useState(false);
     const [profileError, setProfileError] = useState('');
 
     // Password state
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showCurrent, setShowCurrent] = useState(false);
-    const [showNew, setShowNew] = useState(false);
     const [passwordSaving, setPasswordSaving] = useState(false);
     const [passwordError, setPasswordError] = useState('');
     const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+    const loadProfile = useCallback(async (signal?: AbortSignal) => {
+        setProfileLoading(true);
+        setProfileLoadError('');
+        try {
+            const response = await fetch('/api/customer/profile', { cache: 'no-store', signal });
+            const body = await response.json() as {
+                customer?: { email?: string; full_name?: string | null; phone?: string | null; accepts_marketing?: boolean };
+                error?: string;
+            };
+            if (!response.ok || !body.customer) throw new Error(body.error || 'We could not load your store profile.');
+            setFullName(body.customer.full_name || '');
+            setPhone(body.customer.phone || '');
+            setAcceptsMarketing(body.customer.accepts_marketing === true);
+        } catch (reason) {
+            if (reason instanceof DOMException && reason.name === 'AbortError') return;
+            setProfileLoadError(reason instanceof Error ? reason.message : 'We could not load your store profile.');
+        } finally {
+            if (!signal?.aborted) setProfileLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        void loadProfile(controller.signal);
+        return () => controller.abort();
+    }, [loadProfile]);
 
     const handleProfileSave = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,42 +137,33 @@ function StoreCustomerSettings() {
         }
     };
 
-    const handlePasswordChange = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handlePasswordResetRequest = async () => {
         setPasswordError('');
         setPasswordSuccess(false);
-
-        if (newPassword.length < 6) {
-            setPasswordError('Password must be at least 6 characters');
+        if (!customer?.email || !customer.storeId) {
+            setPasswordError('Your store account could not be verified. Refresh and try again.');
             return;
         }
-
-        if (newPassword !== confirmPassword) {
-            setPasswordError('Passwords do not match');
-            return;
-        }
-
         setPasswordSaving(true);
         try {
             const res = await fetch('/api/customer/set-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    currentPassword: currentPassword || undefined,
-                    password: newPassword,
+                    action: 'request_reset',
+                    email: customer.email,
+                    storeId: customer.storeId,
+                    resetUrl: new URL('/customers/reset-password', window.location.origin).toString(),
                 }),
             });
 
             if (res.ok) {
                 setPasswordSuccess(true);
-                setCurrentPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-                setTimeout(() => setPasswordSuccess(false), 3000);
             } else {
-                const data = await res.json();
-                setPasswordError(data.error || 'Failed to update password');
+                setPasswordError('We could not start a password reset. Please try again.');
             }
+        } catch {
+            setPasswordError('Network error. Please try again.');
         } finally {
             setPasswordSaving(false);
         }
@@ -110,6 +174,16 @@ function StoreCustomerSettings() {
             <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
 
             <div className="space-y-6">
+                <section className="rounded-2xl border p-5 space-y-3" style={{ borderColor: 'var(--lb-color-border)' }}>
+                    <div>
+                        <h2 className="font-semibold">Connect this store account to LetBuyy</h2>
+                        <p className="mt-1 text-sm" style={{ color: 'var(--lb-color-text-secondary)' }}>
+                            Sign in with a verified LetBuyy account using the same email as this store account. Connecting does not claim past orders; historical orders need a separate verified claim.
+                        </p>
+                    </div>
+                    <StoreCustomerLinkForm returnTo={pathname || '/'} label="Sign in and connect with LetBuyy" borderColor="var(--lb-color-border)" />
+                </section>
+
                 {/* Profile Info */}
                 <form onSubmit={handleProfileSave} className="rounded-2xl border p-5" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                     <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -129,6 +203,13 @@ function StoreCustomerSettings() {
                         )}
                     </div>
                     <div className="space-y-3">
+                        {profileLoading && <p role="status" className="text-sm">Loading your store profile…</p>}
+                        {profileLoadError && (
+                            <div role="alert" className="text-sm text-red-600">
+                                <p>{profileLoadError}</p>
+                                <Button unstyled type="button" onClick={() => void loadProfile()} className="underline">Try again</Button>
+                            </div>
+                        )}
                         <div>
                             <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
                                 Email Address
@@ -145,6 +226,7 @@ function StoreCustomerSettings() {
                             <Input unstyled
                                 value={fullName}
                                 onChange={e => setFullName(e.target.value)}
+                                disabled={profileLoading || Boolean(profileLoadError)}
                                 className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2"
                                 style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                             />
@@ -158,6 +240,7 @@ function StoreCustomerSettings() {
                                 <Input unstyled
                                     value={phone}
                                     onChange={e => setPhone(e.target.value.replace(/[^\d+\-\s]/g, ''))}
+                                    disabled={profileLoading || Boolean(profileLoadError)}
                                     placeholder="+91 98765 43210"
                                     inputMode="tel"
                                     className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2"
@@ -170,6 +253,7 @@ function StoreCustomerSettings() {
                                 type="checkbox"
                                 checked={acceptsMarketing}
                                 onChange={e => setAcceptsMarketing(e.target.checked)}
+                                disabled={profileLoading || Boolean(profileLoadError)}
                                 className="mt-1 h-4 w-4 rounded border-[var(--lb-color-border)]"
                             />
                             <span>
@@ -186,7 +270,7 @@ function StoreCustomerSettings() {
                         )}
                         <Button unstyled
                             type="submit"
-                            disabled={profileSaving}
+                            disabled={profileSaving || profileLoading || Boolean(profileLoadError)}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
                             style={{ backgroundColor: profileSaved ? 'rgb(16 185 129)' : 'var(--primary)' }}
                         >
@@ -203,131 +287,99 @@ function StoreCustomerSettings() {
                 </form>
 
                 {/* Security */}
-                <form onSubmit={handlePasswordChange} className="rounded-2xl border p-5" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                <section className="rounded-2xl border p-5" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                     <h2 className="font-semibold mb-4 flex items-center gap-2">
                         <Lock size={18} />
-                        Change Password
+                        Reset Password
                     </h2>
                     <div className="space-y-3">
-                        <div className="relative">
-                            <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                Current Password
-                            </label>
-                            <div className="relative">
-                                <Input unstyled
-                                    type={showCurrent ? 'text' : 'password'}
-                                    value={currentPassword}
-                                    onChange={e => setCurrentPassword(e.target.value)}
-                                    placeholder="Enter current password (if set)"
-                                    className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2 pr-10"
-                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
-                                />
-                                <Button unstyled
-                                    type="button"
-                                    onClick={() => setShowCurrent(!showCurrent)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                                    style={{ color: 'var(--text-muted, rgb(156 163 175))' }}
-                                >
-                                    {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className="relative">
-                            <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                New Password
-                            </label>
-                            <div className="relative">
-                                <Input unstyled
-                                    type={showNew ? 'text' : 'password'}
-                                    value={newPassword}
-                                    onChange={e => setNewPassword(e.target.value)}
-                                    placeholder="Enter new password"
-                                    required
-                                    className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2 pr-10"
-                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
-                                />
-                                <Button unstyled
-                                    type="button"
-                                    onClick={() => setShowNew(!showNew)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                                    style={{ color: 'var(--text-muted, rgb(156 163 175))' }}
-                                >
-                                    {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                Confirm New Password
-                            </label>
-                            <Input unstyled
-                                type="password"
-                                value={confirmPassword}
-                                onChange={e => setConfirmPassword(e.target.value)}
-                                placeholder="Confirm new password"
-                                required
-                                className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
-                            />
-                        </div>
-
-                        {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
+                            We’ll email a secure reset link to {customer?.email || 'your account email'} if password reset is available for this account.
+                        </p>
+                        {passwordError && <p className="text-sm text-red-500" role="alert">{passwordError}</p>}
                         {passwordSuccess && (
-                            <p className="text-sm text-green-600 flex items-center gap-1">
-                                <Check size={14} /> Password updated successfully!
+                            <p className="text-sm text-green-600 flex items-center gap-1" role="status">
+                                <Check size={14} /> If password reset is available, check your email for a link.
                             </p>
                         )}
 
                         <Button unstyled
-                            type="submit"
+                            type="button"
+                            onClick={handlePasswordResetRequest}
                             disabled={passwordSaving}
                             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-50"
                             style={{ backgroundColor: 'var(--primary)' }}
                         >
-                            {passwordSaving ? <Loader2 size={16} className="animate-spin" /> : <Lock size={16} />}
-                            Update Password
+                            {passwordSaving ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                            Email reset link
                         </Button>
                     </div>
-                </form>
+                </section>
             </div>
         </div>
     );
 }
 
-type BuyerProfile = { email: string; email_verified: boolean; full_name: string | null; phone: string | null };
+type BuyerProfile = { id: string; email: string; email_verified: boolean; full_name: string | null; phone: string | null };
 
 function BuyerSettings() {
+    const pathname = usePathname();
+    const { buyerSessionReady, buyerSessionRevision } = useWishlist();
+    const buyerSessionRevisionRef = useRef(buyerSessionRevision);
+    buyerSessionRevisionRef.current = buyerSessionRevision;
+    const { isAuthenticated: hasStoreCustomerSession, logout: signOutStoreCustomer } = useCustomerAuth();
     const [profile, setProfile] = useState<BuyerProfile | null>(null);
+    const profileId = useRef<string | null>(null);
+    const [loadedSessionRevision, setLoadedSessionRevision] = useState<number | null>(null);
     const [fullName, setFullName] = useState('');
     const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [linkStatus, setLinkStatus] = useState('');
 
-    const load = async () => {
+    const load = useCallback(async (signal?: AbortSignal) => {
         setLoading(true);
         setError('');
+        setLoadedSessionRevision(null);
         try {
-            const response = await fetch('/api/buyer/profile', { cache: 'no-store' });
+            const response = await fetch('/api/buyer/profile', { cache: 'no-store', signal });
             const body = await response.json() as { buyer?: BuyerProfile; error?: string };
             if (!response.ok || !body.buyer) throw new Error(body.error || 'We could not load your profile.');
+            if (profileId.current !== body.buyer.id) {
+                setFullName(body.buyer.full_name || '');
+                setPhone(body.buyer.phone || '');
+            }
+            profileId.current = body.buyer.id;
             setProfile(body.buyer);
-            setFullName(body.buyer.full_name || '');
-            setPhone(body.buyer.phone || '');
         } catch (reason) {
+            if (reason instanceof DOMException && reason.name === 'AbortError') return;
             setError(reason instanceof Error ? reason.message : 'We could not load your profile.');
         } finally {
-            setLoading(false);
+            if (!signal?.aborted) {
+                setLoading(false);
+                setLoadedSessionRevision(buyerSessionRevision);
+            }
         }
-    };
+    }, [buyerSessionRevision]);
 
-    useEffect(() => { void load(); }, []);
+    useEffect(() => {
+        if (!buyerSessionReady) return;
+        const controller = new AbortController();
+        void load(controller.signal);
+        return () => controller.abort();
+    }, [buyerSessionReady, buyerSessionRevision, load]);
+    useEffect(() => { setLinkStatus(new URLSearchParams(window.location.search).get('buyer_link') || ''); }, []);
 
     const save = async (event: React.FormEvent) => {
         event.preventDefault();
+        const submittedRevision = buyerSessionRevisionRef.current;
+        const expectedBuyerId = profileId.current;
+        if (!expectedBuyerId) {
+            setError('Reload your account before saving profile changes.');
+            return;
+        }
         setSaving(true);
         setError('');
         setMessage('');
@@ -335,15 +387,17 @@ function BuyerSettings() {
             const response = await fetch('/api/buyer/profile', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName: fullName.trim(), phone: phone.trim() }),
+                body: JSON.stringify({ fullName: fullName.trim(), phone: phone.trim(), expectedBuyerId }),
             });
             const body = await response.json() as { buyer?: BuyerProfile; error?: string };
             if (!response.ok || !body.buyer) throw new Error(body.error || 'We could not update your profile.');
+            if (buyerSessionRevisionRef.current !== submittedRevision) return;
             setProfile(body.buyer);
             setFullName(body.buyer.full_name || '');
             setPhone(body.buyer.phone || '');
             setMessage('Your LetBuyy profile is saved.');
         } catch (reason) {
+            if (buyerSessionRevisionRef.current !== submittedRevision) return;
             setError(reason instanceof Error ? reason.message : 'We could not update your profile.');
         } finally {
             setSaving(false);
@@ -360,7 +414,20 @@ function BuyerSettings() {
         }
     };
 
-    if (loading) return <p role="status">Loading your LetBuyy profile…</p>;
+    const signOutStoreCustomerSession = async () => {
+        setError('');
+        setMessage('');
+        try {
+            await signOutStoreCustomer();
+            setMessage('Store customer account signed out at this store. Your LetBuyy session remains active here.');
+        } catch {
+            setError('We could not sign you out of the store customer account. Please try again.');
+        }
+    };
+
+    if (loading || !buyerSessionReady || loadedSessionRevision !== buyerSessionRevision) {
+        return <p role="status">Loading your LetBuyy profile…</p>;
+    }
 
     return (
         <div>
@@ -391,31 +458,52 @@ function BuyerSettings() {
                     <Button unstyled type="submit" disabled={saving} className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold disabled:opacity-50" style={{ backgroundColor: 'var(--primary)' }}>
                         {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} Save profile
                     </Button>
-                    <Button unstyled type="button" onClick={() => void signOut()} className="px-5 py-2.5 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>Sign out at this store</Button>
+                    <Button unstyled type="button" onClick={() => void signOut()} className="px-5 py-2.5 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>Sign out of LetBuyy at this store</Button>
+                    {hasStoreCustomerSession && <Button unstyled type="button" onClick={() => void signOutStoreCustomerSession()} className="px-5 py-2.5 rounded-xl border text-sm font-semibold" style={{ borderColor: 'var(--lb-color-border)' }}>Sign out of store customer account</Button>}
                 </div>
             </form>
+            <section className="mt-5 rounded-2xl border border-[var(--lb-color-border)] p-5 space-y-2">
+                <h2 className="font-semibold">Your data access</h2>
+                <p className="text-sm">Open your canonical LetBuyy account to request a restricted data export. Password verification and a single-use download take place at Identity.</p>
+                {profile && <PrivacyEntry buyerId={profile.id} />}
+            </section>
+            <section className="mt-5 rounded-2xl border p-5 space-y-2" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
+                <h2 className="font-semibold">Connect this store account</h2>
+                <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
+                    Reconfirm your LetBuyy sign-in to connect a store customer record with the same verified email. This action does not claim past orders; historical orders require a separate verified claim flow.
+                </p>
+                {linkStatus && <p role="status" className="text-sm" style={{ color: linkStatus === 'linked' ? 'var(--primary)' : 'var(--text-secondary, rgb(107 114 128))' }}>
+                    {linkStatus === 'linked' ? 'This store account is connected.'
+                        : linkStatus === 'unverified' ? 'Verify your LetBuyy email before connecting a store account.'
+                            : linkStatus === 'conflict' ? 'This store customer record is already connected to another LetBuyy account. Contact the store for help.'
+                                : 'We could not connect this store account. You can try again shortly.'}
+                </p>}
+                <StoreCustomerLinkForm returnTo={pathname || '/'} label="Connect store account" borderColor="var(--border, rgb(229 231 235))" />
+            </section>
         </div>
     );
 }
 
-export default function SettingsPageClient() {
-    const [mode, setMode] = useState<'checking' | 'buyer' | 'store-customer' | 'error'>('checking');
-    useEffect(() => {
-        const controller = new AbortController();
-        fetch('/api/buyer-auth/session', { cache: 'no-store', signal: controller.signal })
-            .then(async response => {
-                if (!response.ok) throw new Error('session_unavailable');
-                const data = await response.json() as { buyer?: unknown };
-                setMode(data.buyer ? 'buyer' : 'store-customer');
-            })
-            .catch((reason: unknown) => {
-                if (reason instanceof Error && reason.name === 'AbortError') return;
-                setMode('error');
-            });
-        return () => controller.abort();
-    }, []);
+function PrivacyEntry({ buyerId }: { buyerId: string }) {
+    try {
+        const href = buyerPrivacyUrl(buyerId, { NEXT_PUBLIC_ACCOUNTS_URL: process.env.NEXT_PUBLIC_ACCOUNTS_URL });
+        return <a className="inline-block underline" href={href}>Manage data access</a>;
+    } catch { return <p role="alert">The secure data access page is unavailable. Contact support.</p>; }
+}
 
-    if (mode === 'checking') return <p role="status">Checking your account…</p>;
-    if (mode === 'error') return <p role="alert">We could not check your account. Please refresh and try again.</p>;
-    return mode === 'buyer' ? <BuyerSettings /> : <StoreCustomerSettings />;
+export default function SettingsPageClient() {
+    const { buyerSessionEmail, buyerSessionReady, buyerSessionUnavailable } = useWishlist();
+    const checking = !buyerSessionReady;
+    const unavailable = buyerSessionReady && buyerSessionUnavailable;
+    return (
+        <>
+            {checking && <p role="status">Checking your account…</p>}
+            {unavailable && <p role="alert">We could not check your account. Please refresh and try again.</p>}
+            <div hidden={checking || unavailable} aria-hidden={checking || unavailable || undefined} inert={checking || unavailable || undefined}>
+                {buyerSessionEmail
+                    ? <BuyerSettings key={buyerSessionEmail} />
+                    : <StoreCustomerSettings />}
+            </div>
+        </>
+    );
 }

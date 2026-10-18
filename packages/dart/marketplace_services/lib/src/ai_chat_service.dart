@@ -3,12 +3,51 @@
 // ============================================================
 
 import 'dart:developer' as dev;
+import 'package:flutter/foundation.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:uuid/uuid.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 // ✅ 1. IMPORT SHARED_PREFERENCES
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Only closed, fixed diagnostic codes may cross the logging boundary. Never
+// attach prompts, function data, exception objects or stack traces: each can
+// contain private conversation, credentials, URLs or provider response bodies.
+enum _AiDiagnostic {
+  messageFailed('AI_MESSAGE_FAILED'),
+  profileContextFailed('AI_PROFILE_CONTEXT_FAILED'),
+  historyItemDropped('AI_HISTORY_ITEM_DROPPED'),
+  providerUnavailable('AI_PROVIDER_UNAVAILABLE'),
+  providerRequestStarted('AI_PROVIDER_REQUEST_STARTED'),
+  providerEmpty('AI_PROVIDER_EMPTY'),
+  providerResponseReady('AI_PROVIDER_RESPONSE_READY'),
+  providerFailed('AI_PROVIDER_FAILED'),
+  toolStarted('AI_TOOL_STARTED'),
+  toolCompleted('AI_TOOL_COMPLETED'),
+  toolFailed('AI_TOOL_FAILED'),
+  toolResponseStarted('AI_TOOL_RESPONSE_STARTED'),
+  toolResponseFailed('AI_TOOL_RESPONSE_FAILED'),
+  searchStarted('AI_SEARCH_STARTED'),
+  searchCompleted('AI_SEARCH_COMPLETED'),
+  searchFailed('AI_SEARCH_FAILED'),
+  productDetailsFailed('AI_PRODUCT_DETAILS_FAILED'),
+  profileFailed('AI_PROFILE_FAILED'),
+  categoriesCompleted('AI_CATEGORIES_COMPLETED'),
+  categoriesFailed('AI_CATEGORIES_FAILED'),
+  cachePrimeFailed('AI_CACHE_PRIME_FAILED');
+
+  const _AiDiagnostic(this.code);
+  final String code;
+}
+
+void _diagnostic(_AiDiagnostic reason) =>
+    dev.log(reason.code, name: 'letbuyy.ai');
+
+/// A result for an ended actor/session must never be applied to the current chat.
+class AIChatContextChanged implements Exception {
+  const AIChatContextChanged();
+}
 
 class AIChatService {
   // C3 (Firebase SDK removal, 27 September 2026 review continuation, second pass): this service's
@@ -28,36 +67,96 @@ class AIChatService {
 
   /// Wires this singleton to the canonical gateway clients. Idempotent; ai_chat_screen.dart calls
   /// this once per screen entry from its own Provider-scoped context.
-  void configure({required ApiClient client, required BuyerAccountApi accounts}) {
+  void configure({
+    required ApiClient client,
+    required BuyerAccountApi accounts,
+  }) {
     _client = client;
     _accounts = accounts;
   }
 
-  /// Call whenever BuyerSignInController's identity changes (sign in/out/switch).
-  void updateAuth({String? sessionToken, String? email}) {
-    _sessionToken = sessionToken;
-    _buyerEmail = email;
+  String? _buyerId;
+  int _epoch = 0;
+  int get epoch => _epoch;
+  bool isCurrent(int expectedEpoch) => expectedEpoch == _epoch;
+
+  void _requireCurrent(int expectedEpoch) {
+    if (!isCurrent(expectedEpoch)) throw const AIChatContextChanged();
   }
 
-  bool get isSignedIn => _sessionToken != null;
+  /// Bind the canonical buyer ID, never an email or a rotating token, as the actor.
+  /// A token without its canonical principal is deliberately treated as signed out.
+  void updateAuth({String? buyerId, String? sessionToken, String? email}) {
+    final nextBuyer =
+        buyerId != null &&
+            buyerId.isNotEmpty &&
+            sessionToken != null &&
+            sessionToken.isNotEmpty
+        ? buyerId
+        : null;
+    final nextToken = nextBuyer == null ? null : sessionToken;
+    final actorChanged = nextBuyer != _buyerId;
+    if (actorChanged || nextToken != _sessionToken) {
+      _epoch++;
+      userProfileCache = null;
+      _profileCacheTime = null;
+      if (actorChanged) {
+        context.clear();
+        _currentSessionId = null;
+      }
+    }
+    _buyerId = nextBuyer;
+    _sessionToken = nextToken;
+    _buyerEmail = nextBuyer == null ? null : email;
+  }
 
-  // ✅ 2. MAKE A SINGLETON
+  /// Invalidate work abandoned by a screen without deleting the current conversation.
+  void invalidatePending({int? expectedEpoch}) {
+    if (expectedEpoch == null || isCurrent(expectedEpoch)) _epoch++;
+  }
+
+  bool get isSignedIn => _buyerId != null && _sessionToken != null;
+
   static final AIChatService instance = AIChatService._();
-  AIChatService._(); // Private constructor
+  AIChatService._({
+    Future<SharedPreferences> Function()? preferencesLoader,
+    Future<ChatMessage> Function(String, List<ChatMessage>?)? reply,
+    GenerativeModel? model,
+  }) : _preferencesLoader = preferencesLoader ?? SharedPreferences.getInstance,
+       _reply = reply,
+       _testModel = model;
 
-  // ✅ 3. PRIVATE STATE FOR SESSION
-  static const String _kSessionKey = 'current_chat_session_id';
+  /// Uses the same lifecycle and result guards with controlled local transports.
+  @visibleForTesting
+  factory AIChatService.forTesting({
+    Future<SharedPreferences> Function()? preferencesLoader,
+    Future<ChatMessage> Function(String, List<ChatMessage>?)? reply,
+    GenerativeModel? model,
+  }) => AIChatService._(
+    preferencesLoader: preferencesLoader,
+    reply: reply,
+    model: model,
+  );
+
+  final Future<SharedPreferences> Function() _preferencesLoader;
+  final Future<ChatMessage> Function(String, List<ChatMessage>?)? _reply;
+  // A controlled SDK client supplied only by forTesting. Ordinary construction
+  // still uses the existing missing-provider gate, with no new key/config path.
+  final GenerativeModel? _testModel;
   SharedPreferences? _prefs;
   String? _currentSessionId;
 
-  // ✅ 4. PUBLIC GETTER FOR THE SESSION ID
+  // Only the non-secret conversation identifier is persisted. The old global key
+  // is left untouched and is never restored into another buyer's namespace.
+  String get _sessionKey =>
+      'current_chat_session_id:${_buyerId == null ? 'guest' : 'buyer:$_buyerId'}';
+
+  String? get initializedSessionId => _currentSessionId;
+
   String get currentSessionId {
-    if (_currentSessionId == null) {
-      // This error means you forgot to call initSession() in the UI.
-      throw StateError(
-          'AIChatService.currentSessionId called before initSession() was completed.');
-    }
-    return _currentSessionId!;
+    final id = _currentSessionId;
+    if (id == null) throw StateError('Chat session is not initialized.');
+    return id;
   }
 
   final List<ChatMessage> context = [];
@@ -65,103 +164,102 @@ class AIChatService {
   DateTime? _profileCacheTime;
   static const _cacheExpiry = Duration(minutes: 15);
 
-  // ✅ 5. NEW INIT METHOD TO LOAD THE SESSION
-  /// Must be called once before using the service.
   Future<void> initSession() async {
-    // Already initialized, do nothing.
     if (_currentSessionId != null) return;
-
-    _prefs ??= await SharedPreferences.getInstance();
-    final savedId = _prefs!.getString(_kSessionKey);
-
-    if (savedId != null && savedId.isNotEmpty) {
-      _currentSessionId = savedId;
-      dev.log('🔄 Resumed session: $_currentSessionId');
-    } else {
-      _currentSessionId = const Uuid().v4();
-      await _prefs!.setString(_kSessionKey, _currentSessionId!);
-      dev.log('✨ Created new persistent session: $_currentSessionId');
-    }
+    final expectedEpoch = _epoch;
+    final key = _sessionKey;
+    final prefs = _prefs ?? await _preferencesLoader();
+    if (!isCurrent(expectedEpoch)) return;
+    _prefs = prefs;
+    // A concurrent initializer may already have selected this actor's ID.
+    if (_currentSessionId != null) return;
+    final savedId = prefs.getString(key);
+    final id = savedId != null && savedId.isNotEmpty
+        ? savedId
+        : const Uuid().v4();
+    _currentSessionId = id;
+    if (savedId != id) await prefs.setString(key, id);
+    // Persistence is namespaced to the captured actor; never restore it after a switch.
   }
 
-  // ✅ 6. UPDATE STARTNEWSESSION TO SAVE THE NEW ID
   Future<void> startNewSession() async {
-    _prefs ??= await SharedPreferences.getInstance();
-    _currentSessionId = const Uuid().v4();
-    await _prefs!.setString(_kSessionKey, _currentSessionId!);
-
+    _epoch++;
+    final expectedEpoch = _epoch;
+    final key = _sessionKey;
+    final id = const Uuid().v4();
+    _currentSessionId = id;
     context.clear();
     userProfileCache = null;
     _profileCacheTime = null;
-    dev.log('🆕 New session started & saved: $_currentSessionId');
+    final prefs = _prefs ?? await _preferencesLoader();
+    if (!isCurrent(expectedEpoch)) return;
+    _prefs = prefs;
+    await prefs.setString(key, id);
   }
 
   // ... (tools definition remains exactly the same) ...
   final tools = [
-    Tool(functionDeclarations: [
-      FunctionDeclaration(
-        'searchProducts',
-        'Search for products by name, keywords, or category. Use this when user asks to "show", "find", "buy", "price of", or just names a product.',
-        Schema(
-          SchemaType.object,
-          properties: {
-            'query': Schema(
-              SchemaType.string,
-              description:
-                  'Product name, keywords, or "all" to show all products',
-              nullable: false,
-            ),
-            'categoryId': Schema(
-              SchemaType.string,
-              description: 'Optional category ID filter',
-              nullable: true,
-            ),
-            'limit': Schema(
-              SchemaType.integer,
-              description: 'Max results (default: 8, max: 20)',
-              nullable: true,
-            ),
-          },
-          requiredProperties: ['query'],
+    Tool(
+      functionDeclarations: [
+        FunctionDeclaration(
+          'searchProducts',
+          'Search for products by name, keywords, or category. Use this when user asks to "show", "find", "buy", "price of", or just names a product.',
+          Schema(
+            SchemaType.object,
+            properties: {
+              'query': Schema(
+                SchemaType.string,
+                description:
+                    'Product name, keywords, or "all" to show all products',
+                nullable: false,
+              ),
+              'categoryId': Schema(
+                SchemaType.string,
+                description: 'Optional category ID filter',
+                nullable: true,
+              ),
+              'limit': Schema(
+                SchemaType.integer,
+                description: 'Max results (default: 8, max: 20)',
+                nullable: true,
+              ),
+            },
+            requiredProperties: ['query'],
+          ),
         ),
-      ),
-      // ... all other function declarations
-      FunctionDeclaration(
-        'getAvailableCoupons',
-        'Get active discount coupons. Use when user asks about deals, discounts, or coupons.',
-        Schema(SchemaType.object, properties: {}),
-      ),
-    ])
+        // ... all other function declarations
+        FunctionDeclaration(
+          'getAvailableCoupons',
+          'Get active discount coupons. Use when user asks about deals, discounts, or coupons.',
+          Schema(SchemaType.object, properties: {}),
+        ),
+      ],
+    ),
   ];
 
   /// C3: no durable chat-history backend exists yet (see this file's own class-level doc comment)
   /// -- kept in memory for the lifetime of the running app only. Never silently claims to have
   /// saved anything it did not.
-  Future<void> saveMessage(ChatMessage message) async {
-    if (message.text.trim().isEmpty &&
-        message.messageType != MessageType.loading) {
+  Future<void> saveMessage(ChatMessage message, {int? expectedEpoch}) async {
+    if ((expectedEpoch != null && !isCurrent(expectedEpoch)) ||
+        message.sessionId != _currentSessionId ||
+        (message.text.trim().isEmpty &&
+            message.messageType != MessageType.loading)) {
       return;
     }
-
     context.add(message);
   }
 
-  /// No durable chat-history store exists yet (see saveMessage's doc comment) -- this always
-  /// returns [], the same as it always effectively did under the old Firebase-gated code (every
-  /// message write silently failed, so there was never anything real to load back). Still switches
-  /// the active session id so a caller resuming a specific session id is honored going forward.
-  /// initializeChat() in ai_chat_screen.dart already treats an empty result as "show the
-  /// greeting", which is the correct, honest behavior here.
+  /// There is no durable history backend. Only the current actor's initialized
+  /// session may be selected; an old route result cannot replace it.
   Future<List<ChatMessage>> loadSessionHistory(String sessionId) async {
-    _prefs ??= await SharedPreferences.getInstance();
-    _currentSessionId = sessionId;
-    await _prefs!.setString(_kSessionKey, _currentSessionId!);
-    dev.log('🔄 Switched active session to: $sessionId');
-
+    final expectedEpoch = _epoch;
+    if (sessionId != _currentSessionId) return [];
     context.clear();
     userProfileCache = null;
     _profileCacheTime = null;
     await primeCaches();
+    _requireCurrent(expectedEpoch);
     return [];
   }
 
@@ -172,34 +270,51 @@ class AIChatService {
     String msg, {
     List<ChatMessage>? conversationHistory,
   }) async {
+    final expectedEpoch = _epoch;
+    final sessionId = currentSessionId;
+    final history = List<ChatMessage>.unmodifiable(
+      (conversationHistory ?? context).where((m) => m.sessionId == sessionId),
+    );
     try {
-      return await handleGeminiResponse(msg, conversationHistory);
-    } catch (e, st) {
-      dev.log('❌ processUserMessage error', error: e, stackTrace: st);
+      final response =
+          await (_reply?.call(msg, history) ??
+              handleGeminiResponse(msg, history));
+      _requireCurrent(expectedEpoch);
+      if (response.sessionId != sessionId) throw const AIChatContextChanged();
+      return response;
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.messageFailed);
       return ChatMessage.error(
         text: 'Error processing message. Please try again.',
-        sessionId: currentSessionId, // Uses persistent getter
-        errorMessage: e.toString(),
+        sessionId: sessionId,
+        errorMessage: 'Message could not be processed.',
       );
     }
   }
 
   // ✅ FIXED: System prompt with better intent differentiation
   Future<String> buildSystemPrompt() async {
+    final expectedEpoch = _epoch;
     String userName = 'Guest';
 
     if (isSignedIn) {
       try {
-        userProfileCache ??= await handleUserProfile();
-        if (userProfileCache != null &&
-            !userProfileCache!.containsKey('error')) {
-          userName = userProfileCache!['name'] as String? ?? 'User';
+        final profile = await handleUserProfile();
+        _requireCurrent(expectedEpoch);
+        if (!profile.containsKey('error')) {
+          userName = profile['name'] as String? ?? 'User';
         }
-      } catch (e) {
-        dev.log('⚠️ Error getting user name: $e');
+      } on AIChatContextChanged {
+        rethrow;
+      } catch (_) {
+        _diagnostic(_AiDiagnostic.profileContextFailed);
       }
     }
 
+    _requireCurrent(expectedEpoch);
     return '''You are the LetBuyy AI Shopping Assistant. Help customers find products, track orders, and get deals.
 
     Current User: $userName
@@ -257,10 +372,13 @@ class AIChatService {
   Future<List<Content>> buildChatHistory(List<ChatMessage>? history) async {
     final List<Content> content = [];
     final messages = (history ?? context)
-        .where((m) =>
-            m.text.trim().isNotEmpty &&
-            m.messageType != MessageType.loading &&
-            m.messageType != MessageType.system)
+        .where(
+          (m) =>
+              m.sessionId == _currentSessionId &&
+              m.text.trim().isNotEmpty &&
+              m.messageType != MessageType.loading &&
+              m.messageType != MessageType.system,
+        )
         .toList();
 
     for (var m in messages) {
@@ -270,8 +388,8 @@ class AIChatService {
         } else if (m.isAI) {
           content.add(Content.model([TextPart(m.text)]));
         }
-      } catch (e) {
-        dev.log('⚠️ Error building chat history item: $e');
+      } catch (_) {
+        _diagnostic(_AiDiagnostic.historyItemDropped);
       }
     }
 
@@ -282,9 +400,10 @@ class AIChatService {
     String msg,
     List<ChatMessage>? history,
   ) async {
+    final expectedEpoch = _epoch;
     const apiKey = String.fromEnvironment('GEMINI_API_KEY');
-    if (apiKey.trim().isEmpty) {
-      dev.log('❌ API key missing');
+    if (_testModel == null && apiKey.trim().isEmpty) {
+      _diagnostic(_AiDiagnostic.providerUnavailable);
       return ChatMessage.ai(
         text: 'AI service not configured. Please contact support.',
         sessionId: currentSessionId,
@@ -294,28 +413,33 @@ class AIChatService {
 
     try {
       final systemPrompt = await buildSystemPrompt();
+      _requireCurrent(expectedEpoch);
 
-      final model = GenerativeModel(
-        model: 'gemini-2.0-flash-exp', // Or your preferred model
-        apiKey: apiKey,
-        tools: tools,
-        systemInstruction: Content.text(systemPrompt),
-        generationConfig: GenerationConfig(
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048,
-        ),
-      );
+      final model =
+          _testModel ??
+          GenerativeModel(
+            model: 'gemini-2.0-flash-exp', // Or your preferred model
+            apiKey: apiKey,
+            tools: tools,
+            systemInstruction: Content.text(systemPrompt),
+            generationConfig: GenerationConfig(
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 2048,
+            ),
+          );
 
       final chatHistory = await buildChatHistory(history);
+      _requireCurrent(expectedEpoch);
       final chat = model.startChat(history: chatHistory);
 
-      dev.log('📤 Sending to Gemini: "$msg"');
+      _diagnostic(_AiDiagnostic.providerRequestStarted);
       final response = await chat.sendMessage(Content.text(msg));
+      _requireCurrent(expectedEpoch);
 
       if (response.candidates.isEmpty) {
-        dev.log('❌ No candidates');
+        _diagnostic(_AiDiagnostic.providerEmpty);
         return ChatMessage.ai(
           text: 'I couldn\'t process that. Could you rephrase?',
           sessionId: currentSessionId,
@@ -324,12 +448,13 @@ class AIChatService {
       }
 
       final candidate = response.candidates.first;
-      final functionCalls =
-          candidate.content.parts.whereType<FunctionCall>().toList();
+      final functionCalls = candidate.content.parts
+          .whereType<FunctionCall>()
+          .toList();
 
       if (functionCalls.isEmpty) {
         final text = response.text ?? 'I couldn\'t generate a response.';
-        dev.log('✅ Text response: ${text.length} chars');
+        _diagnostic(_AiDiagnostic.providerResponseReady);
         return ChatMessage.ai(
           text: text,
           sessionId: currentSessionId,
@@ -337,14 +462,22 @@ class AIChatService {
         );
       }
 
-      dev.log('🔧 Function call: ${functionCalls.first.name}');
-      return await _executeFunctionCall(functionCalls.first, chat, msg);
-    } catch (e, st) {
-      dev.log('❌ Error', error: e, stackTrace: st);
+      _diagnostic(_AiDiagnostic.toolStarted);
+      return await _executeFunctionCall(
+        functionCalls.first,
+        chat,
+        msg,
+        expectedEpoch,
+      );
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.providerFailed);
       return ChatMessage.error(
         text: 'An error occurred. Please try again.',
         sessionId: currentSessionId,
-        errorMessage: e.toString(),
+        errorMessage: 'AI_PROVIDER_FAILED',
       );
     }
   }
@@ -353,12 +486,14 @@ class AIChatService {
     FunctionCall call,
     ChatSession chat,
     String originalMsg,
+    int expectedEpoch,
   ) async {
+    _requireCurrent(expectedEpoch);
     final args = call.args ?? {};
     Map<String, dynamic> resultData = {};
 
     try {
-      dev.log('🔍 Executing: ${call.name}');
+      _diagnostic(_AiDiagnostic.toolStarted);
 
       switch (call.name) {
         case 'searchProducts':
@@ -371,8 +506,9 @@ class AIChatService {
           break;
 
         case 'getProductDetails':
-          resultData =
-              await handleProductDetails(getString(args['productId']) ?? '');
+          resultData = await handleProductDetails(
+            getString(args['productId']) ?? '',
+          );
           break;
 
         case 'getOrders':
@@ -383,8 +519,9 @@ class AIChatService {
           break;
 
         case 'getOrderDetails':
-          resultData =
-              await handleOrderDetails(getString(args['orderId']) ?? '');
+          resultData = await handleOrderDetails(
+            getString(args['orderId']) ?? '',
+          );
           break;
 
         case 'getUserProfile':
@@ -400,23 +537,29 @@ class AIChatService {
           break;
 
         default:
-          resultData = {'error': 'Unknown function: ${call.name}'};
+          resultData = {'error': 'Unsupported AI action.'};
       }
 
-      dev.log('✅ Function result: ${resultData.keys.join(", ")}');
-    } catch (e, st) {
-      dev.log('❌ Function error', error: e, stackTrace: st);
-      resultData = {'error': 'Function failed: $e'};
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolCompleted);
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolFailed);
+      resultData = {'error': 'AI action could not be completed.'};
     }
 
     try {
-      dev.log('📤 Sending result to Gemini...');
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolResponseStarted);
       final finalResponse = await chat.sendMessage(
         Content.functionResponse(call.name, resultData),
       );
+      _requireCurrent(expectedEpoch);
 
       final responseText = finalResponse.text ?? 'Could not process results.';
-      dev.log('✅ Final response: ${responseText.length} chars');
+      _diagnostic(_AiDiagnostic.providerResponseReady);
 
       return ChatMessage.ai(
         text: responseText,
@@ -426,12 +569,15 @@ class AIChatService {
         orders: resultData['orders'] as List<Map<String, dynamic>>?,
         quickReplies: suggestReplies(call.name, resultData),
       );
-    } catch (e, st) {
-      dev.log('❌ Error processing result', error: e, stackTrace: st);
+    } on AIChatContextChanged {
+      rethrow;
+    } catch (_) {
+      _requireCurrent(expectedEpoch);
+      _diagnostic(_AiDiagnostic.toolResponseFailed);
       return ChatMessage.error(
         text: 'Could not complete that request.',
         sessionId: currentSessionId,
-        errorMessage: e.toString(),
+        errorMessage: 'AI_TOOL_RESPONSE_FAILED',
       );
     }
   }
@@ -458,12 +604,14 @@ class AIChatService {
     }
 
     try {
-      dev.log('🔍 Searching products: "$query"');
+      _diagnostic(_AiDiagnostic.searchStarted);
       final trimmed = query.trim();
       final isBrowseAll = trimmed.isEmpty || trimmed.toLowerCase() == 'all';
 
       final page = await client.marketplaceFeed(
-        category: (categoryId != null && categoryId.isNotEmpty) ? categoryId : null,
+        category: (categoryId != null && categoryId.isNotEmpty)
+            ? categoryId
+            : null,
         search: isBrowseAll ? null : trimmed,
         limit: limit,
       );
@@ -471,20 +619,24 @@ class AIChatService {
       final products = page.items.map((item) {
         return {
           'id': item.listingId,
+          'marketplaceListingId': item.listingId,
           'name': item.name,
           'price': (item.price ?? 0).toDouble(),
           'originalPrice': (item.comparePrice ?? item.price ?? 0).toDouble(),
+          'priceKnown': item.price != null,
           'imageUrl': item.images.isNotEmpty ? item.images.first : '',
           'images': item.images,
           'description': '',
-          'inStock': item.price != null,
+          // The canonical marketplace feed does not expose inventory. Price
+          // visibility cannot be used as evidence that a listing is in stock.
           'stock': 0,
+          'stockKnown': false,
           'rating': 0.0,
           'isFeatured': false,
         };
       }).toList();
 
-      dev.log('✅ Found ${products.length} products');
+      _diagnostic(_AiDiagnostic.searchCompleted);
 
       return {
         'products': products,
@@ -492,11 +644,11 @@ class AIChatService {
         'query': query,
         'success': true,
       };
-    } catch (e, st) {
-      dev.log('❌ Search error', error: e, stackTrace: st);
+    } catch (_) {
+      _diagnostic(_AiDiagnostic.searchFailed);
       return {
         'error': 'Product search failed',
-        'details': e.toString(),
+        'details': 'AI_SEARCH_FAILED',
         'products': [],
         'totalCount': 0,
         'success': false,
@@ -506,7 +658,8 @@ class AIChatService {
 
   Future<Map<String, dynamic>> handleProductDetails(String productId) async {
     final client = _client;
-    if (client == null) return {'error': 'Product details are not ready yet', 'success': false};
+    if (client == null)
+      return {'error': 'Product details are not ready yet', 'success': false};
 
     try {
       if (productId.isEmpty) return {'error': 'Product ID required'};
@@ -524,7 +677,8 @@ class AIChatService {
         },
         'success': true,
       };
-    } catch (e) {
+    } catch (_) {
+      _diagnostic(_AiDiagnostic.productDetailsFailed);
       return {'error': 'Failed to get product details', 'success': false};
     }
   }
@@ -534,7 +688,10 @@ class AIChatService {
   // an earlier phase) -- honestly, explicitly unavailable rather than a misleading "please login"
   // (which used to fire even for a signed-in canonical buyer, since it only ever checked
   // FirebaseAuth) or a Firestore call that always threw.
-  Future<Map<String, dynamic>> handleGetOrders({int limit = 5, String? status}) async {
+  Future<Map<String, dynamic>> handleGetOrders({
+    int limit = 5,
+    String? status,
+  }) async {
     return {
       'error': "Order tracking isn't available in this build yet.",
       'orders': [],
@@ -552,25 +709,34 @@ class AIChatService {
   Future<Map<String, dynamic>> handleUserProfile() async {
     final accounts = _accounts;
     final token = _sessionToken;
-    if (accounts == null || token == null) return {'error': 'Not logged in'};
-
-    if (userProfileCache != null && _profileCacheTime != null) {
-      if (DateTime.now().difference(_profileCacheTime!).inMinutes < 15) {
-        return userProfileCache!;
-      }
+    final buyerId = _buyerId;
+    final email = _buyerEmail;
+    final expectedEpoch = _epoch;
+    if (accounts == null || token == null || buyerId == null)
+      return {'error': 'Not logged in'};
+    if (userProfileCache != null &&
+        _profileCacheTime != null &&
+        DateTime.now().difference(_profileCacheTime!) < _cacheExpiry) {
+      return userProfileCache!;
     }
-
     try {
       final account = await accounts.account(token);
-      userProfileCache = {
-        'name': account.fullName ?? _buyerEmail ?? 'User',
+      _requireCurrent(expectedEpoch);
+      if (account.id != buyerId)
+        return {'error': 'Profile identity did not match'};
+      final profile = <String, dynamic>{
+        'name': account.fullName ?? email ?? 'User',
         'email': account.email,
         'phone': account.phone ?? 'Not provided',
       };
+      userProfileCache = profile;
       _profileCacheTime = DateTime.now();
-
-      return userProfileCache!;
-    } catch (e) {
+      return profile;
+    } on AIChatContextChanged {
+      // No old actor data escapes, even to a direct caller awaiting this operation.
+      return {'error': 'Chat identity changed'};
+    } catch (_) {
+      _diagnostic(_AiDiagnostic.profileFailed);
       return {'error': 'Failed to get profile'};
     }
   }
@@ -578,7 +744,11 @@ class AIChatService {
   Future<Map<String, dynamic>> handleGetCategories() async {
     final client = _client;
     if (client == null) {
-      return {'error': 'Categories are not ready yet', 'categories': [], 'success': false};
+      return {
+        'error': 'Categories are not ready yet',
+        'categories': [],
+        'success': false,
+      };
     }
 
     try {
@@ -587,13 +757,14 @@ class AIChatService {
         return {'id': c.id, 'name': c.name, 'description': ''};
       }).toList();
 
-      dev.log('✅ Found ${result.length} categories');
+      _diagnostic(_AiDiagnostic.categoriesCompleted);
       return {'categories': result, 'success': true};
-    } catch (e) {
+    } catch (_) {
+      _diagnostic(_AiDiagnostic.categoriesFailed);
       return {
         'error': 'Failed to get categories',
         'categories': [],
-        'success': false
+        'success': false,
       };
     }
   }
@@ -646,8 +817,8 @@ class AIChatService {
   Future<void> primeCaches() async {
     try {
       await handleUserProfile();
-    } catch (e) {
-      dev.log('⚠️ primeCaches error: $e');
+    } catch (_) {
+      _diagnostic(_AiDiagnostic.cachePrimeFailed);
     }
   }
 

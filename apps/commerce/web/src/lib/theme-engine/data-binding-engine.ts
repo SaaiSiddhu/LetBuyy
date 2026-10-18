@@ -108,11 +108,20 @@ export async function buildSectionDataPlan({
     // not running in a bare `next start` load-test environment (ECONNREFUSED). Mirrors the exact
     // same demo-subdomain check loadProductsForStore already uses.
     const isUrbanKicksDemo = route.subdomain === URBAN_KICKS_DEMO_SUBDOMAIN;
+    const productFilters = {
+        ...(route.searchParams?.category ? { category: route.searchParams.category } : {}),
+        ...(route.searchParams?.search ? { search: route.searchParams.search } : {}),
+        ...(route.searchParams?.country_of_origin ? { country_of_origin: route.searchParams.country_of_origin } : {}),
+        ...(route.searchParams?.page ? { page: Number(route.searchParams.page) || 1 } : {}),
+    };
     const products = isUrbanKicksDemo
         ? await ProductService.getUrbanKicksDemoProducts(allProductIds.size > 0 ? Array.from(allProductIds) : undefined)
         : allProductIds.size > 0
-            ? await ProductService.getProductsByIds(Array.from(allProductIds), route.subdomain)
-            : await ProductService.getProductsByStoreSubdomain(route.subdomain);
+            ? await ProductService.getProductsByIds(Array.from(allProductIds), route.subdomain, productFilters)
+            : await ProductService.getProductsByStoreSubdomain(route.subdomain, {
+                ...productFilters,
+                ...(route.searchParams?.page ? { page: Number(route.searchParams.page) || 1 } : {}),
+            });
 
     const productsById = new Map(products.map((product) => [product.id, product]));
     for (const section of productSections) {

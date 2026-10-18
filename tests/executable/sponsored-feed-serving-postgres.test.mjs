@@ -121,6 +121,15 @@ const allocated = (campaign) => psql(
 
 const PRODUCT_A = '55555555-5555-4555-8555-5555555555d1';
 const PRODUCT_B = '66666666-6666-4666-8666-6666666666d2';
+const PRODUCT_PENDING = '77777777-7777-4777-8777-7777777777d3';
+const PRODUCT_REJECTED = '88888888-8888-4888-8888-8888888888d4';
+const PRODUCT_HIDDEN = '99999999-9999-4999-8999-9999999999d5';
+const MARKETPLACE_CATEGORY = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+const LISTING_A = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbba1';
+const LISTING_B = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2';
+const LISTING_PENDING = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbd3';
+const LISTING_REJECTED = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbd4';
+const LISTING_HIDDEN = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbd5';
 
 const feed = () => psql(`SELECT string_agg(campaign_id::text, ',' ORDER BY ord) FROM (
     SELECT campaign_id, row_number() OVER () AS ord FROM public.marketplace_sponsored_products(20)
@@ -146,17 +155,60 @@ before(() => {
     psql(`
     INSERT INTO public.products (id, store_id, site_id, name, slug, price, is_active, status) VALUES
       (${sqlString(PRODUCT_A)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Prod A', 'prod-a', 100, true, 'active'),
-      (${sqlString(PRODUCT_B)}::uuid, ${sqlString(SITE_B)}::uuid, ${sqlString(SITE_B)}::uuid, 'Prod B', 'prod-b', 200, true, 'active');
+      (${sqlString(PRODUCT_B)}::uuid, ${sqlString(SITE_B)}::uuid, ${sqlString(SITE_B)}::uuid, 'Prod B', 'prod-b', 200, true, 'active'),
+      (${sqlString(PRODUCT_PENDING)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Pending Prod', 'pending-prod', 300, true, 'active'),
+      (${sqlString(PRODUCT_REJECTED)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Rejected Prod', 'rejected-prod', 400, true, 'active'),
+      (${sqlString(PRODUCT_HIDDEN)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Hidden Prod', 'hidden-prod', 500, true, 'active');
+
+    INSERT INTO public.marketplace_categories (id, slug, name) VALUES
+      (${sqlString(MARKETPLACE_CATEGORY)}::uuid, 'ads-test', 'Ads Test');
+
+    INSERT INTO public.channel_listings (id, site_id, product_id, channel, visibility, marketplace_category_id) VALUES
+      (${sqlString(LISTING_A)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(PRODUCT_A)}::uuid, 'marketplace', 'public', ${sqlString(MARKETPLACE_CATEGORY)}::uuid),
+      (${sqlString(LISTING_B)}::uuid, ${sqlString(SITE_B)}::uuid, ${sqlString(PRODUCT_B)}::uuid, 'marketplace', 'public', ${sqlString(MARKETPLACE_CATEGORY)}::uuid),
+      (${sqlString(LISTING_PENDING)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(PRODUCT_PENDING)}::uuid, 'marketplace', 'public', ${sqlString(MARKETPLACE_CATEGORY)}::uuid),
+      (${sqlString(LISTING_REJECTED)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(PRODUCT_REJECTED)}::uuid, 'marketplace', 'public', ${sqlString(MARKETPLACE_CATEGORY)}::uuid),
+      (${sqlString(LISTING_HIDDEN)}::uuid, ${sqlString(SITE_A)}::uuid, ${sqlString(PRODUCT_HIDDEN)}::uuid, 'marketplace', 'hidden', ${sqlString(MARKETPLACE_CATEGORY)}::uuid);
 
     INSERT INTO public.ad_campaign_placements (site_id, campaign_id, product_id, "position") VALUES
       (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_A)}::uuid, 0),
-      (${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, ${sqlString(PRODUCT_B)}::uuid, 0);
+      (${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, ${sqlString(PRODUCT_B)}::uuid, 0),
+      (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_PENDING)}::uuid, 1),
+      (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_REJECTED)}::uuid, 2),
+      (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_HIDDEN)}::uuid, 3);
 
     SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 40000, 'ads1b:alloc:a');
     SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 40000, 'ads1b:alloc:b');
   `);
+    psql(`BEGIN;
+      SELECT set_config('app.site_id', ${sqlString(SITE_A)}, true);
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_A)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:a');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_PENDING)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:pending');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_REJECTED)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:rejected');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_HIDDEN)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:hidden');
+      COMMIT;
+      BEGIN;
+      SELECT set_config('app.site_id', '', true);
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_A)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:a');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_REJECTED)}::uuid, 'rejected', 'operator', NULL, 'rejected test listing', 'ads-reject:rejected');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_HIDDEN)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:hidden');
+      SELECT set_config('app.site_id', ${sqlString(SITE_B)}, true);
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_B)}::uuid, ${sqlString(LISTING_B)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:b');
+      COMMIT;
+      BEGIN;
+      SELECT set_config('app.site_id', '', true);
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_B)}::uuid, ${sqlString(LISTING_B)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:b');
+      COMMIT;`);
     configure(CAMPAIGN_A, "pricing_model = 'cpc', bid_minor = 1000");
     configure(CAMPAIGN_B, "pricing_model = 'cpc', bid_minor = 9000");
+});
+
+test('paid marketplace placements exclude pending, rejected, and hidden listings', { skip }, () => {
+    assert.deepEqual(
+        feedProducts().split(',').sort(),
+        [PRODUCT_A, PRODUCT_B].sort(),
+        'only approved, public marketplace listings may enter paid marketplace discovery',
+    );
 });
 
 test('the feed ranks by bid, highest first', { skip }, () => {

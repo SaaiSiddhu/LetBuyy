@@ -13,7 +13,7 @@ class CacheService {
   CacheService._internal();
 
   SharedPreferences? _prefs;
-  
+
   // Cache keys
   //
   // C2 corrective (27 September 2026 review, finding 2): bumped v2 -> v3. ProductProvider/
@@ -29,7 +29,7 @@ class CacheService {
   static const String _productsKey = 'cache_products_v3';
   static const String _categoriesKey = 'cache_categories_v3';
   static const String _cacheTimestampKey = 'cache_timestamp';
-  
+
   // Cache expiry: 24 hours
   static const Duration _cacheExpiry = Duration(hours: 24);
 
@@ -55,13 +55,13 @@ class CacheService {
   Future<void> cacheProducts(List<ProductModel> products) async {
     try {
       await initialize();
-      
+
       // Convert products to cache-friendly JSON (with ID included in map)
       final jsonList = products.map((p) {
         final map = _productToCache(p);
         return map;
       }).toList();
-      
+
       await _prefs?.setString(_productsKey, jsonEncode(jsonList));
       await _updateTimestamp();
       debugPrint('💾 Cached ${products.length} products');
@@ -75,7 +75,7 @@ class CacheService {
       await initialize();
       final jsonString = _prefs?.getString(_productsKey);
       if (jsonString == null) return null;
-      
+
       final jsonList = jsonDecode(jsonString) as List;
       final products = jsonList
           .map((json) => _productFromCache(json as Map<String, dynamic>))
@@ -87,13 +87,17 @@ class CacheService {
       return null;
     }
   }
-  
+
   // Convert ProductModel to cache-friendly map (no Timestamps)
   Map<String, dynamic> _productToCache(ProductModel p) {
     return {
       'id': p.id,
+      'marketplaceListingId': p.marketplaceListingId,
+      'catalogProductId': p.catalogProductId,
       'sellerId': p.sellerId,
       'storeName': p.storeName,
+      'countryOfOrigin': p.countryOfOrigin,
+      'importerDetails': p.importerDetails,
       'name': p.name,
       'description': p.description,
       'salePrice': p.salePrice,
@@ -116,13 +120,17 @@ class CacheService {
       'isTrending': p.isTrending,
     };
   }
-  
+
   // Convert cache map back to ProductModel
   ProductModel _productFromCache(Map<String, dynamic> map) {
     return ProductModel(
       id: map['id'] ?? '',
+      marketplaceListingId: map['marketplaceListingId'] as String?,
+      catalogProductId: map['catalogProductId'] as String?,
       sellerId: map['sellerId'] ?? '',
       storeName: map['storeName'],
+      countryOfOrigin: map['countryOfOrigin'] as String?,
+      importerDetails: map['importerDetails'] as String?,
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       salePrice: (map['salePrice'] as num?)?.toDouble() ?? 0.0,
@@ -156,7 +164,7 @@ class CacheService {
   Future<void> cacheCategories(List<CategoryModel> categories) async {
     try {
       await initialize();
-      
+
       final jsonList = categories.map((c) => _categoryToCache(c)).toList();
       await _prefs?.setString(_categoriesKey, jsonEncode(jsonList));
       await _updateTimestamp();
@@ -171,7 +179,7 @@ class CacheService {
       await initialize();
       final jsonString = _prefs?.getString(_categoriesKey);
       if (jsonString == null) return null;
-      
+
       final jsonList = jsonDecode(jsonString) as List;
       final categories = jsonList
           .map((json) => _categoryFromCache(json as Map<String, dynamic>))
@@ -183,7 +191,7 @@ class CacheService {
       return null;
     }
   }
-  
+
   // Convert CategoryModel to cache-friendly map
   Map<String, dynamic> _categoryToCache(CategoryModel c) {
     return {
@@ -202,7 +210,7 @@ class CacheService {
       'productCount': c.productCount,
     };
   }
-  
+
   // Convert cache map back to CategoryModel
   CategoryModel _categoryFromCache(Map<String, dynamic> map) {
     return CategoryModel(
@@ -227,7 +235,10 @@ class CacheService {
   // ============================================
 
   Future<void> _updateTimestamp() async {
-    await _prefs?.setInt(_cacheTimestampKey, DateTime.now().millisecondsSinceEpoch);
+    await _prefs?.setInt(
+      _cacheTimestampKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
   Future<void> clearCache() async {

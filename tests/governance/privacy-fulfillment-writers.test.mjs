@@ -14,34 +14,35 @@
 
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { spawnSync } from 'node:child_process';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { listWorkspaceFiles } from '../../scripts/validators/governance-common.mjs';
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ROUTE = 'services/api-gateway/src/routes/storefront/buyer-privacy-routes.ts';
 
 const stripComments = (source) => source.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/(^|[^:])\/\/.*$/gm, '$1');
 
-/** Tracked files under `roots` containing `needle`, tests and documents excluded. Plain directory pathspecs only: no pathspec magic. */
-function trackedFilesMentioning(needle, roots) {
-    const result = spawnSync('git', ['-C', repoRoot, 'grep', '-l', '-F', needle, '--', ...roots], { encoding: 'utf8' });
-    // git grep exits 1 when nothing matches: that is an answer. Anything else is a failure to look, which must not read as "no match".
-    assert.ok(result.status === 0 || result.status === 1, `git grep could not run: ${result.stderr}`);
-    return result.stdout
-        .split('\n')
-        .filter(Boolean)
+/** Current safe source, including the untracked candidate; never count tests or output. */
+function sourceFilesMentioning(needle, roots) {
+    return listWorkspaceFiles(roots)
         .filter((file) => !/(^|\/)(__tests__|tests?|node_modules)\//.test(file) && !/\.(test|spec)\.[cm]?[jt]sx?$/.test(file) && !/\.md$/.test(file))
+        .filter((file) => /\.(?:[cm]?[jt]sx?|dart|sql)$/.test(file))
+        .filter((file) => {
+            const raw=readFileSync(join(repoRoot,file),'utf8');
+            const code=file.endsWith('.sql') ? raw.replace(/\/\*[\s\S]*?\*\//g,' ').replace(/--[^\n]*/g,' ') : stripComments(raw);
+            return code.includes(needle);
+        })
         .sort();
 }
 
-test('the privacy route is the only file in the repository that mentions fulfillment_outcome', () => {
-    assert.deepEqual(trackedFilesMentioning('fulfillment_outcome', ['services', 'apps', 'packages', 'database', 'scripts']), [ROUTE]);
+test('only the reader and approved canonical access-export transaction mention fulfillment_outcome', () => {
+    assert.deepEqual(sourceFilesMentioning('fulfillment_outcome', ['services', 'apps', 'packages', 'database', 'scripts']), ['database/supabase/migrations/330_verified_buyer_privacy_exports.sql', ROUTE]);
 });
 
 test('the only direct runtime writer is buyer intake; operator writes live in the reviewed transaction', () => {
-    const writers = trackedFilesMentioning(".from('support_tickets')", ['services', 'apps', 'packages']).filter((file) => {
+    const writers = sourceFilesMentioning(".from('support_tickets')", ['services', 'apps', 'packages']).filter((file) => {
         const code = stripComments(readFileSync(join(repoRoot, file), 'utf8'));
         // Each chain starts at .from('support_tickets') and ends at the statement's semicolon.
         const chains = code.match(/\.from\('support_tickets'\)[^;]*;/g) ?? [];
@@ -65,7 +66,14 @@ test('only reviewed support migrations write tickets; reply and operator metadat
         .filter((name) => name.endsWith('.sql'))
         .filter((name) => /\b(?:update|insert\s+into|delete\s+from)\s+(?:public\.)?support_tickets\b/i.test(sqlOf(name)))
         .sort();
-    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql', '265_operator_support_mutation_integrity.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+    assert.deepEqual(writers, ['264_support_ticket_reply_atomic.sql', '265_operator_support_mutation_integrity.sql', '287_buyer_support_intake_atomic.sql', '330_verified_buyer_privacy_exports.sql'], 'a new SQL writer of support tickets is a new way to write a privacy request: review it, and extend the database-backed proof, before adding it here');
+    const intake=sqlOf('287_buyer_support_intake_atomic.sql');
+    const intakeColumns=intake.match(/INSERT INTO public\.support_tickets\s*\(([\s\S]*?)\)\s*VALUES/i)?.[1]
+        .split(',').map(column=>column.trim());
+    assert.deepEqual(intakeColumns,['ticket_ref','first_response_due_at','resolution_due_at','site_id','requester_type','requester_user_id','subject','channel','status','last_customer_message_at','created_at']);
+    assert.doesNotMatch(intake,/p_metadata|p_topic|fulfillment_outcome|privacy_request_type/,
+        'ordinary complaint intake cannot change privacy type or claim fulfillment');
+    assert.match(intake,/INSERT INTO public\.ticket_messages/);
 
     const updates = sqlOf('264_support_ticket_reply_atomic.sql').match(/\bupdate\s+public\.support_tickets\s+set\b[\s\S]*?\bwhere\b/gi) ?? [];
     assert.equal(updates.length, 1, 'one update of support_tickets');
@@ -85,13 +93,23 @@ test('only reviewed support migrations write tickets; reply and operator metadat
     }
     assert.match(mutation, /p_operation='create' AND p_payload->>'topic'='privacy'/);
     assert.match(mutation, /Privacy requests use buyer intake/);
+    const approvedExport=sqlOf('330_verified_buyer_privacy_exports.sql');
+    assert.match(approvedExport,/p_operation NOT IN \('inspect','consume'\)/);
+    assert.match(approvedExport,/e\.buyer_session_sha256 IS DISTINCT FROM p_session_sha256/);
+    assert.match(approvedExport,/e\.buyer_verified_at<=clock_timestamp\(\)-interval '10 minutes'/);
+    assert.match(approvedExport,/UPDATE public\.customer_dsr_exports SET status='delivered'/);
+    assert.match(approvedExport,/'fulfillment_outcome','fulfilled','export_id',e\.id/);
+    assert.match(approvedExport,/'buyer\.privacy\.export_released'/);
+    assert.match(approvedExport,/FROM PUBLIC,anon,authenticated,app_tenant/);
+    assert.doesNotMatch(approvedExport,/DELETE FROM public\.(?:buyer_accounts|orders|audit_logs)/);
+
 
 });
 
 test('the scans really look: the key is found where it is known to be, and a reviewed writer is found as a writer', () => {
     // Guards the tripwire against going blind (an empty result would otherwise read as "nothing writes it").
-    assert.ok(trackedFilesMentioning('privacy_request_type', ['services']).includes('services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts'));
-    assert.ok(trackedFilesMentioning(".from('support_tickets')", ['services']).includes('services/api-gateway/src/routes/operations/support.ts'));
+    assert.ok(sourceFilesMentioning('privacy_request_type', ['services']).includes('services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts'));
+    assert.ok(sourceFilesMentioning(".from('support_tickets')", ['services']).includes('services/api-gateway/src/routes/operations/support.ts'));
     assert.match(stripComments(readFileSync(join(repoRoot, 'services/api-gateway/src/routes/storefront/buyer-realm-wiring.ts'), 'utf8')), /\.from\('support_tickets'\)[^;]*\.(insert|update)\(/);
     assert.match(stripComments(readFileSync(join(repoRoot, 'services/api-gateway/src/execution/support-execution.adapter.ts'), 'utf8')), /rpc\('execute_operator_support_mutation'/);
 });

@@ -74,6 +74,7 @@ export async function fetchBuyerExportSourceData(
     .select('id, ticket_ref, topic, created_at')
     .eq('requester_user_id', buyerAccountId)
     .eq('requester_type', 'customer')
+    .is('deleted_at', null)
     .limit(MAX_TICKETS + 1);
   if (ticketsRes.error) throw new Error(`support_tickets read failed: ${JSON.stringify(ticketsRes.error)}`);
   const tickets = (ticketsRes.data || []) as Record<string, unknown>[];
@@ -89,6 +90,7 @@ export async function fetchBuyerExportSourceData(
       .select('body')
       .eq('ticket_id', ticketId)
       .eq('author_type', 'requester')
+      .is('deleted_at', null)
       .limit(MAX_MESSAGES_PER_TICKET + 1);
     if (messagesRes.error) throw new Error(`ticket_messages read failed: ${JSON.stringify(messagesRes.error)}`);
     const messages = (messagesRes.data || []) as Array<{ body: string }>;

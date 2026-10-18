@@ -1,8 +1,8 @@
 // The privacy route only READS a fulfillment outcome; it can never record one.
 //
 // buyer-privacy-routes.ts reports a resolved or closed privacy request as 'fulfilled' only when the ticket's metadata.fulfillment_outcome
-// holds a recognised value, and as 'closed_no_fulfillment' otherwise. That is honest only while nothing but a real export or erasure
-// executor can write that key, and today there is no executor (export release and erasure are open decisions: D05). This file pins the
+// holds a recognised value, and as 'closed_no_fulfillment' otherwise. Only the approved canonical access-export release transaction
+// may write that outcome; erasure remains gated. This file pins the
 // route's half of that: the key appears in it exactly twice, as a type member and as a read, and the file writes nothing at all (it reads
 // through the dependencies it is handed). The repository-wide half (no other file mentions the key, and the only writers of support
 // tickets are the two reviewed ones) is tests/governance/privacy-fulfillment-writers.test.mjs; the database-backed proof that no

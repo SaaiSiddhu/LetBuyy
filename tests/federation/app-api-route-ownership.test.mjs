@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import test from 'node:test';
 import {
   APP_API_ROUTE_CLASSES,
@@ -94,11 +95,42 @@ test('the ESLint route baseline and the route inventory list exactly the same ro
   assert.equal(baseline.length, APP_API_ROUTE_RATCHET, 'the baseline and the ratchet count agree');
 });
 
-test('storefront auto-create no longer accepts client-controlled order stats', () => {
+test('storefront auto-create derives customer contact fields from a tenant-scoped persisted order', () => {
   const route = read('apps/commerce/web/src/app/api/customer/auto-create/route.ts');
+  const handler = read('apps/commerce/web/src/app/api/customer/auto-create/handler.ts');
   const checkout = read('apps/commerce/web/src/app/store/[subdomain]/checkout/checkout-client.tsx');
 
-  assert.doesNotMatch(route, /orderTotal|order_total|orderId|updateCustomerStats|@\/lib\/customer-service/);
-  assert.match(route, /createStorefrontApiClient\(\)\.storefront\.findOrCreateCustomer/);
-  assert.doesNotMatch(checkout, /orderTotal:|orderId: order\?\.id/);
+  const gateway = read('services/api-gateway/src/routes/storefront/customer-engagement-routes.ts');
+  const orderBootstrap = gateway.slice(
+    gateway.indexOf("router.post('/customer/from-order'"),
+    gateway.indexOf("router.post('/customer/password'"),
+  );
+  assert.match(route, /return handleAutoCreateCustomer\(request\)/);
+  assert.doesNotMatch(route + handler, /email:|fullName:|phone:|orderTotal|order_total|updateCustomerStats|@\/lib\/customer-service/);
+  assert.match(handler, /createStorefrontApiClient\(\)\.storefront\.createCustomerFromOrder/);
+  assert.match(handler, /store_id: storeId\.trim\(\),[\s\S]*order_id: orderId\.trim\(\)/);
+  assert.match(checkout, /orderId,/);
+  assert.match(orderBootstrap, /\.eq\('id', orderId\)[\s\S]*?\.eq\('store_id', storeId\)/);
+  assert.match(orderBootstrap, /customer_email, customer_name, customer_phone/);
+  assert.doesNotMatch(orderBootstrap, /body\.(email|full_name|phone)/);
+});
+
+test('credential leakage fixtures do not become runtime owners; real app-local violations remain denied', () => {
+  const prefix=`apps/commerce/web/src/lib/boundary-fixture-${randomUUID()}`;
+  const runtime=`${prefix}.ts`;
+  const fixture=`${prefix}.test.ts`;
+  const created=[];
+  try {
+    for (const file of [runtime,fixture]) {
+      writeFileSync(file,"export const synthetic = { password_hash: 'must-not-cross-the-boundary' };\n",{flag:'wx'});
+      created.push(file);
+    }
+    const result=spawnSync(process.execPath,['scripts/validators/domain-boundary-validator.mjs'],{cwd:process.cwd(),encoding:'utf8'});
+    const output=result.stdout+result.stderr;
+    assert.notEqual(result.status,0,'a real app-local credential field must fail the guard');
+    assert.ok(output.includes(runtime),'the actual runtime violation must be reported');
+    assert.ok(!output.includes(fixture),'the negative leakage fixture is test evidence, not runtime credential storage');
+  } finally {
+    for (const file of created) { try { unlinkSync(file); } catch (error) { if(error.code!=='ENOENT')throw error; } }
+  }
 });

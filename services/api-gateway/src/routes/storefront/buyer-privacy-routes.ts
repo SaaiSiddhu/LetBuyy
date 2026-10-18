@@ -5,14 +5,15 @@
 // parallel privacy platform: a privacy request is a support_tickets row with topic = 'privacy',
 // scoped by requester_user_id exactly like every other buyer ticket.
 //
-// This is REQUEST INTAKE ONLY. It never exports data and never executes an erasure. Status is
+// This file remains REQUEST INTAKE ONLY. The separate approved canonical access-export
+// adapter/transaction owns password verification and single-use release; erasure remains gated. Status is
 // reported honestly: closing a support ticket is a workflow action an agent can take for many
 // reasons (fulfilled, rejected, duplicate, withdrawn) and support_tickets has no status value that
 // distinguishes them (its CHECK constraint: open/pending_customer/pending_internal/escalated/
 // resolved/closed — nothing that means "fulfilled"). So a resolved/closed ticket is reported as
 // 'closed_no_fulfillment' unless metadata explicitly carries a recorded fulfillment outcome
-// (metadata.fulfillment_outcome — nothing writes this today; D05, data purpose/retention/deletion
-// exceptions, remains OPEN_FOUNDER_DECISION, and no export/erasure execution exists to set it).
+// (metadata.fulfillment_outcome — only the private approved access-export release transaction
+// writes it; erasure/retention/deletion exceptions remain separately gated).
 // An unrecognized ticket status is reported as 'unknown', never defaulted toward anything that
 // reads as success.
 

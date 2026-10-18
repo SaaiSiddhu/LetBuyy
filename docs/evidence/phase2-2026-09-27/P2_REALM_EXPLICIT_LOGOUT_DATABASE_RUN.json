@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-04",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "runner_run_id": "a5539a2a5b1b",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+  "kind": "gateway-db",
+  "database_image": "postgres:16-alpine",
+  "rest_image": "public.ecr.aws/supabase/postgrest:v16.2",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --kind gateway-db --jobs 1",
+  "result": {
+    "status": "pass",
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "wall_seconds": 74.8,
+    "suite_seconds": 72.6
+  },
+  "browser_assertions": [
+    "same-origin store-customer logout clears only lb_customer_session and the legacy session endpoint reports signed out",
+    "canonical site-bound buyer session remains valid after store-customer logout",
+    "same-origin canonical buyer logout clears only __Host-lb_store_buyer and the buyer endpoint reports signed out",
+    "synthetic legacy store-customer session remains valid after canonical buyer logout",
+    "account-link callback assertion checks the actual __Host-lb_store_buyer cookie"
+  ],
+  "boundary": {
+    "worker": "real api-gateway worker",
+    "commerce_identity": "local Commerce and Identity Next.js applications with headless Chromium",
+    "database": "runner-owned disposable PostgreSQL 16 and PostgREST",
+    "identities": "synthetic only",
+    "hosted_or_production": false
+  },
+  "ownership": "verified by the executable-suite runner before start",
+  "cleanup": {
+    "containers_remaining": 0,
+    "networks_remaining": 0,
+    "volumes_remaining": 0,
+    "owned_database": "discarded",
+    "failures": []
+  },
+  "limits": [
+    "does not prove hosted cookie or telemetry behavior",
+    "does not retire legacy customer issuers or verifiers",
+    "does not close Phase 2"
+  ]
+}

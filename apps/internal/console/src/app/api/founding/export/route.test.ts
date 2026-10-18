@@ -1,3 +1,4 @@
+import {createConsoleSessionCookieValue,identityUnitConfig} from '../../../../__tests__/identity-issuer-fixture';
 // Auth hardening follow-up, Section 13 -- see founding/action/route.test.ts for the full context.
 // This export route returns founding-allocation data (site IDs, pricing) as a CSV; the same
 // unauthenticated-data-exfiltration risk, now closed the same way.
@@ -5,11 +6,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { NextRequest } from 'next/server';
-import { createConsoleSessionCookieValue, CONSOLE_SESSION_COOKIE } from '../../../../lib/console-session';
+import { CONSOLE_SESSION_COOKIE } from '../../../../lib/console-session';
 
 const SESSION_SECRET = 'test-only-console-session-secret-for-founding-route-tests-0123456789';
 
 async function withEnv<T>(vars: Record<string, string | undefined>, fn: () => Promise<T> | T): Promise<T> {
+    vars={...identityUnitConfig,...vars};
     const previous: Record<string, string | undefined> = {};
     for (const key of Object.keys(vars)) previous[key] = process.env[key];
     for (const [key, value] of Object.entries(vars)) {

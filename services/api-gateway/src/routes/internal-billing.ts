@@ -1,10 +1,13 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { Env } from '../index';
+import {readSubscriptionCheckoutSource} from '../lib/subscription-checkout-source';
+import { ValidationError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { isInternalApiSecretRequest } from '../lib/internal-secret';
 import { SubscriptionExecutionAdapter, type SubscriptionStatus } from '../execution/subscription-execution.adapter';
 import {
+    InternalSubscriptionActivationSchema,
     applyStorePlanTierDefaults,
     planBillingAmountMinor,
     type BillingPlanCatalogRecord,
@@ -97,7 +100,9 @@ router.post('/subscriptions/activate', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
     }
 
-    const body = asRecord(await c.req.json().catch(() => ({})));
+    const parsed=InternalSubscriptionActivationSchema.safeParse(await c.req.json().catch(()=>null));
+    if(!parsed.success)throw new ValidationError('Invalid subscription activation payload.');
+    const body=parsed.data;
     const resolved = await requireStoreAndPlan(c, body);
     if ('error' in resolved) return resolved.error;
 
@@ -113,10 +118,15 @@ router.post('/subscriptions/activate', async (c) => {
     }
 
     const amountPaid = numberValue(body.amountPaid) ?? planBillingAmountMinor(resolved.plan, billingPeriod).amountMinor;
+    const source=provider==='razorpay'&&!String(body.providerPaymentId||'').startsWith('sandbox_autopay_payment:')
+        ?await readSubscriptionCheckoutSource(resolved.db,{actor:userId,site:resolved.store.id,
+            reference:textValue(body.externalSubscriptionId)||textValue(body.providerOrderId)||'',payment:textValue(body.providerPaymentId)||'',
+            planSlug:resolved.plan.slug,period:billingPeriod}):null;
+
     const subscription = await new SubscriptionExecutionAdapter(resolved.db).activateMerchantSubscription({
         userId,
         storeId: resolved.store.id,
-        plan: resolved.plan,
+        plan: source?.plan||resolved.plan,
         billingPeriod,
         amountPaid,
         paymentGateway: provider,

@@ -1,0 +1,47 @@
+{
+  "recorded_on": "2026-10-08",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+  "owned_runner_id": "285d90778e4e",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --log-dir <private-diagnostics> --json",
+  "result": {
+    "suite_count": 1,
+    "tests": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 125.9,
+    "wall_seconds": 128.7,
+    "postgres_image": "postgres:16-alpine",
+    "postgrest_image": "public.ecr.aws/supabase/postgrest:v16.2"
+  },
+  "journey": [
+    "A sibling Chromium tab performs the real local Identity 'Use a different account' credential login, consent and PKCE callback, replacing the host-only buyer cookie while the original account-wishlist tab stays mounted.",
+    "The first tab revalidates through the real Commerce buyer-session BFF; its held response proves the prior wishlist is hidden and no new wishlist read starts while identity is pending.",
+    "After release, the production Gateway worker and runner-owned Postgres fixture return an empty, unlinked wishlist for the replacement buyer; the prior buyer's product stays absent.",
+    "The owned suite's existing customer-profile, login, store-isolation, address, reset, support rollback and other consumer checks remain in the same 12-test run."
+  ],
+  "test_setup": {
+    "next_dist_dir": "unique ignored per-run directories for spawned test apps; existing developer .next directories were not used",
+    "headless_focus": "window focus lifecycle event dispatched after bringToFront because headless Chromium does not consistently emit OS focus transitions",
+    "identity_dependencies": "two temporary symlinks to already-present Tailwind packages were used because apps/platform/identity/node_modules was absent; removed after the run"
+  },
+  "cleanup": {
+    "runner_owned_database": true,
+    "postgrest": true,
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0,
+    "test_owned_next_processes": "none remained after run; only previously running developer Next processes were present"
+  },
+  "limits": [
+    "Synthetic identities and data in a runner-owned disposable Postgres database only.",
+    "This does not establish hosted adoption, buyer-role RLS policy, production account switching, or full Phase 2/eleven-phase acceptance.",
+    "The seven-day versus thirty-minute legacy-session lifetime choice and hosted telemetry/drain remain owner and operations gates."
+  ]
+}

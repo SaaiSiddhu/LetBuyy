@@ -1,0 +1,83 @@
+{
+  "runId": "2449f2817b15",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-16037-mv1t1zx8-bd9a85"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 1,
+  "tests": 12,
+  "assertionsPassed": 11,
+  "assertionsFailed": 1,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 109.7,
+  "suiteSeconds": 107.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-customer-profile.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-16037-mv1t1zx8-bd9a85",
+      "code": 1,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 12,
+      "pass": 11,
+      "fail": 1,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 107.5,
+      "firstFailure": "not ok 11 - real Next Commerce login cookie completes a session and profile read through the rea",
+      "failures": [
+        "not ok 11 - real Next Commerce login cookie completes a session and profile read through the real Gateway worker"
+      ],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_customer_profile_postgres",
+      "templateSeconds": 17.2,
+      "provisionSeconds": 1,
+      "rest": {
+        "container": "letbuyy-exec-2449f2817b15-rest-1",
+        "upstreamPort": 51061,
+        "proxyPort": 51062
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 1783,
+        "refused": 0,
+        "upstreamErrors": 1
+      }
+    }
+  ]
+}

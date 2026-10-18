@@ -10,6 +10,7 @@ import { AuthIcon } from '@/components/AuthIcon'
 import { BrandLogo } from '@/components/BrandLogo'
 import { OAuthBrandIcon } from '@/components/OAuthBrandIcon'
 import { Button, Input } from '@letbuyy/ui'
+import { safePlatformReturnTo, authPathWithReturnTo } from '@/lib/auth/return-to'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -106,21 +107,6 @@ interface UserStore {
 
 type ViewState = 'email' | 'password' | 'accounts'
 
-/**
- * Validate that a return_to URL is safe for LetBuyy-owned domains.
- */
-function isValidReturnTo(url: string): boolean {
-    try {
-        const parsed = new URL(url)
-        return (
-            parsed.hostname.endsWith('.letbuyy.com') ||
-            parsed.hostname === 'letbuyy.com'
-        )
-    } catch {
-        return false
-    }
-}
-
 function LookupContent() {
     const searchParams = useSearchParams()
     const [email, setEmail] = useState('')
@@ -150,7 +136,7 @@ function LookupContent() {
 
         // Read and validate return_to from URL (sent by admin login page)
         const returnToParam = searchParams.get('return_to')
-        if (returnToParam && isValidReturnTo(returnToParam)) {
+        if (returnToParam && safePlatformReturnTo(returnToParam)) {
             setReturnTo(returnToParam)
         }
 
@@ -187,6 +173,8 @@ function LookupContent() {
             // If user has an active session, route from the same store verdict
             // used by /select so zero-store users land on onboarding directly.
             if (sessionData.authenticated) {
+                const requestedReturn = safePlatformReturnTo(searchParams.get('return_to'))
+                if (requestedReturn) { window.location.replace(requestedReturn); return }
                 const storesRes = await fetch('/api/auth/stores')
                 const storesData = await storesRes.json().catch(() => null) as {
                     authenticated?: boolean
@@ -257,7 +245,7 @@ function LookupContent() {
 
             if (!data.exists) {
                 // User doesn't exist — redirect to signup
-                window.location.href = `/signup?email=${encodeURIComponent(email.trim())}`
+                window.location.href = authPathWithReturnTo(`/signup?email=${encodeURIComponent(email.trim())}`, returnTo)
                 return
             }
 
@@ -383,12 +371,12 @@ function LookupContent() {
             }
 
             if (!data?.exists) {
-                window.location.href = `/signup?email=${encodeURIComponent(accountEmail)}`
+                window.location.href = authPathWithReturnTo(`/signup?email=${encodeURIComponent(accountEmail)}`, returnTo)
                 return
             }
 
             if (!data.hasPassword) {
-                window.location.href = `/set-password?email=${encodeURIComponent(accountEmail)}`
+                window.location.href = authPathWithReturnTo(`/set-password?email=${encodeURIComponent(accountEmail)}`, returnTo)
                 return
             }
 
@@ -467,14 +455,14 @@ function LookupContent() {
 
                         <a
                             className="auth-link-btn"
-                            href="/login"
+                            href={authPathWithReturnTo('/login', returnTo)}
                         >
                             {t.useDifferentAccount}
                         </a>
 
                         <div className="auth-bottom-link">
                             <span>{t.newToLetBuyy}</span>{' '}
-                            <a href="/signup">{t.getStarted} →</a>
+                            <a href={authPathWithReturnTo('/signup', returnTo)}>{t.getStarted} →</a>
                         </div>
                     </>
                 )}
@@ -535,7 +523,7 @@ function LookupContent() {
 
                         <div className="auth-bottom-link">
                             <span>{t.newToLetBuyy}</span>{' '}
-                            <a href="/signup">{t.getStarted} →</a>
+                            <a href={authPathWithReturnTo('/signup', returnTo)}>{t.getStarted} →</a>
                         </div>
                     </>
                 )}

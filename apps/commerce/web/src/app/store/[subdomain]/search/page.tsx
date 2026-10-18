@@ -15,7 +15,7 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 
 type Props = {
     params: Promise<{ subdomain: string }>;
-    searchParams?: Promise<{ search?: string; theme_preview_token?: string }>;
+    searchParams?: Promise<{ search?: string; theme_preview_token?: string; country_of_origin?: string; category?: string; page?: string }>;
 };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
@@ -49,7 +49,11 @@ export default async function SearchPage({ params, searchParams }: Props) {
     let searchFailed = false;
     if (term) {
         try {
-            products = await ProductService.searchProducts(subdomain, term);
+            products = await ProductService.searchProducts(subdomain, term, {
+                ...(query?.country_of_origin?.trim() ? { country_of_origin: query.country_of_origin.trim().slice(0, 100) } : {}),
+                ...(query?.category?.trim() ? { category: query.category.trim().slice(0, 100) } : {}),
+                ...(query?.page?.trim() ? { page: Number(query.page) || 1 } : {}),
+            });
         } catch {
             // A failed search degrades to an empty result with its own message — it is not the
             // same fact as a catalogue outage and must not throw the whole storefront error boundary.
@@ -61,6 +65,12 @@ export default async function SearchPage({ params, searchParams }: Props) {
         type: 'search',
         path: `/store/${subdomain}/search${term ? `?search=${encodeURIComponent(term)}` : ''}`,
         subdomain,
+        searchParams: {
+            ...(term ? { search: term } : {}),
+            ...(query?.country_of_origin?.trim() ? { country_of_origin: query.country_of_origin.trim().slice(0, 100) } : {}),
+            ...(query?.category?.trim() ? { category: query.category.trim().slice(0, 100) } : {}),
+            ...(query?.page?.trim() ? { page: query.page.trim().slice(0, 6) } : {}),
+        },
         fallbackSections: [createProductListingFallbackSection(
             term ? `Results for "${term}"` : 'Search',
         )],

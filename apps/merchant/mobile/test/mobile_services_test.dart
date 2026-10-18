@@ -1,3 +1,4 @@
+import 'package:letbuyy_store/screens/settings/settings_screen.dart';
 import 'dart:io';
 import 'dart:convert';
 
@@ -53,6 +54,7 @@ import 'package:letbuyy_store/services/telemetry_service.dart';
 import 'package:letbuyy_store/services/theme_provider.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/services/two_factor_service.dart';
+import 'package:letbuyy_store/services/security_command_store.dart';
 import 'package:letbuyy_store/services/whatsapp_service.dart';
 import 'package:letbuyy_store/screens/content/blog_screen.dart';
 import 'package:letbuyy_store/screens/content/media_library_screen.dart';
@@ -75,6 +77,9 @@ import 'package:letbuyy_store/screens/marketing/leads_screen.dart';
 import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/main/store_main_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
+import 'package:letbuyy_store/screens/orders/orders_screen.dart';
+import 'package:letbuyy_store/screens/dashboard/home_screen.dart';
+import 'package:letbuyy_store/screens/wizard/create_store_wizard.dart';
 import 'package:letbuyy_store/screens/orders/returns_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
 import 'package:letbuyy_store/screens/products/import_products_screen.dart';
@@ -90,18 +95,25 @@ import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:letbuyy_store/screens/settings/staff_screen.dart';
 import 'package:letbuyy_store/screens/settings/store_details_screen.dart';
 import 'package:letbuyy_store/screens/settings/taxes_screen.dart';
+import 'package:letbuyy_store/screens/subscription/pricing_screen.dart';
 import 'package:letbuyy_store/screens/settings/localization_markets_screen.dart';
 import 'package:letbuyy_store/screens/settings/custom_data_screen.dart';
 import 'package:letbuyy_store/screens/store_health/store_health_screen.dart';
 import 'package:letbuyy_store/screens/auth/turnstile_challenge_screen.dart';
 import 'package:letbuyy_store/widgets/shared/capability_gate.dart';
 import 'package:letbuyy_store/widgets/shared/accessible_tap_region.dart';
+import 'package:letbuyy_store/widgets/wizard/wizard_container.dart'
+    show WizardContainer, WizardOptionCard;
 import 'package:letbuyy_store/widgets/dashboard/quick_actions_grid.dart'
     as dashboard_widgets;
+import 'package:letbuyy_store/widgets/dashboard/premium_header.dart'
+    as header_widgets;
+import 'package:letbuyy_store/widgets/settings/store_info_card.dart';
 import 'package:letbuyy_store/widgets/settings/settings_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'support/loyalty_fixture.dart' show MemoryStorage;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -293,11 +305,1662 @@ void main() {
           ),
         );
 
-        await tester.tap(find.text('Add product'));
-        await tester.tap(find.text('Store profile'));
+        final addProductLabel = find.text('Add product');
+        final addProductInkWell = find.ancestor(
+          of: addProductLabel,
+          matching: find.byType(InkWell),
+        );
+        final addProductFocus = find.descendant(
+          of: addProductInkWell,
+          matching: find.byType(Focus),
+        );
+        final addProductFocusableLabel = find.descendant(
+          of: addProductFocus.first,
+          matching: find.text('Add product'),
+        );
+        Focus.of(tester.element(addProductFocusableLabel)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+
+        final settingsLabel = find.text('Store profile');
+        final settingsInkWell = find.ancestor(
+          of: settingsLabel,
+          matching: find.byType(InkWell),
+        );
+        final settingsFocusableLabel = find.descendant(
+          of: find.descendant(
+            of: settingsInkWell,
+            matching: find.byType(Focus),
+          ).first,
+          matching: settingsLabel,
+        );
+        Focus.of(tester.element(settingsFocusableLabel)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+
+        expect(settingsTaps, 1);
+        await tester.tap(settingsLabel);
 
         expect(quickActionTaps, 1);
-        expect(settingsTaps, 1);
+        expect(settingsTaps, 2);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('dashboard quick actions open routes with Enter', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: SingleChildScrollView(
+                  child: dashboard_widgets.QuickActionsGrid(
+                    onOrdersTap: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.orders),
+                  ),
+                ),
+              ),
+            ),
+            routes: {
+              AppRoutes.orders: (_) => const Scaffold(
+                body: Center(child: Text('Orders destination')),
+              ),
+            },
+          ),
+        );
+
+        final ordersAction = find.bySemanticsLabel('Manage Orders');
+        final actionNode = tester.getSemantics(ordersAction);
+        expect(
+          actionNode,
+          matchesSemantics(
+            label: 'Manage Orders',
+            hint: 'View & update orders',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+          ),
+        );
+        final actionSize = tester.getSize(ordersAction);
+        expect(actionSize.width, greaterThanOrEqualTo(48));
+        expect(actionSize.height, greaterThanOrEqualTo(48));
+
+        final ordersLabel = find.text('Manage Orders');
+        final ordersInkWell = find.ancestor(
+          of: ordersLabel,
+          matching: find.byType(InkWell),
+        );
+        final ordersFocus = find.descendant(
+          of: ordersInkWell,
+          matching: find.byType(Focus),
+        );
+        final ordersFocusableLabel = find.descendant(
+          of: ordersFocus.first,
+          matching: find.text('Manage Orders'),
+        );
+        Focus.of(tester.element(ordersFocusableLabel)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Orders destination'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets(
+      'wizard option cards expose selected state and keyboard input',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        var selected = false;
+        try {
+          await tester.pumpWidget(
+            ChangeNotifierProvider<ThemeProvider>(
+              create: (_) => ThemeProvider(),
+              child: MaterialApp(
+                home: Scaffold(
+                  body: StatefulBuilder(
+                    builder: (context, setState) => Center(
+                      child: SizedBox(
+                        width: 340,
+                        child: WizardOptionCard(
+                          icon: Icons.inventory_2_outlined,
+                          title: 'Physical products',
+                          subtitle: 'Items that customers can receive',
+                          isSelected: selected,
+                          onTap: () => setState(() => selected = !selected),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          const optionKey = ValueKey('wizard-option-Physical products');
+          final option = find.byKey(optionKey);
+          expect(
+            tester.getSemantics(option),
+            matchesSemantics(
+              label: 'Physical products, Items that customers can receive',
+              isButton: true,
+              hasEnabledState: true,
+              isEnabled: true,
+              hasSelectedState: true,
+              isSelected: false,
+              hasTapAction: true,
+            ),
+          );
+          expect(tester.getSize(option).height, greaterThanOrEqualTo(48));
+
+          final optionTitle = find.text('Physical products');
+          Focus.of(tester.element(optionTitle)).requestFocus();
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pump();
+
+          final selectedData = tester.getSemantics(option).getSemanticsData();
+          expect(selectedData.hasFlag(SemanticsFlag.isSelected), isTrue);
+          expect(selected, isTrue);
+
+          await tester.sendKeyEvent(LogicalKeyboardKey.space);
+          await tester.pump();
+          expect(
+            tester
+                .getSemantics(option)
+                .getSemanticsData()
+                .hasFlag(SemanticsFlag.isSelected),
+            isFalse,
+          );
+          expect(selected, isFalse);
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+
+    testWidgets('wizard shell actions are named and keyboard accessible', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      var backTaps = 0;
+      var skipTaps = 0;
+      late ThemeProvider themeProvider;
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider<ThemeProvider>(
+                create: (_) => themeProvider = ThemeProvider(),
+              ),
+              ChangeNotifierProvider<LanguageService>(
+                create: (_) => LanguageService(),
+              ),
+            ],
+            child: MaterialApp(
+              home: Scaffold(
+                body: WizardContainer(
+                  currentStep: 2,
+                  totalSteps: 7,
+                  onBack: () => backTaps++,
+                  onSkip: () => skipTaps++,
+                  skipText: 'Skip this step',
+                  child: const Text('Sales channels'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final backAction = find.bySemanticsLabel('← Back');
+        final backData = tester.getSemantics(backAction).getSemanticsData();
+        expect(backData.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(backData.hasAction(SemanticsAction.tap), isTrue);
+        expect(tester.getSize(backAction).width, greaterThanOrEqualTo(48));
+        expect(tester.getSize(backAction).height, greaterThanOrEqualTo(48));
+
+        final themeAction = find.bySemanticsLabel('Switch to light mode');
+        final themeData = tester.getSemantics(themeAction).getSemanticsData();
+        expect(themeData.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(themeData.hasAction(SemanticsAction.tap), isTrue);
+        expect(tester.getSize(themeAction).width, greaterThanOrEqualTo(48));
+        expect(tester.getSize(themeAction).height, greaterThanOrEqualTo(48));
+
+        final skipAction = find.bySemanticsLabel('Skip this step');
+        expect(
+          tester
+              .getSemantics(skipAction)
+              .getSemanticsData()
+              .hasAction(SemanticsAction.tap),
+          isTrue,
+        );
+        expect(tester.getSize(skipAction).height, greaterThanOrEqualTo(48));
+
+        Focus.of(
+          tester.element(find.byIcon(Icons.arrow_back_ios_new_rounded)),
+        ).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(backTaps, 1);
+
+        await tester.ensureVisible(skipAction);
+        Focus.of(tester.element(find.text('Skip this step'))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.space);
+        await tester.pump();
+        expect(skipTaps, 1);
+
+        Focus.of(
+          tester.element(find.byIcon(Icons.light_mode_rounded)),
+        ).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        expect(
+          themeProvider.isDarkMode(tester.element(find.text('Sales channels'))),
+          isFalse,
+        );
+        expect(find.bySemanticsLabel('Switch to dark mode'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard language selector changes language by keyboard', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      late LanguageService language;
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider<ThemeProvider>(
+                create: (_) => ThemeProvider(),
+              ),
+              ChangeNotifierProvider<LanguageService>(
+                create: (_) => language = LanguageService(),
+              ),
+            ],
+            child: const MaterialApp(
+              home: Scaffold(
+                body: WizardContainer(
+                  currentStep: 2,
+                  totalSteps: 7,
+                  child: Text('Sales channels'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final languageButton = find.byKey(
+          const ValueKey('wizard-language-selector'),
+        );
+        final languageData = tester
+            .getSemantics(languageButton)
+            .getSemanticsData();
+        expect(languageData.hasFlag(SemanticsFlag.isFocusable), isTrue);
+        expect(languageData.hasFlag(SemanticsFlag.hasExpandedState), isTrue);
+        expect(languageData.hasAction(SemanticsAction.tap), isTrue);
+        expect(languageData.tooltip, 'English');
+        expect(tester.getSize(languageButton).height, greaterThanOrEqualTo(48));
+
+        Focus.of(tester.element(find.text('English'))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.text('தமிழ்'), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(language.currentLanguage, AppLanguage.tamil);
+        expect(find.text('தமிழ்'), findsOneWidget);
+        expect(
+          tester.getSemantics(languageButton).getSemanticsData().tooltip,
+          'தமிழ்',
+        );
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowUp);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(language.currentLanguage, AppLanguage.english);
+        expect(find.text('English'), findsOneWidget);
+
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(language.currentLanguage, AppLanguage.tamil);
+        expect(find.text('தமிழ்'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard exit confirmation actions support keyboard', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      final api = _FakeApiClient();
+      final language = LanguageService();
+      final providers = _merchantShellProviders(api)
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        Focus.of(
+          tester.element(find.byIcon(Icons.logout_rounded)),
+        ).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.text(language.logoutTitle), findsOneWidget);
+
+        for (final key in ['wizard-logout-cancel', 'wizard-logout-confirm']) {
+          final action = find.byKey(ValueKey(key));
+          final data = tester.getSemantics(action).getSemanticsData();
+          expect(
+            data.label,
+            key == 'wizard-logout-cancel' ? language.cancel : language.logout,
+          );
+          expect(data.hasFlag(SemanticsFlag.isButton), isTrue);
+          expect(data.hasFlag(SemanticsFlag.isEnabled), isTrue);
+          expect(data.hasAction(SemanticsAction.tap), isTrue);
+          expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
+        }
+
+        Focus.of(tester.element(find.text(language.cancel))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.text(language.logoutTitle), findsNothing);
+        expect(find.text(language.wizardNewBusiness), findsOneWidget);
+        expect(api.paths, isEmpty);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard logout confirmation signs out and opens login', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      FlutterSecureStorage.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      final api = _FakeApiClient();
+      final language = LanguageService();
+      final identityRequests = <http.Request>[];
+      final auth = _TestMerchantAuthService(
+        api: api,
+        currentUserId: 'synthetic-owner',
+        httpClient: MockClient((request) async {
+          identityRequests.add(request);
+          switch (request.url.path) {
+            case '/login':
+              return http.Response(
+                '',
+                200,
+                headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
+              );
+            case '/api/auth/login':
+              return http.Response(
+                '{"success":true}',
+                200,
+                headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
+              );
+            case '/api/auth/session':
+              return http.Response(
+                '{"authenticated":true,"user":{"id":"synthetic-owner","email":"owner@example.invalid"}}',
+                200,
+              );
+            case '/api/auth/logout':
+              return http.Response('{"success":true}', 200);
+          }
+          return http.Response('not found', 404);
+        }),
+      );
+      final signedInUser = await auth.signInWithPassword(
+        'owner@example.invalid',
+        'synthetic-password',
+      );
+      expect(signedInUser?.id, 'synthetic-owner');
+      expect(auth.isSignedIn, isTrue);
+      final providers = _merchantShellProviders(
+        api,
+        currentUserId: 'synthetic-owner',
+        authServiceOverride: auth,
+      )..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: MaterialApp(
+              home: const CreateStoreWizard(),
+              routes: {
+                AppRoutes.login: (_) => const Scaffold(
+                  body: Center(child: Text('Merchant login reached')),
+                ),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        Focus.of(
+          tester.element(find.byIcon(Icons.logout_rounded)),
+        ).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.text(language.logoutTitle), findsOneWidget);
+
+        final confirm = find.byKey(const ValueKey('wizard-logout-confirm'));
+        expect(
+          tester.getSemantics(confirm).getSemanticsData().label,
+          language.logout,
+        );
+        Focus.of(tester.element(find.text(language.logout))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(auth.signOutCalls, 1);
+        expect(auth.isSignedIn, isFalse);
+        final logoutRequests = identityRequests
+            .where((request) => request.url.path == '/api/auth/logout')
+            .toList();
+        expect(logoutRequests, hasLength(1));
+        expect(
+          logoutRequests.single.headers['cookie'],
+          'lb_session=session_123',
+        );
+        expect(logoutRequests.single.method, 'POST');
+        expect(find.text('Merchant login reached'), findsOneWidget);
+        expect(find.byType(CreateStoreWizard), findsNothing);
+        expect(api.paths, isEmpty);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard category is selected by keyboard and saved', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      final api = _FakeApiClient();
+      final language = LanguageService();
+      final providers = _merchantShellProviders(api)
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        expect(find.text(language.wizardWhereToSell), findsOneWidget);
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        expect(find.text(language.wizardWhatToSell), findsOneWidget);
+        await activateAndAdvance(find.text(language.physicalProducts));
+        expect(find.text(language.wizardCategory), findsOneWidget);
+
+        final fashion = find.byKey(const ValueKey('wizard-category-fashion'));
+        final initialData = tester.getSemantics(fashion).getSemanticsData();
+        expect(initialData.label, language.fashionApparel);
+        expect(initialData.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(initialData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+        expect(initialData.hasFlag(SemanticsFlag.hasSelectedState), isTrue);
+        expect(initialData.hasFlag(SemanticsFlag.isSelected), isFalse);
+        expect(initialData.hasAction(SemanticsAction.tap), isTrue);
+        expect(tester.getSize(fashion).height, greaterThanOrEqualTo(48));
+
+        Focus.of(
+          tester.element(find.text(language.fashionApparel)),
+        ).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+        final selectedData = tester.getSemantics(fashion).getSemanticsData();
+        expect(selectedData.hasFlag(SemanticsFlag.isSelected), isTrue);
+
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardStoreName), findsOneWidget);
+        expect(api.paths, contains('/onboarding/mobile-progress'));
+        expect(
+          api.bodies['/onboarding/mobile-progress'],
+          containsPair('category', 'fashion'),
+        );
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets(
+      'wizard theme is selected by keyboard after availability check',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        const subdomain = 'my-store';
+        final api = _FakeApiClient(
+          errors: {
+            'stores/public/$subdomain': const ApiException(
+              message: 'Not found',
+              statusCode: 404,
+              code: 'NOT_FOUND',
+            ),
+          },
+        );
+        final language = LanguageService();
+        final providers = _merchantShellProviders(api)
+          ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+        Future<void> activateAndAdvance(Finder target) async {
+          Focus.of(tester.element(target)).requestFocus();
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pump(const Duration(milliseconds: 250));
+          await tester.pumpAndSettle();
+        }
+
+        try {
+          await tester.pumpWidget(
+            MultiProvider(
+              providers: providers,
+              child: const MaterialApp(home: CreateStoreWizard()),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await activateAndAdvance(find.text(language.wizardNewBusiness));
+          await tester.ensureVisible(find.text(language.skipStep));
+          await activateAndAdvance(find.text(language.skipStep));
+          await activateAndAdvance(find.text(language.physicalProducts));
+          await activateAndAdvance(find.text(language.fashionApparel));
+          await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(language.next));
+          await tester.pumpAndSettle();
+          expect(find.text(language.wizardSubdomain), findsOneWidget);
+
+          await tester.enterText(find.byType(TextField).first, subdomain);
+          await tester.pumpAndSettle();
+          expect(api.paths, contains('stores/public/$subdomain'));
+          expect(
+            find.textContaining(language.subdomainAvailable),
+            findsOneWidget,
+          );
+          await tester.tap(find.text(language.next));
+          await tester.pumpAndSettle();
+          expect(find.text(language.wizardTheme), findsOneWidget);
+
+          final theme = find.byKey(
+            const ValueKey('wizard-theme-minimal_modern'),
+          );
+          final initialData = tester.getSemantics(theme).getSemanticsData();
+          expect(initialData.label, 'Minimal Modern');
+          expect(initialData.hasFlag(SemanticsFlag.isButton), isTrue);
+          expect(initialData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+          expect(initialData.hasFlag(SemanticsFlag.hasSelectedState), isTrue);
+          expect(initialData.hasFlag(SemanticsFlag.isSelected), isTrue);
+          expect(initialData.hasAction(SemanticsAction.tap), isTrue);
+          expect(tester.getSize(theme).height, greaterThanOrEqualTo(48));
+
+          Focus.of(tester.element(find.text('Vibrant Bold'))).requestFocus();
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pump();
+          final selectedTheme = find.byKey(
+            const ValueKey('wizard-theme-vibrant_bold'),
+          );
+          expect(
+            tester
+                .getSemantics(selectedTheme)
+                .getSemanticsData()
+                .hasFlag(SemanticsFlag.isSelected),
+            isTrue,
+          );
+          expect(find.text(language.createStore), findsOneWidget);
+          final createStoreButton = find.ancestor(
+            of: find.text(language.createStore),
+            matching: find.byType(ElevatedButton),
+          );
+          final createStoreData = tester
+              .getSemantics(createStoreButton)
+              .getSemanticsData();
+          expect(createStoreData.label, language.createStore);
+          expect(createStoreData.hasFlag(SemanticsFlag.isButton), isTrue);
+          expect(createStoreData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+          expect(createStoreData.hasAction(SemanticsAction.tap), isTrue);
+          expect(
+            tester.getSize(createStoreButton).height,
+            greaterThanOrEqualTo(48),
+          );
+          expect(api.paths, isNot(contains('stores')));
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+
+    testWidgets(
+      'wizard retries a failed publish without creating another store',
+      (tester) async {
+        SharedPreferences.setMockInitialValues({});
+        const subdomain = 'retry-shop';
+        final draft = {
+          ..._storeJson(name: 'Sample Shop', subdomain: subdomain),
+          'status': 'draft',
+        };
+        final published = {...draft, 'status': 'published'};
+        final api = _PublishRetryApiClient(
+          json: {'/stores': draft, '/stores/store_1/publish': published},
+          errors: {
+            'stores/public/$subdomain': const ApiException(
+              message: 'Not found',
+              statusCode: 404,
+              code: 'NOT_FOUND',
+            ),
+          },
+        );
+        final language = LanguageService();
+        final providers = _merchantShellProviders(
+          api,
+          currentUserId: 'retry-owner',
+        )..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+        String? destination;
+        Object? destinationArguments;
+        Future<void> activateAndAdvance(Finder target) async {
+          Focus.of(tester.element(target)).requestFocus();
+          await tester.pump();
+          await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+          await tester.pump(const Duration(milliseconds: 250));
+          await tester.pumpAndSettle();
+        }
+
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: MaterialApp(
+              home: const CreateStoreWizard(),
+              onGenerateRoute: (settings) {
+                destination = settings.name;
+                destinationArguments = settings.arguments;
+                return MaterialPageRoute<void>(
+                  settings: settings,
+                  builder: (_) =>
+                      const Scaffold(body: Text('Published store destination')),
+                );
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).first, subdomain);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+
+        final createButton = find.ancestor(
+          of: find.text(language.createStore),
+          matching: find.byType(ElevatedButton),
+        );
+        await tester.ensureVisible(createButton);
+        await tester.pumpAndSettle();
+        await tester.tap(createButton);
+        await tester.pumpAndSettle();
+        expect(api.createAttempts, 1);
+        expect(api.publishAttempts, 0);
+        expect(find.text(language.createStore), findsOneWidget);
+        final pendingPreferences = await SharedPreferences.getInstance();
+        expect(
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.key',
+          ),
+          isNotNull,
+        );
+        expect(
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.request',
+          ),
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.fingerprint',
+          ),
+        );
+
+        // The first create committed on the server but its response was lost.
+        // Recreate the wizard to model process death. The saved request must
+        // restore the final step and let the Gateway return that draft on retry.
+        await tester.pumpWidget(const SizedBox.shrink());
+        final resumedProviders = _merchantShellProviders(
+          api,
+          currentUserId: 'retry-owner',
+        )..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: resumedProviders,
+            child: MaterialApp(
+              home: const CreateStoreWizard(),
+              onGenerateRoute: (settings) {
+                destination = settings.name;
+                destinationArguments = settings.arguments;
+                return MaterialPageRoute<void>(
+                  settings: settings,
+                  builder: (_) =>
+                      const Scaffold(body: Text('Published store destination')),
+                );
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text(language.createStore), findsOneWidget);
+
+        await tester.ensureVisible(createButton);
+        await tester.pumpAndSettle();
+        await tester.tap(createButton);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 250));
+        expect(api.createAttempts, 2);
+        expect(api.publishAttempts, 1);
+        expect(find.text(language.retryPublishStore), findsOneWidget);
+        expect(api.paths.where((path) => path == '/stores').length, 2);
+
+        await tester.tap(find.text(language.retryPublishStore));
+        await tester.pumpAndSettle();
+
+        expect(api.publishAttempts, 2);
+        expect(api.createAttempts, 2);
+        expect(api.paths.where((path) => path == '/stores').length, 2);
+        expect(api.createIdempotencyKeys, hasLength(2));
+        expect(api.createIdempotencyKeys.toSet(), hasLength(1));
+        expect(api.bodies['/stores'], containsPair('name', 'Sample Shop'));
+        expect(api.bodies['/stores'], containsPair('subdomain', subdomain));
+        expect(
+          api.paths.where((path) => path == '/stores/store_1/publish').length,
+          2,
+        );
+        expect(api.bodies['/stores'], containsPair('name', 'Sample Shop'));
+        expect(api.bodies['/stores'], containsPair('subdomain', subdomain));
+        expect(destination, AppRoutes.storePublished);
+        expect(destinationArguments, containsPair('storeId', 'store_1'));
+        expect(destinationArguments, containsPair('storeName', 'Sample Shop'));
+        expect(destinationArguments, containsPair('subdomain', subdomain));
+        expect(
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.key',
+          ),
+          isNull,
+        );
+        expect(
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.fingerprint',
+          ),
+          isNull,
+        );
+        expect(
+          pendingPreferences.getString(
+            'letbuyy.pending_mobile_store_creation.retry-owner.request',
+          ),
+          isNull,
+        );
+        final storeContext = Provider.of<StoreContext>(
+          tester.element(find.text('Published store destination')),
+          listen: false,
+        );
+        expect(storeContext.selectedStore?.id, 'store_1');
+        expect(storeContext.selectedStore?.status, StoreStatus.published);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('wizard store-name and subdomain back actions support Enter', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      final language = LanguageService();
+      final providers = _merchantShellProviders(_FakeApiClient())
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      Future<void> activateBack(String key) async {
+        final action = find.byKey(ValueKey(key));
+        final data = tester.getSemantics(action).getSemanticsData();
+        expect(data.label, language.back);
+        expect(data.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(data.hasFlag(SemanticsFlag.isEnabled), isTrue);
+        expect(data.hasAction(SemanticsAction.tap), isTrue);
+        expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
+
+        final label = find.descendant(
+          of: action,
+          matching: find.text(language.back),
+        );
+        Focus.of(tester.element(label)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        expect(find.text(language.wizardStoreName), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardSubdomain), findsOneWidget);
+
+        await activateBack('wizard-subdomain-back');
+        expect(find.text(language.wizardStoreName), findsOneWidget);
+        await activateBack('wizard-store-name-back');
+        expect(find.text(language.wizardCategory), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard subdomain status is localized and announced', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      const availableSubdomain = 'available-shop';
+      final api = _FakeApiClient(
+        errors: {
+          'stores/public/$availableSubdomain': const ApiException(
+            message: 'Not found',
+            statusCode: 404,
+            code: 'NOT_FOUND',
+          ),
+        },
+        delay: const Duration(milliseconds: 350),
+      );
+      final language = LanguageService();
+      final providers = _merchantShellProviders(api)
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardSubdomain), findsOneWidget);
+
+        await tester.enterText(
+          find.byType(TextField).first,
+          availableSubdomain,
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        final checking = find.byKey(
+          const ValueKey('wizard-subdomain-status-checking'),
+        );
+        expect(
+          tester
+              .getSemantics(checking)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+        expect(find.text(language.checkingAvailability), findsOneWidget);
+
+        await tester.pump(const Duration(milliseconds: 300));
+        await tester.pumpAndSettle();
+        expect(api.paths, contains('stores/public/$availableSubdomain'));
+        final available = find.byKey(
+          const ValueKey('wizard-subdomain-status-available'),
+        );
+        expect(
+          find.textContaining(language.subdomainAvailable),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('https://$availableSubdomain.letbuyy.com'),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .getSemantics(available)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+
+        await language.setLanguage(AppLanguage.tamil);
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining(language.subdomainAvailable),
+          findsOneWidget,
+        );
+
+        await tester.enterText(find.byType(TextField).first, 'taken-shop');
+        await tester.pump(const Duration(milliseconds: 400));
+        await tester.pumpAndSettle();
+        final taken = find.byKey(
+          const ValueKey('wizard-subdomain-status-taken'),
+        );
+        expect(find.textContaining(language.subdomainTaken), findsOneWidget);
+        expect(
+          find.textContaining(language.subdomainChooseAnother),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .getSemantics(taken)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+
+        await language.setLanguage(AppLanguage.hindi);
+        await tester.pumpAndSettle();
+        expect(find.textContaining(language.subdomainTaken), findsOneWidget);
+        expect(
+          find.textContaining(language.subdomainChooseAnother),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard subdomain validation fails closed with clear errors', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      const offlineSubdomain = 'offline-shop';
+      final api = _FakeApiClient(
+        errors: {
+          'stores/public/$offlineSubdomain': const ApiException(
+            message: 'Unavailable',
+            statusCode: 503,
+            code: 'SERVICE_UNAVAILABLE',
+          ),
+        },
+      );
+      final language = LanguageService();
+      final providers = _merchantShellProviders(api)
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardSubdomain), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, 'ab');
+        await tester.pump();
+        var tooShort = find.byKey(
+          const ValueKey('wizard-subdomain-status-tooShort'),
+        );
+        expect(
+          tester.getSemantics(tooShort).getSemanticsData().label,
+          language.subdomainTooShort,
+        );
+        expect(
+          tester
+              .getSemantics(tooShort)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+        expect(api.paths, isNot(contains('stores/public/ab')));
+
+        await language.setLanguage(AppLanguage.tamil);
+        await tester.pump();
+        expect(
+          tester.getSemantics(tooShort).getSemanticsData().label,
+          language.subdomainTooShort,
+        );
+
+        await tester.enterText(find.byType(TextField).first, 'bad_name');
+        await tester.pump();
+        final invalid = find.byKey(
+          const ValueKey('wizard-subdomain-status-invalidCharacters'),
+        );
+        expect(
+          tester.getSemantics(invalid).getSemanticsData().label,
+          language.subdomainInvalidCharacters,
+        );
+        expect(api.paths, isNot(contains('stores/public/bad_name')));
+
+        await language.setLanguage(AppLanguage.hindi);
+        await tester.pump();
+        expect(
+          tester.getSemantics(invalid).getSemanticsData().label,
+          language.subdomainInvalidCharacters,
+        );
+
+        await tester.enterText(find.byType(TextField).first, offlineSubdomain);
+        await tester.pumpAndSettle();
+        final unavailable = find.byKey(
+          const ValueKey('wizard-subdomain-status-checkFailed'),
+        );
+        expect(
+          tester.getSemantics(unavailable).getSemanticsData().label,
+          language.subdomainCheckFailed,
+        );
+        expect(
+          tester
+              .getSemantics(unavailable)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+        expect(api.paths, contains('stores/public/$offlineSubdomain'));
+        final next = find.text(language.next);
+        expect(
+          tester
+              .getSemantics(next)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isEnabled),
+          isFalse,
+        );
+        expect(api.paths, isNot(contains('stores')));
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('stale subdomain lookup cannot replace newer validation', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      const slowSubdomain = 'slow-shop';
+      final api = _DelayedSubdomainLookupApiClient(slowSubdomain);
+      final language = LanguageService();
+      final providers = _merchantShellProviders(api)
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        await tester.enterText(find.byType(TextField).first, 'Sample Shop');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(language.next));
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardSubdomain), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, 'available-shop');
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('wizard-subdomain-status-available')),
+          findsOneWidget,
+        );
+
+        await tester.enterText(find.byType(TextField).first, slowSubdomain);
+        expect(api.delayedLookupStarted, isTrue);
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(
+          find.byKey(const ValueKey('wizard-subdomain-status-checking')),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .getSemantics(find.text(language.next))
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isEnabled),
+          isFalse,
+        );
+
+        await tester.enterText(find.byType(TextField).first, 'ab');
+        await tester.pump();
+        final tooShort = find.byKey(
+          const ValueKey('wizard-subdomain-status-tooShort'),
+        );
+        expect(tooShort, findsOneWidget);
+        await tester.pump(const Duration(milliseconds: 2200));
+        await tester.pumpAndSettle();
+
+        expect(tooShort, findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('wizard-subdomain-status-available')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const ValueKey('wizard-subdomain-status-checking')),
+          findsNothing,
+        );
+        expect(api.paths, contains('stores/public/$slowSubdomain'));
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('wizard store-name validation is localized and announced', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final semantics = tester.ensureSemantics();
+      final language = LanguageService();
+      final providers = _merchantShellProviders(_FakeApiClient())
+        ..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+      Future<void> activateAndAdvance(Finder target) async {
+        Focus.of(tester.element(target)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump(const Duration(milliseconds: 250));
+        await tester.pumpAndSettle();
+      }
+
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: providers,
+            child: const MaterialApp(home: CreateStoreWizard()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await activateAndAdvance(find.text(language.wizardNewBusiness));
+        await tester.ensureVisible(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.skipStep));
+        await activateAndAdvance(find.text(language.physicalProducts));
+        await activateAndAdvance(find.text(language.fashionApparel));
+        expect(find.text(language.wizardStoreName), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, 'Abc');
+        await tester.pump();
+        final tooShort = find.byKey(
+          const ValueKey('wizard-store-name-too-short'),
+        );
+        expect(
+          tester.getSemantics(tooShort).getSemanticsData().label,
+          language.wizardStoreNameTooShort,
+        );
+        expect(
+          tester
+              .getSemantics(tooShort)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+
+        await language.setLanguage(AppLanguage.tamil);
+        await tester.pump();
+        expect(
+          tester.getSemantics(tooShort).getSemanticsData().label,
+          language.wizardStoreNameTooShort,
+        );
+        expect(find.text(language.wizardStoreNameTooShort), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, 'Abcd');
+        await tester.pump();
+        final validName = find.byKey(
+          const ValueKey('wizard-store-name-meets-minimum'),
+        );
+        expect(
+          tester.getSemantics(validName).getSemanticsData().label,
+          language.wizardStoreNameMeetsMinimum,
+        );
+        expect(
+          tester
+              .getSemantics(validName)
+              .getSemanticsData()
+              .hasFlag(SemanticsFlag.isLiveRegion),
+          isTrue,
+        );
+
+        await language.setLanguage(AppLanguage.hindi);
+        await tester.pump();
+        expect(
+          tester.getSemantics(validName).getSemanticsData().label,
+          language.wizardStoreNameMeetsMinimum,
+        );
+        final next = find.text(language.next);
+        Focus.of(tester.element(next)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(find.text(language.wizardSubdomain), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('dashboard notification control opens its route with Enter', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(_FakeApiClient()),
+            child: MaterialApp(
+              home: Builder(
+                builder: (context) => Scaffold(
+                  body: header_widgets.PremiumHeader(
+                    isDark: true,
+                    onNotificationTap: () => Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.notifications),
+                  ),
+                ),
+              ),
+              routes: {
+                AppRoutes.notifications: (_) => const Scaffold(
+                  body: Center(child: Text('Notifications destination')),
+                ),
+              },
+            ),
+          ),
+        );
+
+        final notificationAction = find.bySemanticsLabel('Notifications');
+        expect(
+          tester.getSemantics(notificationAction),
+          matchesSemantics(
+            label: 'Notifications',
+            hint: 'Open notifications',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+            hasFocusAction: true,
+            isFocusable: true,
+          ),
+        );
+        final actionSize = tester.getSize(notificationAction);
+        expect(actionSize.width, greaterThanOrEqualTo(48));
+        expect(actionSize.height, greaterThanOrEqualTo(48));
+
+        final icon = find.byIcon(Icons.notifications_outlined);
+        final notificationInkWell = find.ancestor(
+          of: icon,
+          matching: find.byType(InkWell),
+        );
+        final notificationFocus = find.descendant(
+          of: notificationInkWell,
+          matching: find.byType(Focus),
+        );
+        final focusableIcon = find.descendant(
+          of: notificationFocus.first,
+          matching: find.byIcon(Icons.notifications_outlined),
+        );
+        Focus.of(tester.element(focusableIcon)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Notifications destination'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('dashboard profile control opens account sheet with Enter', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: _merchantShellProviders(_FakeApiClient()),
+            child: MaterialApp(
+              home: const Scaffold(
+                body: header_widgets.PremiumHeader(isDark: true),
+              ),
+              routes: {
+                AppRoutes.login: (_) => const Scaffold(
+                  body: Center(child: Text('Login destination')),
+                ),
+              },
+            ),
+          ),
+        );
+
+        final accountAction = find.bySemanticsLabel('Account');
+        expect(
+          tester.getSemantics(accountAction),
+          matchesSemantics(
+            label: 'Account',
+            hint: 'Open account menu',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+          ),
+        );
+        final actionSize = tester.getSize(accountAction);
+        expect(actionSize.width, greaterThanOrEqualTo(48));
+        expect(actionSize.height, greaterThanOrEqualTo(48));
+
+        final initials = find.text('U');
+        final accountInkWell = find.ancestor(
+          of: initials,
+          matching: find.byType(InkWell),
+        );
+        final accountFocus = find.descendant(
+          of: accountInkWell,
+          matching: find.byType(Focus),
+        );
+        final focusableInitials = find.descendant(
+          of: accountFocus.first,
+          matching: find.text('U'),
+        );
+        Focus.of(tester.element(focusableInitials)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Merchant'), findsOneWidget);
+        expect(find.text('Add account'), findsOneWidget);
+
+        final addAccountAction = find.bySemanticsLabel('Add account');
+        expect(
+          tester.getSemantics(addAccountAction),
+          matchesSemantics(
+            label: 'Add account',
+            hint: 'Open Add account',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+          ),
+        );
+        final addAccountSize = tester.getSize(addAccountAction);
+        expect(addAccountSize.width, greaterThanOrEqualTo(48));
+        expect(addAccountSize.height, greaterThanOrEqualTo(48));
+
+        final addAccountText = find.text('Add account');
+        final addAccountInkWell = find.ancestor(
+          of: addAccountText,
+          matching: find.byType(InkWell),
+        );
+        final addAccountFocus = find.descendant(
+          of: addAccountInkWell,
+          matching: find.byType(Focus),
+        );
+        final focusableAddAccount = find.descendant(
+          of: addAccountFocus.first,
+          matching: find.text('Add account'),
+        );
+        Focus.of(tester.element(focusableAddAccount)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Login destination'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('dashboard store picker switches stores with Enter', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [
+            _storeJson(),
+            _storeJson(id: 'store_2', name: 'Second Store', subdomain: 'two'),
+          ],
+        },
+      );
+      final storeService = StoreService(api: api, cache: CacheService.memory());
+      final storeContext = StoreContext(storeService: storeService);
+      await storeContext.loadStores();
+      final auth = StoreAuthService(
+        api: api,
+        identityBaseUrl: 'https://accounts.test',
+        turnstileTokenProvider: () => 'turnstile-token',
+      );
+      var storeChanged = 0;
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MultiProvider(
+            providers: [
+              ChangeNotifierProvider<StoreContext>.value(value: storeContext),
+              ChangeNotifierProvider<StoreAuthService>.value(value: auth),
+            ],
+            child: MaterialApp(
+              home: Scaffold(
+                body: header_widgets.PremiumHeader(
+                  isDark: true,
+                  onStoreChanged: () => storeChanged += 1,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(storeContext.selectedStore?.name, 'Demo Store');
+        expect(find.text('Demo Store'), findsOneWidget);
+        final storePickerAction = find.bySemanticsLabel(
+          'Active store: Demo Store',
+        );
+        expect(
+          tester.getSemantics(storePickerAction),
+          matchesSemantics(
+            label: 'Active store: Demo Store',
+            hint: 'Choose active store',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+          ),
+        );
+        final pickerSize = tester.getSize(storePickerAction);
+        expect(pickerSize.width, greaterThanOrEqualTo(48));
+        expect(pickerSize.height, greaterThanOrEqualTo(48));
+
+        final currentStoreText = find.text('Demo Store');
+        final pickerInkWell = find.ancestor(
+          of: currentStoreText,
+          matching: find.byType(InkWell),
+        );
+        final pickerFocus = find.descendant(
+          of: pickerInkWell,
+          matching: find.byType(Focus),
+        );
+        final focusableStoreName = find.descendant(
+          of: pickerFocus.first,
+          matching: find.text('Demo Store'),
+        );
+        Focus.of(tester.element(focusableStoreName)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(find.bySemanticsLabel('Second Store'), findsOneWidget);
+        expect(
+          tester.getSemantics(find.bySemanticsLabel('Demo Store')),
+          matchesSemantics(
+            label: 'Demo Store',
+            hint: 'Current store',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+            hasSelectedState: true,
+            isSelected: true,
+          ),
+        );
+        final secondStoreNode = tester.getSemantics(
+          find.bySemanticsLabel('Second Store'),
+        );
+        final secondStoreSize = tester.getSize(
+          find.bySemanticsLabel('Second Store'),
+        );
+        expect(secondStoreSize.width, greaterThanOrEqualTo(48));
+        expect(secondStoreSize.height, greaterThanOrEqualTo(48));
+        expect(
+          secondStoreNode,
+          matchesSemantics(
+            label: 'Second Store',
+            hint: 'Switch to Second Store',
+            isButton: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+            hasSelectedState: true,
+            isSelected: false,
+          ),
+        );
+
+        final secondStoreText = find.text('Second Store');
+        final secondStoreInkWell = find.ancestor(
+          of: secondStoreText,
+          matching: find.byType(InkWell),
+        );
+        final secondStoreFocus = find.descendant(
+          of: secondStoreInkWell,
+          matching: find.byType(Focus),
+        );
+        final focusableSecondStore = find.descendant(
+          of: secondStoreFocus.first,
+          matching: find.text('Second Store'),
+        );
+        Focus.of(tester.element(focusableSecondStore)).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+
+        expect(storeContext.selectedStoreId, 'store_2');
+        expect(storeChanged, 1);
+        expect(
+          find.bySemanticsLabel('Active store: Second Store'),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
       } finally {
         semantics.dispose();
       }
@@ -351,6 +2014,53 @@ void main() {
         expect(events.single.metadata.containsKey('csrf_token'), isFalse);
       },
     );
+
+    testWidgets('wizard does not restore another merchant pending store', (
+      tester,
+    ) async {
+      const ownerId = 'merchant-a';
+      const otherOwnerId = 'merchant-b';
+      const prefix = 'letbuyy.pending_mobile_store_creation';
+      final savedRequest = jsonEncode({
+        'name': 'Private Merchant Store',
+        'subdomain': 'private-merchant-store',
+        'site_type': 'store',
+        'tagline': '',
+        'theme_id': 'minimal_modern',
+        'template_config': {
+          'onboarding': {
+            'channels': <String>[],
+            'source': 'mobile-merchant-app',
+          },
+        },
+      });
+      SharedPreferences.setMockInitialValues({
+        '$prefix.$ownerId.key': 'pending-create-key-1234',
+        '$prefix.$ownerId.fingerprint': savedRequest,
+        '$prefix.$ownerId.request': savedRequest,
+      });
+      final api = _FakeApiClient();
+      final language = LanguageService();
+      final providers = _merchantShellProviders(
+        api,
+        currentUserId: otherOwnerId,
+      )..add(ChangeNotifierProvider<LanguageService>.value(value: language));
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: providers,
+          child: const MaterialApp(home: CreateStoreWizard()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(language.wizardNewBusiness), findsOneWidget);
+      expect(
+        api.paths.where((path) => path.startsWith('stores/public/')),
+        isEmpty,
+      );
+      expect(tester.takeException(), isNull);
+    });
 
     testWidgets('TelemetryNavigatorObserver emits screen view events', (
       tester,
@@ -1428,6 +3138,8 @@ void main() {
           images: ['https://cdn.test/products/tee.jpg'],
           productType: 'T-shirt',
           vendor: 'LetBuyy Basics',
+          countryOfOrigin: ' Japan ',
+          importerDetails: ' Example Imports, Mumbai ',
           tags: const ['cotton', 'summer'],
           metadata: const {
             'specifications': {'Material': 'Cotton'},
@@ -1444,6 +3156,8 @@ void main() {
         expect(body['seo_description'], 'Premium cotton tee for daily wear.');
         expect(body['product_type'], 'T-shirt');
         expect(body['vendor'], 'LetBuyy Basics');
+        expect(body['country_of_origin'], 'Japan');
+        expect(body['importer_details'], 'Example Imports, Mumbai');
         expect(body['tags'], ['cotton', 'summer']);
         expect(body['metadata'], {
           'specifications': {'Material': 'Cotton'},
@@ -1759,7 +3473,12 @@ void main() {
     });
 
     test('OrderService fetches detail and refund lifecycle routes', () async {
+      var contextEpoch = 1;
+      final storage = MemoryStorage();
+      final transportErrors = <String, ApiException>{};
       final api = _FakeApiClient(
+        contextVersionProvider: () => contextEpoch,
+        errors: transportErrors,
         paginated: {
           '/orders/drafts': [_draftOrderJson()],
         },
@@ -1794,11 +3513,24 @@ void main() {
             'draft_order': _draftOrderJson(status: 'converted'),
             'order': _orderJson(status: 'pending'),
           },
-          '/orders/order_1/refund': _orderJson(status: 'refund_pending'),
-          '/orders/order_1/refund/complete': _orderJson(status: 'refunded'),
+          '/orders/order_1/refund': {
+            'order': _orderJson(status: 'refund_pending'),
+            'status': 'pending',
+            'refund_id': 'refund_1',
+            'return_id': 'return_1',
+            'refund_amount': 499,
+          },
+          '/orders/order_1/refund/complete': {
+            'order': _orderJson(status: 'refunded'),
+            'refund': {'id': 'refund_1', 'status': 'succeeded'},
+          },
+          '/security/step-up/challenges': _controlledRefundProofJson(),
         },
       );
-      final service = OrderService(api: api);
+      final service = OrderService(
+        api: api,
+        securityCommands: SecurityCommandStore(storage: storage),
+      );
 
       final detail = await service.fetchOrder('order_1');
       final shipped = await service.fulfillOrder(
@@ -1842,14 +3574,31 @@ void main() {
         'draft_1',
         idempotencyKey: 'test-draft-convert-key',
       );
-      await service.refundOrder(
+      final security = _contractTwoFactor(api, storage);
+      final captured = security.capture();
+      const refundLines = <JsonMap>[
+        {'order_item_id': 'line_1', 'quantity': 1},
+      ];
+      Future<OrderContract> requestRefund() => service.refundOrder(
         'order_1',
-        amount: 499,
+        context: captured,
+        lines: refundLines,
         reason: 'Customer requested return',
-        idempotencyKey: 'test-refund-key',
       );
+      transportErrors['/orders/order_1/refund'] = const ApiException(
+        message: 'Controlled reply loss', statusCode: 503,
+        code: 'CONTROLLED_REPLY_LOSS',
+      );
+      await expectLater(requestRefund(), throwsA(isA<ApiException>()));
+      final originalRequestKey =
+          api.requestOptions['/orders/order_1/refund']!.single!.idempotencyKey;
+      transportErrors.remove('/orders/order_1/refund');
+      final requested = await requestRefund();
+      expect(requested.status, 'refund_pending');
+      final approval = await _contractRefundApproval(security);
       final completed = await service.completeRefund(
         'order_1',
+        approval: approval,
         refundId: 'refund_1',
         providerRefundId: 'rfnd_1',
       );
@@ -1865,6 +3614,32 @@ void main() {
       expect(draft['id'], 'draft_1');
       expect(converted.id, 'order_1');
       expect(completed.status, 'refunded');
+      expect(api.bodies['/orders/order_1/refund'], {
+        'lines': refundLines,
+        'reason': 'Customer requested return',
+        'idempotency_key': originalRequestKey,
+      });
+      expect(originalRequestKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
+      expect(api.requestOptions['/orders/order_1/refund']!
+          .every((o) => o!.idempotencyKey == originalRequestKey &&
+              o.storeId == 'store_1' && o.expectedContextVersion == 1), isTrue);
+      final completionOptions =
+          api.requestOptions['/orders/order_1/refund/complete']!.single!;
+      expect(api.bodies['/orders/order_1/refund/complete'], {
+        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
+        'idempotency_key': completionOptions.idempotencyKey,
+      });
+      _expectContractApproval(completionOptions, approval);
+      expect(storage.data.values.join(), isNot(contains(approval.token)));
+      final beforeStale = api.paths.length;
+      contextEpoch++;
+      expect(() => service.completeRefund('order_1', approval: approval,
+          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
+            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      expect(api.paths.length, beforeStale);
+      await expectLater(requestRefund(), throwsA(isA<ApiException>().having(
+          (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/orders/order_1'));
       expect(api.paths, contains('/orders/order_1/fulfill'));
       expect(api.paths, contains('/orders/order_1/line-items'));
@@ -1925,7 +3700,12 @@ void main() {
     });
 
     test('ReturnService manages RMA lifecycle routes', () async {
+      var contextEpoch = 1;
+      final storage = MemoryStorage();
+      final transportErrors = <String, ApiException>{};
       final api = _FakeApiClient(
+        contextVersionProvider: () => contextEpoch,
+        errors: transportErrors,
         paginated: {
           '/returns': [_returnJson()],
         },
@@ -1933,9 +3713,13 @@ void main() {
           '/returns': _returnJson(status: 'approved'),
           '/returns/return_1': _returnJson(status: 'received'),
           '/returns/return_1/refund/complete': _returnJson(status: 'refunded'),
+          '/security/step-up/challenges': _controlledRefundProofJson(),
         },
       );
-      final service = ReturnService(api: api);
+      final service = ReturnService(
+        api: api,
+        securityCommands: SecurityCommandStore(storage: storage),
+      );
 
       final rows = await service.fetchReturns('store_1');
       final created = await service.createReturn(
@@ -1948,17 +3732,46 @@ void main() {
         'return_1',
         status: 'received',
       );
-      final refunded = await service.completeRefund(
+      final security = _contractTwoFactor(api, storage);
+      final approval = await _contractRefundApproval(security);
+      Future<MerchantReturn> complete() => service.completeRefund(
         'return_1',
+        approval: approval,
         refundId: 'refund_1',
         providerRefundId: 'rfnd_1',
-        idempotencyKey: 'return-refund-123',
       );
+      transportErrors['/returns/return_1/refund/complete'] = const ApiException(
+        message: 'Controlled reply loss', statusCode: 503,
+        code: 'CONTROLLED_REPLY_LOSS',
+      );
+      await expectLater(complete(), throwsA(isA<ApiException>()));
+      final originalKey = api.requestOptions[
+          '/returns/return_1/refund/complete']!.single!.idempotencyKey;
+      transportErrors.remove('/returns/return_1/refund/complete');
+      final refunded = await complete();
 
       expect(rows.single.id, 'return_1');
       expect(created.status, 'approved');
       expect(received.status, 'received');
       expect(refunded.status, 'refunded');
+      expect(refunded.refundAmount, 499);
+      expect(api.bodies['/returns/return_1/refund/complete'], {
+        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
+        'idempotency_key': originalKey,
+      });
+      expect(originalKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
+      for (final options in api.requestOptions[
+          '/returns/return_1/refund/complete']!) {
+        expect(options!.idempotencyKey, originalKey);
+        _expectContractApproval(options, approval);
+      }
+      expect(storage.data.values.join(), isNot(contains(approval.token)));
+      final beforeStale = api.paths.length;
+      contextEpoch++;
+      expect(() => service.completeRefund('return_1', approval: approval,
+          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
+            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
+      expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/returns'));
       expect(api.paths, contains('/returns/return_1'));
       expect(api.paths, contains('/returns/return_1/refund/complete'));
@@ -1979,6 +3792,23 @@ void main() {
               'summary': _payoutSummaryJson(),
             },
             '/payouts/summary': _payoutSummaryJson(),
+            '/payouts/payout_1': {
+              ..._payoutJson(),
+              'source_order_lineage': [
+                {
+                  'order_id': 'order_1',
+                  'source_order_gross_minor': 10000,
+                  'canonical_merchant_payable_delta_minor': 9000,
+                  'lineage_status': 'linked',
+                  'ledger_transactions': [
+                    {
+                      'source_type': 'payment_capture',
+                      'merchant_payable_delta_minor': 9000,
+                    },
+                  ],
+                },
+              ],
+            },
             '/wallet': _walletJson(),
             '/commission': _commissionJson(),
             '/commission/reconcile': {
@@ -2003,6 +3833,7 @@ void main() {
 
         final payouts = await service.fetchPayouts('store_1');
         final summary = await service.fetchPayoutSummary('store_1');
+        final payoutDetail = await service.fetchPayoutStatement('payout_1');
         final wallet = await service.fetchWallet('store_1');
         final commission = await service.fetchCommission('store_1');
         final cod = await service.fetchCodReconciliation('store_1');
@@ -2022,6 +3853,10 @@ void main() {
 
         expect((payouts['payouts'] as List).single['id'], 'payout_1');
         expect(summary['next_payout']['id'], 'payout_1');
+        expect(
+          payoutDetail['source_order_lineage'][0]['lineage_status'],
+          'linked',
+        );
         expect(wallet['available_minor'], 250000);
         expect(commission['schedule']['commission_bps'], 0);
         expect(cod['summary']['expected_amount_minor'], 300000);
@@ -2032,6 +3867,7 @@ void main() {
         expect(codReconciled['entry']['id'], 'cod_1');
         expect(api.paths, contains('/payouts'));
         expect(api.paths, contains('/payouts/summary'));
+        expect(api.paths, contains('/payouts/payout_1'));
         expect(api.paths, contains('/wallet'));
         expect(api.paths, contains('/commission'));
         expect(api.paths, contains('/commission/reconcile'));
@@ -2112,12 +3948,25 @@ void main() {
         final service = KycService(api: api);
 
         final overview = await service.fetchOverview('store_1');
+        final pathsBeforeDeniedFile = List<String>.of(api.paths);
+        await expectLater(
+          service.submitDocument(
+            storeId: 'store_1',
+            documentType: 'business_pan',
+            fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
+            fileName: 'pan.jpg',
+          ),
+          throwsA(isA<ApiException>().having(
+            (error) => error.code,
+            'code',
+            'KYC_PRIVATE_UPLOAD_UNAVAILABLE',
+          )),
+        );
+        expect(api.paths, pathsBeforeDeniedFile);
         final submitted = await service.submitDocument(
           storeId: 'store_1',
           documentType: 'business_pan',
           documentNumberLast4: '1234',
-          fileUrl: 'https://cdn.letbuyy.com/kyc/pan.jpg',
-          fileName: 'pan.jpg',
         );
         final refreshed = await service.refreshDocument('kyc_1', 'store_1');
 
@@ -2133,7 +3982,7 @@ void main() {
         );
         expect(
           api.bodies['/kyc/documents'],
-          containsPair('file_url', 'https://cdn.letbuyy.com/kyc/pan.jpg'),
+          isNot(contains('file_url')),
         );
       },
     );
@@ -2168,7 +4017,9 @@ void main() {
     test(
       'TwoFactorService manages overview, TOTP enrollment, verify, and disable',
       () async {
+        var contextEpoch = 1;
         final api = _FakeApiClient(
+          contextVersionProvider: () => contextEpoch,
           json: {
             '/2fa': _twoFactorOverviewJson(),
             '/2fa/sessions': {
@@ -2189,7 +4040,7 @@ void main() {
             },
           },
         );
-        final service = TwoFactorService(api: api);
+        final service = _contractTwoFactor(api, MemoryStorage());
 
         final overview = await service.fetchOverview();
         final enrollment = await service.enrollTotp();
@@ -2215,6 +4066,21 @@ void main() {
           containsPair('factor_id', '22222222-2222-4222-8222-222222222222'),
         );
         expect(api.bodies['/2fa/disable'], containsPair('code', '123456'));
+        for (final path in ['/2fa/totp/enroll', '/2fa/totp/verify',
+            '/2fa/disable']) {
+          final options = api.requestOptions[path]!.single!;
+          expect(options.storeId, 'store_1');
+          expect(options.expectedContextVersion, 1);
+          expect(options.idempotencyKey,
+              matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
+        }
+        final previousCalls = api.paths.length;
+        contextEpoch++;
+        expect(service.overview, isNull);
+        await expectLater(service.fetchOverview(expectedContext: 1),
+            throwsA(isA<ApiException>().having((e) => e.code,
+                'code', 'SESSION_CONTEXT_CHANGED')));
+        expect(api.paths.length, previousCalls);
       },
     );
 
@@ -2779,7 +4645,8 @@ void main() {
       );
       final inventory = _readSource(
         appRelative: 'lib/services/inventory_service.dart',
-        repoRelative: 'apps/mobile/merchant-app/lib/services/inventory_service.dart',
+        repoRelative:
+            'apps/mobile/merchant-app/lib/services/inventory_service.dart',
       );
 
       expect(pubspec, contains('mobile_scanner:'));
@@ -3284,6 +5151,7 @@ void main() {
     );
 
     test('StaffService manages staff, roles, and removal', () async {
+      FlutterSecureStorage.setMockInitialValues({});
       final api = _FakeApiClient(
         json: {
           '/employees': [_staffJson()],
@@ -3301,6 +5169,8 @@ void main() {
         ),
       );
       final updated = await service.updateRole(staff.single, 'manager');
+      expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
+      expect(api.bodies['/employees/staff_1'], containsPair('expected_updated_at', staff.single.updatedAt));
       await service.removeStaff(updated);
 
       expect(staff.single.email, 'riya@example.com');
@@ -3309,7 +5179,7 @@ void main() {
       expect(api.paths, contains('/employees'));
       expect(api.paths, contains('/employees/staff_1'));
       expect(api.bodies['/employees'], containsPair('role', 'editor'));
-      expect(api.bodies['/employees/staff_1'], containsPair('role', 'manager'));
+      expect(api.bodies['/employees/staff_1'], containsPair('expected_updated_at', updated.updatedAt));
     });
 
     test(
@@ -3669,12 +5539,14 @@ void main() {
       'AiStudioService executes AI operator tool calls through gateway APIs',
       () async {
         final api = _FakeApiClient(
+          raw: {
+            '/themes': {'data': [], 'current_theme': 'modern'},
+          },
           json: {
             '/ai/operator': {
               'store_id': 'store_1',
               'conversation_id': 'operator_1',
-              'message':
-                  'Last 7 days: INR 1200 revenue. Create the draft work.',
+              'message': 'Last 7 days: INR 1200 revenue. Create the draft work.',
               'created_at': '2026-06-08T10:00:00.000Z',
               'tool_calls': [
                 {
@@ -3742,10 +5614,19 @@ void main() {
             },
             '/products': _productJson(),
             '/coupons': _couponJson(code: 'LAUNCH10', isActive: false),
+            '/themes/modern/editor': {
+              'version': 2,
+              'store': {'id': 'store_1'},
+              'theme': {'slug': 'modern'},
+              'draft': {'exists': true},
+              'template_config': {},
+            },
             '/themes/modern/editor/draft': {
-              'theme_slug': 'modern',
               'version': 3,
-              'has_draft': true,
+              'current_version': 3,
+              'replayed': false,
+              'saved_at': '2026-10-16T12:00:00Z',
+              'draft': {'version': 3},
             },
           },
         );
@@ -3753,8 +5634,7 @@ void main() {
 
         final result = await service.runOperatorCommand(
           storeId: 'store_1',
-          message:
-              'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
+          message: 'Show sales this week, create product "Cotton Tee", draft 10% coupon LAUNCH10, and add homepage section "New arrivals".',
         );
 
         expect(result.toolCalls, hasLength(4));
@@ -3770,7 +5650,19 @@ void main() {
         expect(api.bodies['/coupons'], containsPair('is_active', false));
         expect(
           api.bodies['/themes/modern/editor/draft'],
-          containsPair('client', 'flutter-ai-operator'),
+          containsPair('client', 'flutter-builder'),
+        );
+        expect(
+          api.bodies['/themes/modern/editor/draft'],
+          containsPair('base_version', 2),
+        );
+        expect(
+          api.bodies['/themes/modern/editor/draft'],
+          containsPair('idempotency_key', 'ai-theme:tool_theme'),
+        );
+        expect(
+          api.paths.indexOf('/themes/modern/editor'),
+          lessThan(api.paths.indexOf('/ai/operator')),
         );
         expect(api.bodies['/ai/operator'], containsPair('store_id', 'store_1'));
         expect(
@@ -4287,7 +6179,19 @@ void main() {
           },
         },
         json: {
-          '/themes/modern/publish': {'ok': true},
+          '/themes/modern/editor/draft': {
+            'version': 3,
+            'current_version': 3,
+            'replayed': false,
+            'saved_at': '2026-10-16T12:00:00Z',
+            'draft': {'version': 3},
+          },
+          '/themes/modern/publish': {
+            'version': 4,
+            'current_version': 4,
+            'replayed': false,
+            'release': {'release_id': 'release_1'},
+          },
         },
       );
       final service = ThemeService(api: api);
@@ -4312,7 +6216,11 @@ void main() {
         baseVersion: 2,
       );
 
-      expect(api.bodies['/themes/modern/publish'], {
+      final saveBody = Map<String, dynamic>.from(
+        api.bodies['/themes/modern/editor/draft'] as Map,
+      );
+      expect(saveBody.remove('idempotency_key'), isNotEmpty);
+      expect(saveBody, {
         'store_id': 'store_1',
         'template_config': {
           'themeId': 'modern',
@@ -4329,8 +6237,23 @@ void main() {
           'liquidRenderingCanary': true,
         },
         'base_version': 2,
+        'template_key': 'index',
+        'client': 'flutter-builder',
+      });
+      final publishBody = Map<String, dynamic>.from(
+        api.bodies['/themes/modern/publish'] as Map,
+      );
+      expect(publishBody.remove('idempotency_key'), isNotEmpty);
+      expect(publishBody, {
+        'store_id': 'store_1',
+        'template_key': 'index',
+        'base_version': 3,
         'make_store_live': true,
       });
+      expect(
+        api.paths.indexOf('/themes/modern/editor/draft'),
+        lessThan(api.paths.indexOf('/themes/modern/publish')),
+      );
     });
 
     test('ThemeService maps stale editor saves to conflict guidance', () async {
@@ -4360,11 +6283,7 @@ void main() {
         throwsA(isA<ThemeDraftConflictException>()),
       );
       await expectLater(
-        service.publish(
-          storeId: 'store_1',
-          themeSlug: 'modern',
-          baseVersion: 0,
-        ),
+        service.publish(storeId: 'store_1', themeSlug: 'modern', baseVersion: 2),
         throwsA(isA<ThemeDraftConflictException>()),
       );
 
@@ -4374,13 +6293,14 @@ void main() {
       );
       expect(
         api.bodies['/themes/modern/publish'],
-        containsPair('base_version', 0),
+        containsPair('base_version', 2),
       );
     });
 
     test(
       'SubscriptionService creates and verifies Razorpay checkout',
       () async {
+        FlutterSecureStorage.setMockInitialValues({});
         final api = _FakeApiClient(
           json: {
             'payments/subscription/order': {
@@ -4406,7 +6326,7 @@ void main() {
             },
           },
         );
-        final service = SubscriptionService(api: api);
+        final service = SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor');
 
         final checkout = await service.createSubscriptionOrder(
           storeId: 'store_1',
@@ -4437,11 +6357,11 @@ void main() {
           '/payments/subscription/history': [_billingHistoryJson()],
         },
       );
-      final service = SubscriptionService(api: api);
+      final service = SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor');
 
       final history = await service.fetchBillingHistory('store_1');
 
-      expect(history.single.status, 'active');
+      expect(history.single.status, 'paid');
       expect(history.single.billingPeriod, 'monthly');
       expect(history.single.amountLabel, 'INR 399.00');
       expect(api.paths, contains('/payments/subscription/history'));
@@ -4483,70 +6403,67 @@ void main() {
       expect(requests.last.headers['X-CSRF-Token'], 'csrf_123');
     });
 
-    test(
-      'verifies Turnstile with the mobile BFF before password login',
-      () async {
-        final requests = <http.Request>[];
-        final auth = StoreAuthService(
-          api: _FakeApiClient(),
-          identityBaseUrl: 'https://accounts.test',
-          mobileBffBaseUrl: 'https://bff.test/v1',
-          turnstileTokenProvider: () => 'turnstile_token',
-          httpClient: MockClient((request) async {
-            requests.add(request);
-            switch (request.url.host) {
-              case 'bff.test':
-                expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
-                expect(request.body, contains('turnstile_token'));
+    test('verifies Turnstile with the mobile BFF before password login', () async {
+      final requests = <http.Request>[];
+      final auth = StoreAuthService(
+        api: _FakeApiClient(),
+        identityBaseUrl: 'https://accounts.test',
+        mobileBffBaseUrl: 'https://bff.test/v1',
+        turnstileTokenProvider: () => 'turnstile_token',
+        httpClient: MockClient((request) async {
+          requests.add(request);
+          switch (request.url.host) {
+            case 'bff.test':
+              expect(request.url.path, '/v1/auth/mobile/turnstile/verify');
+              expect(request.body, contains('turnstile_token'));
+              return http.Response(
+                '{"success":true,"verification":{"proof_token":"lb-mobile-turnstile-v1.proof.signature"}}',
+                200,
+              );
+            case 'accounts.test':
+              if (request.url.path == '/login') {
                 return http.Response(
-                  '{"success":true,"verification":{"proof_token":"lb-mobile-turnstile-v1.proof.signature"}}',
+                  '',
+                  200,
+                  headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
+                );
+              }
+              if (request.url.path == '/api/auth/login') {
+                expect(
+                  request.body,
+                  contains('lb-mobile-turnstile-v1.proof.signature'),
+                );
+                expect(request.body, isNot(contains('turnstile_token')));
+                return http.Response(
+                  '{"success":true}',
+                  200,
+                  headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
+                );
+              }
+              if (request.url.path == '/api/auth/session') {
+                return http.Response(
+                  '{"authenticated":true,"user":{"id":"user_1","email":"m@example.com"}}',
                   200,
                 );
-              case 'accounts.test':
-                if (request.url.path == '/login') {
-                  return http.Response(
-                    '',
-                    200,
-                    headers: {'set-cookie': 'letbuyy_csrf=csrf_123; Path=/;'},
-                  );
-                }
-                if (request.url.path == '/api/auth/login') {
-                  expect(
-                    request.body,
-                    contains('lb-mobile-turnstile-v1.proof.signature'),
-                  );
-                  expect(request.body, isNot(contains('turnstile_token')));
-                  return http.Response(
-                    '{"success":true}',
-                    200,
-                    headers: {'set-cookie': 'lb_session=session_123; Path=/;'},
-                  );
-                }
-                if (request.url.path == '/api/auth/session') {
-                  return http.Response(
-                    '{"authenticated":true,"user":{"id":"user_1","email":"m@example.com"}}',
-                    200,
-                  );
-                }
-            }
-            return http.Response('not found', 404);
-          }),
-        );
+              }
+          }
+          return http.Response('not found', 404);
+        }),
+      );
 
-        final user = await auth.signInWithPassword(
-          'M@Example.COM',
-          'Password123',
-        );
+      final user = await auth.signInWithPassword(
+        'M@Example.COM',
+        'Password123',
+      );
 
-        expect(user?.email, 'm@example.com');
-        expect(requests.map((request) => request.url.host), [
-          'accounts.test',
-          'bff.test',
-          'accounts.test',
-          'accounts.test',
-        ]);
-      },
-    );
+      expect(user?.email, 'm@example.com');
+      expect(requests.map((request) => request.url.host), [
+        'accounts.test',
+        'bff.test',
+        'accounts.test',
+        'accounts.test',
+      ]);
+    });
 
     test('verifies OTP, sets password, and persists lb_session', () async {
       final auth = StoreAuthService(
@@ -4699,7 +6616,16 @@ void main() {
   testWidgets('OrderDetailScreen renders customer, totals, and actions', (
     tester,
   ) async {
-    final api = _FakeApiClient(json: {'/orders/order_1': _orderJson()});
+    SharedPreferences.setMockInitialValues({});
+    late final StoreContext storeContext;
+    final api = _FakeApiClient(
+      json: {'/orders/order_1': _orderJson()},
+      paginated: {'/stores': [_storeJson()]},
+      contextVersionProvider: () => storeContext.requestContextKey,
+    );
+    storeContext = StoreContext(storeService: StoreService(api: api));
+    await storeContext.ensureSelectedStore();
+    addTearDown(storeContext.dispose);
     final orderService = OrderService(api: api);
     final order = OrderContract.fromJson(
       _orderJson(
@@ -4712,8 +6638,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      ChangeNotifierProvider.value(
-        value: orderService,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<StoreContext>.value(value: storeContext),
+          ChangeNotifierProvider<OrderService>.value(value: orderService),
+        ],
         child: MaterialApp(
           home: OrderDetailScreen(orderId: order.id, initialOrder: order),
         ),
@@ -4753,15 +6682,25 @@ void main() {
   testWidgets('OrderDetailScreen cancels an order with a reason', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    late final StoreContext storeContext;
     final api = _FakeApiClient(
       json: {'/orders/order_1': _orderJson(status: 'cancelled')},
+      paginated: {'/stores': [_storeJson()]},
+      contextVersionProvider: () => storeContext.requestContextKey,
     );
+    storeContext = StoreContext(storeService: StoreService(api: api));
+    await storeContext.ensureSelectedStore();
+    addTearDown(storeContext.dispose);
     final orderService = OrderService(api: api);
     final order = OrderContract.fromJson(_orderJson());
 
     await tester.pumpWidget(
-      ChangeNotifierProvider.value(
-        value: orderService,
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<StoreContext>.value(value: storeContext),
+          ChangeNotifierProvider<OrderService>.value(value: orderService),
+        ],
         child: MaterialApp(
           home: OrderDetailScreen(orderId: order.id, initialOrder: order),
         ),
@@ -5208,13 +7147,28 @@ void main() {
     expect(find.text('Inactive'), findsWidgets);
   });
 
-  testWidgets('ProductsScreen product cards open the edit flow', (
+  testWidgets('ProductsScreen edits seller-entered importer disclosure', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+
+    Future<void> pumpRouteTransition() async {
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+    }
+
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
-        '/products': [_productJson()],
+        '/products': [
+          {
+            ..._productJson(),
+            'description': 'A cotton tee for the edit journey.',
+            'images': ['https://cdn.test/products/cotton-tee.jpg'],
+            'country_of_origin': 'Japan',
+            'importer_details': 'Example Imports, Mumbai',
+          },
+        ],
       },
     );
 
@@ -5227,15 +7181,657 @@ void main() {
         child: const MaterialApp(home: ProductsScreen()),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpRouteTransition();
 
     expect(find.text('Cotton Tee'), findsOneWidget);
-    await tester.ensureVisible(find.text('Cotton Tee'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Cotton Tee'));
-    await tester.pumpAndSettle();
+    final productCard = find.byKey(const ValueKey('product-card-prod_1'));
+    await tester.ensureVisible(productCard);
+    await pumpRouteTransition();
+    final cardSemantics = tester.getSemantics(productCard).getSemanticsData();
+    expect(cardSemantics.label, startsWith('Product Cotton Tee, Active'));
+    expect(cardSemantics.hint, 'Opens product editor');
+    expect(cardSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
+    expect(cardSemantics.hasFlag(SemanticsFlag.isEnabled), isTrue);
+    expect(cardSemantics.hasAction(SemanticsAction.tap), isTrue);
+
+    final productName = find.descendant(
+      of: productCard,
+      matching: find.text('Cotton Tee'),
+    );
+    Focus.of(tester.element(productName)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await pumpRouteTransition();
 
     expect(find.text('Edit Product'), findsOneWidget);
+    tester.widget<Stepper>(find.byType(Stepper)).onStepTapped!(4);
+    await pumpRouteTransition();
+    expect(find.text('Country of origin (optional)'), findsOneWidget);
+    expect(find.text('Importer details (optional)'), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(find.byKey(const ValueKey('importer-details')))
+          .controller
+          ?.text,
+      'Example Imports, Mumbai',
+    );
+
+    await tester.enterText(
+      find.byKey(const ValueKey('country-of-origin')),
+      ' India ',
+    );
+    await tester.enterText(
+      find.byKey(const ValueKey('importer-details')),
+      ' Updated Imports, Delhi ',
+    );
+    await tester.tap(find.widgetWithText(TextButton, 'Update'));
+    await pumpRouteTransition();
+
+    expect(
+      api.paths,
+      contains('/products/prod_1'),
+      reason: 'update API trace: ${api.paths}',
+    );
+    expect(
+      api.bodies['/products/prod_1'],
+      containsPair('country_of_origin', 'India'),
+    );
+    expect(
+      api.bodies['/products/prod_1'],
+      containsPair('importer_details', 'Updated Imports, Delhi'),
+    );
+  });
+
+  testWidgets('product bulk selection announces the selected state', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final semantics = tester.ensureSemantics();
+    try {
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+          '/products': [
+            _productJson(),
+            {..._productJson(), 'id': 'prod_2', 'name': 'Blue Mug'},
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ..._storeProviders(api),
+            ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+          ],
+          child: const MaterialApp(home: ProductsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final selectionToggle = find.bySemanticsLabel('Select');
+      expect(
+        tester.getSemantics(selectionToggle),
+        matchesSemantics(
+          label: 'Select',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+      await tester.tap(selectionToggle);
+      await tester.pumpAndSettle();
+
+      final selectProduct = find.byKey(const ValueKey('product-select-prod_1'));
+      final unselectedData = tester
+          .getSemantics(selectProduct)
+          .getSemanticsData();
+      expect(unselectedData.label, 'Select product Cotton Tee');
+      expect(unselectedData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(unselectedData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(unselectedData.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(unselectedData.hasAction(SemanticsAction.tap), isTrue);
+
+      final checkboxInkWell = find.descendant(
+        of: selectProduct,
+        matching: find.byType(InkWell),
+      );
+      final checkboxVisual = find.descendant(
+        of: checkboxInkWell,
+        matching: find.byType(Container),
+      );
+      Focus.of(tester.element(checkboxVisual.first)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      final deselectProduct = find.byKey(
+        const ValueKey('product-select-prod_1'),
+      );
+      final selectedData = tester
+          .getSemantics(deselectProduct)
+          .getSemanticsData();
+      expect(selectedData.label, 'Deselect product Cotton Tee');
+      expect(selectedData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(selectedData.hasAction(SemanticsAction.tap), isTrue);
+      final productCard = tester
+          .getSemantics(find.byKey(const ValueKey('product-card-prod_1')))
+          .getSemanticsData();
+      expect(productCard.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(find.text('1 selected'), findsOneWidget);
+
+      final selectAll = find.byKey(
+        const ValueKey('products-select-all-visible'),
+      );
+      final selectAllData = tester.getSemantics(selectAll).getSemanticsData();
+      expect(selectAllData.label, '1 products selected');
+      expect(selectAllData.hint, 'Select all visible products');
+      expect(selectAllData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(selectAllData.hasAction(SemanticsAction.tap), isTrue);
+
+      final selectAllInkWell = find.descendant(
+        of: selectAll,
+        matching: find.byType(InkWell),
+      );
+      final selectAllContainer = find.descendant(
+        of: selectAllInkWell,
+        matching: find.byType(Container),
+      );
+      Focus.of(tester.element(selectAllContainer.first)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 selected'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('product status filters support keyboard selection', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final semantics = tester.ensureSemantics();
+    try {
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+          '/products': [
+            _productJson(),
+            {
+              ..._productJson(),
+              'id': 'prod_2',
+              'name': 'Paused Tee',
+              'is_active': false,
+            },
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ..._storeProviders(api),
+            ChangeNotifierProvider(create: (_) => ProductService(api: api)),
+          ],
+          child: const MaterialApp(home: ProductsScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Cotton Tee'), findsOneWidget);
+      expect(find.text('Paused Tee'), findsOneWidget);
+
+      final inactiveFilter = find.byKey(
+        const ValueKey('product-filter-inactive'),
+      );
+      final inactiveData = tester
+          .getSemantics(inactiveFilter)
+          .getSemanticsData();
+      expect(inactiveData.label, 'Inactive products filter');
+      expect(inactiveData.hint, 'Show Inactive products');
+      expect(inactiveData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(inactiveData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(inactiveData.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(inactiveData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(inactiveFilter).height, greaterThanOrEqualTo(48));
+
+      final chipText = find.descendant(
+        of: inactiveFilter,
+        matching: find.text('Inactive'),
+      );
+      Focus.of(tester.element(chipText)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      final activeFilterData = tester
+          .getSemantics(inactiveFilter)
+          .getSemanticsData();
+      expect(activeFilterData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(activeFilterData.hint, 'Current filter');
+      expect(find.text('Paused Tee'), findsOneWidget);
+      expect(find.text('Cotton Tee'), findsNothing);
+      expect(tester.takeException(), isNull);
+      expect(api.paths, containsAll(['/stores', '/products']));
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('order status filters support keyboard selection', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          AppBadgeService.defaultChannel,
+          (_) async => null,
+        );
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(AppBadgeService.defaultChannel, null),
+    );
+    final semantics = tester.ensureSemantics();
+    try {
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+          '/orders': [
+            _orderJson(id: 'pending_1', status: 'pending'),
+            _orderJson(id: 'delivered_1', status: 'delivered'),
+          ],
+        },
+      );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: const MaterialApp(home: OrdersScreen()),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(api.paths, containsAll(['/stores', '/orders']));
+      expect(
+        Provider.of<OrderService>(
+          tester.element(find.byType(OrdersScreen)),
+          listen: false,
+        ).orders,
+        hasLength(2),
+      );
+      expect(find.text('pending_1'), findsOneWidget);
+      expect(find.text('delivered_1'), findsOneWidget);
+
+      final pendingFilter = find.byKey(const ValueKey('order-filter-pending'));
+      final pendingData = tester.getSemantics(pendingFilter).getSemanticsData();
+      expect(pendingData.label, 'Pending orders filter');
+      expect(pendingData.hint, 'Show Pending orders');
+      expect(pendingData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(pendingData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(pendingData.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(pendingData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(pendingFilter).height, greaterThanOrEqualTo(48));
+
+      final chipText = find.descendant(
+        of: pendingFilter,
+        matching: find.text('Pending'),
+      );
+      Focus.of(tester.element(chipText)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final activeFilterData = tester
+          .getSemantics(pendingFilter)
+          .getSemanticsData();
+      expect(activeFilterData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(activeFilterData.hint, 'Current filter');
+      expect(find.text('pending_1'), findsOneWidget);
+      expect(find.text('delivered_1'), findsNothing);
+      expect(tester.takeException(), isNull);
+      expect(api.paths, containsAll(['/stores', '/orders']));
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('order cards support keyboard selection with named semantics', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          AppBadgeService.defaultChannel,
+          (_) async => null,
+        );
+    addTearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(AppBadgeService.defaultChannel, null),
+    );
+    final semantics = tester.ensureSemantics();
+    try {
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+          '/orders': [
+            _orderJson(id: 'pending_1', status: 'pending'),
+            _orderJson(id: 'pending_2', status: 'pending'),
+          ],
+        },
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: const MaterialApp(home: OrdersScreen()),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      final orderCard = find.byKey(const ValueKey('order-card-pending_1'));
+      final cardData = tester.getSemantics(orderCard).getSemanticsData();
+      expect(cardData.label, contains('Order pending_1'));
+      expect(cardData.label, contains('Customer Meera Merchant'));
+      expect(cardData.hint, 'Opens order details');
+      expect(cardData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(cardData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(cardData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(orderCard).height, greaterThanOrEqualTo(48));
+
+      await tester.tap(find.text('Select').first);
+      await tester.pump();
+      final selectionCardData = tester
+          .getSemantics(orderCard)
+          .getSemanticsData();
+      expect(selectionCardData.hint, 'Tap to select order');
+      expect(selectionCardData.hasFlag(SemanticsFlag.isSelected), isFalse);
+
+      Focus.of(tester.element(find.text('pending_1'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+
+      final selectedCardData = tester
+          .getSemantics(orderCard)
+          .getSemanticsData();
+      expect(selectedCardData.hint, 'Tap to deselect order');
+      expect(selectedCardData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(find.text('1 selected'), findsOneWidget);
+
+      final checkbox = find.byKey(const ValueKey('order-select-pending_1'));
+      final checkboxData = tester.getSemantics(checkbox).getSemanticsData();
+      expect(checkboxData.label, 'Deselect order pending_1');
+      expect(checkboxData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(checkboxData.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(checkboxData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(checkbox).height, greaterThanOrEqualTo(48));
+
+      final selectAll = find.byKey(
+        const ValueKey('orders-select-all-visible'),
+      );
+      final selectAllData = tester.getSemantics(selectAll).getSemanticsData();
+      expect(selectAllData.label, '1 orders selected');
+      expect(selectAllData.hint, 'Select all visible orders');
+      expect(selectAllData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(selectAllData.hasAction(SemanticsAction.tap), isTrue);
+
+      final selectAllInkWell = find.descendant(
+        of: selectAll,
+        matching: find.byType(InkWell),
+      );
+      final selectAllContainer = find.descendant(
+        of: selectAllInkWell,
+        matching: find.byType(Container),
+      );
+      Focus.of(tester.element(selectAllContainer.first)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 selected'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(api.paths, containsAll(['/stores', '/orders']));
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('store info URL copy supports keyboard activation', (
+    tester,
+  ) async {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    Map<String, dynamic>? copiedClipboardData;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        copiedClipboardData = Map<String, dynamic>.from(call.arguments);
+      }
+      return null;
+    });
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
+
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: StoreInfoCard(
+              storeName: 'Demo store',
+              storeUrl: 'https://demo.letbuyy.com',
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final copyUrl = find.byKey(const ValueKey('store-info-copy-url'));
+      final copyUrlData = tester.getSemantics(copyUrl).getSemanticsData();
+      expect(copyUrlData.label, 'Copy store URL https://demo.letbuyy.com');
+      expect(copyUrlData.hint, 'Copies the store URL to the clipboard');
+      expect(copyUrlData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(copyUrlData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(copyUrl).height, greaterThanOrEqualTo(48));
+
+      final copyUrlText = find.descendant(
+        of: copyUrl,
+        matching: find.text('https://demo.letbuyy.com'),
+      );
+      Focus.of(tester.element(copyUrlText)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+
+      expect(copiedClipboardData?['text'], 'https://demo.letbuyy.com');
+      expect(find.text('URL copied!'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('dashboard period picker supports keyboard and reloads metrics', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      'letbuyy.selected_store_id': 'store_1',
+    });
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    Map<String, dynamic>? copiedClipboardData;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        copiedClipboardData = Map<String, dynamic>.from(call.arguments);
+      }
+      return null;
+    });
+    messenger.setMockMethodCallHandler(
+      AppBadgeService.defaultChannel,
+      (_) async => null,
+    );
+    messenger.setMockMethodCallHandler(
+      HomeWidgetService.defaultChannel,
+      (_) async => null,
+    );
+    addTearDown(() {
+      messenger.setMockMethodCallHandler(SystemChannels.platform, null);
+      messenger.setMockMethodCallHandler(AppBadgeService.defaultChannel, null);
+      messenger.setMockMethodCallHandler(
+        HomeWidgetService.defaultChannel,
+        null,
+      );
+    });
+
+    final semantics = tester.ensureSemantics();
+    try {
+      tester.view.physicalSize = const Size(800, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+        json: {
+          '/mobile/dashboard': _mobileDashboardJson(
+            revenueValue: 1200,
+            orderValue: 4,
+            productCount: 1,
+            averageOrderValue: 300,
+          ),
+        },
+      );
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: _merchantShellProviders(api),
+          child: MaterialApp(
+            home: const HomeScreen(),
+            routes: {
+              AppRoutes.money: (_) => const Scaffold(
+                body: Center(child: Text('Money destination')),
+              ),
+            },
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      final copyStoreUrl = find.bySemanticsLabel('Copy store URL');
+      final copyStoreUrlData = tester
+          .getSemantics(copyStoreUrl)
+          .getSemanticsData();
+      expect(copyStoreUrlData.hint, 'https://demo.letbuyy.com to clipboard');
+      expect(copyStoreUrlData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(copyStoreUrlData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(copyStoreUrlData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(copyStoreUrl).height, greaterThanOrEqualTo(48));
+
+      for (final label in [
+        'Visit',
+        'Go Live',
+        'Share store',
+        'Store QR code',
+      ]) {
+        final action = find.bySemanticsLabel(label);
+        final data = tester.getSemantics(action).getSemanticsData();
+        expect(data.hasFlag(SemanticsFlag.isButton), isTrue, reason: label);
+        expect(data.hasFlag(SemanticsFlag.isEnabled), isTrue, reason: label);
+        expect(data.hasAction(SemanticsAction.tap), isTrue, reason: label);
+        expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
+      }
+      final unavailableSettings = tester
+          .getSemantics(find.bySemanticsLabel('Store settings'))
+          .getSemanticsData();
+      expect(unavailableSettings.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(unavailableSettings.hasFlag(SemanticsFlag.isEnabled), isFalse);
+      expect(unavailableSettings.hasAction(SemanticsAction.tap), isFalse);
+
+      final copyFocus = find.byKey(const ValueKey('hero-store-url-focus'));
+      tester.widget<Focus>(copyFocus).focusNode!.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(copiedClipboardData?['text'], 'https://demo.letbuyy.com');
+      expect(find.text('URL copied!'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      final payoutCard = find.bySemanticsLabel(RegExp(r'^Next payout'));
+      await tester.ensureVisible(payoutCard);
+      final payoutData = tester.getSemantics(payoutCard).getSemanticsData();
+      expect(payoutData.label, startsWith('Next payout, ₹'));
+      expect(payoutData.label, contains('pending'));
+      expect(payoutData.hint, 'Open Money and payouts');
+      expect(payoutData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(payoutData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(payoutData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(payoutCard).height, greaterThanOrEqualTo(48));
+
+      final payoutTitle = find.text('Next payout');
+      final payoutInkWell = find.ancestor(
+        of: payoutTitle,
+        matching: find.byType(InkWell),
+      );
+      final payoutFocus = find.descendant(
+        of: payoutInkWell,
+        matching: find.byType(Focus),
+      );
+      final focusablePayoutTitle = find.descendant(
+        of: payoutFocus.first,
+        matching: find.text('Next payout'),
+      );
+      Focus.of(tester.element(focusablePayoutTitle)).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      expect(find.text('Money destination'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      Navigator.of(tester.element(find.text('Money destination'))).pop();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      final periodPicker = find.byKey(
+        const ValueKey('dashboard-period-picker'),
+      );
+      await tester.ensureVisible(periodPicker);
+      await tester.pump();
+      final periodData = tester.getSemantics(periodPicker).getSemanticsData();
+      expect(periodData.label, 'Dashboard reporting period');
+      expect(periodData.hint, 'Current reporting period: 30 Days');
+      expect(periodData.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(periodData.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(periodData.hasAction(SemanticsAction.tap), isTrue);
+      expect(tester.getSize(periodPicker).height, greaterThanOrEqualTo(48));
+
+      Focus.of(tester.element(find.text('30 Days'))).requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pump();
+      expect(find.text('Select Period'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 400));
+
+      await tester.tap(find.text('7 Days'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.text('7 Days'), findsOneWidget);
+      expect(
+        api.paths.where((path) => path == '/mobile/dashboard'),
+        hasLength(2),
+      );
+      expect(
+        api.queries['/mobile/dashboard'],
+        containsPair('store_id', 'store_1'),
+      );
+      expect(api.queries['/mobile/dashboard'], containsPair('period', '7d'));
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
   });
 
   testWidgets('ImportProductsScreen shows progress and result feedback', (
@@ -5372,6 +7968,172 @@ void main() {
     expect(find.text('Meta description'), findsOneWidget);
   });
 
+  testWidgets('product image add and remove controls expose clear semantics', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+      await tester.tap(find.text('Continue').first, warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      final addImage = find.bySemanticsLabel('Add product image');
+      expect(
+        tester.getSemantics(addImage),
+        matchesSemantics(
+          label: 'Add product image',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+      await tester.tap(addImage);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Image URL'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(TextField),
+        ),
+        'https://cdn.example.test/item.jpg',
+      );
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Product image 1, primary')),
+        matchesSemantics(label: 'Product image 1, primary', isImage: true),
+      );
+      final removeImage = find.bySemanticsLabel('Remove product image 1');
+      expect(
+        tester.getSemantics(removeImage),
+        matchesSemantics(
+          label: 'Remove product image 1',
+          isButton: true,
+          hasEnabledState: true,
+          isEnabled: true,
+          hasTapAction: true,
+        ),
+      );
+      await tester.tap(removeImage);
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('Add product image'), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('product specification removal exposes its value and action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+      final detailsStep = find.text('Details');
+      final stepperScroll = find.byType(Scrollable).first;
+      await tester.scrollUntilVisible(
+        detailsStep,
+        250,
+        scrollable: stepperScroll,
+      );
+      await tester.tap(detailsStep);
+      await tester.pumpAndSettle();
+      expect(find.text('Specifications'), findsOneWidget);
+      final addSpecification = find.widgetWithText(TextButton, 'Add');
+      await tester.scrollUntilVisible(
+        addSpecification,
+        250,
+        scrollable: stepperScroll,
+      );
+      await tester.tap(addSpecification);
+      await tester.pumpAndSettle();
+      final fields = find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.byType(TextField),
+      );
+      await tester.enterText(fields.at(0), 'Material');
+      await tester.enterText(fields.at(1), 'Cotton');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Add'));
+      await tester.pumpAndSettle();
+
+      final remove = find.byTooltip('Remove specification Material');
+      final removeSemantics = tester.getSemantics(remove).getSemanticsData();
+      expect(removeSemantics.tooltip, 'Remove specification Material');
+      expect(removeSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(removeSemantics.hasAction(SemanticsAction.tap), isTrue);
+      await tester.tap(remove);
+      await tester.pumpAndSettle();
+      expect(find.text('No specifications added'), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('product variant actions identify the variant they affect', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(const MaterialApp(home: ProductFormScreen()));
+
+      final stepperScroll = find.byType(Scrollable).first;
+      final variantsStep = find.text('Variants').first;
+      await tester.scrollUntilVisible(
+        variantsStep,
+        250,
+        scrollable: stepperScroll,
+      );
+      await tester.tap(variantsStep);
+      await tester.pumpAndSettle();
+
+      final addVariant = find.widgetWithText(ElevatedButton, 'Add variant');
+      await tester.scrollUntilVisible(
+        addVariant.first,
+        250,
+        scrollable: stepperScroll,
+      );
+      await tester.tap(addVariant.first);
+      await tester.pumpAndSettle();
+
+      final variantFields = find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(TextFormField),
+      );
+      await tester.enterText(variantFields.at(0), 'Size');
+      await tester.enterText(variantFields.at(1), 'Small');
+      await tester.enterText(variantFields.at(5), '25');
+      await tester.enterText(variantFields.at(6), '3');
+      await tester.tap(addVariant.last);
+      await tester.pumpAndSettle();
+
+      final delete = find.byTooltip('Delete Small variant');
+      final deleteSemantics = tester.getSemantics(delete).getSemanticsData();
+      expect(deleteSemantics.tooltip, 'Delete Small variant');
+      expect(deleteSemantics.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(deleteSemantics.hasAction(SemanticsAction.tap), isTrue);
+      await tester.tap(delete);
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'No variants yet. The product will use the base price and stock.',
+        ),
+        findsOneWidget,
+      );
+    } finally {
+      semantics.dispose();
+    }
+  });
+
   testWidgets('CouponFormScreen renders create form', (tester) async {
     final api = _FakeApiClient(json: {'/coupons': _couponJson()});
 
@@ -5459,7 +8221,9 @@ void main() {
         '/stores': [_storeJson()],
       },
       json: {
-        '/employees': [_staffJson()],
+        '/employees': [
+          {..._staffJson(), 'permissions': {'granted': ['products:read']}},
+        ],
       },
     );
 
@@ -5477,13 +8241,56 @@ void main() {
     expect(find.text('Users & Permissions'), findsOneWidget);
     expect(find.text('riya@example.com'), findsWidgets);
     expect(find.text('Editor'), findsWidgets);
-    expect(find.text('Catalog'), findsOneWidget);
+    expect(find.text('View products'), findsOneWidget);
+    expect(find.text('Manage & fulfil orders'), findsNothing);
     expect(find.text('Add staff'), findsOneWidget);
+  });
+
+
+
+  for (final screen in <String, Widget>{'settings':const SettingsScreen(),'dashboard':const HomeScreen()}.entries) {
+    testWidgets('${screen.key} store-read failure clears content and waits for explicit recovery', (tester) async {
+      SharedPreferences.setMockInitialValues({});FlutterSecureStorage.setMockInitialValues({});
+      final api=_FakeApiClient(errors:{'/stores':const ApiException(message:'synthetic private store fault',statusCode:503,code:'SYNTHETIC_STORE_OUTAGE')},paginated:{'/stores':[_storeJson()]});
+      await tester.pumpWidget(MultiProvider(providers:_merchantShellProviders(api),child:MaterialApp(home:screen.value)));
+      await tester.pumpAndSettle();
+      expect(find.text('Store details could not load. Try again.'),findsOneWidget);
+      expect(find.text('Demo Store'),findsNothing);
+      final attempts=api.paths.where((p)=>p=='/stores').length;
+      await tester.pump(const Duration(seconds:10));expect(api.paths.where((p)=>p=='/stores').length,attempts,reason:'an outage must not trigger a rebuild/request loop');
+      api._errors.clear();await tester.tap(find.text('Retry store details'));await tester.pump();await tester.pump(const Duration(seconds:1));await tester.pump(const Duration(seconds:1));
+      expect(find.text('Store details could not load. Try again.'),findsNothing);expect(api.paths.where((p)=>p=='/stores').length,greaterThan(attempts));
+      expect(tester.takeException(),isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
+  testWidgets('normal settings opens canonical invoices and exposes current plan and usage', (tester) async {
+    SharedPreferences.setMockInitialValues({});FlutterSecureStorage.setMockInitialValues({});
+    tester.view.physicalSize=const Size(900,1200);tester.view.devicePixelRatio=1;
+    addTearDown(tester.view.resetPhysicalSize);addTearDown(tester.view.resetDevicePixelRatio);
+    final api=_FakeApiClient(paginated:{'/stores':[_storeJson()]},json:{
+      'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub_1','plan':'growth','status':'active','billing_period':'monthly','amount_paid':69900,'products_limit':500},'product_usage':{'count':12,'limit_known':true,'limit':500}},
+      '/payments/subscription/history':[_billingHistoryJson()],
+    });
+    await tester.pumpWidget(MultiProvider(providers:_merchantShellProviders(api),child:MaterialApp(home:const SettingsScreen(),routes:{AppRoutes.billing:(_)=>const BillingScreen()})));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Billing and invoices'),300,scrollable:find.byType(Scrollable).first);
+    expect(find.text('Growth • active'),findsOneWidget);expect(find.text('12 / 500 products'),findsOneWidget);
+    await tester.ensureVisible(find.text('Billing and invoices'));
+    await tester.pumpAndSettle();
+    expect(find.text('Billing and invoices').hitTestable(),findsOneWidget);
+    await tester.tap(find.text('Billing and invoices').hitTestable());await tester.pumpAndSettle();
+    expect(find.text('Invoices'),findsOneWidget);expect(find.textContaining('SYN-BILLING-001'),findsOneWidget);
+    expect(find.text('Recorded tax: ₹71.82'),findsOneWidget);expect(find.text('Recorded total: ₹470.82'),findsOneWidget);
+    expect(tester.takeException(),isNull);
   });
 
   testWidgets('BillingScreen renders subscription and invoices', (
     tester,
   ) async {
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
@@ -5509,7 +8316,7 @@ void main() {
         providers: [
           ..._storeProviders(api),
           Provider<SubscriptionService>(
-            create: (_) => SubscriptionService(api: api),
+            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
           ),
         ],
         child: const MaterialApp(home: BillingScreen()),
@@ -5526,6 +8333,7 @@ void main() {
 
   testWidgets('BillingScreen starts failed-payment recovery', (tester) async {
     SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
     final api = _FakeApiClient(
       paginated: {
         '/stores': [_storeJson()],
@@ -5563,7 +8371,7 @@ void main() {
         providers: [
           ..._storeProviders(api),
           Provider<SubscriptionService>(
-            create: (_) => SubscriptionService(api: api),
+            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
           ),
         ],
         child: const MaterialApp(home: BillingScreen()),
@@ -5575,7 +8383,10 @@ void main() {
     expect(find.text('Payment needs attention'), findsOneWidget);
     expect(find.text('Retry payment'), findsOneWidget);
 
-    await tester.tap(find.text('Retry payment'));
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Retry payment'));
+      await Future<void>.delayed(const Duration(milliseconds:20));
+    });
     await tester.pump();
     for (
       var attempt = 0;
@@ -5903,7 +8714,8 @@ void main() {
     final uploadTest = _readSource(
       appRelative:
           '../../../services/api-gateway/src/__tests__/upload.security.test.ts',
-      repoRelative: 'services/api-gateway/src/__tests__/upload.security.test.ts',
+      repoRelative:
+          'services/api-gateway/src/__tests__/upload.security.test.ts',
     );
 
     expect(route, contains('VIDEO_UPLOAD_LIMIT_BYTES'));
@@ -6448,6 +9260,122 @@ void main() {
     expect(find.textContaining('backend contract'), findsNothing);
   });
 
+  testWidgets('subscription plan cards expose labeled selectable semantics', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final semantics = tester.ensureSemantics();
+    try {
+      final api = _FakeApiClient(
+        paginated: {
+          '/stores': [_storeJson()],
+        },
+        json:{'/payments/plans':[_merchantCatalogPlan('launch','Launch',29900),_merchantCatalogPlan('growth','Growth',69900)],'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub-launch','plan':'launch','status':'active','billing_period':'monthly','amount_paid':29900}}},
+      );
+      final providers = _storeProviders(api)
+        ..add(
+          Provider<SubscriptionService>(
+            create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+          ),
+        );
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: providers,
+          child: const MaterialApp(home: PricingScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final freeTrial = tester
+          .getSemantics(find.byKey(const ValueKey('subscription-plan-launch')))
+          .getSemanticsData();
+      expect(freeTrial.label, startsWith('Launch plan, ₹299 /month,'));
+      expect(freeTrial.label, contains('Current plan'));
+      expect(freeTrial.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(freeTrial.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(freeTrial.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(freeTrial.hasFlag(SemanticsFlag.isEnabled), isFalse);
+      expect(freeTrial.hasAction(SemanticsAction.tap), isFalse);
+
+      final starter = tester
+          .getSemantics(find.byKey(const ValueKey('subscription-plan-growth')))
+          .getSemanticsData();
+      expect(starter.label, startsWith('Growth plan, ₹699 /month,'));
+      expect(starter.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(starter.hasFlag(SemanticsFlag.isSelected), isFalse);
+      expect(starter.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(starter.hasAction(SemanticsAction.tap), isTrue);
+      expect(api.paths,containsAll(['/stores','/payments/plans','payments/subscription']));
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('keyboard activation opens the selected plan details only', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json:{'/payments/plans':[_merchantCatalogPlan('launch','Launch',29900),_merchantCatalogPlan('growth','Growth',69900)],'payments/subscription':{'store':{'id':'store_1','trial_status':'paid'},'subscription':{'id':'sub-launch','plan':'launch','status':'active','billing_period':'monthly','amount_paid':29900}}},
+    );
+    final providers = _storeProviders(api)
+      ..add(
+        Provider<SubscriptionService>(
+          create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor'),
+        ),
+      );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: providers,
+        child: const MaterialApp(home: PricingScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final starter = find.byKey(const ValueKey('subscription-plan-growth'));
+    await tester.ensureVisible(starter);
+    final starterInkWell = find.descendant(
+      of: starter,
+      matching: find.byType(InkWell),
+    );
+    final starterFocus = find.descendant(
+      of: starterInkWell,
+      matching: find.byType(Focus),
+    );
+    final starterLabel = find.descendant(
+      of: starterFocus.first,
+      matching: find.text('Growth'),
+    );
+    Focus.of(tester.element(starterLabel)).requestFocus();
+    await tester.pump();
+    expect(FocusManager.instance.primaryFocus?.hasFocus, isTrue);
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Choose Growth'), findsOneWidget);
+    expect(find.text('Continue to Payment'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    final sheetScroll = find.descendant(
+      of: find.byType(BottomSheet),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.descendant(of:find.byType(BottomSheet),matching:find.text('Custom domain')),
+      100,
+      scrollable: sheetScroll.first,
+    );
+    expect(find.descendant(of:find.byType(BottomSheet),matching:find.text('Custom domain')), findsOneWidget);
+    expect(find.text('Continue to Payment'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(api.paths,containsAll(['/stores','/payments/plans','payments/subscription']));
+  });
+
   testWidgets('Turnstile sentinel state renders a generic error', (
     tester,
   ) async {
@@ -6476,15 +9404,17 @@ List<SingleChildWidget> _storeProviders(ApiClient api) {
   ];
 }
 
-List<SingleChildWidget> _merchantShellProviders(ApiClient api) {
+List<SingleChildWidget> _merchantShellProviders(
+  ApiClient api, {
+  String? currentUserId,
+  StoreAuthService? authServiceOverride,
+}) {
   final cache = CacheService.memory();
   final storeService = StoreService(api: api, cache: cache);
   final appBadgeService = const AppBadgeService();
-  final authService = StoreAuthService(
-    api: api,
-    identityBaseUrl: 'https://accounts.test',
-    turnstileTokenProvider: () => 'turnstile-token',
-  );
+  final authService =
+      authServiceOverride ??
+      _TestMerchantAuthService(api: api, currentUserId: currentUserId);
 
   return [
     Provider<ApiClient>.value(value: api),
@@ -6517,8 +9447,37 @@ List<SingleChildWidget> _merchantShellProviders(ApiClient api) {
     ),
     Provider<AppBadgeService>.value(value: appBadgeService),
     Provider<HomeWidgetService>(create: (_) => const HomeWidgetService()),
-    Provider<SubscriptionService>(create: (_) => SubscriptionService(api: api)),
+    Provider<SubscriptionService>(create: (_) => SubscriptionService(api: api, actorIdProvider: () => 'synthetic-subscription-actor')),
   ];
+}
+
+class _TestMerchantAuthService extends StoreAuthService {
+  _TestMerchantAuthService({
+    required super.api,
+    required this.currentUserId,
+    super.httpClient,
+  })
+    : super(
+        identityBaseUrl: 'https://accounts.test',
+        turnstileTokenProvider: () => 'turnstile-token',
+      );
+
+  final String? currentUserId;
+  int signOutCalls = 0;
+
+  @override
+  Future<void> signOut() async {
+    signOutCalls++;
+    await super.signOut();
+  }
+
+  @override
+  MerchantSessionUser? get currentUser => currentUserId == null
+      ? null
+      : MerchantSessionUser(
+          id: currentUserId!,
+          email: '$currentUserId@example.invalid',
+        );
 }
 
 String _readSource({
@@ -6533,6 +9492,87 @@ String _readSource({
   return source.readAsStringSync();
 }
 
+class _PublishRetryApiClient extends _FakeApiClient {
+  _PublishRetryApiClient({required super.json, super.errors = const {}});
+
+  int createAttempts = 0;
+  int publishAttempts = 0;
+  final List<String?> createIdempotencyKeys = [];
+
+  @override
+  Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) {
+    if (path == '/stores') {
+      createAttempts++;
+      createIdempotencyKeys.add(options?.idempotencyKey);
+      return super.requestJson(path, options: options).then((response) {
+        if (createAttempts == 1) {
+          throw const ApiException(
+            message: 'temporary lost create response',
+            statusCode: 503,
+            code: 'CREATE_RESPONSE_LOST',
+          );
+        }
+        return response;
+      });
+    }
+    if (path == '/stores/store_1/publish') {
+      publishAttempts++;
+      if (publishAttempts == 1) {
+        paths.add(path);
+        throw const ApiException(
+          message: 'temporary publish failure',
+          statusCode: 503,
+          code: 'PUBLISH_UNAVAILABLE',
+        );
+      }
+    }
+    return super.requestJson(path, options: options);
+  }
+}
+
+// Controlled transport only: proof objects are created by the real service,
+// never directly constructed. These responses are not server/MFA/provider proof.
+JsonMap _controlledRefundProofJson() => {
+  'step_up_token': 'unit-response-refund-approval',
+  'verified_at': '2026-10-16T12:00:00Z',
+};
+
+TwoFactorService _contractTwoFactor(_FakeApiClient api, MemoryStorage storage) {
+  final service = TwoFactorService(
+    api: api,
+    actorIdProvider: () => '11111111-1111-4111-8111-111111111111',
+    storeIdProvider: () => 'store_1',
+    storage: storage,
+  );
+  addTearDown(service.dispose);
+  return service;
+}
+
+Future<MerchantStepUpProof> _contractRefundApproval(TwoFactorService service) =>
+    service.challenge(
+      action: 'refund.approve',
+      factorId: '22222222-2222-4222-8222-222222222222',
+      code: '123456',
+      idempotencyKey: 'unit-refund-challenge-key',
+      expectedContext: service.requestContext,
+    );
+
+void _expectContractApproval(
+  ApiRequestOptions options,
+  MerchantStepUpProof approval,
+) {
+  expect(approval.context.actorId,
+      '11111111-1111-4111-8111-111111111111');
+  expect(approval.action, 'refund.approve');
+  expect(options.method, HttpMethod.post);
+  expect(options.storeId, 'store_1');
+  expect(options.expectedContextVersion, approval.context.version);
+  expect(options.headers, {
+    'X-Step-Up-Token': 'unit-response-refund-approval',
+    'X-Step-Up-Verified-At': '2026-10-16T12:00:00Z',
+  });
+}
+
 class _FakeApiClient extends ApiClient {
   _FakeApiClient({
     Map<String, dynamic> json = const {},
@@ -6541,13 +9581,17 @@ class _FakeApiClient extends ApiClient {
     Map<String, Map<String, dynamic>> paginatedMeta = const {},
     Map<String, ApiException> errors = const {},
     Duration delay = Duration.zero,
+    super.contextVersionProvider,
   }) : _json = json,
        _raw = raw,
        _paginated = paginated,
        _paginatedMeta = paginatedMeta,
        _errors = errors,
        _delay = delay,
-       super(baseUrl: 'https://gateway.test/v1', maxRetries: 0);
+       super(
+         baseUrl: 'https://gateway.test/v1',
+         maxRetries: 0,
+       );
 
   final Map<String, dynamic> _json;
   final Map<String, dynamic> _raw;
@@ -6558,6 +9602,7 @@ class _FakeApiClient extends ApiClient {
   final List<String> paths = [];
   final Map<String, Object?> bodies = {};
   final Map<String, Map<String, dynamic>> queries = {};
+  final Map<String, List<ApiRequestOptions?>> requestOptions = {};
 
   @override
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
@@ -6640,11 +9685,37 @@ class _FakeApiClient extends ApiClient {
   }
 
   void _captureBody(String path, ApiRequestOptions? options) {
+    requestOptions.putIfAbsent(path, () => []).add(options);
     if (options?.body != null) bodies[path] = options!.body;
     final query = options?.query;
     if (query != null && query.isNotEmpty) {
       queries[path] = Map<String, dynamic>.from(query);
     }
+  }
+}
+
+class _DelayedSubdomainLookupApiClient extends _FakeApiClient {
+  _DelayedSubdomainLookupApiClient(this.subdomain)
+    : super(
+        errors: const {
+          'stores/public/available-shop': ApiException(
+            message: 'Not found',
+            statusCode: 404,
+            code: 'NOT_FOUND',
+          ),
+        },
+      );
+
+  final String subdomain;
+  bool delayedLookupStarted = false;
+
+  @override
+  Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
+    if (path.endsWith('stores/public/$subdomain')) {
+      delayedLookupStarted = true;
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+    return super.request(path, options: options);
   }
 }
 
@@ -7605,8 +10676,8 @@ Map<String, dynamic> _staffJson({
   'status': status,
   'is_active': status != 'removed',
   'created_at': '2026-06-01T11:00:00.000Z',
+  'updated_at': '2026-10-15T00:00:00.000Z',
 };
-
 
 Map<String, dynamic> _reviewJson({
   String id = 'review_1',
@@ -7652,9 +10723,13 @@ Map<String, dynamic> _formSubmissionJson({
 };
 
 Map<String, dynamic> _billingHistoryJson() => {
-  'id': 'sub_1',
+  'id': 'invoice_1',
+  'invoice_number': 'SYN-BILLING-001',
   'amount_paid': 39900,
-  'status': 'active',
+  'amount': 39900,
+  'tax_amount': 7182,
+  'total_amount': 47082,
+  'status': 'paid',
   'billing_period': 'monthly',
   'created_at': '2026-06-01T11:00:00.000Z',
 };
@@ -8073,4 +11148,11 @@ Map<String, dynamic> _returnJson({
       'status': 'restocked',
     },
   ],
+};
+
+
+Map<String,dynamic> _merchantCatalogPlan(String slug,String name,int amount)=>{
+ 'id':'catalog-$slug','slug':slug,'name':name,'currency':'INR','is_active':true,'purchasable':true,
+ 'billing_amount_monthly_minor':amount,'billing_amount_yearly_minor':amount*12,
+ 'limits':{'products':slug=='growth'?null:100},'entitlements':{'custom_domain':true},
 };

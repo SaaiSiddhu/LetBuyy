@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { SUBSCRIPTION_OFFERS, type SubscriptionPlanView } from '@/lib/billing/plan-ui'
 import { Button, Input, Select, MaterialIcon } from '@letbuyy/ui'
+import { retainSubscriptionCheckoutIntent, completeSubscriptionCheckoutIntent } from '@/lib/billing/subscription-checkout-intent'
 
 declare global {
     interface Window {
@@ -22,6 +23,7 @@ interface CheckoutClientProps {
     storeName: string
     storeSlug: string
     siteType: string
+    userId: string
     userEmail: string
     userName: string
 }
@@ -112,6 +114,7 @@ export default function CheckoutClient({
     storeName,
     storeSlug,
     siteType,
+    userId,
     userEmail,
 }: CheckoutClientProps) {
     const router = useRouter()
@@ -259,16 +262,19 @@ export default function CheckoutClient({
         setError(null)
 
         try {
+            if (!navigator.locks) throw new Error('Please use an updated browser to keep checkout progress safe.')
+            const orderBody = {
+                store_id: storeId,
+                plan_slug: plan.slug,
+                billing_period: billingPeriod,
+                site_type: siteType,
+                ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
+            }
+            const intent = await retainSubscriptionCheckoutIntent(userId, orderBody, localStorage, navigator.locks)
             const orderRes = await fetch('/api/subscribe', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    store_id: storeId,
-                    plan_slug: plan.slug,
-                    billing_period: billingPeriod,
-                    site_type: siteType,
-                    ...(appliedCoupon ? { coupon_code: appliedCoupon.code } : {}),
-                }),
+                headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': intent.key },
+                body: JSON.stringify(orderBody),
             })
 
             const orderPayload = await orderRes.json().catch(() => null)
@@ -277,6 +283,7 @@ export default function CheckoutClient({
             const orderData = normalizeOrderData(orderPayload)
 
             if (orderData.activated || orderData.checkout_mode === 'free_activation') {
+                await completeSubscriptionCheckoutIntent(intent, localStorage, navigator.locks).catch(() => {})
                 router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
                 return
             }
@@ -333,7 +340,7 @@ export default function CheckoutClient({
                     try {
                         const verifyRes = await fetch('/api/subscribe/verify', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': `subscription-verify:${response.razorpay_payment_id}` },
                             body: JSON.stringify({
                                 razorpay_order_id: response.razorpay_order_id || orderData.razorpay_order_id || undefined,
                                 razorpay_subscription_id: response.razorpay_subscription_id || orderData.razorpay_subscription_id || undefined,
@@ -352,6 +359,7 @@ export default function CheckoutClient({
                             setIsProcessing(false)
                             return
                         }
+                        await completeSubscriptionCheckoutIntent(intent, localStorage, navigator.locks).catch(() => {})
                         router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
                     } catch {
                         setError('Payment verification failed. Contact support.')

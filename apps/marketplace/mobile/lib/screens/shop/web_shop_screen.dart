@@ -44,7 +44,10 @@ class _WebShopScreenState extends State<WebShopScreen> {
   void _loadData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      Provider.of<ProductProvider>(context, listen: false).loadProducts();
+      // The web shop can be mounted over an already-populated provider. Bypass the
+      // provider's dedup guard so its cards start from current marketplace eligibility.
+      Provider.of<ProductProvider>(context, listen: false)
+          .loadProducts(forceReload: true);
       Provider.of<CategoryProvider>(context, listen: false).loadCategories();
     });
   }
@@ -171,17 +174,20 @@ class _WebShopScreenState extends State<WebShopScreen> {
             return Column(
               children: categories.map((category) {
                 final isSelected = _selectedCategory == category.id;
-                return RadioListTile<String>(
-                  title: Text(category.name),
-                  value: category.id,
-                  groupValue: _selectedCategory,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedCategory = value!;
-                    });
-                  },
-                  activeColor: AppColors.primary,
-                  contentPadding: EdgeInsets.zero,
+                return Material(
+                  color: Colors.transparent,
+                  child: RadioListTile<String>(
+                    title: Text(category.name),
+                    value: category.id,
+                    groupValue: _selectedCategory,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory = value!;
+                      });
+                    },
+                    activeColor: AppColors.primary,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 );
               }).toList(),
             );

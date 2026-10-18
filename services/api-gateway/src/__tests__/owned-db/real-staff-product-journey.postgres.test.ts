@@ -158,7 +158,7 @@ test('D03 real staff product journey: independently authenticated staff, real em
     {
         const res = await gateway().request('/employees', {
             method: 'POST',
-            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json' },
+            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json', 'X-Idempotency-Key': crypto.randomUUID() },
             body: JSON.stringify({
                 email: staffEmail,
                 store_id: SITE_A,
@@ -352,8 +352,8 @@ test('D03 real staff product journey: independently authenticated staff, real em
     {
         const res = await gateway().request(`/employees/${employeeId}`, {
             method: 'PATCH',
-            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ permissions: { granted: ['products:read'] } }),
+            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json', 'X-Idempotency-Key': crypto.randomUUID() },
+            body: JSON.stringify({ permissions: { granted: ['products:read'] }, expected_updated_at: owned.psql(`SELECT to_char(updated_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') FROM employees WHERE id='${employeeId}';`) }),
         }, env());
         const body = await readJson(res);
         assert.equal(res.status, 200, `real owner downgrade: ${JSON.stringify(body)}`);
@@ -386,7 +386,7 @@ test('D03 real staff product journey: independently authenticated staff, real em
     {
         const res = await gateway().request('/products', {
             method: 'POST',
-            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json' },
+            headers: { ...(await identityHeaders(OWNER, ownerEmail)), 'Content-Type': 'application/json', 'X-Idempotency-Key': crypto.randomUUID() },
             body: JSON.stringify({ store_id: SITE_A, name: `Owner still works ${RUN}`, price: 299 }),
         }, env());
         const body = await readJson(res);

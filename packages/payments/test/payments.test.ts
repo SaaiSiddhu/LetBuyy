@@ -8,6 +8,9 @@ import {
   buildSandboxPaymentSessionPlan,
   buildReversalLedgerPosting,
   inrMoney,
+  isValidLivePASplitApprovalReference,
+  isLivePASplitProviderReady,
+  livePASplitProviderHasApproval,
   isProductionRuntime,
   livePaymentCredentialsAreRequired,
   normalizeIdempotencyKey,
@@ -35,6 +38,27 @@ test('payment side-effect idempotency keys are normalized and bounded', () => {
   assert.throws(() => normalizeIdempotencyKey('short'), /Idempotency key/);
   assert.throws(() => normalizeIdempotencyKey('order 123'), /Idempotency key/);
   assert.throws(() => normalizeIdempotencyKey('x'.repeat(201)), /Idempotency key/);
+});
+
+test('live PA split eligibility fails closed without provider-specific approval evidence references', () => {
+  assert.equal(isValidLivePASplitApprovalReference(undefined), false);
+  assert.equal(isValidLivePASplitApprovalReference('SKIP_NEEDS_HUMAN_PROVIDER'), false);
+  assert.equal(isValidLivePASplitApprovalReference('bad ref with spaces'), false);
+  assert.equal(isValidLivePASplitApprovalReference('provider-approval-2026'), true);
+  assert.equal(livePASplitProviderHasApproval('razorpay_route', {
+    razorpay_route: 'razorpay-eligibility-approval',
+    cashfree: undefined,
+  }), true);
+  assert.equal(livePASplitProviderHasApproval('cashfree', {
+    razorpay_route: 'razorpay-eligibility-approval',
+    cashfree: undefined,
+  }), false, 'approval evidence for one provider cannot authorize another');
+  assert.equal(isLivePASplitProviderReady('razorpay_route', {
+    razorpay_route: 'route-approval-evidence',
+  }, false), false, 'an evidence reference cannot replace required provider configuration');
+  assert.equal(isLivePASplitProviderReady('razorpay_route', {
+    razorpay_route: 'route-approval-evidence',
+  }, true), true);
 });
 
 test('ledger posting helpers enforce double-entry balance and reversal-only correction', () => {

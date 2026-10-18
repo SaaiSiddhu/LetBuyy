@@ -13,7 +13,7 @@ export async function resolveBuyerDataSession(request: NextRequest): Promise<
     const session = decodeSession(request.cookies.get(STOREFRONT_BUYER_SESSION_COOKIE)?.value);
     const refuse = () => ({ response: NextResponse.json({ error: 'Not authenticated' }, { status: 401, headers: { 'Cache-Control': 'no-store' } }) });
     if (!session) return refuse();
-    if (request.method !== 'GET' && !isSameOriginRequest(request.headers)) {
+    if (request.method !== 'GET' && !isSameOriginRequest(request.headers, request.url)) {
         return { response: NextResponse.json({ error: 'A same-origin request is required.' }, { status: 403, headers: { 'Cache-Control': 'no-store' } }) };
     }
     try {

@@ -18,35 +18,86 @@
 // The gateway's database suites are a fourth kind and live elsewhere on purpose: every `*.test.ts` under
 // services/api-gateway/src/__tests__/owned-db/. They are outside the `tests/<dir>/*.test.mjs` partition above, and
 // outside the gateway's unit glob (`src/__tests__/*.test.ts` does not descend), so the fast unit lane cannot run them
+// Cross-runtime/provider fixtures live under the reviewed root tests/owned-db inventory in this SAME kind.
+// Root tests/owned-device remains explicit-only and is never part of database auto-discovery.
 // and cannot be mistaken for full gateway acceptance. They run only through the owned-cluster runner, which gives each
 // one a database cloned from a pristine, fully migrated template, a real PostgREST sidecar and an ownership check.
 
-import { readFileSync, readdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs';
+import { basename, join } from 'node:path';
 
 export const LIVE_EXTERNAL_SUITES = [];
 
 export const GATEWAY_DB_SUITE_DIR = 'services/api-gateway/src/__tests__/owned-db';
-export const isGatewayDatabaseSuite = (suite) => suite.startsWith(`${GATEWAY_DB_SUITE_DIR}/`) && suite.endsWith('.test.ts');
+export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
+// Explicit reviewed ownership inventory; new root suites must be registered,
+// never silently admitted as pure tests or provider/runtime code.
+export const ROOT_GATEWAY_DB_SUITES = [
+    "tests/owned-db/ad-credit-purchase.postgres.test.ts",
+    "tests/owned-db/console-current-oncall-browser.postgres.test.ts",
+    "tests/owned-db/console-oncall-schedules-browser.postgres.test.ts",
+    "tests/owned-db/console-runtime-command-history-browser.postgres.test.ts",
+    "tests/owned-db/console-mfa-reset-delivery.postgres.test.ts",
+    "tests/owned-db/console-mfa-reset.postgres.test.ts",
+    "tests/owned-db/loyalty-earn-worker.postgres.test.ts",
+    "tests/owned-db/loyalty-refund-scheduler.postgres.test.ts",
+    "tests/owned-db/loyalty-reversal-recovery.postgres.test.ts",
+    "tests/owned-db/merchant-dashboard-access.postgres.test.ts",
+    "tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts",
+    "tests/owned-db/merchant-inventory-adjustment-browser.postgres.test.ts",
+    "tests/owned-db/merchant-loyalty-browser.postgres.test.ts",
+    "tests/owned-db/merchant-mobile-mfa-transport.postgres.test.ts",
+    "tests/owned-db/merchant-product-edit-browser.postgres.test.ts",
+    "tests/owned-db/merchant-product-status-browser.postgres.test.ts",
+    "tests/owned-db/merchant-smart-collection-preview-browser.postgres.test.ts",
+    "tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts",
+    "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
+    "tests/owned-db/payment-refund-reconciliation.postgres.test.ts",
+    "tests/owned-db/payout-statement-replay.postgres.test.ts",
+    "tests/owned-db/platform-job-recovery-browser.postgres.test.ts",
+    "tests/owned-db/platform-job-recovery.postgres.test.ts",
+    "tests/owned-db/reel-review-revisions.postgres.test.ts"
+];
+export const isGatewayDatabaseSuite = (suite) =>
+    new RegExp(`^${GATEWAY_DB_SUITE_DIR}/[^/]+\\.test\\.ts$`).test(suite) || ROOT_GATEWAY_DB_SUITES.includes(suite);
 
-/** Every gateway database suite, sorted; empty when the directory does not exist. */
+/** Same hermetic gateway-db lane, including root cross-runtime/provider fixtures.
+ * Device/browser prerequisites remain explicit; owned-device is never auto-discovered.
+ */
 export function discoverGatewayDatabaseSuites(repoRoot) {
-    const dir = join(repoRoot, GATEWAY_DB_SUITE_DIR);
-    let entries = [];
-    try {
-        entries = readdirSync(dir, { withFileTypes: true });
-    } catch {
-        return [];
+    function list(dir) {
+        const absolute = join(repoRoot, dir);
+        let prefix = repoRoot;
+        for (const segment of dir.split('/')) {
+            prefix = join(prefix, segment);
+            let stat;
+            try { stat = lstatSync(prefix); } catch (error) { if (error.code === 'ENOENT') return []; throw error; }
+            if (stat.isSymbolicLink()) throw new Error(`suite directory must not be a symlink: ${dir}`);
+            if (!stat.isDirectory()) throw new Error(`suite directory must be a directory: ${dir}`);
+        }
+        const entries = readdirSync(absolute, {withFileTypes:true});
+        for (const entry of entries) {
+            if (entry.name.endsWith('.test.ts') && !entry.isFile()) throw new Error(`suite must be a regular file: ${dir}/${entry.name}`);
+        }
+        return entries.filter(entry => entry.isFile() && entry.name.endsWith('.test.ts')).map(entry => `${dir}/${entry.name}`).sort();
     }
-    return entries
-        .filter((entry) => entry.isFile() && entry.name.endsWith('.test.ts'))
-        .map((entry) => `${GATEWAY_DB_SUITE_DIR}/${entry.name}`)
-        .sort();
+    const gateway = list(GATEWAY_DB_SUITE_DIR), root = list(ROOT_GATEWAY_DB_SUITE_DIR);
+    if (gateway.length || existsSync(join(repoRoot, ROOT_GATEWAY_DB_SUITE_DIR))) {
+        const extra = root.filter(suite => !ROOT_GATEWAY_DB_SUITES.includes(suite));
+        const missing = ROOT_GATEWAY_DB_SUITES.filter(suite => !root.includes(suite));
+        if (extra.length || missing.length) throw new Error(`root gateway-db inventory mismatch; unregistered: ${extra.join(', ')}; missing: ${missing.join(', ')}`);
+    }
+    const suites = [...gateway, ...root].sort();
+    const names = suites.map(suite => basename(suite));
+    if (new Set(names).size !== names.length) throw new Error('duplicate gateway-db suite basenames across owned roots');
+    return suites;
 }
 
 const POSTGRES_MARKER = /process\.env\.LETBUYY_EXECUTABLE_PG_CONTAINER/;
 
 export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
+    if (lstatSync(join(repoRoot, 'tests')).isSymbolicLink()) throw new Error('suite directory must not be a symlink: tests');
+    const gatewayDb = discoverGatewayDatabaseSuites(repoRoot);
     const all = [];
     for (const dir of readdirSync(join(repoRoot, 'tests'), { withFileTypes: true })) {
         if (!dir.isDirectory()) continue;
@@ -75,5 +126,5 @@ export function discoverSuites(repoRoot, liveExternal = LIVE_EXTERNAL_SUITES) {
             pure.push(suite);
         }
     }
-    return { all, pure, postgres, live, gatewayDb: discoverGatewayDatabaseSuites(repoRoot) };
+    return { all, pure, postgres, live, gatewayDb };
 }

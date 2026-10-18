@@ -70,8 +70,8 @@ test('razorpay payment verification validates signatures before confirming payme
     // `${order_id}|${payment_id}` payload, HMAC-SHA256 with the key secret, compared in constant
     // time — and it is now asserted once for every caller instead of once per copy.
     const verifierSource = repositorySource('services/api-gateway/src/lib/provider-payment-verification.ts');
-    assert.match(verifierSource, /return `\$\{providerOrderId\}\|\$\{providerPaymentId\}`/);
-    assert.match(verifierSource, /await hmacSha256Hex\(keySecret, razorpaySignaturePayload\(/);
+    assert.match(verifierSource, /razorpayBillingSignaturePayload\(\{orderId:providerOrderId,paymentId:providerPaymentId\}\)/);
+    assert.match(verifierSource, /await hmacSha256Hex\(keySecret, razorpayBillingSignaturePayload\(/);
     assert.match(verifierSource, /!timingSafeEqualHex\(expected, input\.signature\)/);
     // And the route must NOT have kept a second copy: two HMAC constructions for one provider is how
     // a fix gets applied to one of them.
@@ -302,6 +302,29 @@ test('Task 004 generic payment sessions are persisted, tenant-scoped, sandbox-fi
     assert.match(rollback, /DROP TABLE IF EXISTS public\.payment_credentials/);
     assert.match(humanRequired, /HR-MERCHANT-PSP-LIVE/);
     assert.match(liveSkips, /\[HUMAN-REQUIRED\] HR-MERCHANT-PSP-LIVE/);
+});
+
+test('provider-created refunds stay pending and cannot post the canonical refund ledger early', () => {
+    const paymentsSource = source('routes/payments.ts');
+    const razorpayAdapter = repositorySource('packages/infrastructure/razorpay-adapter/index.ts');
+    const refundCall = paymentsSource.indexOf('const refundResult = await razorpayProvider.refund({');
+    const pendingHandling = paymentsSource.indexOf("if (refundResult.status === 'pending'", refundCall);
+    const pendingAttempt = paymentsSource.indexOf("db.from('payment_attempts').update({", pendingHandling);
+    const durableReservation = paymentsSource.indexOf("db.rpc('reserve_owned_payment_refund_v1'");
+    const earlyReturn = paymentsSource.indexOf('return c.json(responseBody, 202);', pendingHandling);
+    const reconciliation = paymentsSource.indexOf("db.rpc('reconcile_payment_refund_attempt'", refundCall);
+
+    assert.match(razorpayAdapter, /const refunded = refund\.status === 'processed'/);
+    assert.match(razorpayAdapter, /status: refunded \? 'refunded' : failed \? 'failed' : 'pending'/);
+    assert.ok(refundCall >= 0 && pendingHandling > refundCall);
+    assert.ok(durableReservation >= 0 && durableReservation < refundCall, 'the refund attempt is reserved before the provider side effect');
+    const guardedClaim = repositorySource('database/supabase/migrations/342_live_merchant_money_claims.sql');
+    assert.match(guardedClaim, /IF NOT public\.verify_merchant_step_up_v1[\s\S]*r:=public\.reserve_payment_refund_attempt/);
+    assert.ok(pendingAttempt > pendingHandling, 'the provider refund reference is attached to the reserved attempt');
+    assert.ok(earlyReturn > pendingAttempt && earlyReturn < reconciliation, 'pending returns before canonical refund reconciliation');
+    assert.match(paymentsSource.slice(pendingHandling, reconciliation), /statusCode: 202/);
+    assert.match(paymentsSource.slice(pendingHandling, reconciliation), /reconciliation: providerRefundId \? 'provider_webhook_required'/);
+    assert.match(paymentsSource, /db\.rpc\('finalize_manual_payment_refund_attempt'/, 'manual provider refunds use the atomic database finalizer');
 });
 
 test('storefront runtime no longer owns payment route handlers', () => {

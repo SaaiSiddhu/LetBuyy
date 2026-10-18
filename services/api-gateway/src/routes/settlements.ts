@@ -2,12 +2,12 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import {
     SettlementIngestSchema,
-    planPayoutReleaseLedgerPosting,
     planSettlementLedgerPosting,
     type SettlementIngestInput,
     type SettlementLedgerLine,
 } from '@letbuyy/billing-core';
 import type { Env } from '../index';
+import { isLivePASplitProviderReady } from '@letbuyy/payments';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { HumanRequiredError } from '../lib/errors';
 import { getSupabaseAdmin, success } from '../lib/supabase';
@@ -28,6 +28,7 @@ type SettlementEventType = 'settlement.recorded' | 'settlement.recon.break_detec
 interface SettlementRow extends JsonRecord {
     id: string;
     site_id: string;
+    idempotency_key: string;
     settlement_reference: string;
     provider: string;
     provider_mode: 'sandbox' | 'live';
@@ -46,28 +47,49 @@ interface SettlementRow extends JsonRecord {
     updated_at?: string | null;
 }
 
-interface PayoutStatementExecutorRow extends JsonRecord {
-    id: string;
-    statement_number: string;
-}
+class SettlementPayoutConflict extends Error {}
 
 function configured(value: string | undefined): boolean {
     return Boolean(value && !value.startsWith('SKIP_NEEDS_HUMAN_') && !value.includes('replace-with'));
 }
 
-function assertLiveSettlementReady(env: Env, input: SettlementIngestInput) {
+function stableJson(value: unknown): string {
+    if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+    if (value && typeof value === 'object') {
+        const record = value as Record<string, unknown>;
+        return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`).join(',')}}`;
+    }
+    return JSON.stringify(value) ?? 'null';
+}
+
+export function assertLiveSettlementReady(env: Env, input: SettlementIngestInput) {
     if (input.provider_mode !== 'live') return;
-    if (input.provider === 'manual') return;
-    if (
-        configured(env.RAZORPAY_ROUTE_ACCOUNT_ID)
-        && configured(env.RAZORPAY_KEY_ID)
-        && configured(env.RAZORPAY_ROUTE_KEY_SECRET || env.RAZORPAY_KEY_SECRET)
-    ) {
+
+    if (input.rail === 'cod_remittance') {
+        if (input.provider === 'cod' || input.provider === 'manual') return;
+        throw new HumanRequiredError('Live COD remittance records must use the COD or manual provider classification.');
+    }
+
+    // Easy Split is researched as a candidate, but this runtime has no Cashfree-specific
+    // split/settlement execution and reconciliation adapter. Do not let a settlement row fall
+    // through to the Razorpay Route payout path merely because Cashfree credentials exist.
+    if (input.provider === 'cashfree') {
+        throw new HumanRequiredError('Cashfree Easy Split live settlement is unavailable until its provider-specific execution and reconciliation adapter is implemented.');
+    }
+
+    if (input.rail === 'pa_split'
+        && input.provider === 'razorpay_route'
+        && isLivePASplitProviderReady('razorpay_route', {
+            razorpay_route: env.RAZORPAY_ROUTE_LIVE_APPROVAL_REFERENCE,
+        }, configured(env.RAZORPAY_ROUTE_ACCOUNT_ID)
+            && configured(env.RAZORPAY_KEY_ID)
+            && configured(env.RAZORPAY_ROUTE_KEY_SECRET || env.RAZORPAY_KEY_SECRET))) {
         return;
     }
 
-    // [HUMAN-REQUIRED] HR-PA-SPLIT-LIVE: live PA settlement feeds and Route/Easy-Split credentials require provider onboarding and legal approval.
-    throw new HumanRequiredError('Live PA settlement setup is required before live settlement ingest can be enabled.');
+    // [HUMAN-REQUIRED] HR-PA-SPLIT-LIVE: the provider-specific evidence reference represents
+    // separately reviewed provider onboarding and legal acceptance; its presence is not itself proof.
+    throw new HumanRequiredError('Live PA settlement eligibility, contract review, and provider setup are required before live settlement ingest can be enabled.');
 }
 
 function settlementSetupError(c: import('hono').Context<{ Bindings: Env }>) {
@@ -104,10 +126,6 @@ function serializeSettlement(row: SettlementRow) {
 
 function dateOnly(value: Date): string {
     return value.toISOString().slice(0, 10);
-}
-
-function settlementPayoutStatementNumber(settlementId: string): string {
-    return `STL-${settlementId.replace(/-/g, '').slice(0, 12).toUpperCase()}`;
 }
 
 function toLedgerRpcLines(lines: readonly SettlementLedgerLine[]) {
@@ -186,84 +204,27 @@ async function postSettlementLedgerTransaction(
     return String(data);
 }
 
-async function ensureSettlementPayoutStatement(
+async function createSettlementPayoutWithEffects(
     db: ReturnType<typeof getSupabaseAdmin>,
     input: {
         siteId: string;
         userId: string | null;
         settlement: SettlementRow;
-        providerMode: 'sandbox' | 'live';
         amountMinor: number;
+        requestId?: string | null;
     },
-): Promise<PayoutStatementExecutorRow> {
-    const idempotencyKey = `settlement-payout:${input.settlement.id}`;
-    const existing = await db
-        .from('payout_statements')
-        .select('id, statement_number')
-        .eq('site_id', input.siteId)
-        .eq('idempotency_key', idempotencyKey)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (existing.error) throw new Error(`Settlement payout statement lookup failed: ${existing.error.message}`);
-    if (existing.data) return existing.data as unknown as PayoutStatementExecutorRow;
-
-    const today = dateOnly(new Date());
-    const { data, error } = await db
-        .from('payout_statements')
-        .insert({
-            site_id: input.siteId,
-            statement_number: settlementPayoutStatementNumber(input.settlement.id),
-            status: 'pending',
-            provider: 'razorpay_route',
-            provider_mode: input.providerMode,
-            rail: 'razorpay_route',
-            currency: 'INR',
-            gross_amount_minor: input.amountMinor,
-            platform_fee_minor: 0,
-            tax_minor: 0,
-            net_amount_minor: input.amountMinor,
-            available_on: today,
-            idempotency_key: idempotencyKey,
-            metadata: {
-                source_type: 'settlement',
-                source_settlement_id: input.settlement.id,
-                source_settlement_reference: input.settlement.settlement_reference,
-                canonical_executor: 'payout_statements',
-                no_custody: true,
-            },
-            created_by: input.userId,
-            updated_by: input.userId,
-        })
-        .select('id, statement_number')
-        .single();
-
-    if (error || !data) throw new Error(`Settlement payout statement create failed: ${error?.message || 'unknown error'}`);
-
-    const { error: walletCreditError } = await db.from('wallet_ledger_entries').insert({
-        site_id: input.siteId,
-        payout_statement_id: data.id,
-        entry_type: 'payout_credit',
-        direction: 'credit',
-        status: 'pending',
-        currency: 'INR',
-        amount_minor: input.amountMinor,
-        available_on: today,
-        reference_type: 'settlement',
-        reference_id: input.settlement.id,
-        description: `Settlement payout ${input.settlement.settlement_reference} pending release`,
-        idempotency_key: `settlement-payout-credit:${input.settlement.id}`,
-        metadata: {
-            source_type: 'settlement',
-            source_settlement_id: input.settlement.id,
-            source_settlement_reference: input.settlement.settlement_reference,
-        },
-        created_by: input.userId,
-        updated_by: input.userId,
-    }).select('id').single();
-    if (walletCreditError) throw new Error(`Settlement payout wallet credit failed: ${walletCreditError.message}`);
-
-    return data as unknown as PayoutStatementExecutorRow;
+): Promise<JsonRecord> {
+    const { data, error } = await db.rpc('create_settlement_payout_with_effects', {
+        p_site_id: input.siteId,
+        p_settlement_id: input.settlement.id,
+        p_expected_amount_minor: input.amountMinor,
+        p_available_on: dateOnly(new Date()),
+        p_actor_id: input.userId,
+        p_request_id: input.requestId || null,
+    });
+    if (error?.code === '23505' || error?.code === '23514') throw new SettlementPayoutConflict();
+    if (error || !data) throw new Error(`Settlement payout transaction failed: ${error?.message || 'unknown error'}`);
+    return data as JsonRecord;
 }
 
 async function emitSettlementEvent(
@@ -333,50 +294,63 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
         provider: body.provider,
         settlementReference: body.settlement_reference,
     });
-    if (existing) {
-        return c.json(success({
-            settlement: serializeSettlement(existing.row),
-            replayed: true,
-            dedupe_key: existing.dedupeKey,
-        }));
-    }
-
     const plan = planSettlementLedgerPosting(body);
     const status = plan.recon_break_minor === 0 ? 'recorded' : 'break_detected';
-    const { data: settlement, error: insertError } = await db
-        .from('settlements')
-        .insert({
-            site_id: tenant.siteId,
-            settlement_reference: body.settlement_reference,
-            provider: body.provider,
-            provider_mode: body.provider_mode,
-            rail: body.rail,
-            status,
-            currency: 'INR',
-            gross_amount_minor: plan.gross_amount_minor,
-            platform_fee_minor: plan.platform_fee_minor,
-            gst_minor: plan.gst_minor,
-            net_amount_minor: plan.net_amount_minor,
-            reserve_minor: plan.reserve_minor,
-            recon_break_minor: plan.recon_break_minor,
-            idempotency_key: body.idempotency_key,
-            metadata: body.metadata,
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        })
-        .select('*')
-        .single();
+    let settlementRow: SettlementRow;
+    if (existing) {
+        const prior = existing.row;
+        if (prior.settlement_reference !== body.settlement_reference
+            || prior.provider !== body.provider || prior.provider_mode !== body.provider_mode || prior.rail !== body.rail
+            || prior.currency !== 'INR'
+            || Number(prior.gross_amount_minor) !== plan.gross_amount_minor
+            || Number(prior.platform_fee_minor) !== plan.platform_fee_minor
+            || Number(prior.gst_minor) !== plan.gst_minor
+            || Number(prior.net_amount_minor) !== plan.net_amount_minor
+            || Number(prior.reserve_minor) !== plan.reserve_minor
+            || Number(prior.recon_break_minor) !== plan.recon_break_minor
+            || stableJson(prior.metadata || {}) !== stableJson(body.metadata || {})) {
+            return c.json({
+                success: false,
+                error: { code: 'CONFLICT', message: 'Settlement key or provider reference is already bound to different settlement amounts.' },
+            }, 409);
+        }
+        settlementRow = prior;
+    } else {
+        const { data: settlement, error: insertError } = await db
+            .from('settlements')
+            .insert({
+                site_id: tenant.siteId,
+                settlement_reference: body.settlement_reference,
+                provider: body.provider,
+                provider_mode: body.provider_mode,
+                rail: body.rail,
+                status,
+                currency: 'INR',
+                gross_amount_minor: plan.gross_amount_minor,
+                platform_fee_minor: plan.platform_fee_minor,
+                gst_minor: plan.gst_minor,
+                net_amount_minor: plan.net_amount_minor,
+                reserve_minor: plan.reserve_minor,
+                recon_break_minor: plan.recon_break_minor,
+                idempotency_key: body.idempotency_key,
+                metadata: body.metadata,
+                created_by: tenant.userId,
+                updated_by: tenant.userId,
+            })
+            .select('*')
+            .single();
 
-    if (insertError || !settlement) throw new Error(`Settlement create failed: ${insertError?.message || 'unknown error'}`);
-    const settlementRow = settlement as unknown as SettlementRow;
-    let ledgerTransactionId: string | null = null;
+        if (insertError || !settlement) throw new Error(`Settlement create failed: ${insertError?.message || 'unknown error'}`);
+        settlementRow = settlement as unknown as SettlementRow;
+    }
+    let ledgerTransactionId: string | null = settlementRow.ledger_transaction_id || null;
     let updatedSettlement: SettlementRow = settlementRow;
     if (plan.recon_break_minor === 0 && plan.balanced) {
         ledgerTransactionId = await postSettlementLedgerTransaction(db, {
             siteId: tenant.siteId,
             sourceType: plan.source_type,
             sourceId: settlementRow.id,
-            idempotencyKey: `settlement:${body.idempotency_key}`,
+            idempotencyKey: `settlement:${settlementRow.idempotency_key}`,
             lines: plan.lines,
             metadata: {
                 provider: body.provider,
@@ -400,89 +374,53 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
     }
 
     if (plan.recon_break_minor !== 0) {
-        const { error: breakError } = await db.from('recon_breaks').insert({
-            site_id: tenant.siteId,
-            settlement_id: settlementRow.id,
-            break_type: 'amount_mismatch',
-            status: 'open',
-            currency: 'INR',
-            amount_minor: Math.abs(plan.recon_break_minor),
-            suspense_account_code: 'reserve',
-            explanation: 'Canonical settlement ledger posting skipped until the provider mismatch is reconciled.',
-            metadata: { recon_break_minor: plan.recon_break_minor },
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        });
-        if (breakError) throw new Error(`Settlement break create failed: ${breakError.message}`);
+        const priorBreak = await db.from('recon_breaks')
+            .select('id, amount_minor')
+            .eq('site_id', tenant.siteId)
+            .eq('settlement_id', settlementRow.id)
+            .eq('break_type', 'amount_mismatch')
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (priorBreak.error) throw new Error(`Settlement break lookup failed: ${priorBreak.error.message}`);
+        if (priorBreak.data) {
+            if (Number(priorBreak.data.amount_minor) !== Math.abs(plan.recon_break_minor)) {
+                return c.json({ success: false, error: { code: 'CONFLICT', message: 'Settlement reconciliation break differs from the stored break.' } }, 409);
+            }
+        } else {
+            const { error: breakError } = await db.from('recon_breaks').insert({
+                site_id: tenant.siteId,
+                settlement_id: settlementRow.id,
+                break_type: 'amount_mismatch',
+                status: 'open',
+                currency: 'INR',
+                amount_minor: Math.abs(plan.recon_break_minor),
+                suspense_account_code: 'reserve',
+                explanation: 'Canonical settlement ledger posting skipped until the provider mismatch is reconciled.',
+                metadata: { recon_break_minor: plan.recon_break_minor },
+                created_by: tenant.userId,
+                updated_by: tenant.userId,
+            });
+            if (breakError) throw new Error(`Settlement break create failed: ${breakError.message}`);
+        }
     }
 
     let payout: JsonRecord | null = null;
-    if (plan.recon_break_minor === 0 && plan.net_amount_minor > 0 && body.rail === 'pa_split') {
-        const payoutStatement = await ensureSettlementPayoutStatement(db, {
-            siteId: tenant.siteId,
-            userId: tenant.userId,
-            settlement: settlementRow,
-            providerMode: body.provider_mode,
-            amountMinor: plan.net_amount_minor,
-        });
-        const { data: payoutRow, error: payoutError } = await db
-            .from('payouts')
-            .insert({
-                site_id: tenant.siteId,
-                settlement_id: settlementRow.id,
-                payout_statement_id: payoutStatement.id,
-                status: 'scheduled',
-                provider: body.provider,
-                provider_mode: body.provider_mode,
-                rail: 'razorpay_route',
-                currency: 'INR',
-                amount_minor: plan.net_amount_minor,
-                idempotency_key: `payout:${body.idempotency_key}`,
-                requires_step_up: true,
-                maker_actor_id: tenant.userId,
-                metadata: {
-                    no_custody: true,
-                    instruction_only: true,
-                    canonical_executor: 'payout_statements',
-                    payout_statement_id: payoutStatement.id,
-                },
-                created_by: tenant.userId,
-                updated_by: tenant.userId,
-            })
-            .select('*')
-            .single();
-        if (payoutError || !payoutRow) throw new Error(`Payout schedule create failed: ${payoutError?.message || 'unknown error'}`);
-
-        const payoutLines = planPayoutReleaseLedgerPosting({
-            payoutReference: String(payoutRow.id),
-            amountMinor: plan.net_amount_minor,
-        });
-        const { error: itemError } = await db.from('payout_items').insert({
-            site_id: tenant.siteId,
-            payout_id: payoutRow.id,
-            settlement_id: settlementRow.id,
-            source_type: 'settlement',
-            source_id: settlementRow.id,
-            currency: 'INR',
-            amount_minor: plan.net_amount_minor,
-            ledger_transaction_id: ledgerTransactionId,
-            ledger_preview: { lines: payoutLines },
-            metadata: { payout_statement_id: payoutStatement.id },
-            created_by: tenant.userId,
-            updated_by: tenant.userId,
-        });
-        if (itemError) throw new Error(`Payout item create failed: ${itemError.message}`);
-
-        payout = payoutRow as JsonRecord;
-        await emitSettlementEvent(db, {
-            siteId: tenant.siteId,
-            aggregateId: String(payoutRow.id),
-            eventType: 'payout.scheduled',
-            idempotencyKey: `event:payout.scheduled:${payoutRow.id}`,
-            requestId: c.req.header('X-Request-ID') || null,
-            actorId: tenant.userId,
-            payload: { amount: plan.net_amount_minor },
-        });
+    if (plan.recon_break_minor === 0 && plan.net_amount_minor > 0
+        && body.rail === 'pa_split' && body.provider === 'razorpay_route') {
+        try {
+            payout = await createSettlementPayoutWithEffects(db, {
+                siteId: tenant.siteId,
+                userId: tenant.userId,
+                settlement: settlementRow,
+                amountMinor: plan.net_amount_minor,
+                requestId: c.req.header('X-Request-ID') || null,
+            });
+        } catch (error) {
+            if (error instanceof SettlementPayoutConflict) {
+                return c.json({ success: false, error: { code: 'CONFLICT', message: 'Payout instruction is bound to different settlement terms.' } }, 409);
+            }
+            throw error;
+        }
     }
 
     await emitSettlementEvent(db, {
@@ -492,7 +430,7 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
         idempotencyKey: `event:settlement.recorded:${settlementRow.id}`,
         requestId: c.req.header('X-Request-ID') || null,
         actorId: tenant.userId,
-        payload: { amount: plan.gross_amount_minor },
+        payload: { amount: { amount_minor: plan.gross_amount_minor, currency: 'INR' } },
     });
     if (plan.recon_break_minor !== 0) {
         await emitSettlementEvent(db, {
@@ -502,7 +440,7 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
             idempotencyKey: `event:settlement.recon.break_detected:${settlementRow.id}`,
             requestId: c.req.header('X-Request-ID') || null,
             actorId: tenant.userId,
-            payload: { amount: Math.abs(plan.recon_break_minor) },
+            payload: { amount: { amount_minor: Math.abs(plan.recon_break_minor), currency: 'INR' } },
         });
     }
 
@@ -511,7 +449,9 @@ router.post('/ingest', validate('json', SettlementIngestSchema), async (c) => {
         ledger_transaction_id: ledgerTransactionId,
         payout,
         recon_break_minor: plan.recon_break_minor,
-    }), 201);
+        replayed: Boolean(existing),
+        ...(existing ? { dedupe_key: existing.dedupeKey } : {}),
+    }), existing ? 200 : 201);
 });
 
 export default router;

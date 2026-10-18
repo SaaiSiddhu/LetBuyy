@@ -910,6 +910,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   MaterialPageRoute(
                     builder: (_) => PaymentMethodScreen(
                       selectedAddress: _selectedAddress!,
+                      buyerEmail: context.read<BuyerSignInController>().email,
                       total: total,
                       shippingFee: shippingFee,
                     ),

@@ -15,7 +15,7 @@ import {
     CheckSubdomainSchema,
     STEP_SCHEMAS,
 } from '../schemas/onboarding.schema';
-import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled } from '@letbuyy/tenant-core';
+import { isComingSoonSiteType, isLegacySiteType, legacySiteTypeCreationEnabled, validateSubdomainFormat } from '@letbuyy/tenant-core';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -26,6 +26,22 @@ const MobileOnboardingProgressSchema = z.object({
     product_type: z.string().trim().min(1).max(80),
     category: z.string().trim().min(1).max(80),
 });
+
+const SalesChannelSchema = z.enum(['online', 'retail', 'social', 'marketplace', 'events']);
+const SalesChannelsSchema = z.array(SalesChannelSchema).max(5).transform((channels) => [...new Set(channels)]);
+const StorefrontWebOnboardingDraftSchema = z.object({
+    step: z.number().int().min(1).max(3),
+    store_name: z.string().trim().max(100).default(''),
+    subdomain: z.string().trim().toLowerCase().max(63).default('').refine((value) => !value || validateSubdomainFormat(value).valid),
+    industry: z.enum(['electronics', 'fashion', 'beauty', 'furniture', 'food', 'sports', 'books', 'pet', 'general']).default('general'),
+    channels: SalesChannelsSchema.default(['online']),
+});
+const StoredStorefrontWebOnboardingDraftSchema = z.object({
+    version: z.literal(1),
+    store_name: z.string().max(100),
+    subdomain: z.string().max(63),
+    industry: z.enum(['electronics', 'fashion', 'beauty', 'furniture', 'food', 'sports', 'books', 'pet', 'general']),
+}).strict();
 
 function platformDomain(env: Env): string {
     return (env.NEXT_PUBLIC_PLATFORM_DOMAIN || env.LETBUYY_PLATFORM_DOMAIN || env.PLATFORM_ROOT_DOMAIN || 'letbuyy.com')
@@ -72,6 +88,120 @@ function comingSoonSiteTypeCreationResponse(siteType: string) {
         },
     };
 }
+
+// GET /onboarding/web-draft — return only the signed-in user's resumable web-wizard fields.
+router.get('/web-draft', async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data, error } = await db
+        .from('onboarding_attempts')
+        .select('id, current_step, requested_subdomain, survey_data, updated_at')
+        .eq('user_id', customUser.id)
+        .eq('site_type', 'store')
+        .eq('status', 'in_progress')
+        .is('deleted_at', null)
+        .contains('survey_data', { web_draft: {} })
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ success: false, error: { code: 'DRAFT_LOAD_FAILED', message: 'Unable to load saved setup' } }, 503);
+    }
+
+    const draftResult = data ? StoredStorefrontWebOnboardingDraftSchema.safeParse(data.survey_data?.web_draft) : null;
+    const draft = draftResult?.success ? draftResult.data : null;
+    if (data && draft?.subdomain && data.requested_subdomain === draft.subdomain) {
+        const { data: ownedStore, error: storeError } = await db
+            .from('sites')
+            .select('id, subdomain')
+            .eq('subdomain', data.requested_subdomain)
+            .eq('custom_user_id', customUser.id)
+            .is('deleted_at', null)
+            .maybeSingle();
+        if (storeError) {
+            return c.json({ success: false, error: { code: 'DRAFT_LOAD_FAILED', message: 'Unable to load saved setup' } }, 503);
+        }
+        if (ownedStore) {
+            // Recover if the store insert succeeded but its following draft-finalization call lost
+            // its response. The exact signed-in owner and exact requested handle must match.
+            await db.rpc('complete_storefront_web_onboarding_draft', {
+                p_user_id: customUser.id,
+                p_attempt_id: data.id,
+                p_store_id: ownedStore.id,
+            });
+            return c.json(success({ attempt: null, completed_store: ownedStore }));
+        }
+    }
+
+    const channelsResult = data ? SalesChannelsSchema.safeParse(data.survey_data?.channels ?? ['online']) : null;
+    const attempt = data ? {
+        attempt_id: data.id,
+        current_step: data.current_step,
+        draft,
+        channels: channelsResult?.success ? channelsResult.data : [],
+        updated_at: data.updated_at,
+    } : null;
+    return c.json(success({ attempt }));
+});
+
+// PUT /onboarding/web-draft — create/update one account-bound draft under a transaction lock.
+router.put('/web-draft', validate('json', StorefrontWebOnboardingDraftSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as z.infer<typeof StorefrontWebOnboardingDraftSchema>;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data, error } = await db.rpc('save_storefront_web_onboarding_draft', {
+        p_user_id: customUser.id,
+        p_step: body.step,
+        p_store_name: body.store_name,
+        p_subdomain: body.subdomain,
+        p_industry: body.industry,
+        p_channels: body.channels,
+    });
+
+    if (error) {
+        return c.json({ success: false, error: { code: 'DRAFT_SAVE_FAILED', message: 'Unable to save setup progress' } }, 503);
+    }
+
+    return c.json(success(data));
+});
+
+// POST /onboarding/web-draft/complete — bind the draft to a store already created by POST /stores.
+router.post('/web-draft/complete', validate('json', z.object({ attempt_id: z.string().uuid(), store_id: z.string().uuid() })), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as { attempt_id: string; store_id: string };
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data, error } = await db.rpc('complete_storefront_web_onboarding_draft', {
+        p_user_id: customUser.id,
+        p_attempt_id: body.attempt_id,
+        p_store_id: body.store_id,
+    });
+    if (error) {
+        if (error.code === '42501' || error.code === 'P0002') {
+            return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Onboarding draft or owned store not found' } }, 404);
+        }
+        if (error.code === '22023' || error.code === '55000') {
+            return c.json({ success: false, error: { code: 'CONFLICT', message: 'Onboarding draft cannot be finalized for this store' } }, 409);
+        }
+        return c.json({ success: false, error: { code: 'DRAFT_COMPLETION_FAILED', message: 'Unable to confirm setup completion' } }, 503);
+    }
+    return c.json(success(data));
+});
 
 async function emitStoreCreatedEvent(
     db: ReturnType<typeof getSupabaseAdmin>,
@@ -374,6 +504,16 @@ router.post('/:attemptId/complete', async (c) => {
 
     if (!customUser) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    if (customUser.email_verified !== true) {
+        return c.json({
+            success: false,
+            error: {
+                code: 'EMAIL_VERIFICATION_REQUIRED',
+                message: 'Verify your account email before creating a storefront.',
+            },
+        }, 403);
     }
 
     const { data: attempt } = await db

@@ -17,6 +17,7 @@ export type StaffPermissionKey =
     | 'marketing:write'
     | 'shipping:write'
     | 'returns:write'
+    | 'reports:read'
     | 'settings:write'
     | 'content:write';
 

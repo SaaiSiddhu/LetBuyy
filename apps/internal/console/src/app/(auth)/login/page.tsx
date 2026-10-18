@@ -18,6 +18,12 @@ function errorMessage(code: string | undefined) {
             return 'Platform console magic-link delivery is not configured.';
         case 'session_secret_not_configured':
             return 'Console session signing is not configured.';
+        case 'session_unavailable':
+            return 'Your session is unavailable or has been revoked. Sign in again, or retry when service is restored.';
+        case 'logout_unavailable':
+            return 'Sign-out could not be saved. Retry sign-out when service is restored.';
+        case 'access_revoked':
+            return 'Console access has been revoked.';
         case 'invalid_magic_link':
             return 'This magic link is invalid or expired.';
         case 'missing_token':
@@ -30,6 +36,7 @@ function errorMessage(code: string | undefined) {
 export default async function ConsoleLoginPage({ searchParams }: { searchParams: LoginSearchParams }) {
     const params = await searchParams;
     const error = errorMessage(firstParam(params.error));
+    const authenticatorReset=firstParam(params.notice)==='operator_mfa_reset';
     const sent = firstParam(params.sent) === '1';
     const loggedOut = firstParam(params.loggedOut) === '1';
     const devMagicLink = firstParam(params.devMagicLink);
@@ -52,6 +59,8 @@ export default async function ConsoleLoginPage({ searchParams }: { searchParams:
                         {error}
                     </div>
                 )}
+
+                {authenticatorReset && <p role="status" className="rounded-lg border border-zinc-700 p-4 text-zinc-200">Your operator authenticator was reset and you were signed out. Sign in after your configuration custodian provides a replacement factor.</p>}
 
                 {sent && (
                     <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">

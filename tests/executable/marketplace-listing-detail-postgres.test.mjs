@@ -103,6 +103,8 @@ function seedFixtures() {
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published, status)
     VALUES (${sqlString(SITE)}::uuid, 'MKT2', 'MKT2 Store', 'store', 'mkt2-store', true, 'published'),
            (${sqlString(OTHER_SITE)}::uuid, 'Other', 'Other Store', 'store', 'other-store', true, 'published');
+    INSERT INTO public.marketplace_categories (id, slug, name)
+    VALUES ('dddddddd-0000-4000-8000-000000000001', 'detail-test', 'Detail Test');
 
     -- cost_price, sku and barcode are populated deliberately: SEC-1's rule is that a public read must
     -- not return them, and a fixture that leaves them null cannot prove it (that is exactly how the
@@ -111,12 +113,21 @@ function seedFixtures() {
     VALUES (${sqlString(PRODUCT)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(SITE)}::uuid, 'Listed Item', 'listed-item', 'A description.', 799, true, 'active', 400, 'SKU-1', 'BC-1'),
            (${sqlString(PENDING_PRODUCT)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(SITE)}::uuid, 'Pending Item', 'pending-item', 'Awaiting review.', 500, true, 'active', 250, 'SKU-2', 'BC-2');
 
-    INSERT INTO public.channel_listings (id, site_id, product_id, channel, status, visibility, approved_at)
-    VALUES (${sqlString(LISTING)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(PRODUCT)}::uuid, 'marketplace', 'approved', 'public', now());
+    INSERT INTO public.channel_listings (id, site_id, product_id, channel, status, visibility, marketplace_category_id)
+    VALUES (${sqlString(LISTING)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(PRODUCT)}::uuid, 'marketplace', 'draft', 'public', 'dddddddd-0000-4000-8000-000000000001');
 
-    INSERT INTO public.channel_listings (id, site_id, product_id, channel, status, visibility)
-    VALUES (${sqlString(PENDING_LISTING)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(PENDING_PRODUCT)}::uuid, 'marketplace', 'pending_review', 'public');
+    INSERT INTO public.channel_listings (id, site_id, product_id, channel, status, visibility, marketplace_category_id)
+    VALUES (${sqlString(PENDING_LISTING)}::uuid, ${sqlString(SITE)}::uuid, ${sqlString(PENDING_PRODUCT)}::uuid, 'marketplace', 'draft', 'public', 'dddddddd-0000-4000-8000-000000000001');
   `);
+  psql(`BEGIN;
+    SELECT set_config('app.site_id', ${sqlString(SITE)}, true);
+    SELECT * FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(LISTING)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'detail-submit:approved');
+    SELECT * FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(PENDING_LISTING)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'detail-submit:pending');
+    COMMIT;
+    BEGIN;
+    SELECT set_config('app.site_id', '', true);
+    SELECT * FROM public.transition_channel_listing(${sqlString(SITE)}::uuid, ${sqlString(LISTING)}::uuid, 'approved', 'operator', ${sqlString(OPERATOR)}::uuid, 'Review passed.', 'detail-approve:approved');
+    COMMIT;`);
 }
 
 // TEST-1: this suite runs inside the shared container now, so it must leave nothing behind.

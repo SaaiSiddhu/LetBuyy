@@ -14,6 +14,32 @@ export function getSupabaseAdminFromEnv(env: Env): SupabaseClient {
     return createTenantGuardedSupabaseClient(createSupabaseServiceClient(env));
 }
 
+/**
+ * Claim a single-use signed internal credential in the shared database.
+ *
+ * The RPC is atomic across gateway isolates. `null` means the claim service could
+ * not be reached or did not return its strict boolean contract; callers must fail
+ * closed in that case. The JTI is a random replay identifier, not the credential.
+ */
+export async function claimInternalAuthReplayJti(
+    env: Env,
+    input: { kind: string; jti: string; ttlSeconds?: number },
+): Promise<'claimed' | 'replayed' | 'unavailable'> {
+    try {
+        const { data, error } = await getSupabaseAdminFromEnv(env).rpc('consume_internal_auth_replay_jti', {
+            p_auth_kind: input.kind,
+            p_jti: input.jti,
+            p_ttl_seconds: input.ttlSeconds ?? 300,
+        });
+        if (error) return 'unavailable';
+        if (data === true) return 'claimed';
+        if (data === false) return 'replayed';
+        return 'unavailable';
+    } catch {
+        return 'unavailable';
+    }
+}
+
 export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {
     return getSupabaseAdminFromEnv(c.env);
 }
@@ -47,8 +73,8 @@ export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): Supaba
 
 /**
  * The service-role client WITHOUT the tenant query guard, for a route that already verified a
- * specific operator review/moderation PERMISSION via `requirePermission` before this function is
- * ever called (F2.6, D-ONE-IDENTITY's delegation of "how an operator reads across tenants" to
+ * specific operator permission via `requirePermission`, or an inherited super-admin-only router
+ * gate, before this function is ever called (F2.6, D-ONE-IDENTITY's delegation of "how an operator reads across tenants" to
  * technical design under ART-08/SEC-R9: no blanket service_role, audited, narrow).
  *
  * This is a DIFFERENT shape of exception from `getSupabaseAdminUnguarded` above, not a relaxation
@@ -59,17 +85,19 @@ export function getSupabaseAdminUnguarded(c: Context<{ Bindings: Env }>): Supaba
  * boundary here is not row count; it is that only a route holding a verified, table-appropriate
  * operator scope may ever construct this client, and every call site is enumerated by
  * `services/api-gateway/src/__tests__/operator-scoped-admin-client-contract.test.ts`, which also
- * asserts the named permission scope is required on the exact route before this function runs.
+ * asserts the named permission scope is required on the exact route, or the reviewed router-level
+ * super-admin gate precedes it, before this function runs.
  *
  * Conditions every call site must meet:
- *   1. mounted behind `requirePermission(<scope>)` for the specific route handler, not merely
- *      somewhere earlier in the file — the allowlist test greps the route registration itself;
+ *   1. mounted behind `requirePermission(<scope>)` for the specific route handler, or a reviewed
+ *      router-level ops + super-admin gate for routes with no narrower operator tier; the allowlist
+ *      test checks the exact route and its gate;
  *   2. reads only — every state transition for the same resource goes through its own
  *      `SECURITY DEFINER` RPC (e.g. `transition_channel_listing`), which takes an explicit
  *      `p_site_id` and is where mutation-level tenant enforcement actually happens;
  *   3. the query's own request schema caps page size (no unbounded `SELECT *` across a table with
  *      no ceiling) — the allowlist test reads the validated schema's `limit` bound;
- *   4. never used to decide authorization by itself — the permission check already happened.
+ *   4. never used to decide authorization by itself — the permission or super-admin check already happened.
  *
  * Anything that does not meet all four uses `getSupabaseAdmin` (single tenant) or
  * `getSupabaseAdminUnguarded` (single-row bootstrap lookup) instead.

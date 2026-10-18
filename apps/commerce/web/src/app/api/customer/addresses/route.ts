@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { createStorefrontApiClient } from '@/lib/api/client';
+import { isSameOriginRequest } from '@/lib/buyer-auth/flow';
 
 // ── GET — List all addresses for current customer ──────────
 export async function GET() {
@@ -35,6 +36,9 @@ export async function GET() {
 // ── POST — Add a new address ───────────────────────────────
 export async function POST(request: NextRequest) {
     try {
+        if (!isSameOriginRequest(request.headers, request.url)) {
+            return NextResponse.json({ error: 'A same-origin request is required.' }, { status: 403, headers: { 'Cache-Control': 'no-store' } });
+        }
         const session = await getSession();
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -80,6 +84,9 @@ export async function POST(request: NextRequest) {
 // ── PUT — Update an existing address ───────────────────────
 export async function PUT(request: NextRequest) {
     try {
+        if (!isSameOriginRequest(request.headers, request.url)) {
+            return NextResponse.json({ error: 'A same-origin request is required.' }, { status: 403, headers: { 'Cache-Control': 'no-store' } });
+        }
         const session = await getSession();
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -109,6 +116,9 @@ export async function PUT(request: NextRequest) {
 // ── DELETE — Remove an address ─────────────────────────────
 export async function DELETE(request: NextRequest) {
     try {
+        if (!isSameOriginRequest(request.headers, request.url)) {
+            return NextResponse.json({ error: 'A same-origin request is required.' }, { status: 403, headers: { 'Cache-Control': 'no-store' } });
+        }
         const session = await getSession();
         if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -146,6 +146,8 @@ function seedFixtures() {
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(ORDER_ID)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'FENCE-0001', 'fence-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 500, 500, 'paid');
+    INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
+    VALUES (${sqlString(ORDER_ID)}::uuid,${sqlString(BUYER_ID)}::uuid,${sqlString(SITE_ID)}::uuid,'authenticated_checkout');
   `);
 }
 

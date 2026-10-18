@@ -163,16 +163,6 @@ export interface StorefrontPagesData {
   pages: GraphQLConnection<Page>;
 }
 
-export interface StorefrontCustomerOrdersVariables extends JsonRecord {
-  storeId: string;
-  email: string;
-  orderId?: string | null;
-}
-
-export interface StorefrontCustomerOrdersData {
-  customerOrders: JsonRecord;
-}
-
 export const LETBUYY_ADMIN_GRAPHQL_OPERATIONS = {
   products: {
     surface: 'admin',
@@ -275,13 +265,6 @@ export const LETBUYY_STOREFRONT_GRAPHQL_OPERATIONS = {
   }
 }`,
   } satisfies GeneratedGraphQLOperation<StorefrontPagesData, StorefrontPagesVariables>,
-  customerOrders: {
-    surface: 'storefront',
-    operationName: 'StorefrontCustomerOrders',
-    document: String.raw`query StorefrontCustomerOrders($storeId: ID!, $email: String!, $orderId: ID) {
-  customerOrders(storeId: $storeId, email: $email, orderId: $orderId)
-}`,
-  } satisfies GeneratedGraphQLOperation<StorefrontCustomerOrdersData, StorefrontCustomerOrdersVariables>,
 } as const;
 
 export class LetbuyyGraphQLExecutionError extends Error {
@@ -324,8 +307,6 @@ export class LetbuyyGraphQLSdk {
       this.execute(LETBUYY_STOREFRONT_GRAPHQL_PATH, LETBUYY_STOREFRONT_GRAPHQL_OPERATIONS.products, variables, options),
     pages: (variables: StorefrontPagesVariables, options?: LetbuyyGraphQLTransportRequestOptions) =>
       this.execute(LETBUYY_STOREFRONT_GRAPHQL_PATH, LETBUYY_STOREFRONT_GRAPHQL_OPERATIONS.pages, variables, options),
-    customerOrders: (variables: StorefrontCustomerOrdersVariables, options?: LetbuyyGraphQLTransportRequestOptions) =>
-      this.execute(LETBUYY_STOREFRONT_GRAPHQL_PATH, LETBUYY_STOREFRONT_GRAPHQL_OPERATIONS.customerOrders, variables, options),
   };
 
   execute<TData, TVariables extends JsonRecord>(

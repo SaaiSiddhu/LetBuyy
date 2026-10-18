@@ -23,6 +23,7 @@ test('webhook payment events are normalized to contracted domain event names', (
   assert.match(webhookSource, /function normalizePaymentDomainEventType/);
   assert.match(webhookSource, /return "payment\.subscription\.activated"/);
   assert.match(webhookSource, /return "refund\.created"/);
+  assert.match(webhookSource, /normalized === "refund\.processed"\) return "payment\.refunded"/);
   assert.match(webhookSource, /return "payment\.failed"/);
   assert.match(webhookSource, /return "payment\.captured"/);
   assert.match(webhookSource, /eventType: domainEventType/);

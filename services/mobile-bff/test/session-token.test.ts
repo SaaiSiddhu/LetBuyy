@@ -46,6 +46,7 @@ test('allowlist includes merchant domain management surfaces', () => {
 
 test('mobile dashboard composites analytics and payout gateway calls', async () => {
   const seen: string[] = [];
+  const envelopeIds: string[] = [];
   const dataByPath: Record<string, unknown> = {
     '/v1/analytics/dashboard': { summary: { revenue: { value: 1200 }, orders: { value: 3 } } },
     '/v1/analytics/orders': { breakdown: { paid: 2, pending: 1 } },
@@ -61,6 +62,9 @@ test('mobile dashboard composites analytics and payout gateway calls', async () 
         const url = new URL(request.url);
         seen.push(`${url.pathname}?${url.searchParams.toString()}`);
         assert.equal(request.headers.get('X-Client'), 'mobile-bff-composite');
+        assert.equal(request.headers.get('Authorization'), null);
+        assert.equal(request.headers.get('Cookie'), null);
+        envelopeIds.push(request.headers.get('X-LetBuyy-Internal-JTI') || '');
         assert.equal(request.headers.get('X-LetBuyy-Internal-Session-Token'), 'a'.repeat(32));
         return new Response(JSON.stringify({ success: true, data: dataByPath[url.pathname] }), {
           status: 200,
@@ -87,6 +91,8 @@ test('mobile dashboard composites analytics and payout gateway calls', async () 
   assert.deepEqual(payload.data?.analytics?.dashboard, dataByPath['/v1/analytics/dashboard']);
   assert.deepEqual(payload.data?.payout_summary, dataByPath['/v1/payouts/summary']);
   assert.equal(seen.length, 6);
+  assert.equal(new Set(envelopeIds).size,6);
+  assert.ok(envelopeIds.every(Boolean));
   assert.ok(seen.some((path) => path.startsWith('/v1/analytics/dashboard?')));
   assert.ok(seen.some((path) => path.startsWith('/v1/payouts/summary?')));
 });
@@ -158,3 +164,25 @@ test('mobile Turnstile verification fails closed when proof signing secret is ab
     code: 'TURNSTILE_PROOF_SECRET_NOT_CONFIGURED',
   });
 });
+
+
+// The real platform Request must preserve streamed mutation bytes and session
+// translation, including invitation consent and observed-version removal bodies.
+for (const [method, path] of [['POST','/v1/employees/invite'],['POST','/v1/employees/auth/accept-invite'],['PATCH','/v1/employees/synthetic-member'],['DELETE','/v1/employees/synthetic-member']]) {
+  test(`normal mobile ${method} ${path} forwards exact body and stable key with translated session`, async () => {
+    const body=JSON.stringify({token:'synthetic-invitation-proof',expected_updated_at:'2026-10-15T00:00:00Z'});
+    let forwarded=0;
+    const response=await app.fetch(new Request('https://mobile-bff.test'+path,{method,
+      headers:{Authorization:'Bearer '+ 'a'.repeat(32),Cookie:'lb_session='+ 'a'.repeat(32),
+        'Content-Type':'application/json','X-Idempotency-Key':'synthetic-stable-intent'},body}),{
+      INTERNAL_API_SECRET:'synthetic-test-internal-key',API_GATEWAY_SERVICE:{fetch:async(request:Request)=>{
+        forwarded++;assert.equal(request.method,method);assert.equal(await request.text(),body);
+        assert.equal(request.headers.get('Authorization'),null);assert.equal(request.headers.get('Cookie'),null);
+        assert.equal(request.headers.get('X-Idempotency-Key'),'synthetic-stable-intent');
+        assert.equal(request.headers.get('X-LetBuyy-Internal-Session-Token'),'a'.repeat(32));
+        assert.ok(request.headers.get('X-LetBuyy-Internal-Signature'));
+        return new Response(JSON.stringify({success:true}),{headers:{'Content-Type':'application/json'}});
+      }},
+    });assert.equal(response.status,200);assert.equal(forwarded,1);
+  });
+}

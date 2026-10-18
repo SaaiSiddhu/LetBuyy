@@ -48,6 +48,30 @@ test('D6 checkout handoff canonical binding is content stable and order independ
         ...base,
         lines: [{ product_id: 'product-a', variant_id: 'variant-a', quantity: 3, unit_price: 10, line_total: 30 }],
     }));
+    const marketplaceLine = {
+        product_id: 'product-a',
+        marketplace_listing_id: 'listing-a',
+        variant_id: null,
+        quantity: 1,
+        unit_price: 10,
+        line_total: 10,
+    };
+    const marketplaceBinding = canonicalCheckoutCartBinding({
+        ...base,
+        salesOrigin: 'marketplace',
+        lines: [marketplaceLine],
+    });
+    assert.match(marketplaceBinding, /"sales_origin":"marketplace"/);
+    assert.match(marketplaceBinding, /"marketplace_listing_id":"listing-a"/);
+    assert.notEqual(marketplaceBinding, canonicalCheckoutCartBinding({ ...base, lines: [marketplaceLine] }));
+    const duplicateProductListings = [
+        { ...marketplaceLine, marketplace_listing_id: 'listing-b' },
+        { ...marketplaceLine, marketplace_listing_id: 'listing-a' },
+    ];
+    assert.equal(
+        canonicalCheckoutCartBinding({ ...base, salesOrigin: 'marketplace', lines: duplicateProductListings }),
+        canonicalCheckoutCartBinding({ ...base, salesOrigin: 'marketplace', lines: [...duplicateProductListings].reverse() }),
+    );
     assert.match(canonicalCheckoutHandoffPayload({ ...base, lines: [], cartContentDigest: 'abc123' }), /cart_content_digest/);
 });
 
@@ -67,6 +91,24 @@ test('D6 hosted checkout rejects mutated cart handoffs by recomputing digest fro
     assert.match(checkoutRouteSource, /canonicalCheckoutHandoffPayload\(\{/);
     assert.match(checkoutRouteSource, /cartContentDigest: expectedCartDigest/);
     assert.doesNotMatch(checkoutRouteSource, /hmacSha256Hex\(secret,\s*`\$\{siteId\}:\$\{cartId\}:\$\{cartToken\}:\$\{channel\}:\$\{expiresAt\}`/);
+});
+
+test('marketplace cart admission and checkout preserve listing identity through dedicated order transaction', () => {
+    assert.match(cartRouteSource, /router\.post\('\/:subdomain\/marketplace-cart'/);
+    assert.match(cartRouteSource, /marketplace_listing_detail/);
+    assert.match(cartRouteSource, /String\(listing\.product_id\) !== line\.product_id/);
+    assert.match(cartRouteSource, /String\(listing\.site_id\) !== store\.id/);
+    assert.match(cartRouteSource, /SALES_ORIGIN_IMMUTABLE/);
+    assert.match(cartRouteSource, /salesOrigin: cart\.sales_origin/);
+    assert.match(checkoutRouteSource, /MARKETPLACE_LISTING_REQUIRED/);
+    assert.match(checkoutRouteSource, /marketplace_listing_id: stringValue\(line\.marketplace_listing_id\)/);
+    assert.match(checkoutRouteSource, /salesOrigin: cartRow\.sales_origin/);
+    const orderAdapterSource = readFileSync(new URL('../execution/order-execution.adapter.ts', import.meta.url), 'utf8');
+    const orderMigrationSource = readFileSync(new URL('../../../../database/supabase/migrations/278_marketplace_order_listing_binding.sql', import.meta.url), 'utf8');
+    assert.match(orderAdapterSource, /create_marketplace_checkout_order/);
+    assert.match(orderMigrationSource, /marketplace_listing_review_fingerprint/);
+    assert.match(orderMigrationSource, /purchases SET channel = 'marketplace'/);
+    assert.match(orderMigrationSource, /trg_order_items_marketplace_listing_guard/);
 });
 
 test('D6 order inventory path uses reserve then commit lifecycle and rollback restores direct decrement', () => {

@@ -41,7 +41,11 @@ import { registerSellerFollowRoutes } from './seller-follow-routes';
 import { registerPersonalizationRoutes } from './personalization-routes';
 import { registerBuyerSupportRoutes, type BuyerTicketRow, type BuyerTicketMessageRow } from './buyer-support-routes';
 import { registerBuyerPrivacyRoutes, type PrivacyRequestRow, type PrivacyRequestType } from './buyer-privacy-routes';
+import {registerBuyerPrivacyExportRoutes} from './buyer-privacy-export-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
+import { registerBuyerWishlistRoutes } from './buyer-wishlist-routes';
+import { registerBuyerReviewRoutes } from './buyer-review-routes';
+import { BuyerReviewExecutionAdapter } from '../../execution/buyer-review-execution.adapter';
 import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
@@ -52,7 +56,7 @@ import type { AppContext, StorefrontCustomerEngagementDependencies } from './cus
 /** Postgres SQLSTATE for a unique-constraint violation (same convention as contact-public.ts). */
 const UNIQUE_VIOLATION = '23505';
 
-export interface BuyerRealmRoutesDeps extends Pick<StorefrontCustomerEngagementDependencies, 'hydrateStorefrontOrderItems' | 'orderItemsRelationalReadsEnabled'> {
+export interface BuyerRealmRoutesDeps extends Pick<StorefrontCustomerEngagementDependencies, 'hydrateStorefrontOrderItems' | 'orderItemsRelationalReadsEnabled' | 'requireValidTurnstile'> {
     normalizeEmail: (email: string) => string;
 }
 
@@ -396,11 +400,13 @@ export function registerBuyerRealmRoutes(
                 .maybeSingle();
             if (account.error) return { data: null, error: account.error };
 
-            let balance = 0;
+            let balance: number | string = 0;
             if (account.data) {
                 const projected = await db.rpc('loyalty_balance', { p_loyalty_account_id: (account.data as { id: string }).id });
                 if (projected.error) return { data: null, error: projected.error };
-                balance = Number(projected.data ?? 0);
+                const projection = projected.data;
+                if (typeof projection === 'number' || typeof projection === 'string') balance = projection;
+                else if (projection !== null && projection !== undefined) return { data: null, error: new Error('Invalid loyalty balance projection') };
             }
             const row = program.data as unknown as Omit<LoyaltySummary, 'balance'>;
             return { data: { ...row, balance }, error: null };
@@ -425,6 +431,56 @@ export function registerBuyerRealmRoutes(
                 .limit(limit);
             return { data: (data || null) as LoyaltyEntryRow[] | null, error };
         },
+    });
+
+    // Storefront buyer wishlist access reuses the merchant's existing list only after the
+    // explicit, verified buyer_store_customers link. The signed session supplies both principals.
+    registerBuyerWishlistRoutes(router, {
+        resolveLinkedCustomer: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('buyer_store_customers')
+                .select('store_customer_id, verified_at, store_customers!inner(store_id,status,deleted_at)')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('site_id', siteId)
+                .maybeSingle();
+            if (error || !data) return { data: null, error };
+            const row = data as {
+                store_customer_id: string;
+                verified_at: string | null;
+                store_customers?: { store_id?: string; status?: string; deleted_at?: string | null } | null;
+            };
+            if (!row.verified_at || row.store_customers?.store_id !== siteId) return { data: null, error: null };
+            return {
+                data: {
+                    storeCustomerId: row.store_customer_id,
+                    active: row.store_customers.status === 'active' && row.store_customers.deleted_at == null,
+                },
+                error: null,
+            };
+        },
+        list: async (c, storeCustomerId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('customer_wishlists')
+                .select('product_id')
+                .eq('customer_id', storeCustomerId)
+                .eq('store_id', siteId);
+            return { data: error ? null : (data ?? []).map((row) => (row as { product_id: string }).product_id), error };
+        },
+        save: async (c, storeCustomerId, siteId, productId, variantId) => getSupabaseAdmin(c)
+            .from('customer_wishlists')
+            .upsert({ customer_id: storeCustomerId, store_id: siteId, product_id: productId, variant_id: variantId }, { onConflict: 'customer_id,product_id' }),
+        remove: async (c, storeCustomerId, siteId, productId) => getSupabaseAdmin(c)
+            .from('customer_wishlists')
+            .delete()
+            .eq('customer_id', storeCustomerId)
+            .eq('store_id', siteId)
+            .eq('product_id', productId),
+    });
+
+    // One canonical transaction checks current ownership and commits content plus private authorship.
+    registerBuyerReviewRoutes(router, {
+        requireValidTurnstile: deps.requireValidTurnstile,
+        createReview: (c, input) => new BuyerReviewExecutionAdapter(c).create(input),
     });
 
     registerBuyerSupportRoutes(router, {
@@ -472,31 +528,19 @@ export function registerBuyerRealmRoutes(
         openTicket: async (c, buyerAccountId, input) => {
             const db = getSupabaseAdmin(c);
             const now = new Date();
-            const inserted = await db
-                .from('support_tickets')
-                .insert({
-                    ticket_ref: generateTicketRef(now),
-                    first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
-                    resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
-                    site_id: input.siteId,
-                    requester_type: 'customer',
-                    requester_user_id: buyerAccountId,
-                    subject: input.subject,
-                    channel: 'chat',
-                    status: 'open',
-                    last_customer_message_at: now.toISOString(),
-                })
-                .select('id, ticket_ref, subject, status, topic, created_at, last_agent_message_at')
-                .maybeSingle();
-            if (inserted.error || !inserted.data) return { data: null, error: inserted.error };
-            const ticket = inserted.data as unknown as BuyerTicketRow;
-            const message = await db
-                .from('ticket_messages')
-                .insert({ ticket_id: ticket.id, author_type: 'requester', author_id: buyerAccountId, visibility: 'public', body: input.body })
-                .select('id')
-                .maybeSingle();
-            if (message.error) return { data: null, error: message.error };
-            return { data: ticket, error: null };
+            const { data, error } = await db.rpc('open_buyer_support_ticket_with_complaint', {
+                p_ticket_ref: generateTicketRef(now),
+                p_first_response_due_at: new Date(now.getTime() + SUPPORT_DEFAULT_FIRST_RESPONSE_HOURS * 60 * 60 * 1000).toISOString(),
+                p_resolution_due_at: addBusinessDays(now, SUPPORT_DEFAULT_RESOLUTION_BUSINESS_DAYS).toISOString(),
+                p_site_id: input.siteId,
+                p_requester_user_id: buyerAccountId,
+                p_subject: input.subject,
+                p_body: input.body,
+            });
+            if (error || !data || typeof data !== 'object') return { data: null, complaintCopy: null, error };
+            const result = data as { ticket?: BuyerTicketRow; message?: BuyerTicketMessageRow };
+            if (!result.ticket || !result.message) return { data: null, complaintCopy: null, error: new Error('Atomic buyer support intake returned an incomplete result') };
+            return { data: result.ticket, complaintCopy: result.message, error: null };
         },
         addRequesterMessage: async (c, ticketId, body) => {
             const { data, error } = await getSupabaseAdmin(c)
@@ -599,6 +643,8 @@ export function registerBuyerRealmRoutes(
             return { data: (data || null) as PrivacyRequestRow[] | null, error };
         },
     });
+
+    registerBuyerPrivacyExportRoutes(router);
 
     registerPersonalizationRoutes(router, {
         // Viewing again UPDATES the timestamp: 230's PK is (buyer, product), so the history holds one

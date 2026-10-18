@@ -89,6 +89,8 @@ export interface LiquidCommerceDrops {
   customer?: unknown;
   /** Canonical LetBuyy buyer identity, separate from the store-customer principal. */
   buyer?: unknown;
+  /** Store-scoped wishlist state resolved through the buyer's verified store relationship. */
+  buyer_wishlist?: unknown;
   buyer_unavailable?: boolean;
   search?: unknown;
   order?: unknown;
@@ -1361,6 +1363,7 @@ function buildLiquidScope(
     cart: commerceDrops.cart,
     customer: commerceDrops.customer,
     buyer: commerceDrops.buyer,
+    buyer_wishlist: commerceDrops.buyer_wishlist,
     buyer_unavailable: commerceDrops.buyer_unavailable,
     search: commerceDrops.search,
     order: commerceDrops.order,
@@ -1418,6 +1421,7 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
   cart: Record<string, unknown>;
   customer: unknown;
   buyer: unknown;
+  buyer_wishlist: unknown;
   buyer_unavailable: boolean;
   search: unknown;
   order: unknown;
@@ -1438,6 +1442,7 @@ function buildLiquidCommerceDrops(context?: LiquidCommerceDrops): {
     },
     customer: toLiquidDrop(context?.customer) || null,
     buyer: toLiquidDrop(context?.buyer) || null,
+    buyer_wishlist: toLiquidDrop(context?.buyer_wishlist) || null,
     buyer_unavailable: context?.buyer_unavailable === true,
     search: toLiquidDrop(context?.search) || null,
     order: toLiquidDrop(context?.order) || null,

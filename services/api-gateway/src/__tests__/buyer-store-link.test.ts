@@ -12,6 +12,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { exportJWK, generateKeyPair, SignJWT } from 'jose';
+import { LETBUYY_STOREFRONT_SESSION_AUDIENCE, LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { installBuyerSessionState } from './buyer-session-state-fake';
@@ -33,9 +34,12 @@ async function keys() {
     return { privateKey, jwks: JSON.stringify({ keys: [{ ...jwk, alg: 'ES256', kid: 'test' }] }) };
 }
 
-async function mint(privateKey: CryptoKey, opts: { sub: string; realm?: string; tokenUse?: string; audience?: string }) {
+async function mint(privateKey: CryptoKey, opts: { sub: string; realm?: string; tokenUse?: string; audience?: string; siteId?: string; epoch?: number }) {
     const now = Math.floor(Date.now() / 1000);
-    return new SignJWT({ realm: opts.realm ?? 'buyer', token_use: opts.tokenUse ?? 'buyer_session' })
+    return new SignJWT({
+        realm: opts.realm ?? 'buyer', token_use: opts.tokenUse ?? 'buyer_session',
+        ...(opts.siteId ? { site_id: opts.siteId, sep: opts.epoch ?? 1 } : {}),
+    })
         .setProtectedHeader({ alg: 'ES256', typ: 'JWT', kid: 'test' })
         .setIssuer(ISSUER)
         .setAudience(opts.audience ?? 'letbuyy:buyer-session')
@@ -87,14 +91,21 @@ const account = (over: Partial<BuyerAccountRow> = {}): BuyerAccountRow => ({
     id: BUYER_ID, email: 'shopper@example.com', password_hash: null, email_verified: true, status: 'active', session_epoch: 1, full_name: null, phone: null, ...over,
 });
 
-async function link(h: ReturnType<typeof harness>, jwks: string, token: string | null, body: unknown, path = '/storefront/buyer/link-store-customer') {
+async function link(
+    h: ReturnType<typeof harness>, jwks: string, token: string | null, body: unknown,
+    path = '/storefront/buyer/link-store-customer',
+    opts: { storefront?: boolean; requestedSite?: string } = {},
+) {
+    const routePath = opts.storefront && path.includes('?') === false
+        ? `${path}?store_id=${encodeURIComponent(opts.requestedSite ?? STORE)}`
+        : path;
     return h.app.request(
-        path,
+        routePath,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(token ? { 'X-LetBuyy-Buyer-Session': token } : {}),
+                ...(token ? { [opts.storefront ? LETBUYY_STOREFRONT_SESSION_HEADER : 'X-LetBuyy-Buyer-Session']: token } : {}),
             },
             body: JSON.stringify(body),
         },
@@ -110,6 +121,32 @@ test('an authenticated buyer is linked to the store customer', async () => {
     assert.deepEqual(h.linked, [{ buyerAccountId: BUYER_ID, siteId: STORE }]);
     const body = await res.json() as { data: { linked: { buyer_account_id: string; store_customer_id: string } } };
     assert.deepEqual(body.data.linked, { buyer_account_id: BUYER_ID, store_customer_id: 'store-customer-1' });
+});
+
+test('a site-bound storefront session can link only its own store customer', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness(account());
+    const token = await mint(privateKey, {
+        sub: BUYER_ID, tokenUse: 'storefront_session', audience: LETBUYY_STOREFRONT_SESSION_AUDIENCE, siteId: STORE,
+    });
+    const res = await link(h, jwks, token, { store_id: STORE }, '/storefront/buyer/link-store-customer', { storefront: true });
+    assert.equal(res.status, 200);
+    assert.deepEqual(h.linked, [{ buyerAccountId: BUYER_ID, siteId: STORE }]);
+});
+
+test('a storefront token is rejected for another query scope or body store', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness(account());
+    const token = await mint(privateKey, {
+        sub: BUYER_ID, tokenUse: 'storefront_session', audience: LETBUYY_STOREFRONT_SESSION_AUDIENCE, siteId: STORE,
+    });
+    const wrongQuery = await link(h, jwks, token, { store_id: STORE }, '/storefront/buyer/link-store-customer', {
+        storefront: true, requestedSite: '44444444-4444-4444-8444-444444444444',
+    });
+    assert.equal(wrongQuery.status, 401);
+    const wrongBody = await link(h, jwks, token, { store_id: '44444444-4444-4444-8444-444444444444' }, '/storefront/buyer/link-store-customer', { storefront: true });
+    assert.equal(wrongBody.status, 401);
+    assert.equal(h.linked.length, 0);
 });
 
 test('a body-supplied buyer_account_id is IGNORED — identity comes from the token', async () => {
@@ -239,6 +276,28 @@ test('a claim uses the session\'s buyer, never one named in the body', async () 
     assert.deepEqual(h.claimed, [{ buyerAccountId: BUYER_ID, siteId: null }]);
     const body = await res.json() as { data: { claimed: Record<string, number> } };
     assert.deepEqual(body.data.claimed, { linked: 2, already_linked: 1, conflicts: 0 });
+});
+
+test('a storefront buyer may claim only orders placed at its signed store', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness(account());
+    const token = await mint(privateKey, {
+        sub: BUYER_ID, tokenUse: 'storefront_session', audience: LETBUYY_STOREFRONT_SESSION_AUDIENCE, siteId: STORE,
+    });
+    const res = await link(h, jwks, token, {}, CLAIM, { storefront: true });
+    assert.equal(res.status, 200);
+    assert.deepEqual(h.claimed, [{ buyerAccountId: BUYER_ID, siteId: STORE }]);
+});
+
+test('a storefront order claim refuses a different body site and never claims across stores', async () => {
+    const { privateKey, jwks } = await keys();
+    const h = harness(account());
+    const token = await mint(privateKey, {
+        sub: BUYER_ID, tokenUse: 'storefront_session', audience: LETBUYY_STOREFRONT_SESSION_AUDIENCE, siteId: STORE,
+    });
+    const res = await link(h, jwks, token, { store_id: '44444444-4444-4444-8444-444444444444' }, CLAIM, { storefront: true });
+    assert.equal(res.status, 401);
+    assert.equal(h.claimed.length, 0);
 });
 
 test('a claim can be narrowed to one store, and a malformed store_id is a 400', async () => {

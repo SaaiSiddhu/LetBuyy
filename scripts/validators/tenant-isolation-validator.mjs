@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import ts from 'typescript';
+import {directTenantQueries} from '../governance/tenant-query-scope.mjs';
 import {
   createReporter,
   getTrackedFiles,
@@ -67,7 +69,6 @@ reporter.assert(
   'requireRole must resolve roles from server-side persistence instead of JWT metadata',
 );
 
-const directBypassPattern = /getSupabaseAdmin\([^)]*\)\s*\.from\(\s*['"`]([a-zA-Z_][a-zA-Z0-9_]*)['"`]\s*\)/g;
 // PLATFORM-OWNED tables that appear in the tenant registry because they carry a site_id, but which
 // tenant roles are explicitly REVOKED from (migration 223, D-8). The rule below assumes a
 // tenant-scoped client is the correct accessor and that the admin client bypasses it. For these
@@ -115,45 +116,26 @@ for (const table of platformOwnedRevokedFromTenants) {
   }
 }
 
+// The runtime client is guarded. Check the real expression chain and contextual
+// write type, including tenant columns and delegated typed payloads. A fixed text
+// window could borrow another query's owner predicate and missed legitimate stores.
+const configPath=path.join(root,'services/api-gateway/tsconfig.json');
+const config=ts.readConfigFile(configPath,ts.sys.readFile);
+if(config.error)throw new Error(ts.flattenDiagnosticMessageText(config.error.messageText,'\n'));
+const parsed=ts.parseJsonConfigFileContent(config.config,ts.sys,path.dirname(configPath));
+const program=ts.createProgram({rootNames:parsed.fileNames,options:{...parsed.options,noEmit:true}});
+const checker=program.getTypeChecker();
 for (const file of sourceFiles()) {
   const abs = path.join(root, file);
   if (!fs.existsSync(abs)) continue;
-  const source = fs.readFileSync(abs, 'utf8');
-  let match;
-  while ((match = directBypassPattern.exec(source))) {
-    const table = match[1];
-    const entry = tenantTableByName.get(table);
-    if (!entry) continue;
+  const sourceFile=program.getSourceFile(abs);
+  if(!sourceFile)throw new Error(`${file}: source is absent from the Gateway TypeScript programme`);
+  for(const query of directTenantQueries(sourceFile,checker,tenantTableByName)) {
+    const table=query.table;
     if (platformOwnedRevokedFromTenants.has(table)) continue;
-    // An access that carries a registered OWNER predicate is SCOPED, and the runtime tenant guard
-    // accepts it for exactly that reason. tenantScoped() cannot serve these: it takes a siteId and
-    // returns rows for one tenant, whereas a platform-level owner read (a buyer's own support
-    // tickets, which span sites and may have no site_id at all) is scoped by the owner instead.
-    // Flagging it would push the next author toward a tenant-scoped client that cannot express the
-    // query, or toward restructuring the call to dodge this regex -- which this file already says is
-    // worse than either.
-    //
-    // The window ends at the NEXT .from( so a neighbouring query's predicate can never satisfy this
-    // one: a fixed-size window is the same defect in the opposite direction.
-    const after = source.slice(match.index + match[0].length);
-    const nextFrom = after.indexOf('.from(');
-    const statement = nextFrom === -1 ? after : after.slice(0, nextFrom);
-    const ownerScoped = (entry.ownerColumns || []).some((column) =>
-      new RegExp(`\\.eq\\(\\s*['"\`]${column}['"\`]`).test(statement),
-    );
-    if (ownerScoped) continue;
-
-    // An INSERT or UPSERT that NAMES its owner in the payload has no scope to bypass: it writes the
-    // row it names rather than selecting rows it was not entitled to. The runtime guard agrees —
-    // probing it shows an insert passes while an unscoped SELECT on the same table is refused — so
-    // flagging this would report a write as if it were an unscoped read. Both halves are required:
-    // a write, AND the owner column present as a payload key.
-    const writesOwnedRow = /\.(insert|upsert)\s*\(/.test(statement)
-      && (entry.ownerColumns || []).some((column) => new RegExp(`\\b${column}\\s*:`).test(statement));
-    if (writesOwnedRow) continue;
-
-    const line = source.slice(0, match.index).split('\n').length;
-    violations.push(`${file}:${line} ${table} bypasses guarded tenantScoped/service client`);
+    if(query.scoped)continue;
+    const line=sourceFile.getLineAndCharacterOfPosition(query.start).line+1;
+    violations.push(`${file}:${line} ${table} has an unproven scope on its direct guarded-client expression`);
   }
 }
 

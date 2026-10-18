@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
+
 import '../../app/store_context.dart';
 
 import '../../app/routes.dart';
 import '../../services/subscription_service.dart';
 import '../../theme/app_theme_colors.dart';
+
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart' as mobile_tokens;
-import '../../widgets/shared/provider_mode_badge.dart';
+
 import '../subscription/razorpay_checkout_screen.dart';
 
 class BillingScreen extends StatefulWidget {
@@ -18,13 +19,14 @@ class BillingScreen extends StatefulWidget {
 }
 
 class _BillingScreenState extends State<BillingScreen> {
-  SubscriptionModel? _subscription;
+  MerchantBillingState? _subscription;
   List<BillingHistoryEntry> _history = const [];
   bool _isLoading = true;
   bool _isRecovering = false;
   String? _storeId;
+  int _loadVersion = 0;
+  int? _loadedEpoch;
   String? _error;
-  ProviderMode? _providerMode;
 
   late AppThemeColors colors;
 
@@ -35,14 +37,18 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   Future<void> _load() async {
+    final version = ++_loadVersion;
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
     try {
-      _storeId ??=
-          (await context.read<StoreContext>().ensureSelectedStore())?.id;
+      final storeContext = context.read<StoreContext>(),
+          epoch = storeContext.requestContextVersion;
+      final store = await storeContext.ensureSelectedStore();
+      if (!mounted || version != _loadVersion) return;
+      _storeId = store?.id;
       if (_storeId == null) {
         setState(() {
           _subscription = null;
@@ -54,23 +60,22 @@ class _BillingScreenState extends State<BillingScreen> {
 
       final subscriptionService = context.read<SubscriptionService>();
       final results = await Future.wait<Object?>([
-        subscriptionService.getSubscription(_storeId!),
+        subscriptionService.fetchBillingState(_storeId!),
         subscriptionService.fetchBillingHistory(_storeId!),
-        subscriptionService.getPaymentConfig(_storeId!),
       ]);
-      final paymentConfig = results[2] is Map
-          ? Map<String, dynamic>.from(results[2] as Map)
-          : const <String, dynamic>{};
-      if (mounted) {
+      if (mounted && version == _loadVersion) {
+        if (storeContext.requestContextVersion != epoch ||
+            storeContext.selectedStoreId != _storeId)
+          throw StateError('Store changed');
         setState(() {
-          _subscription = results[0] as SubscriptionModel?;
+          _loadedEpoch = epoch;
+          _subscription = results[0] as MerchantBillingState?;
           _history = results[1] as List<BillingHistoryEntry>;
-          _providerMode = ProviderMode.parse(paymentConfig['provider_mode']);
           _isLoading = false;
         });
       }
     } catch (error) {
-      if (mounted) {
+      if (mounted && version == _loadVersion) {
         setState(() {
           _error =
               'Billing details could not load. Pull to refresh or try again.';
@@ -101,7 +106,14 @@ class _BillingScreenState extends State<BillingScreen> {
         MaterialPageRoute(
           builder: (_) => RazorpayCheckoutScreen(
             storeId: _storeId!,
-            plan: subscription.plan,
+            planSlug:
+                (checkout['plan'] as Map?)?['slug'] as String? ??
+                subscription.planSlug ??
+                '',
+            billingPeriod:
+                checkout['billing_period'] as String? ??
+                subscription.billingPeriod ??
+                'monthly',
             checkout: checkout,
           ),
         ),
@@ -129,6 +141,15 @@ class _BillingScreenState extends State<BillingScreen> {
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
+    final storeContext = context.watch<StoreContext>();
+    final changed =
+        _storeId != null &&
+        (_storeId != storeContext.selectedStoreId ||
+            _loadedEpoch != storeContext.requestContextVersion);
+    if (changed && !_isLoading && _error == null)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_isLoading) _load();
+      });
     return Scaffold(
       backgroundColor: colors.bgStart,
       body: Container(
@@ -137,7 +158,11 @@ class _BillingScreenState extends State<BillingScreen> {
           child: Column(
             children: [
               _header(),
-              Expanded(child: _isLoading ? _loading() : _body()),
+              Expanded(
+                child: _isLoading || (changed && _error == null)
+                    ? _loading()
+                    : _body(),
+              ),
             ],
           ),
         ),
@@ -212,13 +237,15 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   Widget _subscriptionCard() {
-    final plan = _subscription?.plan ?? SubscriptionPlan.trial;
-    final status = _subscription?.status.name ?? 'active';
-    final planInfo = SubscriptionService.getPlanInfo(plan);
-    final amount = _subscription?.lastPaymentAmount ?? 0;
-    final nextBilling = _subscription?.nextBillingDate;
-    final recoverable = _subscription?.status == SubscriptionStatus.pastDue;
-    final statusTone = recoverable ? colors.warning : colors.success;
+    final status = _subscription?.status ?? 'unknown';
+    final amount = _subscription?.amountPaidMinor;
+    final nextBilling = _subscription?.periodEnd;
+    final recoverable = _subscription?.recoverable == true;
+    final statusTone = recoverable
+        ? colors.warning
+        : _subscription?.active == true
+        ? colors.success
+        : colors.textTertiary;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -239,7 +266,7 @@ class _BillingScreenState extends State<BillingScreen> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  planInfo['name'] as String,
+                  _subscription?.planName ?? 'Billing unavailable',
                   style: TextStyle(
                     color: colors.textPrimary,
                     fontSize: 18,
@@ -247,7 +274,10 @@ class _BillingScreenState extends State<BillingScreen> {
                   ),
                 ),
               ),
-              ProviderModeBadge(mode: _providerMode, compact: true),
+              Text(
+                'Provider status unavailable',
+                style: TextStyle(color: colors.textSecondary, fontSize: 10),
+              ),
               const SizedBox(width: 8),
               _statusChip(_statusLabel(status), statusTone),
             ],
@@ -259,7 +289,13 @@ class _BillingScreenState extends State<BillingScreen> {
               Expanded(
                 child: _metric(
                   'Last payment',
-                  amount <= 0 ? 'INR 0.00' : 'INR ${amount.toStringAsFixed(2)}',
+                  amount == null
+                      ? 'Not recorded'
+                      : subscriptionMoney(
+                          amount,
+                          symbol: 'INR ',
+                          decimals: true,
+                        ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -273,7 +309,10 @@ class _BillingScreenState extends State<BillingScreen> {
           ),
           const SizedBox(height: 14),
           FilledButton.icon(
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.pricing),
+            onPressed: () async {
+              await Navigator.pushNamed(context, AppRoutes.pricing);
+              if (mounted) await _load();
+            },
             icon: const Icon(Icons.rocket_launch_outlined),
             label: const Text('Manage plan'),
           ),
@@ -372,9 +411,7 @@ class _BillingScreenState extends State<BillingScreen> {
   }
 
   Widget _historyCard(BillingHistoryEntry entry) {
-    final paid =
-        entry.status.toLowerCase() == 'active' ||
-        entry.status.toLowerCase() == 'paid';
+    final paid = entry.status.toLowerCase() == 'paid';
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -403,11 +440,21 @@ class _BillingScreenState extends State<BillingScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_titleCase(entry.billingPeriod)} - ${entry.createdAt}',
+                  '${entry.invoiceNumber ?? _titleCase(entry.billingPeriod)} - ${entry.createdAt}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
+                if (entry.taxAmount != null)
+                  Text(
+                    'Recorded tax: ${subscriptionMoney(entry.taxAmount!, decimals: true)}',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
+                if (entry.totalAmount != null)
+                  Text(
+                    'Recorded total: ${subscriptionMoney(entry.totalAmount!, decimals: true)}',
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
               ],
             ),
           ),

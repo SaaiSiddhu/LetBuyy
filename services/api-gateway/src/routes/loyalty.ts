@@ -1,4 +1,4 @@
-// Merchant loyalty programme settings (phase F-LOY-3, backend half; schema: migrations 231 and 237).
+// Merchant loyalty settings over canonical237 audit/projection and334 owner/retry/policy guards.
 //
 // Before this router existed, `loyalty_programs` had NO writer anywhere in the repository — the only
 // TypeScript references to the table were two `.select()` calls — so a merchant could enable loyalty
@@ -6,14 +6,16 @@
 // store. Loyalty was complete and unusable.
 //
 // The write goes through `set_loyalty_program`, never through an UPDATE, and the reason is money:
-// `redeem_loyalty_points` reads `point_value_minor` AT REDEMPTION TIME, so halving it halves the
-// rupee value of every point already earned at that store. The RPC records that change — old and new
+// `redeem_loyalty_points` reads `point_value_minor` AT REDEMPTION TIME. The owner-approved
+// rule forbids decreases while points remain. Allowed changes record old and new
 // values, the outstanding point balance and the signed liability delta in paise — in the same
 // transaction as the change itself. A route-side audit write can fail after the settings change has
 // landed, and nothing would ever notice.
 //
+// 334 blocks decreases while buyers hold points (owner16October2026),
+// uses exact timestamp versions and durable scoped retry receipts.
 // Both routes run INSIDE the tenant transaction (`withResolvedTenantTx`: SET LOCAL ROLE app_tenant +
-// app.site_id from the resolved owned-store scope). That is what makes 237's tenant fence
+// app.site_id from the resolved owned-store scope). That is what makes the current tenant fence
 // load-bearing: the function refuses any site other than the one the transaction is scoped to, so a
 // route that resolved ownership for one store and passed another is stopped by the database rather
 // than by review. `app_tenant` has EXECUTE on the function and still has no INSERT or UPDATE on the
@@ -44,13 +46,12 @@ import {
 
 type AppContext = Context<{ Bindings: Env }>;
 
-export const SET_LOYALTY_PROGRAM_RPC = 'set_loyalty_program';
-export const LOYALTY_PROGRAM_COLUMNS =
-    'site_id, is_active, earn_rate_bps, redeem_cap_bps, point_value_minor, created_at, updated_at';
-
-// The nine positional parameters of set_loyalty_program, in 237's declared order.
+export const SET_LOYALTY_PROGRAM_RPC = 'mutate_loyalty_program_v1';
+// 334 guards retries/version, then calls the one 237 settings/audit authority.
+// The text cast avoids postgres.js's timestamptz serializer converting the
+// microsecond version to a millisecond JS Date before PostgreSQL receives it.
 export const SET_LOYALTY_PROGRAM_SQL =
-    `select public.${SET_LOYALTY_PROGRAM_RPC}($1::uuid, $2::boolean, $3::integer, $4::integer, $5::bigint, $6::uuid, $7::text, $8::text, $9::text) as result`;
+    `select public.${SET_LOYALTY_PROGRAM_RPC}($1::uuid, $2::uuid, $3::jsonb, $4::text, $5::text::timestamptz, $6::text) as result`;
 
 export type TenantSql = { unsafe: (query: string, parameters?: unknown[]) => Promise<unknown> };
 export type LoyaltyScope = Pick<OwnedStoreScope, 'siteId' | 'customUser' | 'tenant'>;
@@ -70,16 +71,6 @@ export const defaultLoyaltyRouteDependencies: LoyaltyRouteDependencies = {
         withResolvedTenantTxFromGateway(c, tenant, (sql) => callback(sql as unknown as TenantSql)),
 };
 
-interface LoyaltyProgramRow {
-    site_id: string;
-    is_active: boolean;
-    earn_rate_bps: number;
-    redeem_cap_bps: number;
-    point_value_minor: number | string;
-    created_at: string;
-    updated_at: string;
-}
-
 // Postgres → HTTP. Messages are 237's own RAISE texts; codes are SQLSTATE. Anything unrecognised is
 // rethrown so the global handler logs it as an unexpected error instead of masking a real bug.
 export function mapLoyaltyDatabaseError(error: unknown): AppError | null {
@@ -95,6 +86,7 @@ export function mapLoyaltyDatabaseError(error: unknown): AppError | null {
     if (/must be between 0 and 10000/.test(message)) return new AppError(message.replace(/^.*?ERROR:\s*/i, ''), 422, 'UNPROCESSABLE');
     if (/point_value_minor must be greater than zero/.test(message)) return new AppError('point_value_minor must be greater than zero', 422, 'UNPROCESSABLE');
     if (/actor_type must be one of/.test(message)) return new AppError('unsupported actor type', 422, 'UNPROCESSABLE');
+    if (/LOYALTY_VALUE_DECREASE_BLOCKED/.test(message)) return new AppError('Point value cannot decrease while buyers hold points', 409, 'LOYALTY_VALUE_DECREASE_BLOCKED');
     return null;
 }
 
@@ -118,25 +110,12 @@ export function createLoyaltyRouter(deps: LoyaltyRouteDependencies = defaultLoya
         try {
             const scope = await deps.resolveOwnedStoreScope(c, query.store_id);
             const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
-                const rows = (await sql.unsafe(
-                    `select ${LOYALTY_PROGRAM_COLUMNS} from public.loyalty_programs where site_id = $1`,
-                    [scope.siteId],
-                )) as LoyaltyProgramRow[];
-                // The outstanding liability is served with the settings on purpose: a merchant about
-                // to change point_value_minor should be able to see what it is worth before doing it.
-                const outstanding = (await sql.unsafe(
-                    'select public.loyalty_outstanding_points($1) as points',
-                    [scope.siteId],
-                )) as Array<{ points: number | string }>;
-                return { row: rows[0] ?? null, outstanding: Number(outstanding[0]?.points ?? 0) };
+                const rows = (await sql.unsafe('select public.read_loyalty_program_v1($1::uuid,$2::uuid) as result',
+                    [scope.siteId, scope.customUser.id])) as Array<{ result: unknown }>;
+                if (!rows[0]?.result) throw new AppError('Loyalty state unavailable', 503, 'LOYALTY_STATE_UNAVAILABLE');
+                return rows[0].result;
             });
-
-            if (!result.row) {
-                // Not enrolled is a different answer from enrolled-and-paused, exactly as it is on the
-                // buyer side. Serving a zeroed programme here would tell a merchant they had one.
-                return c.json(success({ store_id: scope.siteId, enrolled: false, program: null, outstanding_points: result.outstanding }));
-            }
-            return c.json(success({ store_id: scope.siteId, enrolled: true, program: result.row, outstanding_points: result.outstanding }));
+            return c.json(success(result));
         } catch (error) {
             return respond(c, error);
         }
@@ -146,24 +125,39 @@ export function createLoyaltyRouter(deps: LoyaltyRouteDependencies = defaultLoya
     router.put('/program', validate('json', SetLoyaltyProgramSchema), async (c) => {
         const body = c.get('validatedBody') as SetLoyaltyProgramInput;
         try {
+            const key = c.req.header('X-Idempotency-Key');
+            if (!key || key.length < 8 || key.length > 200 || key.trim() !== key || /[\u0000-\u001f\u007f]/.test(key)) {
+                throw new AppError('A stable X-Idempotency-Key is required', 400, 'IDEMPOTENCY_KEY_REQUIRED');
+            }
             const scope = await deps.resolveOwnedStoreScope(c, body.store_id);
+            const { store_id: _store, expected_updated_at: _version, ...intent } = body;
             const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
                 const rows = (await sql.unsafe(SET_LOYALTY_PROGRAM_SQL, [
                     // The site comes from the resolved scope, never from the body. `store_id` in the
                     // body only chose which owned store to resolve.
                     scope.siteId,
-                    body.is_active ?? null,
-                    body.earn_rate_bps ?? null,
-                    body.redeem_cap_bps ?? null,
-                    body.point_value_minor ?? null,
                     scope.customUser.id,
-                    'user',
-                    scope.customUser.email ?? null,
+                    intent,
+                    key,
+                    body.expected_updated_at,
                     scope.tenant.requestId ?? null,
-                ])) as Array<{ result: unknown }>;
-                return rows[0]?.result ?? null;
+                ])) as Array<{ result: { data?: unknown; status?: number; error?: string; replayed?: boolean } }>;
+                const reply = rows[0]?.result;
+                if (!reply || ![200,400,409,503].includes(reply.status ?? 0)) throw new AppError('Loyalty state unavailable', 503, 'LOYALTY_STATE_UNAVAILABLE');
+                if (reply.error) {
+                    const messages: Record<string,string> = {
+                        LOYALTY_VERSION_CONFLICT: 'Settings changed. Reload before saving again.',
+                        IDEMPOTENCY_CONFLICT: 'The retry key belongs to a different save.',
+                        LOYALTY_STATE_UNAVAILABLE: 'Loyalty state is temporarily unavailable.',
+                        VALIDATION: 'Invalid loyalty settings.',
+                    };
+                    throw new AppError(messages[reply.error] ?? 'Loyalty save unavailable', reply.status ?? 503, reply.error);
+                }
+                if (reply.data === undefined) throw new AppError('Loyalty state unavailable', 503, 'LOYALTY_STATE_UNAVAILABLE');
+                return reply;
             });
-            return c.json(success(result));
+            c.header('X-Idempotency-Replayed', result.replayed ? 'true' : 'false');
+            return c.json(success(result.data));
         } catch (error) {
             return respond(c, error);
         }

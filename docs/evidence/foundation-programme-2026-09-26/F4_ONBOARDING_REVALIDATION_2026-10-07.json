@@ -1,0 +1,33 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts",
+  "owned_runner_id": "93efe4eed24b",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-web-onboarding-browser.postgres.test.ts --kind gateway-db --jobs 1 --timeout 300",
+  "result": {
+    "suite_count": 1,
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 60.5,
+    "wall_seconds": 63.2,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining_runner_resources": 0,
+    "result": "runner exited 0 after its run-id-scoped cleanup check"
+  },
+  "limits": [
+    "Local runner-owned Postgres/PostgREST, Gateway worker, Identity and Merchant Next applications, and headless Chromium only.",
+    "Synthetic pre-minted session; normal sign-in and email delivery are outside the suite.",
+    "No plan was selected, checkout opened, hosted service contacted or deployment performed.",
+    "This revalidates the existing F4.2 journey only; it is not screen-reader, WCAG or full Phase 4 acceptance."
+  ]
+}

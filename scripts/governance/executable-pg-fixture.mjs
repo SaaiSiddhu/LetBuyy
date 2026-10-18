@@ -143,7 +143,19 @@ export function createVolume({ name, runId }) {
  * remove exactly what the caller made); when a caller passes neither, both are created here under the
  * container's own name, so a bare startCluster never leaves an anonymous volume either.
  */
+// Test-only startup opt-in, confined to the newly owned PostgreSQL process.
+// Validate during module loading, before runner resource creation. Unset keeps
+// the historical command byte-for-byte; only the literal bounded value 2 works.
+export function preparedTransactionArgs(env = process.env) {
+    const value = env.LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS;
+    if (value === undefined) return [];
+    if (value !== '2') throw new Error('LETBUYY_EXECUTABLE_PREPARED_TRANSACTIONS must be exactly 2 when explicitly set');
+    return ['-c', 'max_prepared_transactions=2'];
+}
+const preparedServerArgs = preparedTransactionArgs();
+
 export function startCluster({ name, database, image = DEFAULT_IMAGE, runId = newRunId(), network, volume, limits = POSTGRES_LIMITS, plain = false }) {
+    if (plain && preparedServerArgs.length) throw new Error('prepared transaction proof requires a real owned PostgreSQL cluster');
     if (plain) {
         // With no real Docker daemon the only docker on the machine is the cloud-sandbox shim (scripts/dev/docker-shim), which
         // models `run`, `exec` and `inspect` of a Postgres container and nothing else: no named volume, network, resource limit
@@ -161,7 +173,7 @@ export function startCluster({ name, database, image = DEFAULT_IMAGE, runId = ne
             '--mount', `type=volume,source=${ownVolume},target=${DATA_DIR}`,
             '-e', 'POSTGRES_PASSWORD=postgres',
             '-e', `POSTGRES_DB=${database}`,
-            image,
+            image, ...preparedServerArgs,
         ]);
     } catch (error) {
         // The volume this call made (and only that one) goes with the failed start; the caller owns anything it passed in.
@@ -319,7 +331,7 @@ function pidAlive(pid) {
  * FIXTURE_LABEL, carrying a dead owner pid and older than the grace period. Returns the container names (the
  * historical return value) and, separately, the networks and volumes.
  */
-export function reapStaleClusters({ minAgeSeconds = 120, log = () => {}, detail = false } = {}) {
+function reapAllStaleClusters({ minAgeSeconds = 120, log = () => {}, detail = false } = {}) {
     const staleEnough = (created) => {
         const ageSeconds = (Date.now() - Date.parse(String(created).trim())) / 1000;
         return Number.isFinite(ageSeconds) && ageSeconds >= minAgeSeconds;
@@ -378,4 +390,90 @@ export function reapStaleClusters({ minAgeSeconds = 120, log = () => {}, detail 
     }
 
     return detail ? { containers: reaped, networks: reapedNetworks, volumes: reapedVolumes } : reaped;
+}
+
+/** Explicit allowsets are validated before even listing Docker resources. */
+export function validateReapRunIds(runIds) {
+    if (runIds === undefined) return null; // historical unscoped path, not used by lifecycle fixtures
+    if (!Array.isArray(runIds) || runIds.length === 0 || runIds.length > 32 || runIds.some(id => typeof id !== 'string' || !RUN_ID_PATTERN.test(id))) {
+        throw new Error('reap run IDs must be a nonempty array of at most32 exact12-character lowercase hex IDs');
+    }
+    return [...new Set(runIds)];
+}
+
+/** CLI is deliberately unambiguous: no missing values or equals-form fallback to global reaping. */
+export function parseReapRunIds(args) {
+    const selected=[];
+    for(let i=0;i<args.length;i++) {
+        if(!args[i].startsWith('--reap-run-id'))continue;
+        if(args[i]!=='--reap-run-id' || !RUN_ID_PATTERN.test(args[i+1]??''))throw new Error('--reap-run-id requires an exact12-character lowercase hex ID');
+        selected.push(args[++i]);
+    }
+    if(args.includes('--reap-only') && args.includes('--no-reap'))throw new Error('--reap-only and --no-reap cannot be combined');
+    if(!selected.length)return undefined;
+    if(!args.includes('--reap-only') || args.includes('--no-reap'))throw new Error('--reap-run-id is only valid with --reap-only');
+    return validateReapRunIds(selected);
+}
+
+// Kept separate so supplying an explicit scope can never fall back to legacy discovery.
+export function reapStaleClusters({runIds, minAgeSeconds=120, log=()=>{}, detail=false}={}, deps={}) {
+    const allow=validateReapRunIds(runIds);
+    if(allow===null) {
+        if(Object.keys(deps).length)throw new Error('recording seams require an explicit reap run-ID scope');
+        return reapAllStaleClusters({minAgeSeconds,log,detail});
+    }
+    if(!Number.isFinite(minAgeSeconds) || minAgeSeconds<0)throw new Error('reap minimum age must be finite and nonnegative');
+    const run=deps.docker??docker, alive=deps.processAlive??pidAlive, now=deps.now??Date.now;
+    const reaped={containers:[],networks:[],volumes:[],failures:[]};
+    const ownedName=/^letbuyy-exec-[A-Za-z0-9][A-Za-z0-9.-]*$/;
+    const restoredImage=/(^|\/)supabase\/(postgres|gotrue|kong|storage-api|realtime|studio|edge-runtime|postgres-meta|supavisor|mailpit|logflare|vector)(:|@|$)/;
+    const inspect=(kind,handle)=>{
+        const answer=run([kind,'inspect',handle],{allowFailure:true});
+        if(answer.status!==0) {
+            // Literal equality binds the whole known response to this exact handle;
+            // handles are never interpreted as patterns. Allow one terminal CLI newline.
+            const missingNetwork=kind==='network'&&answer.status===1&&(answer.stderr??'').replace(/\r?\n$/,'')===`Error response from daemon: network ${handle} not found`;
+            return missingNetwork||/no such (?:object|container|network|volume)/i.test(answer.stderr??'')?{missing:true}:null;
+        }
+        try {const values=JSON.parse(answer.stdout);return Array.isArray(values)&&values.length===1?values[0]:null;}catch{return null;}
+    };
+    const safe=(kind,item,runId)=>{
+        if(!item || item.missing)return false;
+        const labels=item.Config?.Labels??item.Labels??{}, name=String(item.Name??'').replace(/^\//,'');
+        if(!ownedName.test(name) || labels[FIXTURE_LABEL]!=='1' || labels[RUN_ID_LABEL]!==runId || !allow.includes(labels[RUN_ID_LABEL]))return false;
+        if(Object.keys(labels).some(key=>key.startsWith('com.supabase.') || key.startsWith('com.docker.compose.') && key.endsWith('.project') && /supabase/i.test(String(labels[key]))))return false;
+        const role=labels[ROLE_LABEL], expected=kind==='network'?'network':kind==='volume'?'volume':null;
+        if(expected ? role!==expected : !['postgres','postgrest'].includes(role))return false;
+        if(kind==='container') {
+            if(!/^[0-9a-f]{64}$/.test(item.Id??''))return false;
+            const image=item.Config?.Image;
+            if(restoredImage.test(String(image)) || image!==(role==='postgres'?DEFAULT_IMAGE:DEFAULT_REST_IMAGE))return false;
+            if(item.HostConfig?.Privileged || item.HostConfig?.NetworkMode==='host' || (item.HostConfig?.Binds??[]).length || (item.Mounts??[]).some(m=>m.Type==='bind'))return false;
+        }
+        if(kind==='network' && !/^[0-9a-f]{64}$/.test(item.Id??''))return false;
+        const pidText=labels[OWNER_PID_LABEL],pid=Number(pidText);
+        if(!Number.isInteger(pid) || pid<=1 || pid>2147483647 || String(pid)!==pidText || pid===process.pid)return false;
+        try {if(alive(pid)!==false)return false;}catch{return false;}
+        const age=(now()-Date.parse(String(kind==='volume'?item.CreatedAt:item.Created)))/1000;
+        return Number.isFinite(age) && age>=minAgeSeconds;
+    };
+    for(const [kind,plural] of [['container','containers'],['network','networks'],['volume','volumes']])for(const runId of allow) {
+        const filters=['--filter',`label=${FIXTURE_LABEL}=1`,'--filter',`label=${RUN_ID_LABEL}=${runId}`];
+        const args=kind==='container'?['ps','-a',...filters,'--format','{{.ID}}']: [kind,'ls',...filters,'--format',kind==='network'?'{{.ID}}':'{{.Name}}'];
+        const listed=run(args,{allowFailure:true});
+        if(listed.status!==0){reaped.failures.push(`${kind} discovery failed for selected run ${runId}`);continue;}
+        for(const handle of [...new Set(listed.stdout.split('\n').map(s=>s.trim()).filter(Boolean))]) {
+            const item=inspect(kind,handle);if(!safe(kind,item,runId))continue;
+            const name=String(item.Name).replace(/^\//,''), identity=kind==='volume'?name:item.Id;
+            // Immutable IDs for containers/networks, and exact label/creation revalidation
+            // for named volumes. A foreign replacement is never removed by guessed name.
+            const check=inspect(kind,identity);
+            if(!safe(kind,check,runId) || check.Created!==item.Created || check.CreatedAt!==item.CreatedAt || check.Id!==item.Id)continue;
+            const removed=run(kind==='container'?['rm','-f',identity]:[kind,'rm',identity],{allowFailure:true});
+            const after=inspect(kind,identity);
+            if(removed.status!==0 || !after?.missing){reaped.failures.push(`${kind} ${name} removal not verified`);continue;}
+            reaped[plural].push(name);log(`reaped selected stale executable ${kind} ${name}`);
+        }
+    }
+    return detail?reaped:reaped.containers;
 }

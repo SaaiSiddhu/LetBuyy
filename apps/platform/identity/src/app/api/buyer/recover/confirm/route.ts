@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateCsrf } from '@/lib/auth/csrf'
-import { createIdentityIssuedBuyerSessionToken } from '@/lib/auth/identity-issued-session'
+import { prepareIdentityIssuedBuyerSession } from '@/lib/auth/identity-issued-session'
 import { buyerSessionEpoch, setBuyerSessionCookie } from '@/lib/auth/buyer-session'
 import {
     BUYER_EMAIL_CODE_PATTERN,
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: `Password must be ${BUYER_PASSWORD_MIN} to ${BUYER_PASSWORD_MAX} characters` }, { status: 400 })
         }
 
+        const issueSession = await prepareIdentityIssuedBuyerSession()
         const reset = await identityApiRequest('/storefront/buyer/password-recovery/complete', {
             method: 'POST',
             body: JSON.stringify({ email: body.email, code, password: body.password }),
@@ -64,11 +65,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Something went wrong. Try again in a moment.' }, { status: 503 })
         }
 
-        const token = await createIdentityIssuedBuyerSessionToken({
+        const token = await issueSession({
             buyerAccountId: buyer.id,
             sessionEpoch: buyerSessionEpoch(buyer.session_epoch),
         })
-        if (token) await setBuyerSessionCookie(token)
+        await setBuyerSessionCookie(token)
 
         return NextResponse.json({ buyer: { id: buyer.id, email: buyer.email, status: buyer.status } })
     } catch {

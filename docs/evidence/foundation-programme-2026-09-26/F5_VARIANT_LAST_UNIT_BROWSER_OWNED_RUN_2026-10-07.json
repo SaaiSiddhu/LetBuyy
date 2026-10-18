@@ -1,0 +1,44 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts",
+  "owned_runner_id": "780df4d7c6a7",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/checkout-browser.postgres.test.ts --kind gateway-db --jobs 1 --timeout 300",
+  "result": {
+    "suite_count": 1,
+    "tests": 4,
+    "passed": 4,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 64.2,
+    "wall_seconds": 66.3,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "new_journey": [
+    "Starts at the normal storefront cart and hands off to the hosted-checkout UI using synthetic cart data.",
+    "Buyer enters contact and delivery details and selects COD; immediately before confirmation, the test changes the owned Postgres inventory row to zero to simulate a competing last-unit sale.",
+    "Real Commerce BFF and Gateway return HTTP 409 with INSUFFICIENT_INVENTORY and the buyer-safe review-cart message; Chromium shows the message in the checkout alert.",
+    "The cart token remains in browser storage, no order is created for this buyer, checkout is not completed, and no page error occurs."
+  ],
+  "runner_observations": {
+    "gateway_requests_forwarded": 700,
+    "gateway_requests_refused": 0,
+    "proxy_upstream_errors": 1,
+    "expected_confirm_conflict": "HTTP 409 logged for the synthetic stale-inventory confirmation"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining_runner_resources": 0,
+    "result": "runner exited 0 after its run-id-scoped cleanup check"
+  },
+  "limits": [
+    "Synthetic local data and a runner-owned disposable Postgres/PostgREST database only.",
+    "The browser journey induces a stock change through the test fixture immediately before confirm; the separate owned API suite proves two actual Gateway buyer requests racing concurrently for the final unit.",
+    "No hosted deployment, production data, physical device or real payment provider was used; no provider transaction occurs in this COD failure journey."
+  ]
+}

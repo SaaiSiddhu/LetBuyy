@@ -40,7 +40,7 @@
 //   node scripts/governance/run-executable-suites.mjs [--filter <substring>] [--suite <path>]...
 //        [--suite-dir <dir>]... [--gateway-db] [--jobs <n>] [--timeout <seconds>] [--log-dir <dir>] [--json]
 //        [--json-out <file>] [--list] [--keep-container] [--container <name>] [--kind postgres|gateway-db] [--no-reap]
-//        [--reap-only] [--reap-min-age <seconds>]
+//        [--reap-only] [--reap-min-age <seconds>] [--reap-run-id <12hex>]... [--run-receipt <new-file>]
 // --container names the cluster(s); it must be one of this runner's own names (letbuyy-exec-...), and anything else -
 // a Supabase development container included - is refused before a single docker command runs. --kind applies to
 // explicit --suite/--suite-dir paths that live outside the catalog (the runner's own lifecycle tests use it).
@@ -66,6 +66,7 @@ import {
     newRunId,
     publishedHostPort,
     reapStaleClusters,
+    parseReapRunIds,
     removeContainer,
     removeNetwork,
     removeVolume,
@@ -78,6 +79,7 @@ import {
 } from './executable-pg-fixture.mjs';
 import { buildGatewayTemplate, createSuiteDatabase, dropSuiteDatabase } from './owned-database-provision.mjs';
 import { OWNED_FIXTURE_ENV, verifyOwnedFixture } from './owned-fixture-guard.mjs';
+import { ownedDatabaseNameFor } from './owned-database-name.mjs';
 import { startRestProxy } from './owned-rest-proxy.mjs';
 import { discoverSuites, isGatewayDatabaseSuite } from './test-suite-catalog.mjs';
 
@@ -126,13 +128,6 @@ function selectSuites() {
         if (!existsSync(join(repoRoot, suite))) throw new Error(`suite not found: ${suite}`);
     }
     return chosen.filter((suite) => !filter || suite.includes(filter)).map((path) => ({ path, kind: kindOf(path) }));
-}
-
-// Postgres identifiers cap at 63 bytes; suite names are long, so trim from the front and keep the
-// distinctive tail.
-function databaseNameFor(suite) {
-    const slug = basename(suite).replace(/\.test\.(mjs|ts)$/, '').replace(/[^a-z0-9]+/gi, '_').toLowerCase();
-    return `letbuyy_exec_${slug}`.slice(0, 63);
 }
 
 const psqlOn = (cluster, sql, { allowFailure = false } = {}) =>
@@ -288,7 +283,7 @@ async function runPostgresSuite(suite, cluster) {
     // a table sees the first one's state and fails in a fraction of a second. Run standalone they
     // pass. Two separate psql invocations, not one `-c` with both statements: psql wraps a
     // multi-command -c string in an implicit transaction and CREATE DATABASE cannot run in one.
-    const database = databaseNameFor(suite.path);
+    const database = ownedDatabaseNameFor(suite.path);
     psqlOn(cluster, `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`, { allowFailure: true });
     psqlOn(cluster, `CREATE DATABASE "${database}";`);
 
@@ -324,7 +319,7 @@ async function waitForRest(proxyUrl, serviceKey, restName) {
 
 async function runGatewaySuite(suite, cluster) {
     const started = Date.now();
-    const database = databaseNameFor(suite.path);
+    const database = ownedDatabaseNameFor(suite.path);
     const restName = `letbuyy-exec-${runId}-rest-${++restCounter}`;
     const record = { database, templateSeconds: 0, provisionSeconds: 0, rest: null, ownership: 'not verified', cleanup: { rest: null, database: null } };
     let proxy = null;
@@ -439,11 +434,12 @@ async function startClusters(count) {
 }
 
 async function main() {
+    const reapRunIds = parseReapRunIds(args); // before any Docker discovery or deletion
     const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
     if (flag('--reap-only')) {
-        const { containers, networks, volumes } = reapStaleClusters({ minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
-        process.stdout.write(JSON.stringify({ reaped: containers, reapedNetworks: networks, reapedVolumes: volumes }) + '\n');
-        return 0;
+        const { containers, networks, volumes, failures = [] } = reapStaleClusters({ runIds: reapRunIds, minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });
+        process.stdout.write(JSON.stringify({ reaped: containers, reapedNetworks: networks, reapedVolumes: volumes, reapFailures: failures }) + '\n');
+        return failures.length ? 71 : 0;
     }
 
     const suites = selectSuites();
@@ -455,6 +451,14 @@ async function main() {
     if (!OWNED_CLUSTER_NAME.test(containerBase)) {
         // Refused with no docker command at all: not even an inspect of a container this runner did not name.
         throw new Error(`refusing --container ${containerBase}: a cluster name must be one this runner allocates (letbuyy-exec-...); the Supabase development stack and every other container are never used`);
+    }
+
+    // Optional exclusive-create receipt is durable before the first Docker operation.
+    // Lifecycle SIGKILL/failure cleanup can select this exact generated run, never guessed names.
+    if (args.includes('--run-receipt')) {
+        const path = value('--run-receipt', null);
+        if (values('--run-receipt').length !== 1 || !path || path.startsWith('--')) throw new Error('--run-receipt requires one new file path');
+        writeFileSync(path, JSON.stringify({ runId, runnerPid: process.pid, containerBase }) + '\n', { flag: 'wx', mode: 0o600 });
     }
 
     // Parallel clusters are only isolated when each container is a real one. The cloud-sandbox docker
@@ -517,7 +521,7 @@ async function main() {
     const leftover = keepContainer ? [] : [...remaining.containers, ...remaining.networks, ...remaining.volumes];
     const cleanupFailures = [...cleanupOutcomes.filter((outcome) => !outcome.removed).map((outcome) => `${outcome.kind} ${outcome.name}`), ...leftover.map((name) => `remaining ${name}`)];
     if (cleanupFailures.length > 0) {
-        warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
+        warn(`cleanup incomplete; these resources carry run id ${runId} and can be removed with \`node scripts/governance/run-executable-suites.mjs --reap-only --reap-run-id ${runId}\` once this process has exited: ${[...new Set(cleanupFailures)].join(', ')}`);
     }
 
     if (infrastructureError) {

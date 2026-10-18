@@ -1,0 +1,38 @@
+{
+  "recorded_on": "2026-10-07",
+  "timezone": "Asia/Kolkata",
+  "checkout": "/Users/saai_mithra/Projects/LetBuyy-Workspace/LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/marketplace-origin-filter.postgres.test.ts",
+  "owned_runner_id": "797b61510e46",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/marketplace-origin-filter.postgres.test.ts --kind gateway-db --jobs 1 --timeout 300",
+  "result": {
+    "suite_count": 1,
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "todo": 0,
+    "suite_seconds": 24.5,
+    "wall_seconds": 26.5,
+    "postgres_image": "postgres:16-alpine"
+  },
+  "cleanup": {
+    "failures": [],
+    "remaining_runner_resources": 0,
+    "result": "runner exited 0 after its run-id-scoped cleanup check"
+  },
+  "journey": [
+    "Calls the original five-argument marketplace_feed overload through real PostgREST.",
+    "Calls the Gateway worker and PostgREST six-argument filtered marketplace feed; proves normalized exact country matching and cursor pagination across two pages.",
+    "Proves facet results collapse case/space variants and exclude hidden, inactive, pending-review and unpublished offers.",
+    "Checks anon execution grants and absence of a PUBLIC-wide EXECUTE grant for the relevant functions."
+  ],
+  "limits": [
+    "Uses synthetic tenant/product/listing rows in the runner-owned disposable database; not an RLS-policy test.",
+    "No restored or hosted database was used, no hosted migration or deployment occurred, and no real merchant data was examined.",
+    "Does not decide the canonical country vocabulary or legacy free-text mapping, establish legal compliance, or exercise physical-device/storefront-browser acceptance."
+  ]
+}

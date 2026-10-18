@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchConsoleApi } from '@/lib/console-api';
 import { requireConsoleApiSession } from '@/lib/console-api-auth';
+import { CONSOLE_SESSION_COOKIE } from '@/lib/console-session';
 
 // Server-side proxy for super-admin founding mutations. Runs with the console API
 // token (internal secret) and dispatches to the gateway /internal/founding/* RPCs.
@@ -38,7 +39,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'site_id is required' }, { status: 400 });
     }
     const { path, payload } = builder(body);
-    const result = await fetchConsoleApi(path, { method: 'POST', body: payload });
+    const result = await fetchConsoleApi(path, { method: 'POST', body: payload,
+        sessionToken: req.cookies.get(CONSOLE_SESSION_COOKIE)?.value });
     if (result.error) {
         return NextResponse.json({ error: result.error }, { status: 502 });
     }

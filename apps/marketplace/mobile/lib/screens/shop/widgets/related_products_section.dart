@@ -52,10 +52,12 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
       builder: (context, productProvider, child) {
         // Get products from same category, excluding current product
         final relatedProducts = productProvider.products
-            .where((p) => 
-                p.categoryId == widget.categoryId && 
-                p.id != widget.currentProductId &&
-                p.isActive)
+            .where(
+              (p) =>
+                  p.categoryId == widget.categoryId &&
+                  p.id != widget.currentProductId &&
+                  p.isActive,
+            )
             .take(10)
             .toList();
 
@@ -77,7 +79,9 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
     required IconData icon,
     required List<ProductModel> products,
   }) {
-    final accentColor = widget.isDark ? AppColors.primaryLight : AppColors.primary;
+    final accentColor = widget.isDark
+        ? AppColors.primaryLight
+        : AppColors.primary;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -146,13 +150,17 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
       builder: (context, dealSnapshot) {
         final deal = dealSnapshot.data;
         final hasDeal = deal != null && deal.isActive;
-        
+
         // Deal-specific colors
-        final dealBorderColor = hasDeal 
-            ? (widget.isDark ? const Color(0xFF991B1B) : const Color(0xFFFECACA))
+        final dealBorderColor = hasDeal
+            ? (widget.isDark
+                  ? const Color(0xFF991B1B)
+                  : const Color(0xFFFECACA))
             : (widget.isDark ? Colors.grey[800]! : Colors.grey[200]!);
         final dealBgColor = hasDeal
-            ? (widget.isDark ? const Color(0xFF1A0A0A) : const Color(0xFFFEF2F2))
+            ? (widget.isDark
+                  ? const Color(0xFF1A0A0A)
+                  : const Color(0xFFFEF2F2))
             : (widget.isDark ? const Color(0xFF1A1A1A) : Colors.white);
 
         return GestureDetector(
@@ -172,8 +180,10 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: hasDeal 
-                      ? AppColors.error.withValues(alpha: widget.isDark ? 0.2 : 0.1)
+                  color: hasDeal
+                      ? AppColors.error.withValues(
+                          alpha: widget.isDark ? 0.2 : 0.1,
+                        )
                       : Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
@@ -187,7 +197,9 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
                       child: CachedNetworkImage(
                         imageUrl: product.primaryImage,
                         height: 130,
@@ -195,31 +207,46 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(
                           height: 130,
-                          color: widget.isDark ? Colors.grey[800] : Colors.grey[200],
+                          color: widget.isDark
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
                           child: const Center(
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
                           height: 130,
-                          color: widget.isDark ? Colors.grey[800] : Colors.grey[200],
-                          child: const Icon(Icons.image_not_supported, size: 32),
+                          color: widget.isDark
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 32,
+                          ),
                         ),
                       ),
                     ),
-                    
+
                     // 🔥 DEAL Badge
                     if (hasDeal)
                       Positioned(
                         top: 8,
                         left: 0,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [AppColors.error, const Color(0xFFDC2626)],
+                              colors: [
+                                AppColors.error,
+                                const Color(0xFFDC2626),
+                              ],
                             ),
-                            borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+                            borderRadius: const BorderRadius.horizontal(
+                              right: Radius.circular(6),
+                            ),
                             boxShadow: [
                               BoxShadow(
                                 color: AppColors.error.withValues(alpha: 0.4),
@@ -245,12 +272,16 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                           ),
                         ),
                       )
-                    else if (product.discount > 0)
+                    else if (product.discount > 0 &&
+                        product.marketplaceListingId == null)
                       Positioned(
                         top: 8,
                         left: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE53935),
                             borderRadius: BorderRadius.circular(4),
@@ -282,12 +313,14 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: widget.isDark ? Colors.white : Colors.black87,
+                            color: widget.isDark
+                                ? Colors.white
+                                : Colors.black87,
                             height: 1.3,
                           ),
                         ),
                         const SizedBox(height: 6),
-                        
+
                         // Price Row
                         Row(
                           children: [
@@ -296,14 +329,21 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: hasDeal ? AppColors.error : (widget.isDark ? Colors.white : Colors.black87),
+                                color: hasDeal
+                                    ? AppColors.error
+                                    : (widget.isDark
+                                          ? Colors.white
+                                          : Colors.black87),
                               ),
                             ),
-                            if (hasDeal || product.originalPrice != null) ...[
+                            if (hasDeal ||
+                                product.hasDisplayableReferencePrice) ...[
                               const SizedBox(width: 6),
                               Flexible(
                                 child: Text(
-                                  '₹${(hasDeal ? deal.originalPrice : product.originalPrice!).toStringAsFixed(0)}',
+                                  hasDeal
+                                      ? '₹${deal.originalPrice.toStringAsFixed(0)}'
+                                      : '${product.hasPriorThirtyDayLow ? '30d low' : 'M.R.P.'} ₹${product.originalPrice!.toStringAsFixed(0)}',
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 11,
@@ -315,22 +355,31 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                             ],
                           ],
                         ),
-                        
+
                         const SizedBox(height: 4),
-                        
+
                         // Deal Timer or Rating
                         if (hasDeal)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.error.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                              border: Border.all(
+                                color: AppColors.error.withValues(alpha: 0.3),
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.timer_rounded, size: 10, color: AppColors.error),
+                                Icon(
+                                  Icons.timer_rounded,
+                                  size: 10,
+                                  color: AppColors.error,
+                                ),
                                 const SizedBox(width: 2),
                                 Text(
                                   _formatDealTime(deal.timeRemaining),
@@ -346,20 +395,28 @@ class _RelatedProductsSectionState extends State<RelatedProductsSection> {
                         else
                           Row(
                             children: [
-                              const Icon(Icons.star_rounded, color: Color(0xFFFFC107), size: 14),
+                              const Icon(
+                                Icons.star_rounded,
+                                color: Color(0xFFFFC107),
+                                size: 14,
+                              ),
                               const SizedBox(width: 4),
                               Text(
                                 product.rating.toStringAsFixed(1),
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: widget.isDark ? Colors.grey[400] : Colors.grey[600],
+                                  color: widget.isDark
+                                      ? Colors.grey[400]
+                                      : Colors.grey[600],
                                 ),
                               ),
                               Text(
                                 ' (${product.reviewCount})',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: widget.isDark ? Colors.grey[600] : Colors.grey[500],
+                                  color: widget.isDark
+                                      ? Colors.grey[600]
+                                      : Colors.grey[500],
                                 ),
                               ),
                             ],

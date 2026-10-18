@@ -111,8 +111,8 @@ test('the buyer token is minted by identity-platform, never by the gateway', () 
             `the gateway's buyer routes must not issue tokens (found ${signing})`,
         );
     }
-    assert.match(buyerLogin, /createIdentityIssuedBuyerSessionToken/);
-    assert.match(buyerRegister, /createIdentityIssuedBuyerSessionToken/);
+    assert.match(buyerLogin, /prepareIdentityIssuedBuyerSession/);
+    assert.match(buyerRegister, /prepareIdentityIssuedBuyerSession/);
 });
 
 // ---------------------------------------------------------------------------------------------------
@@ -160,21 +160,33 @@ test('the token exchange touches no cookie, and takes its site only from the red
     assert.ok(!/params\.(site_id|store_id)|params\[['"](site_id|store_id)/.test(source), 'never from the request');
     assert.match(source, /createIdentityIssuedStorefrontSessionToken\(\{\s*buyerAccountId: grant\.buyerAccountId,\s*siteId: grant\.siteId,\s*sessionEpoch: grant\.sessionEpoch,\s*\}\)/,
         'the storefront session is minted with the redeemed buyer, site and epoch');
-    assert.match(source, /if \(grant\.kind === 'app'\) \{\s*const accessToken = await createIdentityIssuedBuyerSessionToken\(\{ buyerAccountId: grant\.buyerAccountId, sessionEpoch: grant\.sessionEpoch \}\)/,
+    assert.match(source, /if \(grant\.kind === 'app'\) \{\s*const accessToken = await issueBuyerSession\(\{ buyerAccountId: grant\.buyerAccountId, sessionEpoch: grant\.sessionEpoch \}\)/,
         'only an app code gets a platform buyer session, with the redeemed buyer and epoch');
+    const prepareAt = source.indexOf('await prepareIdentityIssuedBuyerSession()');
+    const redeemAt = source.indexOf("await identityApiRequest('/storefront/buyer/authorization-codes/redeem'");
+    assert.ok(prepareAt >= 0 && redeemAt > prepareAt,
+        'the sole signing configuration must work before the one-time grant is consumed');
 });
 
 test('every buyer route that mints a token puts the account session epoch in it', () => {
     // Without the epoch the gateway counts a token as epoch 1, so after the account's first reset a
     // fresh sign-in would be refused at once. Worse, a helper that minted a CONSTANT epoch would keep
     // working until then and look correct in every test that never resets.
-    const minting = buyerRoutes().filter(([, source]) => code(source).includes('createIdentityIssuedBuyerSessionToken('));
+    const minting = buyerRoutes().filter(([, source]) => /createIdentityIssuedBuyerSessionToken\(|prepareIdentityIssuedBuyerSession\(/.test(code(source)));
     assert.ok(minting.length >= 3, `expected login, register and recover/confirm to mint, found ${minting.map(([n]) => n).join(', ')}`);
     for (const [name, source] of minting) {
         // The token exchange mints with the epoch of the redeemed code, which the database confirmed is
         // current as it redeemed it; grantForRedemption refuses a missing or malformed one.
         const epoch = name === TOKEN_ROUTE ? /sessionEpoch: grant\.sessionEpoch/ : /sessionEpoch: buyerSessionEpoch\(buyer\.session_epoch\)/;
         assert.match(source, epoch, `${name} must mint with the epoch the gateway returned`);
+        if (name !== TOKEN_ROUTE) {
+            const prepareAt = source.indexOf('await prepareIdentityIssuedBuyerSession()');
+            const mutationAt = source.indexOf("await identityApiRequest('/storefront/buyer/");
+            assert.ok(prepareAt >= 0 && prepareAt < mutationAt, `${name} must validate its issuer before credential/account/reset work`);
+            assert.match(source, /const token = await issueSession\(/, `${name} must use the prepared sole issuer`);
+            assert.match(source, /await setBuyerSessionCookie\(token\)/, `${name} must persist its issued session`);
+            assert.doesNotMatch(source, /if \(token\) await setBuyerSessionCookie/, `${name} cannot report success without a session`);
+        }
     }
 });
 

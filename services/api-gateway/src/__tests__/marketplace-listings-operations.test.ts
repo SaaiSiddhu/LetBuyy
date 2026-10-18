@@ -39,7 +39,10 @@ import { Hono } from 'hono';
 import {
     createMarketplaceListingsOperationsRouter,
     DECISION_TARGET,
+    OPERATOR_LISTING_DETAIL_COLUMNS,
     type AuditInput,
+    type ClaimParams,
+    type AssignmentParams,
     type MarketplaceListingsOperationsDependencies,
     type TransitionParams,
 } from '../routes/operations/marketplace-listings';
@@ -54,34 +57,48 @@ const LISTING = '11111111-0000-4000-8000-000000000001';
 
 function operatorApp(options: { listing?: Record<string, unknown> | null; transitionError?: Error; actorId?: string } = {}) {
     const transitions: TransitionParams[] = [];
+    const claims: ClaimParams[] = [];
+    const assignments: AssignmentParams[] = [];
     const audits: AuditInput[] = [];
     const listCalls: unknown[] = [];
-    const listing = options.listing === undefined ? { id: LISTING, site_id: SITE_A, status: 'pending_review', channel: 'marketplace' } : options.listing;
+    const listing = options.listing === undefined ? { id: LISTING, site_id: SITE_A, status: 'pending_review', channel: 'marketplace', assigned_reviewer_id: OPERATOR, version: 3 } : options.listing;
     const deps: MarketplaceListingsOperationsDependencies = {
-        actor: () => ({ id: options.actorId ?? OPERATOR, email: 'ops@letbuyy.com' }),
+        authorizeOperator: async (_c, userId) => ({ id: options.actorId ?? (userId || OPERATOR), email: 'ops@letbuyy.com' }),
         listListings: async (_c, query) => {
             listCalls.push(query);
             return { rows: listing ? [listing as never] : [], total: listing ? 1 : 0 };
         },
         loadListing: async () => (listing as never) ?? null,
         loadListingEvents: async () => [{ id: 'e1', from_status: 'draft', to_status: 'pending_review', actor_realm: 'merchant' }],
+        loadReviewer: async (_c, userId) => ({ user_id: userId, full_name: 'Test Reviewer' }),
         transition: async (_c, params) => {
             transitions.push(params);
             if (options.transitionError) throw options.transitionError;
             return { listing_id: params.p_listing_id, from_status: 'pending_review', to_status: params.p_to_status, event_id: 'e2', replayed: false };
+        },
+        claim: async (_c, params) => {
+            claims.push(params);
+            return { listing_id: params.p_listing_id, assigned_reviewer_id: params.p_reviewer_id, version: params.p_expected_version, event_id: 'claim-event', replayed: false };
+        },
+        listEligibleReviewers: async () => [{ user_id: 'bbbbbbbb-0000-4000-8000-00000000000b', full_name: 'Eligible Lead' }],
+        authorizeReviewer: async (_c, userId) => ({ user_id: userId, full_name: 'Eligible Lead' }),
+        assignReviewer: async (_c, params) => {
+            assignments.push(params);
+            return { listing_id: params.p_listing_id, previous_reviewer_id: OPERATOR, assigned_reviewer_id: params.p_reviewer_id, version: params.p_expected_version + 1, event_id: 'assignment-event', replayed: false };
         },
         writeAudit: async (_c, input) => {
             audits.push(input);
         },
         // Unit tests bypass the RBAC lookup; the contract test asserts the real middleware is wired per route.
         permission: (() => async (_c: unknown, next: () => Promise<void>) => next()) as never,
+        operatorGate: (() => async (_c: unknown, next: () => Promise<void>) => next()) as never,
     };
     const app = new Hono();
     app.route('/operations/marketplace-listings', createMarketplaceListingsOperationsRouter(deps));
-    return { app, transitions, audits, listCalls };
+    return { app, transitions, claims, assignments, audits, listCalls };
 }
 
-const post = (body: unknown) => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+const post = (body: Record<string, unknown>) => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ operator_user_id: OPERATOR, ...body }) });
 
 test('GET /operations/marketplace-listings defaults to pending marketplace listings, forwards filters, and paginates', async () => {
     const { app, listCalls } = operatorApp();
@@ -110,6 +127,54 @@ test('GET /operations/marketplace-listings/:id returns the listing with its mode
     const { app: empty } = operatorApp({ listing: null });
     assert.equal((await empty.request(`/operations/marketplace-listings/${LISTING}`, undefined, {})).status, 404);
     assert.equal((await app.request('/operations/marketplace-listings/not-a-uuid', undefined, {})).status, 400);
+});
+
+test('review detail selects only the bounded saved submitted and approved revision snapshots', () => {
+    assert.match(OPERATOR_LISTING_DETAIL_COLUMNS, /submitted_product_snapshot/);
+    assert.match(OPERATOR_LISTING_DETAIL_COLUMNS, /approved_product_snapshot/);
+    assert.match(routeSource, /select\(OPERATOR_LISTING_DETAIL_COLUMNS\)/);
+});
+
+test('a reviewer claims an unassigned pending listing for their authenticated identity and displayed version', async () => {
+    const { app, claims } = operatorApp({ listing: { id: LISTING, site_id: SITE_A, status: 'pending_review', channel: 'marketplace', assigned_reviewer_id: null, version: 7 } });
+    const res = await app.request(`/operations/marketplace-listings/${LISTING}/claim`, post({ reason: 'I will review this product submission.', idempotency_key: 'claim-key', expected_version: 7 }), {});
+    assert.equal(res.status, 200);
+    assert.deepEqual(claims, [{ p_site_id: SITE_A, p_listing_id: LISTING, p_reviewer_id: OPERATOR, p_reason: 'I will review this product submission.', p_idempotency_key: 'claim-key', p_expected_version: 7 }]);
+});
+
+test('lead reviewer assignment uses server identity, target eligibility, displayed version and an atomic RPC', async () => {
+    const replacement = 'bbbbbbbb-0000-4000-8000-00000000000b';
+    const { app, assignments } = operatorApp();
+    const roster = await app.request('/operations/marketplace-listings/reviewers', undefined, {});
+    assert.equal(roster.status, 200);
+    assert.equal(((await roster.json()) as { data: unknown[] }).data.length, 1);
+
+    const res = await app.request(`/operations/marketplace-listings/${LISTING}/assign`, post({
+        assignee_user_id: replacement, reason: 'Reviewer is rotating to the next on-call.',
+        idempotency_key: 'assign-key', expected_version: 3,
+    }), {});
+    assert.equal(res.status, 200);
+    assert.deepEqual(assignments, [{
+        p_site_id: SITE_A, p_listing_id: LISTING, p_assigning_operator_id: OPERATOR,
+        p_reviewer_id: replacement, p_reason: 'Reviewer is rotating to the next on-call.',
+        p_idempotency_key: 'assign-key', p_expected_version: 3,
+    }]);
+});
+
+test('an unassigned reviewer cannot make a decision', async () => {
+    const { app, transitions } = operatorApp({ listing: { id: LISTING, site_id: SITE_A, status: 'pending_review', channel: 'marketplace', assigned_reviewer_id: null } });
+    const res = await app.request(`/operations/marketplace-listings/${LISTING}/approve`, post({ idempotency_key: 'approve-unclaimed' }), {});
+    assert.equal(res.status, 403);
+    assert.equal(transitions.length, 0);
+});
+
+test('decisions require an explicit authenticated operator identity in addition to the service request', async () => {
+    const { app, transitions } = operatorApp();
+    const res = await app.request(`/operations/marketplace-listings/${LISTING}/approve`, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ idempotency_key: 'missing-operator' }),
+    }, {});
+    assert.equal(res.status, 400);
+    assert.equal(transitions.length, 0);
 });
 
 test('approve calls transition_channel_listing as the operator realm with the listing\'s own site and writes an audit row', async () => {
@@ -187,10 +252,16 @@ test('the operator router never enters a tenant transaction, is permission-gated
     for (const route of ['/:id/approve', '/:id/reject', '/:id/take-down']) {
         assert.match(routeSource, new RegExp(`router\\.post\\('${route.replace(/\//g, '\\/')}', deps\\.permission\\('review:decide'\\)`), `${route} must require review:decide`);
     }
+    assert.match(routeSource, /router\.post\('\/:id\/claim', deps\.permission\('review:decide'\)/);
+    assert.match(routeSource, /router\.post\('\/:id\/assign', deps\.permission\('review:assign'\)/);
+    assert.match(routeSource, /router\.get\('\/reviewers', deps\.permission\('review:assign'\)/);
+    assert.match(routeSource, /router\.use\('\*', deps\.operatorGate\(\{ admittedTiers: \['viewer', 'operator', 'lead'\] \}\)\)/);
+    assert.match(routeSource, /operatorGate: requirePlatformOperator,/, 'the production dependency set wires the active platform operator gate');
     assert.match(routeSource, /router\.get\('\/', deps\.permission\('review:view'\)/);
     assert.match(routeSource, /permission: requirePermission,/, 'the production dependency set wires rbac\'s requirePermission');
     assert.equal(indexSource.match(/import operationsMarketplaceListingsRouter from '\.\/routes\/operations\/marketplace-listings'/g)?.length, 1);
     assert.equal(indexSource.match(/api\.route\('\/operations\/marketplace-listings', operationsMarketplaceListingsRouter\)/g)?.length, 1);
+    assert.ok(indexSource.indexOf("api.route('/operations/marketplace-listings', operationsMarketplaceListingsRouter);") < indexSource.indexOf("api.route('/operations', operationsIncidentCommandRouter);"), 'the listing router with its own gate must mount before incident-command');
     assert.doesNotMatch(indexSource, /api\.use\('\/operations\/marketplace-listings[^']*', appPlatformKillSwitch\)/, 'core marketplace moderation is not behind the frozen app-platform kill switch');
     // Named parameters match 217's declaration.
     for (const name of ['p_site_id', 'p_listing_id', 'p_to_status', 'p_actor_realm', 'p_actor_id', 'p_reason', 'p_idempotency_key']) {

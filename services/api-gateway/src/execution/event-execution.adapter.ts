@@ -62,6 +62,7 @@ export class EventExecutionAdapter {
             .upsert(
                 {
                     store_id: input.storeId || null,
+                    site_id: input.storeId || null,
                     aggregate_type: input.aggregateType,
                     aggregate_id: input.aggregateId,
                     event_type: input.eventType,

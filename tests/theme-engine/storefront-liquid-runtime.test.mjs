@@ -300,20 +300,37 @@ test('D7 font loading wires experience fonts for active theme settings', () => {
   assert.match(cssSource, /--font-lato/);
 });
 
-test('customer register route and Liquid form support the no-JS form submit path', () => {
+test('legacy customer register entry routes to canonical buyer sign-in', () => {
   const routeSource = read('apps/commerce/web/src/app/api/customer/register/route.ts');
-  // The route must parse both JSON and HTML form submissions (an HTML form posts
-  // application/x-www-form-urlencoded; request.json() alone would throw a 500).
-  assert.match(routeSource, /request\.formData\(\)/);
+  // Stale Liquid form posts must enter the canonical buyer PKCE flow without
+  // reviving store-local account creation.
   assert.match(routeSource, /application\/x-www-form-urlencoded/);
-  assert.match(routeSource, /request\.json\(\)/);
-  // Form posts must be answered with a redirect (303), never a raw JSON body.
+  assert.match(routeSource, /buyer-auth\/start/);
+  assert.match(routeSource, /return_to/);
   assert.match(routeSource, /NextResponse\.redirect/);
-  // The redirect target for feedback must be same-origin guarded.
   assert.match(routeSource, /refererUrl\.origin === new URL\(request\.url\)\.origin/);
-  // The Liquid register form must carry the storeId the route requires.
+  assert.match(routeSource, /CANONICAL_BUYER_ACCOUNT_REQUIRED/);
+  assert.match(routeSource, /status: 410/);
+
   const bundleSource = read('packages/theme-engine/src/theme-bundle.ts');
-  assert.match(bundleSource, /name="storeId" value="\{\{ shop\.id \}\}"/);
+  const sectionStart = bundleSource.indexOf("'customer-register': createLiquidSectionFile");
+  assert.notEqual(sectionStart, -1);
+  const sectionEnd = bundleSource.indexOf("'customer-settings': createLiquidSectionFile", sectionStart);
+  const registerSection = bundleSource.slice(sectionStart, sectionEnd);
+  assert.match(registerSection, /href="\/api\/buyer-auth\/start\?return_to=\{\{ routes\.account_url \}\}"/);
+  assert.match(registerSection, /Create or sign in with LetBuyy/);
+  assert.doesNotMatch(registerSection, /method="post"|name="storeId"/);
+});
+
+test('storefront account entry avoids public store-customer account enumeration', () => {
+  const accountSheet = read('apps/commerce/web/src/components/account/account-bottom-sheet.tsx');
+  const lookupRoute = read('apps/commerce/web/src/app/api/customer/check/route.ts');
+
+  assert.doesNotMatch(accountSheet, /checkEmail|\/api\/customer\/check/);
+  assert.match(accountSheet, /Continue with LetBuyy/);
+  assert.match(accountSheet, /Continue to older store-only sign-in/);
+  assert.match(lookupRoute, /status:\s*410/);
+  assert.doesNotMatch(lookupRoute, /customerStatus|createStorefrontApiClient/);
 });
 
 // ============================================================

@@ -47,6 +47,18 @@ test('protected merchant mutations run through the shared idempotency middleware
     assert.match(middlewareSource, /X-Idempotent-Replay/);
     assert.match(middlewareSource, /await idempotency\.complete\(/);
     assert.match(middlewareSource, /await idempotency\.fail\(claim\.id\)/);
+    assert.match(middlewareSource, /isPendingPayoutRelease\(c\.req\.path, method, replayBody\)/);
+    assert.match(middlewareSource, /would strand the statement on an exact retry/);
+});
+
+test('pre-store onboarding draft uses its account-serialized RPC while completion stays site-idempotent', () => {
+    const middlewareSource = source('middleware/idempotency.ts');
+    const identityRoute = repoSource('apps/platform/identity/src/app/api/auth/create-store/route.ts');
+
+    assert.match(middlewareSource, /method === 'PUT' && normalized === '\/onboarding\/web-draft'\) return false/);
+    assert.match(middlewareSource, /RPC takes a per-user advisory lock and upserts one row/);
+    assert.match(identityRoute, /'X-Idempotency-Key': `onboarding-complete:\$\{attemptId\}`/);
+    assert.match(middlewareSource, /'\/onboarding'/);
 });
 
 test('typed API clients attach idempotency keys to unsafe mutation requests', () => {

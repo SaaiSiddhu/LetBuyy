@@ -44,7 +44,6 @@ void main() {
         AppRouteId.giftCards,
         AppRouteId.featureGiftCards,
         AppRouteId.connectRazorpay,
-        AppRouteId.staff,
       ]) {
         expect(V1CapabilityPolicy.isGated(id), isTrue, reason: '$id');
         expect(
@@ -57,6 +56,9 @@ void main() {
 
     test('in-scope V1 capabilities are untouched', () {
       for (final id in [
+        AppRouteId.staff,
+        AppRouteId.featureUsers,
+        AppRouteId.acceptStaffInvitation,
         AppRouteId.products,
         AppRouteId.orders,
         AppRouteId.inventory,

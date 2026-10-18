@@ -61,35 +61,21 @@ export async function runLoyaltyEarnSweeper(
     let skipped = 0;
     let failed = 0;
 
-    // Only sites with an ACTIVE programme are candidates. Scanning every paid order and asking the
-    // RPC to decline would work, but it would call it once per order per run forever.
-    const { data: programs, error: programError } = await db
-        .from('loyalty_programs')
-        .select('site_id')
-        .eq('is_active', true);
-    if (programError) throw programError;
-
-    const siteIds = (programs || []).map((row) => (row as { site_id: string }).site_id);
-    if (siteIds.length === 0) {
-        return { scanned: 0, awarded: 0, skipped: 0, failed: 0, request_id: input.requestId, results };
-    }
-
-    const { data: orders, error: orderError } = await db
-        .from('orders')
-        .select('id, site_id')
-        .in('site_id', siteIds)
-        .eq('payment_status', 'paid')
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
+    // The database excludes completed and ineligible work BEFORE applying the
+    // batch limit. Limiting the newest paid orders first stranded older orders
+    // forever once that window was already earned. Discovery shares the award
+    // calculation and never supplies a point amount or a mutable balance.
+    const { data: orders, error: orderError } = await db.rpc('pending_loyalty_earn_orders_v1', { p_limit: limit });
     if (orderError) throw orderError;
+    if (!Array.isArray(orders) || orders.some(row => !row || typeof row.id !== 'string' || typeof row.site_id !== 'string')) {
+        throw new Error('Unexpected loyalty earning discovery response');
+    }
 
     for (const row of orders || []) {
         const order = row as { id: string; site_id: string };
 
-        // The marker: an order that already has an 'earned' entry is done. Checked per order rather
-        // than filtered in the query above because PostgREST cannot express "no matching row in
-        // another table" without a view, and a wrong filter here would silently skip real awards.
+        // Recheck the marker in case another worker completed this candidate
+        // after discovery. The authoritative RPC also binds source and replay.
         const { data: existing, error: existingError } = await db
             .from('loyalty_ledger_entries')
             .select('id')

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useWishlist } from '@/context/wishlist-context';
 
 interface OrderDetail {
     id: string;
@@ -29,31 +30,60 @@ const formatMoney = (amount: number | null | undefined, currency: string | null 
 
 export default function OrderDetailClient({ subdomain, id }: { subdomain: string; id: string }) {
     const basePath = `/store/${subdomain}`;
-    const [order, setOrder] = useState<OrderDetail | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
-    const [signedOut, setSignedOut] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const {
+        buyerSessionReady,
+        buyerSessionRefreshing,
+        buyerSessionRevision,
+        buyerSessionUnavailable,
+    } = useWishlist();
+    const [result, setResult] = useState<{
+        requestKey: string;
+        order: OrderDetail | null;
+        message: string | null;
+        signedOut: boolean;
+    } | null>(null);
+    const requestKey = `${id}:buyer-session-${buyerSessionRevision}`;
 
     useEffect(() => {
+        if (!buyerSessionReady || buyerSessionRefreshing || buyerSessionUnavailable) return;
         const controller = new AbortController();
-        fetch(`/api/buyer/orders?order_id=${encodeURIComponent(id)}`, { cache: 'no-store', signal: controller.signal })
-            .then(async (response) => {
-                if (response.status === 401 || response.status === 403) { setSignedOut(true); return; }
-                if (response.status === 404) { setMessage('We could not find this order in your linked order history.'); return; }
+        void (async () => {
+            try {
+                const response = await fetch(`/api/buyer/orders?order_id=${encodeURIComponent(id)}`, { cache: 'no-store', signal: controller.signal });
+                if (controller.signal.aborted) return;
+                if (response.status === 401 || response.status === 403) {
+                    setResult({ requestKey, order: null, message: null, signedOut: true });
+                    return;
+                }
+                if (response.status === 404) {
+                    setResult({ requestKey, order: null, message: 'We could not find this order in your linked order history.', signedOut: false });
+                    return;
+                }
                 if (!response.ok) throw new Error('This order is temporarily unavailable.');
                 const body = await response.json() as { order?: OrderDetail };
+                if (controller.signal.aborted) return;
                 if (!body.order || body.order.id !== id) throw new Error('This order is temporarily unavailable.');
-                setOrder(body.order);
-            })
-            .catch((error: unknown) => {
-                if (error instanceof DOMException && error.name === 'AbortError') return;
-                setMessage(error instanceof Error ? error.message : 'This order is temporarily unavailable.');
-            })
-            .finally(() => setLoading(false));
+                setResult({ requestKey, order: body.order, message: null, signedOut: false });
+            } catch (error: unknown) {
+                if ((error instanceof DOMException && error.name === 'AbortError') || controller.signal.aborted) return;
+                setResult({
+                    requestKey,
+                    order: null,
+                    message: error instanceof Error ? error.message : 'This order is temporarily unavailable.',
+                    signedOut: false,
+                });
+            }
+        })();
         return () => controller.abort();
-    }, [id]);
+    }, [buyerSessionReady, buyerSessionRefreshing, buyerSessionRevision, buyerSessionUnavailable, id, requestKey]);
 
-    if (loading) return <main className="mx-auto max-w-3xl p-6" aria-busy="true">Loading your order…</main>;
+    if (!buyerSessionReady || buyerSessionRefreshing) {
+        return <main className="mx-auto max-w-3xl p-6" aria-busy="true">Loading your order…</main>;
+    }
+    if (buyerSessionUnavailable) return <main className="mx-auto max-w-3xl space-y-4 p-6"><h1 className="text-2xl font-bold">Order unavailable</h1><p role="alert">We could not verify your account right now. Please try again.</p><Link className="underline" href={`${basePath}/account/orders`}>Back to orders</Link></main>;
+    if (!result || result.requestKey !== requestKey) return <main className="mx-auto max-w-3xl p-6" aria-busy="true">Loading your order…</main>;
+
+    const { order, message, signedOut } = result;
     if (signedOut) return <main className="mx-auto max-w-3xl space-y-4 p-6"><h1 className="text-2xl font-bold">Sign in to view this order</h1><p>Your linked orders are private to your LetBuyy account.</p><a className="inline-flex rounded-xl px-4 py-3 font-semibold" style={{ backgroundColor: 'var(--primary)', color: 'var(--lb-color-text-inverse, white)' }} href={`/api/buyer-auth/start?return_to=${encodeURIComponent(`${basePath}/account/orders/${id}`)}`}>Continue with LetBuyy</a><Link className="block underline" href={`${basePath}/account/orders`}>Back to orders</Link></main>;
     if (message || !order) return <main className="mx-auto max-w-3xl space-y-4 p-6"><h1 className="text-2xl font-bold">Order unavailable</h1><p role="alert">{message || 'This order is unavailable.'}</p><Link className="underline" href={`${basePath}/account/orders`}>Back to orders</Link></main>;
 

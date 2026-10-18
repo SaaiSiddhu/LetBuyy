@@ -318,6 +318,7 @@ async function resolveGrants(
         .eq('store_id', siteId)
         .eq('user_id', userId)
         .eq('status', 'active')
+        .eq('is_active', true)
         .is('deleted_at', null)
         .maybeSingle();
     if (error) throw new Error('Staff grant lookup failed');
@@ -371,8 +372,11 @@ export async function evaluateStaffRequest(
     siteId: string | null | undefined,
     userId: string | null | undefined,
     key: StaffPermissionKey,
+    enforcement?: 'enforce',
 ): Promise<StaffDecision> {
-    const mode = staffRbacMode(c.env);
+    // Newly opened staff paths must stay closed without a grant, even when an
+    // existing route's explicit non-production diagnostic mode is dryrun.
+    const mode = enforcement ?? staffRbacMode(c.env);
     const refuse = (status: 403 | 503): StaffDecision => (mode === 'enforce' ? { block: true, status } : { block: false });
 
     const sessionStoreId = (() => { try { return c.get('auth')?.user?.storeId; } catch { return undefined; } })();
@@ -457,8 +461,9 @@ export async function assertStaffPermission(
     siteId: string | null | undefined,
     userId: string | null | undefined,
     key: StaffPermissionKey,
+    enforcement?: 'enforce',
 ): Promise<Response | null> {
-    const r = await evaluateStaffRequest(c, siteId, userId, key);
+    const r = await evaluateStaffRequest(c, siteId, userId, key, enforcement);
     return r.block ? forbidden(c, key, r.status) : null;
 }
 

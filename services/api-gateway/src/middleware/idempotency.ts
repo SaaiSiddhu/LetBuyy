@@ -3,6 +3,8 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { resolveCustomUser } from '../lib/auth-user';
+import { assertStaffPermission } from './staff-permission';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
@@ -58,6 +60,10 @@ const BOOTSTRAP_CREATION_PATHS = new Set(['/stores']);
 
 function isProtectedMutationPath(path: string, method?: string): boolean {
     const normalized = normalizePath(path);
+    // The pre-store web draft is account-bound and has no site_id yet. Its
+    // SECURITY DEFINER RPC takes a per-user advisory lock and upserts one row,
+    // so the site-scoped idempotency table cannot represent this operation.
+    if (method === 'PUT' && normalized === '/onboarding/web-draft') return false;
     // Store creation (POST /stores) has no site_id yet — guarded by subdomain uniqueness.
     // All sub-resource mutations (/stores/{id}/...) still require idempotency.
     if (method === 'POST' && BOOTSTRAP_CREATION_PATHS.has(normalized)) return false;
@@ -154,9 +160,31 @@ async function responseBodyForReplay(response: Response): Promise<JsonValue | nu
     return value as JsonValue;
 }
 
+function isPendingPayoutRelease(path: string, method: string, responseBody: JsonValue): boolean {
+    if (method !== 'POST' || !/^\/payouts\/[^/]+\/settle$/.test(normalizePath(path))) return false;
+    if (!responseBody || typeof responseBody !== 'object' || Array.isArray(responseBody)) return false;
+    const data = (responseBody as Record<string, JsonValue>).data;
+    return Boolean(data && typeof data === 'object' && !Array.isArray(data)
+        && (data as Record<string, JsonValue>).status === 'processing');
+}
+
 export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(async (c, next) => {
     const method = c.req.method.toUpperCase();
-    if (!MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    // These mutations have route-owned receipts after live order ownership and
+    // permission checks. A second HTTP cache would bypass both those checks and
+    // committed reversal recovery on an exact retry. Their schemas still require
+    // keys and their adapters still bind the complete request body.
+    const orderPath = normalizePath(c.req.path);
+    // Account-bound factor commands own encrypted, actor-bound retry receipts.
+    // A store-selected HTTP response cache must never retain setup credentials.
+    const credentialCommand = method === 'POST' && ['/2fa/totp/enroll', '/2fa/totp/verify', '/2fa/disable'].includes(orderPath);
+    const routeOwnedOrderReceipt = (method === 'PATCH' && /^\/orders\/[^/]+$/.test(orderPath))
+        || (method === 'POST' && /^\/(?:orders|returns)\/[^/]+\/refund\/complete$/.test(orderPath));
+    const routeOwnedMoneyClaim = method === 'POST' && (/^\/payments\/[^/]+\/refund$/.test(orderPath) || /^\/payouts\/[^/]+\/settle$/.test(orderPath));
+    // Product PATCH owns an atomic actor/payload/version-bound receipt after live access checks.
+    const routeOwnedProductReceipt = method === 'PATCH' && /^\/products\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderPath);
+    const routeOwnedInventoryAdjustment = method === 'POST' && orderPath === '/inventory/adjust';
+    if (routeOwnedInventoryAdjustment || routeOwnedProductReceipt || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }
@@ -180,6 +208,19 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
                 message: 'A store context is required for this mutation.',
             },
         }, 400);
+    }
+
+    // Product creation still owns its existing HTTP receipt and mandatory key.
+    // Recheck the route's current principal authority before returning that
+    // receipt, so a revoked owner/staff member cannot bypass the route guard.
+    if (method === 'POST' && orderPath === '/products') {
+        const auth = c.get('auth');
+        const customUser = auth?.user ? await resolveCustomUser(getSupabaseAdmin(c), auth.user) : null;
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+        const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
+        if (staffBlock) return staffBlock;
     }
 
     const idempotency = new IdempotencyExecutionAdapter(getSupabaseAdmin(c));
@@ -223,6 +264,15 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
 
     const replayBody = await responseBodyForReplay(c.res);
     if (replayBody === null && c.res.status !== 204) {
+        await idempotency.fail(claim.id);
+        return;
+    }
+
+    if (replayBody !== null && isPendingPayoutRelease(c.req.path, method, replayBody)) {
+        // The payout statement's durable release claim and Route's provider
+        // idempotency key own this retry. Caching a 200/processing response at
+        // the HTTP layer would strand the statement on an exact retry before
+        // its provider request could advance to a terminal result.
         await idempotency.fail(claim.id);
         return;
     }

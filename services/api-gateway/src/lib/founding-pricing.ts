@@ -1,3 +1,4 @@
+import {AppError} from './errors';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { BillingPlanCatalogRecord, FoundingLock } from '@letbuyy/billing-core';
 
@@ -23,12 +24,14 @@ export async function resolveFoundingCheckoutLock(
     siteId: string,
     plan: BillingPlanCatalogRecord,
 ): Promise<FoundingLock> {
-    const { data: site } = await db
+    const { data: site, error: siteError } = await db
         .from('sites')
         .select('price_lock_enabled, locked_launch_price, locked_growth_price')
         .eq('id', siteId)
         .is('deleted_at', null)
         .maybeSingle();
+
+    if(siteError)throw new AppError('Subscription pricing is temporarily unavailable.',503,'SUBSCRIPTION_PRICING_UNAVAILABLE');
 
     if (site?.price_lock_enabled) {
         return {
@@ -40,7 +43,8 @@ export async function resolveFoundingCheckoutLock(
     }
 
     if (FOUNDING_PLANS.has(plan.slug) && Number(plan.founding_price_inr ?? 0) > 0) {
-        const { data: program } = await db.rpc('get_founding_program_public');
+        const { data: program, error: programError } = await db.rpc('get_founding_program_public');
+        if(programError)throw new AppError('Subscription pricing is temporarily unavailable.',503,'SUBSCRIPTION_PRICING_UNAVAILABLE');
         const p = (program ?? {}) as Record<string, unknown>;
         if (p.available && p.active && !p.paused && Number(p.remaining_slots ?? 0) > 0) {
             const offer = Number(plan.founding_price_inr);

@@ -16,7 +16,7 @@ test('storefront order creation derives the tenant from the resolved published s
 
     assert.match(routeSource, /const store = await loadPublishedStore\(c,\s*subdomain\)/);
     assert.match(routeSource, /const tenant = await createPublicStorefrontTenantContext\(c,\s*store\.id\)/);
-    assert.match(routeSource, /requestBody:\s*\{ \.\.\.body,\s*resolvedStoreId:\s*store\.id \}/);
+    assert.match(routeSource, /requestBody:\s*\{ \.\.\.body,\s*resolvedStoreId:\s*store\.id,\s*buyerAccountId:\s*buyerSession\?\.buyerAccountId\s*\?\?\s*null \}/);
     assert.match(routeSource, /const order = await service\.createOrder\(orderCommand,\s*tenant,/);
     assert.doesNotMatch(routeSource, /store_id:\s*body\./);
 });

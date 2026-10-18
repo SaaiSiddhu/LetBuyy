@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
-import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { merchantSecurityScope } from '@/lib/api/merchant-security-scope'
 import type { InventoryAdjustInput } from '@letbuyy/api-client'
 
 type InventoryAdjustBody = {
@@ -17,10 +17,18 @@ export async function POST(
     { params }: { params: Promise<{ store: string }> }
 ) {
     try {
-        const { store } = await params
-        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+        const scope = await merchantSecurityScope(request, params)
+        if (scope.error) return scope.error
 
-        if (resolved.error) return resolved.error
+        const idempotencyKey = request.headers.get('X-Idempotency-Key')?.trim()
+        if (!idempotencyKey || idempotencyKey.length < 8 || idempotencyKey.length > 200) {
+            return NextResponse.json({
+                error: {
+                    code: 'IDEMPOTENCY_KEY_REQUIRED',
+                    message: 'A valid inventory update key is required. Retry the same update to safely complete it.',
+                },
+            }, { status: 400 })
+        }
 
         const body = await request.json() as InventoryAdjustBody
         const payload = await createMerchantApiClient().inventory.adjust({
@@ -30,9 +38,9 @@ export async function POST(
             adjustment: body.adjustment,
             reason: body.reason || 'correction',
             notes: body.notes || null,
-        } as InventoryAdjustInput)
+        } as InventoryAdjustInput, { idempotencyKey, storeId: scope.storeId })
 
-        return NextResponse.json({ data: payload })
+        return NextResponse.json({ data: payload }, { headers: { 'Cache-Control': 'private, no-store' } })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to adjust inventory')
     }

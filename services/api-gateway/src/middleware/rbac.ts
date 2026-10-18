@@ -16,6 +16,7 @@ import type { RbacRoleCategory } from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { AppError } from '../lib/errors';
 
 type RbacDb = ReturnType<typeof getSupabaseAdmin>;
 type JsonRecord = Record<string, unknown>;
@@ -275,6 +276,7 @@ interface PlatformEmployeeRow {
 async function activeEmployeeForUser(db: RbacDb, userId: string): Promise<PlatformEmployeeRow | null> {
     const { data, error } = await platformEmployeeRows(db, 'id, user_id, email, role, role_id, permissions, is_active, status')
         .eq('user_id', userId)
+        .eq('is_active',true)
         .in('status', ['active'])
         .maybeSingle();
 
@@ -412,7 +414,7 @@ export async function logSensitiveRead(
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
 
-    await db.from('audit_logs').insert({
+    const { error } = await db.from('audit_logs').insert({
         actor_id: auth?.user?.id || null,
         actor_type: 'employee',
         actor_email: auth?.user?.email || null,
@@ -427,6 +429,7 @@ export async function logSensitiveRead(
         ip_address: c.req.header('CF-Connecting-IP') || null,
         user_agent: c.req.header('User-Agent') || null,
     });
+    if(error) throw new AppError('The required sensitive-read audit could not be saved.',503,'AUDIT_UNAVAILABLE');
 }
 
 /**

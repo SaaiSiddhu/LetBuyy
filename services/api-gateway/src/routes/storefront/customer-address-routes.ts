@@ -80,39 +80,18 @@ export function registerCustomerAddressRoutes(
             return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
         }
 
-        const db = getSupabaseAdmin(c);
-        const customerEmail = normalizeEmail(customer.email);
-        if (body.is_default) {
-            await db
-                .from('customer_addresses')
-                .update({ is_default: false })
-                .eq('store_id', body.store_id)
-                .eq('customer_email', customerEmail);
-        }
-
-        const { data, error } = await db
-            .from('customer_addresses')
-            .insert({
-                store_id: body.store_id,
-                customer_email: customerEmail,
-                customer_phone: body.customer_phone || null,
-                label: body.label || 'home',
-                full_name: body.full_name,
-                address_line1: body.address_line1,
-                address_line2: body.address_line2 || null,
-                city: body.city,
-                state: body.state,
-                postal_code: body.postal_code,
-                country: body.country || 'IN',
-                landmark: body.landmark || null,
-                is_default: Boolean(body.is_default),
-            })
-            .select()
-            .single();
+        const { data, error } = await getSupabaseAdmin(c).rpc('mutate_store_customer_address', {
+            p_store_id: body.store_id,
+            p_customer_id: customer.id,
+            p_customer_email: normalizeEmail(customer.email),
+            p_address_id: null,
+            p_address: body,
+        });
 
         if (error) {
             return c.json(dbFailureBody(), 500);
         }
+        if (!data) return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
 
         return c.json(success({ address: data }), 201);
     });
@@ -130,16 +109,6 @@ export function registerCustomerAddressRoutes(
             return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
         }
 
-        const db = getSupabaseAdmin(c);
-        const customerEmail = normalizeEmail(customer.email);
-        if (body.is_default) {
-            await db
-                .from('customer_addresses')
-                .update({ is_default: false })
-                .eq('store_id', body.store_id)
-                .eq('customer_email', customerEmail);
-        }
-
         const allowed = ['label', 'full_name', 'address_line1', 'address_line2', 'city', 'state', 'postal_code', 'country', 'landmark', 'is_default'];
         const updates: Record<string, unknown> = {};
         for (const key of allowed) {
@@ -147,18 +116,18 @@ export function registerCustomerAddressRoutes(
             if (value !== undefined) updates[key] = value;
         }
 
-        const { data, error } = await db
-            .from('customer_addresses')
-            .update(updates)
-            .eq('id', addressId)
-            .eq('store_id', body.store_id)
-            .eq('customer_email', customerEmail)
-            .select()
-            .single();
+        const { data, error } = await getSupabaseAdmin(c).rpc('mutate_store_customer_address', {
+            p_store_id: body.store_id,
+            p_customer_id: customer.id,
+            p_customer_email: normalizeEmail(customer.email),
+            p_address_id: addressId,
+            p_address: updates,
+        });
 
         if (error) {
             return c.json(dbFailureBody(), 500);
         }
+        if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Address not found.' } }, 404);
 
         return c.json(success({ address: data }));
     });

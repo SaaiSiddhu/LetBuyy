@@ -83,9 +83,32 @@ test('wrong site, audience, header and ambiguous credentials are refused without
     ] as Array<[string, Record<string, string>]>) {
         assert.equal((await gateway.request(path, { headers })).status, 401, path);
     }
-    for (const path of ['/orders', '/orders/claim', '/link-store-customer', '/sessions/revoke']) {
+    // Storefront-scoped order claims and explicit store-customer linking are intentionally available
+    // to this signed site-bound audience. Platform-wide order reads and session revocation are not.
+    for (const path of ['/orders', '/sessions/revoke']) {
         const result = await gateway.request(atSite(path), { method: path === '/orders' ? 'GET' : 'POST', headers: store, body: path === '/orders' ? undefined : '{}' });
         assert.ok(result.status === 401 || result.status === 403, `${path}: ${result.status}`);
+    }
+});
+
+test('the real worker retires per-store registration before touching customer data', async () => {
+    const email = `new-${crypto.randomUUID()}@example.invalid`;
+    const tap = tapRest(owned.restEnv().SUPABASE_URL, async (_call, forward) => forward());
+    try {
+        const result = await gateway.request('/v1/storefront/customer/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ store_id: site.siteId, email, password: 'synthetic-password' }),
+        });
+
+        assert.equal(result.status, 410);
+        assert.equal(result.json?.error?.code, 'CANONICAL_BUYER_ACCOUNT_REQUIRED');
+        assert.doesNotMatch(result.text, /synthetic-password|new-/);
+        assert.ok(!tap.calls.some((call) => ['store_customers', 'customer_credentials'].includes(call.resource)));
+        assert.equal(psql(`SELECT count(*) FROM store_customers WHERE store_id = '${site.siteId}' AND email = '${email}';`), '0');
+        assert.equal(psql(`SELECT count(*) FROM customer_credentials WHERE store_id = '${site.siteId}' AND email_or_phone = '${email}';`), '0');
+    } finally {
+        tap.restore();
     }
 });
 

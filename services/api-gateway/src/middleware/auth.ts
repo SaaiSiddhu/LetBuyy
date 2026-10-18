@@ -15,7 +15,7 @@ import {
     type AuthVerifierName,
 } from '../identity-foundation/auth-verifier-registry';
 import { verifyInternalIdentityPayload, verifyInternalSessionHeaders } from '../lib/internal-auth';
-import { isLocalSupabaseEnvironment } from '../lib/supabase';
+import { AppError } from '../lib/errors';
 import { validateMerchantSessionToken } from '../lib/merchant-session';
 
 interface AuthContext {
@@ -126,35 +126,28 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
 
     try {
         const session = await validateMerchantSessionToken(supabase, sessionVerification.token, { rotate: false });
-        if (session.accepted && session.userId) {
-            const { data: user } = await supabase
-                .from('users_custom')
-                .select('id, email')
-                .eq('id', session.userId)
-                .maybeSingle();
+        if (session.status === 'error') throw new Error('Merchant session lookup failed');
+        if (!session.accepted || !session.userId) return null;
 
-            if (user && isSafeAuthEmail(user.email)) {
-                return {
-                    user: buildAuthContextUser({
-                        id: user.id,
-                        email: user.email,
-                        authSource: 'internal-sso',
-                    }),
-                };
-            }
+        const { data: user, error } = await supabase
+            .from('users_custom')
+            .select('id, email')
+            .eq('id', session.userId)
+            .maybeSingle();
+        if (error) throw new Error('Merchant account lookup failed');
+        if (user && isSafeAuthEmail(user.email)) {
+            return {
+                user: buildAuthContextUser({
+                    id: user.id,
+                    email: user.email,
+                    authSource: 'internal-sso',
+                }),
+            };
         }
     } catch {
-        // Fall through to local dev fallback
-    }
-
-    if (isLocalSupabaseEnvironment(c.env)) {
-        return {
-            user: buildAuthContextUser({
-                id: 'dev-local-user-id',
-                email: 'saaisiddu@gmail.com',
-                authSource: 'internal-sso',
-            }),
-        };
+        // Local and hosted requests share the same authority. A revoked session
+        // never becomes a development identity; outages remain retryable errors.
+        throw new AppError('Your merchant session could not be checked. Try again shortly.', 503, 'MERCHANT_SESSION_UNAVAILABLE');
     }
 
     return null;

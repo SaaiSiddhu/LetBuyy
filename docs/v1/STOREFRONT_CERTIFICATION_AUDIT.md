@@ -128,7 +128,7 @@ Traced chain (each hop verified):
 ## 9. Customer Account Certification — **CONNECTED (gateway-backed)**
 
 `customer-service.ts` + `app/api/customer/*`:
-- Registration / guest auto-create: `findOrCreateCustomer` (`:46-66`).
+- Post-checkout guest CRM auto-create uses the order-scoped `createCustomerFromOrder` route; new registration enters canonical buyer PKCE.
 - Login: `verifyCustomerPassword` **with Turnstile** (`:148-163`).
 - Password reset request/confirm (`:99-129`); set-password (`:131-142`).
 - Profile/status (`:72-93`), addresses (`storefront.customerAddresses` / `createCustomerAddress`), order history `customerOrders` (`:230-238`), wishlist CRUD + local sync (`:169-224`).

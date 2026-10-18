@@ -37,16 +37,19 @@ test('B4 exposes an audited admin-web break-resolution queue for money ledger mi
     assert.match(internalConsoleMoneySource, /money_ledger\.breaks\.read/);
     assert.match(internalConsoleMoneySource, /money_ledger\.reconciliation\.read/);
     assert.match(internalConsoleMoneySource, /router\.post\('\/reconciliation\/:siteId\/resolve'/);
-    assert.match(internalConsoleMoneySource, /checkSegregationOfDuty/);
-    assert.match(internalConsoleMoneySource, /targetAction:\s*'money\.reconciliation\.resolve'/);
-    assert.match(internalConsoleMoneySource, /operator_resolution/);
-    assert.match(internalConsoleMoneySource, /money_ledger\.breaks\.resolve/);
-    assert.match(internalConsoleMoneySource, /refresh_money_ledger_site_reconciliation/);
+    const protocol = readFileSync(new URL('../../../../database/supabase/migrations/316_session_bound_money_resolution.sql', import.meta.url), 'utf8');
+    assert.match(internalConsoleMoneySource, /execute_console_money_resolution_v1/);
+    assert.match(internalConsoleMoneySource, /requireConsolePermission/);
+    assert.match(protocol, /INDEPENDENT_APPROVAL_REQUIRED/);
+    assert.match(protocol, /operator_resolution/);
+    assert.match(protocol, /money_ledger\.breaks\.resolve/);
+    assert.match(protocol, /refresh_money_ledger_site_reconciliation/);
     assert.match(consoleLayoutSource, /href:\s*'\/money-reconciliation'/);
     assert.match(consolePageSource, /\/internal\/console\/money\/reconciliation/);
     assert.match(consolePageSource, /Break Resolution Queue/);
-    assert.match(consolePageSource, /resolveMoneyBreak/);
-    assert.match(consolePageSource, /secondary_approver_id/);
+    assert.match(consolePageSource, /ConsoleApprovalForm action="\/api\/approvals\/request-money"/);
+    assert.match(consolePageSource, /request_key/);
+    assert.doesNotMatch(consolePageSource, /secondary_approver_id/);
     assert.match(consolePageSource, /variance-0 row/);
 });
 

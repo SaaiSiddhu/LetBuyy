@@ -10,9 +10,9 @@ import {
 
 const STORE_ID = '11111111-1111-4111-8111-111111111111';
 
-function render(templateKey, liquidContext) {
+function render(templateKey, liquidContext, searchParams = {}) {
   return new LiquidRenderer().render({
-    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/' + templateKey, previewMode: true, locale: 'en' },
+    context: { storeId: STORE_ID, subdomain: 'local-kicks', path: '/' + templateKey, previewMode: true, locale: 'en', searchParams },
     storeTemplate: { storeId: STORE_ID, themeId: 'urban-kicks-liquid', themeSettings: DEFAULT_THEME_SETTINGS, sections: [] },
     routeTemplate: { id: templateKey, type: templateKey, layoutKey: 'theme', sections: [] },
     liquidTemplateKey: templateKey,
@@ -38,6 +38,17 @@ test('L11: order history lists only canonical buyer orders', async () => {
   assert.match(html, /#1001/);
   assert.match(html, /#1002/);
   assert.match(html, /href="\/store\/local-kicks\/account\/orders\/o1"/);
+  assert.match(html, /<form[^>]+method="post"[^>]+action="\/api\/buyer\/orders"/);
+  assert.match(html, /name="return_to" value="\/store\/local-kicks\/account\/orders"/);
+});
+
+test('L11: historical claim status is rendered safely on the buyer order list', async () => {
+  const result = await render('customers/orders', {
+    buyer: { email: 'buyer@example.test', orders: [] },
+  }, { buyer_claim: 'partial' });
+  const html = result.liquid?.layoutHtml ?? '';
+  assert.match(html, /Some eligible orders could not be linked/);
+  assert.match(html, /aria-live="polite"/);
 });
 
 test('L11: order detail binds line items, status, and the already-ledgered total', async () => {

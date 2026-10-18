@@ -10,14 +10,18 @@ import { STOREFRONT_BUYER_SESSION_COOKIE, isSameOriginRequest, safeReturnTo } fr
  * `return_to`; a script gets JSON.
  */
 export async function POST(request: NextRequest) {
-    if (!isSameOriginRequest(request.headers)) {
-        return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 });
+    if (!isSameOriginRequest(request.headers, request.url)) {
+        return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, {
+            status: 403,
+            headers: { 'Cache-Control': 'no-store' },
+        });
     }
 
     const wantsJson = (request.headers.get('accept') || '').includes('application/json');
     const response = wantsJson
         ? NextResponse.json({ success: true }, { headers: { 'Cache-Control': 'no-store' } })
         : NextResponse.redirect(new URL(safeReturnTo(request.nextUrl.searchParams.get('return_to')), request.url), 303);
+    response.headers.set('Cache-Control', 'no-store');
     response.cookies.set(STOREFRONT_BUYER_SESSION_COOKIE, '', { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 0 });
     return response;
 }

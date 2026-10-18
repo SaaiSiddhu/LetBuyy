@@ -1,25 +1,16 @@
-// apps/marketplace/lib/screens/support/support_chat_screen.dart
-// 💬 SUPPORT CHAT SCREEN
+import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
-import 'package:letbuyy_marketplace/widgets/premium_scaffold.dart';
+import 'package:provider/provider.dart';
 
-// Phase 1R (Firebase removal, final pass): this screen used to construct SupportChatService
-// (entirely FirebaseFirestore-backed) and stream live messages from it. There is no canonical
-// LetBuyy backend for support conversations -- it is not among services/api-gateway's owned
-// domains (products, inventory, cart, checkout, orders, payments, discounts, GST, shipping,
-// settlement, customers, billing, analytics) -- so this is a genuinely deferred capability, not
-// a rewiring target. A prior pass had already found the one real bug this created (this screen's
-// only entry point never actually produced a conversation, since AuthProvider/FirebaseAuth was
-// already dead) and neutered _initConversation() so _conversation stayed permanently null,
-// leaving _buildNoConversation() as the screen's only reachable body -- but the SupportChatService
-// field, its live-stream listener, the message-list/input-bar/message-bubble UI built to consume
-// it, and the model imports they needed all stayed behind as unreachable code. Deleted here along
-// with the whole file's Firebase coupling; what remains is an honest, permanent "not available yet"
-// state, not a live chat UI with its data source removed.
+import '../../auth/buyer_sign_in_controller.dart';
+
 class SupportChatScreen extends StatefulWidget {
+  // Legacy route names remain accepted. A conversationId now identifies a
+  // canonical ticket; prefill is preserved but never submitted by readback.
   final String? conversationId;
   final SupportTicketType? ticketType;
   final String? subject;
@@ -40,76 +31,188 @@ class SupportChatScreen extends StatefulWidget {
 }
 
 class _SupportChatScreenState extends State<SupportChatScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  BuyerSignInController? _auth;
+  ({String? buyerId, String? token}) _identity = (buyerId: null, token: null);
+  int _generation = 0;
+  List<JsonMap> _messages = const [];
+  bool _loading = false;
+  String? _error;
 
-    return PremiumScaffold(
-      appBar: _buildAppBar(isDark),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.support_agent_outlined, size: 64, color: Colors.grey[400]),
-              const SizedBox(height: 16),
-              const Text(
-                'Support chat isn\'t available in this build yet',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              if (widget.ticketType != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Topic: ${widget.ticketType!.displayName}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-              ],
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Go Back'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final auth = Provider.of<BuyerSignInController>(context);
+    final replaced = !identical(auth, _auth);
+    if (replaced) {
+      _auth?.removeListener(_onSessionChanged);
+      _auth = auth..addListener(_onSessionChanged);
+    }
+    _syncSession(force: replaced);
   }
 
-  PreferredSizeWidget _buildAppBar(bool isDark) {
-    return AppBar(
-      backgroundColor: isDark ? const Color(0xFF1A1F2C) : Colors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primaryDark],
-              ),
-              borderRadius: BorderRadius.circular(10),
+  @override
+  void didUpdateWidget(covariant SupportChatScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.conversationId != widget.conversationId)
+      _syncSession(force: true);
+  }
+
+  void _onSessionChanged() => _syncSession();
+
+  void _syncSession({bool force = false}) {
+    final identity = (buyerId: _auth?.buyerId, token: _auth?.token);
+    if (!force && identity == _identity) return;
+    setState(() {
+      _identity = identity;
+      _generation++;
+      _messages = const [];
+      _error = null;
+      _loading = false;
+    });
+    if (identity.token != null &&
+        identity.buyerId != null &&
+        widget.conversationId != null)
+      unawaited(_load());
+  }
+
+  bool _current(
+    ({String? buyerId, String? token}) identity,
+    String id,
+    int generation,
+  ) =>
+      mounted &&
+      _generation == generation &&
+      _identity == identity &&
+      widget.conversationId == id &&
+      _auth?.token == identity.token &&
+      _auth?.buyerId == identity.buyerId;
+
+  Future<void> _load() async {
+    final identity = _identity;
+    final token = identity.token;
+    final id = widget.conversationId;
+    if (_loading || token == null || identity.buyerId == null || id == null)
+      return;
+    final generation = ++_generation;
+    setState(() {
+      _messages = const [];
+      _error = null;
+      _loading = true;
+    });
+    try {
+      final messages = await context.read<BuyerSupportApi>().listPublicMessages(
+        token,
+        id,
+      );
+      if (!_current(identity, id, generation)) return;
+      setState(() {
+        _messages = messages;
+        _loading = false;
+      });
+    } on ApiException catch (error) {
+      if (!_current(identity, id, generation)) return;
+      setState(() {
+        _loading = false;
+        _error = error.statusCode == 401 || error.statusCode == 403
+            ? 'Your LetBuyy sign-in has ended. Sign in again from Profile.'
+            : error.statusCode == 404
+            ? 'We couldn’t find this support ticket.'
+            : error.code == 'NETWORK_ERROR' || error.code == 'TIMEOUT'
+            ? 'You seem to be offline. Check your connection and try again.'
+            : 'We couldn’t load this support thread. Please try again.';
+      });
+    } on ArgumentError {
+      if (!_current(identity, id, generation)) return;
+      setState(() {
+        _loading = false;
+        _error = 'We couldn’t find this support ticket.';
+      });
+    } catch (_) {
+      if (!_current(identity, id, generation)) return;
+      setState(() {
+        _loading = false;
+        _error = 'We couldn’t load this support thread. Please try again.';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _auth?.removeListener(_onSessionChanged);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: const CustomAppBar(title: 'Support thread', isGlass: false),
+    body: _identity.token == null || _identity.buyerId == null
+        ? const EmptyState(
+            icon: Icons.lock_outline,
+            title: 'Sign in to view this support ticket',
+            message: 'Use Sign in with LetBuyy on the Profile tab.',
+          )
+        : widget.conversationId == null
+        ? const EmptyState(
+            icon: Icons.support_agent_outlined,
+            title: 'Choose an existing support ticket',
+            message:
+                'New tickets, replies and attachments are not available in this view yet. No new request has been sent.',
+          )
+        : _loading
+        ? const Center(child: CircularProgressIndicator())
+        : _error != null
+        ? ErrorView(message: _error!, onRetry: _load)
+        : RefreshIndicator(
+            onRefresh: _load,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                const Text(
+                  'Showing up to the first 200 public messages, oldest first. Later messages may be unavailable in this view.',
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Replies and attachments are not available in this view yet.',
+                ),
+                const SizedBox(height: 16),
+                if (_messages.isEmpty)
+                  const EmptyState(
+                    icon: Icons.forum_outlined,
+                    title: 'No public messages yet',
+                    message:
+                        'Public messages recorded for this ticket will appear here.',
+                  ),
+                for (final message in _messages)
+                  Card(
+                    key: ValueKey('support-message-${message['id']}'),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(switch (message['author_type']) {
+                            'requester' => 'You',
+                            'agent' => 'Support team',
+                            _ => 'Support update',
+                          }, style: Theme.of(context).textTheme.titleSmall),
+                          const SizedBox(height: 8),
+                          Text(message['body'] as String),
+                          const SizedBox(height: 8),
+                          Text(_date(message['created_at'])),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            child: const Icon(Icons.support_agent, size: 18, color: Colors.white),
           ),
-          const SizedBox(width: 12),
-          Text(
-            'Support Team',
-            style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
+  );
+
+  String _date(Object? value) {
+    final date = value is String ? DateTime.tryParse(value)?.toLocal() : null;
+    if (date == null) return 'Date unavailable';
+    final local = MaterialLocalizations.of(context);
+    return '${local.formatMediumDate(date)} · ${local.formatTimeOfDay(TimeOfDay.fromDateTime(date))}';
   }
 }

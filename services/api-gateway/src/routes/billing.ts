@@ -596,27 +596,18 @@ router.post('/ad-credits/verify', async (c) => {
     const amountMinor = Number((charge as { amount: number }).amount);
     const paymentId = body.razorpay_payment_id as string;
 
-    // The provider payment id IS the idempotency key, so one real payment credits exactly once —
-    // ad_credit_ledger_entries' UNIQUE (site_id, idempotency_key) is the backstop behind it. This is
-    // deliberately NOT assertProviderPaymentNotReplayed, which is bound to payment_transactions and
-    // to an order id; a platform charge has neither.
-    const { data: credited, error: creditError } = await db.rpc('record_ad_credit_purchase', {
+    // One SQL transaction locks and finalizes this billing row together with the prepaid credit.
+    // The provider payment id is the idempotency key; a lost response can replay the same payment,
+    // while a second payment attempt for the same order cannot issue another credit.
+    const { data: credited, error: creditError } = await db.rpc('finalize_ad_credit_purchase', {
         p_site_id: tenant.siteId,
-        p_amount_minor: amountMinor,
-        p_payment_reference: paymentId,
-        p_idempotency_key: `ad.purchase:${paymentId}`,
+        p_billing_history_id: (charge as { id: string }).id,
+        p_provider_order_id: body.razorpay_order_id as string,
+        p_provider_payment_id: paymentId,
         p_request_id: c.req.header('x-request-id') ?? null,
         p_actor_id: tenant.userId ?? null,
     });
     if (creditError) throw new Error(`Ad credit purchase failed: ${creditError.message}`);
-
-    // Marked paid only AFTER the credit lands. The other order would leave a row claiming payment
-    // for credits that were never issued.
-    await db
-        .from('billing_history')
-        .update({ payment_status: 'paid' })
-        .eq('id', (charge as { id: string }).id)
-        .eq('site_id', tenant.siteId);
 
     return c.json(success({ credited, amount_minor: amountMinor }));
 });

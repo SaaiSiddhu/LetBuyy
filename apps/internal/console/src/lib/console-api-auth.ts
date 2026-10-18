@@ -12,11 +12,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './console-session';
 import { isConsoleEmailAllowed } from './console-access-allowlist';
+import { readCurrentConsoleSession } from './console-live-session';
 
 export async function requireConsoleApiSession(request: NextRequest, options: { mfa?: boolean } = {}): Promise<NextResponse | null> {
     const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
     if (!session) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     if (!isConsoleEmailAllowed(session.email)) return NextResponse.json({ error: 'Access revoked' }, { status: 403 });
     if (options.mfa && !session.mfaVerified) return NextResponse.json({ error: 'MFA required' }, { status: 401 });
+    if (!await readCurrentConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value)) {
+        return NextResponse.json({ error: 'Session unavailable or revoked' }, { status: 401 });
+    }
     return null;
 }

@@ -50,8 +50,8 @@ export async function psqlScript(cluster, database, sql, what) {
 const quoted = (identifier) => `"${String(identifier).replaceAll('"', '""')}"`;
 
 /**
- * Builds the pristine template once per cluster: faithful bootstrap, every migration in numeric order, then the REST
- * layer's roles and the fixture schema. Returns the seconds it took.
+ * Builds the pristine template once per cluster: faithful bootstrap, every migration in numeric order, with the REST
+ * layer's roles established first, then the fixture schema. Returns the seconds it took.
  */
 export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) {
     // The password is written into SQL text, so it is checked to be what the runner generates (hex), nothing else.
@@ -59,14 +59,7 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) 
     const started = Date.now();
     await psqlScript(cluster, 'postgres', `CREATE DATABASE ${quoted(GATEWAY_TEMPLATE_DATABASE)};`, 'creating the template database');
     await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, SUPABASE_FAITHFUL_BOOTSTRAP_SQL, 'the faithful bootstrap');
-    for (const name of listMigrations(repoRoot)) {
-        await psqlScript(
-            cluster,
-            GATEWAY_TEMPLATE_DATABASE,
-            stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')),
-            `migration ${name}`,
-        );
-    }
+    // REST transport memberships must exist before migrations freeze their authority profile.
     await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, `
         DO $role$
         BEGIN
@@ -78,6 +71,17 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) 
         ALTER ROLE authenticator PASSWORD '${restPassword}';
         GRANT anon, authenticated, service_role TO authenticator;
 
+    `, 'the REST roles');
+    for (const name of listMigrations(repoRoot)) {
+        await psqlScript(
+            cluster,
+            GATEWAY_TEMPLATE_DATABASE,
+            stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')),
+            `migration ${name}`,
+        );
+    }
+    await psqlScript(cluster, GATEWAY_TEMPLATE_DATABASE, `
+
         -- The run's identity, readable through the REST layer: schema letbuyy_fixture is exposed only by this lane's
         -- sidecar, and only the service role may call it.
         CREATE SCHEMA IF NOT EXISTS letbuyy_fixture;
@@ -85,7 +89,7 @@ export async function buildGatewayTemplate(cluster, { repoRoot, restPassword }) 
         CREATE OR REPLACE FUNCTION letbuyy_fixture.run_id() RETURNS text LANGUAGE sql STABLE
           AS $fn$ SELECT current_setting('letbuyy.fixture_run_id', true) $fn$;
         GRANT EXECUTE ON FUNCTION letbuyy_fixture.run_id() TO service_role;
-    `, 'the REST roles and fixture schema');
+    `, 'the fixture schema');
     // Nobody connects to a template while it is cloned; keeping connections off makes that a rule and not a habit.
     await psqlScript(cluster, 'postgres', `ALTER DATABASE ${quoted(GATEWAY_TEMPLATE_DATABASE)} WITH ALLOW_CONNECTIONS false;`, 'sealing the template');
     return Math.round((Date.now() - started) / 100) / 10;

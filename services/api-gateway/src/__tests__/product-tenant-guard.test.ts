@@ -133,8 +133,8 @@ function freshTables(): { sites: Row[]; products: Row[]; users_custom: Row[]; em
         // staff-permission-shadow.test.ts uses -- not shadow/target data, since STAFF_PERMISSION_SHADOW
         // is unset here (shadow mode off) and these tests exercise only the real, authoritative decision.
         employees: [
-            { store_id: SITE_A, user_id: STAFF_FULL, status: 'active', deleted_at: null, permissions: { granted: ['products:read', 'products:write'] }, role: 'manager' },
-            { store_id: SITE_A, user_id: STAFF_READONLY, status: 'active', deleted_at: null, permissions: { granted: ['products:read'] }, role: 'viewer' },
+            { store_id: SITE_A, user_id: STAFF_FULL, status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['products:read', 'products:write'] }, role: 'manager' },
+            { store_id: SITE_A, user_id: STAFF_READONLY, status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['products:read'] }, role: 'viewer' },
         ],
     };
 }

@@ -1,4 +1,5 @@
 import path from "node:path";
+import ts from "typescript";
 import {
   canonicalRuntimeRoots,
   createReporter,
@@ -58,6 +59,40 @@ function resolvedSourceTarget(file, specifier) {
 }
 
 const edges = new Map([...governedRoots].map((root) => [root, new Set()]));
+
+// Root integration fixtures may compose runtimes, but must never become a
+// production dependency. Check physical relative targets and configured aliases
+// independently of the production edge map (tests/ is deliberately not a runtime).
+const compilerOptions = new Map();
+const repoRoot = process.cwd();
+const isRootTestPath = target => target === 'tests' || target.startsWith('tests/');
+function importsRootTests(file, specifier, target) {
+  if (target && isRootTestPath(target)) return true;
+  if (isRootTestPath(specifier.replace(/^\//, ''))) return true;
+  if (path.isAbsolute(specifier) && isRootTestPath(path.relative(repoRoot, specifier).split(path.sep).join('/'))) return true;
+  const config = ts.findConfigFile(path.dirname(path.join(repoRoot, file)), ts.sys.fileExists);
+  if (!config || path.relative(repoRoot, config).startsWith('..')) return false;
+  if (!compilerOptions.has(config)) {
+    const parsed = ts.readConfigFile(config, ts.sys.readFile);
+    if (parsed.error) throw new Error(`Cannot read alias configuration: ${path.relative(repoRoot, config)}`);
+    // Only options are needed; do not enumerate project/dependency trees.
+    const options = ts.parseJsonConfigFileContent(parsed.config, {...ts.sys, readDirectory: () => []}, path.dirname(config)).options;
+    compilerOptions.set(config, options);
+  }
+  const options = compilerOptions.get(config);
+  const base = options.baseUrl ?? options.pathsBasePath ?? path.dirname(config);
+  for (const [pattern, paths] of Object.entries(options.paths ?? {})) {
+    const star = pattern.indexOf('*');
+    const prefix = star < 0 ? pattern : pattern.slice(0, star), suffix = star < 0 ? '' : pattern.slice(star + 1);
+    if (star < 0 ? specifier !== pattern : !specifier.startsWith(prefix) || !specifier.endsWith(suffix)) continue;
+    const middle = star < 0 ? '' : specifier.slice(prefix.length, suffix ? -suffix.length : undefined);
+    for (const mapped of paths) {
+      const resolved = path.relative(repoRoot, path.resolve(base, mapped.replace('*', middle))).split(path.sep).join('/');
+      if (isRootTestPath(resolved)) return true;
+    }
+  }
+  return false;
+}
 
 function addEdge(fromRoot, toRoot, reason) {
   if (!governedRoots.has(fromRoot) || !governedRoots.has(toRoot) || fromRoot === toRoot) return;
@@ -142,6 +177,10 @@ for (const file of trackedFiles.filter((candidate) => sourceExtensions.has(path.
 
   for (const specifier of extractSpecifiers(readFile(file))) {
     const target = resolvedSourceTarget(file, specifier);
+    if (importsRootTests(file, specifier, target)) {
+      reporter.errors.push(`Runtime/package source may not import root test code: ${file} imports ${specifier}`);
+      continue;
+    }
     if (!target) continue;
 
     addEdge(fromRoot, rootForFile(target), `${file} imports ${specifier}`);
@@ -163,6 +202,10 @@ for (const file of trackedFiles.filter((candidate) => candidate.endsWith("/packa
   for (const block of dependencyBlocks) {
     for (const dependencyName of Object.keys(block ?? {})) {
       const toRoot = packageNameToRoot.get(dependencyName);
+      if (toRoot && isRootTestPath(toRoot)) {
+        reporter.errors.push(`Runtime/package manifests may not depend on root test code: ${file} declares ${dependencyName}`);
+        continue;
+      }
       if (toRoot) addEdge(fromRoot, toRoot, `${file} declares ${dependencyName}`);
     }
   }

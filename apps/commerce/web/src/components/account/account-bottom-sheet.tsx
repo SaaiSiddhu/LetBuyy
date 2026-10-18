@@ -1,6 +1,6 @@
 // ============================================================
 // ACCOUNT BOTTOM SHEET — auth & account sheet
-// States: email_entry → password_login | register | set_password | not_found | logged_in
+// States: email_entry → password_login (explicit legacy choice) → logged_in, or canonical PKCE.
 // Theme-agnostic: uses CSS variables from the store theme
 // ============================================================
 
@@ -10,10 +10,11 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button, Input,
     X, User, Mail, Lock, Eye, EyeOff,
-    Package, Heart, MapPin, Settings, LogOut,
+    Package, Heart, MapPin, Settings, LogOut, Headphones,
     ArrowLeft, Loader2, ShoppingBag,
 } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import { useWishlist } from '@/context/wishlist-context';
 import TurnstileWidget, { type TurnstileHandle } from '@/components/security/turnstile-widget';
 import Link from 'next/link';
 
@@ -24,10 +25,11 @@ interface Props {
     subdomain: string;
 }
 
-type SheetState = 'email_entry' | 'password_login' | 'set_password' | 'register' | 'not_found' | 'logged_in';
+type SheetState = 'email_entry' | 'password_login' | 'set_password' | 'not_found' | 'logged_in';
 
 export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain }: Props) {
-    const { customer, isAuthenticated, login, setPassword, register, checkEmail, logout } = useCustomerAuth();
+    const { customer, isAuthenticated, login, setPassword, logout } = useCustomerAuth();
+    const { buyerSessionEmail, buyerSessionReady } = useWishlist();
     const basePath = `/store/${subdomain}`;
 
     const [state, setState] = useState<SheetState>('email_entry');
@@ -42,7 +44,8 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
     const passwordRef = useRef<HTMLInputElement>(null);
     const turnstileRef = useRef<TurnstileHandle>(null);
     // APPID-P4c: a LetBuyy account session at this store, separate from the store's own customer login.
-    const [letbuyyBuyer, setLetbuyyBuyer] = useState<{ email: string } | null>(null);
+    const [buyerSignedOutLocally, setBuyerSignedOutLocally] = useState(false);
+    const letbuyyBuyer = buyerSessionReady && !buyerSignedOutLocally && buyerSessionEmail ? { email: buyerSessionEmail } : null;
     const [returnTo, setReturnTo] = useState('/');
 
     // Set initial state based on auth
@@ -61,29 +64,21 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         }
     }, [isOpen, isAuthenticated]);
 
-    // APPID-P4c: whether this browser is signed in here with its LetBuyy account. The gateway decides:
-    // the session works only at the store it was issued for, and only in the account's current epoch.
+    // Use the storefront's shared, focus-revalidated buyer session so an open sheet
+    // cannot continue displaying the previous tab owner's account after a cookie switch.
     useEffect(() => {
-        if (!isOpen) return;
-        setReturnTo(`${window.location.pathname}${window.location.search}`);
-        let cancelled = false;
-        fetch('/api/buyer-auth/session', { cache: 'no-store' })
-            .then((res) => (res.ok ? res.json() : null))
-            .then((body: { buyer?: { email?: string } | null } | null) => {
-                if (!cancelled) setLetbuyyBuyer(body?.buyer?.email ? { email: body.buyer.email } : null);
-            })
-            .catch(() => {
-                if (!cancelled) setLetbuyyBuyer(null);
-            });
-        return () => {
-            cancelled = true;
-        };
+        if (isOpen) setReturnTo(`${window.location.pathname}${window.location.search}`);
     }, [isOpen]);
+
+    useEffect(() => setBuyerSignedOutLocally(false), [buyerSessionEmail]);
 
     // Signs out of LetBuyy at this store only; other stores and identity-platform are unaffected.
     const signOutOfLetbuyy = async () => {
-        await fetch('/api/buyer-auth/logout', { method: 'POST', headers: { Accept: 'application/json' } }).catch(() => undefined);
-        setLetbuyyBuyer(null);
+        const response = await fetch('/api/buyer-auth/logout', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+        }).catch(() => null);
+        if (response?.ok) setBuyerSignedOutLocally(true);
     };
 
     // Focus first input on state change
@@ -91,34 +86,19 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         if (!isOpen) return;
         const timer = setTimeout(() => {
             if (state === 'email_entry') emailRef.current?.focus();
-            if (state === 'password_login' || state === 'set_password' || state === 'register') passwordRef.current?.focus();
+            if (state === 'password_login' || state === 'set_password') passwordRef.current?.focus();
         }, 200);
         return () => clearTimeout(timer);
     }, [state, isOpen]);
 
-    // ── EMAIL CHECK ─────────────────────────────────────────
+    // ── ACCOUNT ENTRY ───────────────────────────────────────
     const handleEmailSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!email.trim()) return;
-        setLoading(true);
         setError('');
-
-        try {
-            const result = await checkEmail(email, storeId);
-
-            if (result.hasPassword) {
-                setState('password_login');
-            } else {
-                // LB-12: a new email OR an existing passwordless (guest) account both flow into the
-                // explicit register branch (reuses the gateway POST /customer/register route). This
-                // replaces the old not_found dead-end and the broken set_password (no-resetToken) call.
-                setState('register');
-            }
-        } catch {
-            setError('Something went wrong. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        // Never query whether an email has a store account. This is an explicit user choice
+        // to try the transitional store-only password sign-in.
+        setState('password_login');
     };
 
     // ── PASSWORD LOGIN ──────────────────────────────────────
@@ -164,38 +144,15 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         setLoading(false);
     };
 
-    // ── REGISTER (LB-12: first-time account creation) ───────
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        // Backend enforces 8–128 chars (customer-registration.ts); match it client-side.
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters');
-            return;
-        }
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-        setLoading(true);
-        setError('');
-
-        const result = await register(email, password, storeId, null, turnstileToken);
-
-        if (result.success) {
-            setState('logged_in');
-        } else {
-            setError(result.error || 'Registration failed');
-            setTurnstileToken(null);
-            turnstileRef.current?.reset();
-        }
-        setLoading(false);
-    };
-
     // ── LOGOUT ──────────────────────────────────────────────
     const handleLogout = async () => {
-        await logout();
-        setState('email_entry');
-        setPasswordValue('');
+        try {
+            await logout();
+            setState('email_entry');
+            setPasswordValue('');
+        } catch {
+            setError('We could not sign you out of the store customer account. Please try again.');
+        }
     };
 
     // ── GO BACK ──────────────────────────────────────────────
@@ -207,9 +164,11 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         setError('');
     };
 
-    const initials = customer?.fullName
-        ? customer.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-        : customer?.email?.[0]?.toUpperCase() || '?';
+    const accountDisplayName = letbuyyBuyer?.email || customer?.fullName || 'Customer';
+    const accountDisplayEmail = letbuyyBuyer?.email || customer?.email || '';
+    const initials = accountDisplayName
+        ? accountDisplayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+        : accountDisplayEmail[0]?.toUpperCase() || '?';
 
     return (
         <AnimatePresence>
@@ -239,7 +198,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                             <div className="flex items-center gap-2">
-                                {(state === 'password_login' || state === 'set_password' || state === 'register' || state === 'not_found') && (
+                                {(state === 'password_login' || state === 'set_password' || state === 'not_found') && (
                                     <Button unstyled
                                         onClick={goBack}
                                         className="p-1 rounded-lg hover:bg-[var(--lb-color-surface-subdued)] transition-colors"
@@ -275,7 +234,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         className="space-y-4"
                                     >
                                         <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                            Enter your email to sign in or create an account.
+                                            Enter an email only if you want to try an older store-only password account. We do not check whether an account exists; new and shared accounts use LetBuyy below.
                                         </p>
                                         <div className="relative">
                                             <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
@@ -301,7 +260,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                             className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
                                             style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
                                         >
-                                            {loading ? <Loader2 size={18} className="animate-spin" /> : 'Continue'}
+                                            {loading ? <Loader2 size={18} className="animate-spin" /> : 'Continue to older store-only sign-in'}
                                         </Button>
                                         {letbuyyBuyer ? (
                                             <div className="rounded-xl border border-[color:var(--border)] p-4 text-sm text-[color:var(--text)]">
@@ -452,74 +411,6 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                     </motion.form>
                                 )}
 
-                                {/* ─── STATE: Register (LB-12 first-time account) ─── */}
-                                {state === 'register' && (
-                                    <motion.form
-                                        key="register"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        onSubmit={handleRegister}
-                                        className="space-y-4"
-                                    >
-                                        <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                            Create your account for <strong>{email}</strong>.
-                                        </p>
-                                        <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
-                                        <div className="relative">
-                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
-                                            <Input unstyled
-                                                ref={passwordRef}
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={password}
-                                                onChange={(e) => setPasswordValue(e.target.value)}
-                                                placeholder="Create password"
-                                                required
-                                                minLength={8}
-                                                className="w-full pl-10 pr-12 py-3 rounded-xl border text-sm outline-none transition-colors"
-                                                style={{
-                                                    borderColor: 'var(--border, rgb(209 213 219))',
-                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
-                                                    color: 'var(--text, rgb(26 26 46))',
-                                                }}
-                                            />
-                                            <Button unstyled
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 -translate-y-1/2"
-                                                style={{ color: 'var(--text-secondary, rgb(156 163 175))' }}
-                                            >
-                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                            </Button>
-                                        </div>
-                                        <div className="relative">
-                                            <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, rgb(156 163 175))' }} />
-                                            <Input unstyled
-                                                type={showPassword ? 'text' : 'password'}
-                                                value={confirmPassword}
-                                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                                placeholder="Confirm password"
-                                                required
-                                                className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-colors"
-                                                style={{
-                                                    borderColor: 'var(--border, rgb(209 213 219))',
-                                                    backgroundColor: 'var(--surface, rgb(249 250 251))',
-                                                    color: 'var(--text, rgb(26 26 46))',
-                                                }}
-                                            />
-                                        </div>
-                                        {error && <p className="text-red-500 text-sm">{error}</p>}
-                                        <Button unstyled
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full py-3 rounded-xl text-white text-sm font-semibold flex items-center justify-center gap-2 transition-opacity disabled:opacity-50"
-                                            style={{ backgroundColor: 'var(--primary, rgb(0 179 179))' }}
-                                        >
-                                            {loading ? <Loader2 size={18} className="animate-spin" /> : 'Create Account'}
-                                        </Button>
-                                    </motion.form>
-                                )}
-
                                 {/* ─── STATE: Not Found ────────────────────── */}
                                 {state === 'not_found' && (
                                     <motion.div
@@ -582,9 +473,9 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                                 {initials}
                                             </div>
                                             <div>
-                                                <p className="font-semibold">{customer.fullName || 'Customer'}</p>
+                                                <p className="font-semibold">{accountDisplayName}</p>
                                                 <p className="text-sm" style={{ color: 'var(--text-secondary, rgb(107 114 128))' }}>
-                                                    {customer.email}
+                                                    {accountDisplayEmail}
                                                 </p>
                                             </div>
                                         </div>
@@ -593,6 +484,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         <nav className="space-y-1">
                                             {[
                                                 { href: `${basePath}/account/orders`, icon: Package, label: 'My Orders' },
+                                                { href: `${basePath}/account/support`, icon: Headphones, label: 'Support' },
                                                 { href: `${basePath}/account/wishlist`, icon: Heart, label: 'Wishlist' },
                                                 { href: `${basePath}/account/addresses`, icon: MapPin, label: 'Addresses' },
                                                 { href: `${basePath}/account/settings`, icon: Settings, label: 'Settings' },
@@ -612,15 +504,6 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                             ))}
                                         </nav>
 
-                                        {letbuyyBuyer && (
-                                            <div className="rounded-xl border p-4 text-sm" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
-                                                <p className="text-[var(--text-secondary)]">LetBuyy account: <strong className="text-[var(--text)]">{letbuyyBuyer.email}</strong></p>
-                                                <Link href={`${basePath}/account/orders`} onClick={onClose} className="mt-2 inline-flex min-h-11 items-center font-semibold text-[var(--primary)]">
-                                                    View linked orders at this store
-                                                </Link>
-                                            </div>
-                                        )}
-
                                         {/* Sign Out */}
                                         <Button unstyled
                                             onClick={handleLogout}
@@ -631,8 +514,19 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                             }}
                                         >
                                             <LogOut size={18} />
-                                            Sign Out
+                                            Sign out of store customer account
                                         </Button>
+                                        {letbuyyBuyer && (
+                                            <Button unstyled
+                                                type="button"
+                                                onClick={signOutOfLetbuyy}
+                                                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-colors hover:opacity-80"
+                                                style={{ borderColor: 'var(--lb-color-border)', color: 'var(--lb-color-text-secondary)' }}
+                                            >
+                                                <LogOut size={18} />
+                                                Sign out of LetBuyy at this store
+                                            </Button>
+                                        )}
                                     </motion.div>
                                 )}
                             </AnimatePresence>

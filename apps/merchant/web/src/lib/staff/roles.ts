@@ -1,10 +1,12 @@
+import { permissionsForStoreStaffRole } from '@letbuyy/auth-core'
+
 // Staff roles (RBAC) and the granular permissions each grants (PBAC).
 //
 // Every `value` here MUST be in the employees.role CHECK constraint
 // (support/sales/marketing/operations/manager/admin/editor/viewer/fulfillment/staff).
 // A role is a named bundle of permissions; the permission list is what we persist
 // on the employee's `permissions` JSON so access is explicit and auditable, and so
-// it survives a later role rename. Keep this catalog the single source of truth.
+// it survives a later role rename. Role bundles come from the shared auth-core owner.
 
 export interface StaffPermission {
     key: string
@@ -49,45 +51,42 @@ export const STAFF_ROLES: StaffRole[] = [
         label: 'Manager',
         description: 'Full access to store operations, catalog, orders, customers, and settings.',
         icon: 'shield_person',
-        permissions: [
-            'products:write', 'orders:write', 'customers:write', 'content:write',
-            'marketing:write', 'shipping:write', 'returns:write', 'reports:read', 'settings:write',
-        ],
+        permissions: permissionsForStoreStaffRole('manager').granted,
     },
     {
         value: 'editor',
         label: 'Editor',
         description: 'Create and edit products, collections, pages, and blog content.',
         icon: 'edit',
-        permissions: ['products:write', 'content:write', 'reports:read'],
+        permissions: permissionsForStoreStaffRole('editor').granted,
     },
     {
         value: 'fulfillment',
         label: 'Fulfilment',
         description: 'Process and fulfil orders, manage shipping and delivery.',
         icon: 'local_shipping',
-        permissions: ['orders:write', 'shipping:write', 'reports:read'],
+        permissions: permissionsForStoreStaffRole('fulfillment').granted,
     },
     {
         value: 'marketing',
         label: 'Marketing',
         description: 'Run campaigns and discounts and view customer engagement.',
         icon: 'campaign',
-        permissions: ['marketing:write', 'customers:read', 'reports:read'],
+        permissions: permissionsForStoreStaffRole('marketing').granted,
     },
     {
         value: 'support',
         label: 'Customer support',
         description: 'View orders and customers, and process returns and refunds.',
         icon: 'support_agent',
-        permissions: ['orders:read', 'customers:write', 'returns:write'],
+        permissions: permissionsForStoreStaffRole('support').granted,
     },
     {
         value: 'viewer',
         label: 'Viewer',
         description: 'Read-only access to store data, orders, and reports.',
         icon: 'visibility',
-        permissions: ['products:read', 'orders:read', 'reports:read'],
+        permissions: permissionsForStoreStaffRole('viewer').granted,
     },
 ]
 
@@ -105,5 +104,5 @@ export function staffRoleLabel(value: string | null | undefined): string {
 
 /** The `permissions` JSON we persist on an employee for a given role. */
 export function permissionsForRole(value: string): { granted: string[] } {
-    return { granted: getStaffRole(value).permissions }
+    return permissionsForStoreStaffRole(value)
 }

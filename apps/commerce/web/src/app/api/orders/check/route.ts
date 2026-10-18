@@ -1,24 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getOrderContactSummary } from '@/lib/order-service';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const contact = searchParams.get('contact');
-    const subdomain = searchParams.get('subdomain');
+const RETIRED_RESPONSE = {
+    error: 'Order history now requires your LetBuyy buyer account.',
+};
 
-    if (!contact || !subdomain) {
-        return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
-    }
-
-    try {
-        const summary = await getOrderContactSummary(subdomain, contact);
-
-        return NextResponse.json({
-            hasOrders: summary.hasOrders,
-            hasPassword: summary.hasPassword,
-        });
-    } catch (error) {
-        console.error('Error checking orders:', error);
-        return NextResponse.json({ error: 'Failed to check orders' }, { status: 500 });
-    }
+export function GET() {
+    return NextResponse.json(RETIRED_RESPONSE, {
+        status: 410,
+        headers: { 'Cache-Control': 'no-store' },
+    });
 }

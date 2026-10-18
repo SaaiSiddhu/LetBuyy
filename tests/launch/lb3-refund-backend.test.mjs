@@ -68,12 +68,14 @@ test('LB-3-A: payments.ts refund route initiates Razorpay refund when provider_r
     assert.ok(refundRouteStart > -1, 'refund route must be present');
     const refundRouteBlock = src.slice(refundRouteStart);
     const providerCallIndex = refundRouteBlock.indexOf('razorpayProvider.refund(');
-    const ledgerCallIndex = refundRouteBlock.indexOf('postPaymentLedger(');
+    const reservationIndex = refundRouteBlock.indexOf("rpc('reserve_payment_refund_attempt'");
+    const ledgerCallIndex = refundRouteBlock.indexOf("rpc('reconcile_payment_refund_attempt'");
     assert.ok(providerCallIndex > -1, 'razorpayProvider.refund call must exist in refund route block');
-    assert.ok(ledgerCallIndex > -1, 'postPaymentLedger call must exist in refund route block');
+    assert.ok(reservationIndex > -1 && reservationIndex < providerCallIndex,'durable reservation precedes the provider effect');
+    assert.ok(ledgerCallIndex > -1, 'the atomic provider-refund reconciler must exist in the refund route');
     assert.ok(
         providerCallIndex < ledgerCallIndex,
-        'Razorpay provider refund call must appear before postPaymentLedger (no ledger write on provider failure)',
+        'Razorpay provider confirmation must precede the atomic ledger finalizer',
     );
 });
 
@@ -98,20 +100,21 @@ test('LB-3-B: payments.ts refund route still contains step-up gate and ledger po
     assert.ok(refundRouteStart > -1, 'refund route must be present');
     const refundRouteBlock = src.slice(refundRouteStart);
     const stepUpIndex = refundRouteBlock.indexOf("action: 'refund.approve'");
-    const ledgerIndex = refundRouteBlock.indexOf('buildPaymentRefundLedgerPosting(');
+    const ledgerIndex = refundRouteBlock.indexOf("rpc('reconcile_payment_refund_attempt'");
     assert.ok(stepUpIndex > -1, 'step-up call must be present in refund route');
-    assert.ok(ledgerIndex > -1, 'buildPaymentRefundLedgerPosting call must be present in refund route');
+    assert.ok(ledgerIndex > -1, 'atomic refund reconciliation must be present in the refund route');
     assert.ok(
         stepUpIndex < ledgerIndex,
         'step-up verification must appear before ledger posting',
     );
 
-    // Ledger call is still there
+    // Manual providers share the durable attempt contract; no direct ledger write returns.
     assert.match(
-        src,
-        /postPaymentLedger\(/,
-        'postPaymentLedger must be called in refund route',
+        refundRouteBlock,
+        /rpc\('finalize_manual_payment_refund_attempt'/,
+        'manual provider evidence finalizes through the canonical atomic transaction',
     );
+    assert.doesNotMatch(refundRouteBlock,/postPaymentLedger\(|buildPaymentRefundLedgerPosting\(/);
 
     // payment.refunded event emission must still be present
     assert.match(

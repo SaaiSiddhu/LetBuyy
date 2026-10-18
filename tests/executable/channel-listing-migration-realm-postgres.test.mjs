@@ -19,7 +19,9 @@
 //     thing a forward migration must handle which 221's paired rollback could assume away, it is the
 //     reason 222 exists as a migration rather than a deletion of 221, and until now nothing tested it.
 //
-// DESTRUCTIVE: recreates its database and replays every migration. Refuses the shared database, and
+// DESTRUCTIVE: recreates its database and replays through migration 222. Later Phase 6 migrations
+// add a narrowly scoped `system` audit realm for automatic re-review invalidation; that later policy
+// must not rewrite this historical 221/222 regression test. Refuses the shared database, and
 // SKIPS with the exact command when no dedicated one is named rather than throwing at import.
 
 import assert from 'node:assert/strict';
@@ -90,7 +92,7 @@ const BOOTSTRAP_SQL = SUPABASE_FAITHFUL_BOOTSTRAP_SQL;
 function bootstrapDatabase() {
     psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}";`, 'postgres');
     psql(BOOTSTRAP_SQL);
-    for (const name of listMigrations()) {
+    for (const name of listMigrations().filter((name) => Number(name.match(/^\d+/)?.[0] ?? 0) <= 222)) {
         try {
             psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')));
         } catch (error) {

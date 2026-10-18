@@ -156,27 +156,14 @@ test('A11Y-4 customer-login form has <label> elements wrapping the email and pas
 // A11Y-5: Register form — each visible input is wrapped in a <label> element (WCAG 1.3.1)
 // ============================================================================
 
-test('A11Y-5 customer-register form has <label> elements for name, email, and password inputs', async () => {
+test('A11Y-5 customer-register provides an accessible canonical account-creation link', async () => {
   const result = await renderTemplate('customers/register');
 
   assert.equal(result.status, 'rendered');
 
   const html = result.liquid?.contentForLayout ?? '';
-  // customer-register renders: <label>Name<input...>, <label>Email<input...>, <label>Password<input...>
-  assert.match(html, /<label\b/i, 'register form must have label elements');
-  // Phase I bug fix: the name input is named "fullName" (not "name") so DOMPurify's DOM-clobbering
-  // guard no longer strips it. The name attribute MUST survive sanitization or the no-JS POST would
-  // omit the customer name. This asserts the fix holds end-to-end through the real renderer+sanitizer.
-  assert.match(html, /<input[^>]+name="fullName"/, 'register name input must keep name="fullName" after DOMPurify (no clobbering)');
-  assert.doesNotMatch(html, /<input[^>]+name="name"\b/, 'the clobbering-prone name="name" must not be used');
-  assert.match(html, /<input[^>]+name="email"/, 'register form must have an email input');
-  assert.match(html, /<input[^>]+name="password"/, 'register form must have a password input');
-
-  const labelMatches = html.match(/<label\b/gi) ?? [];
-  assert.ok(
-    labelMatches.length >= 3,
-    `register form must have at least 3 <label> elements (name, email, password), found ${labelMatches.length}`,
-  );
+  assert.match(html, /<a[^>]+href="\/api\/buyer-auth\/start\?return_to=\/store\/[^/]+\/account"[^>]*>Create or sign in with LetBuyy<\/a>/i);
+  assert.doesNotMatch(html, /<input\b/i, 'canonical registration entry must not collect store-local credentials');
 });
 
 // ============================================================================

@@ -69,7 +69,7 @@ function InvalidHandoffPage({ reason }: { reason: string }) {
 }
 
 async function verifyHandoff(params: CheckoutSearchParams): Promise<
-    | { ok: true; siteId: string; subdomain: string; lines: VerifiedHandoffLine[] }
+    | { ok: true; siteId: string; cartId: string; subdomain: string; lines: VerifiedHandoffLine[]; handoff: Record<string, string> }
     | { ok: false; status: number; reason: string }
 > {
     const cartId = typeof params.cart_id === 'string' ? params.cart_id.trim() : '';
@@ -97,12 +97,20 @@ async function verifyHandoff(params: CheckoutSearchParams): Promise<
         };
     }
 
-    const body = await response.json().catch(() => null) as { data?: { site_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
+    const body = await response.json().catch(() => null) as { data?: { site_id?: string; cart_id?: string; subdomain?: string | null; lines?: VerifiedHandoffLine[] } } | null;
     const siteId = body?.data?.site_id;
     const subdomain = body?.data?.subdomain;
-    if (!siteId || !subdomain) return { ok: false, status: 502, reason: 'This store is no longer available.' };
+    const verifiedCartId = body?.data?.cart_id;
+    if (!siteId || !subdomain || verifiedCartId !== cartId) return { ok: false, status: 502, reason: 'This store is no longer available.' };
 
-    return { ok: true, siteId, subdomain, lines: Array.isArray(body?.data?.lines) ? body.data.lines : [] };
+    return {
+        ok: true,
+        siteId,
+        cartId,
+        subdomain,
+        lines: Array.isArray(body?.data?.lines) ? body.data.lines : [],
+        handoff: Object.fromEntries(query.entries()),
+    };
 }
 
 async function loadBranding(storeId: string): Promise<Partial<StoreBrandingInput> | null> {
@@ -181,6 +189,8 @@ export default async function CheckoutOriginPage({
                 checkoutOrigin={{
                     storefrontBaseUrl: resolveStorefrontOriginUrl(store.subdomain),
                     cartLines,
+                    cartId: verified.cartId,
+                    handoff: verified.handoff,
                 }}
             />
         </div>

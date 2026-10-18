@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { tsImport } from 'tsx/esm/api';
 
-const BILLING_CORE_SOURCE = 'packages/billing-core/src/index.ts';
 const RAZORPAY_ADAPTER_SOURCE = 'packages/infrastructure/razorpay-adapter/index.ts';
 
 function loadTypeScriptModule(sourcePath, requireMap) {
@@ -52,53 +52,9 @@ function loadTypeScriptModule(sourcePath, requireMap) {
   return module.exports;
 }
 
-function createSchema(parseFn = (value) => ({ success: true, data: value })) {
-  const schema = function schema() {};
-  const chain = new Proxy(schema, {
-    get(target, property) {
-      if (property === 'safeParse') return parseFn;
-      if (property === 'parse') return (value) => parseFn(value).data;
-      return () => chain;
-    },
-    apply: () => chain,
-  });
-  return chain;
-}
-
-function createZodStub() {
-  const generic = createSchema();
-  const z = {
-    string: () => generic,
-    number: () => generic,
-    coerce: {
-      number: () => generic,
-      string: () => generic,
-      boolean: () => generic,
-    },
-    unknown: () => generic,
-    enum: () => generic,
-    array: () => generic,
-    record: () => generic,
-    object: (shape) => createSchema((value) => {
-      if (!value || typeof value !== 'object' || Array.isArray(value)) {
-        return { success: false, error: new Error('Expected object') };
-      }
-
-      const record = { ...value };
-      if (shape?.quantity && record.quantity === undefined) record.quantity = 1;
-      return { success: true, data: record };
-    }),
-  };
-
-  return { z };
-}
-
-const billingCore = loadTypeScriptModule(BILLING_CORE_SOURCE, {
-  zod: createZodStub(),
-  '@letbuyy/shared-types': {
-    MarketplaceAppPricingModelSchema: createSchema(),
-  },
-});
+// Exercise the canonical schemas and their real Zod dependency. A permissive
+// schema proxy hid invalid inputs and drifted as soon as the owner used union().
+const billingCore = await tsImport('../../packages/billing-core/src/index.ts', import.meta.url);
 
 const paymentsMock = {
   inrMoney(amountMinor) {

@@ -7,6 +7,11 @@ import { validate } from '../middleware/validation';
 
 const router = new Hono<{ Bindings: Env }>();
 
+class CodIdempotencyConflict extends Error {}
+class CodCollectionConflict extends Error {}
+class CodOrderNotFound extends Error {}
+class CodCollectionAmountError extends Error {}
+
 const CodStatusSchema = z.enum(['pending', 'collected', 'reconciled', 'short', 'over', 'reversed']);
 
 const CodQuerySchema = z.object({
@@ -18,7 +23,7 @@ const CodQuerySchema = z.object({
 const CollectCodSchema = z.object({
     store_id: z.string().uuid(),
     order_id: z.string().uuid(),
-    collected_amount_minor: z.number().int().nonnegative().optional(),
+    collected_amount_minor: z.number().int().nonnegative().max(2147483647).optional(),
     notes: z.string().max(1000).optional(),
     idempotency_key: z.string().min(8).max(160),
 });
@@ -138,20 +143,6 @@ function summarize(siteId: string, rows: CodReconciliationRow[]) {
     });
 }
 
-async function loadCodOrder(db: Db, siteId: string, orderId: string): Promise<CodOrderRow | null> {
-    const { data, error } = await db
-        .from('orders')
-        .select('id, order_number, total, currency, payment_method, payment_status, status, created_at')
-        .eq('id', orderId)
-        .eq('store_id', siteId)
-        .eq('payment_method', 'cod')
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (error) throw new Error(`COD order lookup failed: ${error.message}`);
-    return (data || null) as unknown as CodOrderRow | null;
-}
-
 async function loadExistingEntries(db: Db, siteId: string): Promise<CodReconciliationRow[]> {
     const { data, error } = await db
         .from('cod_reconciliation_entries')
@@ -244,35 +235,32 @@ async function loadEntryById(db: Db, siteId: string, id: string): Promise<CodRec
     return (data || null) as unknown as CodReconciliationRow | null;
 }
 
-async function loadEntryByOrder(db: Db, siteId: string, orderId: string): Promise<CodReconciliationRow | null> {
-    const { data, error } = await db
-        .from('cod_reconciliation_entries')
-        .select('*')
-        .eq('site_id', siteId)
-        .eq('order_id', orderId)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (error) throw new Error(`COD reconciliation order entry lookup failed: ${error.message}`);
-    return (data || null) as unknown as CodReconciliationRow | null;
-}
-
-async function loadEntryByIdempotency(
+async function collectCodOrderWithLock(
     db: Db,
-    siteId: string,
-    column: 'collection_idempotency_key' | 'reconciliation_idempotency_key',
-    key: string,
-): Promise<CodReconciliationRow | null> {
-    const { data, error } = await db
-        .from('cod_reconciliation_entries')
-        .select('*')
-        .eq('site_id', siteId)
-        .eq(column, key)
-        .is('deleted_at', null)
-        .maybeSingle();
+    input: {
+        siteId: string;
+        orderId: string;
+        collectedAmountMinor?: number;
+        notes?: string | null;
+        idempotencyKey: string;
+        userId?: string | null;
+    },
+): Promise<CodReconciliationRow> {
+    const { data, error } = await db.rpc('collect_cod_order_with_lock', {
+        p_site_id: input.siteId,
+        p_order_id: input.orderId,
+        p_collected_amount_minor: input.collectedAmountMinor ?? null,
+        p_notes: input.notes || null,
+        p_idempotency_key: input.idempotencyKey,
+        p_actor_id: input.userId || null,
+    });
 
-    if (error) throw new Error(`COD idempotency lookup failed: ${error.message}`);
-    return (data || null) as unknown as CodReconciliationRow | null;
+    if (error?.code === '23505') throw new CodIdempotencyConflict();
+    if (error?.code === '23514') throw new CodCollectionConflict();
+    if (error?.code === 'P0002') throw new CodOrderNotFound();
+    if (error?.code === '22023') throw new CodCollectionAmountError();
+    if (error || !data) throw new Error(`COD collection transaction failed: ${error?.message || 'unknown error'}`);
+    return data as unknown as CodReconciliationRow;
 }
 
 async function reconcileCodRemittanceWithLedger(
@@ -287,7 +275,7 @@ async function reconcileCodRemittanceWithLedger(
         requestId?: string | null;
     },
 ): Promise<CodReconciliationRow> {
-    const { data, error } = await db.rpc('reconcile_cod_remittance_with_ledger', {
+    const { data, error } = await db.rpc('reconcile_cod_remittance_with_ledger_checked', {
         p_site_id: input.siteId,
         p_entry_id: input.entryId,
         p_deposited_amount_minor: input.depositedAmountMinor,
@@ -297,6 +285,7 @@ async function reconcileCodRemittanceWithLedger(
         p_request_id: input.requestId || null,
     });
 
+    if (error?.code === '23505') throw new CodIdempotencyConflict();
     if (error || !data) throw new Error(`COD canonical ledger reconciliation failed: ${error?.message || 'unknown error'}`);
     return data as unknown as CodReconciliationRow;
 }
@@ -312,44 +301,31 @@ router.post('/reconciliation', validate('json', CollectCodSchema), async (c) => 
     const body = c.get('validatedBody') as CollectCodInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const existingByKey = await loadEntryByIdempotency(db, tenant.siteId, 'collection_idempotency_key', body.idempotency_key);
-    if (existingByKey) return c.json(success({ entry: serializeEntry(existingByKey) }));
-
-    const order = await loadCodOrder(db, tenant.siteId, body.order_id);
-    if (!order) {
-        return c.json({ success: false, error: { code: 'COD_ORDER_NOT_FOUND', message: 'COD order not found.' } }, 404);
+    try {
+        const entry = await collectCodOrderWithLock(db, {
+            siteId: tenant.siteId,
+            orderId: body.order_id,
+            collectedAmountMinor: body.collected_amount_minor,
+            notes: body.notes || null,
+            idempotencyKey: body.idempotency_key,
+            userId: tenant.userId,
+        });
+        return c.json(success({ entry: serializeEntry(entry) }));
+    } catch (error) {
+        if (error instanceof CodIdempotencyConflict) {
+            return c.json({ success: false, error: { code: 'CONFLICT', message: 'The collection key is already bound to a different COD request.' } }, 409);
+        }
+        if (error instanceof CodCollectionConflict) {
+            return c.json({ success: false, error: { code: 'COD_COLLECTION_CONFLICT', message: 'This COD order is no longer collectible.' } }, 409);
+        }
+        if (error instanceof CodOrderNotFound) {
+            return c.json({ success: false, error: { code: 'COD_ORDER_NOT_FOUND', message: 'COD order not found.' } }, 404);
+        }
+        if (error instanceof CodCollectionAmountError) {
+            return c.json({ success: false, error: { code: 'COD_AMOUNT_OUT_OF_RANGE', message: 'The COD collection amount is outside the supported range.' } }, 422);
+        }
+        throw error;
     }
-
-    await ensureEntriesForCodOrders(db, tenant.siteId, tenant.userId);
-    const current = await loadEntryByOrder(db, tenant.siteId, body.order_id);
-    if (!current) {
-        return c.json({ success: false, error: { code: 'COD_ENTRY_NOT_FOUND', message: 'COD reconciliation entry not found.' } }, 404);
-    }
-
-    const expectedAmountMinor = Number(current.expected_amount_minor || minorFromMajor(order.total));
-    const collectedAmountMinor = body.collected_amount_minor ?? expectedAmountMinor;
-    const now = new Date().toISOString();
-    const { data, error } = await db
-        .from('cod_reconciliation_entries')
-        .update({
-            status: 'collected',
-            collected_amount_minor: collectedAmountMinor,
-            collected_at: current.collected_at || now,
-            collection_idempotency_key: body.idempotency_key,
-            notes: body.notes || current.notes || null,
-            metadata: {
-                ...(current.metadata || {}),
-                collected_by: 'merchant_mobile',
-            },
-            updated_by: tenant.userId,
-        })
-        .eq('id', current.id)
-        .eq('site_id', tenant.siteId)
-        .select('*')
-        .single();
-
-    if (error || !data) throw new Error(`COD collection update failed: ${error?.message || 'unknown error'}`);
-    return c.json(success({ entry: serializeEntry(data as unknown as CodReconciliationRow) }));
 });
 
 router.post('/reconciliation/:id/reconcile', validate('json', ReconcileCodSchema), async (c) => {
@@ -357,24 +333,32 @@ router.post('/reconciliation/:id/reconcile', validate('json', ReconcileCodSchema
     const body = c.get('validatedBody') as ReconcileCodInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const existingByKey = await loadEntryByIdempotency(db, tenant.siteId, 'reconciliation_idempotency_key', body.idempotency_key);
-    if (existingByKey) return c.json(success({ entry: serializeEntry(existingByKey) }));
-
     const current = await loadEntryById(db, tenant.siteId, id);
     if (!current) {
         return c.json({ success: false, error: { code: 'COD_ENTRY_NOT_FOUND', message: 'COD reconciliation entry not found.' } }, 404);
     }
 
     const collectedAmountMinor = Number(current.collected_amount_minor || current.expected_amount_minor || 0);
-    const updated = await reconcileCodRemittanceWithLedger(db, {
-        siteId: tenant.siteId,
-        entryId: current.id,
-        depositedAmountMinor: body.deposited_amount_minor ?? collectedAmountMinor,
-        notes: body.notes || current.notes || null,
-        idempotencyKey: body.idempotency_key,
-        userId: tenant.userId,
-        requestId: c.req.header('X-Request-ID') || null,
-    });
+    let updated: CodReconciliationRow;
+    try {
+        updated = await reconcileCodRemittanceWithLedger(db, {
+            siteId: tenant.siteId,
+            entryId: current.id,
+            depositedAmountMinor: body.deposited_amount_minor ?? collectedAmountMinor,
+            notes: body.notes || current.notes || null,
+            idempotencyKey: body.idempotency_key,
+            userId: tenant.userId,
+            requestId: c.req.header('X-Request-ID') || null,
+        });
+    } catch (error) {
+        if (error instanceof CodIdempotencyConflict) {
+            return c.json({
+                success: false,
+                error: { code: 'IDEMPOTENCY_KEY_REUSED', message: 'This idempotency key is bound to a different COD reconciliation request.' },
+            }, 409);
+        }
+        throw error;
+    }
 
     return c.json(success({ entry: serializeEntry(updated) }));
 });

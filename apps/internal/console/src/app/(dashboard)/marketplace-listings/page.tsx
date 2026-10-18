@@ -11,8 +11,7 @@
 // actions, the pattern the compliance, developers, employees, incidents and merchants pages already
 // use. A server action is not an API route, so the freeze is respected rather than exempted.
 
-import { revalidatePath } from 'next/cache';
-import { Button, Input, Textarea } from '@letbuyy/ui';
+import Link from 'next/link';
 import {
     ConsoleWorkspace,
     EmptyDataState,
@@ -23,13 +22,6 @@ import {
 } from '@/components/_local-ui/console-workspace';
 import { fetchConsoleApi, formatDateTime } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
-import {
-    MAX_DECISION_REASON,
-    MIN_DECISION_REASON,
-    buildListingDecisionBody,
-    newListingDecisionKey,
-    type ListingDecision,
-} from '@/lib/listing-decision';
 
 const REVIEW_QUEUE_STATUS = 'pending_review';
 
@@ -49,54 +41,8 @@ interface ListResponse {
 }
 
 // ---------------------------------------------------------------------------
-// Server actions — mirror the incidents page pattern exactly
+// Server action — decisions are made from the evidence/detail page.
 // ---------------------------------------------------------------------------
-
-async function decide(formData: FormData, decision: ListingDecision) {
-    const listingId = String(formData.get('listing_id') || '').trim();
-
-    if (!listingId) {
-        throw new Error('A listing id is required.');
-    }
-
-    // F-ADM4-1: the gateway requires an idempotency key on every decision. It is rendered into each form,
-    // so a double submit replays rather than deciding twice; a form rendered before this change carries
-    // none, and gets a fresh one here rather than failing.
-    const body = buildListingDecisionBody({
-        decision,
-        reason: String(formData.get('reason') || ''),
-        idempotencyKey: String(formData.get('idempotency_key') || '') || newListingDecisionKey(decision, listingId),
-    });
-
-    const result = await fetchConsoleApi<{ data?: unknown; error?: { message?: string } }>(
-        `/operations/marketplace-listings/${listingId}/${decision}`,
-        { method: 'POST', body },
-    );
-
-    if (result.error) {
-        throw new Error(result.error);
-    }
-
-    revalidatePath('/marketplace-listings');
-}
-
-async function approveListing(formData: FormData) {
-    'use server';
-    await requireConsoleSession({ mfa: true });
-    await decide(formData, 'approve');
-}
-
-async function rejectListing(formData: FormData) {
-    'use server';
-    await requireConsoleSession({ mfa: true });
-    await decide(formData, 'reject');
-}
-
-async function takeDownListing(formData: FormData) {
-    'use server';
-    await requireConsoleSession({ mfa: true });
-    await decide(formData, 'take-down');
-}
 
 // ---------------------------------------------------------------------------
 
@@ -147,42 +93,9 @@ export default async function MarketplaceListingsPage() {
                                             <span>Submitted {formatDateTime(listing.submitted_at)}</span>
                                         </div>
 
-                                        <form action={approveListing}>
-                                            <Input type="hidden" name="listing_id" value={listing.id} />
-                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('approve', listing.id)} />
-                                            <Button type="submit">Approve</Button>
-                                        </form>
-
-                                        {/* Reject and take down share a reason field because both are
-                                            negative decisions the merchant is entitled to an
-                                            explanation for. */}
-                                        <form action={rejectListing}>
-                                            <Input type="hidden" name="listing_id" value={listing.id} />
-                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('reject', listing.id)} />
-                                            <label htmlFor={`reject-reason-${listing.id}`}>Reason</label>
-                                            <Textarea
-                                                id={`reject-reason-${listing.id}`}
-                                                name="reason"
-                                                minLength={MIN_DECISION_REASON}
-                                                maxLength={MAX_DECISION_REASON}
-                                                required
-                                            />
-                                            <Button type="submit" variant="secondary">Reject</Button>
-                                        </form>
-
-                                        <form action={takeDownListing}>
-                                            <Input type="hidden" name="listing_id" value={listing.id} />
-                                            <Input type="hidden" name="idempotency_key" value={newListingDecisionKey('take-down', listing.id)} />
-                                            <label htmlFor={`takedown-reason-${listing.id}`}>Reason</label>
-                                            <Textarea
-                                                id={`takedown-reason-${listing.id}`}
-                                                name="reason"
-                                                minLength={MIN_DECISION_REASON}
-                                                maxLength={MAX_DECISION_REASON}
-                                                required
-                                            />
-                                            <Button type="submit" variant="secondary">Take down</Button>
-                                        </form>
+                                        <Link href={`/marketplace-listings/${listing.id}`} className="font-medium text-[var(--lb-color-primary)] underline-offset-4 hover:underline">
+                                            Review listing
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>

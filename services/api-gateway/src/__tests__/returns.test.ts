@@ -20,7 +20,9 @@ test('merchant returns contract uses checkout-core schemas and existing refund e
     assert.match(routeSource, /CreateReturnSchema/);
     assert.match(routeSource, /new OrderExecutionAdapter\(db\)/);
     assert.match(routeSource, /service\.createRefund/);
-    assert.match(routeSource, /complete_order_refund/);
+    assert.match(routeSource, /service\.completeReturnRefund/);
+    const adapterSource=readFileSync(new URL('../execution/order-execution.adapter.ts',import.meta.url),'utf8');
+    assert.match(adapterSource,/complete_owned_order_refund_v1/);
 });
 
 test('merchant returns route verifies tenant ownership and removes S-022 block', () => {

@@ -14,7 +14,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const data = await createMerchantApiClient().smartCollections.preview(id)
+        const data = await createMerchantApiClient().smartCollections.preview(id, { store_id: resolved.storeId })
 
         return NextResponse.json({ data })
     } catch (err) {

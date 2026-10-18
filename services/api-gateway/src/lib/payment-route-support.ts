@@ -2,8 +2,8 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { enqueueOrderConfirmationEmail } from './order-confirmation-email';
-import { verifySiteOwnership } from './auth-user';
 import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
+import { verifySiteOwnership } from './auth-user';
 import { AppError, ConflictError, ForbiddenError, HumanRequiredError, NotFoundError } from './errors';
 import { FIXED_PUBLIC_ERROR_MESSAGES } from './public-errors';
 import {
@@ -206,22 +206,19 @@ export async function loadOwnedPaymentSession(
     sessionStoreId?: string,
 ): Promise<PaymentSessionRow> {
     const db = getSupabaseAdmin(c);
-    const { data: payment } = await db
-        .from('payments')
-        .select('*')
-        .eq('id', paymentId)
-        .is('deleted_at', null)
-        .single();
+    const { data: payment, error } = await db.rpc('load_owned_payment_session', {
+        p_payment_id: paymentId,
+        p_user_id: userId,
+        p_session_store_id: sessionStoreId || null,
+    }).maybeSingle();
 
+    if (error) {
+        throw new Error(`Failed to resolve owned payment session: ${error.message}`);
+    }
     if (!payment) {
         throw new NotFoundError('Payment not found');
     }
-
-    const row = payment as PaymentSessionRow;
-    if (!(await verifySiteOwnership(db, row.site_id, userId, sessionStoreId))) {
-        throw new ForbiddenError('Not authorized for this payment');
-    }
-    return row;
+    return payment as PaymentSessionRow;
 }
 
 export async function assertProviderPaymentNotReplayed(

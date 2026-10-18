@@ -4,12 +4,13 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import { useWishlist } from '@/context/wishlist-context';
 import {
-    Package, Heart, MapPin, Settings, ChevronRight,
+    Package, Heart, MapPin, Settings, ChevronRight, Award,
 } from '@letbuyy/ui';
 import { StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
@@ -19,8 +20,6 @@ const navItems = [
     { href: 'settings', icon: Settings, label: 'Settings' },
 ];
 
-type BuyerSession = { email: string; emailVerified: boolean } | null;
-
 export default function AccountChromeClient({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const params = useParams();
@@ -28,27 +27,15 @@ export default function AccountChromeClient({ children }: { children: React.Reac
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
     const { isAuthenticated, isLoading, customer } = useCustomerAuth();
-    const [buyer, setBuyer] = useState<BuyerSession | undefined>(undefined);
-    const [buyerSessionError, setBuyerSessionError] = useState(false);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetch('/api/buyer-auth/session', { cache: 'no-store', signal: controller.signal })
-            .then(async (response) => {
-                if (!response.ok) throw new Error('session_unavailable');
-                const payload = await response.json() as { buyer?: BuyerSession };
-                setBuyer(payload.buyer ?? null);
-                setBuyerSessionError(false);
-            })
-            .catch((error: unknown) => {
-                if (error instanceof Error && error.name === 'AbortError') return;
-                setBuyer(null);
-                setBuyerSessionError(true);
-            });
-        return () => controller.abort();
-    }, []);
-
-    const loading = isLoading || buyer === undefined;
+    const {
+        buyerSession: hasBuyerSession,
+        buyerSessionEmail,
+        buyerSessionReady,
+        buyerSessionUnavailable,
+    } = useWishlist();
+    const buyer = buyerSessionEmail ? { email: buyerSessionEmail } : null;
+    const buyerSessionError = buyerSessionReady && buyerSessionUnavailable;
+    const loading = isLoading || !buyerSessionReady;
     const hasAccount = isAuthenticated || buyer !== null;
 
     useEffect(() => {
@@ -57,7 +44,7 @@ export default function AccountChromeClient({ children }: { children: React.Reac
         }
     }, [basePath, loading, hasAccount, buyerSessionError, router]);
 
-    if (loading) {
+    if (loading && !hasAccount) {
         return (
             <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }}>
                 <StorefrontListLoadingState rows={4} />
@@ -65,7 +52,7 @@ export default function AccountChromeClient({ children }: { children: React.Reac
         );
     }
 
-    if (!hasAccount) {
+    if (!loading && !hasAccount) {
         return buyerSessionError ? (
             <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }} role="alert">
                 We could not check your account right now. Please try again.
@@ -78,10 +65,24 @@ export default function AccountChromeClient({ children }: { children: React.Reac
     const initials = displayName
         ? displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
         : displayEmail?.[0]?.toUpperCase() || '?';
-    const visibleNavItems = isAuthenticated ? [...navItems, { href: 'wishlist', icon: Heart, label: 'Wishlist' }] : navItems;
+    const visibleNavItems = [
+        ...navItems,
+        ...(isAuthenticated || hasBuyerSession ? [{ href: 'wishlist', icon: Heart, label: 'Wishlist' }] : []),
+        ...(hasBuyerSession ? [{ href: 'loyalty', icon: Award, label: 'Rewards' }] : []),
+    ];
 
     return (
         <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }}>
+            {loading && (
+                <div role="status" className="mb-6">
+                    <StorefrontListLoadingState rows={4} />
+                </div>
+            )}
+            <div
+                className={loading ? 'invisible pointer-events-none' : undefined}
+                aria-hidden={loading || undefined}
+                inert={loading || undefined}
+            >
             {/* Mobile: Horizontal Nav */}
             <div className="md:hidden mb-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -167,6 +168,7 @@ export default function AccountChromeClient({ children }: { children: React.Reac
                 <main className="flex-1 min-w-0">
                     {children}
                 </main>
+            </div>
             </div>
         </div>
     );

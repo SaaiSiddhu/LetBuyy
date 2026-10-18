@@ -27,6 +27,14 @@ const SRC = join(dirname(fileURLToPath(import.meta.url)), '..');
 // unguarded client to a helper (internal-store-access does), so asserting boundedness inline would
 // be false for the delegating shape and would quietly pass for the wrong reason.
 const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; symbol: string } }> = {
+    'lib/return-scope.ts': {
+        why: 'globally unique return ID bootstrap without a known tenant: minimal id/site_id/order_id, one bounded row, then live ownership; supplied signed/selection hints remain on the guarded client',
+        boundedIn: { file: 'lib/return-scope.ts', symbol: 'resolveReturnScope' },
+    },
+    'lib/tenant-context.ts': {
+        why: 'id-only order bootstrap without a session/selection hint: globally unique order.id resolves only id/store_id, bounded to one row, then live ownership is verified; supplied hints use the guarded client after ownership verification',
+        boundedIn: { file: 'lib/tenant-context.ts', symbol: 'resolveTenantContextForOrder' },
+    },
     'lib/payment-route-support.ts': {
         why: 'cross-tenant payment-replay detection: a provider payment id is unique across the provider, and scoping it to one site would delete the cross-tenant protection',
         boundedIn: { file: 'lib/payment-route-support.ts', symbol: 'assertProviderPaymentNotReplayed' },
@@ -40,6 +48,10 @@ const ALLOWED_CALLERS: Record<string, { why: string; boundedIn: { file: string; 
     // exact callback and a PKCE verifier. Kept in a one-function file so this entry admits nothing else.
     'lib/storefront-callback-site.ts': {
         why: 'callback host -> site bootstrap for buyer sign-in: the store is not known until the callback host resolves',
+        boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
+    },
+    'lib/customer-reset-store-by-host.ts': {
+        why: 'password-reset destination host -> site bootstrap: no tenant is known until the globally unique storefront host resolves, and the result is checked against the reset customer store before trust',
         boundedIn: { file: 'middleware/store-context.ts', symbol: 'resolveStorefrontSiteByHost' },
     },
     // F2.6 (Phase 2): the operator moderation route's GET /:id and decide() actions look a listing up
@@ -214,4 +226,16 @@ test('the unguarded client is genuinely unguarded and the default one is genuine
         /createTenantGuardedSupabaseClient\s*\(/,
         'the DEFAULT admin client must still apply the tenant guard',
     );
+});
+
+// The new order-by-id bootstrap is not an exemption for ordinary scoped work.
+test('order bootstrap uses a guarded owned hint and re-verifies every id-only result before authority',()=>{
+ const source=files.find(f=>f.rel==='lib/tenant-context.ts')!.body;
+ const body=functionBody(source,'resolveTenantContextForOrder');
+ assert.match(body,/hint \? getSupabaseAdmin\(c\) : getSupabaseAdminUnguarded\(c\)/);
+ assert.match(body,/query\.eq\('store_id', hint\)/);
+ assert.match(body,/\.eq\('id', orderId\)/);
+ assert.match(body,/\.select\('id, store_id'\)/);
+ assert.match(body,/resolveTenantContextForOwnedSite\(c, order\.store_id as string\)/);
+ assert.match(body,/if \(error\) throw/);
 });

@@ -9,7 +9,7 @@
 | Capability | Current impl | Liquid support | Backend support | Missing |
 |---|---|:--:|:--:|---|
 | Authentication (session) | HS256 customer cookie, `getSession` | ✅ (drop resolve) | ✅ | — |
-| Registration | React + `customers/register` template | ⚠️ template dormant | ✅ `findOrCreateCustomer` | route + `lb-customer-auth` island |
+| Registration | React + `customers/register` template | ⚠️ template dormant | ✅ `/customer/from-order` for order CRM; PKCE for registration | route + `lb-customer-auth` island |
 | Login | React `customer-auth-context` + `customers/login` template | ⚠️ template dormant | ✅ `verifyCustomerPassword`+Turnstile | route + island |
 | Forgot password | React | ❌ no Liquid template | ✅ `request/confirmCustomerPasswordReset` | template + island |
 | Addresses | React `account/addresses` | ❌ | ✅ `customerAddresses` CRUD | `customers/addresses` template + `customer.addresses` drop |

@@ -91,6 +91,7 @@ function createHarness({
     webhookEvents = [],
     confirm,
     domainEvent,
+    refundReconcile,
     eventReadsToAlign = 0,
 }: {
     orders?: Row[];
@@ -98,6 +99,7 @@ function createHarness({
     webhookEvents?: Row[];
     confirm?: GatewayResponder;
     domainEvent?: GatewayResponder;
+    refundReconcile?: GatewayResponder;
     // Hold every read of payment_webhook_events until this many have arrived, so concurrent deliveries
     // all see the same row state before any of them writes. A timer stops a missing read from hanging.
     eventReadsToAlign?: number;
@@ -111,7 +113,7 @@ function createHarness({
         orders: orders.map((row) => ({ ...row })),
         subscriptions: subscriptions.map((row) => ({ ...row })),
     };
-    const calls = { confirm: [] as Json[], failure: [] as Json[], activate: [] as Json[], domainEvents: [] as Json[], orderLookups: 0 };
+    const calls = { confirm: [] as Json[], failure: [] as Json[], orderEvents: [] as Json[], refundReconcile: [] as Json[], activate: [] as Json[], domainEvents: [] as Json[], orderLookups: 0 };
 
     async function supabaseFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
         const url = new URL(String(input));
@@ -164,16 +166,29 @@ function createHarness({
                 calls.failure.push(body);
                 return jsonResponse({ success: true, data: { order: { id: body.orderId } } });
             }
+            if (path === "/v1/storefront/internal/payments/event") {
+                calls.orderEvents.push(body);
+                return jsonResponse({ success: true, data: { order: { id: body.orderId } } });
+            }
+            if (path === "/v1/storefront/internal/payments/refund-event") {
+                calls.refundReconcile.push(body);
+                return refundReconcile
+                    ? refundReconcile(calls.refundReconcile.length)
+                    : jsonResponse({ success: true, data: { matched: false } });
+            }
             if (path === "/v1/internal/events/domain") {
                 calls.domainEvents.push(body);
                 return domainEvent ? domainEvent(calls.domainEvents.length) : jsonResponse({ success: true, data: { event: { id: randomUUID() } } });
             }
             if (path === "/v1/internal/billing/subscriptions/activate") {
                 calls.activate.push(body);
-                // What the gateway's activation does to the one table this service reads back.
-                const subscription = { id: randomUUID(), store_id: body.storeId, plan: body.planSlug, razorpay_payment_id: body.providerPaymentId };
-                tables.subscriptions.push(subscription);
-                return jsonResponse({ success: true, data: { subscription } });
+                // Gateway contract fixture: its real ownership/idempotency is
+                // proved by owned-db/subscription-payment-ownership, not this stub.
+                const existing=tables.subscriptions.find(row=>row.razorpay_payment_id===body.providerPaymentId);
+                if(existing&&existing.store_id!==body.storeId)return jsonResponse({error:{code:'SUBSCRIPTION_PAYMENT_CONFLICT'}},409);
+                const subscription=existing||{id:randomUUID(),store_id:body.storeId,plan:body.planSlug,razorpay_payment_id:body.providerPaymentId};
+                if(!existing)tables.subscriptions.push(subscription);
+                return jsonResponse({success:true,data:{subscription}});
             }
             throw new Error(`fake gateway: unexpected ${path}`);
         },
@@ -256,6 +271,36 @@ const subscriptionPayment = (paymentId: string) => capturedEvent({
     providerOrderId: `order_${paymentId}`,
     notes: { store_id: STORE_ID, plan_slug: "growth", billing_period: "monthly", user_id: USER_ID },
 });
+
+function providerRefundEvent(input: {
+    event: "refund.created" | "refund.processed" | "refund.failed";
+    refundId: string;
+    paymentId?: string;
+    amount?: number;
+    currency?: string;
+    status?: string;
+}): Json {
+    const status = input.status || (input.event === "refund.created" ? "created" : input.event === "refund.processed" ? "processed" : "failed");
+    return {
+        entity: "event",
+        account_id: "acc_test",
+        event: input.event,
+        contains: ["refund", "payment"],
+        payload: {
+            refund: {
+                entity: {
+                    id: input.refundId,
+                    entity: "refund",
+                    amount: input.amount ?? 75000,
+                    currency: input.currency ?? "INR",
+                    payment_id: input.paymentId || "pay_LBPAY_REFUND",
+                    status,
+                },
+            },
+        },
+        created_at: Math.floor(Date.now() / 1000),
+    };
+}
 
 test("the real Hono app is mounted, not a source-text stand-in", () => {
     assert.equal(typeof app?.request, "function");
@@ -377,11 +422,20 @@ test("a subscription payment the merchant's verify route already applied is not 
 
     const response = await harness.deliver(subscriptionPayment("pay_SUBVERIFIED"));
     assert.equal(response.status, 200);
-    assert.equal(harness.calls.activate.length, 0, "one payment activates one subscription");
+    assert.equal(harness.calls.activate.length, 1, "the Gateway owns receipt recovery; the satellite does not skip ownership validation");
     assert.equal(harness.calls.domainEvents.length, 1);
     assert.equal(harness.calls.domainEvents[0].eventType, "payment.subscription.activated");
     assert.equal(harness.calls.domainEvents[0].aggregateId, verified.id);
     assert.equal(harness.eventRow("payment.captured:pay_SUBVERIFIED").processing_status, "processed");
+});
+
+test("a subscription payment found at another store is refused by the canonical Gateway and emits no success event",async()=>{
+    const foreign={id:randomUUID(),store_id:randomUUID(),plan:"growth",razorpay_payment_id:"pay_SUBFOREIGN"};
+    const harness=createHarness({subscriptions:[foreign]});
+    const response=await harness.deliver(subscriptionPayment("pay_SUBFOREIGN"));
+    assert.equal(response.status,500);assert.equal(harness.calls.activate.length,1);
+    assert.equal(harness.calls.domainEvents.length,0);
+    assert.equal(harness.eventRow("payment.captured:pay_SUBFOREIGN").processing_status,"failed");
 });
 
 test("a subscription payment nobody has applied is still activated by the webhook", async () => {
@@ -395,7 +449,7 @@ test("a subscription payment nobody has applied is still activated by the webhoo
 
 test("a reclaimed retry of a subscription event whose activation already landed does not activate again", async () => {
     // Attempt 1 activates, then fails emitting its domain event, so the row is 'failed'. The retry reclaims
-    // the row and replays the branch; activation is not idempotent, so it must not run a second time.
+    // the row and delegates to the canonical idempotent activation again.
     const harness = createHarness({ domainEvent: failFirst(1) });
     const event = subscriptionPayment("pay_SUBREPLAY");
 
@@ -405,7 +459,119 @@ test("a reclaimed retry of a subscription event whose activation already landed 
 
     const retry = await harness.deliver(event);
     assert.equal(retry.status, 200);
-    assert.equal(harness.calls.activate.length, 1, "a replay must not cancel and re-create the subscription or invoice it twice");
+    assert.equal(harness.calls.activate.length, 2, "a reclaimed delivery delegates safe receipt recovery to the canonical Gateway again");
     assert.equal(harness.calls.domainEvents.length, 2);
     assert.equal(harness.eventRow("payment.captured:pay_SUBREPLAY").processing_status, "processed");
+});
+
+test("refund.created records provider progress but does not claim the refund succeeded", async () => {
+    const harness = createHarness({ orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }] });
+    const event = providerRefundEvent({ event: "refund.created", refundId: "rfnd_CREATED" });
+
+    const first = await harness.deliver(event);
+    assert.equal(first.status, 200);
+    assert.equal(harness.calls.failure.length, 0, "provider creation is not proof that the refund was processed");
+    assert.equal(harness.calls.orderEvents.length, 1);
+    assert.equal(harness.calls.orderEvents[0].eventType, "refund.created");
+    assert.equal(harness.calls.domainEvents.length, 0);
+    assert.equal(harness.eventRow("refund.created:rfnd_CREATED").processing_status, "processed");
+
+    const duplicate = await harness.deliver(event);
+    assert.equal(duplicate.body.duplicate, true);
+    assert.equal(harness.calls.orderEvents.length, 1);
+});
+
+test("refund.created entity statuses from Razorpay normalize to a pending lifecycle", async () => {
+    for (const status of ["processed", "pending"]) {
+        const refundId = `rfnd_CREATED_${status.toUpperCase()}`;
+        const harness = createHarness({
+            orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }],
+            refundReconcile: () => jsonResponse({ success: true, data: { matched: true, result: { outcome: "pending" } } }),
+        });
+        const response = await harness.deliver(providerRefundEvent({ event: "refund.created", refundId, status }));
+
+        assert.equal(response.status, 200);
+        assert.equal(harness.calls.refundReconcile.length, 1);
+        assert.deepEqual(harness.calls.refundReconcile[0], {
+            provider: "razorpay",
+            providerPaymentId: "pay_LBPAY_REFUND",
+            providerRefundId: refundId,
+            providerEventId: `refund.created:${refundId}`,
+            eventType: "refund.created",
+            status: "created",
+            amountMinor: 75000,
+            currency: "INR",
+        });
+        assert.equal(harness.calls.failure.length, 0, "refund.created must never post a refund reversal");
+        assert.equal(harness.calls.domainEvents.length, 0, "refund.created must not emit payment.refunded");
+        assert.equal(harness.calls.orderEvents.length, 0, "a matched payment-session attempt stays on the canonical path");
+    }
+});
+
+test("refund.processed posts one full-order reversal and emits the contracted payment.refunded event", async () => {
+    const harness = createHarness({ orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }] });
+    const response = await harness.deliver(providerRefundEvent({ event: "refund.processed", refundId: "rfnd_PROCESSED" }));
+
+    assert.equal(response.status, 200);
+    assert.equal(harness.calls.failure.length, 1);
+    assert.equal(harness.calls.failure[0].paymentStatus, "refunded");
+    assert.equal(harness.calls.failure[0].orderStatus, "refunded");
+    assert.equal(harness.calls.failure[0].reason, "refund_processed");
+    assert.equal(harness.calls.failure[0].providerEventId, "refund.processed:rfnd_PROCESSED");
+    assert.equal(harness.calls.domainEvents.length, 1);
+    assert.equal(harness.calls.domainEvents[0].eventType, "payment.refunded");
+    assert.equal(harness.eventRow("refund.processed:rfnd_PROCESSED").processing_status, "processed");
+});
+
+test("a refund matched to a payment-session attempt is reconciled by Gateway and skips the legacy order refund writer", async () => {
+    const harness = createHarness({
+        orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }],
+        refundReconcile: () => jsonResponse({ success: true, data: { matched: true, result: { outcome: "processed" } } }),
+    });
+    const response = await harness.deliver(providerRefundEvent({ event: "refund.processed", refundId: "rfnd_PAYMENT_SESSION" }));
+
+    assert.equal(response.status, 200);
+    assert.equal(harness.calls.refundReconcile.length, 1);
+    assert.deepEqual(harness.calls.refundReconcile[0], {
+        provider: "razorpay",
+        providerPaymentId: "pay_LBPAY_REFUND",
+        providerRefundId: "rfnd_PAYMENT_SESSION",
+        providerEventId: "refund.processed:rfnd_PAYMENT_SESSION",
+        eventType: "refund.processed",
+        status: "processed",
+        amountMinor: 75000,
+        currency: "INR",
+    });
+    assert.equal(harness.calls.failure.length, 0, "the order-level writer must not reverse the same payment a second time");
+    assert.equal(harness.eventRow("refund.processed:rfnd_PAYMENT_SESSION").processing_status, "processed");
+});
+
+test("refund.failed, partial processed, and malformed processed events never post a full-order reversal", async () => {
+    const harness = createHarness({ orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }] });
+
+    for (const event of [
+        providerRefundEvent({ event: "refund.failed", refundId: "rfnd_FAILED" }),
+        providerRefundEvent({ event: "refund.processed", refundId: "rfnd_PARTIAL", amount: 1200 }),
+        providerRefundEvent({ event: "refund.processed", refundId: "rfnd_MISSING_STATUS", status: "created" }),
+        providerRefundEvent({ event: "refund.processed", refundId: "rfnd_MISSING_AMOUNT", amount: 0 }),
+        providerRefundEvent({ event: "refund.processed", refundId: "rfnd_WRONG_CURRENCY", currency: "USD" }),
+    ]) {
+        assert.equal((await harness.deliver(event)).status, 200);
+    }
+
+    assert.equal(harness.calls.failure.length, 0);
+    assert.equal(harness.calls.orderEvents.length, 5, "each nonterminal or unsupported event is retained for reconciliation");
+    assert.equal(harness.calls.domainEvents.length, 0);
+});
+
+test("separate refund IDs for one payment retain distinct webhook idempotency identities", async () => {
+    const harness = createHarness({ orders: [{ ...orderRow(), payment_id: "pay_LBPAY_REFUND", payment_status: "paid", status: "cancelled" }] });
+
+    for (const refundId of ["rfnd_PARTIAL_A", "rfnd_PARTIAL_B"]) {
+        assert.equal((await harness.deliver(providerRefundEvent({ event: "refund.processed", refundId, amount: 1200 }))).status, 200);
+    }
+
+    assert.ok(harness.eventRow("refund.processed:rfnd_PARTIAL_A"));
+    assert.ok(harness.eventRow("refund.processed:rfnd_PARTIAL_B"));
+    assert.equal(harness.calls.orderEvents.length, 2);
 });

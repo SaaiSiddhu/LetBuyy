@@ -1,4 +1,6 @@
-import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import type { InternalMoneyReconciliationRow } from '@letbuyy/shared-types';
+import { ConsoleApprovalForm } from '@/components/ConsoleApprovalForm';
 import { Button, Input, Select, Table, Textarea } from '@letbuyy/ui';
 import {
     ConsoleWorkspace,
@@ -11,35 +13,14 @@ import {
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import {
     fetchConsoleApi,
+    readSearchParam,
     formatDateTime,
     formatMoneyFromPaise,
-    type ConsoleDataResponse,
     type ConsolePaginatedResponse,
 } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
 
-type SiteSummary = {
-    id?: string | null;
-    name?: string | null;
-    store_name?: string | null;
-    subdomain?: string | null;
-};
-
-type MoneyReconciliationRow = {
-    site_id: string;
-    status: 'verified' | 'mismatch';
-    wallet_available_minor: number | string;
-    ledger_merchant_payable_minor: number | string;
-    variance_minor: number | string;
-    verified_at: string | null;
-    updated_at: string | null;
-    sites?: SiteSummary | null;
-};
-
-type MoneyReconciliationResolveResult = {
-    reconciliation: MoneyReconciliationRow;
-    resolution: Record<string, unknown>;
-};
+type MoneyReconciliationRow = InternalMoneyReconciliationRow;
 
 const resolutionOptions = [
     { label: 'Request recheck', value: 'request_recheck' },
@@ -56,57 +37,25 @@ function siteLabel(row: MoneyReconciliationRow): string {
     return row.sites?.store_name || row.sites?.name || row.sites?.subdomain || row.site_id;
 }
 
-function requireActorId(actorId: string | null | undefined): string {
-    if (!actorId) throw new Error('Console session is missing an actor id.');
-    return actorId;
-}
+export default async function MoneyReconciliationPage({ searchParams }: { searchParams: Promise<Record<string,string|string[]|undefined>> }) {
+    await requireConsoleSession({ mfa: true });
+    const query = await searchParams, site = z.string().uuid().optional().safeParse(readSearchParam(query,'site_id') || undefined);
+    const retryKey = z.string().uuid().safeParse(readSearchParam(query,'request_key'));
+    const formError = readSearchParam(query,'error').slice(0,400);
+    if (!site.success) return <ConsoleWorkspace eyebrow="Money" title="Ledger Reconciliation" description="Review the requested store's reconciliation.">
+        <ConsoleApiErrorPanel title="Invalid store filter" message="The store filter must be a valid UUID." />
+    </ConsoleWorkspace>;
 
-function optionalFormString(value: FormDataEntryValue | null): string | null {
-    const trimmed = String(value || '').trim();
-    return trimmed.length > 0 ? trimmed : null;
-}
-
-async function resolveMoneyBreak(formData: FormData) {
-    'use server';
-
-    const session = await requireConsoleSession({ mfa: true });
-    const siteId = String(formData.get('site_id') || '').trim();
-    const resolution = String(formData.get('resolution') || '').trim();
-    const secondaryApproverId = String(formData.get('secondary_approver_id') || '').trim();
-    const reason = String(formData.get('reason') || '').trim();
-
-    if (!siteId || !resolution || !secondaryApproverId || reason.length < 8) {
-        throw new Error('Money break resolution requires a site, resolution, second approver, and reason.');
-    }
-
-    const result = await fetchConsoleApi<ConsoleDataResponse<MoneyReconciliationResolveResult>>(
-        `/internal/console/money/reconciliation/${siteId}/resolve`,
-        {
-            method: 'POST',
-            body: {
-                actor_id: requireActorId(session.userId),
-                actor_email: session.email,
-                secondary_approver_id: secondaryApproverId,
-                reason,
-                resolution,
-                provider_reference: optionalFormString(formData.get('provider_reference')),
-            },
-        }
-    );
-
-    if (result.error) throw new Error(result.error);
-    revalidatePath('/money-reconciliation');
-}
-
-export default async function MoneyReconciliationPage() {
     const [mismatchResult, verifiedResult] = await Promise.all([
         fetchConsoleApi<ConsolePaginatedResponse<MoneyReconciliationRow>>('/internal/console/money/reconciliation', {
+            site_id: site.data,
             status: 'mismatch',
             reason: 'Operator review of money ledger breaks from platform console.',
             page: 1,
             limit: 25,
         }),
         fetchConsoleApi<ConsolePaginatedResponse<MoneyReconciliationRow>>('/internal/console/money/reconciliation', {
+            site_id: site.data,
             status: 'verified',
             page: 1,
             limit: 25,
@@ -122,13 +71,14 @@ export default async function MoneyReconciliationPage() {
             title="Ledger Reconciliation"
             description="Operator break-resolution queue backed by canonical ledger reconciliation rows."
         >
+            {formError && <p role="alert">{formError}</p>}
             {mismatchResult.error ? <ConsoleApiErrorPanel title="Money breaks API unavailable" message={mismatchResult.error} /> : null}
             {verifiedResult.error ? <ConsoleApiErrorPanel title="Verified reconciliation API unavailable" message={verifiedResult.error} /> : null}
 
             <MetricGrid>
-                <LeadershipMetric label="Breaks" value={String(mismatchResult.data?.meta.total || mismatches.length)} tone={mismatches.length ? 'critical' : 'success'} />
-                <LeadershipMetric label="Break variance" value={formatMoneyFromPaise(totalVariance)} tone={totalVariance ? 'critical' : 'success'} />
-                <LeadershipMetric label="Verified stores" value={String(verifiedResult.data?.meta.total || verified.length)} tone="success" />
+                <LeadershipMetric label="Breaks" value={mismatchResult.error ? 'Unavailable' : String(mismatchResult.data?.meta.total || mismatches.length)} tone={mismatchResult.error ? 'warning' : mismatches.length ? 'critical' : 'success'} />
+                <LeadershipMetric label="Displayed break variance" value={mismatchResult.error ? 'Unavailable' : formatMoneyFromPaise(totalVariance)} tone={mismatchResult.error ? 'warning' : totalVariance ? 'critical' : 'success'} />
+                <LeadershipMetric label="Verified stores" value={verifiedResult.error ? 'Unavailable' : String(verifiedResult.data?.meta.total || verified.length)} tone={verifiedResult.error ? 'warning' : 'success'} />
                 <LeadershipMetric label="Latest refresh" value={formatDateTime(mismatches[0]?.updated_at || verified[0]?.updated_at)} />
             </MetricGrid>
 
@@ -159,23 +109,24 @@ export default async function MoneyReconciliationPage() {
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-color-critical)]">{formatMoneyFromPaise(row.variance_minor)}</td>
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">{formatDateTime(row.updated_at)}</td>
                                     <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)]">
-                                        <form action={resolveMoneyBreak} className="grid min-w-[360px] gap-[var(--lb-space-2)]">
+                                        <ConsoleApprovalForm action="/api/approvals/request-money" className="grid min-w-[360px] gap-[var(--lb-space-2)]">
                                             <Input unstyled type="hidden" name="site_id" value={row.site_id} />
                                             <Select name="resolution" hideLabel label="Resolution" defaultValue="request_recheck" options={resolutionOptions} controlSize="sm" />
                                             <div className="grid gap-[var(--lb-space-2)] md:grid-cols-2">
-                                                <Input name="secondary_approver_id" placeholder="Second approver ID" />
-                                                <Input name="provider_reference" placeholder="Provider/ref optional" />
+                                                <input type="hidden" name="request_key" value={site.data === row.site_id && retryKey.success ? retryKey.data : crypto.randomUUID()} />
+                                                <Input name="provider_reference" label="Provider reference (optional)" placeholder="Reference for review" />
                                             </div>
-                                            <Textarea name="reason" required minLength={8} placeholder="Evidence, suspense account, or recheck reason." rows={2} />
-                                            <Button type="submit" size="sm" variant="outline">Record</Button>
-                                        </form>
+                                            <Textarea name="reason" label="Review reason" required minLength={8} placeholder="Evidence, suspense account, or recheck reason." rows={2} />
+                                            <p className="text-sm">A different active platform super admin must approve this exact resolution before execution.</p>
+                                            <Button type="submit" size="sm" variant="outline">Request resolution approval</Button>
+                                        </ConsoleApprovalForm>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </Table>
                 ) : (
-                    <EmptyDataState message="No money ledger breaks are open." />
+                    <EmptyDataState message={mismatchResult.error ? "The break queue is unavailable. Retry this review." : "No money ledger breaks are open."} />
                 )}
             </Panel>
 
@@ -191,7 +142,7 @@ export default async function MoneyReconciliationPage() {
                         ))}
                     </div>
                 ) : (
-                    <EmptyDataState message="No verified reconciliation rows are available yet." />
+                    <EmptyDataState message={verifiedResult.error ? "Verified reconciliation is unavailable. Retry this review." : "No verified reconciliation rows are available yet."} />
                 )}
             </Panel>
         </ConsoleWorkspace>

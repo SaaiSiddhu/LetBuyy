@@ -111,11 +111,14 @@ test('identity-platform origin comes from NEXT_PUBLIC_ACCOUNTS_URL, or productio
 
 test('sign-out is accepted only from the store\'s own pages', () => {
     const headers = (values: Record<string, string>) => ({ get: (name: string) => values[name.toLowerCase()] ?? null });
-    assert.equal(isSameOriginRequest(headers({ 'sec-fetch-site': 'same-origin' })), true);
-    assert.equal(isSameOriginRequest(headers({ 'sec-fetch-site': 'cross-site', origin: 'https://s.letbuyy.com', host: 's.letbuyy.com' })), false);
-    assert.equal(isSameOriginRequest(headers({ origin: 'https://s.letbuyy.com', host: 's.letbuyy.com' })), true);
-    assert.equal(isSameOriginRequest(headers({ origin: 'https://evil.example', host: 's.letbuyy.com' })), false);
-    assert.equal(isSameOriginRequest(headers({ host: 's.letbuyy.com' })), false);
+    const requestUrl = 'https://s.letbuyy.com/api/buyer-auth/logout';
+    assert.equal(isSameOriginRequest(headers({ 'sec-fetch-site': 'same-origin' }), requestUrl), true);
+    assert.equal(isSameOriginRequest(headers({ 'sec-fetch-site': 'cross-site', origin: 'https://s.letbuyy.com' }), requestUrl), false);
+    assert.equal(isSameOriginRequest(headers({ origin: 'https://s.letbuyy.com' }), requestUrl), true);
+    assert.equal(isSameOriginRequest(headers({ origin: 'https://evil.example' }), requestUrl), false);
+    assert.equal(isSameOriginRequest(headers({ host: 's.letbuyy.com' }), requestUrl), false);
+    assert.equal(isSameOriginRequest(headers({ origin: 'http://s.letbuyy.com' }), requestUrl), false);
+    assert.equal(isSameOriginRequest(headers({ origin: 'https://s.letbuyy.com:444' }), requestUrl), false);
 });
 
 test('the gateway read is signed as the storefront, and only that exact path is added', () => {
@@ -129,21 +132,21 @@ test('every buyer-auth cookie is a __Host- cookie: HttpOnly, Secure, host-only, 
     assert.ok(STOREFRONT_BUYER_FLOW_COOKIE.startsWith('__Host-') && STOREFRONT_BUYER_SESSION_COOKIE.startsWith('__Host-'));
     const dir = join(root, 'apps/commerce/web/src/app/api/buyer-auth');
     let sets = 0;
-    for (const route of readdirSync(dir)) {
-        const source = readFileSync(join(dir, route, 'route.ts'), 'utf8');
+    for (const route of readdirSync(dir, { withFileTypes: true }).filter(entry => entry.isDirectory())) {
+        const source = readFileSync(join(dir, route.name, 'route.ts'), 'utf8');
         // Each call ends with its options object and `});`. Bounding a call by the first `}` instead
         // would stop inside an argument like encodeFlow({ ... }) and never reach the options.
         for (const chunk of source.split('cookies.set(').slice(1)) {
             sets += 1;
             const call = chunk.slice(0, chunk.indexOf('});') + 1);
             const options = call.slice(call.lastIndexOf('{'));
-            assert.match(options, /httpOnly: true/, `${route}: ${options.slice(0, 60)}`);
-            assert.match(options, /secure: true/, route);
-            assert.match(options, /path: '\/'/, route);
-            assert.match(options, /sameSite: 'lax'/, route);
-            assert.ok(!/domain:/.test(options), `${route} must not set a domain`);
+            assert.match(options, /httpOnly: true/, `${route.name}: ${options.slice(0, 60)}`);
+            assert.match(options, /secure: true/, route.name);
+            assert.match(options, /path: '\/'/, route.name);
+            assert.match(options, /sameSite: 'lax'/, route.name);
+            assert.ok(!/domain:/.test(options), `${route.name} must not set a domain`);
         }
-        assert.ok(!/access_token=|[?&]token=/.test(source), `${route} must never put a token in a URL`);
+        assert.ok(!/access_token=|[?&]token=/.test(source), `${route.name} must never put a token in a URL`);
     }
     assert.ok(sets >= 5, `found ${sets} cookie writes`);
 });

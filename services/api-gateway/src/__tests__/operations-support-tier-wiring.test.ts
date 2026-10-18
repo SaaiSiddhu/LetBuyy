@@ -94,15 +94,15 @@ function tables(): Record<string, Row[]> {
             { id: 'sa-1', user_id: SUPERADMIN, email: `${SUPERADMIN}@example.test`, is_active: true },
         ],
         employees: [
-            { id: 'plat-viewer', user_id: VIEWER, store_id: null, role: 'viewer', status: 'active', deleted_at: null, role_id: null, permissions: {} },
-            { id: 'plat-moderator', user_id: MODERATOR, store_id: null, role: 'support', status: 'active', deleted_at: null, role_id: null, permissions: {} },
-            { id: 'merch-lookalike', user_id: MERCHANT_LOOKALIKE, store_id: 'a-real-store', role: 'support', status: 'active', deleted_at: null, role_id: null, permissions: { granted: ['support:manage'] } },
+            { id: 'plat-viewer', user_id: VIEWER, store_id: null, role: 'viewer', status: 'active', is_active: true, deleted_at: null, role_id: null, permissions: {} },
+            { id: 'plat-moderator', user_id: MODERATOR, store_id: null, role: 'support', status: 'active', is_active: true, deleted_at: null, role_id: null, permissions: {} },
+            { id: 'merch-lookalike', user_id: MERCHANT_LOOKALIKE, store_id: 'a-real-store', role: 'support', status: 'active', is_active: true, deleted_at: null, role_id: null, permissions: { granted: ['support:manage'] } },
             // role: 'manager' -> INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS['manager'] === 'lead', the tier
             // D04's "Administrator" product role maps to (PHASE2_DECISIONS.md's mapping table). This
             // identity holds NO super_admin_allowlist entry -- its support:manage must come from
             // role-derived tier resolution alone, proving the lead tier works independently of the
             // superadmin-allowlist bypass path, which every other support:manage test here exercises.
-            { id: 'plat-administrator', user_id: ADMINISTRATOR, store_id: null, role: 'manager', status: 'active', deleted_at: null, role_id: null, permissions: {} },
+            { id: 'plat-administrator', user_id: ADMINISTRATOR, store_id: null, role: 'manager', status: 'active', is_active: true, deleted_at: null, role_id: null, permissions: {} },
         ],
         employee_permissions: [],
         break_glass_grants: [],

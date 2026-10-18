@@ -75,10 +75,15 @@ test('trust safety gateway route is mounted with scoped guards, reason capture, 
     assert.match(routeSource, /validateSensitiveReason/);
     assert.match(routeSource, /checkSegregationOfDuty/);
     assert.match(routeSource, /targetAction:\s*'ts\.appeal\.decide'/);
-    assert.match(routeSource, /targetAction:\s*'ts\.reinstate'/);
+    assert.match(routeSource, /execute_console_trust_reinstatement_v1/);
+    assert.match(routeSource, /INDEPENDENT_APPROVAL_REQUIRED/);
+    assert.match(routeSource, /enforce_console_trust_site_v1/);
     assert.match(routeSource, /ts_case_events/);
     assert.match(routeSource, /audit_logs/);
-    assert.match(routeSource, /notification_mode:\s*'dry_run'/);
+    const protocol = repositorySource('database/supabase/migrations/318_session_bound_trust_reinstatement.sql');
+    assert.match(protocol, /approver_session_id/);
+    assert.match(protocol, /pending_approved_delivery/);
+    assert.doesNotMatch(routeSource, /notification_mode:\s*'dry_run'/);
 });
 
 test('trust safety appeal SoD rejects the enforcing reviewer', () => {
@@ -102,7 +107,7 @@ test('trust safety API client and operator pages are wired to real backend paths
     assert.match(clientSource, /\/operations\/trust-safety\/overview/);
     assert.match(clientSource, /enforceTrustSafetyCase/);
     assert.match(clientSource, /decideTrustSafetyAppeal/);
-    assert.match(consoleSource, /\/operations\/trust-safety\/overview/);
+    assert.match(consoleSource, /\/internal\/console\/trust-safety\/overview/);
     assert.doesNotMatch(consoleSource, /SkipBackendPanel/);
     assert.match(opsSource, /openTrustSafetyCase/);
     assert.match(opsSource, /enforceTrustSafetyCase/);

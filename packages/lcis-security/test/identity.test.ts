@@ -239,11 +239,11 @@ test('B03: tokens() first issuer is customer-session with algorithm HS256', () =
   assert.equal(t.algorithm, 'HS256');
 });
 
-test('B04: tokens() second issuer is merchant-identity with algorithm ES256', () => {
+test('B04: tokens() identity-platform family records EdDSA with ES256 fallback', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const t = svc.tokens()[1];
-  assert.equal(t.issuer, 'merchant-identity');
-  assert.equal(t.algorithm, 'ES256');
+  assert.equal(t.issuer, 'identity-platform');
+  assert.equal(t.algorithm, 'EdDSA (ES256 fallback)');
 });
 
 test('B05: tokens() third issuer is step-up with algorithm HMAC', () => {
@@ -260,11 +260,11 @@ test('B06: tokens() fourth issuer is queue-envelope with algorithm HMAC', () => 
   assert.equal(t.algorithm, 'HMAC');
 });
 
-test('B07: tokens() issuer set is exactly {customer-session, merchant-identity, step-up, queue-envelope}', () => {
+test('B07: tokens() issuer set is exactly {customer-session, identity-platform, step-up, queue-envelope}', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const issuers = new Set(svc.tokens().map((t) => t.issuer));
   assert.ok(issuers.has('customer-session'), 'customer-session present');
-  assert.ok(issuers.has('merchant-identity'), 'merchant-identity present');
+  assert.ok(issuers.has('identity-platform'), 'identity-platform present');
   assert.ok(issuers.has('step-up'), 'step-up present');
   assert.ok(issuers.has('queue-envelope'), 'queue-envelope present');
   assert.equal(issuers.size, 4, 'exactly 4 distinct issuers');
@@ -276,9 +276,9 @@ test('B08: tokens() customer-session requires CUSTOMER_SESSION_SECRET', () => {
   assert.deepEqual([...t.requiredEnv], ['CUSTOMER_SESSION_SECRET']);
 });
 
-test('B09: tokens() merchant-identity requires LETBUYY_IDENTITY_PUBLIC_JWKS', () => {
+test('B09: tokens() identity-platform requires LETBUYY_IDENTITY_PUBLIC_JWKS', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
-  const t = svc.tokens().find((x) => x.issuer === 'merchant-identity')!;
+  const t = svc.tokens().find((x) => x.issuer === 'identity-platform')!;
   assert.deepEqual([...t.requiredEnv], ['LETBUYY_IDENTITY_PUBLIC_JWKS']);
 });
 
@@ -317,9 +317,9 @@ test('B14: providing CUSTOMER_SESSION_SECRET does NOT flip other issuers', () =>
   }
 });
 
-test('B15: providing LETBUYY_IDENTITY_PUBLIC_JWKS flips merchant-identity to CONNECTED', () => {
+test('B15: providing LETBUYY_IDENTITY_PUBLIC_JWKS flips identity-platform to CONNECTED', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, withEnv({ LETBUYY_IDENTITY_PUBLIC_JWKS: '{"keys":[]}' }));
-  const t = svc.tokens().find((x) => x.issuer === 'merchant-identity')!;
+  const t = svc.tokens().find((x) => x.issuer === 'identity-platform')!;
   assert.equal(t.present, true);
   assert.equal(t.connection, 'CONNECTED');
 });
@@ -377,9 +377,19 @@ test('B20: tokens() present — evidence kinds are artifact-field', () => {
 test('B21: tokens() detail references correct algorithm string', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const cs = svc.tokens().find((t) => t.issuer === 'customer-session')!;
-  const mi = svc.tokens().find((t) => t.issuer === 'merchant-identity')!;
+  const mi = svc.tokens().find((t) => t.issuer === 'identity-platform')!;
   assert.ok(cs.detail.includes('HS256'), 'customer-session detail includes HS256');
-  assert.ok(mi.detail.includes('ES256'), 'merchant-identity detail includes ES256');
+  assert.ok(mi.detail.includes('EdDSA') && mi.detail.includes('ES256'), 'canonical identity detail includes supported asymmetric algorithms');
+});
+
+test('B21a: token posture distinguishes legacy HS256 bridge from canonical identity-platform sessions', () => {
+  const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
+  const cs = svc.tokens().find((t) => t.issuer === 'customer-session')!;
+  const identity = svc.tokens().find((t) => t.issuer === 'identity-platform')!;
+  assert.ok(cs.detail.includes('transitional'));
+  assert.ok(cs.detail.includes('not the canonical identity-platform issuer'));
+  assert.ok(identity.detail.includes('Canonical identity-platform'));
+  assert.ok(identity.detail.includes('merchant, buyer, and storefront realms'));
 });
 
 test('B22: tokens() detail references relevant env var name', () => {
@@ -408,7 +418,7 @@ test('B23: tokens() is deterministic — calling twice returns identical results
 test('B24: tokens() only HS256 is used for customer-session (not ES256)', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const cs = svc.tokens().find((t) => t.issuer === 'customer-session')!;
-  assert.notEqual(cs.algorithm, 'ES256', 'customer-session does NOT use ES256');
+  assert.notEqual(cs.algorithm, 'EdDSA (ES256 fallback)', 'customer-session remains a separate legacy HS256 format');
   assert.equal(cs.algorithm, 'HS256');
 });
 
@@ -531,12 +541,15 @@ test('C17: identitySurfaces() customer-login detail mentions HS256', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const s = svc.identitySurfaces().find((x) => x.surface === 'customer-login')!;
   assert.ok(s.detail.includes('HS256'), 'customer-login detail mentions HS256');
+  assert.ok(s.detail.includes('canonical buyer sign-in'));
+  assert.ok(s.detail.includes('distinct paths'));
 });
 
 test('C18: identitySurfaces() merchant-oauth detail mentions ES256', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const s = svc.identitySurfaces().find((x) => x.surface === 'merchant-oauth')!;
   assert.ok(s.detail.includes('ES256'), 'merchant-oauth detail mentions ES256');
+  assert.ok(s.detail.includes('EdDSA'));
 });
 
 test('C19: identitySurfaces() step-up detail mentions refund or payout', () => {
@@ -661,12 +674,13 @@ test('D11: secrets() SUPABASE_MGMT_TOKEN + SUPABASE_PROJECT_REF entry exists', (
   assert.ok(mgmtEntry !== undefined, 'supabase management entry present');
 });
 
-test('D12: tokens() two-issuer constitutional split: only HS256 for customer, only ES256 for merchant', () => {
+test('D12: tokens() does not misstate the legacy bridge as a constitutional issuer', () => {
   const svc = new IdentitySecretService(emptyEngine, fixedNow, noCreds());
   const tMap = Object.fromEntries(svc.tokens().map((t) => [t.issuer, t]));
   assert.equal(tMap['customer-session'].algorithm, 'HS256');
-  assert.equal(tMap['merchant-identity'].algorithm, 'ES256');
-  assert.notEqual(tMap['customer-session'].algorithm, tMap['merchant-identity'].algorithm, 'different algos');
+  assert.match(tMap['customer-session'].detail, /transitional/);
+  assert.match(tMap['identity-platform'].detail, /Canonical identity-platform/);
+  assert.match(tMap['identity-platform'].detail, /EdDSA.*ES256 fallback/);
 });
 
 test('D13: all three methods return readonly arrays (frozen content check)', () => {
@@ -757,8 +771,8 @@ test('D20: all three methods work consistently when called in sequence on the sa
   assert.equal(cs.present, true);
   assert.equal(cs.connection, 'CONNECTED');
 
-  // merchant-identity is CONNECTED (env present)
-  const mi = tokens.find((t) => t.issuer === 'merchant-identity')!;
+  // identity-platform is CONNECTED (env present)
+  const mi = tokens.find((t) => t.issuer === 'identity-platform')!;
   assert.equal(mi.present, true);
   assert.equal(mi.connection, 'CONNECTED');
 

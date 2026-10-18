@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './lib/console-session';
 import { isConsoleEmailAllowed } from './lib/console-access-allowlist';
+import { readCurrentConsoleSession } from './lib/console-live-session';
 
 const protectedPrefixes = [
     '/dashboard',
@@ -19,6 +20,8 @@ const protectedPrefixes = [
     '/analytics',
     '/settings',
     '/audit-logs',
+    '/approvals',
+    '/money-reconciliation',
 ];
 
 const PLATFORM_ROOT_DOMAINS = ['letbuyy.com'] as const;
@@ -66,8 +69,10 @@ function redirectRevoked(request: NextRequest, destination: string) {
 
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
-    const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
-    const sessionRevoked = session !== null && !isConsoleEmailAllowed(session.email);
+    const value = request.cookies.get(CONSOLE_SESSION_COOKIE)?.value;
+    const signedSession = await readConsoleSession(value);
+    const sessionRevoked = signedSession !== null && !isConsoleEmailAllowed(signedSession.email);
+    const session = signedSession && !sessionRevoked ? await readCurrentConsoleSession(value) : signedSession;
     const merchantSession = verifyLetbuyySessionCookieValue(
         'merchant',
         request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
@@ -81,6 +86,12 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
+    if (signedSession && !session && (pathname === '/mfa' || isProtectedPath(pathname))) {
+        // Storage unavailability is not durable logout. Keep the signed cookie
+        // for retry; every protected request remains denied by the live check.
+        return NextResponse.redirect(new URL('/login?error=session_unavailable', request.url));
+    }
+
     if (pathname === '/mfa') {
         if (!session) {
             return NextResponse.redirect(new URL('/login', request.url));
@@ -90,7 +101,7 @@ export async function proxy(request: NextRequest) {
             return redirectRevoked(request, '/login?error=access_revoked');
         }
 
-        if (session.mfaVerified) {
+        if (session.mfaVerified && request.nextUrl.searchParams.get('step_up') !== '1') {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
 
@@ -140,5 +151,7 @@ export const config = {
         '/analytics/:path*',
         '/settings/:path*',
         '/audit-logs/:path*',
+        '/approvals/:path*',
+        '/money-reconciliation/:path*',
     ],
 };

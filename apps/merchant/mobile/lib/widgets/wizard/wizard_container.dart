@@ -69,15 +69,38 @@ class WizardContainer extends StatelessWidget {
                   if (onSkip != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 20),
-                      child: GestureDetector(
+                      child: Semantics(
+                        container: true,
+                        excludeSemantics: true,
+                        button: true,
+                        enabled: true,
+                        label: skipText ?? langService.skipStep,
                         onTap: onSkip,
-                        child: Text(
-                          skipText ?? langService.skipStep,
-                          style: TextStyle(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.5)
-                                : Colors.black54,
-                            fontSize: 14,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minHeight: 48),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: onSkip,
+                              child: Ink(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    skipText ?? langService.skipStep,
+                                    style: TextStyle(
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.5)
+                                          : Colors.black54,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -97,6 +120,9 @@ class WizardContainer extends StatelessWidget {
                   // Back button
                   if (showBack && onBack != null)
                     _buildGlassButton(
+                      label: backIcon == Icons.logout_rounded
+                          ? langService.logout
+                          : langService.back,
                       onTap: () {
                         HapticFeedback.lightImpact();
                         onBack?.call();
@@ -117,7 +143,7 @@ class WizardContainer extends StatelessWidget {
                     children: [
                       _buildLanguageSelector(langService, isDark),
                       const SizedBox(width: 8),
-                      _buildThemeToggle(themeProvider, isDark),
+                      _buildThemeToggle(themeProvider, isDark, langService),
                     ],
                   ),
                 ],
@@ -130,39 +156,57 @@ class WizardContainer extends StatelessWidget {
   }
 
   Widget _buildGlassButton({
+    required String label,
     required VoidCallback onTap,
     required Widget child,
     required bool isDark,
   }) {
-    return GestureDetector(
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: true,
+      label: label,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.white.withValues(alpha: 0.7),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.black.withValues(alpha: 0.05),
+          onTap: onTap,
+          child: Ink(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.white.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.05),
+              ),
+            ),
+            child: Center(child: child),
           ),
         ),
-        child: child,
       ),
     );
   }
 
   Widget _buildLanguageSelector(LanguageService langService, bool isDark) {
-    return PopupMenuButton<AppLanguage>(
-      initialValue: langService.currentLanguage,
-      onSelected: (lang) => langService.setLanguage(lang),
-      offset: const Offset(0, 42),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
-      elevation: 6,
-      itemBuilder: (context) => AppLanguage.values
+    return MenuAnchor(
+      alignmentOffset: const Offset(0, 42),
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(
+          isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        ),
+        elevation: const WidgetStatePropertyAll(6),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      menuChildren: AppLanguage.values
           .map(
             (language) => _buildLanguageItem(
               language,
@@ -173,49 +217,87 @@ class WizardContainer extends StatelessWidget {
             ),
           )
           .toList(growable: false),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.white.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.black.withValues(alpha: 0.05),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.public_rounded,
-              size: 16,
-              color: isDark ? Colors.white70 : Colors.black87,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              langService.languageName,
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+      builder: (context, controller, child) => Tooltip(
+        message: langService.languageName,
+        child: Semantics(
+          key: const ValueKey('wizard-language-selector'),
+          container: true,
+          excludeSemantics: true,
+          button: true,
+          focusable: true,
+          expanded: controller.isOpen,
+          label: langService.languageName,
+          tooltip: langService.languageName,
+          onTap: () => controller.isOpen
+              ? controller.close()
+              : controller.open(),
+          child: TextButton(
+            onPressed: () => controller.isOpen
+                ? controller.close()
+                : controller.open(),
+            style: TextButton.styleFrom(
+              minimumSize: const Size(0, 48),
+              padding: EdgeInsets.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              foregroundColor: isDark ? Colors.white : Colors.black87,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.expand_more_rounded,
-              size: 16,
-              color: isDark ? Colors.white54 : Colors.black54,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.white.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.1)
+                          : Colors.black.withValues(alpha: 0.05),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.public_rounded,
+                        size: 16,
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        langService.languageName,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black87,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.expand_more_rounded,
+                        size: 16,
+                        color: isDark ? Colors.white54 : Colors.black54,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  PopupMenuItem<AppLanguage> _buildLanguageItem(
+  MenuItemButton _buildLanguageItem(
     AppLanguage lang,
     String name,
     String flag,
@@ -223,9 +305,14 @@ class WizardContainer extends StatelessWidget {
     bool isDark,
   ) {
     final isSelected = langService.currentLanguage == lang;
-    return PopupMenuItem(
-      value: lang,
-      height: 40,
+    return MenuItemButton(
+      autofocus: isSelected,
+      onPressed: () => langService.setLanguage(lang),
+      style: MenuItemButton.styleFrom(
+        minimumSize: const Size(0, 40),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        foregroundColor: isDark ? Colors.white : Colors.black87,
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -252,31 +339,55 @@ class WizardContainer extends StatelessWidget {
     );
   }
 
-  Widget _buildThemeToggle(ThemeProvider themeProvider, bool isDark) {
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        themeProvider.toggleTheme();
-      },
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : Colors.white.withValues(alpha: 0.7),
+  Widget _buildThemeToggle(
+    ThemeProvider themeProvider,
+    bool isDark,
+    LanguageService langService,
+  ) {
+    final label = isDark
+        ? langService.switchToLightMode
+        : langService.switchToDarkMode;
+    void toggleTheme() {
+      HapticFeedback.lightImpact();
+      themeProvider.toggleTheme();
+    }
+
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: true,
+      label: label,
+      onTap: toggleTheme,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.1)
-                : Colors.black.withValues(alpha: 0.05),
+          onTap: toggleTheme,
+          child: Ink(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.white.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.05),
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                size: 18,
+                color: isDark
+                    ? const Color(0xFFFBBF24)
+                    : mobile_tokens.LetbuyyColorTokens.brandPrimary,
+              ),
+            ),
           ),
-        ),
-        child: Icon(
-          isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-          size: 18,
-          color: isDark
-              ? const Color(0xFFFBBF24)
-              : mobile_tokens.LetbuyyColorTokens.brandPrimary,
         ),
       ),
     );
@@ -360,108 +471,125 @@ class WizardOptionCard extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode(context);
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        onTap();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : mobile_tokens.LetbuyyColorTokens.brandPrimary.withValues(
-                        alpha: 0.1,
-                      ))
-              : (isDark
-                    ? Colors.white.withValues(alpha: 0.04)
-                    : Colors.grey.withValues(alpha: 0.05)),
+    final semanticLabel = subtitle == null ? title : '$title, $subtitle';
+    return Semantics(
+      key: ValueKey('wizard-option-$title'),
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      enabled: true,
+      selected: isSelected,
+      label: semanticLabel,
+      onTap: onTap,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected
-                ? LetbuyyColorTokens.brandPrimary
-                : (isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : Colors.grey.withValues(alpha: 0.2)),
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            // Icon with gradient circle
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isSelected
-                      ? [LetbuyyColorTokens.brandPrimary, LetbuyyColorTokens.accentPink]
-                      : (isDark
-                            ? [
-                                Colors.white.withValues(alpha: 0.15),
-                                Colors.white.withValues(alpha: 0.08),
-                              ]
-                            : [
-                                Colors.grey.withValues(alpha: 0.15),
-                                Colors.grey.withValues(alpha: 0.08),
-                              ]),
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: iconEmoji != null
-                    ? Text(iconEmoji!, style: const TextStyle(fontSize: 18))
-                    : Icon(
-                        icon ?? Icons.store,
-                        size: 18,
-                        color: isDark
-                            ? Colors.white
-                            : (isSelected ? Colors.white : Colors.black87),
-                      ),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            onTap();
+          },
+          child: Ink(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? (isDark
+                        ? Colors.white.withValues(alpha: 0.1)
+                        : mobile_tokens.LetbuyyColorTokens.brandPrimary
+                              .withValues(alpha: 0.1))
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.04)
+                        : Colors.grey.withValues(alpha: 0.05)),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isSelected
+                    ? LetbuyyColorTokens.brandPrimary
+                    : (isDark
+                          ? Colors.white.withValues(alpha: 0.08)
+                          : Colors.grey.withValues(alpha: 0.2)),
+                width: isSelected ? 1.5 : 1,
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : Colors.black87,
-                      letterSpacing: -0.2,
+            child: Row(
+              children: [
+                // Icon with gradient circle
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isSelected
+                          ? [
+                              LetbuyyColorTokens.brandPrimary,
+                              LetbuyyColorTokens.accentPink,
+                            ]
+                          : (isDark
+                                ? [
+                                    Colors.white.withValues(alpha: 0.15),
+                                    Colors.white.withValues(alpha: 0.08),
+                                  ]
+                                : [
+                                    Colors.grey.withValues(alpha: 0.15),
+                                    Colors.grey.withValues(alpha: 0.08),
+                                  ]),
                     ),
+                    shape: BoxShape.circle,
                   ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.6)
-                            : Colors.black54,
+                  child: Center(
+                    child: iconEmoji != null
+                        ? Text(iconEmoji!, style: const TextStyle(fontSize: 18))
+                        : Icon(
+                            icon ?? Icons.store,
+                            size: 18,
+                            color: isDark
+                                ? Colors.white
+                                : (isSelected ? Colors.white : Colors.black87),
+                          ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black87,
+                          letterSpacing: -0.2,
+                        ),
                       ),
-                    ),
-                  ],
-                ],
-              ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Indicator
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.5)
+                      : Colors.black38,
+                ),
+              ],
             ),
-            // Indicator
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.5)
-                  : Colors.black38,
-            ),
-          ],
+          ),
         ),
       ),
     );

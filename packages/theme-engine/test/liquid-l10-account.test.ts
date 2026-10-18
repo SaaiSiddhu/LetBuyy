@@ -33,6 +33,7 @@ test('L10: logged-in account renders the customer greeting + nav', async () => {
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /Signed in as Ravi K/);
   assert.match(html, /href="\/store\/local-kicks\/account\/orders"/);
+  assert.doesNotMatch(html, /href="\/store\/local-kicks\/account\/loyalty">Rewards<\/a>/);
   // F7: logout is now a POST form (lb-logout island + no-JS fallback), not a GET anchor.
   // Verify the form POSTs to the correct endpoint rather than an anchor href.
   assert.match(html, /method="post"/);
@@ -54,6 +55,7 @@ test('L10: LetBuyy buyer account renders canonical account links and store-scope
   const html = result.liquid?.layoutHtml ?? '';
   assert.match(html, /Signed in to LetBuyy as Buyer One/);
   assert.match(html, /href="\/store\/local-kicks\/account\/orders"/);
+  assert.match(html, /href="\/store\/local-kicks\/account\/loyalty">Rewards<\/a>/);
   assert.match(html, /action="\/api\/buyer-auth\/logout\?return_to=/);
   assert.doesNotMatch(html, /store@example\.in/);
   assert.doesNotMatch(html, /\/api\/customer\/logout/);

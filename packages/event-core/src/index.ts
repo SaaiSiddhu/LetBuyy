@@ -148,6 +148,7 @@ export const DOMAIN_EVENT_TYPES = [
   'customer.updated',
   'customer.dsr_requested',
   'media.processed',
+  'reel.review.changed',
   'audit.recorded',
   'payout.ledger_entry.created',
   'payout.released',
@@ -198,6 +199,7 @@ export interface DomainEventContract {
     | 'customer'
     | 'auth'
     | 'media'
+    | 'reel'
     | 'audit'
     | 'app'
     | 'app_charge'
@@ -413,6 +415,13 @@ const PayoutPayloadSchema = z.object({
   rail: z.enum(['razorpay_route', 'upi', 'manual']).default('manual'),
 });
 
+const PayoutScheduledPayloadSchema = GenericSiteEventPayloadSchema.extend({
+  payout_id: UuidSchema,
+  settlement_id: UuidSchema,
+  amount: InrMinorUnitsSchema,
+  rail: z.enum(['razorpay_route', 'cashfree_easy_split', 'manual']),
+});
+
 function activeGatewayContract(
   eventType: DomainEventType,
   aggregateType: DomainEventContract['aggregateType'],
@@ -430,6 +439,12 @@ function activeGatewayContract(
 }
 
 export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract> = {
+  'reel.review.changed': {
+    eventType: 'reel.review.changed', schemaVersion: 1, producer: 'api-gateway',
+    consumers: [], aggregateType: 'reel',
+    payloadSchema: z.object({ site_id: UuidSchema, reel_id: UuidSchema, revision_id: UuidSchema,
+      action: z.enum(['save', 'submit', 'claim', 'reject', 'approve', 'take_down']), version: z.number().int().positive() }).strict(),
+  },
   'store.created': {
     eventType: 'store.created',
     schemaVersion: 1,
@@ -681,7 +696,7 @@ export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract
   'wa.cod_confirmed': activeGatewayContract('wa.cod_confirmed', 'whatsapp', WhatsappPayloadSchema),
   'settlement.recorded': activeGatewayContract('settlement.recorded', 'settlement', SettlementPayloadSchema, ['analytics', 'notifications', 'payout-ledger', 'webhook-service']),
   'settlement.recon.break_detected': activeGatewayContract('settlement.recon.break_detected', 'settlement', SettlementPayloadSchema),
-  'payout.scheduled': activeGatewayContract('payout.scheduled', 'payout', PayoutPayloadSchema),
+  'payout.scheduled': activeGatewayContract('payout.scheduled', 'payout', PayoutScheduledPayloadSchema),
   'payout.paid': activeGatewayContract('payout.paid', 'payout', PayoutPayloadSchema),
   'payment.subscription.activated': {
     eventType: 'payment.subscription.activated',
@@ -772,6 +787,7 @@ export const RUNTIME_QUEUE_NAMES = [
   'search-indexing',
   'fulfillment-jobs',
   'bulk-admin-jobs',
+  'notification-jobs',
 ] as const;
 
 export type RuntimeQueueName = (typeof RUNTIME_QUEUE_NAMES)[number];

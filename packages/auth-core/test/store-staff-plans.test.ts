@@ -54,3 +54,23 @@ test('a new staff record defaults to editor and refuses a platform role', () => 
     assert.equal(planEmployeeStaffCreate({ email: 'a@b.test', store_id: 'site-1', role }, 'o').ok, false, role);
   }
 });
+
+test('role-only downgrades replace prior grants with canonical role defaults; create preserves the owner supplied display name', () => {
+  assert.deepEqual(planEmployeeUpdate({role:'viewer'}),{ok:true,value:{role:'viewer',permissions:{granted:['products:read','orders:read','reports:read']}}});
+  const plan=planEmployeeStaffCreate({email:'staff@example.invalid',store_id:'site-1',role:'editor',full_name:'  Synthetic Staff  '},'owner');
+  assert.equal(plan.ok && plan.value.full_name,'Synthetic Staff');
+  assert.deepEqual(plan.ok && plan.value.permissions,{granted:['products:write','content:write','reports:read']});
+  assert.equal(planEmployeeStaffCreate({email:'staff@example.invalid',store_id:'site-1',full_name:'x'.repeat(121)},'owner').ok,false);
+});
+
+test('staff invitation proofs bind one ID and purpose/key without becoming session tokens', async () => {
+  const {createMerchantStaffInvitationToken,verifyMerchantStaffInvitationToken}=await import('../src/index.ts');
+  const id=crypto.randomUUID(),secret=crypto.randomUUID()+crypto.randomUUID();
+  const token=await createMerchantStaffInvitationToken(id,secret);
+  assert.equal(await verifyMerchantStaffInvitationToken(token,secret),id);
+  assert.equal(await verifyMerchantStaffInvitationToken(token,crypto.randomUUID()+crypto.randomUUID()),null);
+  assert.equal(await verifyMerchantStaffInvitationToken(token.replace(id,crypto.randomUUID()),secret),null);
+  assert.equal(await verifyMerchantStaffInvitationToken(token.replace('lb-staff-invite-v1','merchant_session'),secret),null);
+  assert.equal(await verifyMerchantStaffInvitationToken('header.payload.signature',secret),null);
+  await assert.rejects(()=>createMerchantStaffInvitationToken(id,'short'),/unavailable/);
+});

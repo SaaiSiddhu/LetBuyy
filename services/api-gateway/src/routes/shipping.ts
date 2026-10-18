@@ -50,21 +50,6 @@ function logisticsOptions(env: Env, provider: LogisticsProviderName): LogisticsP
     throw new HumanRequiredError('[HUMAN-REQUIRED] Carrier live credentials are required.');
 }
 
-function defaultRules(pincode: string): ShippingServiceabilityRule[] {
-    return [{
-        provider: 'shiprocket',
-        pincode,
-        serviceable: /^[1-9][0-9]{5}$/.test(pincode),
-        cod_available: /^[1-9][0-9]{5}$/.test(pincode),
-        min_cod_amount_minor: 1_00,
-        max_cod_amount_minor: 200_000_00,
-        min_weight_grams: 1,
-        max_weight_grams: 50_000,
-        estimated_days_min: 3,
-        estimated_days_max: 7,
-    }];
-}
-
 async function assertStoreAccess(c: ShippingContext, storeId: string, authUser: WorkerAuthUser) {
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, authUser);
@@ -74,7 +59,7 @@ async function assertStoreAccess(c: ShippingContext, storeId: string, authUser: 
     return { db, authorized: true as const, customUser };
 }
 
-async function loadRules(db: ReturnType<typeof getSupabaseAdmin>, storeId: string, pincode: string): Promise<ShippingServiceabilityRule[]> {
+async function loadRules(db: ReturnType<typeof getSupabaseAdmin>, storeId: string, pincode: string): Promise<ShippingServiceabilityRule[] | null> {
     const { data, error } = await db
         .from('shipping_serviceability_rules')
         .select('provider, pincode, serviceable, cod_available, min_cod_amount_minor, max_cod_amount_minor, min_weight_grams, max_weight_grams, estimated_days_min, estimated_days_max')
@@ -82,9 +67,8 @@ async function loadRules(db: ReturnType<typeof getSupabaseAdmin>, storeId: strin
         .eq('pincode', pincode)
         .is('deleted_at', null);
 
-    if (error) return defaultRules(pincode);
-    const rows = (data || []) as ShippingServiceabilityRule[];
-    return rows.length > 0 ? rows : defaultRules(pincode);
+    if (error) return null;
+    return (data || []) as ShippingServiceabilityRule[];
 }
 
 router.get('/serviceability/:pincode', async (c) => {
@@ -109,6 +93,7 @@ router.get('/serviceability/:pincode', async (c) => {
     if (!access.authorized) return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
 
     const rules = await loadRules(access.db, storeId, pincode);
+    if (!rules) return c.json({ error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Shipping coverage could not be verified. Please retry.' } }, 503);
     return c.json(success(planShippingServiceability(parsed.data, rules)));
 });
 
@@ -119,18 +104,20 @@ router.post('/rates', validate('json', ShippingRatesSchema), async (c) => {
     if (!access.authorized) return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
 
     const rules = await loadRules(access.db, body.store_id, body.pincode);
+    if (!rules) return c.json({ error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Shipping coverage could not be verified. Please retry.' } }, 503);
     const serviceability = planShippingServiceability(body, rules);
     if (!serviceability.serviceable) {
         return c.json(success({ serviceability, rates: [] }));
     }
 
-    const { data } = await access.db
+    const { data, error } = await access.db
         .from('shipping_rates')
         .select('id, name, type, price, estimated_days_min, estimated_days_max')
         .eq('site_id', body.store_id)
         .eq('is_active', true)
         .is('deleted_at', null)
         .limit(10);
+    if (error) return c.json({ error: { code: 'SHIPPING_CONFIGURATION_UNAVAILABLE', message: 'Shipping rates could not be verified. Please retry.' } }, 503);
 
     const rates = (data || []).map((rate) => ({
         id: String(rate.id),
@@ -146,17 +133,7 @@ router.post('/rates', validate('json', ShippingRatesSchema), async (c) => {
 
     return c.json(success({
         serviceability,
-        rates: rates.length > 0 ? rates : [{
-            id: 'sandbox-standard',
-            name: 'Standard shipping',
-            type: 'flat',
-            currency: 'INR',
-            amount_minor: 6_000,
-            estimated_days_min: serviceability.estimated_days_min,
-            estimated_days_max: serviceability.estimated_days_max,
-            provider: serviceability.provider,
-            cod_available: serviceability.cod_available,
-        }],
+        rates,
     }));
 });
 

@@ -5,8 +5,11 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { Button, Input, Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import { useWishlist } from '@/context/wishlist-context';
 import TurnstileWidget, { type TurnstileHandle } from '@/components/security/turnstile-widget';
 
 interface Review {
@@ -74,6 +77,9 @@ function getApiError(payload: unknown, fallback: string) {
 
 export default function ProductReviews({ productId, storeId, primaryColor = 'rgb(0 179 179)' }: Props) {
     const { isAuthenticated, customer } = useCustomerAuth();
+    const { buyerSessionId, buyerSessionEmail, buyerSessionReady, buyerSessionUnavailable } = useWishlist();
+    const buyerEmail = buyerSessionReady && !buyerSessionUnavailable ? buyerSessionEmail : null;
+    const [needsBuyerLink, setNeedsBuyerLink] = useState(false);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [summary, setSummary] = useState<ReviewSummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -91,6 +97,29 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
     const [error, setError] = useState('');
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const turnstileRef = useRef<TurnstileHandle>(null);
+    const priorBuyerId = useRef<string | null | undefined>(undefined);
+    const params = useParams<{ subdomain?: string }>();
+    const accountSettingsHref = typeof params?.subdomain === 'string'
+        ? `/store/${encodeURIComponent(params.subdomain)}/account/settings`
+        : '/account/settings';
+    const hasAuthenticatedReviewer = isAuthenticated || typeof buyerEmail === 'string';
+    const currentVerifiedBuyerId = buyerSessionReady && !buyerSessionUnavailable ? buyerSessionId : null;
+    const buyerIdentityChanging = buyerSessionReady
+        && priorBuyerId.current !== undefined
+        && priorBuyerId.current !== currentVerifiedBuyerId;
+
+    useEffect(() => {
+        if (!buyerSessionReady) return;
+        const currentBuyerId = buyerSessionUnavailable ? null : buyerSessionId;
+        if (priorBuyerId.current !== undefined && priorBuyerId.current !== currentBuyerId) {
+            setShowForm(false);
+            setFormRating(0);
+            setFormTitle('');
+            setFormBody('');
+            setFormName('');
+        }
+        priorBuyerId.current = currentBuyerId;
+    }, [buyerSessionId, buyerSessionReady, buyerSessionUnavailable]);
 
     const fetchReviews = useCallback(async () => {
         setLoading(true);
@@ -127,11 +156,15 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
             return;
         }
         setError('');
+        setNeedsBuyerLink(false);
         setSubmitting(true);
         try {
             const res = await fetch('/api/reviews', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(currentVerifiedBuyerId ? { 'x-letbuyy-expected-buyer-id': currentVerifiedBuyerId } : {}),
+                },
                 body: JSON.stringify({
                     productId,
                     storeId,
@@ -145,6 +178,10 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
             const data = await res.json().catch(() => null);
 
             if (!res.ok) {
+                const code = data && typeof data === 'object' && 'code' in data
+                    ? (data as { code?: unknown }).code
+                    : null;
+                setNeedsBuyerLink(code === 'STORE_ACCOUNT_NOT_LINKED');
                 setError(getApiError(data, res.status === 409 ? 'You have already reviewed this product' : 'Unable to submit review'));
                 setTurnstileToken(null);
                 turnstileRef.current?.reset();
@@ -260,7 +297,7 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
             )}
 
             {/* ── Review Form ──────────────────────────── */}
-            {showForm && (
+            {showForm && !(!buyerSessionReady && buyerSessionEmail) && !buyerIdentityChanging && (
                 <form onSubmit={handleSubmit} className="rounded-2xl border p-4 space-y-4" style={{ borderColor: 'var(--border, rgb(229 231 235))' }}>
                     <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
                     <h3 className="font-semibold text-sm">Write Your Review</h3>
@@ -272,7 +309,13 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
                         <StarRating rating={formRating} size={28} interactive onChange={setFormRating} />
                     </div>
 
-                    {!isAuthenticated && (
+                    {buyerEmail && <p className="text-sm" role="status">Signed in with LetBuyy as {buyerEmail}</p>}
+
+                    {!isAuthenticated && !buyerSessionReady && (
+                        <p className="text-sm" role="status">Checking your sign-in…</p>
+                    )}
+
+                    {!hasAuthenticatedReviewer && buyerEmail === null && (
                         <Input unstyled
                             value={formName}
                             onChange={e => setFormName(e.target.value)}
@@ -299,7 +342,12 @@ export default function ProductReviews({ productId, storeId, primaryColor = 'rgb
                         style={{ borderColor: 'var(--border, rgb(229 231 235))', backgroundColor: 'var(--input-bg, rgb(249 250 251))' }}
                     />
 
-                    {error && <p className="text-sm text-red-500">{error}</p>}
+                    {error && <p className="text-sm text-red-500" role="alert">{error}</p>}
+                    {needsBuyerLink && (
+                        <Link href={accountSettingsHref} className="inline-flex min-h-11 items-center font-semibold text-[var(--primary)] underline">
+                            Connect this store account in settings
+                        </Link>
+                    )}
 
                     <div className="flex gap-2">
                         <Button unstyled

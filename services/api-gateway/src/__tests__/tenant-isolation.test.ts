@@ -69,7 +69,12 @@ test('orders are isolated by owned store before listing, reading, and mutating',
     assert.match(routeSource, /const tenant = await resolveTenantContextForOwnedSite\(c,\s*body\.store_id\)/);
     assert.match(tenantSource, /export async function resolveTenantContextForOrder/);
     assert.match(tenantSource, /\.from\('orders'\)\s*[\s\S]*\.select\('id, store_id'\)\s*[\s\S]*\.eq\('id',\s*orderId\)/);
-    assert.match(tenantSource, /return resolveTenantContextForOwnedSite\(c,\s*order\.store_id as string\)/);
+    // A validated signed/selected hint already resolved live ownership. Its
+    // scoped query must match that hint; an ID-only result is reverified.
+    assert.match(tenantSource, /const hint = auth\.user\.storeId \|\| c\.req\.header\('X-Store-ID'\)/);
+    assert.match(tenantSource, /const knownTenant = hint \? await resolveTenantContextForOwnedSite\(c, hint\) : null/);
+    assert.match(tenantSource, /if \(hint\) query = query\.eq\('store_id', hint\)/);
+    assert.match(tenantSource, /return knownTenant \|\| resolveTenantContextForOwnedSite\(c,\s*order\.store_id as string\)/);
     assert.match(tenantSource, /verifySiteOwnership\(db,\s*siteId,\s*customUser\.id,\s*authUser\.storeId\)/);
 });
 

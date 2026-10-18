@@ -11,6 +11,7 @@ import {
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { generateTotpSecret, otpauthUri, verifyTotpCode } from '../lib/totp';
 import { validate } from '../middleware/validation';
+import { AppError } from '../lib/errors';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -23,7 +24,8 @@ const VerifyTotpSchema = z.object({
 const DisableFactorSchema = z.object({
     factor_id: z.string().uuid(),
     code: z.string().min(6).max(12).optional(),
-});
+    recovery_code: z.string().trim().min(11).max(40).optional(),
+}).refine((input) => !(input.code && input.recovery_code), { message: 'Use one verification method.' });
 
 interface TwoFactorRow extends Record<string, unknown> {
     id: string;
@@ -76,7 +78,7 @@ function serializeFactor(row: TwoFactorRow) {
         last_verified_at: row.last_verified_at || null,
         enrolled_at: row.enrolled_at || null,
         disabled_at: row.disabled_at || null,
-        metadata: row.metadata || {},
+        metadata: { algorithm: 'SHA1', digits: 6, period: 30 },
         created_at: row.created_at || null,
         updated_at: row.updated_at || null,
         deleted_at: row.deleted_at || null,
@@ -143,17 +145,54 @@ async function loadOwnedFactor(
 
 function generateRecoveryCodes(): string[] {
     return Array.from({ length: 8 }, () => {
-        const bytes = crypto.getRandomValues(new Uint8Array(5));
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
         return Array.from(bytes)
             .map((byte) => byte.toString(16).padStart(2, '0'))
             .join('')
-            .replace(/^(.{5})(.{5})$/, '$1-$2')
+            .match(/.{8}/g)!.join('-')
             .toUpperCase();
     });
 }
 
 async function recoveryCodeHashes(factorId: string, codes: string[]): Promise<string[]> {
     return Promise.all(codes.map((code) => sha256Hex(`${factorId}:${code}`)));
+}
+
+// These routes bypass generic store-selected HTTP caching. Every mutation still
+// requires a logical command key and commits its actor-bound receipt atomically.
+router.use('*', async (c, next) => {
+    c.header('Cache-Control', 'no-store');
+    c.header('Pragma', 'no-cache');
+    await next();
+});
+
+async function commandKey(c: AppContext): Promise<string> {
+    const header = c.req.header('X-Idempotency-Key') || c.req.header('Idempotency-Key');
+    const raw = await c.req.text();
+    let bodyKey: string | undefined;
+    if (raw.trim()) {
+        let input: unknown;
+        try { input = JSON.parse(raw); } catch { throw new AppError('The command body must be valid JSON.', 400, 'VALIDATION_ERROR'); }
+        const parsed = z.object({ idempotency_key: z.string().trim().min(8).max(200).optional() }).safeParse(input);
+        if (!parsed.success) throw new AppError('A valid command key is required.', 400, 'IDEMPOTENCY_KEY_REQUIRED');
+        bodyKey = parsed.data.idempotency_key;
+    }
+    const key = (header || bodyKey || '').trim();
+    if (key.length < 8 || key.length > 200 || (header && bodyKey && key !== bodyKey)) {
+        throw new AppError('A matching command key of 8–200 characters is required.', 400, 'IDEMPOTENCY_KEY_REQUIRED');
+    }
+    return key;
+}
+
+async function command(db: ReturnType<typeof getSupabaseAdmin>, actor: string, action: 'enroll' | 'verify' | 'disable', key: string, input: Record<string, unknown>) {
+    const { data, error } = await db.rpc('execute_merchant_totp_command_v1', { p_actor_id: actor, p_command: action, p_key: key, p_input: input });
+    if (error || !data || typeof data !== 'object') throw new AppError('Account security could not be updated. Retry the same command.', 503, 'TWO_FACTOR_STATE_UNAVAILABLE');
+    const result = data as { accepted: boolean; code?: string; factor: TwoFactorRow; result_ciphertext?: string };
+    if (!result.accepted) {
+        const code = result.code || 'TWO_FACTOR_STATE_CHANGED';
+        throw new AppError('Account security changed. Reload security settings before retrying.', code === 'TWO_FACTOR_NOT_FOUND' ? 404 : 409, code);
+    }
+    return result;
 }
 
 router.get('/', async (c) => {
@@ -174,131 +213,70 @@ router.get('/sessions', async (c) => {
 });
 
 router.post('/totp/enroll', async (c) => {
+    const key = await commandKey(c);
     const db = getSupabaseAdmin(c);
     const user = await requireCustomUser(c);
-    const secret = configuredSecret(c.env);
-    if (!secret) {
-        return c.json({ error: { code: 'TWO_FACTOR_UNAVAILABLE', message: 'Two-factor setup is temporarily unavailable.' } }, 503);
-    }
-
-    const factors = await loadFactors(db, user.id);
-    const existing = factors.find((factor) => factor.factor_type === 'totp' && factor.status !== 'disabled');
-    if (existing?.status === 'active') {
-        return c.json({ error: { code: 'TWO_FACTOR_ALREADY_ENABLED', message: 'Two-factor authentication is already enabled.' } }, 409);
-    }
-
-    const factorId = existing?.id || crypto.randomUUID();
-    const totpSecret = generateTotpSecret();
-    const encrypted = await encryptTextAesGcm(secret, totpSecret);
+    const encryptionSecret = configuredSecret(c.env);
+    if (!encryptionSecret) throw new AppError('Two-factor setup is temporarily unavailable.', 503, 'TWO_FACTOR_UNAVAILABLE');
     const label = user.email || 'LetBuyy Merchant';
-    const values = {
-        custom_user_id: user.id,
-        factor_type: 'totp',
-        status: 'pending',
-        issuer: 'LetBuyy',
-        label,
-        secret_ciphertext: encrypted,
-        recovery_code_hashes: [],
-        metadata: { algorithm: 'SHA1', digits: 6, period: 30 },
-        updated_by: user.id,
-    };
-
-    const result = existing
-        ? await db.from('merchant_2fa_factors').update(values).eq('id', factorId).select('*').single()
-        : await db.from('merchant_2fa_factors').insert({ id: factorId, ...values, created_by: user.id }).select('*').single();
-
-    if (result.error) throw new Error(`2FA enrollment failed: ${result.error.message}`);
-    const factor = result.data as unknown as TwoFactorRow;
+    const result = await command(db, user.id, 'enroll', key, {
+        secret_ciphertext: await encryptTextAesGcm(encryptionSecret, generateTotpSecret()), label,
+    });
+    const totpSecret = await decryptTextAesGcm(encryptionSecret, result.factor.secret_ciphertext);
     return c.json(success({
-        factor: serializeFactor(factor),
-        secret: totpSecret,
-        otpauth_uri: otpauthUri({
-            issuer: 'LetBuyy',
-            label,
-            accountName: user.email,
-            secret: totpSecret,
-        }),
+        factor: serializeFactor(result.factor), secret: totpSecret,
+        otpauth_uri: otpauthUri({ issuer: 'LetBuyy', label: result.factor.label, accountName: user.email, secret: totpSecret }),
     }), 201);
 });
 
 router.post('/totp/verify', validate('json', VerifyTotpSchema), async (c) => {
     const body = c.get('validatedBody') as z.infer<typeof VerifyTotpSchema>;
+    const key = await commandKey(c);
     const db = getSupabaseAdmin(c);
     const user = await requireCustomUser(c);
     const encryptionSecret = configuredSecret(c.env);
-    if (!encryptionSecret) {
-        return c.json({ error: { code: 'TWO_FACTOR_UNAVAILABLE', message: 'Two-factor verification is temporarily unavailable.' } }, 503);
-    }
-
+    if (!encryptionSecret) throw new AppError('Two-factor verification is temporarily unavailable.', 503, 'TWO_FACTOR_UNAVAILABLE');
     const factor = await loadOwnedFactor(db, user.id, body.factor_id);
-    if (!factor || factor.factor_type !== 'totp' || factor.status === 'disabled') {
-        return c.json({ error: { code: 'TWO_FACTOR_NOT_FOUND', message: 'Two-factor factor not found.' } }, 404);
-    }
-
+    if (!factor || factor.factor_type !== 'totp' || factor.status === 'disabled') throw new AppError('Two-factor factor not found.', 404, 'TWO_FACTOR_NOT_FOUND');
     const secret = await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext);
-    const accepted = await verifyTotpCode({ secret, code: body.code });
-    if (!accepted) {
-        return c.json({ error: { code: 'TWO_FACTOR_CODE_INVALID', message: 'Verification code is invalid.' } }, 400);
-    }
-
-    const now = new Date().toISOString();
-    const recoveryCodes = generateRecoveryCodes();
-    const { data, error } = await db
-        .from('merchant_2fa_factors')
-        .update({
-            status: 'active',
-            enrolled_at: factor.enrolled_at || now,
-            last_verified_at: now,
-            recovery_code_hashes: await recoveryCodeHashes(factor.id, recoveryCodes),
-            updated_by: user.id,
-        })
-        .eq('id', factor.id)
-        .select('*')
-        .single();
-    if (error) throw new Error(`2FA verification failed: ${error.message}`);
-
-    return c.json(success({
-        factor: serializeFactor(data as unknown as TwoFactorRow),
-        recovery_codes: recoveryCodes,
-    }));
+    if (!await verifyTotpCode({ secret, code: body.code })) throw new AppError('Verification code is invalid.', 400, 'TWO_FACTOR_CODE_INVALID');
+    const codes = generateRecoveryCodes();
+    const result = await command(db, user.id, 'verify', key, {
+        factor_id: factor.id, secret_sha256: await sha256Hex(factor.secret_ciphertext), proof_kind: 'totp', proof_verified: true,
+        recovery_hashes: await recoveryCodeHashes(factor.id, codes),
+        result_ciphertext: await encryptTextAesGcm(encryptionSecret, JSON.stringify({ actor: user.id, factor: factor.id, key, recovery_codes: codes })),
+    });
+    if (!result.result_ciphertext) throw new Error('Missing encrypted activation receipt');
+    const recovered = JSON.parse(await decryptTextAesGcm(encryptionSecret, result.result_ciphertext)) as { actor: string; factor: string; key: string; recovery_codes: string[] };
+    if (recovered.actor !== user.id || recovered.factor !== factor.id || recovered.key !== key || !Array.isArray(recovered.recovery_codes)) throw new Error('Activation receipt binding mismatch');
+    return c.json(success({ factor: serializeFactor(result.factor), recovery_codes: recovered.recovery_codes }));
 });
 
 router.post('/disable', validate('json', DisableFactorSchema), async (c) => {
     const body = c.get('validatedBody') as z.infer<typeof DisableFactorSchema>;
+    const key = await commandKey(c);
     const db = getSupabaseAdmin(c);
     const user = await requireCustomUser(c);
     const factor = await loadOwnedFactor(db, user.id, body.factor_id);
-    if (!factor || factor.status === 'disabled') {
-        return c.json({ error: { code: 'TWO_FACTOR_NOT_FOUND', message: 'Two-factor factor not found.' } }, 404);
-    }
-
+    if (!factor || factor.factor_type !== 'totp') throw new AppError('Two-factor factor not found.', 404, 'TWO_FACTOR_NOT_FOUND');
+    let proofKind = 'none', verified = false;
     if (factor.status === 'active') {
-        const encryptionSecret = configuredSecret(c.env);
-        if (!encryptionSecret || !body.code) {
-            return c.json({ error: { code: 'TWO_FACTOR_CODE_REQUIRED', message: 'Verification code is required.' } }, 400);
-        }
-        const secret = await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext);
-        const accepted = await verifyTotpCode({ secret, code: body.code });
-        if (!accepted) {
-            return c.json({ error: { code: 'TWO_FACTOR_CODE_INVALID', message: 'Verification code is invalid.' } }, 400);
+        if (body.recovery_code) proofKind = 'recovery';
+        else {
+            const encryptionSecret = configuredSecret(c.env);
+            if (!encryptionSecret || !body.code) throw new AppError('Verification code is required.', 400, 'TWO_FACTOR_CODE_REQUIRED');
+            const secret = await decryptTextAesGcm(encryptionSecret, factor.secret_ciphertext);
+            verified = await verifyTotpCode({ secret, code: body.code });
+            if (!verified) throw new AppError('Verification code is invalid.', 400, 'TWO_FACTOR_CODE_INVALID');
+            proofKind = 'totp';
         }
     }
-
-    const now = new Date().toISOString();
-    const { data, error } = await db
-        .from('merchant_2fa_factors')
-        .update({
-            status: 'disabled',
-            disabled_at: now,
-            recovery_code_hashes: [],
-            updated_by: user.id,
-        })
-        .eq('id', factor.id)
-        .select('*')
-        .single();
-    if (error) throw new Error(`2FA disable failed: ${error.message}`);
-
-    return c.json(success({ factor: serializeFactor(data as unknown as TwoFactorRow) }));
+    const result = await command(db, user.id, 'disable', key, {
+        factor_id: factor.id, secret_sha256: await sha256Hex(factor.secret_ciphertext), expected_status: factor.status,
+        proof_kind: proofKind, proof_verified: verified,
+        recovery_hash: body.recovery_code ? await sha256Hex(`${factor.id}:${body.recovery_code.trim().toUpperCase()}`) : null,
+    });
+    return c.json(success({ factor: serializeFactor(result.factor) }));
 });
 
 export default router;

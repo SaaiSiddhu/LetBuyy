@@ -128,14 +128,6 @@ class LetBuyyGraphQLOperations {
   }
 }''',
   );
-
-  static const storefrontCustomerOrders = GraphQLOperation(
-    surface: 'storefront',
-    operationName: 'StorefrontCustomerOrders',
-    document: r'''query StorefrontCustomerOrders($storeId: ID!, $email: String!, $orderId: ID) {
-  customerOrders(storeId: $storeId, email: $email, orderId: $orderId)
-}''',
-  );
 }
 
 class GraphQLResult {
@@ -300,24 +292,6 @@ class GraphQLClient {
         'handle': handle,
         if (first != null) 'first': first,
         if (after != null) 'after': after,
-      },
-      options: options,
-    );
-  }
-
-  Future<GraphQLResult> storefrontCustomerOrders({
-    required String storeId,
-    required String email,
-    String? orderId,
-    ApiRequestOptions? options,
-  }) {
-    return execute(
-      letbuyyStorefrontGraphQLPath,
-      LetBuyyGraphQLOperations.storefrontCustomerOrders,
-      variables: {
-        'storeId': storeId,
-        'email': email,
-        if (orderId != null) 'orderId': orderId,
       },
       options: options,
     );

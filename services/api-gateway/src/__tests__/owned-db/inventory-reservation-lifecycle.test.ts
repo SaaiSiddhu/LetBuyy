@@ -106,4 +106,13 @@ test('a committed razorpay reservation past its grace period is released automat
 
     const codStatusAfter = psql(`SELECT status FROM inventory_reservations WHERE order_id = '${codOrderId}';`);
     assert.equal(codStatusAfter, 'committed', 'COD reservation must be untouched by the unpaid-online-order sweep, even though it is older than the grace period');
+
+    // Replaying a later sweep must not release the same order twice, even when
+    // the worker uses a different request id. Assert the inventory projection
+    // and the idempotent sale_released event, not only the reservation status.
+    const releasedAgain = psql(`SELECT expire_unpaid_committed_reservations(100, 60, 't12-autotest-sweep-replay-${suffix}');`);
+    assert.equal(releasedAgain, '0', 'a later sweep must find no committed online reservation to release');
+    assert.equal(psql(`SELECT available || '|' || committed_quantity FROM inventory_levels WHERE product_id = '${productId}';`), '4|1');
+    assert.equal(psql(`SELECT count(*) FROM inventory_events WHERE order_id = '${razorpayOrderId}' AND event_type = 'sale_released';`), '1', 'the second sweep must not append a duplicate release event');
+    assert.equal(psql(`SELECT status FROM inventory_reservations WHERE order_id = '${razorpayOrderId}';`), 'released');
 });

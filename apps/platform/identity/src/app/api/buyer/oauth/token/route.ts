@@ -3,7 +3,7 @@ import { LETBUYY_BUYER_SESSION_TTL_SECONDS, LETBUYY_STOREFRONT_SESSION_TTL_SECON
 import { identityApiRequest } from '@/lib/api/client'
 import { grantForRedemption } from '@/lib/auth/buyer-authorization'
 import {
-    createIdentityIssuedBuyerSessionToken,
+    prepareIdentityIssuedBuyerSession,
     createIdentityIssuedStorefrontSessionToken,
 } from '@/lib/auth/identity-issued-session'
 
@@ -46,6 +46,9 @@ export async function POST(request: NextRequest) {
             return oauthError('invalid_request', 400)
         }
 
+        // Both realms use the same sole signing key. Validate it before consuming
+        // the one-time code; the recorded grant still decides which realm is issued.
+        const issueBuyerSession = await prepareIdentityIssuedBuyerSession()
         const redeemed = await identityApiRequest('/storefront/buyer/authorization-codes/redeem', {
             method: 'POST',
             body: JSON.stringify({ code, code_verifier: codeVerifier, client_id: clientId, redirect_uri: redirectUri }),
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
         if (!grant) return oauthError('temporarily_unavailable', 503)
 
         if (grant.kind === 'app') {
-            const accessToken = await createIdentityIssuedBuyerSessionToken({ buyerAccountId: grant.buyerAccountId, sessionEpoch: grant.sessionEpoch })
+            const accessToken = await issueBuyerSession({ buyerAccountId: grant.buyerAccountId, sessionEpoch: grant.sessionEpoch })
             if (!accessToken) return oauthError('temporarily_unavailable', 503)
             return NextResponse.json(
                 { access_token: accessToken, token_type: 'Bearer', expires_in: LETBUYY_BUYER_SESSION_TTL_SECONDS },

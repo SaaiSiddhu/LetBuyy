@@ -3,12 +3,14 @@ import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import { createMerchantApiClient } from '@/lib/api/client'
 import { formatInrCurrency } from '@letbuyy/ui/formatting'
 import DashboardClient from './DashboardClient'
+import { buildPageSetupStatus, buildStoreSetupStatus, resolveDashboardDomain } from './dashboard-setup-status'
+import type { SetupStatus } from './dashboard-setup-status'
+export type { SetupStatus } from './dashboard-setup-status'
 import type {
     AnalyticsDashboard,
     AnalyticsOrdersBreakdown,
     Order,
     Product,
-    StorePaymentConfig,
 } from '@letbuyy/api-client'
 
 /* ——————————————————————————————————————
@@ -17,15 +19,6 @@ import type {
 
 type SiteType = 'store' | 'portfolio' | 'resume' | 'landing' | 'blog'
 
-export interface SetupStatus {
-    primaryComplete: boolean
-    secondaryComplete: boolean
-    themeCustomized: boolean
-    domainConfigured: boolean
-    paymentConfigured?: boolean
-    hasShipping?: boolean
-}
-
 export interface StoreInfo {
     id: string
     name: string
@@ -33,6 +26,7 @@ export interface StoreInfo {
     theme_id: string
     theme_settings: Record<string, unknown> | null
     custom_domain: string | null
+    custom_domain_status: string | null
     subdomain: string
     trial_ends_at: string | null
     trial_status: string | null
@@ -92,6 +86,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
         theme_id: storeData.theme_id,
         theme_settings: storeData.theme_settings,
         custom_domain: storeData.custom_domain,
+        custom_domain_status: storeData.custom_domain_status,
         subdomain: storeData.subdomain,
         trial_ends_at: storeData.trial_ends_at,
         trial_status: storeData.trial_status,
@@ -102,7 +97,11 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     const themeCustomized =
         (storeData.theme_id && storeData.theme_id !== 'modern') ||
         (storeData.theme_settings && JSON.stringify(storeData.theme_settings) !== '{}')
-    const domainConfigured = !!storeData.custom_domain
+    const domainConfigured = resolveDashboardDomain({
+        subdomain: storeData.subdomain,
+        customDomain: storeData.custom_domain,
+        customDomainStatus: storeData.custom_domain_status,
+    }).configured
 
     const apiClient = createMerchantApiClient()
     const setupStatus = await loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured)
@@ -125,72 +124,28 @@ async function loadSetupStatus(
     themeCustomized: boolean,
     domainConfigured: boolean,
 ): Promise<SetupStatus> {
-    try {
-        if (siteType === 'store') {
-            const [productsPayload, shippingZonesPayload, paymentConfigPayload] = await Promise.all([
-                apiClient.products.list({ store_id: storeId, limit: 1 }).catch(() => null),
-                apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => []),
-                apiClient.stores.paymentConfig.get(storeId).catch(() => null),
-            ])
-            const productsCount = productsPayload?.total || 0
-            const shippingZones = Array.isArray(shippingZonesPayload) ? shippingZonesPayload : []
-            const shippingCount = shippingZones.length
+    if (siteType === 'store') {
+        const [productsPayload, shippingZonesPayload, paymentConfigPayload] = await Promise.all([
+            apiClient.products.list({ store_id: storeId, limit: 1 }).catch(() => null),
+            apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => null),
+            apiClient.stores.paymentConfig.get(storeId).catch(() => null),
+        ])
 
-            return {
-                primaryComplete: productsCount > 0,
-                secondaryComplete: shippingCount > 0,
-                themeCustomized,
-                domainConfigured,
-                paymentConfigured: isPaymentConfigured(paymentConfigPayload),
-                hasShipping: shippingCount > 0,
-            }
-        }
-
-        const pagesPayload = await apiClient.pages.list({ store_id: storeId, limit: 1 }).catch(() => null)
-        const pagesCount = pagesPayload?.total || 0
-
-        return {
-            primaryComplete: pagesCount > 0,
-            secondaryComplete: themeCustomized,
+        return buildStoreSetupStatus({
+            productsTotal: productsPayload?.total ?? null,
+            shippingZones: Array.isArray(shippingZonesPayload) ? shippingZonesPayload : null,
+            paymentConfig: paymentConfigPayload,
             themeCustomized,
             domainConfigured,
-        }
-    } catch {
-        return defaultSetupStatus(siteType, themeCustomized, domainConfigured)
+        })
     }
-}
 
-/**
- * A store can take money if ANY of these hold:
- *  - COD is on (India-first: needs no gateway credentials at all)
- *  - online payments are on via the shared platform account (works out of the box)
- *  - online payments are on via the merchant's own Razorpay, with the secret
- *    stored AND verified — key_id alone is not enough to charge a card.
- *
- * Anything else (including an unreachable payment-config endpoint) is treated as
- * not configured, so the checklist under-claims rather than over-claims.
- */
-function isPaymentConfigured(config: StorePaymentConfig | null): boolean {
-    if (!config) return false
-    if (config.cod_enabled) return true
-    if (!config.online_payment_enabled) return false
-
-    const settings = config.payment_settings
-    if (settings?.mode === 'shared') return true
-
-    const razorpay = settings?.razorpay
-    return Boolean(razorpay?.secret_configured && razorpay?.verified)
-}
-
-function defaultSetupStatus(siteType: string, themeCustomized: boolean, domainConfigured: boolean): SetupStatus {
-    return {
-        primaryComplete: false,
-        secondaryComplete: false,
+    const pagesPayload = await apiClient.pages.list({ store_id: storeId, limit: 1 }).catch(() => null)
+    return buildPageSetupStatus({
+        pagesTotal: pagesPayload?.total ?? null,
         themeCustomized,
         domainConfigured,
-        paymentConfigured: siteType === 'store' ? false : undefined,
-        hasShipping: siteType === 'store' ? false : undefined,
-    }
+    })
 }
 
 async function loadDashboardHomeData(

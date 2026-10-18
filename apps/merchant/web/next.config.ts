@@ -54,7 +54,12 @@ type WebpackHookContext = {
   };
 };
 
+const sessionRuntimeDistDir = process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR;
+if (sessionRuntimeDistDir && !/^\.next-session-runtime-\d+-merchant-next(?:-production)?$/.test(sessionRuntimeDistDir)) {
+  throw new Error('Merchant owned runtime requires a unique fixed .next-session-runtime-* directory');
+}
 const nextConfig: NextConfig = {
+  ...(sessionRuntimeDistDir ? { distDir: sessionRuntimeDistDir } : {}),
   // Hide the floating Next.js dev-tools badge. It overlaps the bottom of the
   // merchant sidebar (it sits on top of Settings), which makes the nav look
   // broken while developing. Dev-only UI, so this changes nothing in production.

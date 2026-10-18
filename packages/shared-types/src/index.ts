@@ -1,9 +1,11 @@
 import { z } from 'zod';
 
 export * from './brand';
+export * from './console-overview';
 export * from './contact';
 export * from './app-platform';
 export * from './foundation-execution-contracts';
+export * from './reel-review';
 // Canonical, exhaustive, React-free status presentation per domain.
 export * from './status-presentation';
 import {
@@ -11,7 +13,7 @@ import {
   ORDER_STATUS_VALUES,
   SUBSCRIPTION_STATUS_VALUES,
   GIFT_CARD_STATUS_VALUES,
-  PAYOUT_STATUS_VALUES,
+  MERCHANT_PAYOUT_STATUS_VALUES,
   PAGE_STATUS_VALUES,
   REVIEW_MODERATION_STATUS_VALUES,
   CUSTOM_DOMAIN_STATUS_VALUES,
@@ -235,10 +237,12 @@ export const InternalPermissionScopeSchema = z.enum([
   'merchant:suspend',
   'review:view',
   'review:decide',
+  'review:assign',
   'incident:view',
   'incident:command',
   'payout:view',
   'payout:release',
+  'money:reconcile',
   'exec:view',
   'exec:pii',
   'compliance:view',
@@ -299,6 +303,7 @@ export const INTERNAL_PERMISSION_TIERS: Record<InternalPermissionTier, readonly 
     'merchant:suspend',
     'review:view',
     'review:decide',
+    'review:assign',
     'incident:view',
     'incident:command',
     'payout:view',
@@ -321,6 +326,92 @@ export const INTERNAL_EMPLOYEE_ROLE_DEFAULT_TIERS: Record<string, InternalPermis
   manager: 'lead',
   admin: 'admin',
 };
+
+/** Same ten-minute bound as canonical sensitive-action step-up verification. */
+export const INTERNAL_APPROVAL_WINDOW_SECONDS = 600;
+export const InternalMerchantApprovalRequestSchema = z.object({
+  action: z.enum(['merchant.suspend', 'merchant.restore']),
+  resource_id: z.string().uuid(), reason: z.string().trim().min(8).max(1000), request_key: z.string().uuid(),
+}).strict();
+/** Operator review annotates a break; it never adjusts the canonical journal. */
+export const InternalMoneyResolutionDetailsSchema = z.object({
+  resolution: z.enum(['acknowledge_suspense', 'provider_explained', 'request_recheck']),
+  provider_reference: z.string().trim().max(160).nullable().optional().transform(value => value || null),
+  suspense_ledger_transaction_id: z.string().uuid().nullable().optional().transform(value => value || null),
+}).strict();
+export const InternalMoneyApprovalRequestSchema = z.object({
+  action: z.literal('money.reconciliation.resolve'), resource_id: z.string().uuid(),
+  reason: z.string().trim().min(8).max(1000), request_key: z.string().uuid(), payload: InternalMoneyResolutionDetailsSchema,
+}).strict();
+export const InternalTrustSafetyNoteMetadataSchema = z.record(z.string(),z.unknown()).refine(value => {
+  try { return new TextEncoder().encode(JSON.stringify(value)).length <= 4096; } catch { return false; }
+}, 'Keep additional notes within4KB.').default({});
+export const InternalTrustReinstatementRequestSchema = z.object({ action:z.literal('ts.reinstate'),resource_id:z.string().uuid(),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),metadata:InternalTrustSafetyNoteMetadataSchema }).strict();
+export const InternalTrustReinstatementExecuteSchema = z.object({approval_id:z.string().uuid().optional(),reason:z.string().trim().min(8).max(1000),
+  secondary_approver_id:z.string().uuid().optional(),metadata:InternalTrustSafetyNoteMetadataSchema}).strict();
+export const InternalTrustSiteEnforcementSchema = z.object({action:z.enum(['suspend_site','takedown_theme','disable_app','freeze_payouts','platform_disable']),
+  reason:z.string().trim().min(8).max(1000),idempotency_key:z.string().uuid().optional(),notify_subject:z.boolean().default(true),
+  metadata:InternalTrustSafetyNoteMetadataSchema}).strict();
+export const InternalOperatorMfaResetRequestSchema = z.object({action:z.literal('operator.mfa.reset'),resource_id:z.string().uuid(),
+ reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),configured_fingerprint:z.string().regex(/^[0-9a-f]{64}$/)}).strict();
+/** Minimal operator projection; private queue payloads/errors/results never cross this boundary. */
+export const InternalPlatformJobSchema = z.object({
+  id:z.string().uuid(),site_id:z.string().uuid().nullable(),queue_name:z.literal('loyalty-refunds'),job_type:z.literal('loyalty.restore_redeemed'),
+  status:z.enum(['queued','running','succeeded','failed','dead','cancelled']),attempts:z.number().int(),max_attempts:z.number().int(),
+  order_id:z.string().uuid().nullable(),redeemed_entry_id:z.string().uuid().nullable(),points:z.string().regex(/^\d+$/).nullable(),
+  point_value_minor:z.string().nullable(),value_minor:z.string().nullable(),created_at:z.string(),failed_at:z.string().nullable(),completed_at:z.string().nullable(),
+  eligible:z.boolean(),source_valid:z.boolean(),reason_code:z.enum(['eligible','source_unavailable','debt_not_owed','lease_present','not_exhausted','attempt_limit']),
+  source_identity:z.string().regex(/^[0-9a-f]{64}$/),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
+}).strict();
+export type InternalPlatformJob = z.infer<typeof InternalPlatformJobSchema>;
+export const InternalPlatformJobQuerySchema = z.object({site_id:z.string().uuid().optional(),job_id:z.string().uuid().optional(),
+  page:z.coerce.number().int().min(1).max(10000).default(1),limit:z.coerce.number().int().min(1).max(50).default(25)}).strict();
+export const InternalPlatformJobRecoveryRequestSchema = z.object({site_id:z.string().uuid(),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),expected_session_id:z.string().uuid()}).strict();
+export const InternalPlatformJobRecoveryExecuteSchema = z.object({approval_id:z.string().uuid(),site_id:z.string().uuid(),
+  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid()}).strict();
+export const InternalPlatformJobRecoveryResultSchema = z.object({operation:z.literal('retry_authorized'),operation_id:z.string().uuid(),
+  job_id:z.string().uuid(),site_id:z.string().uuid(),event_id:z.string().uuid(),previous_attempts:z.number().int().nonnegative(),
+  max_attempts:z.number().int().positive(),retry_budget:z.literal(1),queued_at:z.string(),replayed:z.boolean()}).strict();
+export const InternalProtectedApprovalRequestSchema = z.discriminatedUnion('action', [
+  InternalMerchantApprovalRequestSchema, InternalMoneyApprovalRequestSchema, InternalTrustReinstatementRequestSchema, InternalOperatorMfaResetRequestSchema,
+]);
+export const InternalMoneyResolutionExecuteSchema = InternalMoneyResolutionDetailsSchema.extend({
+  approval_id: z.string().uuid().optional(), reason: z.string().trim().min(8).max(1000),
+  // Legacy transport fields are optional and never grant authority.
+  actor_id: z.string().uuid().optional(), actor_email: z.string().email().nullable().optional(),
+  secondary_approver_id: z.string().uuid().optional(),
+}).strict();
+export const InternalMoneyReconciliationRowSchema = z.object({
+  site_id: z.string().uuid(), status: z.enum(['verified', 'mismatch']),
+  wallet_available_minor: z.union([z.number().int(), z.string().regex(/^-?\d+$/)]),
+  ledger_merchant_payable_minor: z.union([z.number().int(), z.string().regex(/^-?\d+$/)]),
+  variance_minor: z.union([z.number().int(), z.string().regex(/^-?\d+$/)]),
+  verified_at: z.string().nullable(), updated_at: z.string().nullable(),
+  sites: z.object({ id: z.string().optional(), name: z.string().nullable().optional(),
+    store_name: z.string().nullable().optional(), subdomain: z.string().nullable().optional() }).nullable().optional(),
+}).passthrough();
+export type InternalMoneyReconciliationRow = z.infer<typeof InternalMoneyReconciliationRowSchema>;
+export const InternalApprovalDecisionSchema = z.object({
+  decision: z.enum(['approve', 'reject', 'cancel']), payload_hash: z.string().regex(/^[0-9a-f]{64}$/),
+}).strict();
+export const InternalSensitiveApprovalSchema = z.object({
+  id: z.string().uuid(), protocol_version: z.literal(1), site_id: z.string().uuid().nullable(),
+  action: z.enum(['refund.approve', 'payout.release', 'customer.dsr.erase', 'merchant.suspend', 'merchant.restore',
+    'developer.suspend', 'money.reconciliation.resolve', 'ts.reinstate', 'runtime.control-command', 'operator.mfa.reset', 'platform.job.redrive']),
+  resource_type: z.string(), resource_id: z.string(), maker_actor_id: z.string().uuid(),
+  checker_actor_id: z.string().uuid().nullable(), requester_session_id: z.string().uuid(),
+  approver_session_id: z.string().uuid().nullable(), request_key: z.string().uuid(),
+  status: z.enum(['pending', 'approved', 'rejected', 'cancelled']), reason: z.string(),
+  payload: z.record(z.string(), z.unknown()), payload_hash: z.string().regex(/^[0-9a-f]{64}$/),
+  expires_at: z.string(), approved_at: z.string().nullable(), consumed_at: z.string().nullable(),
+  result: z.record(z.string(), z.unknown()).nullable(), created_at: z.string(),
+  notification_delivery:z.object({status:z.enum(['queued','running','succeeded','failed','dead','cancelled']),attempts:z.number().int().nonnegative(),completed_at:z.string().nullable()}).nullable().optional(),
+}).refine(value=>value.action==='operator.mfa.reset'
+ ? value.site_id===null&&value.resource_type==='platform_operator'
+ : value.site_id!==null,{message:'The protected action scope does not match its resource.'});
+export type InternalSensitiveApproval = z.infer<typeof InternalSensitiveApprovalSchema>;
 
 export const RiskEntityTypeSchema = z.enum(['signup', 'merchant', 'site', 'payment', 'app', 'theme', 'developer']);
 export const RiskSignalTypeSchema = z.enum([
@@ -467,7 +558,7 @@ export const TrustSafetyCaseCategorySchema = z.enum([
 export const TrustSafetySeveritySchema = z.enum(['low', 'medium', 'high', 'critical']);
 export const TrustSafetyCaseStatusSchema = z.enum(['open', 'under_review', 'actioned', 'appealed', 'reinstated', 'closed', 'finalized']);
 export const TrustSafetyDecisionSchema = z.enum(['no_violation', 'violation', 'needs_more_info']);
-export const TrustSafetyEnforcementActionSchema = z.enum(['none', 'suspend_site', 'takedown_theme', 'disable_app', 'freeze_payouts', 'platform_disable']);
+export const TrustSafetyEnforcementActionSchema = z.enum(['none', ...InternalTrustSiteEnforcementSchema.shape.action.options]);
 export const TrustSafetyAppealStatusSchema = z.enum(['filed', 'under_review', 'upheld', 'overturned', 'rejected', 'expired']);
 export const TrustSafetyTakedownStatusSchema = z.enum(['pending', 'active', 'reversed']);
 
@@ -623,7 +714,7 @@ export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'l
 // Each of these schemas is built from the canonical value tuple in
 // ./status-presentation, which mirrors the live CHECK constraint. Restating the
 // values here is how they drifted: five schemas disagreed with the database,
-// including payouts, where only 2 of 5 values overlapped. Deriving makes the
+// including merchant statements confused with provider payouts. Deriving makes the
 // schema, the TS union and the presentation map one source by construction.
 export const StoreStatusSchema = z.enum(SITE_STATUS_VALUES);
 export const CustomDomainStatusSchema = z.enum(CUSTOM_DOMAIN_STATUS_VALUES);
@@ -723,7 +814,7 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
-export const MerchantPayoutStatusSchema = z.enum(PAYOUT_STATUS_VALUES);
+export const MerchantPayoutStatusSchema = z.enum(MERCHANT_PAYOUT_STATUS_VALUES);
 export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
 export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
@@ -757,6 +848,10 @@ export const MerchantTwoFactorTypeSchema = z.enum(['totp', 'passkey']);
 export const MerchantTwoFactorStatusSchema = z.enum(['pending', 'active', 'disabled']);
 
 export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
+  // Gateway preserves PostgREST's timestamp offsets in statement readback.
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   statement_number: z.string().min(1).max(120),
   status: MerchantPayoutStatusSchema,
@@ -771,9 +866,9 @@ export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
   period_start: z.string().optional().nullable(),
   period_end: z.string().optional().nullable(),
   available_on: z.string().optional().nullable(),
-  processing_at: z.string().datetime().optional().nullable(),
-  released_at: z.string().datetime().optional().nullable(),
-  failed_at: z.string().datetime().optional().nullable(),
+  processing_at: z.string().datetime({ offset: true }).optional().nullable(),
+  released_at: z.string().datetime({ offset: true }).optional().nullable(),
+  failed_at: z.string().datetime({ offset: true }).optional().nullable(),
   utr: z.string().optional().nullable(),
   provider_reference: z.string().optional().nullable(),
   failure_reason: z.string().optional().nullable(),
@@ -1259,6 +1354,7 @@ export const VariantSchema = AuditedEntitySchema.extend({
 
 export const ProductSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
+  version: z.number().int().positive(),
   name: z.string().min(1).max(256),
   slug: SlugSchema,
   description: z.string().max(10000).optional().nullable(),
@@ -1285,7 +1381,8 @@ export const ProductSchema = AuditedEntitySchema.extend({
   charge_tax: z.boolean().default(true),
   hs_code: z.string().max(30).optional().nullable(),
   hsn_code: HsnCodeSchema.optional().nullable(),
-  country_of_origin: z.string().max(100).optional().nullable(),
+  country_of_origin: z.string().trim().max(100).optional().nullable(),
+  importer_details: z.string().trim().max(1000).optional().nullable(),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
   metadata: MetadataSchema.default({}),
@@ -2571,7 +2668,7 @@ export const ThemeEditorPayloadSchema = z.object({
     exists: z.boolean(),
     template_key: z.string().min(1).max(80).optional(),
     updated_at: z.string().datetime().optional().nullable(),
-    version: z.number().int().positive(),
+    version: z.number().int().nonnegative(),
   }).passthrough(),
   release: z.object({
     id: UuidSchema,
@@ -2581,10 +2678,12 @@ export const ThemeEditorPayloadSchema = z.object({
   schemas: ThemeEditableSchemaResponseSchema.shape.schemas,
   renderer_manifest: MetadataSchema.optional().nullable(),
   approved_renderer_keys: z.array(z.string()).default([]),
-  version: z.number().int().positive(),
+  version: z.number().int().nonnegative(),
 });
 
 export const ThemeDraftSaveResultSchema = z.object({
+  replayed: z.boolean(),
+  current_version: z.number().int().positive(),
   saved_at: z.string().datetime(),
   version: z.number().int().positive(),
   template_key: z.string().min(1).max(80).default('index'),
@@ -2602,6 +2701,9 @@ export const ThemePublishedReleaseSchema = z.object({
 }).passthrough();
 
 export const ThemePublishResultSchema = z.object({
+  version: z.number().int().positive(),
+  replayed: z.boolean(),
+  current_version: z.number().int().positive(),
   store: z.object({
     id: UuidSchema,
     status: z.string(),

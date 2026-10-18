@@ -1,10 +1,11 @@
 // ============================================================
 // ANALYTICS — Store analytics + revenue (Doc 04 + Doc 09 § 5.2)
 // ============================================================
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { Env } from '../index';
-import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
+import { resolveCustomUser, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
+import { assertStaffPermission } from '../middleware/staff-permission';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -497,9 +498,8 @@ router.get('/live', async (c) => {
     const db = getSupabaseAdmin(c);
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     const liveView = await loadRollupLiveView(db, storeId, windowMinutes);
     if (liveView) return c.json(success(liveView));
@@ -538,9 +538,8 @@ router.get('/traffic-sources', async (c) => {
     const db = getSupabaseAdmin(c);
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     const report = analyticsRollupReadsEnabled(c.env)
         ? await loadRollupTrafficSources(db, storeId, period, limit)
@@ -573,9 +572,8 @@ router.get('/dashboard', async (c) => {
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
 
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     if (analyticsRollupReadsEnabled(c.env)) {
         const projected = await loadRollupDashboard(db, storeId, period);
@@ -637,9 +635,8 @@ router.get('/revenue', async (c) => {
     const db = getSupabaseAdmin(c);
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     if (analyticsRollupReadsEnabled(c.env)) {
         const projected = await loadRollupRevenue(db, storeId, period);
@@ -693,9 +690,8 @@ router.get('/top-products', async (c) => {
     const db = getSupabaseAdmin(c);
 
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     if (analyticsRollupReadsEnabled(c.env)) {
         const projected = await loadRollupTopProducts(db, storeId, limit);
@@ -716,9 +712,8 @@ router.get('/orders', async (c) => {
     const storeId = c.req.query('store_id');
     const db = getSupabaseAdmin(c);
     if (!storeId) return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id required' } }, 400);
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     if (analyticsRollupReadsEnabled(c.env)) {
         const projected = await loadRollupOrderBreakdown(db, storeId);
@@ -739,9 +734,8 @@ router.get('/:site/summary', async (c) => {
     const period = c.req.query('period') || '30d';
     const db = getSupabaseAdmin(c);
 
-    if (!(await canAccessStore(db, auth.user, storeId))) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
-    }
+    const accessBlock = await assertStoreReportAccess(c, auth.user, storeId);
+    if (accessBlock) return accessBlock;
 
     const projected = await loadCommerceAnalyticsMvSummary(db, storeId, period);
     if (projected) {
@@ -761,15 +755,18 @@ router.get('/:site/summary', async (c) => {
     }));
 });
 
-async function canAccessStore(
-    db: ReturnType<typeof getSupabaseAdmin>,
+async function assertStoreReportAccess(
+    c: Context<{ Bindings: Env }>,
     authUser: WorkerAuthUser,
-    storeId: string
-) {
-    const customUser = await resolveCustomUser(db, authUser);
-    return customUser
-        ? verifySiteOwnership(db, storeId, customUser.id, authUser.storeId)
-        : false;
+    storeId: string,
+): Promise<Response | null> {
+    const customUser = await resolveCustomUser(getSupabaseAdmin(c), authUser);
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+    // Use the existing owner/live employees authority and the grant already
+    // offered by merchant role defaults. No shadow identity alias is activated.
+    return assertStaffPermission(c, storeId, customUser.id, 'reports:read', 'enforce');
 }
 
 export default router;

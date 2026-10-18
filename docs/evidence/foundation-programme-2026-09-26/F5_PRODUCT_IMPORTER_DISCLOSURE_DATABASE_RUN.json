@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-04",
+  "timezone": "Asia/Kolkata",
+  "checkout": "LetBuyy-phase2",
+  "branch": "letbuyy/phase2-shared-buyer-identity",
+  "source_head": "0862687a5008d604d0df23357b2eb511293139fa",
+  "suite": "services/api-gateway/src/__tests__/owned-db/product-importer-disclosure.postgres.test.ts",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/product-importer-disclosure.postgres.test.ts --kind gateway-db --jobs 1",
+  "runner_id": "8f8f47f295d7",
+  "database_image": "postgres:16-alpine",
+  "result": {
+    "status": "pass",
+    "tests": 1,
+    "passed": 1,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "coverage": [
+    "nullable seller-entered importer_details can be persisted and read",
+    "a 1000-character disclosure is accepted",
+    "a 1001-character disclosure violates the database CHECK and leaves no inserted product"
+  ],
+  "fixture_correction": "The prior test setup used a tenant tag longer than the helper's 20-character bound and exited before registering tests. The tag is now imp-disclosure.",
+  "database_ownership": "owned isolated suite database, verified by the executable-suite runner",
+  "limits": [
+    "service-role PostgREST database proof does not establish RLS behavior",
+    "no restored or hosted database, migration, browser, device or deployment was used",
+    "legal applicability and seller/platform obligation remain unverified"
+  ]
+}

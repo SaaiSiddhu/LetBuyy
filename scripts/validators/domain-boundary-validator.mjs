@@ -207,6 +207,9 @@ function isAuthOwnedLocalFile(file) {
 
 const appApiAndLibFiles = listWorkspaceFiles(["apps"])
   .filter((file) => (file.startsWith(`${rootSegment(file)}/src/app/api/`) || file.startsWith(`${rootSegment(file)}/src/lib/`)) && /\.(ts|tsx)$/.test(file) && !file.startsWith("apps/marketing/web/src/lib/resources/"))
+  // Negative response-leakage fixtures contain forbidden fields deliberately.
+  // Runtime support/handlers remain scanned; only explicit test/spec files leave.
+  .filter((file) => !/\.(test|spec)\.[cm]?[jt]sx?$/.test(file))
   .sort();
 
 const directDbOrProviderMutationPattern =
@@ -230,19 +233,9 @@ reporter.assert(
   `Storefront app API routes must call the typed gateway client directly, not customer-service helpers: ${storefrontRoutesUsingCustomerService.join(", ")}`,
 );
 
-const allowedOrderPresentationAdapters = new Set([
-  "apps/commerce/web/src/app/api/orders/check/route.ts",
-  "apps/commerce/web/src/app/api/orders/login/route.ts",
-  "apps/commerce/web/src/app/api/orders/set-password/route.ts",
-]);
 const appRoutesUsingOrderService = appApiRoutes.filter((file) => readFile(file).includes("@/lib/order-service"));
-for (const file of appRoutesUsingOrderService) {
-  reporter.assert(
-    allowedOrderPresentationAdapters.has(file),
-    `Only the classified storefront order lookup adapter may import order-service; use the typed gateway client instead: ${file}`,
-  );
-}
-reporter.assert(appRoutesUsingOrderService.length === allowedOrderPresentationAdapters.size, "Classified storefront order lookup adapter inventory changed; update P4-4 ownership governance");
+reporter.assert(appRoutesUsingOrderService.length === 0,
+  `Retired storefront order lookup routes must not revive order-service adapters; use the canonical buyer transport: ${appRoutesUsingOrderService.join(", ")}`);
 
 const mobileMerchantModelFacades = [
   "apps/merchant/mobile/lib/models/order_model.dart",

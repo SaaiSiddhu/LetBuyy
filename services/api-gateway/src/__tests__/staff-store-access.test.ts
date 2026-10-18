@@ -81,15 +81,18 @@ function matches(row: Row, params: URLSearchParams): boolean {
 
 function installFakePostgrest(tablesData: Record<string, Row[]>) {
     const originalFetch = globalThis.fetch;
-    const requests: { method: string; table: string; query: string }[] = [];
+    const requests: { method: string; table: string; query: string; body?: any }[] = [];
     globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url);
         assert.equal(url.origin, POSTGREST, 'only the fake PostgREST is reachable');
         const method = (init?.method || 'GET').toUpperCase();
         const table = url.pathname.replace('/rest/v1/', '');
-        requests.push({ method, table, query: url.search });
+        const requestBody = init?.body ? JSON.parse(String(init.body)) : undefined;
+        requests.push({ method, table, query: url.search, body: requestBody });
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
+        // Only the transport reply is stubbed. Real ownership/effect/audit/receipt proof is in the owned DB suite.
+        if (table === 'rpc/mutate_merchant_staff_v1') return json({ status: 200, data: { id: EMPLOYEE_ROW, deleted: true }, replayed: false });
         const rows = (tablesData[table] ?? []).filter((row) => matches(row, url.searchParams));
         if (method === 'PATCH') {
             const patch = JSON.parse(String(init?.body ?? '{}')) as Row;
@@ -110,7 +113,7 @@ function installFakePostgrest(tablesData: Record<string, Row[]>) {
 function baseTables(): Record<string, Row[]> {
     return {
         sites: [
-            { id: SITE, name: 'Site One', store_name: 'site-one', subdomain: 'site-one', site_type: 'store', status: 'active', custom_user_id: OWNER, user_id: null, trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null, deleted_at: null },
+            { id: SITE, name: 'Site One', store_name: 'site-one', subdomain: 'site-one', site_type: 'store', status: 'active', custom_user_id: OWNER, user_id: null, trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: 'shop.example.test', custom_domain_status: 'pending', deleted_at: null },
             { id: OTHER_SITE, name: 'Site Two', store_name: 'site-two', subdomain: 'site-two', site_type: 'store', status: 'active', custom_user_id: OUTSIDER, user_id: null, trial_ends_at: null, trial_status: null, theme_id: 'modern', theme_settings: null, custom_domain: null, deleted_at: null },
         ],
         users_custom: [
@@ -153,16 +156,25 @@ test('GET /stores/handle/:handle resolves for the owner and for an active staff 
 
     const owner = await appWithAuth(OWNER, storesRouter, '/stores').request('/stores/handle/site-one');
     assert.equal(owner.status, 200, 'owner resolves');
+    assert.equal(((await owner.json()) as { data: { custom_domain_status: string } }).data.custom_domain_status, 'pending');
 
     const staff = await appWithAuth(STAFF_READ, storesRouter, '/stores').request('/stores/handle/site-one');
     assert.equal(staff.status, 200, 'an active staff member resolves the store they are staff at');
-    assert.equal(((await staff.json()) as { data: { id: string } }).data.id, SITE);
+    const staffStore = (await staff.json()) as { data: { id: string; custom_domain_status: string } };
+    assert.equal(staffStore.data.id, SITE);
+    assert.equal(staffStore.data.custom_domain_status, 'pending');
 
     const strangerRes = await appWithAuth(OUTSIDER, storesRouter, '/stores').request('/stores/handle/site-one');
     assert.equal(strangerRes.status, 404, 'a user with no relationship to this site does not resolve it');
 
     const wrongSite = await appWithAuth(STAFF_OTHER_SITE, storesRouter, '/stores').request('/stores/handle/site-one');
     assert.equal(wrongSite.status, 404, 'staff at a DIFFERENT site does not resolve this one -- the fallback is site-scoped, not a blanket staff bypass');
+
+    const siteSelects = fake.requests
+        .filter((request) => request.table === 'sites')
+        .map((request) => new URLSearchParams(request.query).get('select'));
+    assert.ok(siteSelects.length > 0 && siteSelects.every((select) => select?.split(',').includes('custom_domain_status')),
+        'both owner and staff resolution paths select the domain lifecycle status used by the merchant dashboard');
 });
 
 // ---------------------------------------------------------------------------------------------------
@@ -224,23 +236,26 @@ test('DELETE /employees/:id: the owner\'s revoke reaches the database, scoped by
     const fake = installFakePostgrest(baseTables());
     t.after(fake.restore);
 
-    const res = await appWithAuth(OWNER, employeeRouter, '/employees').request(`/employees/${EMPLOYEE_ROW}`, { method: 'DELETE' });
+    const res = await appWithAuth(OWNER, employeeRouter, '/employees').request(`/employees/${EMPLOYEE_ROW}`, { method: 'DELETE', headers: { 'content-type': 'application/json', 'X-Idempotency-Key': 'synthetic-staff-remove' },
+        body: JSON.stringify({ expected_updated_at: '2026-10-15T00:00:00Z' }) });
     const body = await res.text();
     assert.equal(res.status, 200, `owner delete should reach the database, not be refused by the tenant guard: ${body}`);
 
-    const mutation = fake.requests.find((r) => r.method === 'PATCH' && r.table === 'employees');
-    assert.ok(mutation, 'the removal is implemented as a soft-delete PATCH');
-    assert.match(mutation!.query, /store_id=eq\./, 'the mutation itself carries a store_id scope predicate, satisfying the tenant guard for real');
-    assert.match(mutation!.query, new RegExp(`id=eq\\.${EMPLOYEE_ROW}`), 'and still targets the exact row by id');
+    const mutation = fake.requests.find((r) => r.table === 'rpc/mutate_merchant_staff_v1');
+    assert.ok(mutation, 'the removal reaches the atomic lifecycle RPC');
+    assert.equal(mutation.body.p_store_id,SITE);
+    assert.equal(mutation.body.p_employee_id,EMPLOYEE_ROW);
+    assert.equal(mutation.body.p_operation,'remove');
 });
 
 test('DELETE /employees/:id: a non-owner is forbidden before any write is attempted', async (t) => {
     const fake = installFakePostgrest(baseTables());
     t.after(fake.restore);
 
-    const res = await appWithAuth(STAFF_READ, employeeRouter, '/employees').request(`/employees/${EMPLOYEE_ROW}`, { method: 'DELETE' });
+    const res = await appWithAuth(STAFF_READ, employeeRouter, '/employees').request(`/employees/${EMPLOYEE_ROW}`, { method: 'DELETE', headers: { 'content-type': 'application/json', 'X-Idempotency-Key': 'synthetic-staff-remove' },
+        body: JSON.stringify({ expected_updated_at: '2026-10-15T00:00:00Z' }) });
     assert.equal(res.status, 403);
-    assert.ok(!fake.requests.some((r) => r.method === 'PATCH' && r.table === 'employees'), 'no mutation is attempted for a refused caller');
+    assert.ok(!fake.requests.some((r) => r.table === 'rpc/mutate_merchant_staff_v1' || (r.method === 'PATCH' && r.table === 'employees')), 'no mutation is attempted for a refused caller');
 });
 
 test('PATCH /employees/:id: the owner\'s role update reaches the database, scoped by store_id', async (t) => {
@@ -249,13 +264,15 @@ test('PATCH /employees/:id: the owner\'s role update reaches the database, scope
 
     const res = await appWithAuth(OWNER, employeeRouter, '/employees').request(`/employees/${EMPLOYEE_ROW}`, {
         method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ role: 'viewer' }),
+        headers: { 'content-type': 'application/json', 'X-Idempotency-Key': 'synthetic-staff-update' },
+        body: JSON.stringify({ role: 'viewer', expected_updated_at: '2026-10-15T00:00:00Z' }),
     });
     const body = await res.text();
     assert.equal(res.status, 200, `owner update should reach the database, not be refused by the tenant guard: ${body}`);
 
-    const mutation = fake.requests.find((r) => r.method === 'PATCH' && r.table === 'employees');
-    assert.ok(mutation, 'the update reaches the employees table');
-    assert.match(mutation!.query, /store_id=eq\./, 'scoped by store_id, satisfying the tenant guard for real');
+    const mutation = fake.requests.find((r) => r.table === 'rpc/mutate_merchant_staff_v1');
+    assert.ok(mutation, 'the update reaches the atomic lifecycle RPC');
+    assert.equal(mutation.body.p_store_id,SITE);
+    assert.equal(mutation.body.p_employee_id,EMPLOYEE_ROW);
+    assert.equal(mutation.body.p_operation,'update');
 });

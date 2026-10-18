@@ -1,0 +1,16 @@
+{
+  "runId": "6759c51a7d9f",
+  "command": "node scripts/governance/run-executable-suites.mjs --suite services/api-gateway/src/__tests__/owned-db/storefront-customer-profile.postgres.test.ts --kind gateway-db --jobs 1 --log-dir /private/tmp/letbuyy-session-browser-d93a40aa63da",
+  "image": "postgres:16-alpine",
+  "suites": 1,
+  "tests": 10,
+  "passed": 10,
+  "failed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 37.6,
+  "suiteSeconds": 35.4,
+  "runnerExitCode": 0,
+  "cleanup": "Runner verified no owned containers, networks, volumes, or databases remained."
+}

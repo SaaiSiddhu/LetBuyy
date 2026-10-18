@@ -3,30 +3,17 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { fetchConsoleApi, type ConsoleDataResponse } from './console-api';
+import { readCurrentConsoleSession } from './console-live-session';
 import {
     CONSOLE_SESSION_COOKIE,
     CONSOLE_SESSION_MAX_AGE_SECONDS,
-    createConsoleSessionCookieValue,
     readConsoleSession,
     type ConsoleSession,
 } from './console-session';
 
-// The allowlist and TOTP/MFA logic (including the SUSTAINED-E rate-limit/replay/timing-safety
-// hardening) lives in console-mfa.ts, which has no `server-only`/Next.js import so it can be
-// exercised by a plain `node --test` run. Re-exported here so every existing caller of this
-// module is unaffected.
-export {
-    normalizeConsoleEmail,
-    getAllowedConsoleEmails,
-    isConsoleEmailAllowed,
-    getConsoleTotpSecretForPrincipal,
-    verifyConsoleTotp,
-    resetConsoleMfaGuardStateForTests,
-    resolveConsoleLoginOutcome,
-    type MfaVerificationResult,
-    type ConsoleLoginOutcome,
-} from './console-mfa';
-import { normalizeConsoleEmail, isConsoleEmailAllowed } from './console-mfa';
+export {normalizeConsoleEmail,getAllowedConsoleEmails,isConsoleEmailAllowed} from './console-access-allowlist';
+import {normalizeConsoleEmail,isConsoleEmailAllowed} from './console-access-allowlist';
+import {requestConsoleIdentity} from './console-identity-client';
 
 type ConsoleAuditAction =
     | 'platform_console_login_magic_sent'
@@ -44,31 +31,35 @@ function configured(value: string | undefined): value is string {
 
 export async function getConsoleSessionFromCookies() {
     const cookieStore = await cookies();
-    return readConsoleSession(cookieStore.get(CONSOLE_SESSION_COOKIE)?.value);
+    return readCurrentConsoleSession(cookieStore.get(CONSOLE_SESSION_COOKIE)?.value);
 }
 
-export async function setConsoleSessionCookie(input: {
-    email: string;
-    userId?: string | null;
-    mfaVerified: boolean;
-}) {
-    const cookieValue = await createConsoleSessionCookieValue(input);
-    if (!cookieValue) return false;
-
-    const cookieStore = await cookies();
-    cookieStore.set(CONSOLE_SESSION_COOKIE, cookieValue, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-        maxAge: CONSOLE_SESSION_MAX_AGE_SECONDS,
-    });
-
+/** Persist only a public-key verified, already durably registered Identity
+ * credential. A reply from the transport alone cannot set a human cookie. */
+export async function persistConsoleIdentityCookie(value:string) {
+    const session=await readCurrentConsoleSession(value);
+    if(!session||!isConsoleEmailAllowed(session.email))return false;
+    (await cookies()).set(CONSOLE_SESSION_COOKIE,value,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:Math.max(0,Math.min(CONSOLE_SESSION_MAX_AGE_SECONDS,session.exp-Math.floor(Date.now()/1000)))});
     return true;
+}
+export async function setConsoleMfaCookie(input:{code:string}):Promise<{ok:true}|{ok:false;reason:string}>{
+    const token=(await cookies()).get(CONSOLE_SESSION_COOKIE)?.value;
+    if(!token)return {ok:false,reason:'unavailable'};
+    const result=await requestConsoleIdentity({operation:'mfa',current_token:token,code:input.code});
+    if(!result.ok||!result.token)return {ok:false,reason:result.reason||result.error?.code||'unavailable'};
+    return await persistConsoleIdentityCookie(result.token)?{ok:true}:{ok:false,reason:'unavailable'};
 }
 
 export async function clearConsoleSessionCookie() {
     const cookieStore = await cookies();
+    const value = cookieStore.get(CONSOLE_SESSION_COOKIE)?.value;
+    const session = await readConsoleSession(value);
+    if (session?.sessionId && value) {
+        const revoked = await fetchConsoleApi('/internal/console/sessions/revoke', { method: 'POST', body: {}, sessionToken: value });
+        // A denied/revoked cookie has no current authority. An unavailable
+        // storage service cannot be reported as a completed durable logout.
+        if (revoked.error && revoked.status !== 401) return false;
+    }
     cookieStore.set(CONSOLE_SESSION_COOKIE, '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -76,6 +67,7 @@ export async function clearConsoleSessionCookie() {
         path: '/',
         maxAge: 0,
     });
+    return true;
 }
 
 export async function requireConsoleSession(options: { mfa?: boolean } = {}) {

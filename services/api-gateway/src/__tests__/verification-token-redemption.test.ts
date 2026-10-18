@@ -79,6 +79,10 @@ function installFakePostgrest(tablesData: Record<string, Row[]>, opts: { failCon
         const matched = rows.filter((row) => matches(row, url.searchParams));
         const single = new Headers(init?.headers).get('accept') === 'application/vnd.pgrst.object+json';
 
+        // The signed-app gate claims a durable auth JTI before token-route validation.
+        // This unit fake models a successful claim; actual replay behavior is covered by the owned DB lane.
+        if (table === 'rpc/consume_internal_auth_replay_jti') return json(true);
+
         if (method === 'GET') {
             if (single) return matched.length === 1 ? json(matched[0]) : json(null);
             return json(matched);
@@ -180,13 +184,17 @@ test('wrong principal: an explicit email that does not match the token\'s own em
     assert.equal(rows[0].used, false);
 });
 
-test('malformed input: a missing token is rejected as VALIDATION before any database read', async () => {
+test('malformed input: a missing token is rejected as VALIDATION before any business database read', async (t) => {
+    const fake = installFakePostgrest({});
+    t.after(fake.restore);
     const { status, body } = await validate({ type: 'email_verify' });
     assert.equal(status, 400);
     assert.equal(body.error?.code, 'VALIDATION');
 });
 
-test('malformed input: an invalid type is rejected as VALIDATION before any database read', async () => {
+test('malformed input: an invalid type is rejected as VALIDATION before any business database read', async (t) => {
+    const fake = installFakePostgrest({});
+    t.after(fake.restore);
     const { status, body } = await validate({ token: 'anything', type: 'not-a-real-type' });
     assert.equal(status, 400);
     assert.equal(body.error?.code, 'VALIDATION');

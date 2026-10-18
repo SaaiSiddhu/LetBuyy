@@ -32,7 +32,6 @@ export const WS12_REST_SHIM_PARITY_ENDPOINTS: readonly RestShimParityEndpoint[] 
     { surface: 'storefront', field: 'products', method: 'GET', restPath: '/storefront/:subdomain/products', parity: 'rest-envelope-data-preserved' },
     { surface: 'storefront', field: 'product', method: 'GET', restPath: '/storefront/:subdomain/products/:slug', parity: 'rest-envelope-data-preserved' },
     { surface: 'storefront', field: 'pages', method: 'GET', restPath: '/storefront/:subdomain/pages', parity: 'rest-envelope-data-preserved' },
-    { surface: 'storefront', field: 'customerOrders', method: 'GET', restPath: '/storefront/customer/orders', parity: 'rest-envelope-data-preserved' },
 ] as const;
 
 function recordValue(value: unknown): JsonObject | null {

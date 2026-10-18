@@ -11,6 +11,7 @@ import { isStorefrontInternalOnlyPath } from './internal-only-paths';
 
 test('T4 W4: a literal internal-only path with a query string now matches', () => {
     assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/order-stats?limit=10'), true);
+    assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/addresses?store_id=abc'), true);
 });
 
 test('T4 W4: a similarly-named but distinct path does NOT match, query string or not', () => {
@@ -18,17 +19,24 @@ test('T4 W4: a similarly-named but distinct path does NOT match, query string or
     assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/order-stats-public?limit=10'), false);
 });
 
-test('T4 W4: every one of the nine literal paths still matches bare, with a query string, and with a trailing slash', () => {
+test('only a UUID address mutation route inherits the exact address endpoint signing rule', () => {
+    assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/addresses/6d604f48-9954-4a47-91a2-a06c834785ad'), true);
+    assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/addresses/not-a-uuid'), false);
+    assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/addresses/6d604f48-9954-4a47-91a2-a06c834785ad/nested'), false);
+    assert.equal(isStorefrontInternalOnlyPath('/storefront/customer/addresses-extra/6d604f48-9954-4a47-91a2-a06c834785ad'), false);
+});
+
+test('every explicitly listed internal storefront path matches bare, with a query string, and with a trailing slash', () => {
     const literalPaths = [
-        '/storefront/customer/find-or-create',
+        '/storefront/customer/from-order',
         '/storefront/customer/by-email',
-        '/storefront/customer/status',
         '/storefront/customer/password',
         '/storefront/customer/login-success',
         '/storefront/customer/order-credential',
         '/storefront/customer/order-credential/login',
         '/storefront/customer/order-credential/login-success',
         '/storefront/customer/order-stats',
+        '/storefront/customer/addresses',
     ];
     for (const path of literalPaths) {
         assert.equal(isStorefrontInternalOnlyPath(path), true, `${path} (bare) must match`);

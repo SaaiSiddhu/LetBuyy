@@ -17,6 +17,8 @@ import {
 } from '@/lib/api/browser-client';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 import { GST_STATES, gstStateCodeFromName } from '@letbuyy/checkout-core';
+import { resolveCheckoutPaymentAvailability } from '@/lib/checkout/payment-availability';
+import { loadCheckoutSavedAddresses, type CheckoutSavedAddress } from '@/lib/checkout/saved-addresses';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -94,6 +96,8 @@ interface CheckoutClientProps {
     checkoutOrigin?: {
         storefrontBaseUrl: string;
         cartLines: CheckoutOriginCartLine[];
+        cartId: string;
+        handoff: Record<string, string>;
     };
 }
 
@@ -113,18 +117,6 @@ interface FormData {
     pincode: string;
 }
 
-interface SavedAddress {
-    id: string;
-    label?: string | null;
-    full_name?: string | null;
-    address_line1?: string | null;
-    address_line2?: string | null;
-    city?: string | null;
-    state?: string | null;
-    postal_code?: string | null;
-    customer_phone?: string | null;
-}
-
 type DeliveryOption = 'standard' | 'express';
 // V1 ships Razorpay+COD; Stripe and PayPal deferred (LB-2)
 type PaymentMethod = 'online' | 'cod';
@@ -139,6 +131,9 @@ interface StoreShippingRate {
     amount_minor: number;
     estimated_days_min?: number | null;
     estimated_days_max?: number | null;
+    cod_available?: boolean;
+    source?: 'seller_zone_configuration';
+    carrier_confirmed?: false;
 }
 
 interface CreateOrderResult {
@@ -206,8 +201,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // reads its (now stale) local cart against the real order it already placed.
     const clearCart = cartContext?.clearCart ?? (() => {});
     const basePath = checkoutOrigin ? checkoutOrigin.storefrontBaseUrl : `/store/${subdomain}`;
-    const hasPaymentMethods = onlinePaymentEnabled || codEnabled;
-    const initialPaymentMethod: PaymentMethod = onlinePaymentEnabled ? 'online' : codEnabled ? 'cod' : 'online';
+    const paymentAvailability = resolveCheckoutPaymentAvailability({
+        hostedCheckout: Boolean(checkoutOrigin),
+        onlinePaymentEnabled,
+        codEnabled,
+    });
+    const hasPaymentMethods = paymentAvailability.hasAvailableMethod;
+    const initialPaymentMethod: PaymentMethod = paymentAvailability.initialMethod;
 
     const [step, setStep] = useState(1); // 1: Address, 2: Review & Pay
     const [isProcessing, setIsProcessing] = useState(false);
@@ -221,11 +221,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [couponError, setCouponError] = useState('');
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
     const [checkoutError, setCheckoutError] = useState('');
-    const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
-    // V1 LB-7: real shipping rates from store config.
+    const [savedAddresses, setSavedAddresses] = useState<CheckoutSavedAddress[]>([]);
+    const [savedAddressError, setSavedAddressError] = useState<string | null>(null);
+    // Shipping options are loaded for the entered destination and server-priced cart subtotal.
     const [storeRates, setStoreRates] = useState<StoreShippingRate[] | null>(null);
     const [selectedRateId, setSelectedRateId] = useState<string | null>(null);
+    const [shippingRatesLoading, setShippingRatesLoading] = useState(false);
+    const [shippingRatesError, setShippingRatesError] = useState<string | null>(null);
+    const [shippingQuoteRevision, setShippingQuoteRevision] = useState(0);
     const idempotencyKeysRef = useRef<Record<string, string>>({});
+    const hostedStepPayloadsRef = useRef<Record<string, string>>({});
 
     const [formData, setFormData] = useState<FormData>({
         name: '',
@@ -244,22 +249,31 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const primaryColor = 'var(--primary, rgb(99 102 241))';
 
     useEffect(() => {
+        // Buyer and legacy customer cookies are host-bound to the storefront. The hosted checkout
+        // origin cannot read either session, and the signed cart URL must not disclose address PII.
+        if (checkoutOrigin) return;
+
         let isMounted = true;
 
-        fetch('/api/customer/addresses')
-            .then(response => response.ok ? response.json() : { addresses: [] })
-            .then(payload => {
+        const controller = new AbortController();
+        loadCheckoutSavedAddresses(fetch, controller.signal)
+            .then(result => {
                 if (!isMounted) return;
-                setSavedAddresses(Array.isArray(payload.addresses) ? payload.addresses : []);
+                setSavedAddresses(result.addresses);
+                setSavedAddressError(null);
             })
-            .catch(() => {
-                if (isMounted) setSavedAddresses([]);
+            .catch((error: unknown) => {
+                if (isMounted && !(error instanceof Error && error.name === 'AbortError')) {
+                    setSavedAddresses([]);
+                    setSavedAddressError(error instanceof Error ? error.message : 'Saved addresses could not be loaded. You can enter an address manually.');
+                }
             });
 
         return () => {
             isMounted = false;
+            controller.abort();
         };
-    }, []);
+    }, [checkoutOrigin]);
 
     useEffect(() => {
         if (isSuccess) {
@@ -267,45 +281,78 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
     }, [isSuccess]);
 
-    // V1 LB-7: fetch real shipping rates for this store.
+    // Only ask for quotes after the buyer has entered a valid destination. The Gateway resolves
+    // the published store by subdomain and prices only saved seller-zone rates.
     useEffect(() => {
         let isMounted = true;
+        const controller = new AbortController();
+        const pincode = formData.pincode.trim();
+        const state = formData.state.trim();
+        const stateCode = formData.stateCode.trim();
+        if (!/^[1-9][0-9]{5}$/.test(pincode) || !state || !stateCode) {
+            setStoreRates(null);
+            setSelectedRateId(null);
+            setShippingRatesLoading(false);
+            setShippingRatesError(null);
+            return () => { isMounted = false; controller.abort(); };
+        }
+
         const subtotalMinor = Math.round(cartTotal * 100);
-        fetch('/api/shipping/rates', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                store_id: storeId,
-                pincode: '000000', // placeholder — real pincode available at form-fill
-                subtotal_minor: subtotalMinor,
-            }),
-        })
-            .then(res => res.ok ? res.json() : null)
+        setStoreRates(null);
+        setSelectedRateId(null);
+        setShippingRatesError(null);
+        setShippingRatesLoading(true);
+        const rateRequest = checkoutOrigin
+            ? (() => {
+                const query = new URLSearchParams(checkoutOrigin.handoff);
+                query.set('country', 'IN');
+                query.set('state', state);
+                query.set('state_code', stateCode);
+                query.set('pincode', pincode);
+                return fetch(`/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/delivery-options?${query}`, { signal: controller.signal });
+            })()
+            : fetch('/api/shipping/rates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subdomain,
+                    pincode,
+                    state,
+                    state_code: stateCode,
+                    subtotal_minor: subtotalMinor,
+                }),
+                signal: controller.signal,
+            });
+        rateRequest
+            .then(async (res) => ({ ok: res.ok, payload: await res.json().catch(() => null) }))
             .then(payload => {
                 if (!isMounted) return;
-                const rates: StoreShippingRate[] = Array.isArray(payload?.data?.rates)
-                    ? (payload.data.rates as StoreShippingRate[]).filter(r => typeof r.id === 'string' && r.id && r.id !== 'sandbox-standard')
+                const rates: StoreShippingRate[] = payload.ok && Array.isArray(payload.payload?.data?.rates)
+                    ? (payload.payload.data.rates as StoreShippingRate[]).filter(r => typeof r.id === 'string' && r.id)
                     : [];
-                if (rates.length > 0) {
-                    setStoreRates(rates);
-                    setSelectedRateId(rates[0].id);
-                } else {
-                    setStoreRates(null); // Fall back to hardcoded standard/express
+                setStoreRates(rates);
+                if (!payload.ok) setShippingRatesError(payload.payload?.error?.message || 'Delivery options could not be verified. Please retry.');
+            })
+            .catch((error: unknown) => {
+                if (isMounted && !(error instanceof Error && error.name === 'AbortError')) {
+                    setStoreRates([]);
+                    setShippingRatesError('Delivery options could not be verified. Please retry.');
                 }
             })
-            .catch(() => {
-                if (isMounted) setStoreRates(null);
+            .finally(() => {
+                if (isMounted) setShippingRatesLoading(false);
             });
         return () => {
             isMounted = false;
+            controller.abort();
         };
-    }, [storeId, cartTotal]);
+    }, [subdomain, cartTotal, formData.pincode, formData.state, formData.stateCode, shippingQuoteRevision]);
 
     // Delivery costs
-    const selectedRate = storeRates ? storeRates.find(r => r.id === selectedRateId) ?? storeRates[0] : null;
+    const selectedRate = storeRates?.find(r => r.id === selectedRateId) ?? null;
     const deliveryCharges = selectedRate
         ? (selectedRate.type === 'free' ? 0 : selectedRate.amount_minor / 100)
-        : (deliveryOption === 'express' ? 99 : 0);
+        : 0;
     const discountAmount = appliedCoupon?.discount || 0;
     const effectiveDeliveryCharges = appliedCoupon?.freeShipping ? 0 : deliveryCharges;
     const totalAmount = Math.max(0, cartTotal + effectiveDeliveryCharges - discountAmount);
@@ -322,6 +369,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         scrollToCheckoutTop();
     };
 
+    const refreshShippingOptions = () => {
+        delete idempotencyKeysRef.current['order-cod'];
+        delete idempotencyKeysRef.current['order-razorpay'];
+        setStoreRates(null);
+        setSelectedRateId(null);
+        setShippingRatesError(null);
+        setShippingQuoteRevision((revision) => revision + 1);
+    };
+
     const updateFormField = (field: keyof FormData, value: string) => {
         const normalizedValue = field === 'phone'
             ? value.replace(/[^\d+\-\s]/g, '').slice(0, 16)
@@ -330,11 +386,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 : value;
 
         setFormData(prev => ({ ...prev, [field]: normalizedValue }));
+        if (field === 'pincode' || field === 'state' || field === 'stateCode') {
+            setStoreRates(null);
+            setSelectedRateId(null);
+        }
         setErrors(prev => ({ ...prev, [field]: undefined }));
         setCheckoutError('');
     };
 
-    const applySavedAddress = (address: SavedAddress) => {
+    const applySavedAddress = (address: CheckoutSavedAddress) => {
         setFormData(prev => ({
             ...prev,
             name: address.full_name || prev.name,
@@ -350,15 +410,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     };
 
     // Auto-create customer record after order
-    const autoCreateCustomer = async () => {
+    const autoCreateCustomer = async (orderId: string) => {
         try {
             await fetch('/api/customer/auto-create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: formData.email.toLowerCase(),
-                    fullName: formData.name,
-                    phone: formData.phone,
+                    orderId,
                     storeId,
                 }),
             });
@@ -385,6 +443,12 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // Proceed to payment step
     const proceedToPayment = () => {
         if (validateForm()) {
+            if (!selectedRateId || !selectedRate) {
+                showCheckoutError(shippingRatesLoading
+                    ? 'Wait for delivery options to load before continuing.'
+                    : 'Choose an available delivery option before continuing.');
+                return;
+            }
             setCheckoutError('');
             setStep(2);
             scrollToCheckoutTop();
@@ -397,6 +461,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         storeId,
         sellerId,
         subdomain,
+        ...(checkoutOrigin ? { cartId: checkoutOrigin.cartId, handoff: checkoutOrigin.handoff } : {}),
         idempotencyKey: getIdempotencyKey(`order-${method}`),
         customer: {
             name: formData.name,
@@ -418,8 +483,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         paymentMethod: method,
         deliveryOption,
         couponCode: appliedCoupon?.code,
-        // V1 LB-7: send server-resolvable rate ID; back-compat when store has no rates.
+        // The Gateway compares this reviewed quote token, then the database locks and rechecks the configured rate.
         shippingRateId: selectedRate?.id ?? null,
+        shippingAmountMinor: selectedRate?.amount_minor ?? null,
     });
 
     const applyCoupon = async () => {
@@ -479,22 +545,218 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         return res.json();
     };
 
+    // Hosted COD completes through the signed-cart checkout state machine. The cart lines,
+    // prices and coupon remain gateway-owned; the browser supplies only contact/delivery data.
+    const createHostedCodOrder = async (): Promise<CreateOrderResult> => {
+        if (!checkoutOrigin) return { success: false };
+        const endpoint = (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm') =>
+            `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
+        const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
+            const payloadFingerprint = JSON.stringify(body);
+            const keyScope = `hosted-${step}`;
+            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
+                delete idempotencyKeysRef.current[keyScope];
+                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
+            }
+            const requestBody = { ...body, idempotency_key: getIdempotencyKey(keyScope) };
+            const response = await fetch(endpoint(step), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody),
+            });
+            const payload = await response.json().catch(() => null) as {
+                success?: boolean;
+                error?: { message?: string };
+                data?: { checkout?: { id?: string }; payment_intent?: { payment_intent_id?: string }; order?: { id?: string; orderNumber?: string; status?: string; total?: number | string | null } };
+            } | null;
+            if (!response.ok || !payload?.success || !payload.data) {
+                throw new Error(payload?.error?.message || 'Secure checkout could not continue. Please try again.');
+            }
+            return payload.data;
+        };
+
+        await send('contact', {
+            email: formData.email.trim().toLowerCase(),
+            name: formData.name.trim(),
+            phone: formData.phone.trim() || null,
+        });
+        await send('delivery', {
+            shipping_method: deliveryOption,
+            shipping_address: {
+                line1: formData.address.trim(),
+                city: formData.city.trim(),
+                state: formData.state.trim(),
+                state_code: formData.stateCode.trim(),
+                zip: formData.pincode.trim(),
+                country: 'IN',
+                phone: formData.phone.trim() || undefined,
+            },
+            cod_requested: true,
+            shipping_quote: selectedRate?.id ? {
+                shipping_rate_id: selectedRate.id,
+                expected_shipping_amount: selectedRate.amount_minor / 100,
+            } : {},
+        });
+        const intentData = await send('payment-intent', {
+            provider: 'cod',
+            mode: 'sandbox',
+            tokenize: false,
+            metadata: { channel: 'web' },
+        });
+        const paymentIntentId = intentData.payment_intent?.payment_intent_id;
+        if (!paymentIntentId) throw new Error('Secure checkout could not continue. Please try again.');
+        const confirmed = await send('confirm', {
+            payment_intent_id: paymentIntentId,
+        });
+        const order = confirmed.order;
+        if (!order?.id || !order.orderNumber) throw new Error('Secure checkout could not confirm the order. Please try again.');
+        return {
+            success: true,
+            order: {
+                id: order.id,
+                orderNumber: order.orderNumber,
+                status: order.status || 'pending',
+                total: Number(order.total || 0),
+            },
+        };
+    };
+
+    const startHostedOnlinePayment = async () => {
+        if (!checkoutOrigin) throw new Error('Secure checkout could not continue. Please try again.');
+        const endpoint = (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm') =>
+            `/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/${step}?${new URLSearchParams(checkoutOrigin.handoff).toString()}`;
+        const send = async (step: 'contact' | 'delivery' | 'payment-intent' | 'confirm', body: Record<string, unknown>) => {
+            const payloadFingerprint = JSON.stringify(body);
+            const keyScope = `hosted-${step}`;
+            if (hostedStepPayloadsRef.current[keyScope] !== payloadFingerprint) {
+                delete idempotencyKeysRef.current[keyScope];
+                hostedStepPayloadsRef.current[keyScope] = payloadFingerprint;
+            }
+            const response = await fetch(endpoint(step), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...body, idempotency_key: getIdempotencyKey(keyScope) }),
+            });
+            const payload = await response.json().catch(() => null) as {
+                success?: boolean;
+                error?: { message?: string };
+                data?: {
+                    payment_intent?: {
+                        payment_intent_id?: string;
+                        provider?: string;
+                        status?: string;
+                        key_id?: string;
+                        provider_order_id?: string;
+                        amount_minor?: number;
+                        currency?: string;
+                    };
+                    order?: { id?: string; orderNumber?: string; status?: string; total?: number | string | null };
+                };
+            } | null;
+            if (!response.ok || !payload?.success || !payload.data) {
+                throw new Error(payload?.error?.message || 'Secure checkout could not continue. Please try again.');
+            }
+            return payload.data;
+        };
+
+        await send('contact', {
+            email: formData.email.trim().toLowerCase(),
+            name: formData.name.trim(),
+            phone: formData.phone.trim() || null,
+        });
+        await send('delivery', {
+            shipping_method: deliveryOption,
+            shipping_address: {
+                line1: formData.address.trim(),
+                city: formData.city.trim(),
+                state: formData.state.trim(),
+                state_code: formData.stateCode.trim(),
+                zip: formData.pincode.trim(),
+                country: 'IN',
+                phone: formData.phone.trim() || undefined,
+            },
+            cod_requested: false,
+            shipping_quote: selectedRate?.id ? {
+                shipping_rate_id: selectedRate.id,
+                expected_shipping_amount: selectedRate.amount_minor / 100,
+            } : {},
+        });
+        const intentData = await send('payment-intent', {
+            provider: 'razorpay',
+            mode: 'sandbox',
+            tokenize: false,
+            metadata: { channel: 'web' },
+        });
+        const intent = intentData.payment_intent;
+        if (intent?.provider !== 'razorpay' || intent.status !== 'requires_action'
+            || !intent.payment_intent_id || !intent.provider_order_id || !intent.key_id
+            || !Number.isSafeInteger(intent.amount_minor) || !intent.amount_minor || intent.currency !== 'INR') {
+            throw new Error('Online payment is not available on this checkout yet.');
+        }
+        return intent as Required<typeof intent>;
+    };
+
+    const confirmHostedOnlinePayment = async (intentId: string, response: RazorpaySuccessResponse) => {
+        if (!checkoutOrigin) throw new Error('Secure checkout could not continue. Please try again.');
+        const query = new URLSearchParams(checkoutOrigin.handoff);
+        const body = {
+            payment_intent_id: intentId,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+        };
+        const fingerprint = JSON.stringify(body);
+        const keyScope = `hosted-confirm-${response.razorpay_payment_id}`;
+        if (hostedStepPayloadsRef.current[keyScope] !== fingerprint) {
+            delete idempotencyKeysRef.current[keyScope];
+            hostedStepPayloadsRef.current[keyScope] = fingerprint;
+        }
+        const result = await fetch(`/api/checkout/${encodeURIComponent(checkoutOrigin.cartId)}/confirm?${query.toString()}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...body, idempotency_key: getIdempotencyKey(keyScope) }),
+        });
+        const payload = await result.json().catch(() => null) as {
+            success?: boolean;
+            error?: { message?: string };
+            data?: { order?: { id?: string; orderNumber?: string; status?: string; total?: number | string | null } };
+        } | null;
+        const order = payload?.data?.order;
+        if (!result.ok || !payload?.success || !order?.id || !order.orderNumber) {
+            throw new Error(payload?.error?.message || 'Payment verification failed. Please contact support.');
+        }
+        return {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            status: order.status || 'pending',
+            total: Number(order.total || 0),
+        };
+    };
+
     // Handle COD order
     const handleCODOrder = async () => {
+        if (!selectedRate?.cod_available) {
+            showCheckoutError('Cash on delivery is not available for the selected delivery option. Choose online payment or another delivery option.');
+            return;
+        }
         setIsProcessing(true);
         try {
-            const result = await createCheckoutOrder('cod');
+            const result = checkoutOrigin ? await createHostedCodOrder() : await createCheckoutOrder('cod');
 
             if (result.success && result.order) {
                 setOrderNumber(result.order.orderNumber);
                 setIsSuccess(true);
                 clearCart();
-                autoCreateCustomer();
+                autoCreateCustomer(result.order.id);
             } else {
-                showCheckoutError('Order creation failed. Please try again.');
+                const message = result.error || 'Order creation failed. Please try again.';
+                if (/delivery (price|option) changed|delivery option is no longer available/i.test(message)) refreshShippingOptions();
+                showCheckoutError(message);
             }
-        } catch {
-            showCheckoutError('Order creation failed. Please try again.');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Order creation failed. Please try again.';
+            if (/delivery (price|option) changed|delivery option is no longer available/i.test(message)) refreshShippingOptions();
+            showCheckoutError(message);
         } finally {
             setIsProcessing(false);
         }
@@ -502,6 +764,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     // Initialize Razorpay payment
     const handlePayment = async () => {
+        if (!paymentAvailability.online) {
+            showCheckoutError('Online payment is not available on this checkout yet.');
+            return;
+        }
+
         if (!razorpayLoaded) {
             showCheckoutError('Payment gateway is loading. Please try again.');
             return;
@@ -515,9 +782,52 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         setIsProcessing(true);
 
         try {
+            if (checkoutOrigin) {
+                const intent = await startHostedOnlinePayment();
+                const options: RazorpayOptions = {
+                    key: intent.key_id,
+                    amount: intent.amount_minor,
+                    currency: intent.currency,
+                    name: storeName,
+                    description: 'Secure LetBuyy checkout',
+                    image: '/logo.png',
+                    order_id: intent.provider_order_id,
+                    handler: async (response) => {
+                        try {
+                            const order = await confirmHostedOnlinePayment(intent.payment_intent_id, response);
+                            setOrderNumber(order.orderNumber);
+                            setIsSuccess(true);
+                            clearCart();
+                            autoCreateCustomer(order.id);
+                        } catch (error) {
+                            showCheckoutError(error instanceof Error ? error.message : 'Payment verification failed. Please contact support.');
+                        } finally {
+                            setIsProcessing(false);
+                        }
+                    },
+                    prefill: {
+                        name: formData.name,
+                        email: formData.email,
+                        contact: formData.phone,
+                    },
+                    notes: { checkout_id: checkoutOrigin.cartId, store_id: storeId, subdomain },
+                    theme: { color: 'rgb(99 102 241)' },
+                    modal: { ondismiss: () => setIsProcessing(false) },
+                };
+                const rzp = new window.Razorpay(options);
+                rzp.on('payment.failed', () => {
+                    setIsProcessing(false);
+                    showCheckoutError('Payment failed. Please try again.');
+                });
+                rzp.open();
+                return;
+            }
+
             const orderResult = await createCheckoutOrder('razorpay');
             if (!orderResult.success || !orderResult.order) {
-                showCheckoutError('Order creation failed. Please try again.');
+                const message = orderResult.error || 'Order creation failed. Please try again.';
+                if (/delivery (price|option) changed|delivery option is no longer available/i.test(message)) refreshShippingOptions();
+                showCheckoutError(message);
                 setIsProcessing(false);
                 return;
             }
@@ -566,7 +876,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             setOrderNumber(orderResult.order!.orderNumber);
                             setIsSuccess(true);
                             clearCart();
-                            autoCreateCustomer();
+                            autoCreateCustomer(orderResult.order!.id);
                         } else {
                             showCheckoutError(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
                         }
@@ -688,11 +998,12 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     return (
         <>
-            {/* Razorpay Script */}
-            <Script
-                src="https://checkout.razorpay.com/v1/checkout.js"
-                onLoad={() => setRazorpayLoaded(true)}
-            />
+            {paymentAvailability.online && (
+                <Script
+                    src="https://checkout.razorpay.com/v1/checkout.js"
+                    onLoad={() => setRazorpayLoaded(true)}
+                />
+            )}
 
             <div className="min-h-screen pt-20" style={{ backgroundColor: 'var(--background, rgb(249 250 251))' }}>
                 <div className="container mx-auto px-4 max-w-5xl pb-8">
@@ -770,31 +1081,45 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         </h2>
 
                                         <div className="mb-4 rounded-xl border border-card p-3">
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="text-sm font-semibold">Saved address autofill</p>
-                                                    <p className="mt-1 text-xs text-theme-secondary">
-                                                        {savedAddresses.length > 0
-                                                            ? 'Choose a saved customer address to fill the delivery form.'
-                                                            : 'Saved customer addresses will appear here when available.'}
-                                                    </p>
+                                            {checkoutOrigin ? (
+                                                <div className="flex items-start gap-3">
+                                                    <MapPin size={18} style={{ color: primaryColor }} />
+                                                    <div>
+                                                        <p className="text-sm font-semibold">Enter delivery address</p>
+                                                        <p className="mt-1 text-xs text-theme-secondary">
+                                                            Saved addresses are not loaded on this checkout link. Enter the address for this order below.
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <MapPin size={18} style={{ color: primaryColor }} />
-                                            </div>
-                                            {savedAddresses.length > 0 && (
-                                                <div className="mt-3 flex flex-wrap gap-2">
-                                                    {savedAddresses.map(address => (
-                                                        <Button unstyled
-                                                            key={address.id}
-                                                            type="button"
-                                                            onClick={() => applySavedAddress(address)}
-                                                            className="min-h-11 rounded-full border px-3 text-xs font-semibold capitalize"
-                                                            style={{ borderColor: 'var(--border, rgb(229 231 235))', color: primaryColor }}
-                                                        >
-                                                            {address.label || 'Address'}
-                                                        </Button>
-                                                    ))}
-                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div>
+                                                            <p className="text-sm font-semibold">Saved address autofill</p>
+                                                            <p className="mt-1 text-xs text-theme-secondary">
+                                                                {savedAddresses.length > 0
+                                                                    ? 'Choose a saved customer address to fill the delivery form.'
+                                                                    : savedAddressError ?? 'Saved customer addresses will appear here when available.'}
+                                                            </p>
+                                                        </div>
+                                                        <MapPin size={18} style={{ color: primaryColor }} />
+                                                    </div>
+                                                    {savedAddresses.length > 0 && (
+                                                        <div className="mt-3 flex flex-wrap gap-2">
+                                                            {savedAddresses.map(address => (
+                                                                <Button unstyled
+                                                                    key={address.id}
+                                                                    type="button"
+                                                                    onClick={() => applySavedAddress(address)}
+                                                                    className="min-h-11 rounded-full border px-3 text-xs font-semibold capitalize"
+                                                                    style={{ borderColor: 'var(--border, rgb(229 231 235))', color: primaryColor }}
+                                                                >
+                                                                    {address.label || 'Address'}
+                                                                </Button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
 
@@ -909,11 +1234,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             </div>
                                         </div>
 
-                                        {/* Delivery Options — real store rates when configured, fallback otherwise */}
+                                        {/* Delivery options are server-quoted from the destination and saved seller zones. */}
                                         <div className="mt-6 pt-4 border-t border-card">
                                             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                                                 <Truck size={16} style={{ color: primaryColor }} />
-                                                Delivery Speed
+                                                Delivery options
                                             </h3>
                                             {storeRates && storeRates.length > 0 ? (
                                                 <div className="grid grid-cols-1 gap-3">
@@ -927,8 +1252,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                             <Button unstyled key={rate.id}
                                                                 onClick={() => {
                                                                     setSelectedRateId(rate.id);
-                                                                    setDeliveryOption('standard');
                                                                 }}
+                                                                aria-pressed={isSelected}
                                                                 className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${isSelected ? 'border-[color:var(--lb-color-primary)]' : 'border-card'}`}
                                                             >
                                                                 <div className="flex items-center justify-between mb-1">
@@ -939,42 +1264,24 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                                 </div>
                                                                 {daysLabel && (
                                                                     <p className="text-xs text-theme-secondary flex items-center gap-1">
-                                                                        <Clock size={12} /> {daysLabel}
+                                                                        <Clock size={12} /> Seller estimate: {daysLabel}
                                                                     </p>
                                                                 )}
+                                                                <p className="mt-1 text-xs text-theme-secondary">Seller zone estimate; carrier serviceability is not confirmed.</p>
                                                             </Button>
                                                         );
                                                     })}
                                                 </div>
                                             ) : (
-                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                                    <Button unstyled
-                                                        onClick={() => setDeliveryOption('standard')}
-                                                        className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
-                                                        style={{ borderColor: deliveryOption === 'standard' ? primaryColor : undefined }}
-                                                    >
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <span className="font-semibold text-sm">Standard</span>
-                                                            <span className="text-green-600 text-xs font-medium">FREE</span>
-                                                        </div>
-                                                        <p className="text-xs text-theme-secondary flex items-center gap-1">
-                                                            <Clock size={12} /> 5-7 days
-                                                        </p>
-                                                    </Button>
-                                                    <Button unstyled
-                                                        onClick={() => setDeliveryOption('express')}
-                                                        className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
-                                                        style={{ borderColor: deliveryOption === 'express' ? primaryColor : undefined }}
-                                                    >
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <span className="font-semibold text-sm">Express</span>
-                                                            <span className="text-xs font-medium" style={{ color: primaryColor }}>₹99</span>
-                                                        </div>
-                                                        <p className="text-xs text-theme-secondary flex items-center gap-1">
-                                                            <Clock size={12} /> 2-3 days
-                                                        </p>
-                                                    </Button>
-                                                </div>
+                                                <p className="text-sm text-theme-secondary" role="status">
+                                                    {shippingRatesLoading
+                                                        ? 'Checking seller delivery options…'
+                                                        : shippingRatesError
+                                                            ? shippingRatesError
+                                                            : formData.pincode.length === 6 && formData.stateCode
+                                                                ? 'No seller-configured delivery option covers this address and cart.'
+                                                                : 'Enter your state and six-digit pincode to check delivery options.'}
+                                                </p>
                                             )}
                                         </div>
 
@@ -1054,7 +1361,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 Payment Method
                                             </h3>
                                             <div className="space-y-2">
-                                                {onlinePaymentEnabled && (
+                                                {paymentAvailability.online && (
                                                     <label
                                                         className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('online')}
@@ -1072,22 +1379,25 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         </div>
                                                     </label>
                                                 )}
-                                                {codEnabled && (
+                                                {paymentAvailability.cod && (
                                                     <label
-                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
-                                                        onClick={() => setPaymentMethod('cod')}
+                                                        className={`flex min-h-11 items-center gap-3 rounded-lg border-2 p-3 transition-all ${selectedRate?.cod_available ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
+                                                        onClick={() => { if (selectedRate?.cod_available) setPaymentMethod('cod'); }}
                                                     >
                                                         <Input unstyled
                                                             type="radio"
                                                             checked={paymentMethod === 'cod'}
-                                                            onChange={() => setPaymentMethod('cod')}
+                                                            disabled={!selectedRate?.cod_available}
+                                                            onChange={() => { if (selectedRate?.cod_available) setPaymentMethod('cod'); }}
                                                             className="accent-green-500"
                                                         />
                                                         <Truck size={20} className="text-green-600" />
                                                         <div>
                                                             <p className="font-medium text-sm">Cash on Delivery (COD)</p>
                                                             <p className="text-xs text-theme-secondary">
-                                                                Pay cash when the courier delivers. Keep the exact order amount ready.
+                                                                {selectedRate?.cod_available
+                                                                    ? 'Pay cash when the courier delivers. Keep the exact order amount ready.'
+                                                                    : 'Not available for the selected delivery option.'}
                                                             </p>
                                                         </div>
                                                     </label>
@@ -1107,7 +1417,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         {/* Payment Button */}
                                         <Button unstyled
                                             onClick={paymentMethod === 'online' ? handlePayment : handleCODOrder}
-                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
+                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded) || (paymentMethod === 'cod' && !selectedRate?.cod_available)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? 'rgb(22 163 74)' : 'rgb(26 26 46)' }}
                                         >
@@ -1147,7 +1457,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                     <div className="flex justify-between text-theme-secondary">
                                         <span>Delivery</span>
                                         <span className={effectiveDeliveryCharges === 0 ? 'text-green-600 font-medium' : ''}>
-                                            {effectiveDeliveryCharges === 0 ? 'Free' : `₹${effectiveDeliveryCharges}`}
+                                            {!selectedRate
+                                                ? 'Choose a delivery option'
+                                                : effectiveDeliveryCharges === 0 ? 'Free' : `₹${effectiveDeliveryCharges}`}
                                         </span>
                                     </div>
                                     {appliedCoupon && (

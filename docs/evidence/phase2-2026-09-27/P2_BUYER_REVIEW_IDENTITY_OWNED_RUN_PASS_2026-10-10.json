@@ -1,0 +1,81 @@
+{
+  "runId": "e72cf325c9b4",
+  "image": "postgres:16-alpine",
+  "restImage": "public.ecr.aws/supabase/postgrest:v16.2",
+  "limits": {
+    "postgres": {
+      "memory": "1g",
+      "cpus": "2",
+      "pids": "512"
+    },
+    "rest": {
+      "memory": "256m",
+      "cpus": "1",
+      "pids": "256"
+    }
+  },
+  "jobs": 1,
+  "containers": [
+    "letbuyy-exec-20820-mv1vkye8-517121"
+  ],
+  "reaped": [],
+  "suites": 1,
+  "gatewayDbSuites": 1,
+  "failedSuites": 0,
+  "tests": 4,
+  "assertionsPassed": 4,
+  "assertionsFailed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "wallSeconds": 24.6,
+  "suiteSeconds": 22.5,
+  "cleanup": {
+    "failures": [],
+    "remaining": {
+      "containers": [],
+      "networks": [],
+      "volumes": []
+    }
+  },
+  "results": [
+    {
+      "name": "storefront-buyer-reviews.postgres",
+      "path": "services/api-gateway/src/__tests__/owned-db/storefront-buyer-reviews.postgres.test.ts",
+      "kind": "gateway-db",
+      "cluster": "letbuyy-exec-20820-mv1vkye8-517121",
+      "code": 0,
+      "timedOut": false,
+      "hasSummary": true,
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0,
+      "seconds": 22.5,
+      "firstFailure": "",
+      "failures": [],
+      "skips": [],
+      "strayProcessesStopped": false,
+      "database": "letbuyy_exec_storefront_buyer_reviews_postgres",
+      "templateSeconds": 17.4,
+      "provisionSeconds": 1.5,
+      "rest": {
+        "container": "letbuyy-exec-e72cf325c9b4-rest-1",
+        "upstreamPort": 59315,
+        "proxyPort": 59316
+      },
+      "ownership": "verified before start",
+      "cleanup": {
+        "rest": true,
+        "database": true
+      },
+      "proxyRequests": {
+        "forwarded": 56,
+        "refused": 0,
+        "upstreamErrors": 2
+      }
+    }
+  ]
+}

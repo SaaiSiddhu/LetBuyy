@@ -55,6 +55,13 @@ function matchesExpression(row: Row, column: string, expression: string): { ok: 
         return { ok: String(value) === operand };
     }
     if (operator === 'is') return { ok: operand === 'null' ? value === null || value === undefined : false };
+    if (operator === 'ilike') {
+        const pattern = operand
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+            .replace(/%/g, '.*')
+            .replace(/_/g, '.');
+        return { ok: new RegExp(`^${pattern}$`, 'i').test(String(value ?? '')) };
+    }
     // SEC-2: variant hydration filters with `.in('product_id', [...])`, which PostgREST sends as
     // `in.(a,b)`. Without this the fake matched nothing and the relational variant path could not be
     // exercised at all — the reason no existing test covered it.
@@ -426,6 +433,106 @@ const VARIANT_ROW: Row = {
     image_url: null,
     position: 1,
 };
+
+test('SEC-3: public product lists and by-id lookups use the recursive projection and evidenced compare price', async (t) => {
+    const productWithJsonbVariant: Row = {
+        ...PRODUCT_WITH_INTERNALS,
+        price: 999,
+        compare_price: 1499,
+        currency: 'INR',
+        category: 'bags',
+        avg_rating: 4.5,
+        review_count: 12,
+        quantity: 25,
+        stock_quantity: 25,
+        status: 'active',
+        variants: [{
+            ...VARIANT_ROW,
+            sku: 'VAR-SKU-777',
+            barcode: '4006381333931',
+            cost_per_item: 500,
+            stock: 4,
+        }],
+    };
+    const postgrest = installFakePostgrest({
+        sites: [SITE_A],
+        products: [productWithJsonbVariant],
+        product_variants: [],
+    });
+    t.after(() => postgrest.restore());
+    const offEnv = { ...env(), PRODUCT_VARIANTS_RELATIONAL_READS: 'off' } as unknown as Env;
+
+    for (const path of ['/storefront/snaz/products', `/storefront/snaz/products/by-ids?ids=${PRODUCT_A.id}`]) {
+        const response = await storefrontApp().request(path, undefined, offEnv);
+        assert.equal(response.status, 200, path);
+        const payload = await jsonBody<{ data: Record<string, unknown>[] }>(response);
+        const product = payload.data[0];
+        assert.equal(product.id, PRODUCT_A.id);
+        assert.equal('currency' in product, false, 'product currency is inherited from the store, not read from a nonexistent products.currency column');
+        assert.equal(product.category, 'bags');
+        assert.equal('avg_rating' in product, false, 'product ratings are not stored on the products row');
+        assert.equal('review_count' in product, false, 'product review counts are not stored on the products row');
+        assert.equal(product.compare_price, null, 'an absent/incomplete reference window suppresses the seller-entered compare price');
+        for (const field of [...MERCHANT_INTERNAL_FIELDS, 'quantity', 'stock_quantity', 'status']) {
+            assert.equal(field in product, false, `${path} must not expose ${field}`);
+        }
+        const variants = product.variants as Record<string, unknown>[];
+        assert.equal(variants.length, 1);
+        assert.equal(variants[0].title, VARIANT_ROW.title);
+        for (const field of VARIANT_INTERNAL_FIELDS) {
+            assert.equal(field in variants[0], false, `${path} must not expose variant.${field}`);
+        }
+        assert.doesNotMatch(JSON.stringify(payload), /VAR-SKU-777|4006381333931/);
+    }
+});
+
+test('F5: storefront list, assigned collection, and by-id reads apply exact case-insensitive origin filters', async (t) => {
+    const india: Row & { id: string } = { ...PRODUCT_A, id: String(PRODUCT_A.id), category: 'clothing', country_of_origin: 'India' };
+    const japan: Row & { id: string } = {
+        ...PRODUCT_A,
+        id: 'aadc3e37-dd10-4fa2-82c4-40379f3aa562',
+        slug: 'japanese-tote',
+        name: 'Japanese Tote',
+        category: 'clothing',
+        country_of_origin: 'Japan',
+    };
+    const foreignStoreIndiaTote: Row & { id: string } = {
+        ...india,
+        id: 'aadc3e37-dd10-4fa2-82c4-40379f3aa563',
+        store_id: STORE_B_ID,
+        name: 'India Tote from another store',
+    };
+    const collectionId = 'cccccccc-0000-4000-8000-000000000001';
+    const postgrest = installFakePostgrest({
+        sites: [SITE_A],
+        products: [india, japan, foreignStoreIndiaTote],
+        product_variants: [],
+        collections: [{ id: collectionId, store_id: STORE_A_ID, title: 'Summer', is_active: true, deleted_at: null }],
+        collection_products: [
+            { collection_id: collectionId, product_id: india.id, position: 0 },
+            { collection_id: collectionId, product_id: japan.id, position: 1 },
+        ],
+    });
+    t.after(() => postgrest.restore());
+
+    const app = storefrontApp();
+    const list = await app.request('/storefront/snaz/products?country_of_origin=india&category=clothing&search=Tote', undefined, env());
+    assert.equal(list.status, 200);
+    assert.deepEqual((await jsonBody<{ data: Row[] }>(list)).data.map((product) => product.id), [india.id]);
+
+    const byIds = await app.request(`/storefront/snaz/products/by-ids?ids=${india.id},${japan.id},${foreignStoreIndiaTote.id}&country_of_origin=INDIA`, undefined, env());
+    assert.equal(byIds.status, 200);
+    assert.deepEqual((await jsonBody<{ data: Row[] }>(byIds)).data.map((product) => product.id), [india.id]);
+
+    const collection = await app.request(`/storefront/snaz/collections/${collectionId}?country_of_origin=India`, undefined, env());
+    assert.equal(collection.status, 200, await collection.clone().text());
+    const collectionPayload = await jsonBody<{ data: { products: Row[]; total: number } }>(collection);
+    assert.deepEqual(collectionPayload.data.products.map((product) => product.id), [india.id]);
+    assert.equal(collectionPayload.data.total, 1);
+
+    const invalid = await app.request(`/storefront/snaz/products?country_of_origin=${'x'.repeat(101)}`, undefined, env());
+    assert.equal(invalid.status, 400);
+});
 
 test('SEC-2: the relational variant path returns no sku or barcode', async (t) => {
     const postgrest = installFakePostgrest({ sites: [SITE_A], products: [PRODUCT_A], product_variants: [VARIANT_ROW] });

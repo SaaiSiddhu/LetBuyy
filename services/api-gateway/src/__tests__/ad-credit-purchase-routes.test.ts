@@ -17,6 +17,7 @@ import billingRouter from '../routes/billing';
 
 const billingSource = readFileSync(new URL('../routes/billing.ts', import.meta.url), 'utf8');
 const adsSource = readFileSync(new URL('../routes/ads.ts', import.meta.url), 'utf8');
+const finalizerSource = readFileSync(new URL('../../../../database/supabase/migrations/293_ad_credit_purchase_canonical_liability.sql', import.meta.url), 'utf8');
 
 const STORE = 'aaaaaaaa-0000-4000-8000-00000000000a';
 
@@ -68,7 +69,8 @@ test('verify requires every provider field', async () => {
 test('SOURCE: the amount charged comes from the stored row, never the request', () => {
     // A caller-supplied amount is a caller-chosen number of credits.
     assert.match(adCreditSection, /const amountMinor = Number\(\(charge as \{ amount: number \}\)\.amount\)/);
-    assert.match(adCreditSection, /p_amount_minor: amountMinor/);
+    assert.match(adCreditSection, /p_billing_history_id: \(charge as \{ id: string \}\)\.id/);
+    assert.match(finalizerSource, /v_charge\.amount::bigint[\s\S]{0,120}?p_provider_payment_id[\s\S]{0,120}?'ad\.purchase:' \|\| p_provider_payment_id/);
     // The verify handler must not read an amount from the body at all.
     const verifySection = adCreditSection.slice(adCreditSection.indexOf("router.post('/ad-credits/verify'"));
     assert.ok(!/body\.amount/.test(verifySection), 'verify must not take an amount from the request');
@@ -82,11 +84,15 @@ test('SOURCE: verification binds to the SERVER-stored reference', () => {
 });
 
 test('SOURCE: one payment credits once, and the row is marked paid only after it does', () => {
-    assert.match(adCreditSection, /p_idempotency_key: `ad\.purchase:\$\{paymentId\}`/);
-    const creditIndex = adCreditSection.indexOf("db.rpc('record_ad_credit_purchase'");
-    const markPaidIndex = adCreditSection.indexOf("payment_status: 'paid'");
-    assert.ok(creditIndex > -1 && markPaidIndex > creditIndex,
-        'marking the charge paid before the credit lands would leave a row claiming payment for credits never issued');
+    assert.match(adCreditSection, /db\.rpc\('finalize_ad_credit_purchase'/);
+    assert.match(adCreditSection, /p_billing_history_id: \(charge as \{ id: string \}\)\.id/);
+    assert.match(adCreditSection, /p_provider_payment_id: paymentId/);
+    assert.ok(!/\.update\(\{ payment_status: 'paid' \}\)/.test(adCreditSection),
+        'the billing state must be finalized in the same SQL transaction as the credit');
+    assert.match(finalizerSource, /public\.post_settlement_ledger_transaction\([\s\S]{0,220}?'ad_credit_purchase'/);
+    assert.match(finalizerSource, /'account_code', 'pa_clearing'[\s\S]{0,180}?'side', 'debit'/);
+    assert.match(finalizerSource, /'account_code', 'ad_credit_liability'[\s\S]{0,180}?'side', 'credit'/);
+    assert.match(finalizerSource, /canonical_ledger_transaction_id = v_ledger_id/);
 });
 
 test('SOURCE: the routes are in billing, and ads.ts keeps its no-service-role property', () => {

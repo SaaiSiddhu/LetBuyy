@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { Hono } from 'hono';
+import type { Env } from '../index';
 import {
     marketplaceFeedParams,
     registerStorefrontPublicRoutes,
@@ -20,8 +21,13 @@ import { MarketplaceFeedQuery } from '../schemas/channel-listing.schema';
 type PublicDeps = Parameters<typeof registerStorefrontPublicRoutes>[1];
 
 const publicRoutesSource = readFileSync(new URL('../routes/storefront/public-routes.ts', import.meta.url), 'utf8');
+const marketplaceFeedSource = readFileSync(new URL('../routes/storefront/marketplace-feed-routes.ts', import.meta.url), 'utf8');
 const migrationSource = readFileSync(
     new URL('../../../../database/supabase/migrations/217_marketplace_channel_listings.sql', import.meta.url),
+    'utf8',
+);
+const originMigrationSource = readFileSync(
+    new URL('../../../../database/supabase/migrations/272_marketplace_origin_filter.sql', import.meta.url),
     'utf8',
 );
 
@@ -35,18 +41,24 @@ const ROW: MarketplaceFeedRow = {
     slug: 'alpha-one',
     images: ['https://cdn.example/alpha-one.jpg'],
     price: '100.00',
-    compare_price: null,
+    compare_price: 250,
     category_slug: 'gadgets',
     approved_at: '2026-09-01T10:00:00+00:00',
+    country_of_origin: 'India',
 };
 
-function publicApp(overrides: Partial<PublicDeps> & { calls?: MarketplaceFeedParams[] } = {}) {
+function publicApp(overrides: Partial<PublicDeps> & { calls?: MarketplaceFeedParams[]; priceChannels?: string[] } = {}) {
     const calls: MarketplaceFeedParams[] = overrides.calls ?? [];
+    const priceChannels: string[] = overrides.priceChannels ?? [];
     const app = new Hono();
     const deps = {
         loadMarketplaceFeed: async (_c: unknown, params: MarketplaceFeedParams) => {
             calls.push(params);
             return { data: [ROW], error: null };
+        },
+        loadMarketplacePriceObservations: async (_c: unknown, _productIds: string[], channel: string) => {
+            priceChannels.push(channel);
+            return { data: [], error: null };
         },
         listMarketplaceCategories: async () => ({
             data: [{ id: 'c1', slug: 'gadgets', name: 'Gadgets', parent_id: null, position: 0 }],
@@ -56,28 +68,97 @@ function publicApp(overrides: Partial<PublicDeps> & { calls?: MarketplaceFeedPar
     } as unknown as PublicDeps;
     // Only the two MKT-1 routes are exercised; the other handlers are registered but never invoked.
     registerStorefrontPublicRoutes(app as unknown as Parameters<typeof registerStorefrontPublicRoutes>[0], deps);
-    return { app, calls };
+    return { app, calls, priceChannels };
 }
 
-test('GET /marketplace/feed passes exactly the five marketplace_feed parameters, in the RPC\'s own names', async () => {
-    const { app, calls } = publicApp();
+test('GET /marketplace/feed passes the origin filter and existing feed parameters', async () => {
+    const { app, calls, priceChannels } = publicApp();
     const res = await app.request('/marketplace/feed?category=gadgets&search=alpha&limit=5', undefined, {});
     assert.equal(res.status, 200);
-    assert.deepEqual(calls, [{ category: 'gadgets', search: 'alpha', limit: 5, afterApprovedAt: null, afterId: null }]);
+    assert.deepEqual(calls, [{ category: 'gadgets', search: 'alpha', limit: 5, afterApprovedAt: null, afterId: null, countryOfOrigin: null }]);
 
     const body = (await res.json()) as { success: boolean; data: MarketplaceFeedRow[]; meta: { limit: number; next_cursor: unknown } };
     assert.equal(body.success, true);
-    assert.deepEqual(body.data, [ROW]);
+    assert.equal(body.data[0].product_id, ROW.product_id);
+    assert.equal(body.data[0].price, 100);
+    assert.equal(body.data[0].compare_price, null, 'a feed item without complete evidence has no sale reference');
+    assert.deepEqual(priceChannels, ['marketplace'], 'marketplace feed history must never fall back to the storefront channel');
     assert.equal(body.meta.limit, 5);
     assert.equal(body.meta.next_cursor, null, 'fewer rows than the limit means no next page');
 
-    // The default loader names the parameters the way 217 declares them.
+    // The old five-argument RPC remains available; the overloaded origin-aware call adds one input
+    // and one public field while preserving the same listing visibility contract.
     for (const name of ['p_category_slug', 'p_search', 'p_limit', 'p_after_approved_at', 'p_after_id']) {
-        assert.match(publicRoutesSource, new RegExp(`${name}:`), `default loader must pass ${name}`);
+        assert.match(marketplaceFeedSource, new RegExp(`${name}:`), `default loader must pass ${name}`);
         assert.match(migrationSource, new RegExp(`\\b${name}\\b`), `217 must declare ${name}`);
     }
-    assert.match(publicRoutesSource, new RegExp(`db\\.rpc\\(MARKETPLACE_FEED_RPC`), 'the feed is read through the RPC, never a hand-written join');
+    assert.match(originMigrationSource, /p_country_of_origin text/);
+    assert.match(originMigrationSource, /lower\(btrim\(p\.country_of_origin\)\) = lower\(btrim\(p_country_of_origin\)\)/);
+    assert.match(originMigrationSource, /cl\.channel = 'marketplace'[\s\S]*cl\.status = 'approved'[\s\S]*cl\.visibility = 'public'/);
+    assert.match(marketplaceFeedSource, /p_country_of_origin: params\.countryOfOrigin/);
+    assert.match(marketplaceFeedSource, new RegExp(`db\\.rpc\\(MARKETPLACE_FEED_RPC`), 'the feed is read through the RPC, never a hand-written join');
     assert.equal(MARKETPLACE_FEED_RPC, 'marketplace_feed');
+    assert.match(marketplaceFeedSource, /p_channel:\s*channel/, 'the price-history loader must forward the requested channel to the RPC');
+});
+
+test('GET /marketplace/feed replaces compare price with a complete prior low', async () => {
+    const { app } = publicApp({
+        loadMarketplacePriceObservations: async () => ({
+            data: [{
+                product_id: ROW.product_id,
+                variant_id: null,
+                current_price: 100,
+                prior_lowest_price_30d: 150,
+                prior_coverage_complete: true,
+                price_observed_at: '2026-10-04T00:00:00Z',
+            }],
+            error: null,
+        }),
+    } as Partial<PublicDeps>);
+    const res = await app.request('/marketplace/feed', undefined, {});
+    assert.equal(res.status, 200);
+    const body = await res.json() as { data: MarketplaceFeedRow[] };
+    assert.equal(body.data[0].compare_price, 150);
+});
+
+test('marketplace feed search rechecks eligibility instead of serving a cached approval', async () => {
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'caches');
+    let cacheLookups = 0;
+    let cacheWrites = 0;
+    Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        value: { default: {
+            match: async () => {
+                cacheLookups += 1;
+                return new Response(JSON.stringify({ success: true, data: [ROW] }));
+            },
+            put: async () => { cacheWrites += 1; },
+            delete: async () => true,
+        } },
+    });
+    try {
+        let eligibleRows: MarketplaceFeedRow[] = [ROW];
+        const { app } = publicApp({ loadMarketplaceFeed: async () => ({ data: eligibleRows, error: null }) });
+        const request = () => app.request('/marketplace/feed?search=alpha', undefined,
+            { ENVIRONMENT: 'test', STOREFRONT_CACHE: 'on' } as unknown as Env);
+
+        const first = await request();
+        assert.equal(first.status, 200);
+        assert.equal(first.headers.get('Cache-Control'), 'no-store');
+        assert.equal(first.headers.get('X-Storefront-Cache'), 'BYPASS');
+        assert.deepEqual((await first.json() as { data: MarketplaceFeedRow[] }).data.map((row) => row.listing_id), [ROW.listing_id]);
+
+        eligibleRows = [];
+        const afterRevocation = await request();
+        assert.equal(afterRevocation.status, 200);
+        assert.equal(afterRevocation.headers.get('Cache-Control'), 'no-store');
+        assert.deepEqual((await afterRevocation.json() as { data: MarketplaceFeedRow[] }).data, []);
+        assert.equal(cacheLookups, 0, 'search/feed must not consult the stale approved response');
+        assert.equal(cacheWrites, 0, 'eligibility-sensitive feed results must not repopulate cache');
+    } finally {
+        if (original) Object.defineProperty(globalThis, 'caches', original);
+        else Reflect.deleteProperty(globalThis, 'caches');
+    }
 });
 
 test('GET /marketplace/feed clamps limit to 1..100 and emits a keyset cursor when a page is full', async () => {
@@ -135,26 +216,56 @@ test('GET /marketplace/categories returns the injected live taxonomy in the succ
     const body = (await res.json()) as { success: boolean; data: Array<{ slug: string }> };
     assert.equal(body.success, true);
     assert.deepEqual(body.data.map((c) => c.slug), ['gadgets']);
-    assert.match(publicRoutesSource, /\.from\('marketplace_categories'\)[\s\S]*?\.eq\('is_active', true\)/, 'the default loader mirrors the is_active read policy');
+    assert.match(marketplaceFeedSource, /\.from\('marketplace_categories'\)[\s\S]*?\.eq\('is_active', true\)/, 'the default loader mirrors the is_active read policy');
 });
 
-test('marketplaceFeedParams maps the validated query to the RPC parameter object', () => {
-    const parsed = MarketplaceFeedQuery.parse({ category: 'gadgets', search: '  ', limit: '7' });
-    assert.deepEqual(marketplaceFeedParams(parsed), { category: 'gadgets', search: null, limit: 7, afterApprovedAt: null, afterId: null });
+test('marketplaceFeedParams trims the country filter and maps it into the RPC contract', () => {
+    const parsed = MarketplaceFeedQuery.parse({ category: 'gadgets', search: '  ', country_of_origin: '  India  ', limit: '7' });
+    assert.deepEqual(marketplaceFeedParams(parsed), { category: 'gadgets', search: null, limit: 7, afterApprovedAt: null, afterId: null, countryOfOrigin: 'India' });
+});
+
+test('marketplace origin filter rejects blank and overlong input', () => {
+    assert.equal(MarketplaceFeedQuery.safeParse({ country_of_origin: '   ' }).success, false);
+    assert.equal(MarketplaceFeedQuery.safeParse({ country_of_origin: 'x'.repeat(101) }).success, false);
+});
+
+test('GET /marketplace/origins returns only the database-derived visible-offer facet', async () => {
+    const { app } = publicApp({
+        listMarketplaceOrigins: async () => ({
+            data: [{ country_of_origin: 'India' }, { country_of_origin: 'Japan' }],
+            error: null,
+        }),
+    } as Partial<PublicDeps>);
+    const res = await app.request('/marketplace/origins', undefined, {});
+    assert.equal(res.status, 200);
+    const body = await res.json() as { success: boolean; data: Array<{ country_of_origin: string }> };
+    assert.equal(body.success, true);
+    assert.deepEqual(body.data.map((item) => item.country_of_origin), ['India', 'Japan']);
+    assert.match(originMigrationSource, /CREATE OR REPLACE FUNCTION public\.marketplace_origins\(\)/);
+    assert.match(originMigrationSource, /GROUP BY lower\(btrim\(p\.country_of_origin\)\)[\s\S]*ORDER BY lower\(min\(btrim\(p\.country_of_origin\)\)\)/);
+    assert.match(originMigrationSource, /cl\.channel = 'marketplace'[\s\S]*cl\.status = 'approved'[\s\S]*cl\.visibility = 'public'/);
+    assert.match(marketplaceFeedSource, /db\.rpc\('marketplace_origins'\)/);
 });
 
 test('the marketplace routes are registered ahead of the /:subdomain family and use the storefront cache wrapper', () => {
-    const feedAt = publicRoutesSource.indexOf("router.get('/marketplace/feed'");
-    const categoriesAt = publicRoutesSource.indexOf("router.get('/marketplace/categories'");
+    const feedAt = marketplaceFeedSource.indexOf("router.get('/marketplace/feed'");
+    const categoriesAt = marketplaceFeedSource.indexOf("router.get('/marketplace/categories'");
     const firstHandleRoute = publicRoutesSource.indexOf("router.get('/:subdomain");
     assert.ok(feedAt > 0 && categoriesAt > 0 && firstHandleRoute > 0);
-    assert.ok(feedAt < firstHandleRoute && categoriesAt < firstHandleRoute, 'marketplace routes must precede the handle-shaped routes');
-    const feedBlock = publicRoutesSource.slice(feedAt, categoriesAt);
+    const registrationAt = publicRoutesSource.indexOf('registerStorefrontMarketplaceFeedRoutes(router, dependencies)');
+    const detailAt = publicRoutesSource.indexOf('registerStorefrontMarketplaceDetailRoutes(router,');
+    assert.equal(publicRoutesSource.match(/registerStorefrontMarketplaceFeedRoutes\(router,/g)?.length, 1);
+    assert.ok(registrationAt > 0 && registrationAt < detailAt && detailAt < firstHandleRoute,
+        'the canonical feed/taxonomy module registers once before detail and handle-shaped routes');
+    assert.ok(feedAt < categoriesAt, 'feed and taxonomy preserve their registration order');
+    const feedBlock = marketplaceFeedSource.slice(feedAt, categoriesAt);
     assert.match(feedBlock, /storefrontRequestCacheKey\(\s*c,\s*'marketplace:feed'/);
-    for (const part of ['params.category', 'params.search', 'String(params.limit)', 'params.afterApprovedAt', 'params.afterId']) {
+    for (const part of ['params.category', 'params.search', 'String(params.limit)', 'params.afterApprovedAt', 'params.afterId', 'params.countryOfOrigin', 'params.siteId']) {
         assert.ok(feedBlock.includes(part), `the cache key must include ${part}`);
     }
     assert.match(feedBlock, /cachedJson\(c, key, STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS/);
+    assert.match(feedBlock, /},\s*\{\s*bypassCache:\s*true\s*\}\);/,
+        'the feed must re-run approval eligibility instead of serving a prior cached result');
 });
 
 // ── MKT-1 merchant routes: /channel-listings under the tenant transaction ──────────────────────
@@ -162,6 +273,7 @@ test('the marketplace routes are registered ahead of the /:subdomain family and 
 import {
     createChannelListingsRouter,
     mapChannelListingDatabaseError,
+    RESUBMIT_CHANNEL_LISTING_SQL,
     TRANSITION_SQL,
     type ChannelListingRouteDependencies,
     type TenantSql,
@@ -316,6 +428,46 @@ test('GET /channel-listings lists inside the tenant tx, scoped by the resolved s
     assert.equal(sqlCalls[0].params?.[0], SITE_A);
     assert.equal(sqlCalls[0].params?.[1], 'marketplace');
     assert.equal(sqlCalls[0].params?.[2], null);
+});
+
+test('GET /channel-listings supports an optional product filter inside the resolved tenant scope', async () => {
+    const rows = [{ id: LISTING, site_id: SITE_A, product_id: PRODUCT, status: 'rejected', rejection_reason: 'Add the required product details.' }];
+    const { app, sqlCalls } = merchantApp({ rows: (call) => (call.query.startsWith('select count') ? [{ total: 1 }] : rows) });
+    const res = await app.request(`/channel-listings?store_id=${SITE_A}&channel=marketplace&product_id=${PRODUCT}`, undefined, {});
+    assert.equal(res.status, 200);
+    assert.deepEqual((await res.json() as { data: unknown[] }).data, rows);
+    assert.equal(sqlCalls[0].params?.[0], SITE_A);
+    assert.equal(sqlCalls[0].params?.[3], PRODUCT);
+    assert.match(sqlCalls[0].query, /product_id = \$4/);
+    const invalid = await app.request(`/channel-listings?store_id=${SITE_A}&product_id=not-a-uuid`, undefined, {});
+    assert.equal(invalid.status, 400);
+});
+
+test('POST /channel-listings/:id/resubmit uses only the resolved tenant and a bound correction request', async () => {
+    const result = { listing_id: LISTING, from_status: 'draft', to_status: 'pending_review', event_id: 'e2', replayed: false };
+    const { app, sqlCalls, scopeCalls, tenantCalls } = merchantApp({ rows: [result] });
+    const response = await app.request(`/channel-listings/${LISTING}/resubmit`, json({
+        store_id: SITE_A,
+        reason: 'Updated the safety and product details requested by review.',
+        idempotency_key: 'merchant-resubmit-1',
+    }), {});
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json() as { data: unknown }).data, result);
+    assert.equal(sqlCalls[0].query, RESUBMIT_CHANNEL_LISTING_SQL);
+    assert.deepEqual(sqlCalls[0].params, [SITE_A, LISTING, 'user-1', 'Updated the safety and product details requested by review.', 'merchant-resubmit-1']);
+    assert.deepEqual(scopeCalls, [SITE_A]);
+    assert.deepEqual(tenantCalls, [{ siteId: SITE_A, requestId: 'req-1' }]);
+
+    for (const invalidBody of [
+        { store_id: SITE_A, reason: 'short', idempotency_key: 'bad' },
+        { store_id: SITE_A, reason: 'A sufficiently long response.', idempotency_key: 'bad', to_status: 'approved' },
+    ]) {
+        assert.equal((await app.request(`/channel-listings/${LISTING}/resubmit`, json(invalidBody), {})).status, 400);
+    }
+    assert.equal((await app.request('/channel-listings/not-a-uuid/resubmit', json({
+        store_id: SITE_A, reason: 'A sufficiently long response.', idempotency_key: 'bad',
+    }), {})).status, 400);
+    assert.equal(mapChannelListingDatabaseError(new Error('idempotency_key_conflict: resubmission key belongs to a different request'))?.statusCode, 409);
 });
 
 test('the listing router is mounted exactly once and holds no service-role path at all', () => {

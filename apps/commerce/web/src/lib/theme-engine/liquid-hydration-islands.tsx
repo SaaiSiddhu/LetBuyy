@@ -1112,6 +1112,7 @@ function ensureWishlistStyles() {
         '.lb-wishlist-toggle__button svg{fill:none;stroke:currentColor;stroke-width:2;transition:transform .15s ease}',
         '.lb-wishlist-toggle__button[aria-pressed="true"]{color:var(--primary,rgb(225 29 72));opacity:1}',
         '.lb-wishlist-toggle__button[aria-pressed="true"] svg{fill:currentColor;transform:scale(1.08)}',
+        '.lb-wishlist-toggle__message{display:block;font-size:var(--lb-text-xs,0.75rem);color:var(--text-secondary,rgb(107 114 128))}',
     ].join('');
     document.head.appendChild(style);
 }
@@ -1135,10 +1136,9 @@ function writeWishlist(items: string[]) {
     window.dispatchEvent(new CustomEvent(WISHLIST_CHANGED_EVENT, { detail: { items } }));
 }
 
-// Wishlist toggle island. Mirrors the React wishlist-context: guest = localStorage ('lb_wishlist'),
-// authenticated = the existing /api/customer/wishlist route (POST/DELETE -> customer_wishlists).
-// Auth + initial state come from the server-rendered drop (data-authenticated, data-in-wishlist) so
-// there is no extra request on load. No new backend, no new storage model.
+// Wishlist toggle island. Guests use localStorage; existing store customers use the legacy
+// customer route; canonical buyers use the verified buyer/store relationship route. Auth and
+// initial state come from the server-rendered drop, so no extra request is needed on load.
 class LbWishlistToggleElement extends LiquidIslandBase {
     private active = false;
 
@@ -1160,24 +1160,41 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         return this.dataset.authenticated === 'true';
     }
 
+    private get isBuyer(): boolean {
+        return this.dataset.accountType === 'buyer';
+    }
+
+    private get isBuyerLinked(): boolean {
+        return this.dataset.buyerLinked === 'true';
+    }
+
+    private get isBuyerUnavailable(): boolean {
+        return this.dataset.buyerUnavailable === 'true';
+    }
+
     private resolveInitialActive(): boolean {
         if (this.isAuthenticated) return this.dataset.inWishlist === 'true';
         return readWishlist().includes(this.dataset.productId || '');
     }
 
     private renderToggle() {
-        const label = this.active ? 'Remove from wishlist' : 'Add to wishlist';
+        const label = this.isBuyer && this.isBuyerUnavailable ? 'Wishlist temporarily unavailable'
+            : this.isBuyer && !this.isBuyerLinked ? 'Connect store account to use wishlist'
+                : this.active ? 'Remove from wishlist' : 'Add to wishlist';
         this.innerHTML = [
             `<${liquidButtonTag} type="button" data-lb-wishlist-button class="lb-wishlist-toggle__button" aria-pressed="${this.active ? 'true' : 'false'}" aria-label="${label}" title="${label}">`,
             WISHLIST_HEART_SVG,
             `</${liquidButtonTag}>`,
+            '<span class="lb-wishlist-toggle__message" role="status" aria-live="polite"></span>',
         ].join('');
     }
 
     private updateVisual() {
         const button = this.querySelector<HTMLButtonElement>('[data-lb-wishlist-button]');
         if (!button) return;
-        const label = this.active ? 'Remove from wishlist' : 'Add to wishlist';
+        const label = this.isBuyer && this.isBuyerUnavailable ? 'Wishlist temporarily unavailable'
+            : this.isBuyer && !this.isBuyerLinked ? 'Connect store account to use wishlist'
+                : this.active ? 'Remove from wishlist' : 'Add to wishlist';
         button.setAttribute('aria-pressed', this.active ? 'true' : 'false');
         button.setAttribute('aria-label', label);
         button.setAttribute('title', label);
@@ -1205,9 +1222,29 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         void this.toggle();
     };
 
+    private showMessage(message: string) {
+        const status = this.querySelector<HTMLElement>('.lb-wishlist-toggle__message');
+        if (status) status.textContent = message;
+    }
+
     private async toggle() {
         const productId = this.dataset.productId;
         if (!productId) return;
+
+        if (this.isBuyerUnavailable) {
+            this.showMessage('Your wishlist is temporarily unavailable. Please try again later.');
+            return;
+        }
+        if (this.isBuyer && !this.dataset.buyerId) {
+            this.showMessage('Reload your account before changing your wishlist.');
+            return;
+        }
+        if (this.isBuyer && !this.isBuyerLinked) {
+            const basePath = this.dataset.basePath;
+            if (basePath) window.location.assign(`${basePath}/account/settings`);
+            else this.showMessage('Connect your verified store account in account settings to save items.');
+            return;
+        }
 
         const nextActive = !this.active;
         this.active = nextActive;
@@ -1215,10 +1252,16 @@ class LbWishlistToggleElement extends LiquidIslandBase {
 
         if (this.isAuthenticated) {
             try {
-                const response = await fetch('/api/customer/wishlist', {
+                const response = await fetch(this.isBuyer ? '/api/buyer/wishlist' : '/api/customer/wishlist', {
                     method: nextActive ? 'POST' : 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(this.isBuyer ? { 'x-letbuyy-expected-buyer-id': this.dataset.buyerId || '' } : {}),
+                    },
+                    body: JSON.stringify(this.isBuyer ? {
+                        productId,
+                        variantId: this.dataset.variantId || null,
+                    } : {
                         productId,
                         storeId: this.dataset.storeId,
                         variantId: this.dataset.variantId || null,
@@ -1227,10 +1270,17 @@ class LbWishlistToggleElement extends LiquidIslandBase {
                 if (!response.ok) {
                     this.active = !nextActive;
                     this.updateVisual();
+                    this.showMessage('We could not update your wishlist. Please try again.');
+                } else {
+                    this.showMessage('');
+                    if (!nextActive && window.location.pathname.endsWith('/account/wishlist')) {
+                        this.closest('.lb-product-card')?.remove();
+                    }
                 }
             } catch {
                 this.active = !nextActive;
                 this.updateVisual();
+                this.showMessage('We could not reach the server. Your wishlist was not changed.');
             }
             return;
         }
@@ -1366,19 +1416,35 @@ class LbCustomerSettingsElement extends LiquidIslandBase {
         this.innerHTML = '<p role="status">Loading your LetBuyy profile…</p>';
         try {
             const response = await fetch('/api/buyer/profile', { cache: 'no-store' });
-            const body = await response.json() as { buyer?: { email?: unknown; email_verified?: unknown; full_name?: unknown; phone?: unknown }; error?: string };
-            if (!response.ok || !body.buyer || typeof body.buyer.email !== 'string') throw new Error(body.error || 'profile_load_failed');
+            const body = await response.json() as { buyer?: { id?: unknown; email?: unknown; email_verified?: unknown; full_name?: unknown; phone?: unknown }; error?: string };
+            if (!response.ok || !body.buyer || typeof body.buyer.id !== 'string' || typeof body.buyer.email !== 'string') throw new Error(body.error || 'profile_load_failed');
             const buyer = body.buyer;
+            const linkStatus = new URLSearchParams(window.location.search).get('buyer_link');
+            const linkMessage = linkStatus === 'linked' ? 'This store account is connected.'
+                : linkStatus === 'unverified' ? 'Verify your LetBuyy email before connecting a store account.'
+                    : linkStatus === 'conflict' ? 'This store customer record is already connected to another LetBuyy account. Contact the store for help.'
+                        : linkStatus ? 'We could not connect this store account. You can try again shortly.' : '';
             this.innerHTML = [
                 '<div class="lb-settings__forms">',
                 '<form class="lb-settings__profile-form" data-lb-settings-buyer-profile>',
                 '<h2>LetBuyy profile</h2>',
+                `<input type="hidden" name="expectedBuyerId" value="${escapeHtml(buyer.id)}">`,
                 `<p class="lb-settings__email-display">${escapeHtml(buyer.email)}${buyer.email_verified ? ' · Verified' : ' · Not verified'}</p>`,
                 `<label>Full name<${liquidInputTag} type="text" name="fullName" maxlength="200" value="${escapeHtml(buyer.full_name ?? '')}" autocomplete="name"></${liquidInputTag}></label>`,
                 `<label>Phone<${liquidInputTag} type="tel" name="phone" maxlength="32" value="${escapeHtml(buyer.phone ?? '')}" autocomplete="tel" inputmode="tel"></${liquidInputTag}></label>`,
                 '<p class="lb-settings__profile-msg" aria-live="polite"></p>',
                 `<${liquidButtonTag} type="submit">Save profile</${liquidButtonTag}>`,
                 '</form>',
+                '<section class="lb-settings__profile-form">',
+                '<h2>Connect this store account</h2>',
+                '<p>Reconfirm your LetBuyy sign-in to connect a store customer record with the same verified email. This action does not claim past orders; historical orders require a separate verified claim flow.</p>',
+                linkMessage ? `<p role="status" aria-live="polite">${escapeHtml(linkMessage)}</p>` : '',
+                '<form method="post" action="/api/buyer-auth/start">',
+                '<input type="hidden" name="intent" value="link_store_customer">',
+                `<input type="hidden" name="return_to" value="${escapeHtml(`${this.basePath}/account/settings`)}">`,
+                `<${liquidButtonTag} type="submit">Connect store account</${liquidButtonTag}>`,
+                '</form>',
+                '</section>',
                 `<${liquidButtonTag} type="button" data-lb-buyer-signout>Sign out at this store</${liquidButtonTag}>`,
                 '</div>',
             ].join('');
@@ -1397,13 +1463,18 @@ class LbCustomerSettingsElement extends LiquidIslandBase {
 
     private async saveBuyerProfile(form: HTMLFormElement) {
         const msg = this.querySelector<HTMLElement>('.lb-settings__profile-msg');
-        if (msg) msg.textContent = 'Saving…';
         const fd = new FormData(form);
+        const expectedBuyerId = String(fd.get('expectedBuyerId') ?? '').trim();
+        if (!expectedBuyerId) {
+            if (msg) msg.textContent = 'Reload your account before saving profile changes.';
+            return;
+        }
+        if (msg) msg.textContent = 'Saving…';
         try {
             const response = await fetch('/api/buyer/profile', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName: String(fd.get('fullName') ?? '').trim(), phone: String(fd.get('phone') ?? '').trim() }),
+                body: JSON.stringify({ fullName: String(fd.get('fullName') ?? '').trim(), phone: String(fd.get('phone') ?? '').trim(), expectedBuyerId }),
             });
             if (msg) msg.textContent = response.ok ? 'Your LetBuyy profile is saved.' : 'We could not save your profile. Please try again.';
         } catch {
@@ -1752,10 +1823,10 @@ function canUseFormTurnstileDevBypass(): boolean {
         && process.env.NEXT_PUBLIC_LETBUYY_ENABLE_DEV_AUTH_BYPASS === 'true';
 }
 
-// T1/W2 — generic Turnstile-for-a-plain-<form> island. The customer register/login forms are
-// no-JS-first <form method="post"> submissions (D10 pattern) that POST directly to
-// /api/customer/register|login; there is no client-side submit handler to attach a token to.
-// This island fills the SAME role TurnstileWidget.tsx plays for React forms: render an invisible
+// T1/W2 — generic Turnstile-for-a-plain-<form> island for the transitional customer login form.
+// It is a no-JS-first <form method="post"> submission that POSTs directly to /api/customer/login;
+// there is no client-side submit handler to attach a token to. This island fills the same role
+// TurnstileWidget.tsx plays for React forms: render an invisible
 // challenge and, on solve, write the token straight into the sibling hidden
 // <input name="turnstileToken"> that the Liquid section already renders — so the native form
 // submission (JS or no-JS) carries a real token with zero extra wiring in the section markup.

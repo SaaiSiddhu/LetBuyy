@@ -24,6 +24,8 @@ commands*; they are processes, not agents.)
 
 > **Current continuation (2026-10-03).** [P2-OPERATOR-MUTATION-INTEGRITY](P2_OPERATOR_MUTATION_INTEGRITY_ACCEPTANCE.md) implements all seven support actions with atomic durable retry receipts, fresh authorization, failure rollback and real-worker/owned-database proof (87/87 tests, no skips). The former mutation-idempotency/atomicity follow-up in F2.6 is addressed. Wider Phase 2 remains open. [Customer-session retirement](P2_CUSTOMER_SESSION_RETIREMENT.md) refreshes the actual multi-signer inventory and defines the next local gates; implementation/retirement are not yet verified. Q3 and the remaining D03/D04/D05 policy/cutover requirements remain open.
 
+> **4 October verification update.** The pending production-worker compatibility matrix in [customer-session retirement](P2_CUSTOMER_SESSION_RETIREMENT.md) now passes 7/7 in the owned disposable Postgres lane. The default remains dual-format; issuer retirement, hosted-use observation and cutover are still open.
+
 **A — LOCAL QUALITY CHECKS AND THEME ISOLATION VERIFIED; remaining policy/cutover requirements listed separately.**
 
 | Objective | Result |
@@ -383,9 +385,19 @@ Only questions the record leaves genuinely unanswered. Every option is a **propo
 | Q5 | D03: approve the authoritative cutover after a sustained observation window? | Not before the window exists; then a separate decision. Migrate the merchant realm onto identity-platform OIDC first, staff-membership unification in the same phase | Accept the current three-realm state as a staged milestone | One principal graph under the realms | `staff-permission.ts` stays the only enforced path; the shadow is flag-gated, local-only and cannot change a response |
 | Q6 | D04.2–D04.6: who assigns operator roles; bootstrap authority; recovery approver (and the 8-hour console-session question, now closed for the allowlist dimension); MFA enrollment model; high-risk dual control | Follow the wave order (merchant realm validates the pattern first); TOTP minimum, aal3 for break-glass. **No recommendation on record for dual control or the approver: a business-risk judgment** | Keep admin-provisioned MFA and single-superadmin plus audit | Operator provisioning and recovery without a database edit | Roles exist and are enforced per request; no assignment route, no bootstrap; the static console principal is unchanged |
 | Q7 | D04.8: wire the delivery adapter now (sender address, copy, delivery-failure ownership)? | Defer until a sender and an owner for failures exist | Wire `resend-adapter` now | Console magic-link email in a real environment | `getConfiguredConsoleMagicLinkDeliveryAdapter()` returns `null`; production submissions end at `magic_link_delivery_not_configured` |
-| Q8 | D04.9: does a real caller exist for merchant moderation/impersonation (outside this repository)? | Confirm, else deprecate | Investigate further | Deciding whether those routes stay | No caller found here; nothing calls them |
+| Q8 | D04.9: does a real caller exist for merchant moderation/impersonation (outside this repository)? | Confirm, else deprecate | Investigate further | Deciding whether those routes stay | **Caller existence resolved 2026-10-04:** current Merchant 360 page calls start/end impersonation and suspend/restore routes; see dated correction below. Backend operator/approver authority and actual impersonation-session consumption remain open. |
 | Q9 | D05.2–D05.3: requester verification and release protection for a buyer export | Step-up beyond a session; signed, expiring, single-use link. **No recommendation invented for the legal exemptions** | In-app only | A real export route | The generator is disconnected from every route |
 | Q10 | D05.4–D05.8: retention, deletion exceptions, legal hold, deletion approval, incident ownership | none on record: policy and legal input | — | Deletion execution | Nothing is deleted; every record category retains indefinitely |
+
+> **Q8 correction (2026-10-04).** The prior “no caller found” answer is superseded by the current
+> Merchant 360 detail page. Its MFA-gated server actions call impersonation start/end and
+> moderation routes, reachable from the Merchant 360 navigation and merchant list. The focused
+> `internal-os-merchant-360.test.ts` passed 4/4. The Gateway still does not independently verify
+> the acting/second operator's identity: impersonation relies on the internal perimeter, moderation
+> on a shared console credential, and segregation-of-duty compares supplied IDs. The UI discards
+> the returned impersonation token, and no in-repo code consumes it as a merchant-view credential.
+> Caller existence is resolved; policy, backend authorization and effective impersonation remain
+> open. See the detailed correction in `PHASE2_DECISIONS.md`.
 
 ### 10.3 The concrete next task
 

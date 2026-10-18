@@ -38,7 +38,6 @@ DateTime? _parseTimestamp(dynamic value) {
   }
 }
 
-
 // ============================================
 // PRODUCT VARIANT
 // ============================================
@@ -74,15 +73,15 @@ class ProductVariant {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'sku': sku,
-        'salePrice': salePrice,
-        'originalPrice': originalPrice,
-        'stock': stock,
-        'images': images,
-        'options': options,
-      };
+    'id': id,
+    'name': name,
+    'sku': sku,
+    'salePrice': salePrice,
+    'originalPrice': originalPrice,
+    'stock': stock,
+    'images': images,
+    'options': options,
+  };
 
   factory ProductVariant.fromMap(Map<String, dynamic> map) {
     return ProductVariant(
@@ -98,8 +97,6 @@ class ProductVariant {
   }
 }
 
-
-
 // ============================================
 // VARIANT OPTION
 // ============================================
@@ -107,15 +104,9 @@ class VariantOption {
   final String name;
   final List<String> values;
 
-  VariantOption({
-    required this.name,
-    required this.values,
-  });
+  VariantOption({required this.name, required this.values});
 
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'values': values,
-      };
+  Map<String, dynamic> toMap() => {'name': name, 'values': values};
 
   factory VariantOption.fromMap(Map<String, dynamic> map) {
     return VariantOption(
@@ -125,19 +116,23 @@ class VariantOption {
   }
 }
 
-
-
 // ============================================
 // MAIN PRODUCT MODEL  (WITH APPROVAL SYSTEM)
 // ============================================
 class ProductModel {
   final String id;
+  // Canonical marketplace identity keeps the listing row and underlying catalog product distinct.
+  // `id` remains the route/display identity used by existing marketplace screens.
+  final String? marketplaceListingId;
+  final String? catalogProductId;
   final String sellerId;
   // C2 (canonical rewire): the marketplace feed/listing endpoints hand back the seller's display
   // name directly on every row (no separate seller-document fetch needed) -- see
   // ProductProvider._productFromFeedItem/_productFromListingDetail. Null for a product built from
   // any other source that doesn't carry it.
   final String? storeName;
+  final String? countryOfOrigin;
+  final String? importerDetails;
   final String name;
   final String description;
   final double salePrice;
@@ -186,32 +181,36 @@ class ProductModel {
   final List<String> keywords;
 
   // ✅ NEW: Dynamic Category Attributes (for faceted search)
-  final Map<String, dynamic> attributes;  // Approved attributes
-  final Map<String, dynamic>? pendingAttributes;  // Awaiting admin approval
+  final Map<String, dynamic> attributes; // Approved attributes
+  final Map<String, dynamic>? pendingAttributes; // Awaiting admin approval
 
   // ✅ NEW: Approval System Fields
   final ProductApprovalStatus approvalStatus;
   final String? rejectionReason;
   final DateTime? approvedAt;
   final String? approvedBy;
-  final String? addedBy;  // 'seller' | 'admin'
+  final String? addedBy; // 'seller' | 'admin'
   final DateTime? submittedForApprovalAt;
 
   // ✅ NEW: Shipping Details (weight in kg, dimensions in cm)
-  final double? weight;       // Weight in kg
-  final double? length;       // Length in cm
-  final double? width;        // Width in cm 
-  final double? height;       // Height in cm
+  final double? weight; // Weight in kg
+  final double? length; // Length in cm
+  final double? width; // Width in cm
+  final double? height; // Height in cm
 
   // ✅ NEW: Product Statistics (for seller dashboard)
-  final int viewCount;        // Total page views from marketplace
-  final int totalOrders;      // Total orders containing this product
-  final double totalRevenue;  // Total revenue (price × qty - commissions)
+  final int viewCount; // Total page views from marketplace
+  final int totalOrders; // Total orders containing this product
+  final double totalRevenue; // Total revenue (price × qty - commissions)
 
   ProductModel({
     required this.id,
+    this.marketplaceListingId,
+    this.catalogProductId,
     required this.sellerId,
     this.storeName,
+    this.countryOfOrigin,
+    this.importerDetails,
     required this.name,
     required this.description,
     required this.salePrice,
@@ -249,7 +248,8 @@ class ProductModel {
     this.attributes = const {},
     this.pendingAttributes,
     // ✅ NEW: Approval fields with defaults
-    this.approvalStatus = ProductApprovalStatus.approved, // Default approved for backward compatibility
+    this.approvalStatus = ProductApprovalStatus
+        .approved, // Default approved for backward compatibility
     this.rejectionReason,
     this.approvedAt,
     this.approvedBy,
@@ -265,7 +265,6 @@ class ProductModel {
     this.totalOrders = 0,
     this.totalRevenue = 0.0,
   });
-
 
   // ============================================
   // BACKWARD COMPATIBLE GETTERS
@@ -310,7 +309,6 @@ class ProductModel {
   /// Check if shipping details are complete
   bool get hasShippingDetails => weight != null && weight! > 0;
 
-
   int get discount {
     if (originalPrice != null && originalPrice! > salePrice) {
       return (((originalPrice! - salePrice) / originalPrice!) * 100).round();
@@ -318,7 +316,25 @@ class ProductModel {
     return 0;
   }
 
+  /// Canonical marketplace `compare_price` values are verified prior-30-day lows,
+  /// not an MRP. Keep the distinction at the model boundary so shared mobile
+  /// product surfaces cannot accidentally relabel that reference price.
+  bool get hasDisplayableReferencePrice =>
+      originalPrice != null &&
+      originalPrice! > salePrice &&
+      (marketplaceListingId == null || priceKnown);
 
+  bool get hasPriorThirtyDayLow =>
+      marketplaceListingId != null && hasDisplayableReferencePrice;
+
+  String get referencePriceLabel =>
+      marketplaceListingId != null ? 'Lowest price in prior 30 days' : 'M.R.P.';
+
+  String get discountLabel => hasPriorThirtyDayLow
+      ? '$discount% below prior 30-day low'
+      : marketplaceListingId == null
+      ? '$discount% OFF'
+      : '';
 
   // C3 (Firebase SDK removal, 27 September 2026 review continuation): toMap()/toJson() (Firestore-
   // shaped, via Timestamp.fromDate) deleted outright -- grepping every real caller anywhere in the
@@ -332,7 +348,12 @@ class ProductModel {
   factory ProductModel.fromMap(Map<String, dynamic> map, String id) {
     return ProductModel(
       id: id,
+      marketplaceListingId: map['marketplaceListingId'] as String?,
+      catalogProductId: map['catalogProductId'] as String?,
       sellerId: map['sellerId'] ?? '',
+      storeName: map['storeName'] as String?,
+      countryOfOrigin: map['countryOfOrigin'] as String?,
+      importerDetails: map['importerDetails'] as String?,
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       salePrice: (map['salePrice'] as num?)?.toDouble() ?? 0.0,
@@ -394,7 +415,6 @@ class ProductModel {
     );
   }
 
-
   // REQUIRED FOR YOUR ADMIN SERVICE
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final id = json['id'] ?? '';
@@ -408,8 +428,12 @@ class ProductModel {
   // ============================================
   ProductModel copyWith({
     String? id,
+    String? marketplaceListingId,
+    String? catalogProductId,
     String? sellerId,
     String? storeName,
+    String? countryOfOrigin,
+    String? importerDetails,
     String? name,
     String? description,
     double? salePrice,
@@ -465,8 +489,12 @@ class ProductModel {
   }) {
     return ProductModel(
       id: id ?? this.id,
+      marketplaceListingId: marketplaceListingId ?? this.marketplaceListingId,
+      catalogProductId: catalogProductId ?? this.catalogProductId,
       sellerId: sellerId ?? this.sellerId,
       storeName: storeName ?? this.storeName,
+      countryOfOrigin: countryOfOrigin ?? this.countryOfOrigin,
+      importerDetails: importerDetails ?? this.importerDetails,
       name: name ?? this.name,
       description: description ?? this.description,
       salePrice: salePrice ?? this.salePrice,
@@ -509,7 +537,8 @@ class ProductModel {
       approvedAt: approvedAt ?? this.approvedAt,
       approvedBy: approvedBy ?? this.approvedBy,
       addedBy: addedBy ?? this.addedBy,
-      submittedForApprovalAt: submittedForApprovalAt ?? this.submittedForApprovalAt,
+      submittedForApprovalAt:
+          submittedForApprovalAt ?? this.submittedForApprovalAt,
       // ✅ NEW: Shipping fields
       weight: weight ?? this.weight,
       length: length ?? this.length,

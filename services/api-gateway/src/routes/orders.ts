@@ -1,3 +1,7 @@
+import { verifyMerchantStepUp } from '../lib/merchant-step-up';
+import {tryRestoreGiftCardForReversedOrder} from '../lib/gift-card-refund-recovery';
+import { stepUpErrorBody } from '../lib/security-controls';
+import { tryRestoreRedeemedLoyalty } from '../lib/loyalty-refund-recovery';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
@@ -817,11 +821,14 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
+    const tenant = await resolveTenantContextForOrder(c, orderId);
+
     const buildOrderQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
             .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
-            .eq('id', orderId);
+            .eq('id', orderId)
+            .eq('store_id', tenant.siteId);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
         return dbQuery.single();
@@ -843,7 +850,19 @@ router.get('/:id', async (c) => {
         ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
         : [order as unknown as Record<string, unknown>];
 
-    return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)));
+    // Legacy order.payment_id is a provider reference. Refund commands require
+    // the canonical payments UUID, resolved only inside this already-owned order.
+    // Multiple captured sources need reconciliation; never select an arbitrary one.
+    const { data: refundPayments, error: refundPaymentError } = await db.from('payments')
+        .select('id').eq('site_id', tenant.siteId).eq('order_id', orderId)
+        .is('deleted_at', null).in('status', ['captured', 'partially_refunded', 'refunded']).limit(2);
+    if (refundPaymentError) throw new Error('Owned order payment lookup failed');
+    const candidates = refundPayments || [];
+    return c.json(success({
+        ...normalizeOrderRecord(rows[0] as unknown as OrderSourceRow),
+        refund_payment_id: candidates.length === 1 ? candidates[0].id : null,
+        refund_payment_resolution: candidates.length === 1 ? 'available' : candidates.length ? 'ambiguous' : 'not_found',
+    }));
 });
 
 // PATCH /orders/:id/line-items — Edit line items and rebuild totals server-side
@@ -1029,6 +1048,7 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
     });
 
     if (claim.kind === 'replay') {
+        await tryRestoreRedeemedLoyalty(db, { ...tenant, orderId });
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
@@ -1081,28 +1101,7 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
                     error: String(restoreError),
                 }));
             }
-            // F-LOY-4 — and the same for loyalty points redeemed on this order. Migration 234 made
-            // them spendable as tender; nothing gave them back, so a refunded buyer lost them while
-            // a gift card was correctly restored two lines above. Deliberately placed HERE, beside
-            // its sibling, with the same idempotent + best-effort shape: two stored-value instruments
-            // reversed by the same event must not be reversed in different places or on different
-            // conditions.
-            try {
-                await db.rpc('restore_loyalty_on_refund', {
-                    p_site_id: tenant.siteId,
-                    p_order_id: orderId,
-                    p_actor_id: tenant.userId,
-                    p_request_id: tenant.requestId,
-                });
-            } catch (restoreError) {
-                console.warn(JSON.stringify({
-                    level: 'warn',
-                    event: 'loyalty_refund_restore_failed',
-                    kind: body.status,
-                    order_id: orderId,
-                    error: String(restoreError),
-                }));
-            }
+            await tryRestoreRedeemedLoyalty(db, { ...tenant, orderId });
         }
         const responseBody = success(data);
         await idempotency.complete({
@@ -1231,89 +1230,34 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
     }
 });
 
-// POST /orders/:id/refund/complete — Mark a manual/provider refund as succeeded
+// POST /orders/:id/refund/complete — Canonical source/receipt owns retries.
 router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), async (c) => {
     const orderId = c.req.param('id');
     const body = c.get('validatedBody') as CompleteRefundInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
-
     const staffBlock = await assertStaffPermission(c, tenant.siteId, tenant.userId, 'orders:write');
     if (staffBlock) return staffBlock;
-
-    const idempotency = new IdempotencyExecutionAdapter(db);
-    const claim = await idempotency.begin({
-        siteId: tenant.siteId,
-        key: body.idempotency_key,
-        scope: `orders.refund.complete:${orderId}:${body.refund_id}`,
-        requestBody: body,
-        requestId: tenant.requestId,
-    });
-
-    if (claim.kind === 'replay') {
-        return c.json(claim.responseBody as any, claim.statusCode as any);
-    }
-
+    const stepUp = await verifyMerchantStepUp(db, { action: 'refund.approve',
+        actorId: tenant.userId, siteId: tenant.siteId,
+        token: c.req.header('X-Step-Up-Token'), verifiedAt: c.req.header('X-Step-Up-Verified-At'),
+        signingSecret: c.env.STEP_UP_SIGNING_SECRET });
+    if (!stepUp.ok) return c.json(stepUpErrorBody(stepUp), 428);
     const service = new OrderExecutionAdapter(db);
-    try {
-        const data = await service.completeRefund(orderId, tenant, body);
-        await emitOrderEvent(db, {
-            eventType: 'order.refunded',
-            order: data,
-            fallbackOrderId: orderId,
-            siteId: tenant.siteId,
-            actorId: tenant.userId,
-            requestId: tenant.requestId,
-        });
-        // LB-10 — the canonical "refund succeeded" path must notify the customer too (the PATCH
-        // /:id transition already does). Best-effort; never blocks the refund completion.
+    const {data,replayed} = await service.completeRefund(orderId, tenant, body, stepUp.metadata);
+    if (!replayed && recordValue(data.order).status === 'refunded') {
+        await emitOrderEvent(db, { eventType: 'order.refunded', order: data.order,
+            fallbackOrderId: orderId, siteId: tenant.siteId, actorId: tenant.userId, requestId: tenant.requestId });
         try {
-            await enqueueOrderLifecycleEmail(c.env, db, {
-                orderId,
-                storeId: tenant.siteId,
-                requestId: tenant.requestId,
-                kind: 'refunded',
-            });
-        } catch (emailError) {
-            console.warn(JSON.stringify({
-                level: 'warn',
-                event: 'order_lifecycle_email_enqueue_failed',
-                kind: 'refunded',
-                order_id: orderId,
-                error: String(emailError),
-            }));
+            await enqueueOrderLifecycleEmail(c.env, db, { orderId, storeId: tenant.siteId,
+                requestId: tenant.requestId, kind: 'refunded' });
+        } catch {
+            console.warn(JSON.stringify({level:'warn',event:'order_lifecycle_email_enqueue_failed',order_id:orderId,kind:'refunded'}));
         }
-        // E1 — restore any gift-card balance redeemed on this order via the canonical refund path
-        // (the PATCH /:id cancel/refund path already does this). Idempotent + best-effort; never blocks.
-        try {
-            await db.rpc('restore_gift_card_on_refund', {
-                p_store_id: tenant.siteId,
-                p_order_id: orderId,
-                p_actor_id: tenant.userId,
-                p_request_id: tenant.requestId,
-            });
-        } catch (restoreError) {
-            console.warn(JSON.stringify({
-                level: 'warn',
-                event: 'gift_card_refund_restore_failed',
-                kind: 'refunded',
-                order_id: orderId,
-                error: String(restoreError),
-            }));
-        }
-        const responseBody = success(data);
-        await idempotency.complete({
-            id: claim.id,
-            responseBody,
-            statusCode: 200,
-            resourceType: 'refund',
-            resourceId: body.refund_id,
-        });
-        return c.json(responseBody);
-    } catch (error) {
-        await idempotency.fail(claim.id);
-        throw error;
     }
+    await tryRestoreGiftCardForReversedOrder(db,{...tenant,orderId},data.order);
+    await tryRestoreRedeemedLoyalty(db, {...tenant,orderId});
+    return c.json(success(data));
 });
 
 // POST /orders/:id/refund — Create return + refund intent, not fake provider success

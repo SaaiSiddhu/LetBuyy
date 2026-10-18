@@ -13,10 +13,7 @@ import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
 class ProductShareWidget extends StatefulWidget {
   final ProductModel product;
 
-  const ProductShareWidget({
-    super.key,
-    required this.product,
-  });
+  const ProductShareWidget({super.key, required this.product});
 
   @override
   State<ProductShareWidget> createState() => _ProductShareWidgetState();
@@ -52,12 +49,13 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 1),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
-        ),
+        position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+            .animate(
+              CurvedAnimation(
+                parent: _animationController,
+                curve: Curves.easeOutCubic,
+              ),
+            ),
         child: Container(
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
@@ -139,7 +137,11 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
                 color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.close, size: 20, color: isDark ? Colors.grey[300] : Colors.grey[600]),
+              child: Icon(
+                Icons.close,
+                size: 20,
+                color: isDark ? Colors.grey[300] : Colors.grey[600],
+              ),
             ),
           ),
         ],
@@ -182,7 +184,9 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
               decoration: BoxDecoration(
                 color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[200]!),
+                border: Border.all(
+                  color: isDark ? Colors.grey[700]! : Colors.grey[200]!,
+                ),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
@@ -192,7 +196,11 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: isDark ? Colors.grey[800] : Colors.grey[200],
-                      child: Icon(Icons.image_not_supported, size: 24, color: isDark ? Colors.grey[600] : Colors.grey[400]),
+                      child: Icon(
+                        Icons.image_not_supported,
+                        size: 24,
+                        color: isDark ? Colors.grey[600] : Colors.grey[400],
+                      ),
                     );
                   },
                 ),
@@ -227,7 +235,11 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      Icon(Icons.star_rounded, size: 16, color: Colors.amber[700]),
+                      Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: Colors.amber[700],
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${widget.product.rating.toStringAsFixed(1)} (${widget.product.reviewCount} reviews)',
@@ -297,7 +309,9 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         childAspectRatio: 0.85,
-        children: shareOptions.map((option) => _buildShareButton(option, isDark)).toList(),
+        children: shareOptions
+            .map((option) => _buildShareButton(option, isDark))
+            .toList(),
       ),
     );
   }
@@ -342,14 +356,12 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF2C2C2C) : Colors.grey[100],
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[200]!),
+              border: Border.all(
+                color: isDark ? Colors.grey[700]! : Colors.grey[200]!,
+              ),
             ),
             child: Center(
-              child: Icon(
-                option.icon,
-                color: option.color,
-                size: 24,
-              ),
+              child: Icon(option.icon, color: option.color, size: 24),
             ),
           ),
           const SizedBox(height: 4),
@@ -389,7 +401,11 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           child: Row(
             children: [
-              Icon(icon, size: 22, color: isDark ? Colors.grey[300] : Colors.grey[700]),
+              Icon(
+                icon,
+                size: 22,
+                color: isDark ? Colors.grey[300] : Colors.grey[700],
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
@@ -419,7 +435,10 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? Colors.grey[800]! : Colors.grey[200]!, width: 1),
+        border: Border.all(
+          color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
@@ -450,7 +469,8 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
   void _shareViaTelegram() async {
     final text = _generateShareText();
     final encoded = Uri.encodeComponent(text);
-    final url = 'https://t.me/share/url?url=${Uri.encodeComponent(getProductUrl())}&text=$encoded';
+    final url =
+        'https://t.me/share/url?url=${Uri.encodeComponent(getProductUrl())}&text=$encoded';
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -461,7 +481,8 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
   }
 
   void _shareViaFacebook() async {
-    final url = 'https://www.facebook.com/sharer/sharer.php?u=${getProductUrl()}&quote=${Uri.encodeComponent(widget.product.name)}';
+    final url =
+        'https://www.facebook.com/sharer/sharer.php?u=${getProductUrl()}&quote=${Uri.encodeComponent(widget.product.name)}';
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -472,7 +493,9 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
   }
 
   void _shareViaTwitter() async {
-    final tweet = Uri.encodeComponent('Check out this amazing product: ${widget.product.name} - ${getProductUrl()} #LetBuyy');
+    final tweet = Uri.encodeComponent(
+      'Check out this amazing product: ${widget.product.name} - ${getProductUrl()} #LetBuyy',
+    );
     final url = 'https://twitter.com/intent/tweet?text=$tweet';
 
     if (await canLaunchUrl(Uri.parse(url))) {
@@ -494,7 +517,8 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
   void _shareViaEmail() async {
     final subject = widget.product.name;
     final body = _generateShareText();
-    final url = 'mailto:?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
+    final url =
+        'mailto:?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
 
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
@@ -511,7 +535,11 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: isDark ? Colors.black : Colors.white, size: 20),
+            Icon(
+              Icons.check_circle,
+              color: isDark ? Colors.black : Colors.white,
+              size: 20,
+            ),
             const SizedBox(width: 12),
             Text(
               'Link Copied!',
@@ -540,9 +568,15 @@ class _ProductShareWidgetState extends State<ProductShareWidget>
 
   String _generateShareText() {
     String productUrl = getProductUrl();
-    String discountText = widget.product.discount > 0 ? '🎉 ${widget.product.discount}% OFF!\n' : '';
-    String originalPriceText =
-        widget.product.originalPrice != null ? '₹${widget.product.originalPrice!.toStringAsFixed(0)} \u2192 ' : '';
+    String discountText = widget.product.hasPriorThirtyDayLow
+        ? '${widget.product.discountLabel}\n'
+        : widget.product.discount > 0 &&
+              widget.product.marketplaceListingId == null
+        ? '🎉 ${widget.product.discount}% OFF!\n'
+        : '';
+    String originalPriceText = widget.product.hasDisplayableReferencePrice
+        ? '${widget.product.hasPriorThirtyDayLow ? '${widget.product.referencePriceLabel}: ' : ''}₹${widget.product.originalPrice!.toStringAsFixed(0)} \u2192 '
+        : '';
 
     return '''
 🛍️ ${widget.product.name}

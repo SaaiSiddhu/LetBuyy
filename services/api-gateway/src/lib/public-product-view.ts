@@ -18,7 +18,7 @@
 
 // Everything a storefront needs to render a product page. Nothing here is commercially sensitive.
 export const PUBLIC_PRODUCT_SELECT: string =
-    'id,store_id,name,slug,description,price,compare_price,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,seo_title,seo_description,created_at,updated_at,variants';
+    'id,store_id,name,slug,description,price,compare_price,category,product_type,tags,images,thumbnail_url,stock,track_inventory,is_active,is_featured,weight,country_of_origin,importer_details,seo_title,seo_description,created_at,updated_at,variants';
 
 // Same list without `variants`, for the path that hydrates variants from product_variants instead of
 // reading the products row's own column.
@@ -29,6 +29,9 @@ export const PUBLIC_PRODUCT_SELECT_RELATIONAL: string = PUBLIC_PRODUCT_SELECT.re
 export const PUBLIC_PRODUCT_FIELDS: ReadonlySet<string> = new Set([
     ...PUBLIC_PRODUCT_SELECT.split(','),
     'product_variants',
+    'prior_lowest_price_30d',
+    'prior_price_coverage_complete',
+    'price_observed_at',
 ]);
 
 // SEC-2: the public shape of a VARIANT. Two paths produce variants and both carried stock-keeping
@@ -43,6 +46,9 @@ export const PUBLIC_VARIANT_FIELDS: ReadonlySet<string> = new Set([
     'title',
     'price',
     'compare_price',
+    'prior_lowest_price_30d',
+    'prior_price_coverage_complete',
+    'price_observed_at',
     'stock',
     'inventory_qty',
     'weight',
@@ -53,6 +59,48 @@ export const PUBLIC_VARIANT_FIELDS: ReadonlySet<string> = new Set([
     'image_url',
     'position',
 ]);
+
+export type PublicPriceObservation = {
+    current_price: number | string | null;
+    prior_lowest_price_30d: number | string | null;
+    prior_coverage_complete: boolean;
+    price_observed_at: string | null;
+};
+
+type PublicPriceAnnotated<T> = Omit<T, 'price' | 'compare_price' | 'prior_lowest_price_30d' | 'prior_price_coverage_complete' | 'price_observed_at'> & {
+    price: number | null;
+    compare_price: number | null;
+    prior_lowest_price_30d: number | null;
+    prior_price_coverage_complete: boolean;
+    price_observed_at: string | null;
+};
+
+/** Apply recorded reference-price evidence and suppress unsupported compare-at claims. */
+export function withPublicPriceObservation<T extends Record<string, unknown>>(
+    item: T,
+    observation: PublicPriceObservation | undefined,
+): PublicPriceAnnotated<T> {
+    if (!observation) return item as unknown as PublicPriceAnnotated<T>;
+    const currentPrice = observation.current_price === null ? null : Number(observation.current_price);
+    const priorLowest = observation.prior_lowest_price_30d === null
+        ? null
+        : Number(observation.prior_lowest_price_30d);
+    const complete = observation.prior_coverage_complete === true;
+    const supportedComparePrice = complete
+        && currentPrice !== null && Number.isFinite(currentPrice)
+        && priorLowest !== null && Number.isFinite(priorLowest)
+        && priorLowest > currentPrice
+        ? priorLowest
+        : null;
+    return {
+        ...item,
+        price: currentPrice !== null && Number.isFinite(currentPrice) ? currentPrice : null,
+        compare_price: supportedComparePrice,
+        prior_lowest_price_30d: priorLowest !== null && Number.isFinite(priorLowest) ? priorLowest : null,
+        prior_price_coverage_complete: complete,
+        price_observed_at: observation.price_observed_at,
+    };
+}
 
 /** Drops every key that is not public from one variant, whichever path produced it. */
 export function toPublicVariant(variant: Record<string, unknown>): Record<string, unknown> {

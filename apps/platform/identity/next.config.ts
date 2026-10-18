@@ -11,6 +11,11 @@ const { createSecurityHeaders } = requireFromConfig(
 const appRoot = dirname(fileURLToPath(import.meta.url));
 const workspaceRoot = resolve(appRoot, "../../..");
 const workspaceModules = resolve(workspaceRoot, "node_modules/.pnpm/node_modules");
+const sessionRuntimeDistDir = process.env.LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR;
+
+if (sessionRuntimeDistDir && !/^\.next-session-runtime-[a-zA-Z0-9-]+$/.test(sessionRuntimeDistDir)) {
+  throw new Error("LETBUYY_SESSION_RUNTIME_NEXT_DIST_DIR must be a unique .next-session-runtime-* directory");
+}
 
 const workspacePackages = [
   "@letbuyy/api-client",
@@ -45,6 +50,7 @@ type WebpackResolveConfig = {
 };
 
 const nextConfig: NextConfig = {
+  ...(sessionRuntimeDistDir ? { distDir: sessionRuntimeDistDir } : {}),
   transpilePackages: workspacePackages,
   turbopack: {
     root: workspaceRoot,

@@ -84,7 +84,7 @@ Storefront Runtime (Next 16)              │
 | Layer | Detail |
 |---|---|
 | Storefront | React `account/*` + `customer-auth-context.tsx`; `customer-service.ts` |
-| API | `storefront.findOrCreateCustomer/verifyCustomerPassword/customerByEmail/customerStatus/{request,confirm}CustomerPasswordReset/customerAddresses/{create,update,remove}CustomerAddress/updateCustomerProfile/customer{Wishlist,Orders}` |
+| API | `storefront.createCustomerFromOrder/verifyCustomerPassword/customerByEmail/{request,confirm}CustomerPasswordReset/customerAddresses/{create,update,remove}CustomerAddress/updateCustomerProfile/customer{Wishlist,Orders}` |
 | Gateway route | `routes/storefront/customer-registration.ts`, `customer-engagement-routes.ts`, `routes/customers.ts` |
 | RPC | identity RPCs; credential checks |
 | Tables | `store_customers` (`:12186`), `customer_credentials`, `customer_addresses` (`:8869`), `customer_wishlists` (`:8914`), `wishlists`, `customer_sessions` |

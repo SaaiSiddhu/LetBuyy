@@ -68,7 +68,7 @@ test('WS12 G5 Dart GraphQL SDK exposes the same generated operation catalog', ()
     'bulkOperationRunMutation(input: $input)',
     "operationName: 'StorefrontProducts'",
     "operationName: 'StorefrontPages'",
-    "operationName: 'StorefrontCustomerOrders'",
+    "operationName: 'StorefrontStore'",
   ], 'Dart generated GraphQL SDK');
 
   assertIncludesAll(dartApiClientSource, [
@@ -79,4 +79,13 @@ test('WS12 G5 Dart GraphQL SDK exposes the same generated operation catalog', ()
   assertIncludesAll(dartLibrarySource, [
     "export 'src/graphql.dart'",
   ], 'Dart public GraphQL export');
+
+  const operations = source => [...source.matchAll(/operationName:\s*'([^']+)'/g)]
+    .map(match => match[1]).sort();
+  assert.deepEqual(operations(dartGraphQLSource), operations(tsGraphQLSource),
+    'both SDKs publish the same complete supported operation catalog');
+  for (const source of [tsGraphQLSource, dartGraphQLSource]) {
+    assert.doesNotMatch(source, /customerOrders|StorefrontCustomerOrders/,
+      'private store-customer orders use the scoped REST transport; GraphQL remains deferred');
+  }
 });

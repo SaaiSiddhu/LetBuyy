@@ -116,8 +116,8 @@ function tables(): Record<string, Row[]> {
     return {
         sites: [{ id: 'store-1', custom_user_id: 'owner-user', user_id: null, deleted_at: null }],
         employees: [
-            { store_id: 'store-1', user_id: 'manager-user', status: 'active', deleted_at: null, permissions: { granted: ['products:write'] }, role: 'manager' },
-            { store_id: 'store-1', user_id: 'viewer-user', status: 'active', deleted_at: null, permissions: { granted: ['orders:read'] }, role: 'viewer' },
+            { store_id: 'store-1', user_id: 'manager-user', status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['products:write'] }, role: 'manager' },
+            { store_id: 'store-1', user_id: 'viewer-user', status: 'active', is_active: true, deleted_at: null, permissions: { granted: ['orders:read'] }, role: 'viewer' },
             // A removed/revoked membership: the row exists but status != 'active', so resolveGrants's
             // own .eq('status','active') filter excludes it -- found:false, granted:[], exactly like
             // no row existing at all. This is the "revoked membership" case from Section 9's matrix.

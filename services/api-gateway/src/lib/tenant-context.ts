@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership, type CustomUser, type WorkerAuthUser } from './auth-user';
-import { getSupabaseAdmin } from './supabase';
+import { getSupabaseAdmin, getSupabaseAdminUnguarded } from './supabase';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
 import {
     TENANT_SITE_GUC,
@@ -242,19 +242,22 @@ export async function resolveTenantContextForOwnedSite(c: AppContext, siteId: st
 }
 
 export async function resolveTenantContextForOrder(c: AppContext, orderId: string): Promise<TenantContext> {
-    const db = getSupabaseAdmin(c);
-    const { data: order } = await db
-        .from('orders')
-        .select('id, store_id')
-        .eq('id', orderId)
-        .is('deleted_at', null)
-        .maybeSingle();
-
-    if (!order?.store_id) {
-        throw new NotFoundError('Order not found');
-    }
-
-    return resolveTenantContextForOwnedSite(c, order.store_id as string);
+    const auth = c.get('auth');
+    // A signed session scope wins over an untrusted selection hint. Verify the
+    // live owner before using either as a tenant predicate; a hint grants nothing.
+    const hint = auth.user.storeId || c.req.header('X-Store-ID')?.trim();
+    const knownTenant = hint ? await resolveTenantContextForOwnedSite(c, hint) : null;
+    // Without a hint, order.id is a globally unique platform key and the tenant
+    // is not yet known. This is the documented four-condition bootstrap: one
+    // bounded id/store_id read, followed by live ownership verification. Every
+    // subsequent order read/write continues through the default guarded client.
+    const db = hint ? getSupabaseAdmin(c) : getSupabaseAdminUnguarded(c);
+    let query = db.from('orders').select('id, store_id').eq('id', orderId).is('deleted_at', null);
+    if (hint) query = query.eq('store_id', hint);
+    const { data: order, error } = await query.maybeSingle();
+    if (error) throw new Error('Order scope lookup failed');
+    if (!order?.store_id) throw new NotFoundError('Order not found');
+    return knownTenant || resolveTenantContextForOwnedSite(c, order.store_id as string);
 }
 
 function stringOrNull(value: unknown): string | null {

@@ -20,6 +20,7 @@ import { getSupabaseAdmin } from '../lib/supabase';
 
 export interface BuyerSessionContext {
     buyerAccountId: string;
+    sessionEpoch?: number;
 }
 
 export interface BuyerSessionState {
@@ -58,7 +59,7 @@ export function getBuyerSession(c: Context): BuyerSessionContext | null {
     return c.get('buyerSession') || null;
 }
 
-function readBuyerToken(c: Context<{ Bindings: Env }>): string | null {
+export function readBuyerToken(c: Context<{ Bindings: Env }>): string | null {
     const cookieHeader = c.req.header('cookie');
     if (cookieHeader) {
         for (const part of cookieHeader.split(';')) {
@@ -102,6 +103,6 @@ export const requireBuyerSession = createMiddleware<{ Bindings: Env }>(async (c,
         return c.json({ success: false, error: { code: 'BUYER_DISABLED', message: 'Account is disabled.' } }, 403);
     }
 
-    c.set('buyerSession', { buyerAccountId: resolved.buyerAccountId });
+    c.set('buyerSession', { buyerAccountId: resolved.buyerAccountId, sessionEpoch: resolved.sessionEpoch });
     await next();
 });

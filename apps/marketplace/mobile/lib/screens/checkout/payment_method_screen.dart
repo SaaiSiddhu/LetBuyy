@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_ui_kit/letbuyy_marketplace_ui_kit.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
+import '../../auth/buyer_sign_in_controller.dart';
+import '../../data/marketplace_checkout.dart';
 import 'widgets/checkout_steps.dart';
 import '../../widgets/premium_scaffold.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   final AddressModel selectedAddress;
+  final String? buyerEmail;
+  final CheckoutAttemptStore? checkoutAttemptStore;
   // Phase 1R shipping-semantics correction (owner-requested completion, same day): both are null
   // unless checkout_screen.dart had a real, backend-confirmed fee for every cart line -- see
   // CartShippingSummary.allKnown's own doc comment. Never a partial sum dressed up as complete.
@@ -23,6 +27,8 @@ class PaymentMethodScreen extends StatefulWidget {
   const PaymentMethodScreen({
     super.key,
     required this.selectedAddress,
+    this.buyerEmail,
+    this.checkoutAttemptStore,
     required this.total,
     required this.shippingFee,
   });
@@ -32,93 +38,227 @@ class PaymentMethodScreen extends StatefulWidget {
 }
 
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
-  Razorpay? _razorpay;
   bool _isProcessing = false;
-  String _selectedPaymentMethod = 'razorpay';
+  MarketplaceCheckoutReview? _serverReview;
+  List<MarketplaceShippingOption> _shippingOptions = const [];
+  String? _selectedShippingRateId;
+  Set<String> _unavailableListingIds = const {};
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _initializePaymentServices();
+    _emailController.text = widget.buyerEmail ?? '';
   }
 
   @override
   void dispose() {
-    _razorpay?.clear();
+    _emailController.dispose();
     super.dispose();
   }
 
-  void _initializePaymentServices() {
-    if (kIsWeb) return;
-
-    _razorpay = Razorpay();
-    _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentFailure);
-    _razorpay!.on(Razorpay.EVENT_EXTERNAL_WALLET, (response) {
-      debugPrint("💳 Wallet Selected: ${response.walletName}");
-    });
-  }
-
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    // C3 (Firebase SDK removal, 27 September 2026 review continuation): unreachable in this build
-    // -- _proceedToConfirm below never opens Razorpay checkout, so this callback can never fire.
-    // Kept only because the Razorpay plugin's own API requires a registered success handler.
-    debugPrint('✅ Payment successful (unreachable in this build): ${response.paymentId}');
-  }
-
-  void _handlePaymentFailure(PaymentFailureResponse response) {
-    if (!mounted) return;
-
-    setState(() => _isProcessing = false);
-    _showSnackBar(
-      'Payment Failed: ${response.message ?? "Unknown error"}',
-      isError: true,
-    );
-  }
-
-  // C3 (Firebase SDK removal, 27 September 2026 review continuation): order placement
-  // (_createOrder, deleted here) was entirely Firestore-backed (DatabaseService.createOrder, with
-  // a FirebaseFirestore-derived order id) behind a safeFirebaseUserId()/safeFirebaseCurrentUser()
-  // == null guard that is always true now that Firebase is never initialized -- so tapping "Place
-  // Order" already did nothing at all, silently, regardless of payment method or stock. There is
-  // no canonical order/payment-creation endpoint wired into this app yet: checkout, orders and
-  // payments are canonical-backend capabilities services/api-gateway owns
-  // (LETBUYY_CANONICAL_SYSTEMS.md), and FB-2/3/4 have so far only moved identity, accounts,
-  // addresses and the product/category feed onto it, not order placement -- a missing Flutter
-  // integration is not the same fact as a missing backend capability, but neither exists here yet
-  // either way. Per the owner's explicit instruction, purchase execution stays honestly
-  // unavailable until its own approved phase, rather than silently doing nothing or reaching a
-  // legacy failure and calling the journey complete. Local cart and delivery-address selection
-  // above this point remain real and working; this is the one remaining boundary. StockService's
-  // own Firestore-backed validateStock() is removed along with it -- see stock_service.dart's own
-  // deletion, it had no other caller.
   Future<void> _proceedToConfirm() async {
     if (_isProcessing) return;
     HapticFeedback.mediumImpact();
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Checkout isn’t available yet'),
-        content: const Text(
-          'Placing a real order isn’t supported in this build yet. Your cart and delivery address are saved for when it is.',
+    final cart = context.read<CartProvider>();
+    final snapshot = List<CartItemModel>.unmodifiable(cart.items);
+    setState(() => _isProcessing = true);
+    try {
+      final buyer = context.read<BuyerSignInController>();
+      final buyerId = buyer.buyerId;
+      final sessionToken = buyer.token;
+      final buyerNamespace = buyerId ?? 'guest';
+      final localCartRevision =
+          cart.cart?.updatedAt.millisecondsSinceEpoch ?? 0;
+      bool buyerIsUnchanged() =>
+          buyer.buyerId == buyerId && buyer.token == sessionToken;
+      final checkout = MarketplaceCheckoutService(
+        client: context.read<ApiClient>(),
+        secureStorage: const FlutterSecureStorage(),
+        attemptStore: widget.checkoutAttemptStore,
+      );
+      final result = await checkout.placeCodOrder(
+        items: snapshot,
+        address: widget.selectedAddress,
+        email: _emailController.text,
+        buyerNamespace: buyerNamespace,
+        storefrontSessionToken: sessionToken,
+        localCartRevision: localCartRevision,
+        selectedShippingRateId: _selectedShippingRateId,
+        acceptedTotal: _serverReview?.authoritativeTotal,
+      );
+      if (!mounted) return;
+      if (!buyerIsUnchanged()) {
+        _showSnackBar(
+          'Checkout finished for the account that started it. Sign back into that account to view the order; this account’s cart was left unchanged.',
+          isError: true,
+        );
+        return;
+      }
+      if (result is MarketplaceCheckoutReview) {
+        if ((cart.cart?.updatedAt.millisecondsSinceEpoch ?? 0) !=
+            localCartRevision) {
+          setState(() {
+            _serverReview = null;
+            _shippingOptions = const [];
+            _selectedShippingRateId = null;
+          });
+          _showSnackBar(
+            'Your cart changed during review. Submit again to price the current cart.',
+          );
+          return;
+        }
+        setState(() {
+          _serverReview = result;
+          _shippingOptions = result.shippingOptions;
+          if (result.selectedShippingRateId != null) {
+            _selectedShippingRateId = result.selectedShippingRateId;
+          } else if (!_shippingOptions.any(
+            (option) => option.id == _selectedShippingRateId,
+          )) {
+            _selectedShippingRateId = null;
+          }
+        });
+        if (result.authoritativeTotal == null) {
+          _showSnackBar(
+            'Choose a delivery option, then review its server-confirmed total.',
+          );
+        } else {
+          _showSnackBar(
+            'Server-confirmed total: ₹${result.authoritativeTotal!.toStringAsFixed(2)}. Review it, then tap Place COD order.',
+          );
+        }
+        return;
+      }
+      if (result is! MarketplaceCheckoutResult) {
+        throw StateError('Unexpected checkout result');
+      }
+
+      var cartCleaned = true;
+      if (result.matchesCurrentCart) {
+        cartCleaned = await cart.removeSnapshot(
+          snapshot,
+          expectedBuyerId: buyerId,
+        );
+      }
+      if (!mounted) return;
+      if (!buyerIsUnchanged()) {
+        _showSnackBar(
+          'Checkout finished for the account that started it. Sign back into that account to view the order; this account’s cart was left unchanged.',
+          isError: true,
+        );
+        return;
+      }
+      if (cartCleaned || !result.matchesCurrentCart) {
+        await checkout.clearCompletedAttempt(
+          buyerNamespace: buyerNamespace,
+          cartToken: result.cartToken,
+        );
+      }
+      if (!mounted) return;
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('COD order placed'),
+          content: Text(
+            'Order ${result.orderNumber} is confirmed. Amount due on delivery: ₹${result.total.toStringAsFixed(2)}.${cartCleaned ? '' : '\nYour cart is still saved on this device; open Orders before retrying checkout.'}',
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              child: const Text('Continue shopping'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
-        ],
+      );
+    } on ApiException catch (error) {
+      if (mounted) {
+        if (error.code == 'MARKETPLACE_LISTING_UNAVAILABLE') {
+          final body = error.body;
+          final rawIds = body is Map ? body['listing_ids'] : null;
+          final listingIds = rawIds is List
+              ? rawIds.whereType<String>().where((id) => id.isNotEmpty).toSet()
+              : <String>{};
+          setState(() {
+            _unavailableListingIds = listingIds;
+            _serverReview = null;
+            _shippingOptions = const [];
+            _selectedShippingRateId = null;
+          });
+        } else if (error.code == 'MARKETPLACE_LISTING_CHANGED') {
+          setState(() {
+            _serverReview = null;
+            _shippingOptions = const [];
+            _selectedShippingRateId = null;
+          });
+        }
+        _showSnackBar(error.message, isError: true);
+      }
+    } catch (error) {
+      debugPrint('Marketplace COD checkout failed: $error');
+      if (mounted) {
+        _showSnackBar(
+          'Checkout could not be confirmed. Your cart is saved; retry safely.',
+          isError: true,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  Future<void> _removeUnavailableItems() async {
+    if (_unavailableListingIds.isEmpty || _isProcessing) return;
+    final buyerId = context.read<BuyerSignInController>().buyerId;
+    final cart = context.read<CartProvider>();
+    final snapshot = List<CartItemModel>.unmodifiable(
+      cart.items.where(
+        (item) => _unavailableListingIds.contains(item.marketplaceListingId),
       ),
     );
+    if (snapshot.isEmpty) {
+      setState(() => _unavailableListingIds = const {});
+      return;
+    }
+    setState(() => _isProcessing = true);
+    try {
+      final removed = await cart.removeSnapshot(
+        snapshot,
+        expectedBuyerId: buyerId,
+      );
+      if (!mounted) return;
+      if (!removed) {
+        _showSnackBar(
+          'The active account changed. Sign in again before changing this cart.',
+          isError: true,
+        );
+        return;
+      }
+      setState(() {
+        _unavailableListingIds = const {};
+        _serverReview = null;
+        _shippingOptions = const [];
+        _selectedShippingRateId = null;
+      });
+      _showSnackBar('Unavailable items removed from your cart.');
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
   }
 
   Future<void> _openInMaps() async {
     final addr = widget.selectedAddress;
-    
+
     if (addr.latitude != null && addr.longitude != null) {
-      final String googleMapsUrl = 
+      final String googleMapsUrl =
           'https://www.google.com/maps/search/?api=1&query=${addr.latitude},${addr.longitude}';
-      
+
       final Uri uri = Uri.parse(googleMapsUrl);
-      
+
       try {
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -140,7 +280,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         content: Row(
           children: [
             Icon(
-              isError ? Icons.error_outline_rounded : Icons.check_circle_outline_rounded,
+              isError
+                  ? Icons.error_outline_rounded
+                  : Icons.check_circle_outline_rounded,
               color: Colors.white,
               size: 20,
             ),
@@ -177,16 +319,15 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     // Phase 1R corrective (C2): was context.watch<CouponProvider>()/coupon.calculateDiscount(...).
     // CouponProvider was entirely FirebaseFirestore-backed with no canonical successor; a coupon
     // could never actually load, so this already always evaluated to 0.
-    final subtotal = cart.subtotal;
-    const discount = 0.0;
-    // Phase 1R corrective (found via C5 device testing): this used to recompute
-    // `subtotal - discount` independently, silently ignoring widget.total (and the shipping fee
-    // baked into it) -- checkout_screen.dart already computed the real total, including shipping,
-    // moments earlier on the previous screen; trust it instead of recomputing a different number.
-    // Phase 1R shipping-semantics correction (owner-requested completion, same day): both are
-    // now nullable -- see this widget's own field doc comment.
-    final shippingFee = widget.shippingFee;
-    final total = widget.total;
+    final subtotal = _serverReview?.subtotal ?? cart.subtotal;
+    final discount = _serverReview?.discount ?? 0.0;
+    final tax = _serverReview?.tax ?? 0.0;
+    // Before the server review, these values are displayed only as estimates from the app cart.
+    // After review, all rows come from the same canonical cart/delivery response.
+    final shippingFee =
+        _serverReview?.shipping ??
+        (_serverReview == null ? widget.shippingFee : null);
+    final total = _serverReview?.authoritativeTotal ?? widget.total;
 
     return PremiumScaffold(
       // resizeToAvoidBottomInset handled internally
@@ -231,17 +372,29 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 children: [
                   _buildAddressCard(isDark, cardColor, accentColor),
                   const SizedBox(height: 12),
+                  _buildEmailField(isDark, cardColor),
+                  const SizedBox(height: 12),
+                  if (_unavailableListingIds.isNotEmpty) ...[
+                    _buildUnavailableItemsCard(isDark, cardColor, accentColor),
+                    const SizedBox(height: 12),
+                  ],
+                  if (_shippingOptions.isNotEmpty) ...[
+                    _buildShippingOptions(isDark, cardColor, accentColor),
+                    const SizedBox(height: 12),
+                  ],
                   _buildOrderSummaryCard(
                     subtotal: subtotal,
                     discount: discount,
                     shippingFee: shippingFee,
+                    tax: tax,
                     total: total,
+                    isServerPriced: _serverReview?.authoritativeTotal != null,
                     isDark: isDark,
                     cardColor: cardColor,
                     accentColor: accentColor,
                   ),
                   const SizedBox(height: 12),
-                  _buildPaymentCard(isDark, cardColor, accentColor),
+                  _buildCodPaymentCard(isDark, cardColor, accentColor),
                   const SizedBox(height: 12),
                   _buildSecurityBadge(isDark, accentColor),
                   const SizedBox(height: 16),
@@ -250,6 +403,105 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ),
           ),
           _buildBottomBar(total, isDark, accentColor, cardColor),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShippingOptions(
+    bool isDark,
+    Color cardColor,
+    Color accentColor,
+  ) {
+    return _buildCardSection(
+      isDark: isDark,
+      cardColor: cardColor,
+      title: 'Delivery options',
+      icon: Icons.local_shipping_outlined,
+      accentColor: accentColor,
+      child: Column(
+        children: _shippingOptions
+            .map((option) {
+              final eta =
+                  option.estimatedDaysMin == null ||
+                      option.estimatedDaysMax == null
+                  ? null
+                  : '${option.estimatedDaysMin}–${option.estimatedDaysMax} days';
+              return Material(
+                color: cardColor,
+                child: RadioListTile<String>(
+                  value: option.id,
+                  groupValue: _selectedShippingRateId,
+                  contentPadding: EdgeInsets.zero,
+                  activeColor: accentColor,
+                  title: Text(
+                    option.name,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: eta == null ? null : Text('Seller estimate: $eta'),
+                  secondary: Text(
+                    option.amount == 0
+                        ? 'Free'
+                        : '₹${option.amount.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: accentColor,
+                    ),
+                  ),
+                  onChanged: _isProcessing
+                      ? null
+                      : (id) {
+                          setState(() {
+                            _selectedShippingRateId = id;
+                            _serverReview = null;
+                          });
+                        },
+                ),
+              );
+            })
+            .toList(growable: false),
+      ),
+    );
+  }
+
+  Widget _buildUnavailableItemsCard(
+    bool isDark,
+    Color cardColor,
+    Color accentColor,
+  ) {
+    final unavailableItems = context
+        .watch<CartProvider>()
+        .items
+        .where(
+          (item) => _unavailableListingIds.contains(item.marketplaceListingId),
+        )
+        .toList(growable: false);
+    return _buildCardSection(
+      isDark: isDark,
+      cardColor: cardColor,
+      title: 'Cart items need attention',
+      icon: Icons.warning_amber_rounded,
+      accentColor: Colors.deepOrange,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'These products are no longer available. Remove them to continue checkout.',
+          ),
+          const SizedBox(height: 8),
+          ...unavailableItems.map(
+            (item) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              child: Text('• ${item.productName}'),
+            ),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _isProcessing ? null : _removeUnavailableItems,
+            icon: const Icon(Icons.remove_shopping_cart_outlined),
+            label: const Text('Remove unavailable items'),
+            style: OutlinedButton.styleFrom(foregroundColor: accentColor),
+          ),
         ],
       ),
     );
@@ -272,7 +524,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         icon: Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade100,
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -305,11 +559,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   color: accentColor.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  Icons.map_outlined,
-                  color: accentColor,
-                  size: 18,
-                ),
+                child: Icon(Icons.map_outlined, color: accentColor, size: 18),
               ),
               tooltip: 'Open in Maps',
             )
@@ -339,7 +589,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Phone
           Row(
             children: [
@@ -359,7 +609,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ],
           ),
-          
+
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Divider(
@@ -367,14 +617,14 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               height: 1,
             ),
           ),
-          
+
           // Address Line 1
           _buildAddressRow(
             icon: Icons.home_outlined,
             value: addr.addressLine1,
             isDark: isDark,
           ),
-          
+
           // Address Line 2 (if exists)
           if (addr.addressLine2.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -385,7 +635,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               isSecondary: true,
             ),
           ],
-          
+
           // Landmark (if exists)
           if (addr.landmark != null && addr.landmark!.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -395,9 +645,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               isDark: isDark,
             ),
           ],
-          
+
           const SizedBox(height: 12),
-          
+
           // City, State, Zipcode
           Wrap(
             spacing: 8,
@@ -420,7 +670,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ],
           ),
-          
+
           // Country (if not India)
           if (addr.country.isNotEmpty && addr.country != 'India') ...[
             const SizedBox(height: 8),
@@ -430,16 +680,20 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               isDark: isDark,
             ),
           ],
-          
+
           // Address Type Badge (if exists)
           if (addr.addressType != null && addr.addressType!.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: _getAddressTypeColor(addr.addressType!).withValues(alpha: 0.15),
+                color: _getAddressTypeColor(
+                  addr.addressType!,
+                ).withValues(alpha: 0.15),
                 border: Border.all(
-                  color: _getAddressTypeColor(addr.addressType!).withValues(alpha: 0.3),
+                  color: _getAddressTypeColor(
+                    addr.addressType!,
+                  ).withValues(alpha: 0.3),
                 ),
                 borderRadius: BorderRadius.circular(6),
               ),
@@ -561,11 +815,87 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
   }
 
+  Widget _buildEmailField(bool isDark, Color cardColor) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+        ),
+      ),
+      child: TextField(
+        controller: _emailController,
+        keyboardType: TextInputType.emailAddress,
+        autofillHints: const [AutofillHints.email],
+        textInputAction: TextInputAction.done,
+        decoration: InputDecoration(
+          labelText: 'Order email',
+          hintText: 'name@example.com',
+          prefixIcon: const Icon(Icons.email_outlined),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCodPaymentCard(bool isDark, Color cardColor, Color accentColor) {
+    return _buildCardSection(
+      isDark: isDark,
+      cardColor: cardColor,
+      title: 'Payment Method',
+      icon: Icons.payments_outlined,
+      accentColor: accentColor,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: accentColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: accentColor.withValues(alpha: 0.45)),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.local_atm_rounded, color: accentColor, size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Cash on Delivery',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Pay the confirmed order amount when it arrives.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.check_circle, color: accentColor),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildOrderSummaryCard({
     required double subtotal,
     required double discount,
     required double? shippingFee,
+    required double tax,
     required double? total,
+    required bool isServerPriced,
     required bool isDark,
     required Color cardColor,
     required Color accentColor,
@@ -573,7 +903,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     return _buildCardSection(
       isDark: isDark,
       cardColor: cardColor,
-      title: 'Price Details',
+      title: isServerPriced ? 'Server-priced order' : 'Price estimate',
       icon: Icons.receipt_long_rounded,
       accentColor: accentColor,
       child: Column(
@@ -583,12 +913,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             const SizedBox(height: 10),
             _priceRow("Discount", -discount, isDark, color: AppColors.success),
           ],
-          if (shippingFee != null && shippingFee > 0) ...[
+          if (shippingFee != null) ...[
             const SizedBox(height: 10),
             _priceRow("Shipping Fee", shippingFee, isDark),
           ] else if (shippingFee == null) ...[
             const SizedBox(height: 10),
             _priceStatusRow("Shipping Fee", "Pending", isDark),
+          ],
+          if (tax > 0) ...[
+            const SizedBox(height: 10),
+            _priceRow('Tax', tax, isDark),
           ],
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -598,9 +932,23 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             ),
           ),
           if (total != null)
-            _priceRow("Total Amount", total, isDark, isTotal: true, color: accentColor)
+            _priceRow(
+              isServerPriced
+                  ? 'Server-confirmed total'
+                  : 'Estimate (not final)',
+              total,
+              isDark,
+              isTotal: true,
+              color: accentColor,
+            )
           else
-            _priceStatusRow("Total Amount", "Calculated at checkout", isDark, isTotal: true, color: accentColor),
+            _priceStatusRow(
+              'Server total',
+              'Shown after repricing',
+              isDark,
+              isTotal: true,
+              color: accentColor,
+            ),
 
           // Phase 1R corrective (C2): "Coupon Applied" badge removed. CouponProvider was
           // entirely FirebaseFirestore-backed with no canonical successor; appliedCoupon was
@@ -612,7 +960,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: isDark ? 0.15 : 0.08),
+                color: AppColors.success.withValues(
+                  alpha: isDark ? 0.15 : 0.08,
+                ),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Row(
@@ -636,263 +986,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ),
           ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentCard(bool isDark, Color cardColor, Color accentColor) {
-    return _buildCardSection(
-      isDark: isDark,
-      cardColor: cardColor,
-      title: 'Payment Method',
-      icon: Icons.payment_rounded,
-      accentColor: accentColor,
-      child: Column(
-        children: [
-          // Online Payment Option
-          if (!kIsWeb)
-            GestureDetector(
-              onTap: () {
-                setState(() => _selectedPaymentMethod = 'razorpay');
-                HapticFeedback.selectionClick();
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: _selectedPaymentMethod == 'razorpay'
-                      ? accentColor.withValues(alpha: 0.1)
-                      : (isDark ? Colors.grey[850] : Colors.grey[50]),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _selectedPaymentMethod == 'razorpay'
-                        ? accentColor
-                        : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
-                    width: _selectedPaymentMethod == 'razorpay' ? 2 : 1,
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Icon(
-                            Icons.payment_rounded,
-                            color: accentColor,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Pay Online (Razorpay)',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w800,
-                                  color: isDark ? Colors.white : Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                'UPI, Cards, Wallets & More',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDark ? Colors.grey[400] : Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: _selectedPaymentMethod == 'razorpay'
-                                  ? accentColor
-                                  : (isDark ? Colors.grey[600]! : Colors.grey[400]!),
-                              width: 2,
-                            ),
-                            color: _selectedPaymentMethod == 'razorpay'
-                                ? accentColor
-                                : Colors.transparent,
-                          ),
-                          child: _selectedPaymentMethod == 'razorpay'
-                              ? const Icon(Icons.check, color: Colors.white, size: 16)
-                              : null,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildPaymentBadge(FontAwesomeIcons.solidCreditCard, 'Card', isDark),
-                        _buildPaymentBadge(FontAwesomeIcons.mobileScreenButton, 'UPI', isDark),
-                        _buildPaymentBadge(FontAwesomeIcons.wallet, 'Wallet', isDark),
-                        _buildPaymentBadge(FontAwesomeIcons.buildingColumns, 'Bank', isDark),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          
-          if (!kIsWeb) const SizedBox(height: 12),
-          
-          // Cash on Delivery Option
-          GestureDetector(
-            onTap: () {
-              setState(() => _selectedPaymentMethod = 'cod');
-              HapticFeedback.selectionClick();
-            },
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: _selectedPaymentMethod == 'cod'
-                    ? accentColor.withValues(alpha: 0.1)
-                    : (isDark ? Colors.grey[850] : Colors.grey[50]),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _selectedPaymentMethod == 'cod'
-                      ? accentColor
-                      : (isDark ? Colors.grey[700]! : Colors.grey[300]!),
-                  width: _selectedPaymentMethod == 'cod' ? 2 : 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.warning.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: FaIcon(
-                      FontAwesomeIcons.handHoldingDollar,
-                      color: AppColors.warning,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Cash on Delivery',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: isDark ? Colors.white : Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Pay when you receive',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: _selectedPaymentMethod == 'cod'
-                            ? accentColor
-                            : (isDark ? Colors.grey[600]! : Colors.grey[400]!),
-                        width: 2,
-                      ),
-                      color: _selectedPaymentMethod == 'cod'
-                          ? accentColor
-                          : Colors.transparent,
-                    ),
-                    child: _selectedPaymentMethod == 'cod'
-                        ? const Icon(Icons.check, color: Colors.white, size: 16)
-                        : null,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          // Web Notice
-          if (kIsWeb) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.info.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: AppColors.infoDark,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Online payments are supported only on mobile apps',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: isDark ? Colors.white : Colors.grey.shade900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentBadge(FaIconData icon, String label, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2C2C2C) : Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: isDark ? Colors.grey[700]! : Colors.grey[300]!),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FaIcon(icon, size: 11, color: isDark ? Colors.grey[400] : Colors.grey[600]),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: isDark ? Colors.grey[300] : Colors.grey[700],
-            ),
-          ),
         ],
       ),
     );
@@ -1011,17 +1104,19 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 ],
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
-          ),
+          Padding(padding: const EdgeInsets.all(16), child: child),
         ],
       ),
     );
   }
 
-  Widget _priceRow(String title, double value, bool isDark,
-      {Color? color, bool isTotal = false}) {
+  Widget _priceRow(
+    String title,
+    double value,
+    bool isDark, {
+    Color? color,
+    bool isTotal = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1030,7 +1125,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           style: TextStyle(
             fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
             fontSize: isTotal ? 15 : 14,
-            color: isDark ? (isTotal ? Colors.white : Colors.grey[300]) : (isTotal ? Colors.black87 : Colors.grey[700]),
+            color: isDark
+                ? (isTotal ? Colors.white : Colors.grey[300])
+                : (isTotal ? Colors.black87 : Colors.grey[700]),
           ),
         ),
         Text(
@@ -1048,8 +1145,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   // Phase 1R shipping-semantics correction: the text-status counterpart to [_priceRow], for a
   // line whose value genuinely isn't a number yet -- never a ₹ amount standing in for "we don't
   // know". Mirrors mobile_cart_screen.dart's own _priceStatusRow so both screens read alike.
-  Widget _priceStatusRow(String title, String status, bool isDark,
-      {Color? color, bool isTotal = false}) {
+  Widget _priceStatusRow(
+    String title,
+    String status,
+    bool isDark, {
+    Color? color,
+    bool isTotal = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1058,7 +1160,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           style: TextStyle(
             fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
             fontSize: isTotal ? 15 : 14,
-            color: isDark ? (isTotal ? Colors.white : Colors.grey[300]) : (isTotal ? Colors.black87 : Colors.grey[700]),
+            color: isDark
+                ? (isTotal ? Colors.white : Colors.grey[300])
+                : (isTotal ? Colors.black87 : Colors.grey[700]),
           ),
         ),
         Text(
@@ -1074,9 +1178,22 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  Widget _buildBottomBar(double? total, bool isDark, Color accentColor, Color cardColor) {
+  Widget _buildBottomBar(
+    double? total,
+    bool isDark,
+    Color accentColor,
+    Color cardColor,
+  ) {
+    final needsShippingSelection =
+        _shippingOptions.isNotEmpty && _selectedShippingRateId == null;
+    final hasUnavailableItems = _unavailableListingIds.isNotEmpty;
     return Container(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        16 + MediaQuery.of(context).padding.bottom,
+      ),
       decoration: BoxDecoration(
         color: cardColor,
         boxShadow: [
@@ -1087,11 +1204,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
         ],
         border: Border(
-          top: BorderSide(color: isDark ? Colors.grey[800]! : Colors.grey[200]!),
+          top: BorderSide(
+            color: isDark ? Colors.grey[800]! : Colors.grey[200]!,
+          ),
         ),
       ),
       child: ElevatedButton(
-        onPressed: _isProcessing ? null : _proceedToConfirm,
+        onPressed:
+            _isProcessing || needsShippingSelection || hasUnavailableItems
+            ? null
+            : _proceedToConfirm,
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 54),
           backgroundColor: accentColor,
@@ -1129,19 +1251,18 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    _selectedPaymentMethod == "cod"
-                        ? Icons.check_circle_rounded
-                        : Icons.lock_rounded,
-                    size: 20,
-                  ),
+                  const Icon(Icons.receipt_long_rounded, size: 20),
                   const SizedBox(width: 10),
                   Text(
-                    total != null
-                        ? (_selectedPaymentMethod == "cod"
-                            ? "Place Order • ₹${total.toStringAsFixed(0)}"
-                            : "Pay ₹${total.toStringAsFixed(0)}")
-                        : (_selectedPaymentMethod == "cod" ? "Place Order" : "Pay"),
+                    needsShippingSelection
+                        ? 'Select a delivery option above'
+                        : hasUnavailableItems
+                        ? 'Remove unavailable cart items'
+                        : _serverReview?.authoritativeTotal == null
+                        ? (_shippingOptions.isNotEmpty
+                              ? 'Review selected delivery total'
+                              : 'Review server total')
+                        : 'Place COD order • ₹${_serverReview!.authoritativeTotal!.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,

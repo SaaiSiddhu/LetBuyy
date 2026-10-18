@@ -407,12 +407,20 @@ test('a reset validates the code and the password before anything else', async (
 // ---------------------------------------------------------------------------------------------------
 
 test("identity-platform's own signed header reaches the buyer routes; the storefront's does not", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async (input, init) => {
+        const url = new URL(typeof input === 'string' ? input : input instanceof URL ? input.href : input.url);
+        assert.equal(url.pathname, '/rest/v1/rpc/consume_internal_auth_replay_jti', 'only the signed-auth replay claim is stubbed');
+        assert.equal(init?.method, 'POST');
+        return Response.json(true);
+    };
+    try {
     const secret = 'test-internal-secret';
     const router = new Hono<{ Bindings: Env }>();
-    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false });
+    registerBuyerRealmRoutes(router, { normalizeEmail: (e) => e.trim().toLowerCase(), hydrateStorefrontOrderItems: async (_c, orders) => orders, orderItemsRelationalReadsEnabled: () => false, requireValidTurnstile: async () => null });
     const app = new Hono<{ Bindings: Env }>();
     app.route('/storefront', router);
-    const env = { INTERNAL_API_SECRET: secret } as unknown as Env;
+    const env = { INTERNAL_API_SECRET: secret, SUPABASE_URL: 'https://identity-auth.fake.test', SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key' } as unknown as Env;
 
     const signedAs = async (appName: string) => {
         const plan = await createLetbuyyInternalAppHeaders({ app: appName, secret });
@@ -430,6 +438,9 @@ test("identity-platform's own signed header reaches the buyer routes; the storef
         assert.equal((await call(await signedAs('accounts'))).status, 400, `${path}: identity-platform must get through`);
         assert.equal((await call(await signedAs('storefront'))).status, 401, `${path}: the storefront must not`);
         assert.equal((await call({})).status, 401, `${path}: nor an unsigned caller`);
+    }
+    } finally {
+        globalThis.fetch = originalFetch;
     }
 });
 

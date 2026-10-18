@@ -87,14 +87,18 @@ test('detectAuthAnomalies() live finding source contains SUPABASE_URL env var', 
   assert.ok(mentionsSupa, 'evidence mentions SUPABASE_URL');
 });
 
-test('detectAuthAnomalies() structural two-issuer model finding is CONNECTED', () => {
+test('detectAuthAnomalies() reports canonical identity and the transitional legacy session bridge', () => {
   const engine = createEngine_();
   const svc = new SecurityOperationsService(engine, fixedNow);
   const findings = svc.detectAuthAnomalies();
-  const structural = findings.find((f) => f.kind === 'two-issuer-auth-model');
-  assert.ok(structural, 'two-issuer-auth-model finding is present');
+  const structural = findings.find((f) => f.kind === 'canonical-identity-legacy-session-bridge');
+  assert.ok(structural, 'canonical identity / legacy bridge finding is present');
   assert.equal(structural.status, 'CONNECTED', 'structural finding is CONNECTED');
   assert.ok(structural.confidence > 0, 'structural finding has confidence > 0');
+  assert.match(structural.title, /Canonical identity issuer/);
+  assert.match(structural.detail, /three realms/);
+  assert.match(structural.detail, /hosted observation, migration and retirement remain open/i);
+  assert.equal(structural.evidence.some((entry) => entry.source?.includes('security-intelligence-v5')), false);
 });
 
 test('detectAuthAnomalies() has provenance fields on every finding', () => {

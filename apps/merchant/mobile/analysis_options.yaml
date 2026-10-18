@@ -2,6 +2,11 @@
 # check for errors, warnings, and lints.
 
 # Include root analysis options
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
 include: ../../../analysis_options.yaml
 
 linter:

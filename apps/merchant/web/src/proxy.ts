@@ -17,6 +17,7 @@ export function proxy(request: NextRequest) {
 
     if (
         pathname === '/' ||
+        pathname === '/accept-invite' ||
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
         pathname.startsWith('/launching-soon') ||
