@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-18",
+  "timezone": "Asia/Kolkata",
+  "status": "READY_FOR_AUTHORIZED_PUSH",
+  "reviewedSource": "216ca0205b50cdc2308ef9b8391b8734b8f61ee9",
+  "remoteDevelopBefore": "ffcd12427078b0aaccf40606ad56af789a90d532",
+  "sourceHistoryAhead": 240,
+  "sourceHistoryBehind": 0,
+  "pushTargets": [
+    "refs/heads/develop",
+    "refs/heads/letbuyy/recovery-2026-10-18"
+  ],
+  "recoveryHead": "faeab17f7d5a404ffec95b7c56961bdae74ee379",
+  "preservedEnvironmentRefs": {
+    "main": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a",
+    "staging": "1e6cc4c3d8766dd258ddc02986fda470fdb83c7a"
+  },
+  "freshVerification": {
+    "gatewayUnits": {
+      "pass": 1604,
+      "fail": 0,
+      "skip": 0,
+      "todo": 0
+    },
+    "contracts": {
+      "pass": 338,
+      "fail": 0,
+      "skip": 0,
+      "todo": 0
+    },
+    "typecheck": {
+      "successfulTasks": 81,
+      "cachedTasks": 80
+    },
+    "migrationRegressions": {
+      "pass": 9,
+      "fail": 0,
+      "skip": 0,
+      "todo": 0
+    },
+    "governance": {
+      "counts": {
+        "PASS": 114,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "SKIP": 0,
+        "NOT_APPLICABLE": 1
+      },
+      "exitCode": 0,
+      "disposableInstalledClone": true
+    }
+  },
+  "excludedInvalidObservations": [
+    "Sandbox EPERM prevented the initial tsx launch; unchanged commands subsequently passed with local IPC permitted.",
+    "First governance clone had no dependency installation:109 pass and5 blocked, superseded by installed-clone full gate."
+  ],
+  "privateArchive": {
+    "file": "private-continuity.tar.gz",
+    "bytes": 2221694218,
+    "sha256": "ae15f337282e23e341bb82125e32ad81daad197b7e2d28f221b392dc8f79eb6d",
+    "private": true,
+    "mode": "0o600",
+    "scope": "Coordination review/source packets, all current local-integration raw evidence and existing pre-upgrade backups. Excludes original worktrees, environment/signing files and live Docker volumes."
+  },
+  "sourceScan": {
+    "textBlobs": 2763,
+    "bytes": 73101663,
+    "exactRegisteredFindings": 200,
+    "additionalReviewedSyntheticFindings": 1,
+    "unexplainedFindings": 0
+  },
+  "limits": [
+    "No full whole-product/device/provider/release acceptance.",
+    "Collection full19-case final rerun still required; prior18/19 and isolated corrected1/1 are separate.",
+    "Private archive, ignored credentials/signing and live local data are not carried by a Git clone.",
+    "No staging/main promotion, deployment, hosted migration, provider transaction or phase Goal resume."
+  ]
+}

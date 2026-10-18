@@ -47,10 +47,10 @@ validator already accepts. A branch holding commits absent from `develop` is nev
 
 ## Rows
 
-| `letbuyy/local-complete-integration` | `a23958fe` | ACTIVE | 2026-10-18 | Owner request in local integration chat | Integrate remaining N1–N9 source with provenance, repair gateway/governance failures, verify canonical local web/backend/native journeys without weakening security or touching restored data. Scope apps, services, packages, paired migrations/rollbacks, tests, validators and existing evidence records. Existing phase overlays, environment and signing files preserved. | N/A — pending |
-
 | Branch | SHA | Status | Decided | Decided by | Why | Merged into |
 |---|---|---|---|---|---|---|
+| `letbuyy/local-complete-integration` | `7b8aacac6211102effb400bd04ae7defc86e3fb4` | MERGED_DEVELOP | 2026-10-18 | Owner-authorized consolidation and machine transfer | Remaining N1–N9 assembly and repairs are contained by merges8800ee34,3038312d and216ca020. This records actual ancestry, not whole-phase acceptance. The dirty checkout is retained for private transfer; no cleanup is authorized. | `216ca0205b50cdc2308ef9b8391b8734b8f61ee9` |
+| `letbuyy/recovery-2026-10-18` | `faeab17f7d5a404ffec95b7c56961bdae74ee379` | PRESERVED_REFERENCE | 2026-10-18 | Owner request to consolidate work and transfer machines | Nine unfinished phase source snapshots, captured with temporary indexes and indexed by phase. Recovery only; older shared files make wholesale merging unsafe. Original dirty worktrees remain intact. | N/A — recovery only |
 | `develop` | `a751a2ff` | ENVIRONMENT | 2026-09-04 | owner (D-BRANCH) | Created at the working tip `a751a2ff` (former `feature/claude-md-durable-architecture-memory` head). Integration + local end-to-end. | N/A |
 | `staging` | `a751a2ff` | ENVIRONMENT | 2026-09-04 | owner (D-BRANCH) | Created at `a751a2ff`. Cloud pre-production. Moves only by `promote staging`. | N/A |
 | `main` | `a751a2ff` | ENVIRONMENT | 2026-09-04 | owner (D-BRANCH) | Fast-forwarded `5c984eaa` → `a751a2ff` (`git fetch . <sha>:main`; reflog reads `fast-forward`). Production pointer; nothing is deployed anywhere as of this date. Moves only by `promote main`. | N/A |

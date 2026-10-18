@@ -1,5 +1,11 @@
 # Local develop integration — 18 October 2026
 
+> Current handoff: [CONSOLIDATION.md](CONSOLIDATION.md) reconciles all fourteen
+> chats and the later develop integrations through `216ca020`. The historical
+> 17 gateway / five governance failures below were repaired in later assembly;
+> the runtime was subsequently paused by the owner. See `TRANSFER_RESULT.json`
+> for final transfer verification and the remote push receipt.
+
 Execution mode: SINGLE AGENT. Subagents and delegated implementation: NO.
 
 The owner explicitly requested merging completed work into `develop` and running
