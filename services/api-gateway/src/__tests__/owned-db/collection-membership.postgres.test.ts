@@ -16,7 +16,10 @@ const restCalls: {method: string; resource: string}[] = [];
 before(async () => {
     proxy = await startOwnedPooledSqlProxy(owned);
     gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), proxy.env()));
-    observer = tapRest(owned.restUrl, async (call, forward) => { restCalls.push({method: call.method, resource: call.resource}); return forward(); });
+    observer = tapRest(owned.restUrl, async (call, forward) => { restCalls.push({method: call.method, resource: call.resource});
+        const response=await forward();
+        if(!response.ok){const detail=await response.clone().json().catch(()=>({}));console.info('SYNTHETIC_COLLECTION_SQL',JSON.stringify({resource:call.resource,code:(detail as Record<string,unknown>).code,message:(detail as Record<string,unknown>).message}));}
+        return response; });
 });
 afterEach(async () => { await gateway?.settle(); });
 after(async () => { await gateway?.settle(); observer?.restore(); await closePooledSqlClients(); await proxy?.stop(); });
@@ -45,6 +48,10 @@ async function request(w: World, method: 'GET'|'PUT', options: {actor?: string; 
     const body=options.body, headers=await signedIdentityHeaders(actor,w.email(actor),options.boundStore);
     if(body && typeof body==='object' && 'idempotency_key' in body) headers['X-Idempotency-Key']=String((body as {idempotency_key: unknown}).idempotency_key);
     const response=await gateway.request('/v1/products/collections/'+id+'/products?store_id='+store,{method,headers,...(method==='PUT'?{body:JSON.stringify(body)}:{})});
+    if(response.status===500 && method==='PUT' && body && typeof body==='object') {
+        const error=owned.psqlScriptExpectError(roleScript361(w,canonicalSql361(w,body as ReturnType<typeof command>,actor,store,id)));
+        console.info('SYNTHETIC_MEMBERSHIP_COMMAND',JSON.stringify({sqlError:error.split('\n').find(line=>line.includes('ERROR:'))??null,relay:proxy?.lastRelayError()}));
+    }
     console.info('OWNED_COLLECTION_MEMBERSHIP_HOP '+JSON.stringify({method,status:response.status,code:response.json?.error?.code??null,restResources:restCalls.slice(start),scope:'direct signed API control; no middleware bypass; SQL command effects only asserted after reached response'}));
     return response;
 }
@@ -102,7 +109,9 @@ function outsideState361() {
     });
     const tables=sqlJson("SELECT jsonb_agg(jsonb_build_array(n.nspname,c.relname)ORDER BY n.nspname,c.relname)FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN('r','p')AND c.relpersistence='p'AND n.nspname !~ '^pg_'AND n.nspname<>'information_schema'AND c.oid<>'collection_membership_receipts'::regclass;")as[string,string][];
     const data=tables.map(([schema,table])=>[schema+'.'+table,"SELECT coalesce(jsonb_agg("+(table==='collections'?"to_jsonb(t)-'membership_version'":'to_jsonb(t)')+"ORDER BY to_jsonb(t)::text),'[]'::jsonb)FROM \""+schema.replaceAll('"','""')+'"."'+table.replaceAll('"','""')+'" t'+(table==='migration_privilege_journal'?" WHERE migration<>'361'":'')]);
-    const sql="SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+[...data,...catalogSql].map(([key,value])=>'SELECT '+q(key)+' k,('+value+')v').join(' UNION ALL ')+')s;';
+    // Read every closed field independently: one large normalized catalog
+    // expression for all relations can exhaust the fixture's bounded memory.
+    const sql=[...data,...catalogSql].map(([key,value])=>'SELECT '+q(key)+"||':'||encode(sha256(convert_to(("+value+")::text,'UTF8')),'hex');").join('\n');
     // Reuse this exact closed exclusion set after retirement, so deleted OIDs
     // cannot cause the test to discover and forgive a larger footprint.
     return {sql,raw:largeOwnedScript(sql),ordinal,parent,junction,objects};

@@ -14,7 +14,8 @@ type ProviderOrder={id:string;amount:number;currency:string;notes:Record<string,
 const orders=new Map<string,ProviderOrder>(),payments=new Map<string,{id:string;order_id:string;amount:number;currency:string;status:string}>();
 let diagnostic:ReturnType<typeof tapRest>;
 let restore:()=>void;let loseNextCreate=false;let createCount=0;
-before(()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
+const legacyFreeFixtures=new Map<string,{j:Awaited<ReturnType<typeof freeFixture>>;legacy:{accepted:boolean;subscription:{id:string}}}>();
+before(async()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=>{
  const r=await forward();if(call.resource.startsWith('rpc/')&&!r.ok){const raw=await r.clone().json();const e=raw&&typeof raw==='object'?raw as Record<string,unknown>:{};console.info('OWNED_CHECKOUT_RPC '+JSON.stringify({rpc:call.resource,status:r.status,code:e.code,message:e.message}));}return r;
 });const original=globalThis.fetch;globalThis.fetch=(async(input:RequestInfo|URL,init?:RequestInit)=>{
  const url=new URL(typeof input==='string'?input:input instanceof URL?input.toString():input.url);
@@ -28,14 +29,34 @@ before(()=>{diagnostic=tapRest(owned.restEnv().SUPABASE_URL,async(call,forward)=
  if(url.pathname.startsWith('/v1/orders/'))return orders.has(url.pathname.split('/').pop()!)?json(orders.get(url.pathname.split('/').pop()!)):json({error:{description:'Synthetic order not found'}},404);
  if(url.pathname.startsWith('/v1/payments/'))return payments.has(url.pathname.split('/').pop()!)?json(payments.get(url.pathname.split('/').pop()!)):json({error:{description:'Synthetic payment not found'}},404);
  throw new Error('Unexpected synthetic provider path '+url.pathname);
-}) as typeof fetch;restore=()=>{globalThis.fetch=original;};});
+}) as typeof fetch;restore=()=>{globalThis.fetch=original;};
+ // Build the two historical controls with the genuine predecessor writers,
+ // before any new tax/free evidence exists. Retain them through both migrations.
+ const taxFile=(dir:string)=>readFileSync(new URL('../../../../../database/supabase/'+dir+'/360_subscription_tax_quote_snapshot'+(dir==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+ owned.script(taxFile('rollback'));owned.script(freeMigration('rollback'));
+ for(const status of ['failed','completed']) {
+  const j=await freeFixture(),store=j.stores[0].siteId,key=crypto.randomUUID();
+ const legacy=JSON.parse(owned.script(`SET ROLE service_role;SELECT activate_merchant_subscription_v1(jsonb_build_object(
+  'user_id','${j.owner}','store_id','${store}','plan_id',p.id,'plan_slug','free','plan_name',p.name,
+  'billing_period','monthly','amount_paid',0,'payment_gateway',NULL,'external_subscription_id','free:${store}:synthetic-legacy',
+  'razorpay_order_id',NULL,'razorpay_payment_id',NULL,'period_start',now(),'period_end',now()+interval '1 month',
+  'promo_ends_at',NULL,'products_limit',25,'invoice_number','SYN-LEGACY-FREE-${key}',
+  'invoice_description','Synthetic old free activation without canonical checkout source','tax_amount',0,'total_amount',0))
+  FROM plans p WHERE p.site_type='store' AND p.slug='free';`));
+ assert.equal(legacy.accepted,true);
+  legacyFreeFixtures.set(status,{j,legacy});
+ }
+ owned.script(freeMigration('migrations'));owned.script(taxFile('migrations'));
+});
 after(()=>{restore();diagnostic.restore();});afterEach(()=>mock.timers.reset());
 async function fixture(){
  const owner=crypto.randomUUID(),email=`syn-sub-verify-${owner}@example.invalid`;
  owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${owner}','${email}',true);`);
  const stores=[newSyntheticTenant('sub-v-a-'+(++sequence)),newSyntheticTenant('sub-v-b-'+sequence)];
  for(const store of stores){seedSyntheticTenant(owned.psql,store);owned.psql(`UPDATE sites SET custom_user_id='${owner}' WHERE id='${store.siteId}';`);}
- const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{RAZORPAY_KEY_ID:'synthetic-owned-provider-key',RAZORPAY_KEY_SECRET:key}));
+ const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-billing',profile_version:1,approval_status:'approved',approval_reference:'synthetic-not-live',registration_status:'registered',supply_category:'domestic_taxable_saas',rate_bps:1800,supplier:{name:'Synthetic Supplier',gstin:'27AAAAA0000A1Z5',state_code:'27',country:'IN',address:{line1:'Synthetic Billing Address',city:'Mumbai',state:'Maharashtra',zip:'400001',country:'IN'}}};
+ for(const store of stores)owned.psql(`UPDATE sites SET invoice_address='${JSON.stringify({line1:'Synthetic Billing Address',city:'Bengaluru',state:'Karnataka',state_code:'29',zip:'560001',country:'IN'})}'::jsonb WHERE id='${store.siteId}';`);
+ const gateway=new Gateway(gatewayEnv(owned,await newIdentityKeys(),{LETBUYY_SUBSCRIPTION_TAX_PROFILE:JSON.stringify(profile),RAZORPAY_KEY_ID:'synthetic-owned-provider-key',RAZORPAY_KEY_SECRET:key}));
  async function createCheckout(store=stores[0].siteId,key=crypto.randomUUID(),change:Record<string,unknown>={}){
   return gateway.request('/v1/payments/subscription/order',{method:'POST',headers:{...await signedIdentityHeaders(owner,email),'X-Idempotency-Key':key},
    body:JSON.stringify({store_id:store,plan_slug:'growth',site_type:'store',billing_period:'monthly',...change})});
@@ -102,12 +123,19 @@ function checkoutFunctionState(){
 }
 test('FREE-347: clean rollback/reapply preserves rows and restores exact forward bodies and privileges',()=>{
  const rows=()=>owned.psql('SELECT (SELECT count(*) FROM subscriptions),(SELECT count(*) FROM billing_history),(SELECT count(*) FROM audit_logs),(SELECT count(*) FROM idempotency_keys);');
- const before=checkoutFunctionState(),retained=rows();
+ const taxFile=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+'/360_subscription_tax_quote_snapshot'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+ // The later tax migration replaces these writers and must retire empty first.
+ const fullBefore=checkoutFunctionState(),retained=rows();
+ assert.match(owned.psqlScriptExpectError(freeMigration('rollback')),/360 refuses/);
+ assert.equal(checkoutFunctionState(),fullBefore);assert.equal(rows(),retained);
+ owned.script(taxFile('rollback'));
+ const before=checkoutFunctionState();
  owned.script(freeMigration('rollback'));
  assert.doesNotMatch(checkoutFunctionState(),/347: explicit retained free checkout/);
  assert.equal(rows(),retained);
  owned.script(freeMigration('migrations'));
  assert.equal(checkoutFunctionState(),before);assert.equal(rows(),retained);
+ owned.script(taxFile('migrations'));assert.equal(checkoutFunctionState(),fullBefore);assert.equal(rows(),retained);
 });
 
 test('FREE-RECEIPT: same-key retry thirty application-clock days later preserves the original period and all effects',async()=>{
@@ -369,15 +397,8 @@ test('FREE-RECEIPT: two same-route requests reach activation together and return
 });
 
 for(const status of ['failed','completed'])test('FREE-347: ambiguous legacy HTTP '+status+' receipt cannot create a second free activation after rollout',async()=>{
- const j=await freeFixture(),store=j.stores[0].siteId,key=crypto.randomUUID();
- const legacy=JSON.parse(owned.script(`SET ROLE service_role;SELECT activate_merchant_subscription_v1(jsonb_build_object(
-  'user_id','${j.owner}','store_id','${store}','plan_id',p.id,'plan_slug','free','plan_name',p.name,
-  'billing_period','monthly','amount_paid',0,'payment_gateway',NULL,'external_subscription_id','free:${store}:synthetic-legacy',
-  'razorpay_order_id',NULL,'razorpay_payment_id',NULL,'period_start',now(),'period_end',now()+interval '1 month',
-  'promo_ends_at',NULL,'products_limit',25,'invoice_number','SYN-LEGACY-FREE-${key}',
-  'invoice_description','Synthetic old free activation without canonical checkout source','tax_amount',0,'total_amount',0))
-  FROM plans p WHERE p.site_type='store' AND p.slug='free';`));
- assert.equal(legacy.accepted,true);
+ const {j,legacy}=legacyFreeFixtures.get(status)!;
+ const store=j.stores[0].siteId,key=crypto.randomUUID();
  owned.psql(`INSERT INTO idempotency_keys(site_id,key,scope,request_hash,status,status_code,response_body,expires_at)
   VALUES('${store}','${key}','http:POST:/payments/subscription/order',repeat('0',64),'${status}',${status==='completed'?201:503},
    ${status==='completed'?`jsonb_build_object('data',jsonb_build_object('subscription',jsonb_build_object('id','${legacy.subscription.id}')))`:'NULL'},'infinity');`);

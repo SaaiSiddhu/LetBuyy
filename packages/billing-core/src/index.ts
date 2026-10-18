@@ -3,7 +3,7 @@ import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
 import { MarketplaceAppPricingModelSchema, GstinSchema, IndianStateCodeSchema } from '@letbuyy/shared-types';
 import type { SubscriptionTaxSummary } from '@letbuyy/shared-types';
 export type { SubscriptionTaxSummary } from '@letbuyy/shared-types';
-import { calculateGstLine } from '@letbuyy/checkout-core';
+import { calculateGstAmounts } from '@letbuyy/shared-types';
 
 export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise' | 'launch' | 'growth' | 'scale' | 'commerce_os';
 export type BillingCycle = 'monthly' | 'annual';
@@ -1488,8 +1488,7 @@ export const SubscriptionTaxSnapshotSchema=z.object({
   supply_type:z.enum(['intra_state','inter_state']),gross_minor:SubscriptionMinorSchema,taxable_minor:SubscriptionMinorSchema,
   tax_minor:SubscriptionMinorSchema,cgst_minor:SubscriptionMinorSchema,sgst_minor:SubscriptionMinorSchema,igst_minor:SubscriptionMinorSchema,
 }).strict().superRefine((s,ctx)=>{
-  const line=calculateGstLine({quantity:1,unit_amount_minor:s.gross_minor,discount_amount_minor:0,
-    description:'Subscription',gst_rate_bps:s.profile.rate_bps,tax_inclusive:true},s.supply_type);
+  const line=calculateGstAmounts(s.gross_minor,s.profile.rate_bps,true,s.supply_type);
   if(s.gross_minor<=0 || s.source.gross_before_discount_minor-s.source.discount_minor!==s.gross_minor
     || s.supply_type!==(s.profile.supplier.state_code===s.recipient.state_code?'intra_state':'inter_state')
     || s.taxable_minor!==line.taxable_amount_minor || s.tax_minor!==line.tax_amount_minor
@@ -1508,7 +1507,7 @@ export function planSubscriptionTaxSnapshot(input:{profile:unknown;recipient:unk
   // its inclusive denominator multiplication. No clamping/coercion of bad money.
   if(!Number.isSafeInteger(gross*10_000))throw new Error('Subscription amount exceeds safe tax arithmetic');
   const supply=profile.supplier.state_code===recipient.state_code?'intra_state':'inter_state';
-  const line=calculateGstLine({quantity:1,unit_amount_minor:gross,discount_amount_minor:0,description:'Subscription',gst_rate_bps:profile.rate_bps,tax_inclusive:true},supply);
+  const line=calculateGstAmounts(gross,profile.rate_bps,true,supply);
   return SubscriptionTaxSnapshotSchema.parse({schema_version:1,policy_version:SUBSCRIPTION_TAX_POLICY,basis:'inclusive',currency:'INR',source,profile,recipient,
     supply_type:supply,gross_minor:gross,taxable_minor:line.taxable_amount_minor,tax_minor:line.tax_amount_minor,
     cgst_minor:line.cgst_amount_minor,sgst_minor:line.sgst_amount_minor,igst_minor:line.igst_amount_minor});

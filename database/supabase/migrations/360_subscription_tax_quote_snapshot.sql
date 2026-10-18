@@ -290,7 +290,7 @@ BEGIN
   OR p_quote->'recurring_tax_snapshot'->>'gross_minor' IS DISTINCT FROM p_quote->'charge_schedule'->>'base_gross_minor'
   OR p_quote->'recurring_tax_snapshot'->'profile' IS DISTINCT FROM p_quote->'subscription_tax_snapshot'->'profile'
   OR p_quote->'recurring_tax_snapshot'->'recipient' IS DISTINCT FROM p_quote->'subscription_tax_snapshot'->'recipient'
-  OR (p_quote->'recurring_tax_snapshot'->'source'-'gross_before_discount_minor') IS DISTINCT FROM (p_quote->'subscription_tax_snapshot'->'source'-'gross_before_discount_minor')) THEN
+  OR ((p_quote->'recurring_tax_snapshot'->'source')-'gross_before_discount_minor') IS DISTINCT FROM ((p_quote->'subscription_tax_snapshot'->'source')-'gross_before_discount_minor')) THEN
   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_TAX_SETUP_REQUIRED');END IF;
  IF NOT free_quote AND (NOT public.valid_subscription_tax_snapshot_360(p_quote->'subscription_tax_snapshot')
   OR p_quote->'subscription_tax_snapshot'->'source'->>'actor_id' IS DISTINCT FROM p_actor::text
@@ -613,6 +613,20 @@ LANGUAGE plpgsql SECURITY INVOKER SET search_path=pg_catalog,public SET letbuyy.
 DECLARE s public.subscriptions%ROWTYPE;o public.sites%ROWTYPE;b public.billing_history%ROWTYPE;prior public.billing_history%ROWTYPE;source public.billing_history%ROWTYPE;
  actor uuid;site uuid;sub uuid;pay text;status text;started timestamptz;finished timestamptz;
 BEGIN
+ -- Internal provider notifications resolve through their immutable payment
+ -- source. Derive actor/site/cycle here, then take the existing current-owner
+ -- lock and compare every amount/period below. No caller-supplied tenant wins.
+ IF nullif(btrim(p_input->>'external_subscription_id'),'') IS NOT NULL THEN
+  SELECT * INTO b FROM public.billing_history WHERE payment_gateway=p_input->>'payment_gateway' AND payment_id=p_input->>'payment_id' AND deleted_at IS NULL;
+  IF NOT FOUND THEN RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_TAX_REVIEW_REQUIRED');END IF;
+  IF (SELECT count(*) FROM public.billing_history WHERE payment_gateway=p_input->>'payment_gateway' AND payment_id=p_input->>'payment_id' AND deleted_at IS NULL)<>1 THEN
+   RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_PAYMENT_CONFLICT');END IF;
+  SELECT * INTO s FROM public.subscriptions WHERE id=b.subscription_id AND external_subscription_id=p_input->>'external_subscription_id' AND deleted_at IS NULL;
+  IF NOT FOUND THEN RETURN jsonb_build_object('accepted',false,'code','SUBSCRIPTION_CHECKOUT_CONFLICT');END IF;
+  p_input:=p_input||jsonb_build_object('user_id',b.user_id,'store_id',b.site_id,'subscription_id',s.id,
+   'invoice_number',coalesce(p_input->>'invoice_number',b.invoice_number),'description',coalesce(p_input->>'description',b.description),
+   'period_start',coalesce(p_input->>'period_start',b.period_start::text),'period_end',coalesce(p_input->>'period_end',b.period_end::text));
+ END IF;
  actor:=(p_input->>'user_id')::uuid;site:=(p_input->>'store_id')::uuid;sub:=(p_input->>'subscription_id')::uuid;
  pay:=nullif(btrim(p_input->>'payment_id'),'');status:=p_input->>'payment_status';started:=(p_input->>'period_start')::timestamptz;finished:=(p_input->>'period_end')::timestamptz;
  IF pay IS NULL OR length(pay)>200 OR status NOT IN('paid','failed') OR started IS NULL OR finished IS NULL OR finished<=started
@@ -1227,11 +1241,11 @@ BEGIN
 ('valid_subscription_tax_snapshot_360','public.valid_subscription_tax_snapshot_360(jsonb)','9537560cc154162de305d3ee629ed178e0b17fdaed066ead183bcf82cc3e59a9','boolean',ARRAY['s']::text[],0,NULL,ARRAY['search_path=pg_catalog, public']::text[],'i'),
  ('issue_subscription_tax_invoice_360','public.issue_subscription_tax_invoice_360(uuid,jsonb)','cccc3a7d12c27624ea71febfac57563859203b3cc219013b5d8404a5f07d5d5c','void',ARRAY['p_history','p_evidence']::text[],1,'NULL::jsonb',ARRAY['search_path=pg_catalog, public']::text[],'v'),
  ('read_merchant_subscription_checkout_key_v1','public.read_merchant_subscription_checkout_key_v1(uuid,uuid,text,jsonb)','824e484fbc9dbbf73b56a5c91c17810d955af228d84f1e7ce6bf233870a9bb6b','jsonb',ARRAY['p_actor','p_site','p_key','p_request']::text[],0,NULL,ARRAY['search_path=pg_catalog, public']::text[],'v'),
- ('claim_merchant_subscription_checkout_v1','public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)','39600a4309adb4aaaa9693cfbcc68f1fdfe24f689b27916e6996f7f9a3be0229','jsonb',ARRAY['p_actor','p_site','p_key','p_request','p_quote']::text[],1,'NULL::jsonb',ARRAY['search_path=pg_catalog, public','letbuyy.subscription_checkout_version=347','letbuyy.subscription_tax_version=360','letbuyy.subscription_tax_writer=claim_merchant_subscription_checkout_v1:360']::text[],'v'),
+ ('claim_merchant_subscription_checkout_v1','public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)','05d58cfc3b9ab157a784ae39288079f134e3b6bace9a174e86740c4dcfa753f2','jsonb',ARRAY['p_actor','p_site','p_key','p_request','p_quote']::text[],1,'NULL::jsonb',ARRAY['search_path=pg_catalog, public','letbuyy.subscription_checkout_version=347','letbuyy.subscription_tax_version=360','letbuyy.subscription_tax_writer=claim_merchant_subscription_checkout_v1:360']::text[],'v'),
  ('bind_merchant_subscription_checkout_v1','public.bind_merchant_subscription_checkout_v1(uuid,uuid,uuid,text,text)','6265e6e694d75928f35c49546819beb6646543a54fb0de34858a2d0412f32858','jsonb',ARRAY['p_actor','p_site','p_charge','p_reference','p_short_url']::text[],1,'NULL::text',ARRAY['search_path=pg_catalog, public','letbuyy.subscription_tax_writer=bind_merchant_subscription_checkout_v1:360']::text[],'v'),
  ('read_merchant_subscription_checkout_v1','public.read_merchant_subscription_checkout_v1(uuid,uuid,text,text,text,text)','cdb813ff7bf6da49006c167934a37d3e6592ed5b763c1aa5cba184f28b021757','jsonb',ARRAY['p_actor','p_site','p_reference','p_payment','p_plan_slug','p_period']::text[],0,NULL,ARRAY['search_path=pg_catalog, public']::text[],'v'),
  ('activate_merchant_subscription_v1','public.activate_merchant_subscription_v1(jsonb)','4081a86bc776b45d3d18bfac6bafb898a3e53b01a5dc9f82c84d060eec23af46','jsonb',ARRAY['p_input']::text[],0,NULL,ARRAY['search_path=pg_catalog, public','letbuyy.subscription_checkout_version=347','letbuyy.subscription_tax_version=360','letbuyy.subscription_tax_writer=activate_merchant_subscription_v1:360']::text[],'v'),
- ('record_merchant_subscription_invoice_v1','public.record_merchant_subscription_invoice_v1(jsonb)','629a7d12fa62804e8d1daf66254c9e6a529ceb8a3e20155eb904cbb66a141257','jsonb',ARRAY['p_input']::text[],0,NULL,ARRAY['search_path=pg_catalog, public','letbuyy.subscription_tax_writer=record_merchant_subscription_invoice_v1:360']::text[],'v'),
+ ('record_merchant_subscription_invoice_v1','public.record_merchant_subscription_invoice_v1(jsonb)','4489a4c03dc2a3669caeb6b60882b7ee67873c06819c834acdae6d0df438f996','jsonb',ARRAY['p_input']::text[],0,NULL,ARRAY['search_path=pg_catalog, public','letbuyy.subscription_tax_writer=record_merchant_subscription_invoice_v1:360']::text[],'v'),
  ('guard_subscription_tax_new_writer_360','public.guard_subscription_tax_new_writer_360()','7d373a239b507198007890f910d0d032877e9916cd9a2445d74790155ad9a34d','trigger',NULL::text[],0,NULL,ARRAY['search_path=pg_catalog, public']::text[],'v'),
  ('guard_subscription_tax_rows_360','public.guard_subscription_tax_rows_360()','fd9451b9ee74e588afc309ef76a7b6e5c8f1cab10f6092e43082427a4fe84fde','trigger',NULL::text[],0,NULL,ARRAY['search_path=pg_catalog, public']::text[],'v'),
  ('record_merchant_subscription_failure_v1','public.record_merchant_subscription_failure_v1(jsonb)','41557ea0c2fb67180c4ab190299027af1da5dac89e3e5485900b9110840c8fc4','jsonb',ARRAY['p_input']::text[],0,NULL,ARRAY['search_path=pg_catalog, public','letbuyy.subscription_tax_writer=record_merchant_subscription_failure_v1:360']::text[],'v'),

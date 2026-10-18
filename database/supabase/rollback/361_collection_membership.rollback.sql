@@ -27,11 +27,17 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR EXISTS(SELECT 1 FROM pg_event_trigger e WHERE e.evtenabled<>'D' AND NOT(
     e.evtname='subscription_tax_ddl_guard_360' AND e.evtevent='ddl_command_end' AND e.evtenabled='O'
     AND e.evttags IS NULL AND e.evtowner='postgres'::regrole AND e.evtfoid=to_regprocedure('public.guard_subscription_tax_ddl_360()')
-    AND EXISTS(SELECT 1 FROM pg_proc f JOIN public.migration_privilege_journal j ON j.object_oid=f.oid
-      WHERE f.oid=e.evtfoid AND f.proowner='postgres'::regrole AND j.migration='360'
-      AND j.object_signature='public.guard_subscription_tax_ddl_360()' AND j.grantee='service_role' AND j.privilege='EXECUTE' AND j.action='granted'
-      AND j.object_owner=f.proowner AND j.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'))))
-  OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname IN('postgres','anon','authenticated','service_role','app_tenant','authenticator') AND (rolconnlimit<>-1 OR rolvaliduntil IS NOT NULL OR rolconfig IS NOT NULL))
+    AND EXISTS(SELECT 1 FROM pg_proc tax_fn JOIN public.migration_privilege_journal tax_custody ON tax_custody.object_oid=tax_fn.oid
+      WHERE tax_fn.oid=e.evtfoid AND tax_fn.proowner='postgres'::regrole AND tax_custody.migration='360'
+      AND tax_custody.object_signature='public.guard_subscription_tax_ddl_360()' AND tax_custody.grantee='service_role' AND tax_custody.privilege='EXECUTE' AND tax_custody.action='granted'
+      AND tax_custody.object_owner=tax_fn.proowner AND tax_custody.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(tax_fn.oid),'UTF8')),'hex'))))
+  OR EXISTS(SELECT 1 FROM pg_roles profile_role WHERE profile_role.rolname IN('postgres','anon','authenticated','service_role','app_tenant','authenticator')
+    AND (profile_role.rolconnlimit<>-1 OR profile_role.rolvaliduntil IS NOT NULL OR NOT coalesce(profile_role.rolconfig,'{}'::text[]) <@ CASE profile_role.rolname
+      WHEN 'postgres' THEN ARRAY['search_path="$user", public, extensions','search_path="\$user", public, extensions','search_path=public, extensions']::text[]
+      WHEN 'anon' THEN ARRAY['statement_timeout=3s']::text[]
+      WHEN 'authenticated' THEN ARRAY['statement_timeout=8s']::text[]
+      WHEN 'authenticator' THEN ARRAY['session_preload_libraries=supautils, safeupdate','statement_timeout=8s','lock_timeout=8s']::text[]
+      ELSE '{}'::text[] END))
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
   OR (SELECT count(*)FROM pg_roles WHERE rolname IN('anon','authenticated','app_tenant') AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND NOT rolbypassrls)<>3
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
@@ -88,7 +94,7 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
  FOREACH role_name IN ARRAY ARRAY['postgres','anon','authenticated','service_role','app_tenant']LOOP
   SELECT * INTO j FROM public.migration_privilege_journal WHERE migration='361'AND object_signature='role:'||role_name AND grantee='postgres'AND privilege='361 AUTHORITY ROLE'AND action='granted';
   IF NOT FOUND OR j.object_oid IS DISTINCT FROM(SELECT oid FROM pg_roles WHERE rolname=role_name) OR j.object_owner IS DISTINCT FROM 'postgres'::regrole::oid
-   OR j.object_definition_hash IS DISTINCT FROM encode(sha256(convert_to('361 source authority role profile v1','UTF8')),'hex') THEN
+   OR j.object_definition_hash IS DISTINCT FROM (SELECT encode(sha256(convert_to(to_jsonb(profile_role)::text,'UTF8')),'hex') FROM pg_roles profile_role WHERE profile_role.rolname=role_name) THEN
    RAISE EXCEPTION 'COLLECTION_MEMBERSHIP361_ROLLBACK_ROLE_IDENTITY:%',role_name;END IF;
  END LOOP;
  SELECT attnum INTO column_number FROM pg_attribute WHERE attrelid='public.collections'::regclass AND attname='membership_version'AND NOT attisdropped;

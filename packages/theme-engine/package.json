@@ -10,7 +10,12 @@
     "./theme-bundle": "./src/theme-bundle.ts",
     "./theme-renderer": "./src/theme-renderer.ts",
     "./theme-registry": "./src/theme-registry.ts",
-    "./editor-bridge-protocol": "./src/editor-bridge-protocol.ts"
+    "./editor-bridge-protocol": "./src/editor-bridge-protocol.ts",
+    "./server-dom": {
+      "worker": "./src/server-dom-unavailable.ts",
+      "browser": "./src/server-dom-unavailable.ts",
+      "default": "./src/server-dom-runtime.ts"
+    }
   },
   "bin": {
     "letbuyy-theme": "./src/theme-cli.ts"

@@ -176,11 +176,12 @@ export class SubscriptionExecutionAdapter {
     }
 
     async recordSubscriptionInvoice(input: {
-        userId: string;
-        storeId: string;
+        userId?: string;
+        storeId?: string;
+        externalSubscriptionId?: string;
         subscriptionId?: string | null;
-        invoiceNumber: string;
-        description: string;
+        invoiceNumber?: string | null;
+        description?: string | null;
         amount: number;
         currency: string;
         taxAmount: number;
@@ -189,11 +190,12 @@ export class SubscriptionExecutionAdapter {
         paymentId?: string | null;
         paymentStatus: 'paid' | 'failed';
         billingPeriod?: SubscriptionBillingPeriod | null;
-        periodStart: string;
-        periodEnd: string;
+        periodStart?: string | null;
+        periodEnd?: string | null;
     }) {
         const {data,error}=await this.db.rpc('record_merchant_subscription_invoice_v1',{p_input:{
             user_id:input.userId,store_id:input.storeId,subscription_id:input.subscriptionId||null,
+            external_subscription_id:input.externalSubscriptionId,
             invoice_number:input.invoiceNumber,description:input.description,amount:input.amount,currency:input.currency,
             tax_amount:input.taxAmount,total_amount:input.totalAmount,payment_gateway:input.paymentGateway,
             payment_id:input.paymentId||null,payment_status:input.paymentStatus,billing_period:input.billingPeriod||null,

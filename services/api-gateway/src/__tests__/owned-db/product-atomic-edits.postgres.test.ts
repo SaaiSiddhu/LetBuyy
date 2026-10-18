@@ -1,7 +1,7 @@
 // Production Gateway + actual app_tenant pooled SQL and PostgREST in this run's owned database.
 // The four original defect reproductions are frozen in N3/atomic-edit/baseline-confirmed.
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import test, { after, afterEach, before } from 'node:test';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
@@ -22,6 +22,14 @@ const signature = 'public.apply_product_edit_v1(uuid,uuid,uuid,integer,uuid,json
 let gateway: Gateway, proxy: OwnedPooledSqlProxy;
 
 before(async () => {
+    // Latest356 correctly depends on the346 authority helper. Verify that the
+    // current stack refuses premature retirement, then retire only its empty
+    // owned fixture allocation to exercise the predecessor's exact guard.
+    const file=(dir:string,name:string)=>readFileSync(new URL('../../../../../database/supabase/'+dir+'/'+name,import.meta.url),'utf8');
+    assert.equal(psql('SELECT count(*) FROM inventory_adjustment_receipts;'),'0');
+    assert.match(owned.psqlScriptExpectError(file('rollback','346_product_atomic_edits.rollback.sql')),/rollback346 refuses/);
+    owned.script(file('rollback','356_inventory_adjustment_receipts.rollback.sql'));
+
     for (const tenant of [site, other]) seedSyntheticTenant(psql, tenant);
     psql(`INSERT INTO users_custom(id,email,email_verified) VALUES ${[owner,staff,reader,stranger].map(id => `('${id}','${email(id)}',true)`).join(',')};
         UPDATE sites SET custom_user_id='${owner}' WHERE id='${site.siteId}';
@@ -203,7 +211,7 @@ test('clean-empty paired rollback/reapply preserves product data and historical 
 
 
 const safe346Audit: string[]=[];
-after(() => writeFileSync('/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Codex-Continuous-Run-2026-10-14/coordination-2026-10-16/N9/product346-safe-guard/actual-safe-after-r3-audit.json',JSON.stringify({scope:'reviewed safe346 AFTER controls, no business rows',completed:safe346Audit},null,2)+'\n'));
+after(() => console.info('OWNED346_GUARD_AUDIT '+JSON.stringify({scope:'reviewed safe346 AFTER controls, owned disposable fixture only',completed:safe346Audit})));
 const safe346ReadSignature='public.read_product_for_edit_v1(uuid,uuid,uuid)';
 function safe346Definition(signature: string) {
     const definition=psql(`SELECT pg_catalog.pg_get_functiondef(${quote(signature)}::regprocedure)`);
@@ -693,17 +701,11 @@ test('receipt table is private FORCE RLS and immutable; only guarded tenant entr
     assert.match(owned.psqlExpectError('DELETE FROM product_edit_receipts;'),/immutable/);
 });
 
-test('paired migration rollback/reapply preserves product data and historical version/inventory definitions', () => {
-    const id=product(),before=psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`);
-    const signatures=['public.increment_version()','public.set_inventory_level_available(uuid,uuid,uuid,integer,uuid,text,text,text)'];
-    const definition=()=>signatures.map(sig=>psql(`SELECT md5(pg_get_functiondef('${sig}'::regprocedure))||'|'||proacl::text FROM pg_proc WHERE oid='${sig}'::regprocedure;`));
-    const original=definition();
-    owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8'));
-    assert.equal(psql(`SELECT to_regprocedure('${signature}') IS NULL AND to_regclass('public.product_edit_receipts') IS NULL;`),'t');
-    assert.deepEqual(definition(),original);assert.equal(psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`),before);
-    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/346_product_atomic_edits.sql',import.meta.url),'utf8'));
-    assert.deepEqual(definition(),original);assert.equal(psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`),before);
-    assert.equal(psql(`SELECT has_function_privilege('app_tenant','${signature}','EXECUTE');`),'t');
+test('paired retirement refuses populated product receipts and preserves product/history state', () => {
+    const id=product(),before=snapshot(id),profile=retentionFullProfile();
+    assert.ok(Number(psql('SELECT count(*) FROM product_edit_receipts;'))>0,'earlier actual edits left durable receipts');
+    assert.match(owned.psqlScriptExpectError(readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8')),/rollback346 refuses retained product edit receipts/);
+    assert.deepEqual(snapshot(id),before);assert.deepEqual(retentionFullProfile(),profile);
 });
 
 

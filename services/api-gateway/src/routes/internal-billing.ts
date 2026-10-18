@@ -171,30 +171,12 @@ router.post('/subscriptions/invoice', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    // A delayed notification belongs to its original payment/cycle, never the
-    // latest subscription pointer. The atomic writer rechecks owner and source.
-    const {data:retained, error:retainedError}=await db.from('billing_history')
-        .select('subscription_id,invoice_number,description,period_start,period_end')
-        .eq('payment_gateway',body.provider).eq('payment_id',body.paymentId).is('deleted_at',null).maybeSingle();
-    if(retainedError)throw new ValidationError('Subscription invoice source is ambiguous.');
-    let query=db.from('subscriptions').select('id,user_id,store_id,external_subscription_id').is('deleted_at',null);
-    query=retained?.subscription_id?query.eq('id',retained.subscription_id):query.eq('external_subscription_id',externalSubscriptionId);
-    const {data:subscription,error:subscriptionError}=await query.maybeSingle();
-    if(subscriptionError)throw new ValidationError('Subscription invoice source is ambiguous.');
-    if(subscription&&subscription.external_subscription_id!==externalSubscriptionId)
-        throw new ValidationError('Subscription invoice reference does not match its original payment.');
-
-    if (!subscription?.store_id) {
-        return c.json(success({ recorded: false, reason: 'subscription_not_found' }));
-    }
-
-    const now = new Date().toISOString();
+    // The canonical transaction resolves the original payment's tenant and
+    // current owner. A provider reference never authorizes an unscoped REST read.
     const invoice = await new SubscriptionExecutionAdapter(db).recordSubscriptionInvoice({
-        userId: String(subscription.user_id),
-        storeId: String(subscription.store_id),
-        subscriptionId: String(subscription.id),
-        invoiceNumber: textValue(body.invoiceNumber) || retained?.invoice_number || `INV-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
-        description: textValue(body.description) || retained?.description || 'Provider subscription invoice',
+        externalSubscriptionId,
+        invoiceNumber: body.invoiceNumber,
+        description: body.description,
         amount: numberValue(body.amount) || 0,
         currency: (textValue(body.currency) || 'INR').toUpperCase(),
         taxAmount: numberValue(body.taxAmount) || 0,
@@ -202,8 +184,8 @@ router.post('/subscriptions/invoice', async (c) => {
         paymentGateway: textValue(body.provider) === 'razorpay' ? 'razorpay' : 'stripe',
         paymentId: textValue(body.paymentId) || null,
         paymentStatus: textValue(body.paymentStatus) === 'failed' ? 'failed' : 'paid',
-        periodStart: textValue(body.periodStart) || retained?.period_start || now,
-        periodEnd: textValue(body.periodEnd) || retained?.period_end || now,
+        periodStart: body.periodStart,
+        periodEnd: body.periodEnd,
     });
 
     return c.json(success({ recorded: true, invoice }));

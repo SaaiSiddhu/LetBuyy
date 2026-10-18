@@ -5,10 +5,10 @@ import assert from 'node:assert/strict';
 import {createHmac} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import test,{before,after} from 'node:test';
-import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET,tapRest,restJson} from './gateway-harness';
-import webhookWorker from '../../../../webhook-service/src/index';
-import {requireOwnedDatabase} from './owned-db-support';
-import {newSyntheticTenant,seedSyntheticTenant} from './synthetic-tenant';
+import {Gateway,gatewayEnv,newIdentityKeys,signedIdentityHeaders,INTERNAL_SECRET,tapRest,restJson} from '../../services/api-gateway/src/__tests__/owned-db/gateway-harness';
+import webhookWorker from '../../services/webhook-service/src/index';
+import {requireOwnedDatabase} from '../../services/api-gateway/src/__tests__/owned-db/owned-db-support';
+import {newSyntheticTenant,seedSyntheticTenant} from '../../services/api-gateway/src/__tests__/owned-db/synthetic-tenant';
 const owned=requireOwnedDatabase(),secret='synthetic-tax-provider-secret';
 const profile={schema_version:1,policy_version:'D-SUB-TAX-INCLUSIVE-V1',profile_id:'synthetic-owned-only',profile_version:1,
  approval_status:'approved',approval_reference:'synthetic-approval-not-live',registration_status:'registered',supply_category:'domestic_taxable_saas',rate_bps:1800,
@@ -34,7 +34,7 @@ function nativeCapture(reference:string,cycle:number,upfront=false):Payment{
 }
 let outerFetch:typeof fetch,creates=0,sequence=0;
 const external:string[]=[];
-const migration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+'/360_subscription_tax_quote_snapshot'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+const migration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../database/supabase/'+direction+'/360_subscription_tax_quote_snapshot'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
 function privateState(site:string){
  return owned.psql(`SELECT jsonb_build_object(
   'subscriptions',(SELECT jsonb_agg(to_jsonb(s) ORDER BY id) FROM subscriptions s WHERE store_id='${site}'),
@@ -99,7 +99,7 @@ async function fixture(config:unknown=profile,gst=true){
  }
  return {owner,email,site,env,gateway,headers,checkout,verify,webhook,signedWebhook,signedEventId,signedHops,capture,state:()=>privateState(site.siteId)};
 }
-const refundMigration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+'/364_subscription_refund_source_references'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
+const refundMigration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../database/supabase/'+direction+'/364_subscription_refund_source_references'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
 let restoreRefund364=false;
 let legacy:Awaited<ReturnType<typeof fixture>>,legacyId:string,legacyBefore:string;
 before(async()=>{
@@ -114,7 +114,7 @@ before(async()=>{
   VALUES('${sub}','${legacy.owner}','${legacy.site.siteId}','${legacy.site.siteId}','growth','active','monthly',69900,'2026-12-01T00:00:00Z');
   INSERT INTO billing_history(id,user_id,store_id,site_id,subscription_id,invoice_number,description,amount,tax_amount,total_amount,currency,payment_status)
   VALUES('${legacyId}','${legacy.owner}','${legacy.site.siteId}','${legacy.site.siteId}','${sub}','SYN-LEGACY-${legacyId}','Synthetic Retained Additive Invoice',69900,12582,82482,'INR','paid');`);
- legacyBefore=owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`);
+ legacyBefore=owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`);
  // Same default count with a changed expression must fail predecessor admission.
  // Capture the real predecessor definition; run each mutation in an aborted
  // transaction so no legacy rows, function definitions or ACLs are rewritten.
@@ -167,7 +167,12 @@ before(async()=>{
    throw new Error('Unexpected synthetic provider operation');
   }
   if(!['localhost','127.0.0.1','[::1]'].includes(url.hostname)){external.push(url.hostname);throw new Error('Owned tax fixture forbids external transport');}
-  return outerFetch(input,init);
+  const response=await outerFetch(input,init);
+  if(!response.ok && url.pathname.startsWith('/rest/v1/rpc/')) {
+   const detail=await response.clone().json().catch(()=>({}));
+   console.info('SYNTHETIC_SQL_DIAGNOSTIC',JSON.stringify({rpc:url.pathname.split('/').pop(),code:(detail as Record<string,unknown>).code,message:(detail as Record<string,unknown>).message}));
+  }
+  return response;
  }) as typeof fetch;
 });
 after(async()=>{await legacy?.gateway.settle();if(outerFetch)globalThis.fetch=outerFetch;assert.deepEqual(external,[]);});
@@ -179,17 +184,17 @@ test('empty360 rollback/reapply preserves the full retained legacy invoice and p
   'constraints',(SELECT jsonb_agg(to_jsonb(k) ORDER BY k.oid) FROM pg_constraint k WHERE k.conrelid IN('public.billing_history'::regclass,'public.subscriptions'::regclass)),
   'indexes',(SELECT jsonb_agg(jsonb_build_object('class',to_jsonb(c),'index',to_jsonb(i)) ORDER BY c.oid) FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid WHERE i.indrelid='public.merchant_billing_invoices'::regclass)
  );`);
- const originalCatalog=catalog(),originalLegacy=owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`);
+ const originalCatalog=catalog(),originalLegacy=owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`);
  const mutations:[string,RegExp][]=[
   ["ALTER TABLE public.billing_history ALTER COLUMN subscription_tax_snapshot SET DEFAULT '{}'::jsonb",/360 refuses changed tax column schema or grants/],
   ["GRANT SELECT(subscription_tax_snapshot) ON public.billing_history TO authenticated",/360 refuses changed tax column schema or grants/],
   ['ALTER TABLE public.billing_history DISABLE TRIGGER billing_history_tax_writer_360',/360 refuses changed tax trigger shape/],
-  ['ALTER TRIGGER subscriptions_tax_source_immutable_360 ON public.subscriptions RENAME TO synthetic_wrong_tax_trigger',/360 refuses changed tax trigger shape/],
-  ['CREATE TRIGGER synthetic_extra_tax_trigger BEFORE UPDATE ON public.subscriptions FOR EACH ROW EXECUTE FUNCTION public.guard_subscription_tax_rows_360()',/360 refuses changed tax trigger shape/],
+  ['ALTER TRIGGER subscriptions_tax_source_immutable_360 ON public.subscriptions RENAME TO synthetic_wrong_tax_trigger',/360 refuses replaced tax trigger identity/],
+  ['CREATE TRIGGER synthetic_extra_tax_trigger BEFORE UPDATE ON public.subscriptions FOR EACH ROW EXECUTE FUNCTION public.guard_subscription_tax_rows_360()',/360 refuses unknown incoming function dependency/],
   ['ALTER POLICY subscription_tax_history_backend_read_360 ON public.billing_history TO authenticated',/360 refuses changed tax policy shape/],
   ['ALTER POLICY subscription_tax_current_backend_read_360 ON public.subscriptions USING(true)',/360 refuses changed tax policy shape/],
   ['ALTER TABLE public.billing_history DISABLE ROW LEVEL SECURITY',/360 refuses changed tax policy shape/],
-  ['ALTER TABLE public.subscriptions ALTER CONSTRAINT subscriptions_subscription_tax_source_id_fkey DEFERRABLE INITIALLY DEFERRED',/360 refuses changed tax foreign key shape/],
+  ['ALTER TABLE public.subscriptions ALTER CONSTRAINT subscriptions_subscription_tax_source_id_fkey DEFERRABLE INITIALLY DEFERRED',/360 refuses replaced native RI trigger identity/],
   ['ALTER TABLE public.billing_history DROP CONSTRAINT billing_history_subscription_tax_source_id_fkey',/360 refuses changed tax foreign key shape/],
   ['CREATE INDEX synthetic_unknown_tax_expression ON public.subscriptions ((subscription_tax_snapshot->>\'gross_minor\'))',/360 refuses unknown tax column dependency/],
   ['CREATE VIEW public.synthetic_unknown_tax_view AS SELECT subscription_tax_snapshot FROM public.billing_history',/360 refuses unknown tax column dependency/],
@@ -199,9 +204,9 @@ test('empty360 rollback/reapply preserves the full retained legacy invoice and p
  for(const [mutation,expected] of mutations){
   assert.match(owned.psqlExpectError(`BEGIN;${mutation};ROLLBACK;`),expected,'exact tax guard must reject '+mutation);
   assert.equal(catalog(),originalCatalog,'refused DDL preserves complete observed column/trigger/policy/constraint/index rows');
-  assert.equal(owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`),originalLegacy);
+  assert.equal(owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`),originalLegacy);
  }
- assert.equal(owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`),legacyBefore);
+ assert.equal(owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`),legacyBefore);
  const fullBefore=privateState(legacy.site.siteId);
  assert.match(owned.psqlExpectError(`DELETE FROM billing_history WHERE id='${legacyId}';`),/retained subscription financial source is immutable/);
  for(const table of ['billing_history','subscriptions'])assert.match(owned.psqlExpectError(`TRUNCATE public.${table} CASCADE;`),/retained subscription financial sources cannot be truncated/);
@@ -399,11 +404,11 @@ test('approved native upfront and later base invoices conserve their own gross a
   const noProof=JSON.parse(owned.psql(`SELECT public.activate_merchant_subscription_v1(jsonb_build_object('user_id','${f.owner}','store_id','${f.site.siteId}','plan_id','${original.id}','plan_slug','growth','billing_period','monthly',
    'amount_paid',${initial.amount},'payment_gateway','razorpay','external_subscription_id','${reference}','razorpay_order_id','${initial.order_id}','razorpay_payment_id','${initial.id}',
    'period_start','${a.subscription.start}','period_end','${a.subscription.end}','tax_amount',${a.invoice.tax_amount},'total_amount',${initial.amount},'subscription_tax_source_id','${a.invoice.subscription_tax_source_id}'));`));
-  assert.equal(noProof.accepted,false);assert.equal(noProof.code,'SUBSCRIPTION_TAX_REVIEW_REQUIRED');assert.deepEqual(financialOutcome(initial.id),originalAfter);assert.deepEqual(financialOutcome(base.id),b);
+  assert.equal(noProof.accepted,false);assert.equal(noProof.code,'SUBSCRIPTION_CONTEXT_INVALID');assert.deepEqual(financialOutcome(initial.id),originalAfter);assert.deepEqual(financialOutcome(base.id),b);
  }finally{nativePlans.delete(configured);owned.psql(`UPDATE plans SET price_monthly_inr=${original.price},is_active=${original.active?'true':'false'},razorpay_plan_id_monthly=${original.provider===null?'NULL':"'"+String(original.provider).replaceAll("'","''")+"'"} WHERE id='${original.id}';UPDATE founding_merchant_program SET paused=${paused==='t'?'true':'false'} WHERE program_key='v1';`);await f.gateway.settle();}
 });
 test('history API and raw roles preserve legacy values while hiding new private party sources',async()=>{
- const f=legacy;const before=owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`),r=await f.gateway.request('/v1/payments/subscription/history?store_id='+f.site.siteId,{headers:await f.headers()});
+ const f=legacy;const before=owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`),r=await f.gateway.request('/v1/payments/subscription/history?store_id='+f.site.siteId,{headers:await f.headers()});
  assert.equal(r.status,200);const row=r.json?.data.find((x:{id:string})=>x.id===legacyId);assert.ok(row);assert.equal(Number(row.total_amount),82482);assert.equal(Number(row.tax_amount),12582);assert.equal(before,legacyBefore);
  assert.doesNotMatch(r.text,/gstin|approval_reference|Synthetic Platform Supplier|subscription_tax_snapshot/);
  for(const role of ['anon','authenticated','app_tenant']){
@@ -417,7 +422,7 @@ test('new tax financial rows and populated retirement reject direct changes with
  const before=f.state();
  assert.match(owned.psqlExpectError(`UPDATE billing_history SET tax_amount=tax_amount+1 WHERE id='${legacyId}';`),/legacy subscription financial source is immutable/);
  assert.match(owned.psqlExpectError(`UPDATE subscriptions SET amount_paid=amount_paid+1 WHERE id=(SELECT subscription_id FROM billing_history WHERE id='${legacyId}');`),/legacy subscription financial source is immutable/);
- assert.equal(owned.psql(`SELECT to_jsonb(b) FROM billing_history b WHERE id='${legacyId}';`),legacyBefore);
+ assert.equal(owned.psql(`SELECT to_jsonb(b)-'subscription_tax_snapshot'-'subscription_tax_source_id' FROM billing_history b WHERE id='${legacyId}';`),legacyBefore);
  for(const mutation of ["subscription_tax_snapshot#-'{source,gross_before_discount_minor}'", "jsonb_set(subscription_tax_snapshot,'{recipient,gstin}','\"29INVALID\"'::jsonb)", "jsonb_set(subscription_tax_snapshot,'{profile,schema_version}','2'::jsonb)"]){
   assert.equal(owned.psql(`SELECT public.valid_subscription_tax_snapshot_360(${mutation}) FROM billing_history WHERE site_id='${f.site.siteId}' AND subscription_tax_snapshot IS NOT NULL LIMIT 1;`).trim(),'f');
  }

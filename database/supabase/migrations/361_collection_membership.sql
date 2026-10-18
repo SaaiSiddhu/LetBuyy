@@ -10,11 +10,17 @@ IF current_user<>'postgres' OR current_setting('session_replication_role')<>'ori
   OR EXISTS(SELECT 1 FROM pg_event_trigger e WHERE e.evtenabled<>'D' AND NOT(
     e.evtname='subscription_tax_ddl_guard_360' AND e.evtevent='ddl_command_end' AND e.evtenabled='O'
     AND e.evttags IS NULL AND e.evtowner='postgres'::regrole AND e.evtfoid=to_regprocedure('public.guard_subscription_tax_ddl_360()')
-    AND EXISTS(SELECT 1 FROM pg_proc f JOIN public.migration_privilege_journal j ON j.object_oid=f.oid
-      WHERE f.oid=e.evtfoid AND f.proowner='postgres'::regrole AND j.migration='360'
-      AND j.object_signature='public.guard_subscription_tax_ddl_360()' AND j.grantee='service_role' AND j.privilege='EXECUTE' AND j.action='granted'
-      AND j.object_owner=f.proowner AND j.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'))))
-  OR EXISTS(SELECT 1 FROM pg_roles WHERE rolname IN('postgres','anon','authenticated','service_role','app_tenant','authenticator') AND (rolconnlimit<>-1 OR rolvaliduntil IS NOT NULL OR rolconfig IS NOT NULL))
+    AND EXISTS(SELECT 1 FROM pg_proc tax_fn JOIN public.migration_privilege_journal tax_custody ON tax_custody.object_oid=tax_fn.oid
+      WHERE tax_fn.oid=e.evtfoid AND tax_fn.proowner='postgres'::regrole AND tax_custody.migration='360'
+      AND tax_custody.object_signature='public.guard_subscription_tax_ddl_360()' AND tax_custody.grantee='service_role' AND tax_custody.privilege='EXECUTE' AND tax_custody.action='granted'
+      AND tax_custody.object_owner=tax_fn.proowner AND tax_custody.object_definition_hash=encode(sha256(convert_to(pg_get_functiondef(tax_fn.oid),'UTF8')),'hex'))))
+  OR EXISTS(SELECT 1 FROM pg_roles profile_role WHERE profile_role.rolname IN('postgres','anon','authenticated','service_role','app_tenant','authenticator')
+    AND (profile_role.rolconnlimit<>-1 OR profile_role.rolvaliduntil IS NOT NULL OR NOT coalesce(profile_role.rolconfig,'{}'::text[]) <@ CASE profile_role.rolname
+      WHEN 'postgres' THEN ARRAY['search_path="$user", public, extensions','search_path="\$user", public, extensions','search_path=public, extensions']::text[]
+      WHEN 'anon' THEN ARRAY['statement_timeout=3s']::text[]
+      WHEN 'authenticated' THEN ARRAY['statement_timeout=8s']::text[]
+      WHEN 'authenticator' THEN ARRAY['session_preload_libraries=supautils, safeupdate','statement_timeout=8s','lock_timeout=8s']::text[]
+      ELSE '{}'::text[] END))
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='postgres' AND rolsuper AND rolinherit AND rolcreaterole AND rolcreatedb AND rolcanlogin AND rolreplication AND rolbypassrls)
   OR (SELECT count(*)FROM pg_roles WHERE rolname IN('anon','authenticated','app_tenant') AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND NOT rolbypassrls)<>3
   OR NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname='service_role' AND NOT rolsuper AND rolinherit AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolcanlogin AND NOT rolreplication AND rolbypassrls)
@@ -258,7 +264,7 @@ GRANT EXECUTE ON FUNCTION public.apply_collection_membership_v1(uuid,uuid,uuid,i
 -- Own-object provenance supplements, rather than replaces, the static source
 -- and schema/ACL/dependency/role checks embedded in the paired retirement.
 DO $provenance$
-DECLARE signature text; role_name text; role_oid oid; f record; c record; column_number integer;
+DECLARE signature text; role_name text; role_oid oid; role_profile text; f record; c record; column_number integer;
 BEGIN
  FOREACH signature IN ARRAY ARRAY['public.guard_collection_membership_receipt_v1()','public.guard_collection_membership_junction_v1()','public.bump_collection_membership_junction_v1()','public.prepare_collection_membership_revision_v1()','public.record_collection_membership_revision_v1()','public.protect_collection_membership_audit_v1()','public.assert_collection_membership_owner_v1(uuid,uuid)','public.collection_membership_snapshot_v1(uuid,uuid)','public.apply_collection_membership_v1(uuid,uuid,uuid,integer,uuid,jsonb)'] LOOP
   SELECT * INTO f FROM pg_proc WHERE oid=to_regprocedure(signature);
@@ -266,9 +272,9 @@ BEGIN
   VALUES('361',signature,current_user,'361 FUNCTION','granted',f.oid,f.proowner,encode(sha256(convert_to(pg_get_functiondef(f.oid),'UTF8')),'hex'));
  END LOOP;
  FOREACH role_name IN ARRAY ARRAY['postgres','anon','authenticated','service_role','app_tenant'] LOOP
-  SELECT oid INTO role_oid FROM pg_roles WHERE rolname=role_name;
+  SELECT r.oid,to_jsonb(r)::text INTO role_oid,role_profile FROM pg_roles r WHERE r.rolname=role_name;
   INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)
-  VALUES('361','role:'||role_name,current_user,'361 AUTHORITY ROLE','granted',role_oid,'postgres'::regrole,encode(sha256(convert_to('361 source authority role profile v1','UTF8')),'hex'));
+  VALUES('361','role:'||role_name,current_user,'361 AUTHORITY ROLE','granted',role_oid,'postgres'::regrole,encode(sha256(convert_to(role_profile,'UTF8')),'hex'));
  END LOOP;
  SELECT * INTO c FROM pg_class WHERE oid='public.collection_membership_receipts'::regclass;
  INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner,object_definition_hash)

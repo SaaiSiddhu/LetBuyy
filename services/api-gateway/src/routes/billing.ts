@@ -345,6 +345,7 @@ router.post('/subscribe', validate('json', BillingSubscribeSchema), async (c) =>
         .from('billing_history')
         .select('*')
         .eq('subscription_id', subscription.id)
+        .eq('site_id', tenant.siteId)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();

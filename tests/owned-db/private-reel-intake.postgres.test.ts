@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { randomUUID, createHash } from 'node:crypto';
 import { readFileSync, mkdirSync, writeFileSync, renameSync } from 'node:fs';
-import { createRequire } from 'node:module';
+import { createRequire, builtinModules } from 'node:module';
 import { Script } from 'node:vm';
 import { createServer, type Server } from 'node:http';
 import { exportJWK } from 'jose';
@@ -40,7 +40,14 @@ class NativeGateway {
   const gatewayRequire = createRequire(new URL('../../services/api-gateway/package.json', import.meta.url));
   const compiler = createRequire(gatewayRequire.resolve('wrangler'))('esbuild') as { build(options: unknown): Promise<{ outputFiles?: { text: string }[] }> };
   const bundle = await compiler.build({ entryPoints: [new URL('../../services/api-gateway/src/index.ts', import.meta.url).pathname], absWorkingDir: new URL('../..', import.meta.url).pathname,
-   bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022', tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent' });
+   bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022',
+   banner: {js: "import { createRequire as nativeCreateRequire } from 'node:module'; const require = nativeCreateRequire(import.meta.url);"}, tsconfig: 'services/api-gateway/tsconfig.json', external: ['cloudflare:*','node:*'], conditions: ['workerd','worker','browser'], logLevel: 'silent',
+   // Match Wrangler's Node compatibility resolution while retaining native
+   // implementations. No crypto, storage or route implementation is replaced.
+   plugins: [{ name: 'native-node-builtins', setup(build: {onResolve(options: {filter: RegExp}, handler: (args: {path:string}) => {path:string;external:true}|undefined):void}) {
+    const native = new Set(builtinModules);
+    build.onResolve({filter:/^[a-z][\w/]*$/}, args => native.has(args.path) ? {path:'node:'+args.path,external:true} : undefined);
+   }}] });
   assert.equal(bundle.outputFiles?.length, 1);
   const origin = new URL(String(env.SUPABASE_URL)).origin;
   const tap: { beforeFinish?: () => Promise<void>; loseFinishReply?: boolean } = {};
