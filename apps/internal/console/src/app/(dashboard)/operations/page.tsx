@@ -1,9 +1,9 @@
 import { revalidatePath } from 'next/cache';
-import { z } from 'zod';
 import type {
     InternalIncidentPostmortem,
     InternalOncallSchedule,
     InternalProductionIncident,
+    InternalRuntimeControlCommand,
 } from '@letbuyy/api-client';
 import { Button, Input, Textarea } from '@letbuyy/ui';
 import {
@@ -22,8 +22,6 @@ import {
     type ConsolePaginatedResponse,
 } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
-import { InternalPlatformJobSchema, InternalPlatformJobQuerySchema } from '@letbuyy/shared-types';
-import { PlatformJobRecovery } from '@/components/operations/PlatformJobRecovery';
 
 const OPERATIONS_AUTH_CONTRACT = 'PLATFORM_CONSOLE_API_TOKEN';
 const OPERATIONS_OVERVIEW_CONTRACT = '/v1/operations/runtime/overview?limit=30';
@@ -42,47 +40,11 @@ type OperationsOverview = {
     certification_reports?: Array<{ certification_id: string; certification_mode: string; status: string; repository_maturity_score: number; live_maturity_score: number; generated_at?: string | null; expires_at?: string | null }>;
 };
 
-const CurrentOncallSchema = z.object({
-    id: z.string().uuid(), team_name: z.string().min(2).max(120), rotation_name: z.string().min(2).max(160),
-    primary_employee_id: z.string().uuid().nullable(), paging_adapter: z.enum(['dry_run', 'pagerduty', 'opsgenie']),
-}).strict();
-const CurrentOncallReplySchema = z.object({success:z.literal(true),data:z.object({schedule:CurrentOncallSchema.nullable()}).strict()}).strict();
-type CurrentOncall = z.infer<typeof CurrentOncallSchema>;
-
-const OncallScheduleSchema = z.object({
-    id: z.string().uuid(), team_name: z.string().min(2).max(120), rotation_name: z.string().min(2).max(160),
-    primary_employee_id: z.string().uuid().nullable(), starts_at: z.string().datetime({ offset: true }),
-    ends_at: z.string().datetime({ offset: true }).nullable(), active: z.boolean(),
-}).strict();
-const OncallSchedulesReplySchema = z.object({ success: z.literal(true), data: z.object({
-    items: OncallScheduleSchema.array().max(15), total: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
-    page: z.number().int().min(1).max(10000), limit: z.literal(15), has_next: z.boolean(),
-}).strict().refine(data => data.items.length === Math.min(data.limit, Math.max(data.total - (data.page - 1) * data.limit, 0))
-    && data.has_next === (data.page * data.limit < data.total)
-    && new Set(data.items.map(item => item.id)).size === data.items.length) }).strict();
-type OncallSchedule = z.infer<typeof OncallScheduleSchema>;
-
-const RuntimeCommandRecordSchema=z.object({
-    command_id:z.string(),operation:z.string(),target_type:z.string(),target_id:z.string(),
-    status:z.enum(['accepted','running','completed','failed','cancelled']),
-}).strict();
-const RuntimeCommandHistoryReplySchema=z.object({success:z.literal(true),data:z.object({
-    items:RuntimeCommandRecordSchema.array().max(15),total:z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
-    page:z.number().int().min(1).max(10000),limit:z.literal(15),has_next:z.boolean(),
-}).strict().refine(data=>data.items.length===Math.min(data.limit,Math.max(data.total-(data.page-1)*data.limit,0))
-    &&data.has_next===(data.page*data.limit<data.total)&&new Set(data.items.map(item=>item.command_id)).size===data.items.length)}).strict();
-type RuntimeCommandRecord=z.infer<typeof RuntimeCommandRecordSchema>;
-
 type OperationsPageData = {
     overview: OperationsOverview;
-    commands: RuntimeCommandRecord[];
-    commandsError?: string;
-    commandsHasNext: boolean;
-    schedules: OncallSchedule[];
-    schedulesError?: string;
-    schedulesHasNext: boolean;
-    currentOncall: CurrentOncall | null;
-    currentOncallError?: string;
+    commands: InternalRuntimeControlCommand[];
+    schedules: InternalOncallSchedule[];
+    currentOncall: InternalOncallSchedule | null;
     postmortems: InternalIncidentPostmortem[];
     errors: string[];
 };
@@ -283,60 +245,30 @@ async function createPostmortem(formData: FormData) {
     revalidatePath('/operations');
 }
 
-async function loadOperationsData(oncallPage: number | undefined, commandsPage: number | undefined): Promise<OperationsPageData> {
+async function loadOperationsData(): Promise<OperationsPageData> {
     const [overviewResult, commandsResult, schedulesResult, currentOncallResult, postmortemsResult] = await Promise.all([
         fetchConsoleApi<ConsoleDataResponse<OperationsOverview>>('/operations/runtime/overview', { limit: 30 }),
-        commandsPage === undefined ? Promise.resolve({error:'Invalid runtime command history page.',data:undefined})
-            : fetchConsoleApi<unknown>('/internal/console/operations/runtime/control-commands', {page:commandsPage,limit:15}),
-        oncallPage === undefined ? Promise.resolve({ error: 'Invalid on-call schedule page.', data: undefined })
-            : fetchConsoleApi<unknown>('/internal/console/operations/oncall/schedules', { page: oncallPage, limit: 15, active: 'all' }),
-        fetchConsoleApi<unknown>('/internal/console/operations/oncall/current'),
+        fetchConsoleApi<ConsoleDataResponse<{ commands: InternalRuntimeControlCommand[] }>>('/operations/runtime/control-commands', { limit: 15 }),
+        fetchConsoleApi<ConsolePaginatedResponse<InternalOncallSchedule>>('/operations/oncall/schedules', { limit: 15, active: 'all' }),
+        fetchConsoleApi<ConsoleDataResponse<{ schedule: InternalOncallSchedule | null }>>('/operations/oncall/current'),
         fetchConsoleApi<ConsolePaginatedResponse<InternalIncidentPostmortem>>('/operations/postmortems', { limit: 20 }),
     ]);
 
-    const currentOncall = CurrentOncallReplySchema.safeParse(currentOncallResult.data);
-    const currentOncallError = currentOncallResult.error || (!currentOncall.success ? 'Current rotation response is unavailable.' : undefined);
-    const schedules = OncallSchedulesReplySchema.safeParse(schedulesResult.data);
-    const schedulesError = schedulesResult.error || (!schedules.success || schedules.data.data.page !== oncallPage ? 'On-call schedules response is unavailable.' : undefined);
-    const commands=RuntimeCommandHistoryReplySchema.safeParse(commandsResult.data);
-    const commandsError=commandsResult.error||(!commands.success||commands.data.data.page!==commandsPage?'Runtime command history response is unavailable.':undefined);
-    const errors = [overviewResult.error, postmortemsResult.error]
+    const errors = [overviewResult.error, commandsResult.error, schedulesResult.error, currentOncallResult.error, postmortemsResult.error]
         .filter((error): error is string => Boolean(error));
 
     return {
         overview: overviewResult.data?.data || {},
-        commands: !commandsError&&commands.success?commands.data.data.items:[],
-        commandsError,
-        commandsHasNext:!commandsError&&commands.success&&commands.data.data.has_next,
-        schedules: !schedulesError && schedules.success ? schedules.data.data.items : [],
-        schedulesError,
-        schedulesHasNext: !schedulesError && schedules.success && schedules.data.data.has_next,
-        currentOncall: currentOncall.success ? currentOncall.data.data.schedule : null,
-        currentOncallError,
+        commands: commandsResult.data?.data.commands || [],
+        schedules: schedulesResult.data?.data || [],
+        currentOncall: currentOncallResult.data?.data.schedule || null,
         postmortems: postmortemsResult.data?.data || [],
         errors,
     };
 }
 
-export default async function OperationsDashboardPage({ searchParams }: {searchParams:Promise<Record<string,string|string[]|undefined>>}) {
-    const session = await requireConsoleSession({mfa:true});
-    const params = await searchParams;
-    const first = (name:string) => { const value=params[name];return Array.isArray(value)?value[0]:value; };
-    const query = InternalPlatformJobQuerySchema.safeParse({page:first('page'),limit:25,site_id:first('site_id'),job_id:first('job_id')});
-    const recovery = query.success ? await fetchConsoleApi<ConsoleDataResponse<{items:unknown;has_next:boolean}>>('/internal/console/platform-jobs',query.data)
-        : {error:'Invalid recovery inspection query.',data:undefined};
-    const recoveryItems = InternalPlatformJobSchema.array().safeParse(recovery.data?.data.items);
-    const recoveryError = recovery.error || (!recoveryItems.success?'Recovery response is unavailable.':undefined);
-    const oncallPage = z.coerce.number().int().min(1).max(10000).default(1).safeParse(first('oncall_page'));
-    const commandsPage=z.coerce.number().int().min(1).max(10000).default(1).safeParse(first('commands_page'));
-    const data = await loadOperationsData(oncallPage.success ? oncallPage.data : undefined,commandsPage.success?commandsPage.data:undefined);
-    const reloadQuery = new URLSearchParams();
-    for (const [name, value] of Object.entries(params)) {
-        for (const item of Array.isArray(value) ? value : value === undefined ? [] : [value]) reloadQuery.append(name, item);
-    }
-    const currentOncallReloadHref = '/operations' + (reloadQuery.size ? '?' + reloadQuery.toString() : '');
-    const oncallPageHref = (page: number) => { const next = new URLSearchParams(reloadQuery); next.set('oncall_page', String(page)); return '/operations?' + next.toString(); };
-    const commandsPageHref=(page:number)=>{const next=new URLSearchParams(reloadQuery);next.set('commands_page',String(page));return '/operations?'+next.toString();};
+export default async function OperationsDashboardPage() {
+    const data = await loadOperationsData();
     const consoleApiTokenConfigured = Boolean(process.env.PLATFORM_CONSOLE_API_TOKEN);
     const health = data.overview.health || [];
     const queues = data.overview.queues || [];
@@ -370,10 +302,6 @@ export default async function OperationsDashboardPage({ searchParams }: {searchP
                 <ConsoleApiErrorPanel key={error} title="Operations API unavailable" message={error} />
             ))}
 
-            <PlatformJobRecovery actorId={session.userId} sessionId={session.sessionId}
-                jobs={recoveryItems.success?recoveryItems.data.map(job=>({...job,request_key:crypto.randomUUID()})):[]}
-                error={recoveryError} page={query.success?query.data.page:1} hasNext={recovery.data?.data.has_next===true}/>
-
             <MetricGrid>
                 <LeadershipMetric label="Healthy runtimes" value={`${health.filter((item) => item.status === 'healthy').length}/${health.length}`} />
                 <LeadershipMetric label="Open incidents" value={String(activeIncidents.length)} tone={activeIncidents.length > 0 ? 'warning' : 'success'} />
@@ -385,19 +313,11 @@ export default async function OperationsDashboardPage({ searchParams }: {searchP
 
             <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)]">
                 <IncidentCommandPanel incidents={incidents} postmortems={data.postmortems} />
-                <RuntimeCommandPanel commands={data.commands} error={data.commandsError}
-                    reloadHref={commandsPage.success?currentOncallReloadHref:commandsPageHref(1)}
-                    page={commandsPage.success?commandsPage.data:1}
-                    previousHref={commandsPage.success&&commandsPage.data>1?commandsPageHref(commandsPage.data-1):undefined}
-                    nextHref={commandsPage.success&&data.commandsHasNext&&commandsPage.data<10000?commandsPageHref(commandsPage.data+1):undefined} />
+                <RuntimeCommandPanel commands={data.commands} />
             </section>
 
             <section className="grid gap-[var(--lb-space-5)] xl:grid-cols-2">
-                <OncallPanel current={data.currentOncall} error={data.currentOncallError} reloadHref={currentOncallReloadHref} schedules={data.schedules}
-                    schedulesError={data.schedulesError} schedulesReloadHref={currentOncallReloadHref}
-                    schedulesPage={oncallPage.success ? oncallPage.data : 1}
-                    schedulesPreviousHref={oncallPage.success && oncallPage.data > 1 ? oncallPageHref(oncallPage.data - 1) : undefined}
-                    schedulesNextHref={oncallPage.success && data.schedulesHasNext && oncallPage.data < 10000 ? oncallPageHref(oncallPage.data + 1) : undefined} />
+                <OncallPanel current={data.currentOncall} schedules={data.schedules} />
                 <PostmortemPanel incidents={incidents} postmortems={data.postmortems} />
             </section>
 
@@ -581,17 +501,14 @@ function IncidentCommandPanel({
     );
 }
 
-function RuntimeCommandPanel({commands,error,reloadHref,page,previousHref,nextHref}: {
-    commands:RuntimeCommandRecord[];error?:string;reloadHref:string;page:number;previousHref?:string;nextHref?:string;
-}) {
+function RuntimeCommandPanel({ commands }: { commands: InternalRuntimeControlCommand[] }) {
     return (
         <Panel title="Runtime Controls" description="Generic runtime commands are unavailable while independent consent and their canonical execution owner remain unintegrated.">
             <p role="status">No runtime command can be submitted here. Use the documented recovery procedure for the affected queue, outbox or provider.</p>
             <p>Historical records below are retained evidence. Their stored status does not establish independent approval or a completed operational effect.</p>
 
             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
-                {error ? <div role="alert"><p>Runtime command history unavailable.</p>
-                    <a href={reloadHref}>Reload command history</a></div> : commands.length === 0 ? (
+                {commands.length === 0 ? (
                     <EmptyDataState message="No runtime commands returned." />
                 ) : commands.map((command) => (
                     <div key={command.command_id} className="py-[var(--lb-space-3)]">
@@ -607,39 +524,25 @@ function RuntimeCommandPanel({commands,error,reloadHref,page,previousHref,nextHr
                     </div>
                 ))}
             </div>
-            {!error&&<nav aria-label="Runtime command history pages" className="flex gap-[var(--lb-space-3)]">
-                {previousHref&&<a href={previousHref}>Previous command records</a>}
-                <span>Command history page {page}</span>
-                {nextHref&&<a href={nextHref}>Next command records</a>}
-            </nav>}
         </Panel>
     );
 }
 
 function OncallPanel({
     current,
-    error,
-    reloadHref,
-    schedules, schedulesError, schedulesReloadHref, schedulesPage, schedulesPreviousHref, schedulesNextHref,
+    schedules,
 }: {
-    current: CurrentOncall | null;
-    error?: string;
-    reloadHref: string;
-    schedules: OncallSchedule[];
-    schedulesError?: string; schedulesReloadHref: string; schedulesPage: number;
-    schedulesPreviousHref?: string; schedulesNextHref?: string;
+    current: InternalOncallSchedule | null;
+    schedules: InternalOncallSchedule[];
 }) {
     return (
         <Panel title="On-Call" description="Current rotation resolution and dry-run paging setup. Vendor paging remains on the adapter boundary until production keys are supplied.">
-            {error ? <div role="alert" className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
-                <p>Current rotation unavailable.</p>
-                <a href={reloadHref}>Reload current rotation</a>
-            </div> : <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
+            <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] p-[var(--lb-space-4)]">
                 <p className="m-0 text-sm font-medium">{current ? `${current.team_name} | ${current.rotation_name}` : 'No active on-call schedule'}</p>
                 <p className="m-0 mt-[var(--lb-space-1)] text-xs text-[var(--lb-color-text-subdued)]">
                     {current ? `Primary ${current.primary_employee_id || 'unassigned'} | ${current.paging_adapter}` : 'Create a rotation to resolve the current on-call.'}
                 </p>
-            </div>}
+            </div>
 
             <form action={createOncallSchedule} className="mt-[var(--lb-space-4)] grid gap-[var(--lb-space-3)] md:grid-cols-2">
                 <Input name="team_name" label="Team" placeholder="platform" required />
@@ -656,26 +559,20 @@ function OncallPanel({
             </form>
 
             <div className="mt-[var(--lb-space-5)] divide-y divide-[var(--lb-color-border)]">
-                {schedulesError ? <div role="alert"><p>On-call schedules unavailable.</p>
-                    <a href={schedulesReloadHref}>Reload schedules</a></div> : schedules.length === 0 ? (
+                {schedules.length === 0 ? (
                     <EmptyDataState message="No on-call schedules returned." />
                 ) : schedules.map((schedule) => (
                     <div key={schedule.id} className="flex items-start justify-between gap-[var(--lb-space-3)] py-[var(--lb-space-3)]">
                         <div className="min-w-0">
-                            <p className="m-0 truncate text-sm font-medium">{schedule.rotation_name}</p>
+                            <p className="m-0 truncate text-sm font-medium">{schedule.team_name} | {schedule.rotation_name}</p>
                             <p className="m-0 mt-[var(--lb-space-1)] truncate text-xs text-[var(--lb-color-text-subdued)]">
-                                {schedule.team_name} | {formatDateTime(schedule.starts_at)} to {schedule.ends_at ? formatDateTime(schedule.ends_at) : 'open'} | {schedule.primary_employee_id || 'unassigned'}
+                                {formatDateTime(schedule.starts_at)} to {schedule.ends_at ? formatDateTime(schedule.ends_at) : 'open'} | {schedule.primary_employee_id || 'unassigned'}
                             </p>
                         </div>
                         <StatusPill value={schedule.active ? 'active' : 'inactive'} />
                     </div>
                 ))}
             </div>
-            {!schedulesError && <nav aria-label="On-call schedule pages" className="flex gap-[var(--lb-space-3)]">
-                {schedulesPreviousHref && <a href={schedulesPreviousHref}>Previous schedules</a>}
-                <span>Schedule page {schedulesPage}</span>
-                {schedulesNextHref && <a href={schedulesNextHref}>Next schedules</a>}
-            </nav>}
         </Panel>
     );
 }

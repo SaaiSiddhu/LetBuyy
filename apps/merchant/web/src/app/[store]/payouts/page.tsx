@@ -2,13 +2,31 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
-import { MERCHANT_PAYOUT_STATUS_PRESENTATION, MerchantPayoutStatementSchema, presentStatus, type MerchantPayoutStatement } from '@letbuyy/shared-types'
-import { Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, ProviderModeBadge, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
+import { PAYOUT_STATUS_PRESENTATION, presentStatus, type PayoutStatus } from '@letbuyy/shared-types'
+import { Banner, Button, Card, EmptyState, MaterialIcon, Page, PageHeader, Section, Skeleton, StatusPresentationBadge, useToast } from '@letbuyy/ui'
 import { formatIndiaDate as formatDate } from '@letbuyy/ui/formatting'
 import { StepUpDialog, type StepUpResult } from '@/components/security/StepUpDialog'
-import { useMerchantSecurityContext } from '@/components/security/MerchantSecurityContext'
 
-class PayoutReadbackError extends Error {}
+interface PayoutRow {
+    id: string
+    statement_number: string
+    // Canonical vocabulary from the DB CHECK, not MerchantPayoutStatusSchema
+    // (which declares pending|released — neither of which the column can hold).
+    status: PayoutStatus
+    currency: string
+    gross_amount_minor: number
+    net_amount_minor: number
+    platform_fee_minor: number
+    period_start?: string | null
+    period_end?: string | null
+    available_on?: string | null
+    released_at?: string | null
+    failed_at?: string | null
+    utr?: string | null
+    provider_reference?: string | null
+    failure_reason?: string | null
+    created_at?: string | null
+}
 
 function currency(minor: number) {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(minor / 100)
@@ -27,13 +45,8 @@ function getErrorMsg(payload: unknown, fallback: string): string {
 
 export default function PayoutsPage() {
     const { store } = useParams<{ store: string }>()
-    const { actorId } = useMerchantSecurityContext(store)
-    return <PayoutStatements key={`${actorId}:${store}`} store={store} actorId={actorId} />
-}
-
-function PayoutStatements({ store, actorId }: { store: string; actorId: string }) {
     const { notify } = useToast()
-    const [payouts, setPayouts] = useState<MerchantPayoutStatement[]>([])
+    const [payouts, setPayouts] = useState<PayoutRow[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [releasingId, setReleasingId] = useState<string | null>(null)
@@ -48,57 +61,38 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
     const [settlingId, setSettlingId] = useState<string | null>(null)
     /** Stable across retries of one release attempt — see orders/page.tsx. */
     const settleKeys = useRef(new Map<string, string>())
-    const active = useRef(true)
-    const loadVersion = useRef(0)
-    const settling = useRef(false)
     const [stepUpOpen, setStepUpOpen] = useState(false)
     const [actionError, setActionError] = useState<string | null>(null)
 
     const loadPayouts = useCallback(async () => {
-        const version = ++loadVersion.current
-        const current = () => active.current && loadVersion.current === version
         setLoading(true)
         setError(null)
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts`, { cache: 'no-store' })
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payouts`)
             const payload = await response.json().catch(() => null) as {
-                data?: { payouts?: unknown }
-                payouts?: unknown
+                data?: { payouts?: PayoutRow[] }
+                payouts?: PayoutRow[]
             } | null
-            if (!current()) return
             if (!response.ok) {
                 setPayouts([])
                 setError(getErrorMsg(payload, 'Unable to load payouts'))
                 return
             }
-            const parsed = MerchantPayoutStatementSchema.array().safeParse(payload?.data?.payouts ?? payload?.payouts)
-            if (!parsed.success) throw new PayoutReadbackError('Payout statements returned incomplete data. Refresh and retry.')
-            setPayouts(parsed.data)
-        } catch (cause) {
-            if (!current()) return
+            const rows = payload?.data?.payouts ?? (payload as { payouts?: PayoutRow[] } | null)?.payouts ?? []
+            setPayouts(rows)
+        } catch {
             setPayouts([])
-            setError(cause instanceof PayoutReadbackError ? cause.message : 'Unable to load payouts')
+            setError('Unable to load payouts')
         } finally {
-            if (current()) setLoading(false)
+            setLoading(false)
         }
     }, [store])
 
-    useEffect(() => {
-        active.current = true
-        void loadPayouts()
-        return () => { active.current = false; loadVersion.current += 1 }
-    }, [loadPayouts])
+    useEffect(() => { void loadPayouts() }, [loadPayouts])
 
     const handleReleaseStepUpSuccess = useCallback(async (result: StepUpResult) => {
-        if (!active.current || !releasingId || settling.current) return
-        if (result.actorId !== actorId) {
-            setStepUpOpen(false)
-            setActionError('The signed-in account changed. Reload this page before releasing a payout.')
-            return
-        }
-        const requestedStatement = payouts.find(payout => payout.id === releasingId)
-        if (!requestedStatement) return
-        settling.current = true
+        if (!releasingId) return
+        if (settlingId) return
         setStepUpOpen(false)
         setActionError(null)
         setSettlingId(releasingId)
@@ -120,45 +114,24 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                 }
             )
             const payload = await response.json().catch(() => null)
-            if (!active.current) return
             if (!response.ok) {
                 const message = getErrorMsg(payload, 'Unable to release payout')
                 setActionError(message)
                 notify({ title: 'Release failed', description: message, variant: 'critical' })
                 return
             }
-            const parsed = MerchantPayoutStatementSchema.safeParse(payload?.data)
-            if (!parsed.success || parsed.data.id !== requestedStatement.id || parsed.data.site_id !== requestedStatement.site_id) {
-                throw new PayoutReadbackError('Payout release returned incomplete or conflicting statement data. Refresh and retry the same request.')
-            }
-            const payout = parsed.data
-            if (payout.status === 'released') {
-                settleKeys.current.delete(identity)
-                notify({ title: 'Release recorded', description: 'The statement records this payout as released.', variant: 'success' })
-            } else if (payout.status === 'processing') {
-                // Keep the original command key: processing is an uncertain result.
-                notify({ title: 'Payout processing', description: 'Release remains unconfirmed. Retry uses the same request.', variant: 'info' })
-            } else {
-                const message = payout.status === 'failed'
-                    ? payout.failure_reason || 'The statement records a failed release. Review the statement before trying again.'
-                    : 'Release is not confirmed. Refresh and retry the same request.'
-                setActionError(message)
-                notify({ title: 'Release needs attention', description: message, variant: payout.status === 'failed' ? 'critical' : 'warning' })
-            }
+            settleKeys.current.delete(identity)
+            notify({ title: 'Payout released', description: 'The payout has been submitted for settlement.', variant: 'success' })
             setReleasingId(null)
             await loadPayouts()
-        } catch (cause) {
-            if (!active.current) return
-            const message = cause instanceof PayoutReadbackError
-                ? cause.message
-                : 'Unable to release payout'
+        } catch {
+            const message = 'Unable to release payout'
             setActionError(message)
             notify({ title: 'Release failed', description: message, variant: 'critical' })
         } finally {
-            settling.current = false
-            if (active.current) setSettlingId(null)
+            setSettlingId(null)
         }
-    }, [store, actorId, releasingId, payouts, loadPayouts, notify])
+    }, [store, releasingId, settlingId, loadPayouts, notify])
 
     const emptyState = (
         <EmptyState
@@ -237,13 +210,16 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                                         Net {currency(payout.net_amount_minor)}
                                     </div>
 
-                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                        <StatusPresentationBadge presentation={presentStatus(MERCHANT_PAYOUT_STATUS_PRESENTATION, payout.status)} />
-                                        <ProviderModeBadge mode={payout.provider_mode} />
-                                    </div>
+                                    <StatusPresentationBadge presentation={presentStatus(PAYOUT_STATUS_PRESENTATION, payout.status)} />
 
                                     <div>
-                                        {(payout.status === 'pending' || payout.status === 'processing') && (
+                                        {/* `scheduled`, not `pending`: the CHECK is
+                                            scheduled|processing|paid|failed|cancelled, so the
+                                            previous `=== 'pending'` test could never be true and
+                                            a scheduled payout — the initial state — showed no
+                                            Release action at all. Surfaced by adopting the
+                                            canonical PayoutStatus union. */}
+                                        {(payout.status === 'scheduled' || payout.status === 'processing') && (
                                             <Button
                                                 size="sm"
                                                 // Money is moving: show it, and stop a second
@@ -256,7 +232,7 @@ function PayoutStatements({ store, actorId }: { store: string; actorId: string }
                                                     setActionError(null)
                                                 }}
                                             >
-                                                {payout.status === 'processing' ? 'Retry release' : 'Release'}
+                                                Release
                                             </Button>
                                         )}
                                     </div>

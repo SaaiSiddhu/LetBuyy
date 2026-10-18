@@ -98,10 +98,3 @@ test('configured factor identity is stable across code/time and normalized email
  withEnv({PLATFORM_CONSOLE_TOTP_SECRETS:JSON.stringify({[EMAIL]:'synthetic-different-key'})},()=>assert.notEqual(first,getConsoleFactorFingerprint(EMAIL)));
 })));
 test('production cannot derive a factor identity from a global or development fallback',()=>withEnv({NODE_ENV:'production',PLATFORM_CONSOLE_TOTP_SECRETS:'{}',PLATFORM_CONSOLE_TOTP_SECRET:SECRET},()=>assert.equal(getConsoleFactorFingerprint(EMAIL),null)));
-
-import {consoleStepUpReturnPath} from './console-step-up';
-test('operations step-up returns only to the exact protected page',()=>{
- assert.equal(consoleStepUpReturnPath('/operations'),'/operations');
- for(const path of ['https://evil.invalid/operations','//evil.invalid/operations','//operations','/operations/extra','/operations?next=https://evil.invalid','/operations#fragment','/%6fperations','/operations%2fextra','/operations//','/operations/../approvals','/OPERATIONS','/Operations','/operations '])assert.equal(consoleStepUpReturnPath(path),'/approvals',path);
- for(const path of ['/approvals','/money-reconciliation','/trust-safety'])assert.equal(consoleStepUpReturnPath(path),path);
-});

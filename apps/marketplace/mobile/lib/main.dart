@@ -250,7 +250,6 @@ class LetBuyyMarketplaceApp extends StatelessWidget {
         Provider<BuyerAccountApi>(create: (_) => buildBuyerAccountApi()),
         Provider<BuyerAddressApi>(create: (_) => buildBuyerAddressApi()),
         Provider<BuyerOrdersApi>(create: (_) => buildBuyerOrdersApi()),
-        Provider<BuyerSupportApi>(create: (_) => buildBuyerSupportApi()),
         Provider<BuyerLoyaltyApi>(create: (_) => buildBuyerLoyaltyApi()),
       ],
       child: Consumer<ThemeProvider>(

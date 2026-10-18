@@ -16,7 +16,6 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
-import ts from 'typescript';
 import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
@@ -24,7 +23,6 @@ const repoRoot = join(testDir, '../..');
 const MIGRATION = 'database/supabase/migrations/217_marketplace_channel_listings.sql';
 const LISTINGS_ROUTE = 'services/api-gateway/src/routes/channel-listings.ts';
 const PUBLIC_ROUTES = 'services/api-gateway/src/routes/storefront/public-routes.ts';
-const FEED_ROUTES = 'services/api-gateway/src/routes/storefront/marketplace-feed-routes.ts';
 const SCHEMA = 'services/api-gateway/src/schemas/channel-listing.schema.ts';
 const INDEX = 'services/api-gateway/src/index.ts';
 
@@ -87,65 +85,19 @@ test('the merchant transition binds 217\'s seven parameters positionally, in the
     assert.match(route, /export const TRANSITION_CHANNEL_LISTING_RPC = 'transition_channel_listing'/);
 });
 
-test('the canonical feed preserves legacy RPC bindings and adds only the optional seller overload', () => {
+test('the public feed matches 272\'s origin-filter overload and preserves 217\'s compatibility signature', () => {
     const legacyNames = sqlParameterNames(executableSql(read(MIGRATION)), 'marketplace_feed');
-    assert.deepEqual(legacyNames, ['p_category_slug', 'p_search', 'p_limit', 'p_after_approved_at', 'p_after_id']);
-    const originNames = sqlParameterNames(executableSql(read('database/supabase/migrations/272_marketplace_origin_filter.sql')), 'marketplace_feed');
-    assert.deepEqual(originNames, [...legacyNames, 'p_country_of_origin']);
-    const sellerNames = sqlParameterNames(executableSql(read('database/supabase/migrations/343_marketplace_seller_feed.sql')), 'marketplace_feed');
-    assert.deepEqual(sellerNames, [...originNames, 'p_site_id']);
-
-    const source = ts.createSourceFile(FEED_ROUTES, read(FEED_ROUTES), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-    const loader = source.statements.find((node): node is ts.FunctionDeclaration =>
-        ts.isFunctionDeclaration(node) && node.name?.text === 'loadMarketplaceFeedFromDatabase');
-    assert.ok(loader?.body, 'the canonical module owns the database loader');
-    const rpcCalls: ts.CallExpression[] = [];
-    const visit = (node: ts.Node): void => {
-        if (ts.isCallExpression(node) && node.expression.getText(source) === 'db.rpc') {
-            rpcCalls.push(node);
-        }
-        ts.forEachChild(node, visit);
-    };
-    visit(loader.body);
-    assert.equal(rpcCalls.length, 1, 'one canonical RPC call per feed read');
-    const rpc = rpcCalls[0];
-    assert.ok(rpc);
-    assert.equal(rpc.arguments[0]?.getText(source), 'MARKETPLACE_FEED_RPC');
-    const args = rpc.arguments[1];
-    assert.ok(args && ts.isObjectLiteralExpression(args));
-    const expected: Record<string, string> = {
-        p_category_slug: 'params.category', p_search: 'params.search', p_limit: 'params.limit',
-        p_after_approved_at: 'params.afterApprovedAt', p_after_id: 'params.afterId',
-        p_country_of_origin: 'params.countryOfOrigin',
-    };
-    const mandatory: string[] = [];
-    let optionalSeller = 0;
-    for (const property of args.properties) {
-        if (ts.isPropertyAssignment(property)) {
-            const key = property.name.getText(source);
-            assert.ok(Object.hasOwn(expected, key), `unexpected mandatory RPC field ${key}`);
-            assert.equal(property.initializer.getText(source), expected[key], key);
-            mandatory.push(key);
-            continue;
-        }
-        assert.ok(ts.isSpreadAssignment(property), 'only named bindings and the optional seller spread are allowed');
-        let branch = property.expression;
-        while (ts.isParenthesizedExpression(branch)) branch = branch.expression;
-        assert.ok(ts.isConditionalExpression(branch));
-        assert.equal(branch.condition.getText(source), 'params.siteId');
-        assert.ok(ts.isObjectLiteralExpression(branch.whenTrue));
-        assert.ok(ts.isObjectLiteralExpression(branch.whenFalse));
-        assert.equal(branch.whenTrue.properties.length, 1);
-        assert.equal(branch.whenFalse.properties.length, 0, 'legacy calls must not send p_site_id');
-        const seller = branch.whenTrue.properties[0];
-        assert.ok(ts.isPropertyAssignment(seller));
-        assert.equal(seller.name.getText(source), 'p_site_id');
-        assert.equal(seller.initializer.getText(source), 'params.siteId');
-        optionalSeller++;
-    }
-    assert.deepEqual(mandatory.sort(), [...originNames].sort(), 'the six legacy keys are exact and nonduplicated');
-    assert.equal(optionalSeller, 1);
-    assert.match(executableTs(read(FEED_ROUTES)), /export const MARKETPLACE_FEED_RPC = 'marketplace_feed'/);
+    assert.deepEqual(legacyNames,['p_category_slug','p_search','p_limit','p_after_approved_at','p_after_id']);
+    const migration = executableSql(read('database/supabase/migrations/272_marketplace_origin_filter.sql'));
+    const publicRoutes = executableTs(read(PUBLIC_ROUTES));
+    const sqlNames = sqlParameterNames(migration, 'marketplace_feed');
+    assert.deepEqual(sqlNames,[...legacyNames,'p_country_of_origin']);
+    const call = publicRoutes.match(/db\.rpc\(MARKETPLACE_FEED_RPC,\s*\{([\s\S]*?)\}\s*\)/);
+    assert.ok(call, `${PUBLIC_ROUTES} must call db.rpc(MARKETPLACE_FEED_RPC, { ... })`);
+    const keys = [...call[1].matchAll(/(p_[a-z_]+)\s*:/g)].map((m) => m[1]);
+    // PostgREST passes a JSON object: order is irrelevant, any missing, extra or renamed key breaks the call.
+    assert.deepEqual([...keys].sort(), [...sqlNames].sort());
+    assert.match(publicRoutes, /export const MARKETPLACE_FEED_RPC = 'marketplace_feed'/);
 });
 
 test('the merchant listing routes have no service-role path and run everything inside the tenant transaction', () => {

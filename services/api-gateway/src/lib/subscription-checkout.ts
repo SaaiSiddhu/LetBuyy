@@ -1,3 +1,4 @@
+import {planImmediateSubscriptionChargeSchedule,planSubscriptionRecurringTaxSnapshots} from '@letbuyy/billing-core';
 import {z} from 'zod';
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import {
@@ -16,13 +17,14 @@ import {
 } from '@letbuyy/billing-core';
 import { resolveFoundingCheckoutLock, isPlanPurchasable } from './founding-pricing';
 import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
-import { subscriptionCheckoutRpc, type SubscriptionCheckoutCharge } from './subscription-checkout-source';
+import { isFreeSubscriptionCheckoutCharge, subscriptionCheckoutRpc, requireSubscriptionTaxSnapshot, requireConfiguredSubscriptionPlan, resolveNewSubscriptionTaxSnapshot, subscriptionTaxSummary, type SubscriptionCheckoutCharge } from './subscription-checkout-source';
 import { AppError, NotFoundError } from './errors';
 import { errorBody } from './supabase';
 
 type SubscriptionCheckoutEnv = {
     RAZORPAY_KEY_ID?: string;
     RAZORPAY_KEY_SECRET?: string;
+    LETBUYY_SUBSCRIPTION_TAX_PROFILE?: string;
 };
 
 export type SubscriptionCheckoutResult = {
@@ -44,10 +46,12 @@ type SubscriptionCheckoutInput = {
 };
 
 export async function createMerchantSubscriptionCheckout(input: SubscriptionCheckoutInput): Promise<SubscriptionCheckoutResult> {
+    if(input.idempotencyKey.trim().length<8||input.idempotencyKey.length>200)
+        throw new AppError('A valid idempotency key is required for subscription checkout.',400,'IDEMPOTENCY_KEY_REQUIRED');
     const request={plan_slug:input.planSlug,site_type:input.siteType,billing_period:input.billingPeriod,
         approved_usage_charges:normalizeMerchantApprovedUsageCharges(input.approvedUsageCharges),coupon_code:input.couponCode||null};
     const claimArgs={p_actor:input.userId,p_site:input.storeId,p_key:input.idempotencyKey,p_request:request};
-    const retained=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',claimArgs);
+    const retained=await subscriptionCheckoutRpc(input.db,'read_merchant_subscription_checkout_key_v1',claimArgs);
     if(retained.charge)return resumeCheckout(input,retained.charge,false);
     const { data: rawPlan } = await input.db
         .from('plans')
@@ -93,35 +97,13 @@ export async function createMerchantSubscriptionCheckout(input: SubscriptionChec
     });
 
     if (checkout.mode === 'free_activation') {
-        const subscription = await new SubscriptionExecutionAdapter(input.db).activateMerchantSubscription({
-            userId: input.userId,
-            storeId: input.storeId,
-            plan,
-            billingPeriod: input.billingPeriod,
-            amountPaid: 0,
-            paymentGateway: null,
-            externalSubscriptionId: `free:${input.storeId}:${Date.now()}`,
-        });
-
-        return {
-            status: 201,
-            body: {
-                data: {
-                    razorpay_order_id: null,
-                    razorpay_subscription_id: null,
-                    checkout_mode: checkout.mode,
-                    amount: 0,
-                    currency: checkout.currency,
-                    key_id: null,
-                    plan: checkout.plan_payload,
-                    billing_period: checkout.billing_period,
-                    is_promo: false,
-                    recurring: false,
-                    activated: true,
-                    subscription,
-                },
-            },
-        };
+        const claimed=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
+            mode:checkout.mode,plan,amount_minor:0,currency:checkout.currency,
+            response:{checkout_mode:checkout.mode,amount:0,currency:checkout.currency,plan:checkout.plan_payload,
+                billing_period:checkout.billing_period,is_promo:false,recurring:false}}});
+        if(!claimed.charge||!isFreeSubscriptionCheckoutCharge(claimed.charge))
+            throw new AppError('Checkout state is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
+        return resumeCheckout(input,claimed.charge,claimed.claimed===true);
     }
 
     if (!input.env.RAZORPAY_KEY_ID || !input.env.RAZORPAY_KEY_SECRET) {
@@ -132,11 +114,17 @@ export async function createMerchantSubscriptionCheckout(input: SubscriptionChec
     }
 
     if (checkout.mode === 'razorpay_subscription' && checkout.subscription) {
+        const chargeSchedule=planImmediateSubscriptionChargeSchedule(checkout.amount_minor,input.approvedUsageCharges||[]);
         if(input.couponCode)return {status:400,body:errorBody('COUPON_NOT_SUPPORTED','Coupons are not supported for auto-renewing subscriptions on this plan')};
+        const baseTax=await resolveNewSubscriptionTaxSnapshot(input.db,input.env,{actor:input.userId,site:input.storeId,key:input.idempotencyKey,plan:effectivePlan,period:input.billingPeriod,gross:checkout.amount_minor,beforeDiscount:checkout.amount_minor});
+        const taxSources=planSubscriptionRecurringTaxSnapshots(baseTax,input.approvedUsageCharges||[]),tax=taxSources.initial;
+        // Existing provider-plan/addon behavior is not silently changed. A stored
+        // source must cover the exact consented charge before provider creation.
+        const providerPlanBinding=await requireConfiguredSubscriptionPlan({keyId:input.env.RAZORPAY_KEY_ID,keySecret:input.env.RAZORPAY_KEY_SECRET},{planId:checkout.subscription.plan_id,baseGross:chargeSchedule.base_gross_minor,period:input.billingPeriod});
         const claimed=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
-            mode:checkout.mode,plan:effectivePlan,amount_minor:checkout.amount_minor,currency:checkout.currency,
-            provider_input:checkout.subscription,response:{checkout_mode:checkout.mode,amount:checkout.amount_minor,currency:checkout.currency,
-                plan:checkout.plan_payload,billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:true}}});
+            mode:checkout.mode,plan:effectivePlan,subscription_tax_snapshot:tax,recurring_tax_snapshot:taxSources.recurring,charge_schedule:chargeSchedule,provider_plan_binding:providerPlanBinding,amount_minor:chargeSchedule.initial_gross_minor,currency:checkout.currency,
+            provider_input:checkout.subscription,response:{checkout_mode:checkout.mode,amount:chargeSchedule.initial_gross_minor,currency:checkout.currency,
+                plan:checkout.plan_payload,billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:true,tax:subscriptionTaxSummary(tax)}}});
         if(!claimed.charge)throw new AppError('Checkout state is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
         return resumeCheckout(input,claimed.charge,claimed.claimed===true);
     }
@@ -185,15 +173,30 @@ export async function createMerchantSubscriptionCheckout(input: SubscriptionChec
         };
     }
 
+    const tax=await resolveNewSubscriptionTaxSnapshot(input.db,input.env,{actor:input.userId,site:input.storeId,key:input.idempotencyKey,plan:effectivePlan,period:input.billingPeriod,gross:orderSpec.amount,beforeDiscount:baseOrderAmount,coupon:couponData?.code});
     const claimed=await subscriptionCheckoutRpc(input.db,'claim_merchant_subscription_checkout_v1',{...claimArgs,p_quote:{
-        mode:checkout.mode,plan:effectivePlan,amount_minor:orderSpec.amount,currency:checkout.currency,provider_input:orderSpec,
+        mode:checkout.mode,plan:effectivePlan,subscription_tax_snapshot:tax,amount_minor:orderSpec.amount,currency:checkout.currency,provider_input:orderSpec,
         response:{checkout_mode:checkout.mode,amount:orderSpec.amount,currency:checkout.currency,plan:checkout.plan_payload,
-            billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:false,...(couponData?{coupon:couponData}:{})}}});
+            billing_period:checkout.billing_period,is_promo:checkout.is_promo,recurring:false,tax:subscriptionTaxSummary(tax),...(couponData?{coupon:couponData}:{})}}});
     if(!claimed.charge)throw new AppError('Checkout state is unavailable.',503,'SUBSCRIPTION_STORAGE_UNAVAILABLE');
     return resumeCheckout(input,claimed.charge,claimed.claimed===true);
 }
 
 async function resumeCheckout(input:SubscriptionCheckoutInput,charge:SubscriptionCheckoutCharge,claimed:boolean):Promise<SubscriptionCheckoutResult>{
+    // Free results are backed by the same canonical checkout source, without
+    // provider credentials or a clock-derived activation identity.
+    if(isFreeSubscriptionCheckoutCharge(charge)){
+        const quote=charge.subscription_checkout;
+        const subscription=await new SubscriptionExecutionAdapter(input.db).activateMerchantSubscription({
+            userId:input.userId,storeId:input.storeId,plan:quote.plan as BillingPlanCatalogRecord,
+            billingPeriod:quote.response.billing_period,amountPaid:0,paymentGateway:null,
+            externalSubscriptionId:charge.subscription_checkout_reference,
+            freeCheckout:{id:charge.id,key:charge.subscription_checkout_key,request:charge.subscription_checkout_request},
+        });
+        return {status:201,body:{data:{...quote.response,razorpay_order_id:null,razorpay_subscription_id:null,
+            key_id:null,activated:true,subscription}}};
+    }
+    requireSubscriptionTaxSnapshot(charge);
     const quote=charge.subscription_checkout;
     if(!input.env.RAZORPAY_KEY_ID||!input.env.RAZORPAY_KEY_SECRET)throw new AppError('Razorpay is not configured.',503,'PAYMENT_UNAVAILABLE');
     const credentials={keyId:input.env.RAZORPAY_KEY_ID,keySecret:input.env.RAZORPAY_KEY_SECRET};
@@ -294,46 +297,21 @@ export async function recordSubscriptionCouponRedemption(input: {
     planSlug: string;
     billingPeriod: SubscriptionCheckoutInput['billingPeriod'];
     couponCode: string;
+    checkoutSource: SubscriptionCheckoutCharge;
     razorpayOrderId?: string | null;
     razorpayPaymentId: string;
 }): Promise<void> {
     try {
-        const { data: rawPlan } = await input.db
-            .from('plans')
-            .select('*')
-            .eq('site_type', input.siteType)
-            .eq('slug', input.planSlug)
-            .eq('is_active', true)
-            .single();
-        if (!rawPlan) return;
-
-        const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
-        const foundingLock = await resolveFoundingCheckoutLock(input.db, input.storeId, plan);
-        const effectivePlan = applyFoundingLockToPlan(plan, foundingLock) as BillingPlanCatalogRecord;
-        const base = planBillingAmountMinor(effectivePlan, input.billingPeriod);
-        if (base.amountMinor <= 0) return;
-
-        const { data: verdict } = await input.db.rpc('validate_subscription_coupon', {
-            p_code: input.couponCode,
-            p_plan_slug: input.planSlug,
-            p_billing_period: input.billingPeriod,
-            p_amount_minor: base.amountMinor,
-            p_site_id: input.storeId,
-        });
-        const v = (verdict ?? {}) as Record<string, unknown>;
-        if (v.valid !== true) return;
-
-        const discountMinor = Number(v.discount_minor) || 0;
-        const finalMinorRaw = Number(v.final_minor);
-        const finalMinor = Number.isFinite(finalMinorRaw) ? finalMinorRaw : base.amountMinor;
-
+        const snapshot=requireSubscriptionTaxSnapshot(input.checkoutSource),saved=snapshot.source;
+        if(saved.coupon_code!==input.couponCode||saved.actor_id!==input.userId||saved.site_id!==input.storeId)return;
+        const discountMinor=saved.discount_minor,finalMinor=snapshot.gross_minor;
         await input.db.rpc('redeem_subscription_coupon', {
             p_code: input.couponCode,
             p_site_id: input.storeId,
             p_user_id: input.userId,
             p_plan_slug: input.planSlug,
             p_billing_period: input.billingPeriod,
-            p_amount_before_minor: base.amountMinor,
+            p_amount_before_minor: saved.gross_before_discount_minor,
             p_discount_minor: discountMinor,
             p_amount_after_minor: finalMinor,
             p_razorpay_order_id: input.razorpayOrderId ?? null,

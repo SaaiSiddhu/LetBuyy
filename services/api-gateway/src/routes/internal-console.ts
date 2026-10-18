@@ -23,9 +23,6 @@ import { bindConsoleOperatorIdentity } from '../identity-foundation/console-sess
 import internalConsoleMoneyRouter from './internal-console/money-reconciliation';
 import internalConsoleSessionsRouter from './internal-console/sessions';
 import internalConsoleApprovalsRouter from './internal-console/approvals';
-import platformJobsRouter from './operations/platform-jobs';
-import consoleOperationsOncallRouter from './internal-console/operations-oncall';
-import consoleRuntimeCommandHistoryRouter from './internal-console/operations-runtime-commands';
 import {
     dayBounds,
     daysAgo,
@@ -132,9 +129,6 @@ router.route('/trust-safety',trustSafetyRouter);
 router.route('/developers', internalConsoleDevelopersRouter);
 router.route('/compliance', internalConsoleComplianceRouter);
 router.route('/money', internalConsoleMoneyRouter);
-router.route('/platform-jobs', platformJobsRouter);
-router.route('/operations', consoleOperationsOncallRouter);
-router.route('/operations', consoleRuntimeCommandHistoryRouter);
 function cleanOptional(value: string | undefined): string | undefined {
     const trimmed = value?.trim();
     return trimmed ? trimmed : undefined;

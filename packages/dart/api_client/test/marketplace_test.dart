@@ -57,39 +57,6 @@ import 'package:test/test.dart';
 }
 
 void main() {
-  test(
-    'seller feed retains its scope and filters on a cursor continuation',
-    () async {
-      final h = harness(
-        body: const {
-          'data': [],
-          'meta': {'limit': 20, 'next_cursor': null},
-        },
-      );
-      const cursor = MarketplaceFeedCursor(
-        afterApprovedAt: '2026-10-01T00:00:00Z',
-        afterId: '22222222-2222-4222-8222-222222222222',
-      );
-      await h.client.marketplaceFeed(
-        sellerSiteId: '11111111-1111-4111-8111-111111111111',
-        category: 'clothing',
-        search: 'shirt',
-        countryOfOrigin: 'India',
-        limit: 20,
-        cursor: cursor,
-      );
-      expect(h.requests.single.queryParameters, {
-        'site_id': '11111111-1111-4111-8111-111111111111',
-        'category': 'clothing',
-        'search': 'shirt',
-        'country_of_origin': 'India',
-        'limit': 20,
-        'after_approved_at': cursor.afterApprovedAt,
-        'after_id': cursor.afterId,
-      });
-    },
-  );
-
   test('marketplace checkout client carries seller cart, signed handoff, and retry-safe step data', () async {
     final cartHarness = harness(body: const {
       'success': true,

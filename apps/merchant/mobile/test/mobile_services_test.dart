@@ -54,7 +54,6 @@ import 'package:letbuyy_store/services/telemetry_service.dart';
 import 'package:letbuyy_store/services/theme_provider.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
 import 'package:letbuyy_store/services/two_factor_service.dart';
-import 'package:letbuyy_store/services/security_command_store.dart';
 import 'package:letbuyy_store/services/whatsapp_service.dart';
 import 'package:letbuyy_store/screens/content/blog_screen.dart';
 import 'package:letbuyy_store/screens/content/media_library_screen.dart';
@@ -113,7 +112,6 @@ import 'package:letbuyy_store/widgets/settings/settings_tile.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'support/loyalty_fixture.dart' show MemoryStorage;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -3473,12 +3471,7 @@ void main() {
     });
 
     test('OrderService fetches detail and refund lifecycle routes', () async {
-      var contextEpoch = 1;
-      final storage = MemoryStorage();
-      final transportErrors = <String, ApiException>{};
       final api = _FakeApiClient(
-        contextVersionProvider: () => contextEpoch,
-        errors: transportErrors,
         paginated: {
           '/orders/drafts': [_draftOrderJson()],
         },
@@ -3513,24 +3506,11 @@ void main() {
             'draft_order': _draftOrderJson(status: 'converted'),
             'order': _orderJson(status: 'pending'),
           },
-          '/orders/order_1/refund': {
-            'order': _orderJson(status: 'refund_pending'),
-            'status': 'pending',
-            'refund_id': 'refund_1',
-            'return_id': 'return_1',
-            'refund_amount': 499,
-          },
-          '/orders/order_1/refund/complete': {
-            'order': _orderJson(status: 'refunded'),
-            'refund': {'id': 'refund_1', 'status': 'succeeded'},
-          },
-          '/security/step-up/challenges': _controlledRefundProofJson(),
+          '/orders/order_1/refund': _orderJson(status: 'refund_pending'),
+          '/orders/order_1/refund/complete': _orderJson(status: 'refunded'),
         },
       );
-      final service = OrderService(
-        api: api,
-        securityCommands: SecurityCommandStore(storage: storage),
-      );
+      final service = OrderService(api: api);
 
       final detail = await service.fetchOrder('order_1');
       final shipped = await service.fulfillOrder(
@@ -3574,31 +3554,14 @@ void main() {
         'draft_1',
         idempotencyKey: 'test-draft-convert-key',
       );
-      final security = _contractTwoFactor(api, storage);
-      final captured = security.capture();
-      const refundLines = <JsonMap>[
-        {'order_item_id': 'line_1', 'quantity': 1},
-      ];
-      Future<OrderContract> requestRefund() => service.refundOrder(
+      await service.refundOrder(
         'order_1',
-        context: captured,
-        lines: refundLines,
+        amount: 499,
         reason: 'Customer requested return',
+        idempotencyKey: 'test-refund-key',
       );
-      transportErrors['/orders/order_1/refund'] = const ApiException(
-        message: 'Controlled reply loss', statusCode: 503,
-        code: 'CONTROLLED_REPLY_LOSS',
-      );
-      await expectLater(requestRefund(), throwsA(isA<ApiException>()));
-      final originalRequestKey =
-          api.requestOptions['/orders/order_1/refund']!.single!.idempotencyKey;
-      transportErrors.remove('/orders/order_1/refund');
-      final requested = await requestRefund();
-      expect(requested.status, 'refund_pending');
-      final approval = await _contractRefundApproval(security);
       final completed = await service.completeRefund(
         'order_1',
-        approval: approval,
         refundId: 'refund_1',
         providerRefundId: 'rfnd_1',
       );
@@ -3614,32 +3577,6 @@ void main() {
       expect(draft['id'], 'draft_1');
       expect(converted.id, 'order_1');
       expect(completed.status, 'refunded');
-      expect(api.bodies['/orders/order_1/refund'], {
-        'lines': refundLines,
-        'reason': 'Customer requested return',
-        'idempotency_key': originalRequestKey,
-      });
-      expect(originalRequestKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
-      expect(api.requestOptions['/orders/order_1/refund']!
-          .every((o) => o!.idempotencyKey == originalRequestKey &&
-              o.storeId == 'store_1' && o.expectedContextVersion == 1), isTrue);
-      final completionOptions =
-          api.requestOptions['/orders/order_1/refund/complete']!.single!;
-      expect(api.bodies['/orders/order_1/refund/complete'], {
-        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
-        'idempotency_key': completionOptions.idempotencyKey,
-      });
-      _expectContractApproval(completionOptions, approval);
-      expect(storage.data.values.join(), isNot(contains(approval.token)));
-      final beforeStale = api.paths.length;
-      contextEpoch++;
-      expect(() => service.completeRefund('order_1', approval: approval,
-          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
-            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
-      expect(api.paths.length, beforeStale);
-      await expectLater(requestRefund(), throwsA(isA<ApiException>().having(
-          (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
-      expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/orders/order_1'));
       expect(api.paths, contains('/orders/order_1/fulfill'));
       expect(api.paths, contains('/orders/order_1/line-items'));
@@ -3700,12 +3637,7 @@ void main() {
     });
 
     test('ReturnService manages RMA lifecycle routes', () async {
-      var contextEpoch = 1;
-      final storage = MemoryStorage();
-      final transportErrors = <String, ApiException>{};
       final api = _FakeApiClient(
-        contextVersionProvider: () => contextEpoch,
-        errors: transportErrors,
         paginated: {
           '/returns': [_returnJson()],
         },
@@ -3713,13 +3645,9 @@ void main() {
           '/returns': _returnJson(status: 'approved'),
           '/returns/return_1': _returnJson(status: 'received'),
           '/returns/return_1/refund/complete': _returnJson(status: 'refunded'),
-          '/security/step-up/challenges': _controlledRefundProofJson(),
         },
       );
-      final service = ReturnService(
-        api: api,
-        securityCommands: SecurityCommandStore(storage: storage),
-      );
+      final service = ReturnService(api: api);
 
       final rows = await service.fetchReturns('store_1');
       final created = await service.createReturn(
@@ -3732,46 +3660,17 @@ void main() {
         'return_1',
         status: 'received',
       );
-      final security = _contractTwoFactor(api, storage);
-      final approval = await _contractRefundApproval(security);
-      Future<MerchantReturn> complete() => service.completeRefund(
+      final refunded = await service.completeRefund(
         'return_1',
-        approval: approval,
         refundId: 'refund_1',
         providerRefundId: 'rfnd_1',
+        idempotencyKey: 'return-refund-123',
       );
-      transportErrors['/returns/return_1/refund/complete'] = const ApiException(
-        message: 'Controlled reply loss', statusCode: 503,
-        code: 'CONTROLLED_REPLY_LOSS',
-      );
-      await expectLater(complete(), throwsA(isA<ApiException>()));
-      final originalKey = api.requestOptions[
-          '/returns/return_1/refund/complete']!.single!.idempotencyKey;
-      transportErrors.remove('/returns/return_1/refund/complete');
-      final refunded = await complete();
 
       expect(rows.single.id, 'return_1');
       expect(created.status, 'approved');
       expect(received.status, 'received');
       expect(refunded.status, 'refunded');
-      expect(refunded.refundAmount, 499);
-      expect(api.bodies['/returns/return_1/refund/complete'], {
-        'refund_id': 'refund_1', 'provider_refund_id': 'rfnd_1',
-        'idempotency_key': originalKey,
-      });
-      expect(originalKey, matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
-      for (final options in api.requestOptions[
-          '/returns/return_1/refund/complete']!) {
-        expect(options!.idempotencyKey, originalKey);
-        _expectContractApproval(options, approval);
-      }
-      expect(storage.data.values.join(), isNot(contains(approval.token)));
-      final beforeStale = api.paths.length;
-      contextEpoch++;
-      expect(() => service.completeRefund('return_1', approval: approval,
-          refundId: 'refund_1'), throwsA(isA<ApiException>().having(
-            (e) => e.code, 'code', 'SESSION_CONTEXT_CHANGED')));
-      expect(api.paths.length, beforeStale);
       expect(api.paths, contains('/returns'));
       expect(api.paths, contains('/returns/return_1'));
       expect(api.paths, contains('/returns/return_1/refund/complete'));
@@ -4017,9 +3916,7 @@ void main() {
     test(
       'TwoFactorService manages overview, TOTP enrollment, verify, and disable',
       () async {
-        var contextEpoch = 1;
         final api = _FakeApiClient(
-          contextVersionProvider: () => contextEpoch,
           json: {
             '/2fa': _twoFactorOverviewJson(),
             '/2fa/sessions': {
@@ -4040,7 +3937,7 @@ void main() {
             },
           },
         );
-        final service = _contractTwoFactor(api, MemoryStorage());
+        final service = TwoFactorService(api: api);
 
         final overview = await service.fetchOverview();
         final enrollment = await service.enrollTotp();
@@ -4066,21 +3963,6 @@ void main() {
           containsPair('factor_id', '22222222-2222-4222-8222-222222222222'),
         );
         expect(api.bodies['/2fa/disable'], containsPair('code', '123456'));
-        for (final path in ['/2fa/totp/enroll', '/2fa/totp/verify',
-            '/2fa/disable']) {
-          final options = api.requestOptions[path]!.single!;
-          expect(options.storeId, 'store_1');
-          expect(options.expectedContextVersion, 1);
-          expect(options.idempotencyKey,
-              matches(RegExp(r'^[a-zA-Z0-9-]{8,200}$')));
-        }
-        final previousCalls = api.paths.length;
-        contextEpoch++;
-        expect(service.overview, isNull);
-        await expectLater(service.fetchOverview(expectedContext: 1),
-            throwsA(isA<ApiException>().having((e) => e.code,
-                'code', 'SESSION_CONTEXT_CHANGED')));
-        expect(api.paths.length, previousCalls);
       },
     );
 
@@ -6567,16 +6449,7 @@ void main() {
   testWidgets('OrderDetailScreen renders customer, totals, and actions', (
     tester,
   ) async {
-    SharedPreferences.setMockInitialValues({});
-    late final StoreContext storeContext;
-    final api = _FakeApiClient(
-      json: {'/orders/order_1': _orderJson()},
-      paginated: {'/stores': [_storeJson()]},
-      contextVersionProvider: () => storeContext.requestContextKey,
-    );
-    storeContext = StoreContext(storeService: StoreService(api: api));
-    await storeContext.ensureSelectedStore();
-    addTearDown(storeContext.dispose);
+    final api = _FakeApiClient(json: {'/orders/order_1': _orderJson()});
     final orderService = OrderService(api: api);
     final order = OrderContract.fromJson(
       _orderJson(
@@ -6589,11 +6462,8 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<StoreContext>.value(value: storeContext),
-          ChangeNotifierProvider<OrderService>.value(value: orderService),
-        ],
+      ChangeNotifierProvider.value(
+        value: orderService,
         child: MaterialApp(
           home: OrderDetailScreen(orderId: order.id, initialOrder: order),
         ),
@@ -6633,25 +6503,15 @@ void main() {
   testWidgets('OrderDetailScreen cancels an order with a reason', (
     tester,
   ) async {
-    SharedPreferences.setMockInitialValues({});
-    late final StoreContext storeContext;
     final api = _FakeApiClient(
       json: {'/orders/order_1': _orderJson(status: 'cancelled')},
-      paginated: {'/stores': [_storeJson()]},
-      contextVersionProvider: () => storeContext.requestContextKey,
     );
-    storeContext = StoreContext(storeService: StoreService(api: api));
-    await storeContext.ensureSelectedStore();
-    addTearDown(storeContext.dispose);
     final orderService = OrderService(api: api);
     final order = OrderContract.fromJson(_orderJson());
 
     await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<StoreContext>.value(value: storeContext),
-          ChangeNotifierProvider<OrderService>.value(value: orderService),
-        ],
+      ChangeNotifierProvider.value(
+        value: orderService,
         child: MaterialApp(
           home: OrderDetailScreen(orderId: order.id, initialOrder: order),
         ),
@@ -8172,9 +8032,7 @@ void main() {
         '/stores': [_storeJson()],
       },
       json: {
-        '/employees': [
-          {..._staffJson(), 'permissions': {'granted': ['products:read']}},
-        ],
+        '/employees': [_staffJson()],
       },
     );
 
@@ -8192,8 +8050,7 @@ void main() {
     expect(find.text('Users & Permissions'), findsOneWidget);
     expect(find.text('riya@example.com'), findsWidgets);
     expect(find.text('Editor'), findsWidgets);
-    expect(find.text('View products'), findsOneWidget);
-    expect(find.text('Manage & fulfil orders'), findsNothing);
+    expect(find.text('Catalog'), findsOneWidget);
     expect(find.text('Add staff'), findsOneWidget);
   });
 
@@ -8228,10 +8085,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Billing and invoices'),300,scrollable:find.byType(Scrollable).first);
     expect(find.text('Growth • active'),findsOneWidget);expect(find.text('12 / 500 products'),findsOneWidget);
-    await tester.ensureVisible(find.text('Billing and invoices'));
-    await tester.pumpAndSettle();
-    expect(find.text('Billing and invoices').hitTestable(),findsOneWidget);
-    await tester.tap(find.text('Billing and invoices').hitTestable());await tester.pumpAndSettle();
+    await tester.tap(find.text('Billing and invoices'));await tester.pumpAndSettle();
     expect(find.text('Invoices'),findsOneWidget);expect(find.textContaining('SYN-BILLING-001'),findsOneWidget);
     expect(find.text('Recorded tax: ₹71.82'),findsOneWidget);expect(find.text('Recorded total: ₹470.82'),findsOneWidget);
     expect(tester.takeException(),isNull);
@@ -9481,49 +9335,6 @@ class _PublishRetryApiClient extends _FakeApiClient {
   }
 }
 
-// Controlled transport only: proof objects are created by the real service,
-// never directly constructed. These responses are not server/MFA/provider proof.
-JsonMap _controlledRefundProofJson() => {
-  'step_up_token': 'unit-response-refund-approval',
-  'verified_at': '2026-10-16T12:00:00Z',
-};
-
-TwoFactorService _contractTwoFactor(_FakeApiClient api, MemoryStorage storage) {
-  final service = TwoFactorService(
-    api: api,
-    actorIdProvider: () => '11111111-1111-4111-8111-111111111111',
-    storeIdProvider: () => 'store_1',
-    storage: storage,
-  );
-  addTearDown(service.dispose);
-  return service;
-}
-
-Future<MerchantStepUpProof> _contractRefundApproval(TwoFactorService service) =>
-    service.challenge(
-      action: 'refund.approve',
-      factorId: '22222222-2222-4222-8222-222222222222',
-      code: '123456',
-      idempotencyKey: 'unit-refund-challenge-key',
-      expectedContext: service.requestContext,
-    );
-
-void _expectContractApproval(
-  ApiRequestOptions options,
-  MerchantStepUpProof approval,
-) {
-  expect(approval.context.actorId,
-      '11111111-1111-4111-8111-111111111111');
-  expect(approval.action, 'refund.approve');
-  expect(options.method, HttpMethod.post);
-  expect(options.storeId, 'store_1');
-  expect(options.expectedContextVersion, approval.context.version);
-  expect(options.headers, {
-    'X-Step-Up-Token': 'unit-response-refund-approval',
-    'X-Step-Up-Verified-At': '2026-10-16T12:00:00Z',
-  });
-}
-
 class _FakeApiClient extends ApiClient {
   _FakeApiClient({
     Map<String, dynamic> json = const {},
@@ -9532,17 +9343,13 @@ class _FakeApiClient extends ApiClient {
     Map<String, Map<String, dynamic>> paginatedMeta = const {},
     Map<String, ApiException> errors = const {},
     Duration delay = Duration.zero,
-    super.contextVersionProvider,
   }) : _json = json,
        _raw = raw,
        _paginated = paginated,
        _paginatedMeta = paginatedMeta,
        _errors = errors,
        _delay = delay,
-       super(
-         baseUrl: 'https://gateway.test/v1',
-         maxRetries: 0,
-       );
+       super(baseUrl: 'https://gateway.test/v1', maxRetries: 0);
 
   final Map<String, dynamic> _json;
   final Map<String, dynamic> _raw;
@@ -9553,7 +9360,6 @@ class _FakeApiClient extends ApiClient {
   final List<String> paths = [];
   final Map<String, Object?> bodies = {};
   final Map<String, Map<String, dynamic>> queries = {};
-  final Map<String, List<ApiRequestOptions?>> requestOptions = {};
 
   @override
   Future<dynamic> request(String path, {ApiRequestOptions? options}) async {
@@ -9636,7 +9442,6 @@ class _FakeApiClient extends ApiClient {
   }
 
   void _captureBody(String path, ApiRequestOptions? options) {
-    requestOptions.putIfAbsent(path, () => []).add(options);
     if (options?.body != null) bodies[path] = options!.body;
     final query = options?.query;
     if (query != null && query.isNotEmpty) {

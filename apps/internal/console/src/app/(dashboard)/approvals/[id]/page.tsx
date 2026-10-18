@@ -8,7 +8,6 @@ import { ConsoleWorkspace, Panel } from '@/components/_local-ui/console-workspac
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatDateTime, formatMoneyFromPaise, readSearchParam, type ConsoleDataResponse } from '@/lib/console-api';
 import { requireConsoleSession } from '@/lib/console-auth-server';
-import { InternalPlatformJobSchema } from '@letbuyy/shared-types';
 
 function approvalId(value: unknown): string {
     const parsed = z.string().uuid().safeParse(value);
@@ -37,15 +36,6 @@ export default async function ApprovalPage({ params, searchParams }: {
         <Link href="/approvals">Back to requests</Link>
     </ConsoleWorkspace>;
     const approval = parsed.data, mine = approval.maker_actor_id === session.userId;
-    const jobRecovery = approval.action === 'platform.job.redrive';
-    const reviewedJob = InternalPlatformJobSchema.safeParse(approval.payload.job);
-    if (jobRecovery && (!reviewedJob.success || approval.resource_type !== 'platform_queue_job' || reviewedJob.data.id !== approval.resource_id || reviewedJob.data.site_id !== approval.site_id)) {
-        return <ConsoleApiErrorPanel title="Approval unavailable" message="The reviewed recovery source is unavailable."/>;
-    }
-    const jobResponse = jobRecovery ? await fetchConsoleApi<ConsoleDataResponse<{items:unknown[]}>>('/internal/console/platform-jobs',{job_id:approval.resource_id}) : null;
-    const currentJob = InternalPlatformJobSchema.safeParse(jobResponse?.data?.data.items[0]);
-    const jobReviewEligible = reviewedJob.success && currentJob.success && currentJob.data.eligible &&
-        currentJob.data.source_fingerprint === reviewedJob.data.source_fingerprint;
     const mfa=approval.action==='operator.mfa.reset';
     const mfaTarget=z.object({actor_id:z.string().uuid(),email:z.string().email(),name:z.string().nullable()}).passthrough().safeParse(approval.payload.target);
     if(mfa&&(!mfaTarget.success||approval.site_id!==null||approval.resource_type!=='platform_operator'))return <ConsoleApiErrorPanel title="Approval unavailable" message="The reviewed operator recovery is unavailable."/>;
@@ -53,26 +43,18 @@ export default async function ApprovalPage({ params, searchParams }: {
     const money = approval.action === 'money.reconciliation.resolve';
     const trust = approval.action === 'ts.reinstate', trustReview = trustReviewSchema.safeParse(approval.payload.context);
     const details = InternalMoneyResolutionDetailsSchema.safeParse(approval.payload.details);
-    const resourcePath = jobRecovery ? '/operations?job_id='+approval.resource_id : mfa ? '/approvals?mfa_target='+approval.resource_id : trust ? '/trust-safety/' + approval.resource_id : money ? '/money-reconciliation?site_id=' + approval.site_id : '/merchants/' + approval.site_id;
+    const resourcePath = mfa ? '/approvals?mfa_target='+approval.resource_id : trust ? '/trust-safety/' + approval.resource_id : money ? '/money-reconciliation?site_id=' + approval.site_id : '/merchants/' + approval.site_id;
     if (money && !details.success) return <ConsoleApiErrorPanel title="Approval unavailable" message="The reviewed money resolution is unavailable." />;
     if (trust && !trustReview.success) return <ConsoleApiErrorPanel title="Approval unavailable" message="The reviewed case context is unavailable." />;
     const expired = Date.parse(approval.expires_at) <= Date.now(), executed = !!approval.consumed_at;
-    return <ConsoleWorkspace eyebrow="Protected actions" title="Review protected action" description={jobRecovery ? "Consent applies only to this job, original order, recorded points, one additional attempt, reason and sign-in. Approval alone does not retry the job." : mfa ? "Review the operator, recovery reason and session/factor effects. Approval alone does not execute the reset." : trust ? "Consent applies only to this case, evidence, restrictions, reason, notes and sign-in. Approval alone does not execute it." : money ? "Consent applies only to this store’s money break, resolution, evidence and sign-in. Approval alone does not execute it." : "Consent applies only to this merchant, action, reason and sign-in. Approval alone does not execute it."}>
+    return <ConsoleWorkspace eyebrow="Protected actions" title="Review protected action" description={mfa ? "Review the operator, recovery reason and session/factor effects. Approval alone does not execute the reset." : trust ? "Consent applies only to this case, evidence, restrictions, reason, notes and sign-in. Approval alone does not execute it." : money ? "Consent applies only to this store’s money break, resolution, evidence and sign-in. Approval alone does not execute it." : "Consent applies only to this merchant, action, reason and sign-in. Approval alone does not execute it."}>
         {error && <p role="alert">{error}</p>}
         <Panel title={approval.action}>
             <dl className="space-y-3">
-                <div><dt>{jobRecovery ? 'Job' : mfa ? 'Operator' : trust ? 'Case' : money ? 'Store' : 'Merchant'}</dt><dd><Link className="underline" href={resourcePath}>{approval.resource_id}</Link></dd></div>
+                <div><dt>{mfa ? 'Operator' : trust ? 'Case' : money ? 'Store' : 'Merchant'}</dt><dd><Link className="underline" href={resourcePath}>{approval.resource_id}</Link></dd></div>
                 <div><dt>Requested by</dt><dd>{approval.maker_actor_id}{mine ? ' (you)' : ''}</dd></div>
                 <div><dt>Reason</dt><dd>{approval.reason}</dd></div>
                 {!mfa && <div><dt>State when requested</dt><dd>{String(approval.payload.expected_status || '')}</dd></div>}
-                {jobRecovery && reviewedJob.success && <>
-                    <div><dt>Reviewed store and order</dt><dd>{reviewedJob.data.site_id} · {reviewedJob.data.order_id}</dd></div>
-                    <div><dt>Reviewed attempts</dt><dd>{reviewedJob.data.status} · {reviewedJob.data.attempts} used of {reviewedJob.data.max_attempts}</dd></div>
-                    <div><dt>Original redeemed points</dt><dd>{reviewedJob.data.points}</dd></div>
-                    <div><dt>Reviewed source fingerprint</dt><dd className="break-all">{reviewedJob.data.source_fingerprint}</dd></div>
-                    <div><dt>Current job state</dt><dd>{currentJob.success ? `${currentJob.data.status} · ${currentJob.data.attempts} used of ${currentJob.data.max_attempts}` : 'Unavailable; reload before acting'}</dd></div>
-                    <div><dt>Effect</dt><dd>Authorize one additional attempt of the original loyalty restoration. This operation does not post points; the existing worker verifies and performs any recovery.</dd></div>
-                </>}
                 {mfa && mfaTarget.success && <>
                     <div><dt>Operator account</dt><dd>{mfaTarget.data.name ? mfaTarget.data.name+' · ' : ''}{mfaTarget.data.email}</dd></div>
                     <div><dt>Effect</dt><dd>Revoke this operator’s current Console sessions and retire the configured authenticator. A configuration custodian must provide a replacement per-account factor before the operator can verify again. Other accounts and realms keep their existing authority.</dd></div>
@@ -104,17 +86,15 @@ export default async function ApprovalPage({ params, searchParams }: {
             {!expired && !executed && approval.status === 'pending' && <ConsoleApprovalForm action="/api/approvals/decision" className="mt-6 space-y-4">
                 <input type="hidden" name="approval_id" value={id} /><input type="hidden" name="payload_hash" value={approval.payload_hash} />
                 {mine||affectedOperator ? <><p>{affectedOperator?'The affected operator cannot decide this recovery.':'A different active platform super admin must decide this request.'}</p>{mine&&<Button type="submit" name="decision" value="cancel">Cancel request</Button>}</> : <>
-                    <label className="flex gap-2"><input type="checkbox" name="reviewed" value="yes" required />{jobRecovery ? 'I reviewed this job, original order, recorded points and one-attempt retry.' : mfa ? 'I independently verified this operator recovery request and reviewed the account, reason and reset effect.' : trust ? 'I reviewed this case, evidence, restrictions, reason and notes.' : money ? 'I reviewed this money break, resolution and reason.' : 'I reviewed this merchant, action and reason.'}</label>
+                    <label className="flex gap-2"><input type="checkbox" name="reviewed" value="yes" required />{mfa ? 'I independently verified this operator recovery request and reviewed the account, reason and reset effect.' : trust ? 'I reviewed this case, evidence, restrictions, reason and notes.' : money ? 'I reviewed this money break, resolution and reason.' : 'I reviewed this merchant, action and reason.'}</label>
                     <div className="flex gap-4"><Button type="submit" name="decision" value="approve">Approve this request</Button>
                         <Button type="submit" name="decision" value="reject">Reject this request</Button></div>
                 </>}
             </ConsoleApprovalForm>}
-            {!expired && !executed && mine && approval.status === 'approved' && (!jobRecovery || jobReviewEligible) && <ConsoleApprovalForm action="/api/approvals/execute" className="mt-6">
+            {!expired && !executed && mine && approval.status === 'approved' && <ConsoleApprovalForm action="/api/approvals/execute" className="mt-6">
                 <input type="hidden" name="approval_id" value={id} /><Button type="submit">Execute approved action</Button>
             </ConsoleApprovalForm>}
             {executed && <p className="mt-4">Executed at {formatDateTime(approval.consumed_at)}. A retry cannot create a second effect.</p>}
-            {jobRecovery && !executed && !jobReviewEligible && <p>The current job source or recovery state changed. Review it again before requesting a new action.</p>}
-            {jobRecovery && executed && <p>One additional attempt was authorized. The current job state above reports worker progress; approval alone does not establish a point restoration.</p>}
             {executed&&mfa&&<p>Reset applied. Revoked Console sessions: {String(approval.result?.revoked_sessions??'Unavailable')}. Security notification was {String(approval.result?.notification_status??'unavailable')} at execution; this receipt does not certify inbox delivery.</p>}
             {executed&&mfa&&approval.notification_delivery&&<p>Security email: {approval.notification_delivery.status==='succeeded'?'accepted by the email provider; inbox delivery is unconfirmed':approval.notification_delivery.status==='dead'?'delivery needs attention':approval.notification_delivery.status==='failed'?'retry pending':approval.notification_delivery.status}. Attempts: {approval.notification_delivery.attempts}.</p>}
             {executed && trust && <p>Site restoration outcome: {String(approval.result?.site_restoration_outcome || 'Unavailable')}. Review the case and current site state before further action.</p>}

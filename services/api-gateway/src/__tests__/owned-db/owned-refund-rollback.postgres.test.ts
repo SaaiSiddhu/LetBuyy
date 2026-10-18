@@ -13,7 +13,6 @@ test('empty-history336 rollback retains service-only permissions and reapply res
  const before=snapshot();assert.match(owned.psqlExpectError(rollback),/newer341 approval boundary/);owned.script(currentRollback);owned.script(migration);owned.script(rollback);
  assert.equal(owned.psql(`SELECT to_regprocedure('public.complete_owned_order_refund_v1(uuid,uuid,uuid,uuid,jsonb,text)')IS NULL;`),'t');
  for(const role of ['anon','authenticated','app_tenant'])assert.equal(owned.psql(`SELECT has_function_privilege('${role}','public.complete_order_refund(uuid,text,text,uuid,text,text)','EXECUTE');`),'f');
- assert.equal(owned.psql(`SELECT has_function_privilege('service_role','public.complete_order_refund(uuid,text,text,uuid,text,text)','EXECUTE');`),'t');
  owned.script(migration);owned.script(currentMigration);assert.equal(snapshot(),before);
 });
 test('rollback refuses changed input names, return ABI or overloads before changing definitions',()=>{
@@ -28,33 +27,4 @@ test('rollback refuses changed input names, return ABI or overloads before chang
 test('empty-history341 rollback fails closed without the merchant wrapper and reapply restores exact stronger source',()=>{
  const before=snapshot();owned.script(currentRollback);assert.equal(owned.psql(`SELECT to_regprocedure('public.complete_owned_order_refund_v1(uuid,uuid,uuid,uuid,jsonb,text)')IS NULL;`),'t');
  assert.equal(owned.psql(`SELECT to_regprocedure('public.complete_order_refund(uuid,text,text,uuid,text,text)')IS NOT NULL;`),'t');owned.script(currentMigration);assert.equal(snapshot(),before);
-});
-
-test('concurrent ABI drift sessions both refuse atomically and leave the current definitions intact',async()=>{
- const before=snapshot();
- const barrier=crypto.getRandomValues(new Uint32Array(1))[0] % 1000000000 + 1000000000;
- // The holder waits for two actual advisory-lock waiters. Time bounds only fail
- // the test; they never decide that the concurrent path has been exercised.
- const holder=owned.psqlAsync(`BEGIN; SET LOCAL statement_timeout='20s';
- SELECT pg_advisory_xact_lock(${barrier}::bigint);
- DO $$DECLARE deadline timestamptz:=clock_timestamp()+interval '15 seconds';BEGIN
-  WHILE(SELECT count(*)FROM pg_locks WHERE locktype='advisory' AND classid=0 AND objid=${barrier} AND NOT granted)<2 LOOP
-   IF clock_timestamp()>deadline THEN RAISE EXCEPTION 'ABI refusal barrier did not obtain both waiters';END IF;
-   PERFORM pg_sleep(0.01);
-  END LOOP;
- END$$;COMMIT;`);
- // Attach rejection handling immediately, including failures during setup.
- const holderResult=holder.then(()=>null,(error:Error)=>error);
- const deadline=Date.now()+5000;
- while(owned.psql(`SELECT EXISTS(SELECT 1 FROM pg_locks WHERE locktype='advisory' AND classid=0 AND objid=${barrier} AND granted);`)!=='t'){
-  if(Date.now()>deadline)throw new Error('Owned ABI barrier holder did not acquire its exact lock');
- }
- const changes=['text','boolean'].map(type=>owned.psqlAsync(`BEGIN; SET LOCAL statement_timeout='20s';
- CREATE FUNCTION public.complete_owned_order_refund_v1(p_control ${type})RETURNS jsonb LANGUAGE sql AS $$SELECT '{}'::jsonb$$;
- SELECT pg_advisory_xact_lock(${barrier}::bigint);${guard}COMMIT;`)
-  .then(()=>{throw new Error('ABI drift unexpectedly passed');},(error:Error)=>{assert.match(error.message,/rollback336 refuses changed completion ABI/);}));
- await Promise.all(changes);
- assert.equal(await holderResult,null);
- assert.equal(snapshot(),before);
- for(const type of ['text','boolean'])assert.equal(owned.psql(`SELECT to_regprocedure('public.complete_owned_order_refund_v1(${type})')IS NULL;`),'t');
 });

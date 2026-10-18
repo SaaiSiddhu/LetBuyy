@@ -10,7 +10,7 @@ import {
 } from '@letbuyy/shared-types';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
-import { SaasExecutionAdapter } from './saas-execution.adapter';
+import { SaasExecutionAdapter, assertResolvedCreationEntitlements } from './saas-execution.adapter';
 import {
     planProductCreate,
     planProductUpdate,
@@ -404,6 +404,7 @@ export class ProductExecutionAdapter {
 
     private async assertProductQuota(storeId: string): Promise<void> {
         const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(storeId);
+        assertResolvedCreationEntitlements(entitlements);
         const rawLimit = entitlements.limits.products;
         if (rawLimit === null || rawLimit === undefined) return;
         const productLimit = typeof rawLimit === 'number' ? rawLimit : Number(rawLimit);

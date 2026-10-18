@@ -41,13 +41,11 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
             'buyer-support-readback.postgres.test.ts',
             'checkout-browser.postgres.test.ts',
             'cod-collection.postgres.test.ts',
-            'console-current-oncall.postgres.test.ts',
             'console-identity-issuer-browser.postgres.test.ts',
             'console-mfa-reset-browser.postgres.test.ts',
             'console-mfa-state.postgres.test.ts',
-            'console-oncall-schedules.postgres.test.ts',
             'console-overview-read.postgres.test.ts',
-            'console-runtime-command-history.postgres.test.ts',
+            'current-entitlement-authority.postgres.test.ts',
             'customer-password-reset.postgres.test.ts',
             'final-definer-role-access.postgres.test.ts',
             'final-tenant-table-access.postgres.test.ts',
@@ -123,6 +121,9 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
             'storefront-web-onboarding-browser.postgres.test.ts',
             'storefront-web-onboarding-draft.postgres.test.ts',
             'subscription-checkout-browser.postgres.test.ts',
+            'subscription-checkout-rollback-admission.postgres.test.ts',
+            'subscription-checkout-rollback-overloads.postgres.test.ts',
+            'subscription-checkout-rollback-writer.postgres.test.ts',
             'subscription-payment-ownership.postgres.test.ts',
             'subscription-single-activation.postgres.test.ts',
             'verification-token-redemption.postgres.test.ts',
@@ -131,22 +132,19 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
     );
     assert.deepEqual(rootOwnedSuites(), [
         "ad-credit-purchase.postgres.test.ts",
-        "console-current-oncall-browser.postgres.test.ts",
         "console-mfa-reset-delivery.postgres.test.ts",
         "console-mfa-reset.postgres.test.ts",
-        "console-oncall-schedules-browser.postgres.test.ts",
-        "console-runtime-command-history-browser.postgres.test.ts",
         "loyalty-earn-worker.postgres.test.ts",
         "loyalty-refund-scheduler.postgres.test.ts",
         "loyalty-reversal-recovery.postgres.test.ts",
         "merchant-dashboard-access.postgres.test.ts",
+        "merchant-entitlement-authority-browser.postgres.test.ts",
+        "merchant-free-subscription-browser.postgres.test.ts",
         "merchant-loyalty-browser.postgres.test.ts",
         "merchant-mobile-mfa-transport.postgres.test.ts",
         "merchant-staff-invitation-delivery.postgres.test.ts",
         "payment-refund-reconciliation.postgres.test.ts",
-        "payout-statement-replay.postgres.test.ts",
-        "platform-job-recovery-browser.postgres.test.ts",
-        "platform-job-recovery.postgres.test.ts"
+        "payout-statement-replay.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());

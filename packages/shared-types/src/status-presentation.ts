@@ -261,7 +261,12 @@ export const SUBSCRIPTION_DUNNING_STATUS_PRESENTATION: StatusPresentationMap<Sub
    PAYOUTS & SETTLEMENT
    ──────────────────────────────────────────────────────────────────────────── */
 
-/** Provider instructions: `payouts.status`, separate from merchant statements. */
+/**
+ * `payouts.status` — CHECK: scheduled | processing | paid | failed | cancelled.
+ *
+ * `MerchantPayoutStatusSchema` declares pending | processing | released | failed:
+ * only `processing` and `failed` overlap with what the column can actually hold.
+ */
 export const PAYOUT_STATUS_VALUES = ['scheduled', 'processing', 'paid', 'failed', 'cancelled'] as const;
 export type PayoutStatus = typeof PAYOUT_STATUS_VALUES[number];
 
@@ -271,17 +276,6 @@ export const PAYOUT_STATUS_PRESENTATION: StatusPresentationMap<PayoutStatus> = {
     paid: { label: 'Paid', tone: 'success', iconKey: 'paid', a11yLabel: 'Payout settled to your bank account' },
     failed: { label: 'Failed', tone: 'critical', iconKey: 'error' },
     cancelled: { label: 'Cancelled', tone: 'critical', iconKey: 'cancelled' },
-};
-
-/** Merchant readback: `payout_statements.status` (119, retained by 295/301). */
-export const MERCHANT_PAYOUT_STATUS_VALUES = ['pending', 'processing', 'released', 'failed'] as const;
-export type MerchantPayoutStatementStatus = typeof MERCHANT_PAYOUT_STATUS_VALUES[number];
-
-export const MERCHANT_PAYOUT_STATUS_PRESENTATION: StatusPresentationMap<MerchantPayoutStatementStatus> = {
-    pending: { label: 'Pending', tone: 'info', iconKey: 'calendar' },
-    processing: { label: 'Processing', tone: 'info', iconKey: 'progress', a11yLabel: 'Release remains unconfirmed' },
-    released: { label: 'Released', tone: 'success', iconKey: 'check', a11yLabel: 'Release recorded in the statement' },
-    failed: { label: 'Failed', tone: 'critical', iconKey: 'error' },
 };
 
 /** `settlements.status` — CHECK: recorded | break_detected | failed. */
@@ -424,5 +418,12 @@ export const STATUS_SCHEMA_DRIFT: ReadonlyArray<{
         dbOnly: ['held'],
         schemaOnly: ['redeemed'],
         note: 'Balance is a ledger projection; "redeemed" is not a stored status.',
+    },
+    {
+        column: 'payouts.status',
+        schema: 'MerchantPayoutStatusSchema',
+        dbOnly: ['scheduled', 'paid', 'cancelled'],
+        schemaOnly: ['pending', 'released'],
+        note: 'Worst drift in the set — only processing and failed overlap.',
     },
 ] as const;

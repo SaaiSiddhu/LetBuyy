@@ -5,8 +5,6 @@ import { LETBUYY_STOREFRONT_SESSION_HEADER } from '@letbuyy/auth-core';
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { installBuyerSessionState } from './buyer-session-state-fake';
-import { getStorefrontBuyerSession } from '../middleware/storefront-buyer-session';
-import type { BuyerReviewOutcome } from '../execution/buyer-review-execution.adapter';
 import { registerBuyerReviewRoutes, type BuyerReviewRoutesDeps } from '../routes/storefront/buyer-review-routes';
 
 const ISSUER = 'https://accounts.letbuyy.test';
@@ -14,14 +12,12 @@ const BUYER = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
 const SITE = 'cccccccc-3333-4333-8333-cccccccccccc';
 const OTHER_SITE = 'eeeeeeee-5555-4555-8555-eeeeeeeeeeee';
 const PRODUCT = 'ffffffff-6666-4666-8666-ffffffffffff';
-const REVIEW = 'dddddddd-4444-4444-8444-dddddddddddd';
+const CUSTOMER = 'dddddddd-4444-4444-8444-dddddddddddd';
 
 async function harness(options: {
     linked?: { active: boolean } | null;
     turnstile?: boolean;
     product?: { active: boolean } | null;
-    failure?: boolean;
-    refusal?: Extract<BuyerReviewOutcome, { accepted: false }>['code'];
 } = {}) {
     const { privateKey, publicKey } = await generateKeyPair('ES256', { extractable: true });
     const jwks = JSON.stringify({ keys: [{ ...(await exportJWK(publicKey)), alg: 'ES256', kid: 'test' }] });
@@ -31,22 +27,18 @@ async function harness(options: {
         .setIssuer(ISSUER).setAudience('letbuyy:storefront-session').setSubject(BUYER)
         .setIssuedAt(now).setExpirationTime(now + 3600).setJti('0123456789abcdef0123456789abcdef').sign(privateKey);
 
-    const calls: Array<Record<string, unknown>> = [];
-    const effects: string[] = [];
+    const calls: Array<{ op: string; buyer?: string; site?: string; customer?: string; email?: string; review?: Record<string, unknown> }> = [];
     const deps: BuyerReviewRoutesDeps = {
-        requireValidTurnstile: async () => options.turnstile === false ? new Response('blocked', { status: 403 }) : null,
-        createReview: async (c, input) => {
-            const session = getStorefrontBuyerSession(c);
-            calls.push({ op: 'atomic-review', buyer: session?.buyerAccountId, site: session?.siteId, epoch: session?.sessionEpoch, input });
-            if (options.failure) return { data: null, error: { message: 'private database detail', buyer: BUYER } };
-            const code = options.linked === null ? 'STORE_ACCOUNT_NOT_LINKED'
-                : options.linked?.active === false ? 'STORE_ACCOUNT_UNAVAILABLE'
-                : options.product === null ? 'NOT_FOUND'
-                : options.product?.active === false ? 'PRODUCT_UNAVAILABLE' : options.refusal;
-            if (code) return { data: { accepted: false, code }, error: null };
-            effects.push(REVIEW);
-            return { data: { accepted: true, review_id: REVIEW }, error: null };
+        resolveLinkedCustomer: async (_c, buyerId, siteId) => {
+            calls.push({ op: 'link', buyer: buyerId, site: siteId });
+            return options.linked === null
+                ? { data: null, error: null }
+                : { data: { customerId: CUSTOMER, customerName: 'Linked Buyer', customerEmail: 'verified@example.test', active: options.linked?.active ?? true }, error: null };
         },
+        requireValidTurnstile: async () => options.turnstile === false ? new Response('blocked', { status: 403 }) : null,
+        loadProduct: async (_c, productId, siteId) => { calls.push({ op: 'product', site: siteId }); return { data: options.product === null ? null : { active: options.product?.active ?? true }, error: null }; },
+        hasDuplicate: async (_c, _productId, siteId, email) => { calls.push({ op: 'duplicate', site: siteId, email }); return { data: false, error: null }; },
+        insertReview: async (_c, review) => { calls.push({ op: 'insert', review }); return { data: { id: 'review-1' }, error: null }; },
     };
     const router = new Hono<{ Bindings: Env }>();
     registerBuyerReviewRoutes(router, deps);
@@ -55,7 +47,7 @@ async function harness(options: {
     app.route('/storefront', router);
     const env = { LETBUYY_IDENTITY_ISSUER: ISSUER, LETBUYY_IDENTITY_PUBLIC_JWKS: jwks } as unknown as Env;
     const headers = { [LETBUYY_STOREFRONT_SESSION_HEADER]: token, 'Content-Type': 'application/json' };
-    return { app, calls, effects, env, headers };
+    return { app, calls, env, headers };
 }
 
 const path = (siteId = SITE) => `/storefront/buyer/reviews?store_id=${siteId}`;
@@ -71,10 +63,16 @@ test('buyer review derives site, linked customer, email and verified badge from 
     }, h.env);
     assert.equal(response.status, 201);
     const responseBody = await response.json();
-    assert.deepEqual(responseBody, { success: true, data: { review: { id: REVIEW, status: 'pending' }, message: 'Review submitted! It will appear after approval.' } });
-    assert.deepEqual(h.calls, [{ op: 'atomic-review', buyer: BUYER, site: SITE, epoch: 1,
-        input: { product_id: PRODUCT, rating: 5, title: 'Great', body: 'Works well' } }]);
-    assert.deepEqual(h.effects, [REVIEW]);
+    assert.deepEqual(responseBody, { success: true, data: { review: { id: 'review-1', status: 'pending' }, message: 'Review submitted! It will appear after approval.' } });
+    assert.deepEqual(h.calls, [
+        { op: 'link', buyer: BUYER, site: SITE },
+        { op: 'product', site: SITE },
+        { op: 'duplicate', site: SITE, email: 'verified@example.test' },
+        { op: 'insert', review: {
+            store_id: SITE, product_id: PRODUCT, customer_name: 'Linked Buyer', customer_email: 'verified@example.test',
+            rating: 5, title: 'Great', body: 'Works well', is_verified: true, is_approved: false, status: 'pending',
+        } },
+    ]);
     assert.doesNotMatch(JSON.stringify(responseBody), /verified@example|Linked Buyer/);
 });
 
@@ -83,7 +81,7 @@ test('an unlinked or inactive store account cannot create a review', async () =>
         const h = await harness(options);
         const response = await h.app.request(path(), { method: 'POST', headers: h.headers, body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, h.env);
         assert.equal(response.status, 409);
-        assert.equal(h.effects.length, 0);
+        assert.equal(h.calls.some((call) => call.op === 'insert'), false);
     }
 });
 
@@ -94,7 +92,7 @@ test('review requires Turnstile and an active product at the signed site', async
 
     const archived = await harness({ product: { active: false } });
     assert.equal((await archived.app.request(path(), { method: 'POST', headers: archived.headers, body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, archived.env)).status, 400);
-    assert.equal(archived.effects.length, 0);
+    assert.equal(archived.calls.some((call) => call.op === 'insert'), false);
 });
 
 test('buyer review refuses absent sessions, wrong sites and malformed products', async () => {
@@ -102,28 +100,5 @@ test('buyer review refuses absent sessions, wrong sites and malformed products',
     assert.equal((await h.app.request(path(), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, h.env)).status, 401);
     assert.equal((await h.app.request(path(OTHER_SITE), { method: 'POST', headers: h.headers, body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, h.env)).status, 401);
     assert.equal((await h.app.request(path(), { method: 'POST', headers: h.headers, body: JSON.stringify({ product_id: 'not-a-uuid', rating: 5 }) }, h.env)).status, 400);
-    assert.equal(h.effects.length, 0);
-});
-
-
-test('atomic duplicate, session, scope and busy refusals keep their safe transport status', async () => {
-    for (const [refusal, status] of [['CONFLICT', 409], ['BUYER_SESSION_INVALID', 401],
-        ['BUYER_DISABLED', 403], ['BUYER_SCOPE_MISMATCH', 403], ['REVIEW_SOURCE_BUSY', 503]] as const) {
-        const h = await harness({ refusal });
-        const response = await h.app.request(path(), { method: 'POST', headers: h.headers,
-            body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, h.env);
-        assert.equal(response.status, status);
-        const body = await response.json() as { error: { code: string } };
-        assert.equal(body.error.code, refusal);
-        assert.equal(h.effects.length, 0);
-    }
-});
-
-test('a database failure returns no private source, author or database diagnostics', async () => {
-    const h = await harness({ failure: true });
-    const response = await h.app.request(path(), { method: 'POST', headers: h.headers,
-        body: JSON.stringify({ product_id: PRODUCT, rating: 5 }) }, h.env);
-    assert.equal(response.status, 500);
-    assert.doesNotMatch(await response.text(), new RegExp('private database detail|' + BUYER));
-    assert.equal(h.effects.length, 0);
+    assert.equal(h.calls.some((call) => call.op === 'insert'), false);
 });

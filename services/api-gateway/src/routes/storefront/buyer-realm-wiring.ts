@@ -45,7 +45,6 @@ import {registerBuyerPrivacyExportRoutes} from './buyer-privacy-export-routes';
 import { registerBuyerLoyaltyRoutes, type LoyaltySummary, type LoyaltyEntryRow } from './buyer-loyalty-routes';
 import { registerBuyerWishlistRoutes } from './buyer-wishlist-routes';
 import { registerBuyerReviewRoutes } from './buyer-review-routes';
-import { BuyerReviewExecutionAdapter } from '../../execution/buyer-review-execution.adapter';
 import { registerSponsoredProductRoutes, type AdSpendResult, type SponsoredPlacementRow } from './sponsored-product-routes';
 // The SAME reference generator and SLA defaults the operator surface uses: one ticket system must not
 // grow two human-facing reference formats or two SLA clocks depending on who opened the ticket.
@@ -477,10 +476,67 @@ export function registerBuyerRealmRoutes(
             .eq('product_id', productId),
     });
 
-    // One canonical transaction checks current ownership and commits content plus private authorship.
+    // Canonical buyer reviews use only an explicitly verified, active store-customer link.
+    // PII and the verified badge are derived server-side and never returned in the public response.
     registerBuyerReviewRoutes(router, {
         requireValidTurnstile: deps.requireValidTurnstile,
-        createReview: (c, input) => new BuyerReviewExecutionAdapter(c).create(input),
+        resolveLinkedCustomer: async (c, buyerAccountId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('buyer_store_customers')
+                .select('store_customer_id, verified_at, store_customers!inner(store_id,status,deleted_at,email,full_name)')
+                .eq('buyer_account_id', buyerAccountId)
+                .eq('site_id', siteId)
+                .maybeSingle();
+            if (error || !data) return { data: null, error };
+            const row = data as {
+                store_customer_id: string;
+                verified_at: string | null;
+                store_customers?: { store_id?: string; status?: string; deleted_at?: string | null; email?: string | null; full_name?: string | null } | null;
+            };
+            const customer = row.store_customers;
+            if (!row.verified_at || customer?.store_id !== siteId || !customer.email) return { data: null, error: null };
+            return {
+                data: {
+                    customerId: row.store_customer_id,
+                    customerName: customer.full_name ?? null,
+                    customerEmail: customer.email,
+                    active: customer.status === 'active' && customer.deleted_at == null,
+                },
+                error: null,
+            };
+        },
+        loadProduct: async (c, productId, siteId) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('products')
+                .select('id,is_active,status')
+                .eq('id', productId)
+                .eq('store_id', siteId)
+                .is('deleted_at', null)
+                .maybeSingle();
+            if (error || !data) return { data: null, error };
+            const product = data as { is_active?: boolean | null; status?: string | null };
+            return { data: { active: product.is_active !== false && product.status !== 'archived' }, error: null };
+        },
+        hasDuplicate: async (c, productId, siteId, customerEmail) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('product_reviews')
+                .select('id')
+                .eq('product_id', productId)
+                .eq('store_id', siteId)
+                .eq('customer_email', customerEmail)
+                .is('deleted_at', null)
+                .limit(1)
+                .maybeSingle();
+            return { data: Boolean(data), error };
+        },
+        insertReview: async (c, review) => {
+            const { data, error } = await getSupabaseAdmin(c)
+                .from('product_reviews')
+                .insert(review)
+                .select('id')
+                .single();
+            return { data: data as { id: string } | null, error };
+        },
     });
 
     registerBuyerSupportRoutes(router, {

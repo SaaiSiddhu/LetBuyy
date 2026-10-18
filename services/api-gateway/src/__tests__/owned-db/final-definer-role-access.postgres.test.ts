@@ -5,8 +5,6 @@ import test, {after} from 'node:test';
 import { requireOwnedDatabase } from './owned-db-support';
 
 const owned=requireOwnedDatabase();
-const factorMigration=readFileSync('database/supabase/migrations/329_approved_operator_mfa_reset.sql','utf8');
-const factorRollback=readFileSync('database/supabase/rollback/329_approved_operator_mfa_reset.rollback.sql','utf8');
 const queueMigration=readFileSync('database/supabase/migrations/323_protect_platform_queue_authority.sql','utf8');
 const queueRollback=readFileSync('database/supabase/rollback/323_protect_platform_queue_authority.rollback.sql','utf8');
 const runtimeMigration=readFileSync('database/supabase/migrations/320_protect_global_runtime_claim_authority.sql','utf8');
@@ -27,10 +25,7 @@ const moneyMigration = readFileSync('database/supabase/migrations/316_session_bo
 const moneyRollback = readFileSync('database/supabase/rollback/316_session_bound_money_resolution.rollback.sql','utf8');
 const protocolMigration=readFileSync('database/supabase/migrations/315_session_bound_sensitive_approvals.sql','utf8');
 const protocolRollback=readFileSync('database/supabase/rollback/315_session_bound_sensitive_approvals.rollback.sql','utf8');
-after(()=>{owned.script(policyMigration);owned.script(approvalMigration);owned.script(protocolMigration);owned.script(moneyMigration); owned.script(siteMigration); owned.script(trustMigration); owned.script(fenceMigration);owned.script(runtimeMigration);owned.script(queueMigration);owned.script(factorMigration);
- assert.equal(owned.psql("SELECT attnotnull FROM pg_attribute WHERE attrelid='public.sensitive_action_approvals'::regclass AND attname='site_id';"),'f','restore329 platform-scoped approved-reset schema after predecessor recovery');
- assert.equal(owned.psql("SELECT to_regprocedure('public.complete_console_mfa_v1(uuid,text,text,uuid,timestamptz,timestamptz,timestamptz,uuid,text,bigint,text)') IS NOT NULL;"),'t','restore the configured-factor proof overload');
- closed();});
+after(()=>{owned.script(policyMigration);owned.script(approvalMigration);owned.script(protocolMigration);owned.script(moneyMigration); owned.script(siteMigration); owned.script(trustMigration); owned.script(fenceMigration);owned.script(runtimeMigration);owned.script(queueMigration);closed();});
 const feed='public.marketplace_feed(text,text,integer,timestamp with time zone,uuid,text)';
 const origins='public.marketplace_origins()';
 const callFeed='SELECT count(*) FROM public.marketplace_feed(NULL::text,NULL::text,10,NULL::timestamptz,NULL::uuid,NULL::text);';
@@ -74,11 +69,6 @@ test('309 recovery refuses later policy/approval journals and proceeds only afte
  const saved=journal();const roles=snapshot();
  assert.match(owned.psqlExpectError(rollback),/refuses.*later|subsequent|later migration/i);
  assert.equal(journal(),saved);assert.deepEqual(snapshot(),roles);
- //329 changes the approval table's nullability for platform-scoped resets.
- // Reverse that real dependency before315/313; never relax313's schema fingerprint.
- assert.equal(owned.psql("SELECT attnotnull FROM pg_attribute WHERE attrelid='public.sensitive_action_approvals'::regclass AND attname='site_id';"),'f');
- owned.script(factorRollback);
- assert.equal(owned.psql("SELECT attnotnull FROM pg_attribute WHERE attrelid='public.sensitive_action_approvals'::regclass AND attname='site_id';"),'t','329 predecessor schema restored before313 recovery');
  owned.script(queueRollback); owned.script(runtimeRollback); const predecessors=snapshot();
  owned.script(fenceRollback); owned.script(trustRollback); owned.script(siteRollback); owned.script(moneyRollback); owned.script(protocolRollback);
  owned.script(policyRollback);

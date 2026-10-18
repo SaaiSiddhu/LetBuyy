@@ -12,7 +12,7 @@ import {
   ORDER_STATUS_VALUES,
   SUBSCRIPTION_STATUS_VALUES,
   GIFT_CARD_STATUS_VALUES,
-  MERCHANT_PAYOUT_STATUS_VALUES,
+  PAYOUT_STATUS_VALUES,
   PAGE_STATUS_VALUES,
   REVIEW_MODERATION_STATUS_VALUES,
   CUSTOM_DOMAIN_STATUS_VALUES,
@@ -354,25 +354,6 @@ export const InternalTrustSiteEnforcementSchema = z.object({action:z.enum(['susp
   metadata:InternalTrustSafetyNoteMetadataSchema}).strict();
 export const InternalOperatorMfaResetRequestSchema = z.object({action:z.literal('operator.mfa.reset'),resource_id:z.string().uuid(),
  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),configured_fingerprint:z.string().regex(/^[0-9a-f]{64}$/)}).strict();
-/** Minimal operator projection; private queue payloads/errors/results never cross this boundary. */
-export const InternalPlatformJobSchema = z.object({
-  id:z.string().uuid(),site_id:z.string().uuid().nullable(),queue_name:z.literal('loyalty-refunds'),job_type:z.literal('loyalty.restore_redeemed'),
-  status:z.enum(['queued','running','succeeded','failed','dead','cancelled']),attempts:z.number().int(),max_attempts:z.number().int(),
-  order_id:z.string().uuid().nullable(),redeemed_entry_id:z.string().uuid().nullable(),points:z.string().regex(/^\d+$/).nullable(),
-  point_value_minor:z.string().nullable(),value_minor:z.string().nullable(),created_at:z.string(),failed_at:z.string().nullable(),completed_at:z.string().nullable(),
-  eligible:z.boolean(),source_valid:z.boolean(),reason_code:z.enum(['eligible','source_unavailable','debt_not_owed','lease_present','not_exhausted','attempt_limit']),
-  source_identity:z.string().regex(/^[0-9a-f]{64}$/),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
-}).strict();
-export type InternalPlatformJob = z.infer<typeof InternalPlatformJobSchema>;
-export const InternalPlatformJobQuerySchema = z.object({site_id:z.string().uuid().optional(),job_id:z.string().uuid().optional(),
-  page:z.coerce.number().int().min(1).max(10000).default(1),limit:z.coerce.number().int().min(1).max(50).default(25)}).strict();
-export const InternalPlatformJobRecoveryRequestSchema = z.object({site_id:z.string().uuid(),source_fingerprint:z.string().regex(/^[0-9a-f]{64}$/),
-  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid(),expected_session_id:z.string().uuid()}).strict();
-export const InternalPlatformJobRecoveryExecuteSchema = z.object({approval_id:z.string().uuid(),site_id:z.string().uuid(),
-  reason:z.string().trim().min(8).max(1000),request_key:z.string().uuid()}).strict();
-export const InternalPlatformJobRecoveryResultSchema = z.object({operation:z.literal('retry_authorized'),operation_id:z.string().uuid(),
-  job_id:z.string().uuid(),site_id:z.string().uuid(),event_id:z.string().uuid(),previous_attempts:z.number().int().nonnegative(),
-  max_attempts:z.number().int().positive(),retry_budget:z.literal(1),queued_at:z.string(),replayed:z.boolean()}).strict();
 export const InternalProtectedApprovalRequestSchema = z.discriminatedUnion('action', [
   InternalMerchantApprovalRequestSchema, InternalMoneyApprovalRequestSchema, InternalTrustReinstatementRequestSchema, InternalOperatorMfaResetRequestSchema,
 ]);
@@ -398,7 +379,7 @@ export const InternalApprovalDecisionSchema = z.object({
 export const InternalSensitiveApprovalSchema = z.object({
   id: z.string().uuid(), protocol_version: z.literal(1), site_id: z.string().uuid().nullable(),
   action: z.enum(['refund.approve', 'payout.release', 'customer.dsr.erase', 'merchant.suspend', 'merchant.restore',
-    'developer.suspend', 'money.reconciliation.resolve', 'ts.reinstate', 'runtime.control-command', 'operator.mfa.reset', 'platform.job.redrive']),
+    'developer.suspend', 'money.reconciliation.resolve', 'ts.reinstate', 'runtime.control-command', 'operator.mfa.reset']),
   resource_type: z.string(), resource_id: z.string(), maker_actor_id: z.string().uuid(),
   checker_actor_id: z.string().uuid().nullable(), requester_session_id: z.string().uuid(),
   approver_session_id: z.string().uuid().nullable(), request_key: z.string().uuid(),
@@ -713,7 +694,7 @@ export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'l
 // Each of these schemas is built from the canonical value tuple in
 // ./status-presentation, which mirrors the live CHECK constraint. Restating the
 // values here is how they drifted: five schemas disagreed with the database,
-// including merchant statements confused with provider payouts. Deriving makes the
+// including payouts, where only 2 of 5 values overlapped. Deriving makes the
 // schema, the TS union and the presentation map one source by construction.
 export const StoreStatusSchema = z.enum(SITE_STATUS_VALUES);
 export const CustomDomainStatusSchema = z.enum(CUSTOM_DOMAIN_STATUS_VALUES);
@@ -813,7 +794,7 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
-export const MerchantPayoutStatusSchema = z.enum(MERCHANT_PAYOUT_STATUS_VALUES);
+export const MerchantPayoutStatusSchema = z.enum(PAYOUT_STATUS_VALUES);
 export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
 export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
@@ -847,10 +828,6 @@ export const MerchantTwoFactorTypeSchema = z.enum(['totp', 'passkey']);
 export const MerchantTwoFactorStatusSchema = z.enum(['pending', 'active', 'disabled']);
 
 export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
-  // Gateway preserves PostgREST's timestamp offsets in statement readback.
-  created_at: z.string().datetime({ offset: true }),
-  updated_at: z.string().datetime({ offset: true }),
-  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   statement_number: z.string().min(1).max(120),
   status: MerchantPayoutStatusSchema,
@@ -865,9 +842,9 @@ export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
   period_start: z.string().optional().nullable(),
   period_end: z.string().optional().nullable(),
   available_on: z.string().optional().nullable(),
-  processing_at: z.string().datetime({ offset: true }).optional().nullable(),
-  released_at: z.string().datetime({ offset: true }).optional().nullable(),
-  failed_at: z.string().datetime({ offset: true }).optional().nullable(),
+  processing_at: z.string().datetime().optional().nullable(),
+  released_at: z.string().datetime().optional().nullable(),
+  failed_at: z.string().datetime().optional().nullable(),
   utr: z.string().optional().nullable(),
   provider_reference: z.string().optional().nullable(),
   failure_reason: z.string().optional().nullable(),
@@ -1945,7 +1922,21 @@ export const StoreSubscriptionStateSchema = z.object({
   subscription: StoreSubscriptionSchema.nullable(),
 }).passthrough();
 
+// Public subscription money summary. Private supplier/recipient/source facts stay
+// in the canonical Billing snapshot and never enter browser retry storage.
+export const SubscriptionTaxSummarySchema=z.object({
+  schema_version:z.literal(1),policy_version:z.literal('D-SUB-TAX-INCLUSIVE-V1'),basis:z.literal('inclusive'),currency:z.literal('INR'),
+  supply_type:z.enum(['intra_state','inter_state']),
+  gross_minor:z.number().int().safe().min(1).max(2147483647),taxable_minor:z.number().int().safe().min(0).max(2147483647),
+  tax_minor:z.number().int().safe().min(0).max(2147483647),cgst_minor:z.number().int().safe().min(0).max(2147483647),
+  sgst_minor:z.number().int().safe().min(0).max(2147483647),igst_minor:z.number().int().safe().min(0).max(2147483647),
+}).strict().refine(s=>s.taxable_minor+s.tax_minor===s.gross_minor && s.cgst_minor+s.sgst_minor+s.igst_minor===s.tax_minor
+  && (s.supply_type==='intra_state'?s.igst_minor===0&&s.cgst_minor===Math.floor(s.tax_minor/2)&&s.sgst_minor===s.tax_minor-s.cgst_minor:s.cgst_minor===0&&s.sgst_minor===0&&s.igst_minor===s.tax_minor),
+  'Subscription tax summary does not conserve gross');
+export type SubscriptionTaxSummary=z.infer<typeof SubscriptionTaxSummarySchema>;
+
 export const BillingHistoryItemSchema = z.object({
+  tax:SubscriptionTaxSummarySchema.optional().nullable(),
   id: UuidSchema,
   amount_paid: z.number().min(0).optional().nullable(),
   status: z.string().max(80).optional().nullable(),
@@ -1959,6 +1950,7 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
+  tax:SubscriptionTaxSummarySchema.optional(),
   razorpay_order_id: z.string().min(1).optional().nullable(),
   razorpay_subscription_id: z.string().min(1).optional().nullable(),
   checkout_mode: z.enum(['free_activation', 'razorpay_order', 'razorpay_subscription']).default('razorpay_order'),

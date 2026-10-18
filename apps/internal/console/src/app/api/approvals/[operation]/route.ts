@@ -7,7 +7,6 @@ import { CONSOLE_SESSION_COOKIE } from '@/lib/console-session';
 import { consoleStepUpReturnPath } from '@/lib/console-step-up';
 import {requestConsoleIdentity} from '@/lib/console-identity-client';
 import {getConsoleSessionFromCookies,clearConsoleSessionCookie} from '@/lib/console-auth-server';
-import { InternalPlatformJobSchema, InternalPlatformJobRecoveryRequestSchema, InternalPlatformJobRecoveryExecuteSchema, InternalPlatformJobRecoveryResultSchema } from '@letbuyy/shared-types';
 
 function wantsJson(request: NextRequest) { return request.headers.get('accept')?.includes('application/json') === true; }
 function go(request: NextRequest, path: string) {
@@ -31,20 +30,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ op
     const sessionToken = request.cookies.get(CONSOLE_SESSION_COOKIE)?.value;
     const form = await request.formData().catch(() => null), operation = (await context.params).operation;
     if (!form) return NextResponse.json({ error: 'Invalid approval form.' }, { status: 400 });
-    if (operation === 'request-job-recovery') {
-        const job = z.string().uuid().safeParse(form.get('job_id'));
-        const parsed = InternalPlatformJobRecoveryRequestSchema.safeParse({site_id:form.get('site_id'),
-            source_fingerprint:form.get('source_fingerprint'),reason:form.get('reason'),request_key:form.get('request_key'),
-            expected_session_id:form.get('expected_session_id')});
-        if (!job.success || !parsed.success) return fail(request,'/operations','Review the job and provide a clear recovery reason.');
-        const result = await fetchConsoleApi<ConsoleDataResponse<{approval:unknown}>>('/internal/console/platform-jobs/'+job.data+'/approvals',
-            {method:'POST',body:parsed.data,sessionToken});
-        const approval = InternalSensitiveApprovalSchema.safeParse(result.data?.data.approval);
-        if (result.error || !approval.success || approval.data.action !== 'platform.job.redrive' || approval.data.resource_id !== job.data) {
-            return fail(request,'/operations',result.error || 'The review could not be confirmed. Retry the same form.',result.code,result.status);
-        }
-        return go(request,'/approvals/'+approval.data.id);
-    }
     if(operation==='request-mfa-reset'){
         const target=z.string().uuid().safeParse(form.get('operator_id')),key=z.string().uuid().safeParse(form.get('request_key'));
         if(!target.success||!key.success)return fail(request,'/approvals','Choose an active operator and provide a valid recovery request.');
@@ -120,23 +105,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ op
         const read = await fetchConsoleApi<ConsoleDataResponse<{ approval: unknown }>>('/internal/console/approvals/' + id.data, { sessionToken });
         const approval = InternalSensitiveApprovalSchema.safeParse(read.data?.data.approval);
         if (read.error || !approval.success) return fail(request, path, read.error || 'Approval unavailable.');
-        if (approval.data.action === 'platform.job.redrive') {
-            const job = InternalPlatformJobSchema.safeParse(approval.data.payload.job);
-            const body = InternalPlatformJobRecoveryExecuteSchema.safeParse({approval_id:id.data,site_id:approval.data.site_id,
-                reason:approval.data.reason,request_key:approval.data.request_key});
-            if (!job.success || !body.success || approval.data.resource_type !== 'platform_queue_job' ||
-                job.data.id !== approval.data.resource_id || job.data.site_id !== approval.data.site_id ||
-                approval.data.payload.operation !== 'platform.job.redrive' || approval.data.payload.retry_budget !== 1) {
-                return fail(request,path,'The reviewed recovery is unavailable.');
-            }
-            const result = await fetchConsoleApi<ConsoleDataResponse<unknown>>('/internal/console/platform-jobs/'+job.data.id+'/redrive',
-                {method:'POST',body:body.data,sessionToken});
-            const receipt = InternalPlatformJobRecoveryResultSchema.safeParse(result.data?.data);
-            if (result.error || !receipt.success || receipt.data.operation_id !== id.data || receipt.data.job_id !== job.data.id || receipt.data.site_id !== body.data.site_id) {
-                return fail(request,path,result.error || 'The recovery receipt could not be confirmed. Retry the same action.',result.code,result.status);
-            }
-            return go(request,path);
-        }
         if(approval.data.action==='operator.mfa.reset'){
             const target=z.string().uuid().safeParse(approval.data.resource_id);
             if(!target.success||approval.data.resource_type!=='platform_operator'||approval.data.site_id!==null)return fail(request,path,'The reviewed operator reset is unavailable.');

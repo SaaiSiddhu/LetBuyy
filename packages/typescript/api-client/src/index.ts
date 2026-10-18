@@ -1,3 +1,4 @@
+export { SubscriptionTaxSummarySchema } from '@letbuyy/shared-types';
 import { createLetbuyyGraphQLSdk } from './graphql';
 import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
@@ -204,6 +205,7 @@ import type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
+  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,
@@ -5909,6 +5911,7 @@ export type {
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
   SubscriptionOrderResult,
+  SubscriptionTaxSummary,
   SubscriptionPlan,
   SubscriptionRecoveryResult,
   SubscriptionVerificationResult,

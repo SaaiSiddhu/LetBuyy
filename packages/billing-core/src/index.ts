@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
-import { MarketplaceAppPricingModelSchema } from '@letbuyy/shared-types';
+import { MarketplaceAppPricingModelSchema, GstinSchema, IndianStateCodeSchema } from '@letbuyy/shared-types';
+import type { SubscriptionTaxSummary } from '@letbuyy/shared-types';
+export type { SubscriptionTaxSummary } from '@letbuyy/shared-types';
+import { calculateGstLine } from '@letbuyy/checkout-core';
 
 export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise' | 'launch' | 'growth' | 'scale' | 'commerce_os';
 export type BillingCycle = 'monthly' | 'annual';
@@ -130,7 +133,7 @@ export const BillingMandateSchema = z.object({
 });
 export const BillingSubscribeSchema = z.object({
   store_id: z.string().uuid(),
-  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise']),
+  plan_slug: z.enum(['free', 'starter', 'business', 'enterprise', 'launch', 'growth', 'scale', 'commerce_os']),
   billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
   mandate_id: z.string().uuid().optional(),
   idempotency_key: z.string().trim().min(8).max(200),
@@ -1455,3 +1458,183 @@ export type VerifySubscriptionInput = z.infer<typeof VerifySubscriptionSchema>;
 export type CreateAppBillingChargeInput = z.infer<typeof CreateAppBillingChargeSchema>;
 export type ApproveAppBillingChargeInput = z.infer<typeof ApproveAppBillingChargeSchema>;
 export type CancelAppBillingChargeInput = z.infer<typeof CancelAppBillingChargeSchema>;
+
+// Subscription prices are final gross. The canonical commerce GST helper owns
+// rounding; Billing owns applicability, immutable source identity and conservation.
+export const SUBSCRIPTION_TAX_POLICY = 'D-SUB-TAX-INCLUSIVE-V1' as const;
+const SubscriptionMinorSchema = z.number().int().safe().min(0).max(2_147_483_647);
+export const SubscriptionTaxPartySchema = z.object({
+  name: z.string().trim().min(1).max(200), country: z.literal('IN'),
+  state_code: IndianStateCodeSchema, gstin: GstinSchema.nullable(),
+  address: z.object({line1:z.string().trim().min(1).max(500),city:z.string().trim().min(1).max(100),
+    state:z.string().trim().min(1).max(100),zip:z.string().trim().min(3).max(20),country:z.literal('IN')}).strict(),
+}).strict().refine(p => !p.gstin || p.gstin.slice(0,2) === p.state_code, 'GSTIN and billing state disagree');
+export const SubscriptionSupplierTaxProfileSchema = z.object({
+  schema_version:z.literal(1),policy_version:z.literal(SUBSCRIPTION_TAX_POLICY),
+  profile_id:z.string().trim().min(1).max(120),profile_version:z.number().int().safe().positive(),
+  approval_status:z.literal('approved'),approval_reference:z.string().trim().min(1).max(200),
+  registration_status:z.literal('registered'),supply_category:z.literal('domestic_taxable_saas'),rate_bps:z.literal(1800),
+  supplier:SubscriptionTaxPartySchema.refine(p => p.gstin !== null, 'Registered supplier GSTIN is required'),
+}).strict();
+export const SubscriptionTaxSourceSchema=z.object({
+  actor_id:z.string().uuid().toLowerCase(),site_id:z.string().uuid().toLowerCase(),request_key:z.string().min(8).max(200),
+  plan_id:z.string().uuid().toLowerCase(),plan_slug:z.string().min(1).max(120),billing_period:z.enum(['monthly','yearly']),
+  price_version:z.string().min(1).max(200),gross_before_discount_minor:SubscriptionMinorSchema,
+  discount_minor:SubscriptionMinorSchema,coupon_code:z.string().min(1).max(120).nullable(),
+}).strict();
+export const SubscriptionTaxSnapshotSchema=z.object({
+  schema_version:z.literal(1),policy_version:z.literal(SUBSCRIPTION_TAX_POLICY),basis:z.literal('inclusive'),currency:z.literal('INR'),
+  source:SubscriptionTaxSourceSchema,profile:SubscriptionSupplierTaxProfileSchema,recipient:SubscriptionTaxPartySchema,
+  supply_type:z.enum(['intra_state','inter_state']),gross_minor:SubscriptionMinorSchema,taxable_minor:SubscriptionMinorSchema,
+  tax_minor:SubscriptionMinorSchema,cgst_minor:SubscriptionMinorSchema,sgst_minor:SubscriptionMinorSchema,igst_minor:SubscriptionMinorSchema,
+}).strict().superRefine((s,ctx)=>{
+  const line=calculateGstLine({quantity:1,unit_amount_minor:s.gross_minor,discount_amount_minor:0,
+    description:'Subscription',gst_rate_bps:s.profile.rate_bps,tax_inclusive:true},s.supply_type);
+  if(s.gross_minor<=0 || s.source.gross_before_discount_minor-s.source.discount_minor!==s.gross_minor
+    || s.supply_type!==(s.profile.supplier.state_code===s.recipient.state_code?'intra_state':'inter_state')
+    || s.taxable_minor!==line.taxable_amount_minor || s.tax_minor!==line.tax_amount_minor
+    || s.cgst_minor!==line.cgst_amount_minor || s.sgst_minor!==line.sgst_amount_minor || s.igst_minor!==line.igst_amount_minor)
+    ctx.addIssue({code:'custom',message:'Subscription tax snapshot does not conserve its canonical gross source'});
+});
+export type SubscriptionTaxSnapshot=z.infer<typeof SubscriptionTaxSnapshotSchema>;
+export function subscriptionTaxSummary(snapshot:SubscriptionTaxSnapshot):SubscriptionTaxSummary {
+  const {schema_version,policy_version,basis,currency,supply_type,gross_minor,taxable_minor,tax_minor,cgst_minor,sgst_minor,igst_minor}=SubscriptionTaxSnapshotSchema.parse(snapshot);
+  return {schema_version,policy_version,basis,currency,supply_type,gross_minor,taxable_minor,tax_minor,cgst_minor,sgst_minor,igst_minor};
+}
+export function planSubscriptionTaxSnapshot(input:{profile:unknown;recipient:unknown;source:unknown;grossMinor:unknown}):SubscriptionTaxSnapshot {
+  const profile=SubscriptionSupplierTaxProfileSchema.parse(input.profile),recipient=SubscriptionTaxPartySchema.parse(input.recipient),
+    source=SubscriptionTaxSourceSchema.parse(input.source),gross=SubscriptionMinorSchema.positive().parse(input.grossMinor);
+  // Keep all products passed to the shared number-based helper exact, including
+  // its inclusive denominator multiplication. No clamping/coercion of bad money.
+  if(!Number.isSafeInteger(gross*10_000))throw new Error('Subscription amount exceeds safe tax arithmetic');
+  const supply=profile.supplier.state_code===recipient.state_code?'intra_state':'inter_state';
+  const line=calculateGstLine({quantity:1,unit_amount_minor:gross,discount_amount_minor:0,description:'Subscription',gst_rate_bps:profile.rate_bps,tax_inclusive:true},supply);
+  return SubscriptionTaxSnapshotSchema.parse({schema_version:1,policy_version:SUBSCRIPTION_TAX_POLICY,basis:'inclusive',currency:'INR',source,profile,recipient,
+    supply_type:supply,gross_minor:gross,taxable_minor:line.taxable_amount_minor,tax_minor:line.tax_amount_minor,
+    cgst_minor:line.cgst_amount_minor,sgst_minor:line.sgst_amount_minor,igst_minor:line.igst_amount_minor});
+}
+
+/** Preserve the consented base and upfront components independently. Provider
+ * authorization timing is not inferred by combining them into a charge. */
+export function subscriptionApprovedChargeComponents(base:unknown,approved:unknown):{baseGrossMinor:number;upfrontGrossMinor:number}{
+  const recurring=SubscriptionMinorSchema.positive().parse(base);
+  const lines=z.array(MerchantApprovedUsageChargeSchema).parse(approved);
+  let upfront=0;
+  for(const line of lines){
+    const product=line.amount_minor*line.quantity;
+    if(!Number.isSafeInteger(product)||!Number.isSafeInteger(upfront+product))throw new Error('Subscription addon amount exceeds safe arithmetic');
+    upfront=SubscriptionMinorSchema.parse(upfront+product);
+  }
+  return {baseGrossMinor:recurring,upfrontGrossMinor:upfront};
+}
+
+/** The maintained create payload omits start_at: Razorpay immediate-start
+ * authorization is the base plus explicitly approved upfront amounts. Persist
+ * both components so an initial addon cannot become a later recurring charge.
+ * This describes money only; provider invoice lineage still establishes phase.
+ */
+export const SubscriptionImmediateChargeScheduleSchema=z.object({
+ schema_version:z.literal(1),start_mode:z.literal('immediate'),
+ base_gross_minor:SubscriptionMinorSchema.positive(),upfront_gross_minor:SubscriptionMinorSchema,
+ initial_gross_minor:SubscriptionMinorSchema.positive(),
+}).strict().refine(s=>s.base_gross_minor+s.upfront_gross_minor===s.initial_gross_minor,
+ 'Immediate subscription gross must preserve the base and approved upfront amount');
+export type SubscriptionImmediateChargeSchedule=z.infer<typeof SubscriptionImmediateChargeScheduleSchema>;
+export function planImmediateSubscriptionChargeSchedule(base:unknown,approved:unknown):SubscriptionImmediateChargeSchedule {
+ const parts=subscriptionApprovedChargeComponents(base,approved);
+ const initial=SubscriptionMinorSchema.positive().parse(parts.baseGrossMinor+parts.upfrontGrossMinor);
+ return SubscriptionImmediateChargeScheduleSchema.parse({schema_version:1,start_mode:'immediate',
+  base_gross_minor:parts.baseGrossMinor,upfront_gross_minor:parts.upfrontGrossMinor,initial_gross_minor:initial});
+}
+
+/** Freeze both taxable money sources before a native provider create. The
+ * existing approved SaaS profile is reused; no later profile/catalog read owns
+ * the cycle amount. This does not establish which invoice paid either source.
+ */
+export function planSubscriptionRecurringTaxSnapshots(baseSnapshot:unknown,approved:unknown):{
+ initial:SubscriptionTaxSnapshot;recurring:SubscriptionTaxSnapshot;schedule:SubscriptionImmediateChargeSchedule;
+}{
+ const recurring=SubscriptionTaxSnapshotSchema.parse(baseSnapshot);
+ if(recurring.source.discount_minor!==0||recurring.source.coupon_code!==null)throw new Error('Recurring source requires the existing undiscounted native billing basis');
+ const schedule=planImmediateSubscriptionChargeSchedule(recurring.gross_minor,approved);
+ const initial=planSubscriptionTaxSnapshot({profile:recurring.profile,recipient:recurring.recipient,
+  source:{...recurring.source,gross_before_discount_minor:schedule.initial_gross_minor},grossMinor:schedule.initial_gross_minor});
+ return {initial,recurring,schedule};
+}
+
+/** Resolve a paid provider invoice against retained native money sources.
+ * This proves invoice money/lineage only: current entitlement, owner, replay and
+ * once-only upfront consumption remain the canonical transaction's authority.
+ * Neither today's price/profile nor provider paid_count/current cycle selects tax.
+ */
+export function resolveSubscriptionInvoiceTaxPhase(input:{
+ subscriptionReference:string;providerPlanId:string;schedule:unknown;initialSnapshot:unknown;recurringSnapshot:unknown;
+ approvedUsageCharges:unknown;payment:unknown;invoice:unknown;subscription:unknown;
+}){
+ try{
+  const schedule=SubscriptionImmediateChargeScheduleSchema.parse(input.schedule),initial=SubscriptionTaxSnapshotSchema.parse(input.initialSnapshot),recurring=SubscriptionTaxSnapshotSchema.parse(input.recurringSnapshot);
+  const approved=z.array(MerchantApprovedUsageChargeSchema).max(20).parse(input.approvedUsageCharges);
+  if(initial.gross_minor!==schedule.initial_gross_minor||recurring.gross_minor!==schedule.base_gross_minor
+   ||subscriptionApprovedChargeComponents(schedule.base_gross_minor,approved).upfrontGrossMinor!==schedule.upfront_gross_minor
+   ||JSON.stringify(initial.profile)!==JSON.stringify(recurring.profile)||JSON.stringify(initial.recipient)!==JSON.stringify(recurring.recipient)
+   ||initial.source.discount_minor!==0||initial.source.coupon_code!==null
+   ||Object.keys(initial.source).filter(k=>k!=='gross_before_discount_minor').some(k=>initial.source[k as keyof typeof initial.source]!==recurring.source[k as keyof typeof recurring.source]))throw new Error();
+  const reference=z.string().regex(/^sub_[A-Za-z0-9]+$/).max(120).parse(input.subscriptionReference);
+  const providerPlan=z.string().regex(/^plan_[A-Za-z0-9]+$/).max(120).parse(input.providerPlanId);
+  const payment=z.object({id:z.string().regex(/^pay_[A-Za-z0-9]+$/),invoice_id:z.string().regex(/^inv_[A-Za-z0-9]+$/),order_id:z.string().regex(/^order_[A-Za-z0-9]+$/),
+   amount:SubscriptionMinorSchema.positive(),currency:z.literal('INR'),status:z.literal('captured'),captured:z.literal(true).optional()}).passthrough().parse(input.payment);
+  const invoice=z.object({id:z.literal(payment.invoice_id),entity:z.literal('invoice'),subscription_id:z.literal(reference),payment_id:z.literal(payment.id),order_id:z.literal(payment.order_id),
+   status:z.literal('paid'),currency:z.literal('INR'),amount:SubscriptionMinorSchema.positive(),amount_paid:SubscriptionMinorSchema.positive(),amount_due:z.literal(0),gross_amount:SubscriptionMinorSchema.positive(),partial_payment:z.literal(false),
+   billing_start:z.number().int().safe().positive(),billing_end:z.number().int().safe().positive(),
+   line_items:z.array(z.object({type:z.enum(['plan','addon']),name:z.string().min(1).max(200),quantity:z.number().int().safe().positive().max(999),unit_amount:SubscriptionMinorSchema.positive(),gross_amount:SubscriptionMinorSchema.positive(),tax_amount:z.literal(0),currency:z.literal('INR')}).passthrough()).min(1).max(50),
+  }).passthrough().parse(input.invoice);
+  z.object({id:z.literal(reference),entity:z.literal('subscription'),plan_id:z.literal(providerPlan),quantity:z.literal(1)}).passthrough().parse(input.subscription);
+  if(invoice.billing_end<=invoice.billing_start||invoice.amount!==payment.amount||invoice.amount_paid!==payment.amount||invoice.gross_amount!==payment.amount)throw new Error();
+  let sum=0;
+  for(const line of invoice.line_items){
+   const total=line.unit_amount*line.quantity;
+   if(!Number.isSafeInteger(total)||total!==line.gross_amount)throw new Error();
+   sum=SubscriptionMinorSchema.parse(sum+total);
+  }
+  if(sum!==payment.amount)throw new Error();
+  const base=invoice.line_items.filter(l=>l.type==='plan'),addons=invoice.line_items.filter(l=>l.type==='addon');
+  if(base.length!==1||base[0]!.quantity!==1||base[0]!.gross_amount!==schedule.base_gross_minor)throw new Error();
+  const lineKey=(name:string,amount:number,quantity:number)=>JSON.stringify([name,amount,quantity]);
+  if(addons.length){
+   const expected=approved.map(l=>lineKey(l.description||`${l.meter_name} usage`,l.amount_minor,l.quantity)).sort();
+   const actual=addons.map(l=>lineKey(l.name,l.unit_amount,l.quantity)).sort();
+   if(schedule.upfront_gross_minor<=0||JSON.stringify(actual)!==JSON.stringify(expected)||payment.amount!==initial.gross_minor)throw new Error();
+  }else if(payment.amount!==recurring.gross_minor)throw new Error();
+  const taxSnapshot=addons.length?initial:recurring;
+  // Bound Unix values before converting to ISO. No locale, now or current
+  // subscription pointer supplies the immutable invoice period.
+  const start=new Date(invoice.billing_start*1000),end=new Date(invoice.billing_end*1000);
+  if(!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime()))throw new Error();
+  return {phase:addons.length?'initial_with_upfront' as const:'base_cycle' as const,invoice_id:invoice.id,payment_id:payment.id,
+   order_id:payment.order_id,subscription_reference:reference,period_start:start.toISOString(),period_end:end.toISOString(),gross_minor:payment.amount,taxSnapshot};
+ }catch{throw new Error('Provider subscription invoice does not match its retained charge sources');}
+}
+
+export const InternalSubscriptionInvoiceSchema=z.object({
+  externalSubscriptionId:z.string().trim().min(1).max(200),provider:z.enum(['razorpay','stripe']),
+  invoiceNumber:z.string().trim().min(1).max(80).nullish(),description:z.string().trim().min(1).max(256).nullish(),
+  amount:SubscriptionMinorSchema.positive(),currency:z.literal('INR'),taxAmount:SubscriptionMinorSchema,totalAmount:SubscriptionMinorSchema.positive(),
+  paymentId:z.string().trim().min(1).max(200),paymentStatus:z.enum(['paid','failed']).default('paid'),
+  periodStart:z.string().datetime().nullish(),periodEnd:z.string().datetime().nullish(),
+}).strict().refine(s=>s.amount===s.totalAmount&&s.taxAmount<=s.totalAmount,'Subscription invoice gross must match its verified charge');
+
+export const InternalSubscriptionStateSyncSchema=z.object({
+ externalSubscriptionId:z.string().trim().min(1).max(200),status:z.enum(['active','cancelled','past_due','trialing']),
+ currentPeriodStart:z.string().datetime().nullish(),currentPeriodEnd:z.string().datetime().nullish(),
+}).strict().refine(s=>!s.currentPeriodStart||!s.currentPeriodEnd||Date.parse(s.currentPeriodEnd)>Date.parse(s.currentPeriodStart),
+ 'Provider status cannot reverse the retained billing period');
+
+/** Private verified-provider evidence. Derived by the Gateway from authenticated
+ * provider reads; it is never an input in public checkout/verify DTOs. */
+export const SubscriptionInvoiceEvidenceSchema=z.object({
+ phase:z.enum(['initial_with_upfront','base_cycle']),invoice_id:z.string().regex(/^inv_[A-Za-z0-9]+$/).max(120),
+ payment_id:z.string().regex(/^pay_[A-Za-z0-9]+$/).max(120),order_id:z.string().regex(/^order_[A-Za-z0-9]+$/).max(120),
+ subscription_reference:z.string().regex(/^sub_[A-Za-z0-9]+$/).max(120),
+ period_start:z.string().datetime(),period_end:z.string().datetime(),gross_minor:SubscriptionMinorSchema.positive(),
+}).strict().refine(e=>Date.parse(e.period_end)>Date.parse(e.period_start),'Verified invoice period must advance');
+export type SubscriptionInvoiceEvidence=z.infer<typeof SubscriptionInvoiceEvidenceSchema>;

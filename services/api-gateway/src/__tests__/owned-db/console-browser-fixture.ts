@@ -24,9 +24,8 @@ async function port() {
 export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
     origin: string;identityOrigin:string;setIssuerAvailable:(available:boolean)=>Promise<void>;loseNextOperatorExchangeReply:()=>void; browser: Browser; actors: ConsoleBrowserActor[]; login: (actor: ConsoleBrowserActor,options?:{stopAtMfa?:boolean}) => Promise<{ context: BrowserContext; page: Page }>;
     rotateConfiguredFactor:(actor:ConsoleBrowserActor,factor:string)=>Promise<void>; loseNextMfaExecutionReply:()=>void;
-    loseNextJobApprovalReply:()=>void;loseNextJobExecutionReply:()=>void;
     calls: { path: string; status: number }[]; loseNextApprovalReply: () => void; loseNextMoneyExecutionReply: () => void;
-}) => Promise<void>, options: { makerRole?: 'lead' | 'admin' | 'super';targetRole?:'lead'|'admin'|'super' } = {}) {
+}) => Promise<void>, options: { makerRole?: 'lead' | 'admin';targetRole?:'lead'|'admin'|'super' } = {}) {
     const actors: ConsoleBrowserActor[] = [options.makerRole || 'lead', 'super',...(options.targetRole?[options.targetRole]:[])].map((kind, index) => {
         const id = crypto.randomUUID(); return { id, email: `syn-browser-consent-${id}@example.invalid`, kind: kind as 'lead' | 'super' | 'admin',
             factor: ['JBSWY3DPEHPK3PXP','KRUGS4ZANFZSAYJA','NBSWY3DPO5XXE3DE'][index] };
@@ -43,7 +42,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
     let adapter: Server | undefined, app: OwnedClientProcess | undefined, identity:OwnedClientProcess|undefined, browser: Browser | undefined;
     const calls: { path: string; status: number }[] = [], diagnostics: string[] = [], pages: Page[] = [], errors: string[] = [];
     const browserTrace: Record<string, unknown>[] = [];
-    let loseApprovalReply = false, loseMoneyExecutionReply = false,loseMfaReply=false,loseOperatorExchangeReply=false,loseJobApprovalReply=false,loseJobExecutionReply=false;
+    let loseApprovalReply = false, loseMoneyExecutionReply = false,loseMfaReply=false,loseOperatorExchangeReply=false;
     try {
         adapter = createServer(async (request, response) => {
             const chunks: Buffer[] = []; for await (const chunk of request) chunks.push(Buffer.from(chunk));
@@ -68,12 +67,6 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
                     response.end(JSON.stringify({ success: false, error: { code: 'SYNTHETIC_EFFECT_REPLY_LOST', message: 'Could not confirm the saved action. Retry the same form.' } }));
                 } else if(loseMfaReply && request.method==='POST' && /^\/v1\/internal\/console\/sessions\/mfa-reset\/[0-9a-f-]{36}$/.test(request.url||'') && result.status===200){
                     loseMfaReply=false;response.writeHead(503,{'content-type':'application/json'});response.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_RESET_REPLY_LOST',message:'Could not confirm the saved reset. Retry the same form.'}}));
-                } else if(loseJobApprovalReply&&request.method==='POST'&&/^\/v1\/internal\/console\/platform-jobs\/[0-9a-f-]{36}\/approvals$/.test(request.url||'')&&result.status===201){
-                    loseJobApprovalReply=false;response.writeHead(503,{'content-type':'application/json'});
-                    response.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_JOB_REVIEW_REPLY_LOST',message:'Could not confirm the saved review. Retry the same form.'}}));
-                } else if(loseJobExecutionReply&&request.method==='POST'&&/^\/v1\/internal\/console\/platform-jobs\/[0-9a-f-]{36}\/redrive$/.test(request.url||'')&&result.status===200){
-                    loseJobExecutionReply=false;response.writeHead(503,{'content-type':'application/json'});
-                    response.end(JSON.stringify({success:false,error:{code:'SYNTHETIC_JOB_EFFECT_REPLY_LOST',message:'Could not confirm the saved retry authorization. Retry the same form.'}}));
                 } else { response.writeHead(result.status, Object.fromEntries(result.headers.entries())); response.end(result.text); }
             } catch { response.writeHead(500); response.end('{}'); }
         });
@@ -86,7 +79,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
             LETBUYY_IDENTITY_PRIVATE_JWK:JSON.stringify({...await exportJWK(keys.privateKey),alg:'ES256',kid:keys.kid}),
             PLATFORM_CONSOLE_ALLOWED_EMAILS:actors.map(actor=>actor.email).join(','),
             PLATFORM_CONSOLE_TOTP_SECRETS:JSON.stringify(Object.fromEntries(actors.map(actor=>[actor.email,actor.factor]))),LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'};
-        const runtimeEnv={PLATFORM_CONSOLE_API_BASE_URL:apiOrigin,PLATFORM_CONSOLE_API_TOKEN:bridge,NEXT_PUBLIC_ACCOUNTS_URL:identityOrigin,
+        const runtimeEnv={PLATFORM_CONSOLE_API_BASE_URL:apiOrigin,PLATFORM_CONSOLE_API_TOKEN:bridge,
             PLATFORM_CONSOLE_ALLOWED_EMAILS:identityEnv.PLATFORM_CONSOLE_ALLOWED_EMAILS,LETBUYY_IDENTITY_URL:identityOrigin,
             LETBUYY_IDENTITY_ISSUER:IDENTITY_ISSUER,LETBUYY_IDENTITY_PUBLIC_JWKS:keys.jwks,LETBUYY_ENABLE_DEV_AUTH_BYPASS:'false'};
         async function startIdentity(){
@@ -179,7 +172,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
             await startIdentity();
             await warmRoutes();
         }
-        await run({ loseNextJobApprovalReply:()=>{loseJobApprovalReply=true;},loseNextJobExecutionReply:()=>{loseJobExecutionReply=true;},origin,identityOrigin,setIssuerAvailable,loseNextOperatorExchangeReply:()=>{loseOperatorExchangeReply=true;}, browser, actors, login, calls,rotateConfiguredFactor,loseNextMfaExecutionReply:()=>{loseMfaReply=true;}, loseNextApprovalReply: () => { loseApprovalReply = true; }, loseNextMoneyExecutionReply: () => { loseMoneyExecutionReply = true; } });
+        await run({ origin,identityOrigin,setIssuerAvailable,loseNextOperatorExchangeReply:()=>{loseOperatorExchangeReply=true;}, browser, actors, login, calls,rotateConfiguredFactor,loseNextMfaExecutionReply:()=>{loseMfaReply=true;}, loseNextApprovalReply: () => { loseApprovalReply = true; }, loseNextMoneyExecutionReply: () => { loseMoneyExecutionReply = true; } });
         assert.deepEqual(errors, [], 'normal protected-action UI has no uncaught page errors');
     } catch (error) {
         console.info('OWNED_CONSOLE_CONSENT_BROWSER_FAILURE ' + JSON.stringify({ calls: calls.slice(-18), diagnostics, errors, browserTrace: browserTrace.slice(-20),

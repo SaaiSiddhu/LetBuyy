@@ -34,22 +34,19 @@ export const ROOT_GATEWAY_DB_SUITE_DIR = 'tests/owned-db';
 // never silently admitted as pure tests or provider/runtime code.
 export const ROOT_GATEWAY_DB_SUITES = [
     "tests/owned-db/ad-credit-purchase.postgres.test.ts",
-    "tests/owned-db/console-current-oncall-browser.postgres.test.ts",
-    "tests/owned-db/console-oncall-schedules-browser.postgres.test.ts",
     "tests/owned-db/console-mfa-reset-delivery.postgres.test.ts",
     "tests/owned-db/console-mfa-reset.postgres.test.ts",
-    "tests/owned-db/console-runtime-command-history-browser.postgres.test.ts",
     "tests/owned-db/loyalty-earn-worker.postgres.test.ts",
     "tests/owned-db/loyalty-refund-scheduler.postgres.test.ts",
     "tests/owned-db/loyalty-reversal-recovery.postgres.test.ts",
     "tests/owned-db/merchant-dashboard-access.postgres.test.ts",
+    "tests/owned-db/merchant-entitlement-authority-browser.postgres.test.ts",
+    "tests/owned-db/merchant-free-subscription-browser.postgres.test.ts",
     "tests/owned-db/merchant-loyalty-browser.postgres.test.ts",
     "tests/owned-db/merchant-mobile-mfa-transport.postgres.test.ts",
     "tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts",
     "tests/owned-db/payment-refund-reconciliation.postgres.test.ts",
-    "tests/owned-db/payout-statement-replay.postgres.test.ts",
-    "tests/owned-db/platform-job-recovery-browser.postgres.test.ts",
-    "tests/owned-db/platform-job-recovery.postgres.test.ts"
+    "tests/owned-db/payout-statement-replay.postgres.test.ts"
 ];
 export const isGatewayDatabaseSuite = (suite) =>
     new RegExp(`^${GATEWAY_DB_SUITE_DIR}/[^/]+\\.test\\.ts$`).test(suite) || ROOT_GATEWAY_DB_SUITES.includes(suite);

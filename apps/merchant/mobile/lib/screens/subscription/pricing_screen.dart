@@ -162,6 +162,7 @@ class _PricingScreenState extends State<PricingScreen> {
         if (mounted) _showMessage('${plan.name} is activated.');
         return;
       }
+      SubscriptionTaxBreakdown.fromJson(checkout['tax'],grossMinor:checkout['amount']);
       final amount = checkout['amount'];
       if (amount is! int || amount <= 0 || checkout['currency'] != 'INR')
         throw const FormatException('Checkout pricing is unavailable.');
@@ -348,7 +349,7 @@ class _PricingScreenState extends State<PricingScreen> {
           ),
         const SizedBox(height: 8),
         Text(
-          'Review the selected billing period and checkout amount before paying. Billing shows recorded payments and invoices.',
+          'Review the selected billing period and checkout amount before paying. Prices include applicable taxes. Billing shows recorded payments and invoices.',
           style: TextStyle(color: colors.textSecondary, fontSize: 12),
         ),
       ],

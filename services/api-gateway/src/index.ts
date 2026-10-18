@@ -138,6 +138,8 @@ export interface Env {
     LETBUYY_COD_MODE?: 'sandbox' | 'live';
     LETBUYY_AUTOPAY_MODE?: 'sandbox' | 'live';
     LETBUYY_GST_IRP_MODE?: 'sandbox' | 'live';
+    /** Server-only approved subscription supplier profile; no default registration or tax facts. */
+    LETBUYY_SUBSCRIPTION_TAX_PROFILE?: string;
     RAZORPAY_ROUTE_MODE?: 'sandbox' | 'live';
     RAZORPAY_ROUTE_ACCOUNT_ID?: string;
     RAZORPAY_ROUTE_KEY_SECRET?: string;

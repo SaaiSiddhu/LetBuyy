@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type React
 import {
     ArrowLeft,
     Blocks,
+    Bot,
     CheckCircle2,
     ChevronDown,
     ChevronRight,
@@ -1301,7 +1302,7 @@ function ThemeEditorInner() {
                     enableShadows: true,
                 },
             }))
-            notify({ title: 'Smart defaults applied', description: 'Preset motion and depth settings were applied.', variant: 'success' })
+            notify({ title: 'AI hook applied', description: 'Theme motion and depth settings were tuned.', variant: 'success' })
             return
         }
 
@@ -1313,11 +1314,11 @@ function ThemeEditorInner() {
             const schema = sectionSchemas[section.type]
             const firstBlockType = Object.keys(schema?.blocks_schema || {})[0]
             if (!firstBlockType) {
-                notify({ title: 'No block defaults available', description: 'This section has no block schema.', variant: 'warning' })
+                notify({ title: 'No block hook available', description: 'This section has no block schema.', variant: 'warning' })
                 return
             }
             addBlock(section.id, firstBlockType)
-            notify({ title: 'Smart defaults applied', description: 'A default content block was inserted from the section schema.', variant: 'success' })
+            notify({ title: 'AI hook applied', description: 'A schema-valid content block was inserted.', variant: 'success' })
             return
         }
 
@@ -1337,7 +1338,7 @@ function ThemeEditorInner() {
             }
             return { ...targetSection, settings: nextSettings }
         }))
-        notify({ title: 'Smart defaults applied', description: 'Preset values were applied to the selected section.', variant: 'success' })
+        notify({ title: 'AI hook applied', description: 'The selected schema node was updated.', variant: 'success' })
     }, [addBlock, applyChange, editorState, notify, sectionSchemas, selection])
 
     if (isLoading) return <EditorLoading />
@@ -1730,26 +1731,23 @@ function PropertyPanel({
             </div>
 
             <div className="theme-os-properties__body">
-                <section className="theme-os-ai-card" aria-label="Smart defaults" aria-describedby="theme-smart-defaults-description">
+                <section className="theme-os-ai-card">
                     <div>
-                        <Settings size={16} aria-hidden="true" />
-                        <strong>Smart defaults</strong>
+                        <Bot size={16} aria-hidden="true" />
+                        <strong>AI hooks</strong>
                     </div>
-                    <Button unstyled type="button" aria-label="Apply copy defaults" onClick={() => onAiHook('copy')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('copy')}>
                         <WandSparkles size={14} aria-hidden="true" />
                         Copy
                     </Button>
-                    <Button unstyled type="button" aria-label="Apply layout defaults" onClick={() => onAiHook('layout')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('layout')}>
                         <Sparkles size={14} aria-hidden="true" />
                         Layout
                     </Button>
-                    <Button unstyled type="button" aria-label="Add a default block" onClick={() => onAiHook('blocks')}>
+                    <Button unstyled type="button" onClick={() => onAiHook('blocks')}>
                         <Plus size={14} aria-hidden="true" />
                         Block
                     </Button>
-                    <p id="theme-smart-defaults-description" className="theme-os-muted col-span-full">
-                        Apply fixed defaults to your theme settings or section.
-                    </p>
                 </section>
 
                 {selection.kind === 'theme' && selectedThemeGroup ? (

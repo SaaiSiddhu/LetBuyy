@@ -445,6 +445,8 @@ class _BillingScreenState extends State<BillingScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(color: colors.textSecondary, fontSize: 12),
                 ),
+                if(entry.taxBreakdown!=null)
+                  Text('Taxable amount: ${subscriptionMoney(entry.taxBreakdown!.base,decimals:true)}; tax is included in the total.',style:TextStyle(color:colors.textSecondary,fontSize:12)),
                 if (entry.taxAmount != null)
                   Text(
                     'Recorded tax: ${subscriptionMoney(entry.taxAmount!, decimals: true)}',

@@ -10,15 +10,30 @@ import {
     resolvePlanEntitlementSnapshot,
 } from '@letbuyy/billing-core';
 
+import { AppError } from '../lib/errors';
+
 type JsonObject = Record<string, unknown>;
 
+function isJsonObject(value: unknown): value is JsonObject {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
+
 export interface SiteEntitlementSnapshot {
+    authority: 'persisted' | 'unavailable';
     site_id: string;
     site_type: string;
     plan: string;
     features: string[];
     limits: JsonObject;
     entitlements: JsonObject;
+}
+
+// Reads retain an unavailable snapshot rather than losing access to existing
+// obligations. New creation must never convert that absence into a plan grant.
+export function assertResolvedCreationEntitlements(snapshot: SiteEntitlementSnapshot): void {
+    if (snapshot.authority !== 'persisted') {
+        throw new AppError('Plan permissions are temporarily unavailable. Try again shortly.', 503, 'ENTITLEMENT_AUTHORITY_UNAVAILABLE');
+    }
 }
 
 export interface UsageRecordInput {
@@ -70,24 +85,27 @@ export class SaasExecutionAdapter {
             p_site_id: siteId,
         });
 
-        if (error) {
-            if (isMissingSaasTableOrFunction(error)) {
-                return {
-                    site_id: siteId,
-                    site_type: 'store',
-                    plan: fallback.plan,
-                    features: fallback.features,
-                    limits: fallback.limits,
-                    entitlements: fallback.entitlements,
-                };
-            }
-
-            throw new Error(`Tenant entitlements resolution failed: ${error.message}`);
+        const raw = data as RawSiteEntitlements | null;
+        if (error || !raw || typeof raw.site_id !== 'string' || raw.site_id.toLowerCase() !== siteId.toLowerCase()
+            || !raw.plan || typeof raw.plan !== 'string'
+            || typeof raw.site_type !== 'string' || !Array.isArray(raw.features)
+            || !isJsonObject(raw.limits) || !isJsonObject(raw.entitlements)) {
+            // A missing/error/malformed RPC result is not the persisted free tier.
+            // Keep metadata available to read consumers, with no creation grant.
+            return {
+                authority: 'unavailable',
+                site_id: siteId,
+                site_type: 'store',
+                plan: fallback.plan,
+                features: [],
+                limits: {},
+                entitlements: {},
+            };
         }
 
-        const raw = (data || {}) as RawSiteEntitlements;
         const defaults = resolvePlanEntitlementSnapshot(raw.plan || fallbackPlan);
         return {
+            authority: 'persisted',
             site_id: raw.site_id || siteId,
             site_type: raw.site_type || 'store',
             plan: raw.plan || defaults.plan,

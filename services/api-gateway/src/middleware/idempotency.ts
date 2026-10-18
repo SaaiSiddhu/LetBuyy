@@ -3,6 +3,8 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
+import { resolveCustomUser } from '../lib/auth-user';
+import { assertStaffPermission } from './staff-permission';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 type GatewayContext = Context<{ Bindings: Env }>;
@@ -179,7 +181,12 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
     const routeOwnedOrderReceipt = (method === 'PATCH' && /^\/orders\/[^/]+$/.test(orderPath))
         || (method === 'POST' && /^\/(?:orders|returns)\/[^/]+\/refund\/complete$/.test(orderPath));
     const routeOwnedMoneyClaim = method === 'POST' && (/^\/payments\/[^/]+\/refund$/.test(orderPath) || /^\/payouts\/[^/]+\/settle$/.test(orderPath));
-    if (routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
+    // Subscription checkout owns a live-owner, actor/site/key/payload-bound
+    // durable source. Replaying an outer HTTP cache would bypass owner checks
+    // and split the free activation from its mandatory receipt completion.
+    const routeOwnedSubscriptionCheckout = method === 'POST'
+        && ['/payments/subscription/order', '/payments/subscription/recover', '/payments/subscription/verify'].includes(orderPath);
+    if (routeOwnedSubscriptionCheckout || routeOwnedMoneyClaim || credentialCommand || routeOwnedOrderReceipt || !MUTATION_METHODS.has(method) || !isProtectedMutationPath(c.req.path, method)) {
         await next();
         return;
     }
@@ -203,6 +210,19 @@ export const protectedMutationIdempotency = createMiddleware<{ Bindings: Env }>(
                 message: 'A store context is required for this mutation.',
             },
         }, 400);
+    }
+
+    // Product creation still owns its existing HTTP receipt and mandatory key.
+    // Recheck the route's current principal authority before returning that
+    // receipt, so a revoked owner/staff member cannot bypass the route guard.
+    if (method === 'POST' && orderPath === '/products') {
+        const auth = c.get('auth');
+        const customUser = auth?.user ? await resolveCustomUser(getSupabaseAdmin(c), auth.user) : null;
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+        const staffBlock = await assertStaffPermission(c, siteId, customUser.id, 'products:write');
+        if (staffBlock) return staffBlock;
     }
 
     const idempotency = new IdempotencyExecutionAdapter(getSupabaseAdmin(c));

@@ -2,55 +2,6 @@
 -- onboarding_attempts.survey_data.channels and survives later saves by this function.
 BEGIN;
 
--- Refuse unknown function families before retiring the six-input writer. The target
--- must be absent; a second rollback refuses rather than overwriting a five-input body.
--- Reject pre-existing write transactions before a fresh catalog read; the catalog
--- lock then holds new function DDL behind this atomic transition.
-LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;
-DO $rollback_precondition$
-DECLARE v_expected record;v_source pg_catalog.pg_proc%ROWTYPE;
-BEGIN
- IF pg_catalog.current_setting('transaction_isolation')<>'read committed'
-  OR EXISTS(SELECT 1 FROM pg_catalog.pg_locks l WHERE l.locktype='transactionid' AND l.mode='ExclusiveLock' AND l.granted AND (l.pid IS NULL OR l.pid<>pg_catalog.pg_backend_pid()))
-  OR EXISTS(SELECT 1 FROM pg_catalog.pg_prepared_xacts) THEN
-  RAISE EXCEPTION 'rollback284 refuses concurrent/prepared writes or non-read-committed state';
- END IF;
- FOR v_expected IN SELECT * FROM(VALUES
- ('public.save_storefront_web_onboarding_draft(uuid,integer,text,text,text,text[])',ARRAY['p_user_id','p_step','p_store_name','p_subdomain','p_industry','p_channels']::text[],
-  'public.save_storefront_web_onboarding_draft(uuid,integer,text,text,text)',ARRAY['p_user_id','p_step','p_store_name','p_subdomain','p_industry']::text[],'jsonb','5852cfb891f54b3f3ee04d05389c9ed9'))
- expected(source_signature,source_input_names,target_signature,target_input_names,result_type,source_md5) LOOP
-  SELECT * INTO v_source FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure(v_expected.source_signature);
-  IF v_source.oid IS NULL
-   OR v_source.pronamespace IS DISTINCT FROM 'public'::regnamespace
-   OR v_source.proargnames[1:v_source.pronargs] IS DISTINCT FROM v_expected.source_input_names
-   OR v_source.prorettype IS DISTINCT FROM pg_catalog.to_regtype(v_expected.result_type)
-   OR v_source.proretset
-   OR v_source.prokind<>'f'
-   OR v_source.pronargdefaults<>0
-   OR (SELECT count(*) FROM pg_catalog.pg_proc q WHERE q.pronamespace=v_source.pronamespace AND q.proname=v_source.proname)<>1
-   OR pg_catalog.to_regprocedure(v_expected.target_signature) IS NOT NULL
-   OR v_source.proowner IS DISTINCT FROM pg_catalog.to_regrole(current_user)
-   OR v_source.prolang IS DISTINCT FROM (SELECT oid FROM pg_catalog.pg_language WHERE lanname='plpgsql')
-   OR NOT v_source.prosecdef
-   OR v_source.provolatile<>'v'
-   OR v_source.proisstrict
-   OR v_source.proleakproof
-   OR v_source.proparallel<>'u'
-   OR v_source.proconfig IS DISTINCT FROM ARRAY['search_path=pg_catalog, public, pg_temp']::text[]
-   OR pg_catalog.md5(v_source.prosrc) IS DISTINCT FROM v_expected.source_md5
-   OR pg_catalog.has_function_privilege('anon',v_source.oid,'EXECUTE')
-   OR pg_catalog.has_function_privilege('authenticated',v_source.oid,'EXECUTE')
-   OR pg_catalog.has_function_privilege('app_tenant',v_source.oid,'EXECUTE')
-   OR NOT pg_catalog.has_function_privilege('service_role',v_source.oid,'EXECUTE')
-   OR pg_catalog.has_function_privilege('service_role',v_source.oid,'EXECUTE WITH GRANT OPTION')
-   OR (SELECT count(*) FROM pg_catalog.aclexplode(coalesce(v_source.proacl,pg_catalog.acldefault('f',v_source.proowner))))<>2
-   OR EXISTS(SELECT 1 FROM pg_catalog.aclexplode(coalesce(v_source.proacl,pg_catalog.acldefault('f',v_source.proowner))) a WHERE NOT (a.grantor=v_source.proowner AND a.privilege_type='EXECUTE' AND ((a.grantee=v_source.proowner AND a.is_grantable IS NOT DISTINCT FROM (SELECT b.is_grantable FROM pg_catalog.aclexplode(pg_catalog.acldefault('f',v_source.proowner)) b WHERE b.grantee=v_source.proowner)) OR (a.grantee='service_role'::regrole::oid AND NOT a.is_grantable)))) THEN
-   RAISE EXCEPTION 'rollback284 refuses unknown draft writer family, ABI, body, owner or privileges; use a reviewed forward repair';
-  END IF;
- END LOOP;
-END $rollback_precondition$;
-
-
 DROP FUNCTION IF EXISTS public.save_storefront_web_onboarding_draft(uuid, integer, text, text, text, text[]);
 
 CREATE OR REPLACE FUNCTION public.save_storefront_web_onboarding_draft(

@@ -149,8 +149,8 @@ export function requireOwnedDatabase(): OwnedDatabase {
 }
 
 export type OwnedClientProcess = ChildProcessByStdio<Writable, Readable, Readable>;
-type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe';
-const CLIENT_KINDS = new Set<ClientKind>(['commerce-next','identity-next','merchant-next','console-next','commerce-next-production','identity-next-production','merchant-next-production','commerce-session-smoke','marketplace-flutter','buyer-orders-dart','lifecycle-probe']);
+type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe' | 'subscription-restart';
+const CLIENT_KINDS = new Set<ClientKind>(['commerce-next','identity-next','merchant-next','console-next','commerce-next-production','identity-next-production','merchant-next-production','commerce-session-smoke','marketplace-flutter','buyer-orders-dart','lifecycle-probe','subscription-restart']);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
 const clients = new Map<OwnedClientProcess, { closed:Promise<void>; clientPid?:number }>();
 

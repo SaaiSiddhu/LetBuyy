@@ -15,7 +15,7 @@ export const fixtureConsoleFactorFingerprint=(actorId:string)=>createHash('sha25
 
 export async function nextFixtureConsoleMfaCounter(owned:OwnedDatabase,actorId:string):Promise<number> {
     const last=Number(owned.psql(`SELECT coalesce((metadata->'console_mfa_guard'->>'last_counter')::bigint,-1) FROM principals WHERE realm='admin' AND legacy_user_id='${actorId}' AND deleted_at IS NULL;`)||-1);
-    const next=Math.max(Math.floor(Date.now()/30000),last+1);
+    const next=Math.max(Math.floor(Date.now()/30000)-1,last+1);
     const wait=Math.max(0,(next-1)*30000-Date.now()+20);
     if(wait>0)await new Promise(resolve=>setTimeout(resolve,wait));
     return next;
