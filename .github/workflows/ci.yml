@@ -104,8 +104,6 @@ jobs:
   unit-tests:
     name: Unit tests
     runs-on: ubuntu-latest
-    env:
-      LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
     steps:
       - uses: actions/checkout@v4
         with:
@@ -143,6 +141,7 @@ jobs:
         run: pnpm run test:behavioral
         env:
           CI: "true"
+          LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
 
       - name: Private R2 native runtime proof
         run: node --test tests/runtime/reel-private-r2.workerd.test.mjs
@@ -160,6 +159,7 @@ jobs:
         run: pnpm turbo test --concurrency=2
         env:
           CI: "true"
+          LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
 
       - name: Preserve owned acceptance diagnostics
         if: always()
@@ -173,8 +173,6 @@ jobs:
   merge-safety-gate:
     name: Merge safety gate
     runs-on: ubuntu-latest
-    env:
-      LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
     steps:
       - uses: actions/checkout@v4
         with:
@@ -220,6 +218,7 @@ jobs:
         run: pnpm run test:behavioral
         env:
           CI: "true"
+          LETBUYY_EXECUTABLE_REPORT_DIR: ${{ runner.temp }}/letbuyy-owned
 
       - name: Private R2 native runtime proof
         run: node --test tests/runtime/reel-private-r2.workerd.test.mjs
