@@ -24,8 +24,10 @@ import { execFileSync, spawn, type ChildProcessByStdio } from 'node:child_proces
 import type { Readable, Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import {createServer,type Socket} from 'node:net';
-import {readFileSync,readdirSync} from 'node:fs';
+import {chmodSync,mkdtempSync,readFileSync,readdirSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
+import {tmpdir} from 'node:os';
+import {createHash,X509Certificate} from 'node:crypto';
 import {SUPABASE_FAITHFUL_BOOTSTRAP_SQL} from '../../../../../scripts/governance/supabase-faithful-bootstrap.mjs';
 
 const GUARD = fileURLToPath(new URL('../../../../../scripts/governance/owned-fixture-guard.mjs', import.meta.url));
@@ -178,6 +180,41 @@ export function requireOwnedDatabase(): OwnedDatabase {
 }
 
 export type OwnedClientProcess = ChildProcessByStdio<Writable, Readable, Readable>;
+
+/** One temporary checkout.localhost certificate, only for a freshly verified owned fixture.
+ * No caller-selected command, name, path or certificate-trust override is accepted.
+ * Return its bytes and exact Chromium SPKI pin; remove the temporary key files before returning.
+ */
+export function createOwnedCheckoutTlsCertificate(owned:OwnedDatabase):{key:Buffer;cert:Buffer;spki:string} {
+    if(owned!==requireOwnedDatabase()||!clientFixtureEnv)throw new Error('owned checkout TLS requires the verified database handle');
+    const toolEnv:Record<string,string>={};
+    for(const name of ['PATH','HOME','TMPDIR','TMP','TEMP','LANG','LC_ALL'])if(process.env[name])toolEnv[name]=process.env[name]!;
+    const verified=JSON.parse(execFileSync(process.execPath,[GUARD,'--verify'],{
+        env:{...toolEnv,...clientFixtureEnv},encoding:'utf8',timeout:30_000,stdio:['ignore','pipe','pipe'],
+    })) as VerifiedFixture;
+    if(verified.pgContainer!==owned.container||verified.database!==owned.database||verified.runId!==owned.runId) {
+        throw new Error('owned checkout TLS refuses a changed fixture binding');
+    }
+    const directory=mkdtempSync(join(tmpdir(),'letbuyy-owned-checkout-tls-'));
+    try {
+        chmodSync(directory,0o700);
+        const keyPath=join(directory,'key.pem'),certPath=join(directory,'cert.pem');
+        execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+            '-keyout',keyPath,'-out',certPath,'-subj','/CN=checkout.localhost',
+            '-addext','subjectAltName=DNS:checkout.localhost'],{
+            env:{...toolEnv,RANDFILE:join(directory,'random-state')},timeout:15_000,stdio:['ignore','pipe','pipe'],
+        });
+        chmodSync(keyPath,0o600);
+        const key=readFileSync(keyPath),cert=readFileSync(certPath);
+        const certificate=new X509Certificate(cert);
+        if(certificate.checkHost('checkout.localhost')!=='checkout.localhost')throw new Error('owned checkout TLS certificate name mismatch');
+        const publicDer=certificate.publicKey.export({type:'spki',format:'der'});
+        return Object.freeze({key,cert,spki:createHash('sha256').update(publicDer).digest('base64')});
+    } finally {
+        rmSync(directory,{recursive:true,force:true});
+    }
+}
+
 type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe' | 'money-ledger-scheduled-probe' | 'subscription-restart';
 const CLIENT_KINDS = new Set<ClientKind>(["commerce-next", "identity-next", "merchant-next", "console-next", "commerce-next-production", "identity-next-production", "merchant-next-production", "commerce-session-smoke", "marketplace-flutter", "buyer-orders-dart", "lifecycle-probe", "money-ledger-scheduled-probe", "subscription-restart"]);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
