@@ -98,6 +98,13 @@ Three valid red controls reproduced premature/wrong-path navigation; all four
 new controls pass with existing wishlist controls. Complete Commerce tests
 pass1249/1249 and its typecheck passes. The real owned browser handoff remains
 the required integration proof, including exactly one cart and zero orders.
+The positive fixture's public stock matches its canonical 25 inventory units;
+the original zero-stock fixture correctly kept Buy now disabled. Its built
+production Commerce app uses an owned loopback HTTPS checkout proxy and a
+one-day temporary certificate. Chromium trusts only that certificate's SPKI;
+the existing production HTTPS/host guard stays enforced, and the test requires
+a 200 HTTPS checkout document as well as the signed handoff. The certificate,
+key, proxy and owned runtimes are removed by fixture cleanup.
 
 ## Continuation prerequisites
 

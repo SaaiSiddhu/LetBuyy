@@ -7,8 +7,12 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { before, after, test } from 'node:test';
-import { readFileSync } from 'node:fs';
-import { createServer, type Server } from 'node:http';
+import { chmodSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { createServer, request as forwardHttpRequest, type Server } from 'node:http';
+import { createServer as createHttpsServer, type Server as HttpsServer } from 'node:https';
 import { exportJWK } from 'jose';
 import { chromium, expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { hashMerchantPassword } from '../../services/api-gateway/src/lib/merchant-password';
@@ -21,6 +25,7 @@ const slug = 'urban-kicks'; // Existing ratified Liquid canary; never flip a fla
 const password = 'Synthetic-published-storefront-pass-42';
 let identityOrigin: string, merchantOrigin: string, commerceOrigin: string;
 let bridge: Server | undefined, browser: Browser | undefined;
+let checkoutTls: HttpsServer | undefined, checkoutTlsDirectory: string | undefined, checkoutTlsPort: number;
 const clients: OwnedClientProcess[] = [];
 const contexts: BrowserContext[] = [];
 
@@ -62,8 +67,35 @@ before(async () => {
     identityOrigin = `http://localhost:${identityPort}`;
     merchantOrigin = `http://localhost:${merchantPort}`;
     commerceOrigin = `http://localhost:${commercePort}`;
+    // A real loopback TLS endpoint satisfies the unchanged production checkout
+    // HTTPS guard. Chromium trusts only this fixture's temporary public key.
+    checkoutTlsDirectory = mkdtempSync(join(tmpdir(), 'letbuyy-owned-checkout-tls-'));
+    const keyPath = join(checkoutTlsDirectory, 'key.pem'), certPath = join(checkoutTlsDirectory, 'cert.pem');
+    execFileSync('openssl', ['req','-x509','-newkey','rsa:2048','-nodes','-days','1',
+        '-keyout',keyPath,'-out',certPath,'-subj','/CN=checkout.localhost',
+        '-addext','subjectAltName=DNS:checkout.localhost'], { stdio: 'ignore' });
+    chmodSync(keyPath, 0o600);
+    const publicKey = execFileSync('openssl', ['x509','-in',certPath,'-pubkey','-noout']);
+    const publicDer = execFileSync('openssl', ['pkey','-pubin','-outform','der'], { input: publicKey });
+    const checkoutSpki = createHash('sha256').update(publicDer).digest('base64');
+    checkoutTls = createHttpsServer({ key: readFileSync(keyPath), cert: readFileSync(certPath) }, (req, res) => {
+        const checkoutHost = `checkout.localhost:${checkoutTlsPort}`;
+        if (req.headers.host !== checkoutHost) { res.writeHead(421); res.end(); return; }
+        const upstream = forwardHttpRequest({ hostname: '127.0.0.1', port: commercePort, path: req.url, method: req.method,
+            headers: { ...req.headers, host: checkoutHost, 'x-forwarded-host': checkoutHost, 'x-forwarded-proto': 'https' } }, response => {
+            response.on('error', () => res.destroy());
+            res.writeHead(response.statusCode || 502, response.headers); response.pipe(res);
+        });
+        upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end(); });
+        upstream.setTimeout(10_000, () => upstream.destroy(new Error('Owned checkout upstream timed out')));
+        req.on('aborted', () => upstream.destroy());
+        res.on('close', () => upstream.destroy());
+        req.pipe(upstream);
+    });
+    await new Promise<void>(resolve => checkoutTls!.listen(0, '127.0.0.1', resolve));
+    checkoutTlsPort = (checkoutTls.address() as { port: number }).port;
     const gateway = new Gateway(gatewayEnv(owned, keys, { ENVIRONMENT: 'local',
-        LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `http://checkout.localhost:${commercePort}`,
+        LETBUYY_IDENTITY_ISSUER: identityOrigin, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost', CHECKOUT_ORIGIN: `https://checkout.localhost:${checkoutTlsPort}`,
         CHECKOUT_SIGNING_SECRET: crypto.randomUUID() + crypto.randomUUID() }));
     bridge = createServer(async (req, res) => {
         try {
@@ -101,7 +133,7 @@ before(async () => {
     clients.push(startOwnedClientRuntime(owned, 'commerce-next-production', { port: commercePort, env: { ...common,
         LETBUYY_API_BASE_URL: apiOrigin + '/v1', LETBUYY_API_URL: apiOrigin + '/v1',
         NEXT_PUBLIC_API_BASE_URL: apiOrigin + '/v1', NEXT_PUBLIC_API_URL: apiOrigin + '/v1',
-        CHECKOUT_ORIGIN: `http://checkout.localhost:${commercePort}`, NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost' } }));
+        NEXT_PUBLIC_STORE_ROOT_DOMAIN: 'localhost' } }));
     // Drain child output without exposing cookies, signing material or private URLs.
     for (const [index, child] of clients.entries()) {
         for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => {
@@ -112,14 +144,23 @@ before(async () => {
         });
         child.stdout.resume(); child.stderr.resume();
     }
-    await Promise.all([ready(identityOrigin + '/login', clients[0]), ready(merchantOrigin, clients[1]), ready(commerceOrigin, clients[2])]);
-    browser = await chromium.launch({ headless: true, args: ['--host-resolver-rules=MAP *.localhost 127.0.0.1'] });
+    // The unseeded platform directory can correctly report unavailable before
+    // this suite creates any store. Probe the real anonymous session endpoint;
+    // each public store document is still required to return 200 below.
+    await Promise.all([ready(identityOrigin + '/login', clients[0]), ready(merchantOrigin, clients[1]),
+        ready(commerceOrigin + '/api/buyer-auth/session', clients[2])]);
+    browser = await chromium.launch({ headless: true, args: ['--host-resolver-rules=MAP *.localhost 127.0.0.1',
+        `--ignore-certificate-errors-spki-list=${checkoutSpki}`] });
 }, { timeout: 400_000 });
 after(async () => {
     await Promise.allSettled(contexts.map(context => context.close()));
     await browser?.close();
+    if (checkoutTls?.listening) await new Promise<void>(resolve => {
+        checkoutTls!.close(() => resolve()); checkoutTls!.closeAllConnections();
+    });
     await Promise.allSettled(clients.map(child => stopOwnedClientRuntime(child)));
     if (bridge?.listening) await new Promise<void>(resolve => bridge!.close(() => resolve()));
+    if (checkoutTlsDirectory) rmSync(checkoutTlsDirectory, { recursive: true, force: true });
 });
 
 async function fixture(tag: string) {
@@ -133,10 +174,13 @@ async function fixture(tag: string) {
         UPDATE sites SET custom_user_id='${owner}',theme_id='${slug}' WHERE id='${tenant.siteId}';
         INSERT INTO employees(store_id,user_id,email,role,status,is_active,permissions,created_by)
         VALUES('${tenant.siteId}','${staff}','${staffEmail}','editor','active',true,'{"granted":["content:write"]}','${owner}');
-        INSERT INTO products(id,store_id,name,price,sku,is_active,created_at,updated_at)
-        VALUES('${product}','${tenant.siteId}','Synthetic published Liquid product',199,'SYN-PUBLISHED-${product}',true,now(),now());
+        INSERT INTO products(id,site_id,store_id,name,price,stock,sku,is_active,status,created_at,updated_at)
+        VALUES('${product}','${tenant.siteId}','${tenant.siteId}','Synthetic published Liquid product',199,25,'SYN-PUBLISHED-${product}',true,'active',now(),now());
         INSERT INTO inventory_levels(id,store_id,product_id,variant_id,location_id,available,reserved,committed_quantity,available_quantity,reserved_quantity,on_hand_quantity,created_at,updated_at)
         VALUES(gen_random_uuid(),'${tenant.siteId}','${product}',NULL,'${tenant.locationId}',25,0,0,25,0,25,now(),now());`);
+    assert.equal(owned.psql(`SELECT p.stock::text||'|'||(SELECT sum(i.available_quantity)::text FROM inventory_levels i
+        WHERE i.store_id=p.store_id AND i.product_id=p.id) FROM products p WHERE p.id='${product}';`),'25|25',
+        'the positive purchase fixture has matching public availability and canonical inventory');
     const context = await browser!.newContext({ viewport: { width: 1440, height: 1000 } }); contexts.push(context);
     context.setDefaultNavigationTimeout(90_000);
     const page = await context.newPage(); page.setDefaultTimeout(30_000); page.setDefaultNavigationTimeout(90_000);
@@ -246,6 +290,13 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     buyer.on('framenavigated', frame => {
         if (!frame.parentFrame()) console.info('N4_PUBLIC_NAVIGATION', JSON.stringify({ path: new URL(frame.url()).pathname }));
     });
+    buyer.on('response', response => {
+        const path = new URL(response.url()).pathname;
+        if (path.startsWith('/api/storefront/') || path === '/api/checkout-handoff') {
+            console.info('N4_PUBLIC_CART_RESPONSE', JSON.stringify({ path: path.replace(/(\/cart\/)[^/]+/, '$1[redacted]'), status: response.status() }));
+        }
+    });
+    buyer.on('pageerror', error => console.info('N4_PUBLIC_CLIENT_ERROR', JSON.stringify(previewDiagnostic(error.message))));
     const initial = await buyer.goto(f.publicUrl); assert.equal(initial?.status(), 200);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     await buyer.waitForLoadState('networkidle');
@@ -277,11 +328,27 @@ test('normal Merchant publication renders the saved Liquid heading on the real p
     assert.equal(new URL(buyer.url()).pathname, `/product/${f.product}`);
     await expect(buyer.locator('[data-theme-renderer="liquid"][data-editor-mode="false"]')).toBeVisible();
     await buyer.waitForFunction(() => Boolean(customElements.get('lb-add-to-cart')));
-    const [handoff] = await Promise.all([buyer.waitForResponse(r => new URL(r.url()).pathname === '/api/checkout-handoff' && r.request().method() === 'POST'),
-        buyer.getByRole('button', { name: 'Buy now', exact: true }).click()]);
+    const buyNow = buyer.getByRole('button', { name: 'Buy now', exact: true });
+    console.info('N4_PUBLIC_PURCHASE_STATE', JSON.stringify(await buyNow.evaluate(button => {
+        const island = button.closest<HTMLElement>('lb-add-to-cart');
+        return { disabled: (button as HTMLButtonElement).disabled, buyNowMarker: button.hasAttribute('data-lb-buy-now'),
+            islandPresent: Boolean(island), productPresent: Boolean(island?.dataset.productId),
+            quantity: island?.querySelector<HTMLInputElement>('[name="quantity"]')?.value,
+            status: island?.querySelector('[data-lb-add-to-cart-status]')?.textContent };
+    })));
+    await buyNow.click({ trial: true });
+    const [handoff, checkoutDocument] = await Promise.all([buyer.waitForResponse(r => new URL(r.url()).pathname === '/api/checkout-handoff' && r.request().method() === 'POST'),
+        buyer.waitForResponse(response => {
+            const url = new URL(response.url());
+            return url.protocol === 'https:' && url.hostname === 'checkout.localhost' && url.port === String(checkoutTlsPort)
+                && url.pathname === '/checkout' && response.request().isNavigationRequest();
+        }, { timeout: 90_000 }),
+        buyNow.click()]);
     assert.equal(handoff.status(), 200, 'real product action creates a canonical server cart and checkout handoff');
+    assert.equal(checkoutDocument.status(), 200, 'the scoped local TLS certificate reaches the real hosted checkout document');
     await buyer.waitForURL(url => url.hostname === 'checkout.localhost' && url.pathname === '/checkout', { waitUntil: 'domcontentloaded' });
-    assert.equal(new URL(buyer.url()).port, new URL(commerceOrigin).port);
+    assert.equal(new URL(buyer.url()).protocol, 'https:');
+    assert.equal(new URL(buyer.url()).port, String(checkoutTlsPort));
     assert.equal(owned.psql(`SELECT count(*) FROM carts WHERE store_id='${f.tenant.siteId}';`), '1');
     assert.equal(owned.psql(`SELECT count(*) FROM orders WHERE store_id='${f.tenant.siteId}';`), '0', 'handoff proof stops before any order or payment');
 });
