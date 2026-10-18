@@ -120,8 +120,9 @@ Five governance validators remain red:
 Runtime limits: public aggregate directory listing remains intentionally
 unavailable under the existing tenant guard; exact store lookup works.
 The copied marketplace has no currently eligible listings after the approval
-migrations, so a successful feed can be empty. Runtime telemetry inserts report
-a local table-permission error; core health/read requests still complete.
+migrations, so a successful feed can be empty. Initial runtime telemetry inserts
+reported a local table-permission error; the backend-grant repair below
+supersedes that observation for the two named logging tables.
 No Android device or emulator was attached, and no native APK was built or
 installed. External providers, real payments and hosted delivery were not
 verified or activated.
@@ -134,3 +135,62 @@ configuration and must not be published wholesale.
 Next action for this request: use the running local storefront/merchant app.
 Remaining phase engineering belongs to the paused programme's existing goals
 and requires an explicit continuation; this merge does not close those goals.
+
+## Merchant store-list repair — 18 October 2026
+
+Requested outcome: fix the repeated `STORE_LIST_UNAVAILABLE` error at merchant
+entry. Working checkout: primary `LetBuyy`, branch `develop`, source HEAD
+`a23958feee14ef70ce3ffb4018809feec30d5beb`, with the repair as an uncommitted
+working-tree change. Single agent; unrelated Swift packages remain untouched.
+
+The development database log at 18:57 IST records `permission denied for table
+employees` inside `list_merchant_accessible_sites_v1`. That private invoker
+function checks active staff membership while listing an owner's stores too.
+The gateway correctly sanitized the error as HTTP503, and the merchant server
+render exhausted its retries. The same logs showed missing insert privileges
+for `runtime_telemetry_metrics` and `worker_request_logs`. React DevTools and HMR
+messages were ordinary development notices.
+
+The live read recovered during diagnosis, before this migration was applied;
+current effective access depended on inherited `app_tenant` privileges.
+Migration364 makes the three required privileges direct and explicit:
+`SELECT` on `employees`, and `INSERT` on the two named logging tables, for the
+existing backend `service_role` only. It journals only newly introduced direct
+grants in the existing private privilege journal. Reapply is idempotent;
+rollback preserves prior grants. It changes no role membership, client grant,
+RLS policy, staff authorization, money fence or store row.
+
+Migration364 was applied transactionally, including its migration-ledger entry,
+to `letbuyy_develop_20261018` in `letbuyy-develop-20261018-db`. The original
+restored database and other projects were not modified. The local copy now
+records maximum migration364.
+
+The merchant error screen now requests a new document on **Try again**, so
+session/store reads execute again after recovery. The redundant application
+`console.error` effect was removed; framework/server error reporting remains.
+The package test command now supplies the existing TypeScript loader to its
+second test stage, fixing the observed theme-document module-resolution failure.
+
+Fresh verification:
+
+| Command / boundary | Result |
+| --- | --- |
+| `pnpm --filter @letbuyy/merchant-web run typecheck` | PASS, exit0 |
+| `pnpm --filter @letbuyy/api-gateway run typecheck` | PASS, exit0 |
+| `pnpm --filter @letbuyy/merchant-web run test` | PASS, exit0; stages78/78 and788/788; no failures/skips/TODOs |
+| Owned runner, `merchant-store-discovery-grants.postgres.test.ts` and `merchant-staff-lifecycle.postgres.test.ts`, `--jobs 1 --no-reap` | PASS, exit0;21/21; no failures/cancels/skips/TODOs; owned resources cleaned |
+| New database regression controls | Removing employee read and inherited tenant access reproduces503; applying364 returns only the actor's store; rollback restores exact prior ACL and503; preexisting direct grants survive rollback; unrelated public table grants and RLS flags stay unchanged |
+| Tenant-isolation, package-ownership and dependency-manifest validators | PASS, exit0 |
+| `git diff --check` | PASS, exit0 |
+| Live gateway with existing local identities | HTTP200 for store lists; account data/credentials not copied to evidence |
+| Existing signed-in Chrome session | Store picker and Snaz dashboard render; zero captured errors on the verified tab after recovery |
+
+The migration-safety validator still exits1 on the same three previously
+recorded `TRUNCATE`-token findings in313,319 and357. It reports no364 finding.
+This repair does not claim a clean full governance gate or close the paused
+programme. No push or hosted deployment occurred.
+
+Sanitized test output, owned-run receipt and browser screenshot are under
+workspace `Verification/LetBuyy-Admin-Repair-2026-10-18/`, including
+`final-owned-result.json`, `merchant-tests-final.log` and `admin-dashboard.png`.
+Next action for this bug: continue using the running local merchant dashboard.
