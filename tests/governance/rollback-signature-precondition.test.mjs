@@ -576,3 +576,82 @@ test('supplemental profile blocks cannot hide expressions, mutation, initializer
     ])changeProfile(from,to);
     rejectProfile(profileSql.replace('BEGIN;',''),'missing transaction');rejectProfile(profileSql.replace('COMMIT;',''),'missing commit');
 });
+
+import {createHash as retirementBodyHash} from 'node:crypto';
+const retirementGrammarFixture=()=>read('346_product_atomic_edits.rollback.sql');
+function retirementProfileChange(sql,change,{refreshBodies=false}={}) {
+    const match=sql.match(/\$known346\$([\s\S]*?)\$known346\$::jsonb/);assert.ok(match);
+    const profile=JSON.parse(match[1]);change(profile);
+    if(refreshBodies)for(const fn of Object.values(profile.functions))fn.body_md5=retirementBodyHash('md5').update(fn.prosrc).digest('hex');
+    return sql.replace(match[0],()=>'$known346$'+JSON.stringify(profile)+'$known346$::jsonb');
+}
+function retirementRename(sql) {
+    const names={apply_product_edit_v1:'synthetic_apply',read_product_for_edit_v1:'synthetic_read',assert_product_edit_actor_v1:'synthetic_actor',product_edit_snapshot_v1:'synthetic_snapshot',bump_product_edit_revision_v1:'synthetic_bump',guard_product_edit_receipt_v1:'synthetic_immutable',product_edit_receipts:'synthetic_journal',product_options:'synthetic_alpha',product_variants:'synthetic_beta'};
+    for(const column of ['operation','expected_version','mutation','response'])names['product_edit_receipts_'+column+'_check']='synthetic_journal_'+column+'_check';
+    names.product_edit_receipts_pkey='synthetic_journal_pkey';names.product_edit_receipts_product_idx='synthetic_journal_product_idx';names.product_edit_receipts_immutable='synthetic_journal_immutable';names.product_options_edit_revision='synthetic_alpha_edit_revision';names.product_variants_edit_revision='synthetic_beta_edit_revision';
+    for(const [from,to] of Object.entries(names).sort((a,b)=>b[0].length-a[0].length))sql=sql.replace(new RegExp('(?<![a-z0-9_])'+from+'(?![a-z0-9_])','g'),to);
+    return retirementProfileChange(sql,()=>{},{refreshBodies:true});
+}
+test('finite literal receipt grammar binds full guard without file/function names, labels, whitespace or input-name dependence',(t)=>{
+    const source=retirementGrammarFixture();
+    const renamedArgs=retirementProfileChange(source.replaceAll('p_store_id','p_scope_id'),()=>{},{refreshBodies:true});
+    const variants=[source,'-- Arbitrary source comment\n'+source,source.replaceAll('$rollback_','$other_').replaceAll('$known346$','$literal_data$'),source.replaceAll('LOCK TABLE','lock  table'),renamedArgs,retirementRename(source)];
+    const primary=source.match(/DO \$rollback_precondition\$[\s\S]*?END \$rollback_precondition\$;/)[0];
+    const typedOnly=rollbackSignatureGuards('BEGIN; LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE; '+primary+' DROP FUNCTION public.read_product_for_edit_v1(uuid,uuid,uuid); COMMIT;');
+    assert.equal(typedOnly.length,6);assert.ok(typedOnly.every(g=>!g.catalog_retention_profile),'typed6 alone must never claim the full retirement certificate');
+    for(const [variant,sql] of variants.entries()) {
+        const guards=rollbackSignatureGuards(sql);assert.equal(guards.length,6,'positive variant '+variant);assert.ok(guards.every(g=>g.quiescence_guard&&g.body_fingerprint&&g.catalog_retention_profile?.retained_rows_refused&&g.catalog_retention_profile?.foreign_dependencies_refused));
+    }
+    t.diagnostic(JSON.stringify({accepted_variants:6,typed_only_is_not_full_certificate:true}));
+});
+test('finite literal receipt grammar refuses primary, prefix, metadata, lock, effect and dependency weakening',(t)=>{
+    const source=retirementGrammarFixture();
+    const mutateProfile=change=>sql=>retirementProfileChange(sql,change);
+    const cases=[
+        ["function ACL boundary",sql=>sql.replace("pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)) END)","pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)))>=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner)) END)")],
+        ["receipt ACL boundary",sql=>sql.replace("pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END))=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END) END)","pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END))>=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END) END)")],
+        ["index ACL boundary",sql=>{const needle="pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END))=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END) END)",at=sql.lastIndexOf(needle);assert.ok(at>=0);return sql.slice(0,at)+sql.slice(at).replace(needle,"pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END))>=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(r.relacl,CASE WHEN r.relkind='r' THEN pg_catalog.acldefault('r',r.relowner) ELSE '{}'::pg_catalog.aclitem[] END) END)");}],
+        ["column ACL boundary",sql=>sql.replace("pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(t.attacl,'{}'::pg_catalog.aclitem[]))=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(t.attacl,'{}'::pg_catalog.aclitem[]) END)","pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(t.attacl,'{}'::pg_catalog.aclitem[]))>=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(t.attacl,'{}'::pg_catalog.aclitem[]) END)")],
+        ['column empty ACL bypasses safe input',sql=>sql.replace("pg_catalog.aclexplode(CASE WHEN pg_catalog.cardinality(coalesce(t.attacl,'{}'::pg_catalog.aclitem[]))=0 THEN NULL::pg_catalog.aclitem[] ELSE coalesce(t.attacl,'{}'::pg_catalog.aclitem[]) END)","pg_catalog.aclexplode(coalesce(t.attacl,'{}'::pg_catalog.aclitem[]))")],
+        ['ACL cardinality callee shadow',sql=>sql.replace('pg_catalog.cardinality(','public.cardinality(')],
+        ['function ACL default binding',sql=>sql.replace("pg_catalog.acldefault('f',p.proowner)","pg_catalog.acldefault('r',p.proowner)")],
+        ['missing profile membership SELECT close',sql=>sql.replace("WHERE rolname IN(current_user,'app_tenant','anon','authenticated','service_role')))\n)","WHERE rolname IN(current_user,'app_tenant','anon','authenticated','service_role'))\n)")],
+        ['extra profile membership SELECT close',sql=>sql.replace("WHERE rolname IN(current_user,'app_tenant','anon','authenticated','service_role')))\n)","WHERE rolname IN(current_user,'app_tenant','anon','authenticated','service_role'))))\n)")],
+        ['missing primary',sql=>sql.replace(/DO \$rollback_precondition\$[\s\S]*?END \$rollback_precondition\$;/,'')],
+        ['family count weakened',sql=>sql.replace('v_count<>v_expected.overloads','false')],
+        ['return ABI weakened',sql=>sql.replace('v_live.prorettype IS DISTINCT FROM v_expected.result_type::regtype','false')],
+        ['primary hidden public effect',sql=>sql.replace('BEGIN\n IF pg_catalog.current_setting',"BEGIN\n IF EXISTS(SELECT 1 FROM public.synthetic_view) THEN RAISE EXCEPTION 'deny'; END IF;\n IF pg_catalog.current_setting")],
+        ['catalog serialization missing',sql=>sql.replace('LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE;','')],
+        ['unsafe session path',sql=>sql.replace('SET LOCAL search_path=pg_catalog,public,pg_temp','SET LOCAL search_path=public,pg_catalog,pg_temp')],
+        ['weak domain lock',sql=>sql.replace('IN ACCESS EXCLUSIVE MODE NOWAIT','IN SHARE ROW EXCLUSIVE MODE NOWAIT')],
+        ['catalog lock removed',sql=>sql.replace(/LOCK TABLE pg_catalog\.pg_class[^;]*;/,'')],
+        ['early COMMIT',sql=>sql.replace('DROP FUNCTION public.apply_product_edit_v1','COMMIT; BEGIN; DROP FUNCTION public.apply_product_edit_v1')],
+        ['function metadata deparser shadow',sql=>sql.replace('pg_catalog.pg_get_expr(p.proargdefaults,0)','public.pg_get_expr(p.proargdefaults,0)')],
+        ['unknown builtin effect',sql=>sql.replace('pg_catalog.jsonb_object_agg(p.proname','pg_catalog.pg_sleep(p.proname')],
+        ['custom type cast',sql=>sql.replace("'pg_catalog.now()'::regprocedure::oid","'pg_catalog.now()'::public.synthetic_type")],
+        ['PERFORM before metadata',sql=>sql.replace('DO $rollback_retention_profile$\nBEGIN',"DO $rollback_retention_profile$\nBEGIN PERFORM public.synthetic_effect();")],
+        ['safe-deparse preflight missing',sql=>sql.replace(/DO \$rollback_safe_catalog_deparse\$[\s\S]*?END \$rollback_safe_catalog_deparse\$;/,'')],
+        ['unknown raw-node shape',sql=>sql.replace(':funcid @now',':funcid @unknown')],
+        ['metadata compare inverted',sql=>sql.replace(') IS DISTINCT FROM $known346$',') IS NOT DISTINCT FROM $known346$')],
+        ['live selfapproval',sql=>sql.replace(/\$known346\$[\s\S]*?\$known346\$::jsonb/,"(SELECT pg_catalog.to_jsonb(r) FROM pg_catalog.pg_class r LIMIT 1)")],
+        ['retained rows removed',sql=>sql.replace(/ IF EXISTS\(SELECT 1 FROM public\.product_edit_receipts\) THEN RAISE EXCEPTION '[^']*'; END IF;/,'')],
+        ['filtered retained rows',sql=>sql.replace('IF EXISTS(SELECT 1 FROM public.product_edit_receipts)','IF EXISTS(SELECT 1 FROM public.product_edit_receipts WHERE false)')],
+        ['foreign closure weakened',sql=>sql.replace("SELECT\n EXISTS(SELECT 1 FROM pg_catalog.pg_depend d WHERE (d.refclassid", "SELECT\n false AND EXISTS(SELECT 1 FROM pg_catalog.pg_depend d WHERE (d.refclassid")],
+        ['owner false in declared profile',mutateProfile(p=>p.functions.apply_product_edit_v1.owner_valid=false)],
+        ['OUT profile declaration',mutateProfile(p=>p.functions.apply_product_edit_v1.proallargtypes=['uuid'])],
+        ['default declaration',mutateProfile(p=>p.functions.apply_product_edit_v1.pronargdefaults=1)],
+        ['body fingerprint mismatch',mutateProfile(p=>p.functions.apply_product_edit_v1.prosrc+='\n-- Unknown body\n')],
+        ['ACL declaration widened',mutateProfile(p=>p.functions.apply_product_edit_v1.acl.synthetic={grantee:'anon',grantor:'$owner',privilege:'EXECUTE',grantable:false})],
+        ['table RLS weakened',mutateProfile(p=>p.receipt.relrowsecurity=false)],
+        ['unknown semantic role',mutateProfile(p=>p.roles.synthetic={super:true})],
+        ['expected constraint missing',mutateProfile(p=>delete p.constraints.product_edit_receipts_mutation_check)],
+        ['extra function declaration',mutateProfile(p=>p.functions.synthetic=p.functions.apply_product_edit_v1)],
+        ['356-style dependency selfapproval',mutateProfile(p=>{const edge=JSON.parse(JSON.stringify(Object.values(p.dependencies)[0]));edge.object={type:'default value',schema:null,name:null,identity:'for public.inventory_adjustment_receipts.authority_guard'};p.dependencies.synthetic=edge;})],
+        ['unrecognized postguard SQL',sql=>sql.replace('DROP FUNCTION public.apply_product_edit_v1',"SELECT public.synthetic_effect(); DROP FUNCTION public.apply_product_edit_v1")],
+        ['second literal profile',sql=>sql.replace('COMMIT;',"DO $extra$ BEGIN IF '{}'::jsonb IS DISTINCT FROM $another${\"functions\":{},\"receipt\":{}}$another$::jsonb THEN RAISE EXCEPTION 'deny'; END IF; END $extra$; COMMIT;")],
+    ];
+    for(const [label,change] of cases) {
+        const altered=change(source);assert.notEqual(altered,source,label+' must change actual source');assert.deepEqual(rollbackSignatureGuards(altered),[],label);
+    }
+    t.diagnostic(JSON.stringify({rejected_mutations:cases.map(([label])=>label)}));
+});

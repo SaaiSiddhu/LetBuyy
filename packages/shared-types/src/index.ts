@@ -1334,6 +1334,7 @@ export const VariantSchema = AuditedEntitySchema.extend({
 
 export const ProductSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
+  version: z.number().int().positive(),
   name: z.string().min(1).max(256),
   slug: SlugSchema,
   description: z.string().max(10000).optional().nullable(),
@@ -4944,6 +4945,3 @@ export function featureFlagExposureTelemetry(
     evaluated_at: evaluatedAt.toISOString(),
   };
 }
-
-export { BuyerAssistantRequestSchema, BuyerAssistantResponseSchema } from './buyer-assistant';
-export type { BuyerAssistantRequest, BuyerAssistantResponse } from './buyer-assistant';

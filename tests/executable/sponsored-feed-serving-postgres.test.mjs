@@ -36,22 +36,6 @@ const SITE_B = '22222222-2222-4222-8222-2222222222c2';
 const CAMPAIGN_A = '33333333-3333-4333-8333-3333333333c3';
 const CAMPAIGN_B = '44444444-4444-4444-8444-4444444444c4';
 
-//355 fixture authority: canonical synthetic owner and same-statement captured
-//context. The materialized CTE executes before the volatile budget RPC. It
-//does not grant authority, mint credit, or replace the role under test.
-const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
-const REVIEWER = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbb18';
-const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
-function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
-    return `WITH captured_budget_context AS MATERIALIZED (
-      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
-             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
-    ) SELECT public.${operation}_ad_campaign_budget(
-      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
-      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
-      FROM captured_budget_context`;
-}
-
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -104,15 +88,9 @@ function bootstrapDatabase() {
 
 function seedFixtures() {
     psql(`
-    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid'),
-      (${budgetQ(REVIEWER)}::uuid,'synthetic-sponsored-reviewer@example.invalid');
-    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true),
-      (${budgetQ(REVIEWER)}::uuid,'synthetic-sponsored-reviewer@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${sqlString(SITE_A)}::uuid, 'Ads A', 'Ads A', 'store', 'ads-a', true),
       (${sqlString(SITE_B)}::uuid, 'Ads B', 'Ads B', 'store', 'ads-b', true);
-
-    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE_A)}::uuid,${budgetQ(SITE_B)}::uuid);
 
     INSERT INTO public.ad_campaigns (id, site_id, name, status) VALUES
       (${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Campaign A', 'draft'),
@@ -199,8 +177,8 @@ before(() => {
       (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_REJECTED)}::uuid, 2),
       (${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(PRODUCT_HIDDEN)}::uuid, 3);
 
-    ${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 40000, 'ads1b:alloc:a', null, SITE_A)};
-    ${budgetRpc('allocate', SITE_B, CAMPAIGN_B, 40000, 'ads1b:alloc:b', null, SITE_B)};
+    SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 40000, 'ads1b:alloc:a');
+    SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 40000, 'ads1b:alloc:b');
   `);
     psql(`BEGIN;
       SELECT set_config('app.site_id', ${sqlString(SITE_A)}, true);
@@ -211,37 +189,15 @@ before(() => {
       COMMIT;
       BEGIN;
       SELECT set_config('app.site_id', '', true);
-      SET LOCAL ROLE service_role;
-      -- Use275's canonical assignment and the same reviewer for the decision.
-      SELECT * FROM public.claim_marketplace_listing_review(
-        ${sqlString(SITE_A)}::uuid,${sqlString(LISTING_A)}::uuid,${sqlString(REVIEWER)}::uuid,
-        'Synthetic sponsored listing review.', 'ads-claim:a',
-        (SELECT version FROM public.channel_listings WHERE id=${sqlString(LISTING_A)}::uuid));
-      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_A)}::uuid, 'approved', 'operator', ${sqlString(REVIEWER)}::uuid, 'approved test listing', 'ads-approve:a');
-      -- Use275's canonical assignment and the same reviewer for the decision.
-      SELECT * FROM public.claim_marketplace_listing_review(
-        ${sqlString(SITE_A)}::uuid,${sqlString(LISTING_REJECTED)}::uuid,${sqlString(REVIEWER)}::uuid,
-        'Synthetic sponsored listing review.', 'ads-claim:rejected',
-        (SELECT version FROM public.channel_listings WHERE id=${sqlString(LISTING_REJECTED)}::uuid));
-      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_REJECTED)}::uuid, 'rejected', 'operator', ${sqlString(REVIEWER)}::uuid, 'rejected test listing', 'ads-reject:rejected');
-      -- Use275's canonical assignment and the same reviewer for the decision.
-      SELECT * FROM public.claim_marketplace_listing_review(
-        ${sqlString(SITE_A)}::uuid,${sqlString(LISTING_HIDDEN)}::uuid,${sqlString(REVIEWER)}::uuid,
-        'Synthetic sponsored listing review.', 'ads-claim:hidden',
-        (SELECT version FROM public.channel_listings WHERE id=${sqlString(LISTING_HIDDEN)}::uuid));
-      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_HIDDEN)}::uuid, 'approved', 'operator', ${sqlString(REVIEWER)}::uuid, 'approved test listing', 'ads-approve:hidden');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_A)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:a');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_REJECTED)}::uuid, 'rejected', 'operator', NULL, 'rejected test listing', 'ads-reject:rejected');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_A)}::uuid, ${sqlString(LISTING_HIDDEN)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:hidden');
       SELECT set_config('app.site_id', ${sqlString(SITE_B)}, true);
       SELECT * FROM public.transition_channel_listing(${sqlString(SITE_B)}::uuid, ${sqlString(LISTING_B)}::uuid, 'pending_review', 'merchant', NULL, NULL, 'ads-review:b');
       COMMIT;
       BEGIN;
       SELECT set_config('app.site_id', '', true);
-      SET LOCAL ROLE service_role;
-      -- Use275's canonical assignment and the same reviewer for the decision.
-      SELECT * FROM public.claim_marketplace_listing_review(
-        ${sqlString(SITE_B)}::uuid,${sqlString(LISTING_B)}::uuid,${sqlString(REVIEWER)}::uuid,
-        'Synthetic sponsored listing review.', 'ads-claim:b',
-        (SELECT version FROM public.channel_listings WHERE id=${sqlString(LISTING_B)}::uuid));
-      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_B)}::uuid, ${sqlString(LISTING_B)}::uuid, 'approved', 'operator', ${sqlString(REVIEWER)}::uuid, 'approved test listing', 'ads-approve:b');
+      SELECT * FROM public.transition_channel_listing(${sqlString(SITE_B)}::uuid, ${sqlString(LISTING_B)}::uuid, 'approved', 'operator', NULL, 'approved test listing', 'ads-approve:b');
       COMMIT;`);
     configure(CAMPAIGN_A, "pricing_model = 'cpc', bid_minor = 1000");
     configure(CAMPAIGN_B, "pricing_model = 'cpc', bid_minor = 9000");

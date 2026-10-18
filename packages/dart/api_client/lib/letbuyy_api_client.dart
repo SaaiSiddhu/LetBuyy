@@ -9,4 +9,3 @@ export 'src/buyer_loyalty.dart';
 export 'src/graphql.dart';
 export 'src/marketplace.dart';
 export 'src/types.dart';
-export 'src/buyer_assistant.dart';

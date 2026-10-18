@@ -1,6 +1,17 @@
 import { z } from 'zod';
 import { PaginationQuery, SeoSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
+export {
+  ReelReviewSubmissionSchema,
+  ReelReviewBindingError,
+  buildReelReviewPayload,
+  fingerprintReelReviewPayload,
+  type ReelReviewSubmission,
+  type ServerResolvedReelReviewContext,
+  type ReelReviewBindingErrorCode,
+  type ReelReviewPayload,
+} from './reel-review';
+
 export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
 
 export const ListPagesQuery = PaginationQuery.extend({

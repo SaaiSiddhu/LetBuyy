@@ -33,10 +33,8 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
     assert.deepEqual(
         ownedSuites(),
         [
-            'ad-campaign-budget-authority.postgres.test.ts',
             'authenticated-checkout.postgres.test.ts',
             'backfill-and-target-shadow.postgres.test.ts',
-            'buyer-assistant-quotas.postgres.test.ts',
             'buyer-privacy-export-browser.postgres.test.ts',
             'buyer-privacy-export.postgres.test.ts',
             'buyer-privacy-intake.postgres.test.ts',
@@ -105,6 +103,7 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
             'platform-trust-browser.postgres.test.ts',
             'pooled-tenant-context.postgres.test.ts',
             'privacy-support-visibility.postgres.test.ts',
+            'product-atomic-edits.postgres.test.ts',
             'product-importer-disclosure.postgres.test.ts',
             'product-price-observations.postgres.test.ts',
             'real-http-shadow-rehearsal.postgres.test.ts',

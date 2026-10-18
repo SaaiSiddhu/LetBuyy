@@ -3,6 +3,7 @@ library;
 
 // Config
 export 'src/config/razorpay_config.dart';
+export 'src/config/gemini_config.dart';
 
 // Constants
 export 'src/constants/app_constants.dart';

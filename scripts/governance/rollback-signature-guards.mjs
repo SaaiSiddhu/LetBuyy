@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 // Pure, deliberately finite source recognizer. A label/comment is never a guard.
 // Unknown PL/pgSQL is rejected; executable catalog behavior is tested separately.
 import {sqlTokens, sqlStatements, tokenText, normalizedSql as norm, splitSqlList, functionIdentity, functionDefinitions} from './definer-role-closure.mjs';
@@ -475,7 +476,7 @@ function profileRefusal(body,guards) {
     for(const row of rows)guards.find(g=>g.identity===functionIdentity(row.signature)).profile_fingerprint={default_count:row.default_count,default_source:row.default_source,body_md5s:[row.first_md5,row.second_md5]};
     return true;
 }
-export function rollbackSignatureGuards(sql) {
+function baseRollbackSignatureGuards(sql) {
     try {
         const statements=sqlStatements(sql);
         if(!same(statements[0]??[],'BEGIN;') || !same(statements.at(-1)??[],'COMMIT;'))return [];
@@ -562,4 +563,1736 @@ function dropIdentities(statement) {
         identities.push(identity);
     }
     return identities;
+}
+
+// Closed finite templates use bound identities, not filenames or function names.
+const RETENTION_SOURCE_TEMPLATE="begin ;\nlock table pg_catalog . pg_proc in share row exclusive mode ;\nset local search_path = pg_catalog , public , pg_temp ;\ndo {declare v_expected record ; v_live pg_catalog . pg_proc % rowtype ; v_count integer ; begin if pg_catalog . current_setting ( 'transaction_isolation' ) <> 'read committed' or exists ( select 1 from pg_catalog . pg_locks l where l . locktype = 'transactionid' and l . mode = 'ExclusiveLock' and l . granted and ( l . pid is null or l . pid <> pg_catalog . pg_backend_pid ( ) ) ) or exists ( select 1 from pg_catalog . pg_prepared_xacts ) then raise exception '__literal_refusal__' ; end if ; for v_expected in select * from ( values __primary_rows__ ) expected ( name , signature , input_names , result_type , returns_set , overloads ) loop select count ( * ) into v_count from pg_catalog . pg_proc p join pg_catalog . pg_namespace n on n . oid = p . pronamespace where n . nspname = 'public' and p . proname = v_expected . name ; if v_count <> v_expected . overloads or pg_catalog . to_regprocedure ( v_expected . signature ) is null then raise exception '__literal_refusal__' ; end if ; select * into v_live from pg_catalog . pg_proc p where p . oid = pg_catalog . to_regprocedure ( v_expected . signature ) ; if coalesce ( v_live . proargnames [ 1 : v_live . pronargs ] , array [ ] :: text [ ] ) is distinct from v_expected . input_names or v_live . prorettype is distinct from v_expected . result_type :: regtype or v_live . proretset is distinct from v_expected . returns_set or v_live . prokind <> 'f' then raise exception '__literal_refusal__' ; end if ; end loop ; end} ;\ndo {begin if pg_catalog . to_regclass ( 'public.__receipt__' ) is null then raise exception '__literal_refusal__' ; end if ; if ( select count ( * ) from pg_catalog . pg_class r join pg_catalog . pg_namespace n on n . oid = r . relnamespace where n . nspname = 'public' and r . relname in ( '__receipt__' , '__child_0__' , '__child_1__' ) and r . relkind = 'r' and r . relpersistence = 'p' and not r . relispartition ) <> 3 then raise exception '__literal_refusal__' ; end if ; end} ;\nlock table pg_catalog . pg_class , pg_catalog . pg_attribute , pg_catalog . pg_attrdef , pg_catalog . pg_constraint , pg_catalog . pg_index , pg_catalog . pg_trigger , pg_catalog . pg_policy , pg_catalog . pg_depend , pg_catalog . pg_description , pg_catalog . pg_seclabel , pg_catalog . pg_inherits , pg_catalog . pg_rewrite , pg_catalog . pg_type , pg_catalog . pg_namespace , pg_catalog . pg_language , pg_catalog . pg_shdepend , pg_catalog . pg_auth_members , pg_catalog . pg_authid , pg_catalog . pg_opclass , pg_catalog . pg_opfamily , pg_catalog . pg_operator , pg_catalog . pg_am , pg_catalog . pg_collation , pg_catalog . pg_tablespace in share row exclusive mode nowait ;\nlock table public . __receipt__ , public . __child_0__ , public . __child_1__ in access exclusive mode nowait ;\ndo {begin if exists ( select 1 from pg_catalog . pg_proc p join pg_catalog . pg_namespace n on n . oid = p . pronamespace where n . nspname = 'public' and p . proname in ( '__fn_apply__' , '__fn_actor__' , '__fn_bump__' , '__fn_immutable__' , '__fn_snapshot__' , '__fn_read__' ) and ( p . proargdefaults is not null or p . pronargdefaults <> 0 or p . proallargtypes is not null or p . proargmodes is not null ) ) then raise exception '__literal_refusal__' ; end if ; if ( select count ( * ) from pg_catalog . pg_attribute t where t . attrelid = 'public.__receipt__' :: regclass and t . attnum > 0 ) <> 9 or exists ( select 1 from pg_catalog . pg_attribute t left join ( values ( 1 , 'idempotency_key' , 'pg_catalog.uuid' :: regtype ) , ( 2 , 'operation' , 'pg_catalog.text' :: regtype ) , ( 3 , 'store_id' , 'pg_catalog.uuid' :: regtype ) , ( 4 , 'product_id' , 'pg_catalog.uuid' :: regtype ) , ( 5 , 'actor_id' , 'pg_catalog.uuid' :: regtype ) , ( 6 , 'expected_version' , 'pg_catalog.int4' :: regtype ) , ( 7 , 'mutation' , 'pg_catalog.jsonb' :: regtype ) , ( 8 , 'response' , 'pg_catalog.jsonb' :: regtype ) , ( 9 , 'created_at' , 'pg_catalog.timestamptz' :: regtype ) ) expected ( num , name , type_oid ) on expected . num = t . attnum where t . attrelid = 'public.__receipt__' :: regclass and t . attnum > 0 and ( expected . num is null or t . attname is distinct from expected . name or t . atttypid is distinct from expected . type_oid or t . atttypmod <> - 1 or t . attisdropped ) ) then raise exception '__literal_refusal__' ; end if ; if ( select count ( * ) from pg_catalog . pg_attrdef d where d . adrelid = 'public.__receipt__' :: regclass ) <> 1 or exists ( select 1 from pg_catalog . pg_attrdef d where d . adrelid = 'public.__receipt__' :: regclass and ( d . adnum <> 9 or pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . regexp_replace ( ( d . adbin ) :: text , ':location -?[0-9]+' , ':location #' , 'g' ) , ':funcid ' || ( 'pg_catalog.now()' :: regprocedure :: oid ) :: text || ' ' , ':funcid @now ' ) , ':funcid ' || ( 'pg_catalog.jsonb_typeof(jsonb)' :: regprocedure :: oid ) :: text || ' ' , ':funcid @jsonb_typeof ' ) , ':opno ' || ( 'pg_catalog.>(integer,integer)' :: regoperator :: oid ) :: text || ' ' , ':opno @int4_gt ' ) , ':opno ' || ( 'pg_catalog.=(text,text)' :: regoperator :: oid ) :: text || ' ' , ':opno @text_eq ' ) , ':opfuncid ' || ( 'pg_catalog.int4gt(integer,integer)' :: regprocedure :: oid ) :: text || ' ' , ':opfuncid @int4gt ' ) , ':opfuncid ' || ( 'pg_catalog.texteq(text,text)' :: regprocedure :: oid ) :: text || ' ' , ':opfuncid @texteq ' ) , ':funcresulttype ' || ( 'pg_catalog.timestamptz' :: regtype :: oid ) :: text || ' ' , ':funcresulttype @timestamp_with_time_zone ' ) , ':opresulttype ' || ( 'pg_catalog.bool' :: regtype :: oid ) :: text || ' ' , ':opresulttype @bool ' ) , ':vartype ' || ( 'pg_catalog.int4' :: regtype :: oid ) :: text || ' ' , ':vartype @integer ' ) , ':consttype ' || ( 'pg_catalog.int4' :: regtype :: oid ) :: text || ' ' , ':consttype @integer ' ) , ':inputcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':inputcollid @default_collation ' ) , ':funcresulttype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':funcresulttype @text ' ) , ':funccollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':funccollid @default_collation ' ) , ':vartype ' || ( 'pg_catalog.jsonb' :: regtype :: oid ) :: text || ' ' , ':vartype @jsonb ' ) , ':consttype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':consttype @text ' ) , ':constcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':constcollid @default_collation ' ) , ':vartype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':vartype @text ' ) , ':varcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':varcollid @default_collation ' ) is distinct from '{FUNCEXPR :funcid @now :funcresulttype @timestamp_with_time_zone :funcretset false :funcvariadic false :funcformat 0 :funccollid 0 :inputcollid 0 :args <> :location #}' ) ) then raise exception '__literal_refusal__' ; end if ; if exists ( select 1 from pg_catalog . pg_constraint t left join ( values ( '__check_expected_version__' , '{OPEXPR :opno @int4_gt :opfuncid @int4gt :opresulttype @bool :opretset false :opcollid 0 :inputcollid 0 :args ({VAR :varno 1 :varattno 6 :vartype @integer :vartypmod -1 :varcollid 0 :varnullingrels (b) :varlevelsup 0 :varnosyn 1 :varattnosyn 6 :location #} {CONST :consttype @integer :consttypmod -1 :constcollid 0 :constlen 4 :constbyval true :constisnull false :location # :constvalue 4 [ 0 0 0 0 0 0 0 0 ]}) :location #}' ) , ( '__check_mutation__' , '{OPEXPR :opno @text_eq :opfuncid @texteq :opresulttype @bool :opretset false :opcollid 0 :inputcollid @default_collation :args ({FUNCEXPR :funcid @jsonb_typeof :funcresulttype @text :funcretset false :funcvariadic false :funcformat 0 :funccollid @default_collation :inputcollid 0 :args ({VAR :varno 1 :varattno 7 :vartype @jsonb :vartypmod -1 :varcollid 0 :varnullingrels (b) :varlevelsup 0 :varnosyn 1 :varattnosyn 7 :location #}) :location #} {CONST :consttype @text :consttypmod -1 :constcollid @default_collation :constlen -1 :constbyval false :constisnull false :location # :constvalue 10 [ 40 0 0 0 111 98 106 101 99 116 ]}) :location #}' ) , ( '__check_operation__' , '{OPEXPR :opno @text_eq :opfuncid @texteq :opresulttype @bool :opretset false :opcollid 0 :inputcollid @default_collation :args ({VAR :varno 1 :varattno 2 :vartype @text :vartypmod -1 :varcollid @default_collation :varnullingrels (b) :varlevelsup 0 :varnosyn 1 :varattnosyn 2 :location #} {CONST :consttype @text :consttypmod -1 :constcollid @default_collation :constlen -1 :constbyval false :constisnull false :location # :constvalue 21 [ 84 0 0 0 112 114 111 100 117 99 116 46 117 112 100 97 116 101 46 118 49 ]}) :location #}' ) , ( '__check_response__' , '{OPEXPR :opno @text_eq :opfuncid @texteq :opresulttype @bool :opretset false :opcollid 0 :inputcollid @default_collation :args ({FUNCEXPR :funcid @jsonb_typeof :funcresulttype @text :funcretset false :funcvariadic false :funcformat 0 :funccollid @default_collation :inputcollid 0 :args ({VAR :varno 1 :varattno 8 :vartype @jsonb :vartypmod -1 :varcollid 0 :varnullingrels (b) :varlevelsup 0 :varnosyn 1 :varattnosyn 8 :location #}) :location #} {CONST :consttype @text :consttypmod -1 :constcollid @default_collation :constlen -1 :constbyval false :constisnull false :location # :constvalue 10 [ 40 0 0 0 111 98 106 101 99 116 ]}) :location #}' ) ) expected ( name , node ) on expected . name = t . conname where t . conrelid = 'public.__receipt__' :: regclass and ( ( t . contype = 'c' and ( expected . name is null or pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . replace ( pg_catalog . regexp_replace ( ( t . conbin ) :: text , ':location -?[0-9]+' , ':location #' , 'g' ) , ':funcid ' || ( 'pg_catalog.now()' :: regprocedure :: oid ) :: text || ' ' , ':funcid @now ' ) , ':funcid ' || ( 'pg_catalog.jsonb_typeof(jsonb)' :: regprocedure :: oid ) :: text || ' ' , ':funcid @jsonb_typeof ' ) , ':opno ' || ( 'pg_catalog.>(integer,integer)' :: regoperator :: oid ) :: text || ' ' , ':opno @int4_gt ' ) , ':opno ' || ( 'pg_catalog.=(text,text)' :: regoperator :: oid ) :: text || ' ' , ':opno @text_eq ' ) , ':opfuncid ' || ( 'pg_catalog.int4gt(integer,integer)' :: regprocedure :: oid ) :: text || ' ' , ':opfuncid @int4gt ' ) , ':opfuncid ' || ( 'pg_catalog.texteq(text,text)' :: regprocedure :: oid ) :: text || ' ' , ':opfuncid @texteq ' ) , ':funcresulttype ' || ( 'pg_catalog.timestamptz' :: regtype :: oid ) :: text || ' ' , ':funcresulttype @timestamp_with_time_zone ' ) , ':opresulttype ' || ( 'pg_catalog.bool' :: regtype :: oid ) :: text || ' ' , ':opresulttype @bool ' ) , ':vartype ' || ( 'pg_catalog.int4' :: regtype :: oid ) :: text || ' ' , ':vartype @integer ' ) , ':consttype ' || ( 'pg_catalog.int4' :: regtype :: oid ) :: text || ' ' , ':consttype @integer ' ) , ':inputcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':inputcollid @default_collation ' ) , ':funcresulttype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':funcresulttype @text ' ) , ':funccollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':funccollid @default_collation ' ) , ':vartype ' || ( 'pg_catalog.jsonb' :: regtype :: oid ) :: text || ' ' , ':vartype @jsonb ' ) , ':consttype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':consttype @text ' ) , ':constcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':constcollid @default_collation ' ) , ':vartype ' || ( 'pg_catalog.text' :: regtype :: oid ) :: text || ' ' , ':vartype @text ' ) , ':varcollid ' || ( 'pg_catalog.default' :: regcollation :: oid ) :: text || ' ' , ':varcollid @default_collation ' ) is distinct from expected . node ) ) or ( t . contype <> 'c' and ( t . contype <> 'p' or t . conname <> '__receipt_pkey__' or t . conbin is not null ) ) ) ) then raise exception '__literal_refusal__' ; end if ; if exists ( select 1 from pg_catalog . pg_index i where i . indrelid = 'public.__receipt__' :: regclass and ( i . indexprs is not null or i . indpred is not null ) ) then raise exception '__literal_refusal__' ; end if ; if exists ( select 1 from pg_catalog . pg_trigger t where ( t . tgrelid = 'public.__receipt__' :: regclass or ( t . tgrelid = 'public.__child_1__' :: regclass and t . tgname = '__child_1_trigger__' ) or ( t . tgrelid = 'public.__child_0__' :: regclass and t . tgname = '__child_0_trigger__' ) ) and t . tgqual is not null ) then raise exception '__literal_refusal__' ; end if ; end} ;\ndo {begin if pg_catalog . current_setting ( 'transaction_isolation' ) <> 'read committed' or exists ( select 1 from pg_catalog . pg_locks l where l . locktype = 'transactionid' and l . mode = 'ExclusiveLock' and l . granted and ( l . pid is null or l . pid <> pg_catalog . pg_backend_pid ( ) ) ) or exists ( select 1 from pg_catalog . pg_prepared_xacts ) then raise exception '__literal_refusal__' ; end if ; if pg_catalog . current_setting ( 'server_version_num' ) :: integer / 10000 <> 16 then raise exception '__literal_refusal__' ; end if ; if ( with recursive functions as ( select p . * from pg_catalog . pg_proc p join pg_catalog . pg_namespace n on n . oid = p . pronamespace where n . nspname = 'public' and p . proname in ( '__fn_immutable__' , '__fn_bump__' , '__fn_actor__' , '__fn_snapshot__' , '__fn_read__' , '__fn_apply__' ) ) , receipt as ( select 'public.__receipt__' :: regclass :: oid as oid ) , triggers as ( select t . * from pg_catalog . pg_trigger t where t . tgrelid = ( select oid from receipt ) or ( t . tgrelid = 'public.__child_1__' :: regclass and t . tgname = '__child_1_trigger__' ) or ( t . tgrelid = 'public.__child_0__' :: regclass and t . tgname = '__child_0_trigger__' ) ) , objects as ( select 'pg_catalog.pg_proc' :: regclass :: oid as classid , oid as objid from functions union select 'pg_catalog.pg_class' :: regclass :: oid , oid from receipt union select 'pg_catalog.pg_class' :: regclass :: oid , indexrelid from pg_catalog . pg_index where indrelid = ( select oid from receipt ) union select 'pg_catalog.pg_trigger' :: regclass :: oid , oid from triggers union select 'pg_catalog.pg_constraint' :: regclass :: oid , oid from pg_catalog . pg_constraint where conrelid = ( select oid from receipt ) union select 'pg_catalog.pg_policy' :: regclass :: oid , oid from pg_catalog . pg_policy where polrelid = ( select oid from receipt ) union select 'pg_catalog.pg_attrdef' :: regclass :: oid , oid from pg_catalog . pg_attrdef where adrelid = ( select oid from receipt ) union select 'pg_catalog.pg_rewrite' :: regclass :: oid , oid from pg_catalog . pg_rewrite where ev_class = ( select oid from receipt ) ) , internal_footprint as ( select classid , objid from objects union select d . classid , d . objid from pg_catalog . pg_depend d join internal_footprint o on d . refclassid = o . classid and d . refobjid = o . objid where d . deptype = 'i' ) , full_footprint as ( select classid , objid from internal_footprint union select 'pg_catalog.pg_class' :: regclass :: oid , i . indexrelid from pg_catalog . pg_index i where i . indrelid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) select pg_catalog . jsonb_build_object ( 'functions' , ( select pg_catalog . jsonb_object_agg ( p . proname , ( pg_catalog . to_jsonb ( p ) - array [ 'oid' , 'proowner' , 'pronamespace' , 'prolang' , 'proargtypes' , 'prorettype' , 'proacl' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'namespace' , 'public' , 'owner_valid' , p . proowner = pg_catalog . to_regrole ( current_user ) , 'language' , l . lanname , 'input_types' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . format_type ( t . oid , null ) order by t . n ) , '[]' ) from pg_catalog . unnest ( p . proargtypes :: oid [ ] ) with ordinality t ( oid , n ) ) , 'result_type' , pg_catalog . format_type ( p . prorettype , null ) , 'default_source' , pg_catalog . pg_get_expr ( p . proargdefaults , 0 ) , 'body_md5' , pg_catalog . md5 ( p . prosrc ) , 'acl' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , z . privilege_type , z . is_grantable ) :: text , pg_catalog . jsonb_build_object ( 'grantee' , case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , 'grantor' , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , 'privilege' , z . privilege_type , 'grantable' , z . is_grantable ) ) , '{}' :: jsonb ) from pg_catalog . aclexplode ( case when pg_catalog . cardinality ( coalesce ( p . proacl , pg_catalog . acldefault ( 'f' , p . proowner ) ) ) = 0 then null :: pg_catalog . aclitem [ ] else coalesce ( p . proacl , pg_catalog . acldefault ( 'f' , p . proowner ) ) end ) z ) ) ) from functions p join pg_catalog . pg_language l on l . oid = p . prolang ) , 'receipt' , ( select ( ( pg_catalog . to_jsonb ( r ) - array [ 'oid' , 'relowner' , 'relnamespace' , 'reltype' , 'relam' , 'reltablespace' , 'reltoastrelid' , 'relrewrite' , 'relfilenode' , 'relpages' , 'reltuples' , 'relallvisible' , 'relfrozenxid' , 'relminmxid' , 'relacl' , 'reloftype' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'namespace' , ( select n . nspname from pg_catalog . pg_namespace n where n . oid = r . relnamespace ) , 'owner_valid' , r . relowner = pg_catalog . to_regrole ( current_user ) , 'access_method' , ( select m . amname from pg_catalog . pg_am m where m . oid = r . relam ) , 'tablespace' , case when r . reltablespace = 0 then null else ( select s . spcname from pg_catalog . pg_tablespace s where s . oid = r . reltablespace ) end , 'typed_table' , case when r . reloftype = 0 then null else pg_catalog . format_type ( r . reloftype , null ) end , 'acl' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , z . privilege_type , z . is_grantable ) :: text , pg_catalog . jsonb_build_object ( 'grantee' , case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , 'grantor' , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , 'privilege' , z . privilege_type , 'grantable' , z . is_grantable ) ) , '{}' :: jsonb ) from pg_catalog . aclexplode ( case when pg_catalog . cardinality ( coalesce ( r . relacl , case when r . relkind = 'r' then pg_catalog . acldefault ( 'r' , r . relowner ) else '{}' :: pg_catalog . aclitem [ ] end ) ) = 0 then null :: pg_catalog . aclitem [ ] else coalesce ( r . relacl , case when r . relkind = 'r' then pg_catalog . acldefault ( 'r' , r . relowner ) else '{}' :: pg_catalog . aclitem [ ] end ) end ) z ) , 'rowtype_link_valid' , case when r . relkind = 'r' then exists ( select 1 from pg_catalog . pg_type y where y . oid = r . reltype and y . typrelid = r . oid and y . typname = r . relname and y . typnamespace = r . relnamespace and y . typowner = r . relowner and y . typtype = 'c' ) else r . reltype = 0 end , 'toast_present' , r . reltoastrelid <> 0 , 'toast_link_valid' , ( r . reltoastrelid = 0 or exists ( select 1 from pg_catalog . pg_class t where t . oid = r . reltoastrelid and t . relkind = 't' and t . relnamespace = 'pg_toast' :: regnamespace and t . relowner = r . relowner and ( select count ( * ) from pg_catalog . pg_index i where i . indrelid = t . oid ) = 1 ) ) , 'rewrite_absent' , r . relrewrite = 0 ) ) from pg_catalog . pg_class r where r . oid = ( select oid from receipt ) ) , 'attributes' , ( select pg_catalog . jsonb_object_agg ( t . attnum :: text , ( pg_catalog . to_jsonb ( t ) - array [ 'attrelid' , 'atttypid' , 'attcollation' , 'attcacheoff' , 'attacl' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'type' , pg_catalog . format_type ( t . atttypid , t . atttypmod ) , 'collation_absent' , t . attcollation = 0 , 'collation_default' , t . attcollation = 'pg_catalog.default' :: regcollation , 'acl' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , z . privilege_type , z . is_grantable ) :: text , pg_catalog . jsonb_build_object ( 'grantee' , case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , 'grantor' , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , 'privilege' , z . privilege_type , 'grantable' , z . is_grantable ) ) , '{}' :: jsonb ) from pg_catalog . aclexplode ( case when pg_catalog . cardinality ( coalesce ( t . attacl , '{}' :: pg_catalog . aclitem [ ] ) ) = 0 then null :: pg_catalog . aclitem [ ] else coalesce ( t . attacl , '{}' :: pg_catalog . aclitem [ ] ) end ) z ) ) ) from pg_catalog . pg_attribute t where t . attrelid = ( select oid from receipt ) and t . attnum > 0 ) , 'defaults' , ( select coalesce ( pg_catalog . jsonb_object_agg ( t . adnum :: text , pg_catalog . pg_get_expr ( t . adbin , t . adrelid ) ) , '{}' ) from pg_catalog . pg_attrdef t where t . adrelid = ( select oid from receipt ) ) , 'constraints' , ( select coalesce ( pg_catalog . jsonb_object_agg ( t . conname , ( pg_catalog . to_jsonb ( t ) - array [ 'oid' , 'connamespace' , 'conrelid' , 'contypid' , 'conindid' , 'conparentid' , 'confrelid' , 'conbin' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'namespace' , 'public' , 'typed_constraint_absent' , t . contypid = 0 , 'index' , case when t . conindid = 0 then null else ( select n . nspname || '.' || r . relname from pg_catalog . pg_class r join pg_catalog . pg_namespace n on n . oid = r . relnamespace where r . oid = t . conindid ) end , 'parent_absent' , t . conparentid = 0 , 'foreign_relation_absent' , t . confrelid = 0 , 'definition' , pg_catalog . pg_get_constraintdef ( t . oid , true ) ) ) , '{}' ) from pg_catalog . pg_constraint t where t . conrelid = ( select oid from receipt ) ) , 'indexes' , ( select coalesce ( pg_catalog . jsonb_object_agg ( r . relname , ( pg_catalog . to_jsonb ( t ) - array [ 'indexrelid' , 'indrelid' , 'indclass' , 'indcollation' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'definition' , pg_catalog . pg_get_indexdef ( t . indexrelid ) , 'class_profile' , ( ( pg_catalog . to_jsonb ( r ) - array [ 'oid' , 'relowner' , 'relnamespace' , 'reltype' , 'relam' , 'reltablespace' , 'reltoastrelid' , 'relrewrite' , 'relfilenode' , 'relpages' , 'reltuples' , 'relallvisible' , 'relfrozenxid' , 'relminmxid' , 'relacl' , 'reloftype' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'namespace' , ( select n . nspname from pg_catalog . pg_namespace n where n . oid = r . relnamespace ) , 'owner_valid' , r . relowner = pg_catalog . to_regrole ( current_user ) , 'access_method' , ( select m . amname from pg_catalog . pg_am m where m . oid = r . relam ) , 'tablespace' , case when r . reltablespace = 0 then null else ( select s . spcname from pg_catalog . pg_tablespace s where s . oid = r . reltablespace ) end , 'typed_table' , case when r . reloftype = 0 then null else pg_catalog . format_type ( r . reloftype , null ) end , 'acl' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , z . privilege_type , z . is_grantable ) :: text , pg_catalog . jsonb_build_object ( 'grantee' , case when z . grantee = 0 then 'PUBLIC' when z . grantee = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantee ) end , 'grantor' , case when z . grantor = pg_catalog . to_regrole ( current_user ) then '$owner' else pg_catalog . pg_get_userbyid ( z . grantor ) end , 'privilege' , z . privilege_type , 'grantable' , z . is_grantable ) ) , '{}' :: jsonb ) from pg_catalog . aclexplode ( case when pg_catalog . cardinality ( coalesce ( r . relacl , case when r . relkind = 'r' then pg_catalog . acldefault ( 'r' , r . relowner ) else '{}' :: pg_catalog . aclitem [ ] end ) ) = 0 then null :: pg_catalog . aclitem [ ] else coalesce ( r . relacl , case when r . relkind = 'r' then pg_catalog . acldefault ( 'r' , r . relowner ) else '{}' :: pg_catalog . aclitem [ ] end ) end ) z ) , 'rowtype_link_valid' , case when r . relkind = 'r' then exists ( select 1 from pg_catalog . pg_type y where y . oid = r . reltype and y . typrelid = r . oid and y . typname = r . relname and y . typnamespace = r . relnamespace and y . typowner = r . relowner and y . typtype = 'c' ) else r . reltype = 0 end , 'toast_present' , r . reltoastrelid <> 0 , 'toast_link_valid' , ( r . reltoastrelid = 0 or exists ( select 1 from pg_catalog . pg_class t where t . oid = r . reltoastrelid and t . relkind = 't' and t . relnamespace = 'pg_toast' :: regnamespace and t . relowner = r . relowner and ( select count ( * ) from pg_catalog . pg_index i where i . indrelid = t . oid ) = 1 ) ) , 'rewrite_absent' , r . relrewrite = 0 ) ) , 'opclasses_default' , not exists ( select 1 from pg_catalog . unnest ( t . indclass :: oid [ ] ) with ordinality z ( oid , n ) left join pg_catalog . pg_opclass o on o . oid = z . oid left join pg_catalog . pg_attribute at on at . attrelid = t . indrelid and at . attnum = t . indkey [ ( z . n - 1 ) :: integer ] where o . oid is null or not o . opcdefault or o . opcnamespace <> 'pg_catalog' :: regnamespace or o . opcmethod <> r . relam or o . opcintype is distinct from at . atttypid ) , 'collations_absent' , not exists ( select 1 from pg_catalog . unnest ( t . indcollation :: oid [ ] ) z where z <> 0 ) ) ) , '{}' ) from pg_catalog . pg_index t join pg_catalog . pg_class r on r . oid = t . indexrelid where t . indrelid = ( select oid from receipt ) ) , 'triggers' , ( select coalesce ( pg_catalog . jsonb_object_agg ( n . nspname || '.' || r . relname || '.' || t . tgname , ( pg_catalog . to_jsonb ( t ) - array [ 'oid' , 'tgrelid' , 'tgfoid' , 'tgconstrrelid' , 'tgconstrindid' , 'tgconstraint' , 'tgparentid' ] :: text [ ] ) || pg_catalog . jsonb_build_object ( 'relation' , n . nspname || '.' || r . relname , 'function' , ( select fn . nspname || '.' || p . proname || '()' from pg_catalog . pg_proc p join pg_catalog . pg_namespace fn on fn . oid = p . pronamespace where p . oid = t . tgfoid ) , 'constraint_links_absent' , t . tgconstrrelid = 0 and t . tgconstrindid = 0 and t . tgconstraint = 0 and t . tgparentid = 0 , 'definition' , pg_catalog . pg_get_triggerdef ( t . oid , true ) ) ) , '{}' ) from triggers t join pg_catalog . pg_class r on r . oid = t . tgrelid join pg_catalog . pg_namespace n on n . oid = r . relnamespace ) , 'policies' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . to_jsonb ( t ) ) , '[]' ) from pg_catalog . pg_policy t where t . polrelid = ( select oid from receipt ) ) , 'rules' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . to_jsonb ( t ) ) , '[]' ) from pg_catalog . pg_rewrite t where t . ev_class = ( select oid from receipt ) ) , 'comments' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . to_jsonb ( t ) ) , '[]' ) from pg_catalog . pg_description t where ( t . classoid , t . objoid ) in ( select * from objects ) ) , 'security_labels' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . to_jsonb ( t ) ) , '[]' ) from pg_catalog . pg_seclabel t where ( t . classoid , t . objoid ) in ( select * from objects ) ) , 'inheritance' , ( select coalesce ( pg_catalog . jsonb_agg ( pg_catalog . to_jsonb ( t ) ) , '[]' ) from pg_catalog . pg_inherits t where t . inhrelid = ( select oid from receipt ) or t . inhparent = ( select oid from receipt ) ) , 'dependencies' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'type' , ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'schema' , ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'identity' , t . objsubid , ( case when t . refclassid = 'pg_catalog.pg_class' :: regclass and t . refobjid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , t . refobjsubid ) ) end ) - > > 'type' , ( case when t . refclassid = 'pg_catalog.pg_class' :: regclass and t . refobjid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , t . refobjsubid ) ) end ) - > > 'schema' , ( case when t . refclassid = 'pg_catalog.pg_class' :: regclass and t . refobjid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , t . refobjsubid ) ) end ) - > > 'identity' , t . refobjsubid , t . deptype ) :: text , pg_catalog . jsonb_build_object ( 'object' , case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end , 'reference' , case when t . refclassid = 'pg_catalog.pg_class' :: regclass and t . refobjid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , t . refobjsubid ) ) end , 'subid' , t . objsubid , 'refsubid' , t . refobjsubid , 'deptype' , t . deptype ) ) , '{}' ) from pg_catalog . pg_depend t where ( t . classid , t . objid ) in ( select * from objects ) or ( t . refclassid , t . refobjid ) in ( select * from objects ) ) , 'shared_dependencies' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'type' , ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'schema' , ( case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end ) - > > 'identity' , t . objsubid , ( pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , 0 ) ) ) - > > 'type' , ( pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , 0 ) ) ) - > > 'schema' , ( pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , 0 ) ) ) - > > 'identity' , 0 , t . deptype ) :: text , pg_catalog . jsonb_build_object ( 'object' , case when t . classid = 'pg_catalog.pg_class' :: regclass and t . objid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) then pg_catalog . jsonb_build_object ( 'name' , '$receipt_toast' , 'type' , 'toast table' , 'schema' , 'pg_toast' , 'identity' , 'pg_toast.$receipt_toast' ) else pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . classid , t . objid , t . objsubid ) ) end , 'reference' , pg_catalog . to_jsonb ( pg_catalog . pg_identify_object ( t . refclassid , t . refobjid , 0 ) ) , 'subid' , t . objsubid , 'refsubid' , 0 , 'deptype' , t . deptype ) ) , '{}' ) from pg_catalog . pg_shdepend t where t . dbid = ( select oid from pg_catalog . pg_database where datname = current_database ( ) ) and ( t . classid , t . objid ) in ( select * from objects ) ) , 'roles' , ( select pg_catalog . jsonb_object_agg ( case when r . rolname = current_user then '$owner' else r . rolname end , pg_catalog . jsonb_build_object ( 'login' , r . rolcanlogin , 'super' , r . rolsuper , 'inherit' , r . rolinherit , 'create_db' , r . rolcreatedb , 'bypass_rls' , r . rolbypassrls , 'create_role' , r . rolcreaterole , 'replication' , r . rolreplication ) ) from pg_catalog . pg_roles r where r . rolname in ( current_user , 'app_tenant' , 'anon' , 'authenticated' , 'service_role' ) ) , 'api_role_memberships' , ( select coalesce ( pg_catalog . jsonb_object_agg ( pg_catalog . jsonb_build_array ( case when pg_catalog . pg_get_userbyid ( m . roleid ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . roleid ) end , case when pg_catalog . pg_get_userbyid ( m . member ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . member ) end , case when pg_catalog . pg_get_userbyid ( m . grantor ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . grantor ) end ) :: text , pg_catalog . jsonb_build_object ( 'role' , case when pg_catalog . pg_get_userbyid ( m . roleid ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . roleid ) end , 'member' , case when pg_catalog . pg_get_userbyid ( m . member ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . member ) end , 'grantor' , case when pg_catalog . pg_get_userbyid ( m . grantor ) = current_user then '$owner' else pg_catalog . pg_get_userbyid ( m . grantor ) end , 'admin_option' , m . admin_option , 'inherit_option' , m . inherit_option , 'set_option' , m . set_option ) ) , '{}' ) from pg_catalog . pg_auth_members m where m . member in ( select oid from pg_catalog . pg_roles where rolname in ( current_user , 'app_tenant' , 'anon' , 'authenticated' , 'service_role' ) ) ) ) ) is distinct from __literal_profile__ :: jsonb then raise exception '__literal_refusal__' ; end if ; if ( with recursive functions as ( select p . * from pg_catalog . pg_proc p join pg_catalog . pg_namespace n on n . oid = p . pronamespace where n . nspname = 'public' and p . proname in ( '__fn_immutable__' , '__fn_bump__' , '__fn_actor__' , '__fn_snapshot__' , '__fn_read__' , '__fn_apply__' ) ) , receipt as ( select 'public.__receipt__' :: regclass :: oid as oid ) , triggers as ( select t . * from pg_catalog . pg_trigger t where t . tgrelid = ( select oid from receipt ) or ( t . tgrelid = 'public.__child_1__' :: regclass and t . tgname = '__child_1_trigger__' ) or ( t . tgrelid = 'public.__child_0__' :: regclass and t . tgname = '__child_0_trigger__' ) ) , objects as ( select 'pg_catalog.pg_proc' :: regclass :: oid as classid , oid as objid from functions union select 'pg_catalog.pg_class' :: regclass :: oid , oid from receipt union select 'pg_catalog.pg_class' :: regclass :: oid , indexrelid from pg_catalog . pg_index where indrelid = ( select oid from receipt ) union select 'pg_catalog.pg_trigger' :: regclass :: oid , oid from triggers union select 'pg_catalog.pg_constraint' :: regclass :: oid , oid from pg_catalog . pg_constraint where conrelid = ( select oid from receipt ) union select 'pg_catalog.pg_policy' :: regclass :: oid , oid from pg_catalog . pg_policy where polrelid = ( select oid from receipt ) union select 'pg_catalog.pg_attrdef' :: regclass :: oid , oid from pg_catalog . pg_attrdef where adrelid = ( select oid from receipt ) union select 'pg_catalog.pg_rewrite' :: regclass :: oid , oid from pg_catalog . pg_rewrite where ev_class = ( select oid from receipt ) ) , internal_footprint as ( select classid , objid from objects union select d . classid , d . objid from pg_catalog . pg_depend d join internal_footprint o on d . refclassid = o . classid and d . refobjid = o . objid where d . deptype = 'i' ) , full_footprint as ( select classid , objid from internal_footprint union select 'pg_catalog.pg_class' :: regclass :: oid , i . indexrelid from pg_catalog . pg_index i where i . indrelid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) select exists ( select 1 from pg_catalog . pg_depend d where ( d . refclassid , d . refobjid ) in ( select * from full_footprint ) and ( d . classid , d . objid ) not in ( select * from full_footprint ) ) or exists ( select 1 from pg_catalog . pg_depend d where ( d . classid , d . objid ) in ( select * from full_footprint ) and ( d . classid , d . objid ) not in ( select * from objects ) and not ( ( d . deptype = 'i' and ( d . refclassid , d . refobjid ) in ( select * from full_footprint ) ) or ( d . deptype = 'a' and d . classid = 'pg_catalog.pg_class' :: regclass and d . objid in ( select indexrelid from pg_catalog . pg_index where indrelid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) and d . refclassid = 'pg_catalog.pg_class' :: regclass and d . refobjid = ( select reltoastrelid from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) ) ) or exists ( select 1 from pg_catalog . pg_description d where ( d . classoid , d . objoid ) in ( select * from full_footprint ) and ( d . classoid , d . objoid ) not in ( select * from objects ) ) or exists ( select 1 from pg_catalog . pg_seclabel d where ( d . classoid , d . objoid ) in ( select * from full_footprint ) and ( d . classoid , d . objoid ) not in ( select * from objects ) ) or exists ( select 1 from pg_catalog . pg_shdepend d where d . dbid = ( select oid from pg_catalog . pg_database where datname = current_database ( ) ) and ( d . classid , d . objid ) in ( select * from full_footprint ) and ( d . classid , d . objid ) not in ( select * from objects ) and not ( d . deptype = 'o' and d . refclassid = 'pg_catalog.pg_authid' :: regclass and d . refobjid = pg_catalog . to_regrole ( current_user ) ) ) or exists ( select 1 from pg_catalog . pg_type t where ( 'pg_catalog.pg_type' :: regclass :: oid , t . oid ) in ( select * from full_footprint ) and ( t . typowner is distinct from pg_catalog . to_regrole ( current_user ) or t . typnamespace is distinct from 'public' :: regnamespace or t . typacl is not null or not t . typisdefined or t . typnotnull or t . typbasetype <> 0 or t . typdefault is not null or t . typdefaultbin is not null or not ( ( t . oid = ( select reltype from pg_catalog . pg_class where oid = ( select oid from receipt ) ) and t . typtype = 'c' and t . typrelid = ( select oid from receipt ) and t . typelem = 0 ) or ( t . oid = ( select typarray from pg_catalog . pg_type where oid = ( select reltype from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) and t . typtype = 'b' and t . typrelid = 0 and t . typelem = ( select reltype from pg_catalog . pg_class where oid = ( select oid from receipt ) ) ) ) ) ) ) then raise exception '__literal_refusal__' ; end if ; if exists ( select 1 from public . __receipt__ ) then raise exception '__literal_refusal__' ; end if ; end} ;\ndrop function public . __fn_apply__ ( uuid , uuid , uuid , integer , uuid , jsonb ) ;\ndrop function public . __fn_read__ ( uuid , uuid , uuid ) ;\ndrop function public . __fn_snapshot__ ( uuid ) ;\ndrop function public . __fn_actor__ ( uuid , uuid , text ) ;\ndrop trigger __child_1_trigger__ on public . __child_1__ ;\ndrop trigger __child_0_trigger__ on public . __child_0__ ;\ndrop function public . __fn_bump__ ( ) ;\ndrop table public . __receipt__ ;\ndrop function public . __fn_immutable__ ( ) ;\ncommit ;";
+const RETENTION_LITERAL_TEMPLATE={
+  "api_role_memberships": {
+    "[\"app_tenant\", \"$owner\", \"$owner\"]": {
+      "admin_option": false,
+      "grantor": "$owner",
+      "inherit_option": true,
+      "member": "$owner",
+      "role": "app_tenant",
+      "set_option": true
+    },
+    "[\"app_tenant\", \"service_role\", \"$owner\"]": {
+      "admin_option": false,
+      "grantor": "$owner",
+      "inherit_option": true,
+      "member": "service_role",
+      "role": "app_tenant",
+      "set_option": true
+    }
+  },
+  "attributes": {
+    "1": {
+      "acl": {},
+      "attalign": "c",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 16,
+      "attmissingval": null,
+      "attname": "idempotency_key",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 1,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "uuid"
+    },
+    "2": {
+      "acl": {},
+      "attalign": "i",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": -1,
+      "attmissingval": null,
+      "attname": "operation",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 2,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "x",
+      "atttypmod": -1,
+      "collation_absent": false,
+      "collation_default": true,
+      "type": "text"
+    },
+    "3": {
+      "acl": {},
+      "attalign": "c",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 16,
+      "attmissingval": null,
+      "attname": "store_id",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 3,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "uuid"
+    },
+    "4": {
+      "acl": {},
+      "attalign": "c",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 16,
+      "attmissingval": null,
+      "attname": "product_id",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 4,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "uuid"
+    },
+    "5": {
+      "acl": {},
+      "attalign": "c",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 16,
+      "attmissingval": null,
+      "attname": "actor_id",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 5,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "uuid"
+    },
+    "6": {
+      "acl": {},
+      "attalign": "i",
+      "attbyval": true,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 4,
+      "attmissingval": null,
+      "attname": "expected_version",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 6,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "integer"
+    },
+    "7": {
+      "acl": {},
+      "attalign": "i",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": -1,
+      "attmissingval": null,
+      "attname": "mutation",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 7,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "x",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "jsonb"
+    },
+    "8": {
+      "acl": {},
+      "attalign": "i",
+      "attbyval": false,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": false,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": -1,
+      "attmissingval": null,
+      "attname": "response",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 8,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "x",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "jsonb"
+    },
+    "9": {
+      "acl": {},
+      "attalign": "d",
+      "attbyval": true,
+      "attcompression": "",
+      "attfdwoptions": null,
+      "attgenerated": "",
+      "atthasdef": true,
+      "atthasmissing": false,
+      "attidentity": "",
+      "attinhcount": 0,
+      "attisdropped": false,
+      "attislocal": true,
+      "attlen": 8,
+      "attmissingval": null,
+      "attname": "created_at",
+      "attndims": 0,
+      "attnotnull": true,
+      "attnum": 9,
+      "attoptions": null,
+      "attstattarget": -1,
+      "attstorage": "p",
+      "atttypmod": -1,
+      "collation_absent": true,
+      "collation_default": false,
+      "type": "timestamp with time zone"
+    }
+  },
+  "comments": [],
+  "constraints": {
+    "__check_expected_version__": {
+      "condeferrable": false,
+      "condeferred": false,
+      "conexclop": null,
+      "confdelsetcols": null,
+      "confdeltype": " ",
+      "conffeqop": null,
+      "confkey": null,
+      "confmatchtype": " ",
+      "confupdtype": " ",
+      "coninhcount": 0,
+      "conislocal": true,
+      "conkey": [
+        6
+      ],
+      "conname": "__check_expected_version__",
+      "connoinherit": false,
+      "conpfeqop": null,
+      "conppeqop": null,
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK (expected_version > 0)",
+      "foreign_relation_absent": true,
+      "index": null,
+      "namespace": "public",
+      "parent_absent": true,
+      "typed_constraint_absent": true
+    },
+    "__check_mutation__": {
+      "condeferrable": false,
+      "condeferred": false,
+      "conexclop": null,
+      "confdelsetcols": null,
+      "confdeltype": " ",
+      "conffeqop": null,
+      "confkey": null,
+      "confmatchtype": " ",
+      "confupdtype": " ",
+      "coninhcount": 0,
+      "conislocal": true,
+      "conkey": [
+        7
+      ],
+      "conname": "__check_mutation__",
+      "connoinherit": false,
+      "conpfeqop": null,
+      "conppeqop": null,
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK (jsonb_typeof(mutation) = 'object'::text)",
+      "foreign_relation_absent": true,
+      "index": null,
+      "namespace": "public",
+      "parent_absent": true,
+      "typed_constraint_absent": true
+    },
+    "__check_operation__": {
+      "condeferrable": false,
+      "condeferred": false,
+      "conexclop": null,
+      "confdelsetcols": null,
+      "confdeltype": " ",
+      "conffeqop": null,
+      "confkey": null,
+      "confmatchtype": " ",
+      "confupdtype": " ",
+      "coninhcount": 0,
+      "conislocal": true,
+      "conkey": [
+        2
+      ],
+      "conname": "__check_operation__",
+      "connoinherit": false,
+      "conpfeqop": null,
+      "conppeqop": null,
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK (operation = 'product.update.v1'::text)",
+      "foreign_relation_absent": true,
+      "index": null,
+      "namespace": "public",
+      "parent_absent": true,
+      "typed_constraint_absent": true
+    },
+    "__check_response__": {
+      "condeferrable": false,
+      "condeferred": false,
+      "conexclop": null,
+      "confdelsetcols": null,
+      "confdeltype": " ",
+      "conffeqop": null,
+      "confkey": null,
+      "confmatchtype": " ",
+      "confupdtype": " ",
+      "coninhcount": 0,
+      "conislocal": true,
+      "conkey": [
+        8
+      ],
+      "conname": "__check_response__",
+      "connoinherit": false,
+      "conpfeqop": null,
+      "conppeqop": null,
+      "contype": "c",
+      "convalidated": true,
+      "definition": "CHECK (jsonb_typeof(response) = 'object'::text)",
+      "foreign_relation_absent": true,
+      "index": null,
+      "namespace": "public",
+      "parent_absent": true,
+      "typed_constraint_absent": true
+    },
+    "__receipt_pkey__": {
+      "condeferrable": false,
+      "condeferred": false,
+      "conexclop": null,
+      "confdelsetcols": null,
+      "confdeltype": " ",
+      "conffeqop": null,
+      "confkey": null,
+      "confmatchtype": " ",
+      "confupdtype": " ",
+      "coninhcount": 0,
+      "conislocal": true,
+      "conkey": [
+        1
+      ],
+      "conname": "__receipt_pkey__",
+      "connoinherit": true,
+      "conpfeqop": null,
+      "conppeqop": null,
+      "contype": "p",
+      "convalidated": true,
+      "definition": "PRIMARY KEY (idempotency_key)",
+      "foreign_relation_absent": true,
+      "index": "public.__receipt_pkey__",
+      "namespace": "public",
+      "parent_absent": true,
+      "typed_constraint_absent": true
+    }
+  },
+  "defaults": {
+    "9": "now()"
+  },
+  "dependencies": {
+    "[\"default value\", null, \"for public.__receipt__.created_at\", 0, \"table column\", \"public\", \"public.__receipt__.created_at\", 9, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "for public.__receipt__.created_at",
+        "name": null,
+        "schema": null,
+        "type": "default value"
+      },
+      "reference": {
+        "identity": "public.__receipt__.created_at",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 9,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_actor__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.text)\", 0, \"language\", null, \"plpgsql\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_actor__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.text)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "plpgsql",
+        "name": "plpgsql",
+        "schema": null,
+        "type": "language"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_actor__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.text)\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_actor__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.text)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)\", 0, \"language\", null, \"plpgsql\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "plpgsql",
+        "name": "plpgsql",
+        "schema": null,
+        "type": "language"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_bump__()\", 0, \"language\", null, \"plpgsql\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_bump__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "plpgsql",
+        "name": "plpgsql",
+        "schema": null,
+        "type": "language"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_bump__()\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_bump__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_immutable__()\", 0, \"language\", null, \"plpgsql\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_immutable__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "plpgsql",
+        "name": "plpgsql",
+        "schema": null,
+        "type": "language"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_immutable__()\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_immutable__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)\", 0, \"language\", null, \"plpgsql\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "plpgsql",
+        "name": "plpgsql",
+        "schema": null,
+        "type": "language"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_snapshot__(pg_catalog.uuid)\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__fn_snapshot__(pg_catalog.uuid)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"index\", \"public\", \"public.__receipt_pkey__\", 0, \"table constraint\", \"public\", \"__receipt_pkey__ on public.__receipt__\", 0, \"i\"]": {
+      "deptype": "i",
+      "object": {
+        "identity": "public.__receipt_pkey__",
+        "name": "__receipt_pkey__",
+        "schema": "public",
+        "type": "index"
+      },
+      "reference": {
+        "identity": "__receipt_pkey__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"index\", \"public\", \"public.__receipt_product_index__\", 0, \"table column\", \"public\", \"public.__receipt__.created_at\", 9, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "public.__receipt_product_index__",
+        "name": "__receipt_product_index__",
+        "schema": "public",
+        "type": "index"
+      },
+      "reference": {
+        "identity": "public.__receipt__.created_at",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 9,
+      "subid": 0
+    },
+    "[\"index\", \"public\", \"public.__receipt_product_index__\", 0, \"table column\", \"public\", \"public.__receipt__.product_id\", 4, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "public.__receipt_product_index__",
+        "name": "__receipt_product_index__",
+        "schema": "public",
+        "type": "index"
+      },
+      "reference": {
+        "identity": "public.__receipt__.product_id",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 4,
+      "subid": 0
+    },
+    "[\"index\", \"public\", \"public.__receipt_product_index__\", 0, \"table column\", \"public\", \"public.__receipt__.store_id\", 3, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "public.__receipt_product_index__",
+        "name": "__receipt_product_index__",
+        "schema": "public",
+        "type": "index"
+      },
+      "reference": {
+        "identity": "public.__receipt__.store_id",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 3,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_expected_version__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.expected_version\", 6, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__check_expected_version__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.expected_version",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 6,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_expected_version__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.expected_version\", 6, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__check_expected_version__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.expected_version",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 6,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_mutation__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.mutation\", 7, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__check_mutation__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.mutation",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 7,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_mutation__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.mutation\", 7, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__check_mutation__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.mutation",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 7,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_operation__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.operation\", 2, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__check_operation__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.operation",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 2,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_operation__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.operation\", 2, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__check_operation__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.operation",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 2,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_response__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.response\", 8, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__check_response__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.response",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 8,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__check_response__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.response\", 8, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__check_response__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.response",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 8,
+      "subid": 0
+    },
+    "[\"table constraint\", \"public\", \"__receipt_pkey__ on public.__receipt__\", 0, \"table column\", \"public\", \"public.__receipt__.idempotency_key\", 1, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__receipt_pkey__ on public.__receipt__",
+        "name": null,
+        "schema": "public",
+        "type": "table constraint"
+      },
+      "reference": {
+        "identity": "public.__receipt__.idempotency_key",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table column"
+      },
+      "refsubid": 1,
+      "subid": 0
+    },
+    "[\"table\", \"public\", \"public.__receipt__\", 0, \"schema\", null, \"public\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "public.__receipt__",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table"
+      },
+      "reference": {
+        "identity": "public",
+        "name": "public",
+        "schema": null,
+        "type": "schema"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"toast table\", \"pg_toast\", \"pg_toast.$receipt_toast\", 0, \"table\", \"public\", \"public.__receipt__\", 0, \"i\"]": {
+      "deptype": "i",
+      "object": {
+        "identity": "pg_toast.$receipt_toast",
+        "name": "$receipt_toast",
+        "schema": "pg_toast",
+        "type": "toast table"
+      },
+      "reference": {
+        "identity": "public.__receipt__",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__child_0_trigger__ on public.__child_0__\", 0, \"function\", \"public\", \"public.__fn_bump__()\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__child_0_trigger__ on public.__child_0__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__fn_bump__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__child_0_trigger__ on public.__child_0__\", 0, \"table\", \"public\", \"public.__child_0__\", 0, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__child_0_trigger__ on public.__child_0__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__child_0__",
+        "name": "__child_0__",
+        "schema": "public",
+        "type": "table"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__child_1_trigger__ on public.__child_1__\", 0, \"function\", \"public\", \"public.__fn_bump__()\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__child_1_trigger__ on public.__child_1__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__fn_bump__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__child_1_trigger__ on public.__child_1__\", 0, \"table\", \"public\", \"public.__child_1__\", 0, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__child_1_trigger__ on public.__child_1__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__child_1__",
+        "name": "__child_1__",
+        "schema": "public",
+        "type": "table"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__receipt_trigger__ on public.__receipt__\", 0, \"function\", \"public\", \"public.__fn_immutable__()\", 0, \"n\"]": {
+      "deptype": "n",
+      "object": {
+        "identity": "__receipt_trigger__ on public.__receipt__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__fn_immutable__()",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"trigger\", null, \"__receipt_trigger__ on public.__receipt__\", 0, \"table\", \"public\", \"public.__receipt__\", 0, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "__receipt_trigger__ on public.__receipt__",
+        "name": null,
+        "schema": null,
+        "type": "trigger"
+      },
+      "reference": {
+        "identity": "public.__receipt__",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"type\", \"public\", \"public.__receipt__\", 0, \"table\", \"public\", \"public.__receipt__\", 0, \"i\"]": {
+      "deptype": "i",
+      "object": {
+        "identity": "public.__receipt__",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "type"
+      },
+      "reference": {
+        "identity": "public.__receipt__",
+        "name": "__receipt__",
+        "schema": "public",
+        "type": "table"
+      },
+      "refsubid": 0,
+      "subid": 0
+    }
+  },
+  "functions": {
+    "__fn_actor__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [
+        "uuid",
+        "uuid",
+        "text"
+      ],
+      "language": "plpgsql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": [
+        "__input_0__",
+        "__input_1__",
+        "__input_2__"
+      ],
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_actor__",
+      "pronargdefaults": 0,
+      "pronargs": 3,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": true,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "result_type": "void"
+    },
+    "__fn_apply__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        },
+        "[\"app_tenant\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "app_tenant",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [
+        "uuid",
+        "uuid",
+        "uuid",
+        "integer",
+        "uuid",
+        "jsonb"
+      ],
+      "language": "plpgsql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": [
+        "__input_0__",
+        "__input_1__",
+        "__input_2__",
+        "__input_3__",
+        "__input_4__",
+        "__input_5__"
+      ],
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_apply__",
+      "pronargdefaults": 0,
+      "pronargs": 6,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": true,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "result_type": "jsonb"
+    },
+    "__fn_bump__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [],
+      "language": "plpgsql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": null,
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_bump__",
+      "pronargdefaults": 0,
+      "pronargs": 0,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": true,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "result_type": "trigger"
+    },
+    "__fn_immutable__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [],
+      "language": "plpgsql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": null,
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_immutable__",
+      "pronargdefaults": 0,
+      "pronargs": 0,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": false,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "result_type": "trigger"
+    },
+    "__fn_read__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        },
+        "[\"app_tenant\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "app_tenant",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [
+        "uuid",
+        "uuid",
+        "uuid"
+      ],
+      "language": "plpgsql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": [
+        "__input_0__",
+        "__input_1__",
+        "__input_2__"
+      ],
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_read__",
+      "pronargdefaults": 0,
+      "pronargs": 3,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": true,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "v",
+      "result_type": "jsonb"
+    },
+    "__fn_snapshot__": {
+      "acl": {
+        "[\"$owner\", \"$owner\", \"EXECUTE\", false]": {
+          "grantable": false,
+          "grantee": "$owner",
+          "grantor": "$owner",
+          "privilege": "EXECUTE"
+        }
+      },
+      "body_md5": "__literal_body_md5__",
+      "default_source": null,
+      "input_types": [
+        "uuid"
+      ],
+      "language": "sql",
+      "namespace": "public",
+      "owner_valid": true,
+      "proallargtypes": null,
+      "proargdefaults": null,
+      "proargmodes": null,
+      "proargnames": [
+        "__input_0__"
+      ],
+      "probin": null,
+      "proconfig": [
+        "search_path=pg_catalog, public, pg_temp"
+      ],
+      "procost": 100,
+      "proisstrict": false,
+      "prokind": "f",
+      "proleakproof": false,
+      "proname": "__fn_snapshot__",
+      "pronargdefaults": 0,
+      "pronargs": 1,
+      "proparallel": "u",
+      "proretset": false,
+      "prorows": 0,
+      "prosecdef": false,
+      "prosqlbody": null,
+      "prosrc": "__literal_body__",
+      "prosupport": "-",
+      "protrftypes": null,
+      "provariadic": "0",
+      "provolatile": "s",
+      "result_type": "jsonb"
+    }
+  },
+  "indexes": {
+    "__receipt_pkey__": {
+      "class_profile": {
+        "access_method": "btree",
+        "acl": {},
+        "namespace": "public",
+        "owner_valid": true,
+        "relchecks": 0,
+        "relforcerowsecurity": false,
+        "relhasindex": false,
+        "relhasrules": false,
+        "relhassubclass": false,
+        "relhastriggers": false,
+        "relispartition": false,
+        "relispopulated": true,
+        "relisshared": false,
+        "relkind": "i",
+        "relname": "__receipt_pkey__",
+        "relnatts": 1,
+        "reloptions": null,
+        "relpartbound": null,
+        "relpersistence": "p",
+        "relreplident": "n",
+        "relrowsecurity": false,
+        "rewrite_absent": true,
+        "rowtype_link_valid": true,
+        "tablespace": null,
+        "toast_link_valid": true,
+        "toast_present": false,
+        "typed_table": null
+      },
+      "collations_absent": true,
+      "definition": "CREATE UNIQUE INDEX __receipt_pkey__ ON public.__receipt__ USING btree (idempotency_key)",
+      "indcheckxmin": false,
+      "indexprs": null,
+      "indimmediate": true,
+      "indisclustered": false,
+      "indisexclusion": false,
+      "indislive": true,
+      "indisprimary": true,
+      "indisready": true,
+      "indisreplident": false,
+      "indisunique": true,
+      "indisvalid": true,
+      "indkey": [
+        1
+      ],
+      "indnatts": 1,
+      "indnkeyatts": 1,
+      "indnullsnotdistinct": false,
+      "indoption": [
+        0
+      ],
+      "indpred": null,
+      "opclasses_default": true
+    },
+    "__receipt_product_index__": {
+      "class_profile": {
+        "access_method": "btree",
+        "acl": {},
+        "namespace": "public",
+        "owner_valid": true,
+        "relchecks": 0,
+        "relforcerowsecurity": false,
+        "relhasindex": false,
+        "relhasrules": false,
+        "relhassubclass": false,
+        "relhastriggers": false,
+        "relispartition": false,
+        "relispopulated": true,
+        "relisshared": false,
+        "relkind": "i",
+        "relname": "__receipt_product_index__",
+        "relnatts": 3,
+        "reloptions": null,
+        "relpartbound": null,
+        "relpersistence": "p",
+        "relreplident": "n",
+        "relrowsecurity": false,
+        "rewrite_absent": true,
+        "rowtype_link_valid": true,
+        "tablespace": null,
+        "toast_link_valid": true,
+        "toast_present": false,
+        "typed_table": null
+      },
+      "collations_absent": true,
+      "definition": "CREATE INDEX __receipt_product_index__ ON public.__receipt__ USING btree (store_id, product_id, created_at)",
+      "indcheckxmin": false,
+      "indexprs": null,
+      "indimmediate": true,
+      "indisclustered": false,
+      "indisexclusion": false,
+      "indislive": true,
+      "indisprimary": false,
+      "indisready": true,
+      "indisreplident": false,
+      "indisunique": false,
+      "indisvalid": true,
+      "indkey": [
+        3,
+        4,
+        9
+      ],
+      "indnatts": 3,
+      "indnkeyatts": 3,
+      "indnullsnotdistinct": false,
+      "indoption": [
+        0,
+        0,
+        0
+      ],
+      "indpred": null,
+      "opclasses_default": true
+    }
+  },
+  "inheritance": [],
+  "policies": [],
+  "receipt": {
+    "access_method": "heap",
+    "acl": {
+      "[\"$owner\", \"$owner\", \"DELETE\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "DELETE"
+      },
+      "[\"$owner\", \"$owner\", \"INSERT\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "INSERT"
+      },
+      "[\"$owner\", \"$owner\", \"REFERENCES\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "REFERENCES"
+      },
+      "[\"$owner\", \"$owner\", \"SELECT\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "SELECT"
+      },
+      "[\"$owner\", \"$owner\", \"TRIGGER\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "TRIGGER"
+      },
+      "[\"$owner\", \"$owner\", \"TRUNCATE\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "TRUNCATE"
+      },
+      "[\"$owner\", \"$owner\", \"UPDATE\", false]": {
+        "grantable": false,
+        "grantee": "$owner",
+        "grantor": "$owner",
+        "privilege": "UPDATE"
+      }
+    },
+    "namespace": "public",
+    "owner_valid": true,
+    "relchecks": 4,
+    "relforcerowsecurity": true,
+    "relhasindex": true,
+    "relhasrules": false,
+    "relhassubclass": false,
+    "relhastriggers": true,
+    "relispartition": false,
+    "relispopulated": true,
+    "relisshared": false,
+    "relkind": "r",
+    "relname": "__receipt__",
+    "relnatts": 9,
+    "reloptions": null,
+    "relpartbound": null,
+    "relpersistence": "p",
+    "relreplident": "d",
+    "relrowsecurity": true,
+    "rewrite_absent": true,
+    "rowtype_link_valid": true,
+    "tablespace": null,
+    "toast_link_valid": true,
+    "toast_present": true,
+    "typed_table": null
+  },
+  "roles": {
+    "$owner": {
+      "bypass_rls": true,
+      "create_db": true,
+      "create_role": true,
+      "inherit": true,
+      "login": true,
+      "replication": true,
+      "super": true
+    },
+    "anon": {
+      "bypass_rls": false,
+      "create_db": false,
+      "create_role": false,
+      "inherit": true,
+      "login": false,
+      "replication": false,
+      "super": false
+    },
+    "app_tenant": {
+      "bypass_rls": false,
+      "create_db": false,
+      "create_role": false,
+      "inherit": true,
+      "login": false,
+      "replication": false,
+      "super": false
+    },
+    "authenticated": {
+      "bypass_rls": false,
+      "create_db": false,
+      "create_role": false,
+      "inherit": true,
+      "login": false,
+      "replication": false,
+      "super": false
+    },
+    "service_role": {
+      "bypass_rls": true,
+      "create_db": false,
+      "create_role": false,
+      "inherit": true,
+      "login": false,
+      "replication": false,
+      "super": false
+    }
+  },
+  "rules": [],
+  "security_labels": [],
+  "shared_dependencies": {
+    "[\"function\", \"public\", \"public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)\", 0, \"role\", null, \"app_tenant\", 0, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "public.__fn_apply__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid,integer,pg_catalog.uuid,pg_catalog.jsonb)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "app_tenant",
+        "name": "app_tenant",
+        "schema": null,
+        "type": "role"
+      },
+      "refsubid": 0,
+      "subid": 0
+    },
+    "[\"function\", \"public\", \"public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)\", 0, \"role\", null, \"app_tenant\", 0, \"a\"]": {
+      "deptype": "a",
+      "object": {
+        "identity": "public.__fn_read__(pg_catalog.uuid,pg_catalog.uuid,pg_catalog.uuid)",
+        "name": null,
+        "schema": "public",
+        "type": "function"
+      },
+      "reference": {
+        "identity": "app_tenant",
+        "name": "app_tenant",
+        "schema": null,
+        "type": "role"
+      },
+      "refsubid": 0,
+      "subid": 0
+    }
+  },
+  "triggers": {
+    "public.__child_0__.__child_0_trigger__": {
+      "constraint_links_absent": true,
+      "definition": "CREATE TRIGGER __child_0_trigger__ AFTER INSERT OR DELETE OR UPDATE ON __child_0__ FOR EACH ROW EXECUTE FUNCTION __fn_bump__()",
+      "function": "public.__fn_bump__()",
+      "relation": "public.__child_0__",
+      "tgargs": "\\x",
+      "tgattr": [],
+      "tgdeferrable": false,
+      "tgenabled": "O",
+      "tginitdeferred": false,
+      "tgisinternal": false,
+      "tgname": "__child_0_trigger__",
+      "tgnargs": 0,
+      "tgnewtable": null,
+      "tgoldtable": null,
+      "tgqual": null,
+      "tgtype": 29
+    },
+    "public.__child_1__.__child_1_trigger__": {
+      "constraint_links_absent": true,
+      "definition": "CREATE TRIGGER __child_1_trigger__ AFTER INSERT OR DELETE OR UPDATE ON __child_1__ FOR EACH ROW EXECUTE FUNCTION __fn_bump__()",
+      "function": "public.__fn_bump__()",
+      "relation": "public.__child_1__",
+      "tgargs": "\\x",
+      "tgattr": [],
+      "tgdeferrable": false,
+      "tgenabled": "O",
+      "tginitdeferred": false,
+      "tgisinternal": false,
+      "tgname": "__child_1_trigger__",
+      "tgnargs": 0,
+      "tgnewtable": null,
+      "tgoldtable": null,
+      "tgqual": null,
+      "tgtype": 29
+    },
+    "public.__receipt__.__receipt_trigger__": {
+      "constraint_links_absent": true,
+      "definition": "CREATE TRIGGER __receipt_trigger__ BEFORE DELETE OR UPDATE ON __receipt__ FOR EACH ROW EXECUTE FUNCTION __fn_immutable__()",
+      "function": "public.__fn_immutable__()",
+      "relation": "public.__receipt__",
+      "tgargs": "\\x",
+      "tgattr": [],
+      "tgdeferrable": false,
+      "tgenabled": "O",
+      "tginitdeferred": false,
+      "tgisinternal": false,
+      "tgname": "__receipt_trigger__",
+      "tgnargs": 0,
+      "tgnewtable": null,
+      "tgoldtable": null,
+      "tgqual": null,
+      "tgtype": 27
+    }
+  }
+};
+// Closed source grammar for an empty receipt retirement, composed with the
+// existing primary ABI proof. No SQL is run and no file/target-name is allowed.
+// The inspectable templates below bind identities and literal profile data;
+// they are not source hashes, and never approve values read from the live target.
+function retentionStable(value) {
+    if(Array.isArray(value))return value.map(retentionStable);
+    if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(key=>[key,retentionStable(value[key])]));
+    return value;
+}
+const retentionEqual=(a,b)=>JSON.stringify(retentionStable(a))===JSON.stringify(retentionStable(b));
+function retentionModel(sql,baseProof) {
+    const statements=sqlStatements(sql),primary=[];let literal;
+    for(let index=0;index<statements.length;index++) {
+        const statement=statements[index];
+        if(!word(statement[0],'do')||statement.length!==3||statement[1]?.kind!=='body')continue;
+        const body=statement[1].value,tokens=sqlTokens(body);
+        const identity=tokens.filter(t=>t.kind==='string').map(t=>functionIdentity(t.value)).find(Boolean);
+        if(identity) {
+            const rows=baseProof('BEGIN; LOCK TABLE pg_catalog.pg_proc IN SHARE ROW EXCLUSIVE MODE; DO $primary$'+body+'$primary$; DROP FUNCTION '+identity+'; COMMIT;');
+            if(rows.length)primary.push({index,body,rows});
+        }
+        for(const token of tokens.filter(t=>t.kind==='body')) {
+            let data;try{data=JSON.parse(token.value);}catch{continue;}
+            if(!data||typeof data!=='object'||!data.functions||!data.receipt)continue;
+            if(literal)throw Error('Multiple literal profiles');literal={index,token,data};
+        }
+    }
+    if(primary.length!==1||primary[0].rows.length!==6||!literal)throw Error('Unbound retirement profile');
+    const proof=primary[0];if(proof.rows.some(g=>g.level!=='typed-ABI'||!g.quiescence_guard||g.returns_set!==false||g.overloads!==1))throw Error('Missing primary lifetime proof');
+    const profile=literal.data,functions=profile.functions;
+    if(Object.keys(functions).length!==6)throw Error('Unknown function set');
+    const roleFunctions={},bindings=new Map();
+    const identifier=value=>typeof value==='string'&&/^[a-z_][a-z0-9_]{0,62}$/.test(value);
+    const bind=(value,marker)=>{if(!identifier(value)||bindings.has(value)&&bindings.get(value)!==marker)throw Error('Unbound identity');bindings.set(value,marker);};
+    for(const guard of proof.rows) {
+        const [,name,args]=guard.identity.match(/^public\.([^()]+)\(([^()]*)\)$/)??[];
+        const data=functions[name],inputs=args?.split(',').filter(Boolean);
+        if(!data||data.proname!==name||data.owner_valid!==true||data.namespace!=='public'||!retentionEqual(data.input_types,inputs)||data.result_type!==guard.result_type||!retentionEqual(data.proargnames,inputs.length?guard.input_names:null))throw Error('Literal ABI not bound');
+        if(typeof data.prosrc!=='string'||!data.prosrc.length||data.prosrc.includes('\0')||typeof data.body_md5!=='string'||createHash('md5').update(data.prosrc).digest('hex')!==data.body_md5)throw Error('Nonliteral body fingerprint');
+        const shape=guard.result_type+':'+args;let role;
+        if(shape==='jsonb:uuid,uuid,uuid,integer,uuid,jsonb')role='apply';
+        else if(shape==='jsonb:uuid,uuid,uuid')role='read';
+        else if(shape==='void:uuid,uuid,text')role='actor';
+        else if(shape==='jsonb:uuid')role='snapshot';
+        else if(shape==='trigger:'&&typeof data.prosecdef==='boolean')role=data.prosecdef?'bump':'immutable';
+        if(!role||roleFunctions[role])throw Error('Unknown receipt ABI family');
+        roleFunctions[role]=name;bind(name,'__fn_'+role+'__');
+    }
+    if(Object.keys(roleFunctions).length!==6)throw Error('Missing receipt ABI family');
+    const receipt=profile.receipt?.relname;
+    if(!identifier(receipt)||receipt.length>35)throw Error('Unknown receipt identity');bind(receipt,'__receipt__');
+    bind(receipt+'_pkey','__receipt_pkey__');bind(receipt+'_product_idx','__receipt_product_index__');
+    for(const column of ['operation','expected_version','mutation','response'])bind(receipt+'_'+column+'_check','__check_'+column+'__');
+    const triggers=Object.values(profile.triggers??{});
+    if(triggers.length!==3)throw Error('Unknown trigger footprint');
+    const immutable=triggers.filter(t=>t.relation==='public.'+receipt);
+    if(immutable.length!==1||immutable[0].tgname!==receipt+'_immutable'||immutable[0].function!=='public.'+roleFunctions.immutable+'()')throw Error('Unbound immutable trigger');
+    bind(immutable[0].tgname,'__receipt_trigger__');
+    const children=triggers.filter(t=>t.relation!=='public.'+receipt).sort((a,b)=>a.relation.localeCompare(b.relation,'en'));
+    if(children.length!==2||children[0].relation===children[1].relation)throw Error('Unknown child footprint');
+    children.forEach((trigger,index)=>{
+        const child=trigger.relation?.match(/^public\.([a-z_][a-z0-9_]*)$/)?.[1];
+        if(!identifier(child)||trigger.tgname!==child+'_edit_revision'||trigger.function!=='public.'+roleFunctions.bump+'()')throw Error('Unbound revision trigger');
+        bind(child,'__child_'+index+'__');bind(trigger.tgname,'__child_'+index+'_trigger__');
+    });
+    const names=[...bindings].sort((a,b)=>b[0].length-a[0].length);
+    const replace=value=>names.reduce((text,[name,marker])=>text.replace(new RegExp('(?<![a-z0-9_])'+name+'(?![a-z0-9_])','g'),marker),value);
+    const dataCopy=JSON.parse(JSON.stringify(profile));
+    for(const [name,data] of Object.entries(dataCopy.functions)) {
+        data.prosrc='__literal_body__';data.body_md5='__literal_body_md5__';
+        if(data.proargnames)data.proargnames=data.proargnames.map((_,index)=>'__input_'+index+'__');
+    }
+    const mapData=value=>Array.isArray(value)?value.map(mapData):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,v])=>[replace(key),mapData(v)])):typeof value==='string'?replace(value):value;
+    const literalModel=retentionStable(mapData(dataCopy));
+    const normalizeTokens=(tokens,{primaryBody=false,profileBody=false}={})=>{
+        if(primaryBody) {
+            const start=tokens.findIndex(t=>word(t,'values'));if(start<0)throw Error('Missing finite rows');
+            let depth=1,end=start+1;
+            for(;end<tokens.length;end++){if(tokens[end].kind==='symbol'&&tokens[end].value==='(')depth++;if(tokens[end].kind==='symbol'&&tokens[end].value===')')depth--;if(depth===0)break;}
+            if(depth!==0)throw Error('Unbounded rows');tokens=[...tokens.slice(0,start+1),{kind:'word',value:'__primary_rows__'},...tokens.slice(end)];
+        }
+        return tokens.map((token,index)=>{
+            if(token.kind==='body') {
+                if(!profileBody||token.start!==literal.token.start||token.end!==literal.token.end)throw Error('Unknown executable/literal body');
+                return '__literal_profile__';
+            }
+            const refusal=token.kind==='string'&&word(tokens[index-2],'raise')&&word(tokens[index-1],'exception');
+            const value=refusal?'__literal_refusal__':replace(token.value);
+            return token.kind==='string'?"'"+value.replaceAll("'","''")+"'":value;
+        }).join(' ');
+    };
+    const sourceModel=statements.map((statement,index)=>word(statement[0],'do')?
+        'do {'+normalizeTokens(sqlTokens(statement[1].value),{primaryBody:index===proof.index,profileBody:index===literal.index})+'} ;':normalizeTokens(statement)).join('\n');
+    return {source:sourceModel,literal:literalModel,proof,profile,receipt,roleFunctions};
+}
+function retentionCatalogCertificate(sql,baseProof) {
+    try {
+        const model=retentionModel(sql,baseProof);
+        if(model.source!==RETENTION_SOURCE_TEMPLATE||!retentionEqual(model.literal,RETENTION_LITERAL_TEMPLATE))return [];
+        return model.proof.rows.map(row=>({...row,guard_start:sqlStatements(sql)[model.proof.index][0].start,requires_catalog_lock:true,body_fingerprint:{md5:model.profile.functions[row.name].body_md5,owner_relation:'public.'+model.receipt},catalog_retention_profile:{kind:'closed-literal-receipt-profile',relation:'public.'+model.receipt,retained_rows_refused:true,foreign_dependencies_refused:true}}));
+    }catch{return [];}
+}
+
+export function rollbackSignatureGuards(sql) {
+    const existing=baseRollbackSignatureGuards(sql);
+    return existing.length?existing:retentionCatalogCertificate(sql,baseRollbackSignatureGuards);
 }

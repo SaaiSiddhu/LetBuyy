@@ -119,9 +119,6 @@ export function mapAdsDatabaseError(error: unknown): AppError | null {
     }
     if (/campaign .* does not belong to site/.test(message)) return new NotFoundError('Campaign not found');
     if (/ad credit account is /.test(message)) return new ConflictError('the ad credit account is not active');
-    if (/ad credit idempotency key conflicts with a different request payload/.test(message)) {
-        return new ConflictError('this idempotency key belongs to a different budget request');
-    }
     if (/allocation must be greater than zero/.test(message)) return new AppError('amount_minor must be greater than zero', 422, 'UNPROCESSABLE');
     if (/cannot release .* from a campaign with .* remaining/.test(message)) {
         return new AppError('cannot release more than the campaign has left', 422, 'RELEASE_EXCEEDS_REMAINING');
@@ -269,7 +266,6 @@ export function createAdsRouter(deps: AdsRouteDependencies = defaultAdsRouteDepe
             const id = uuidParam(c, 'id');
             const scope = await deps.resolveOwnedStoreScope(c, body.store_id);
             const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
-                await sql.unsafe('SELECT set_config($1, $2, true)', ['app.user_id', scope.customUser.id]);
                 const rows = (await sql.unsafe(ALLOCATE_AD_BUDGET_SQL, [
                     // The site comes from the resolved scope, never the body; 238's fence checks the
                     // same thing again at the database.
@@ -301,7 +297,6 @@ export function createAdsRouter(deps: AdsRouteDependencies = defaultAdsRouteDepe
             const id = uuidParam(c, 'id');
             const scope = await deps.resolveOwnedStoreScope(c, body.store_id);
             const result = await deps.withResolvedTenantTx(c, scope.tenant, async (sql) => {
-                await sql.unsafe('SELECT set_config($1, $2, true)', ['app.user_id', scope.customUser.id]);
                 const rows = (await sql.unsafe(RELEASE_AD_BUDGET_SQL, [
                     scope.siteId,
                     id,
