@@ -480,8 +480,8 @@ async function withMerchantReelBrowser(run: (fixture: {
       // browser reload/retry or a substitute for any mounted workflow assertion.
       const store = new URL(page.url()).pathname.split('/')[1]; assert.ok(store);
       const warmPath = '/' + store + '/content/reels';
-      const compiledRoute = await context.request.get(origin + warmPath); assert.equal(compiledRoute.status(), 200);
-      const compiledLayout = await context.request.get(origin + '/_next/static/chunks/app/layout.js'); assert.equal(compiledLayout.status(), 200);
+      const compiledRoute = await context.request.get(origin + warmPath, { timeout: 120000 }); assert.equal(compiledRoute.status(), 200);
+      const compiledLayout = await context.request.get(origin + '/_next/static/chunks/app/layout.js', { timeout: 120000 }); assert.equal(compiledLayout.status(), 200);
       const layoutSource = await compiledLayout.text(); new Script(layoutSource);
       scriptNetwork.push({ kind: 'compiler-readiness', path: warmPath, routeStatus: compiledRoute.status(), layoutStatus: compiledLayout.status(), layoutBytes: Buffer.byteLength(layoutSource), completeOuterParse: true });
       return { context, page };
