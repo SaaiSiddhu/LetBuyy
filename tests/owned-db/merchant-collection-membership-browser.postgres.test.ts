@@ -76,7 +76,7 @@ before(async()=>{
     const identityPort=await freePort(),merchantPort=await freePort();
     identityOrigin=`http://localhost:${identityPort}`;merchantOrigin=`http://localhost:${merchantPort}`;
     proxy=await startOwnedPooledSqlProxy(owned);const keys=await newIdentityKeys();
-    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',LETBUYY_IDENTITY_ISSUER:identityOrigin,...proxy.env()}));
+    gateway=new Gateway(gatewayEnv(owned,keys,{ENVIRONMENT:'local',NEXT_PUBLIC_STORE_ROOT_DOMAIN:'localhost',LETBUYY_IDENTITY_ISSUER:identityOrigin,...proxy.env()}));
     bridge=createServer(async(req,res)=>{
         const chunks:Buffer[]=[];for await(const c of req)chunks.push(Buffer.from(c));const body=Buffer.concat(chunks).toString();
         const headers=new Headers();for(const[k,v]of Object.entries(req.headers))if(typeof v==='string'&&!['host','connection','content-length','transfer-encoding','accept-encoding'].includes(k))headers.set(k,v);
@@ -187,6 +187,17 @@ async function loaded(saved:Manual){
         assert.equal(data.collection_id,saved.id);assert.equal(data.store_id,site.siteId);assert.ok(Number.isInteger(data.membership_version)&&data.membership_version>0);assert.deepEqual(data.product_ids,assigned(saved));return{...h,data};
     }catch(error){await h.page.close();throw error;}
 }
+async function choice(page:Page,name:string){
+    const target=page.getByRole('checkbox',{name,exact:true});
+    while(await target.count()===0){
+        const more=page.getByRole('button',{name:'Load more products',exact:true});
+        assert.ok(await more.isVisible(),'Requested product must be reachable through actual catalog continuation: '+name);
+        const count=await page.getByRole('checkbox').count();
+        await more.click();
+        await expect.poll(()=>page.getByRole('checkbox').count()).toBeGreaterThan(count);
+    }
+    return target;
+}
 async function save(page:Page,saved:Manual,label='Save products'){
     const[reply]=await Promise.all([page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='PUT'),page.getByRole('button',{name:label,exact:true}).click()]);return reply;
 }
@@ -229,11 +240,11 @@ test('normal owner membership save is visible at the existing public URL and a s
         const staleCacheKey=storefrontCacheRequest(storefrontCacheKey('storefront-rest','collection-detail','0',site.subdomain,saved.id)).url;
         cacheEntries.set(staleCacheKey,new Response(warm.text,{status:warm.status,headers:warm.headers}));
         const cacheReadsBefore=cacheReads;
-        await first.page.getByRole('checkbox',{name:'Synthetic stale product 2',exact:true}).check();
+        await (await choice(first.page,'Synthetic stale product 2')).check();
         const success=await save(first.page,saved);assert.equal(success.status(),200);const body=success.request().postDataJSON();assert.equal(body.expected_version,first.data.membership_version);assert.match(body.idempotency_key,/^[0-9a-f-]{36}$/i);assert.equal(success.request().headers()['x-idempotency-key'],body.idempotency_key);
         assert.deepEqual(assigned(saved),[...saved.products.slice(0,2),saved.products[2]]);
         const fresh=await publicRead(saved);assert.equal(fresh.status,200,fresh.text);assert.equal(cacheReads,cacheReadsBefore,'Mutable collection detail bypassed the deliberately stale cache entry');assert.match(fresh.headers.get('Cache-Control')??'',/no-store/);assert.deepEqual(fresh.json?.data.products.map((p:{id:string})=>p.id).sort(),[...saved.products.slice(0,2),saved.products[2]].sort());
-        await second.page.getByRole('checkbox',{name:'Synthetic stale product 3',exact:true}).check();const beforeConflict=state(),conflict=await save(second.page,saved);assert.equal(conflict.status(),409);assert.deepEqual(state(),beforeConflict);await expect(second.page.getByText('Collection membership changed',{exact:true})).toBeVisible();
+        await (await choice(second.page,'Synthetic stale product 3')).check();const beforeConflict=state(),conflict=await save(second.page,saved);assert.equal(conflict.status(),409);assert.deepEqual(state(),beforeConflict);await expect(second.page.getByText('Collection membership changed',{exact:true})).toBeVisible();
         const[reloaded]=await Promise.all([second.page.waitForResponse(r=>new URL(r.url()).pathname===membershipPath(saved)&&r.request().method()==='GET'),second.page.getByRole('button',{name:'Reload current products',exact:true}).click()]);assert.equal(reloaded.status(),200);await expect(second.page.getByRole('checkbox',{name:'Synthetic stale product 2',exact:true})).toBeChecked();
         failProductReads=true;const faultsBefore=failedProductReads;
         try{const failed=await publicRead(saved);assert.equal(failed.status,500,failed.text);assert.ok(failedProductReads>faultsBefore);assert.equal(failed.json?.data,undefined);assert.doesNotMatch(failed.text,/syn_private_preview_fault|synthetic-private-detail/);}
@@ -246,9 +257,9 @@ test('a lost committed reply survives reload and exact replay never overwrites a
     const saved=manualCollection('replay'),original=await loaded(saved);
     let later:Awaited<ReturnType<typeof loaded>>|undefined;
     try{
-        await original.page.getByRole('checkbox',{name:'Synthetic replay product 2',exact:true}).check();loseNextMembershipReply=true;
+        await (await choice(original.page,'Synthetic replay product 2')).check();loseNextMembershipReply=true;
         const lost=await save(original.page,saved);assert.equal(lost.status(),503);assert.equal(lostCommittedReplies,1);const captured=lost.request().postDataJSON();assert.ok(assigned(saved).includes(saved.products[2]));
-        later=await loaded(saved);await later.page.getByRole('checkbox',{name:'Synthetic replay product 3',exact:true}).check();assert.equal((await save(later.page,saved)).status(),200);const beforeReplay=state();
+        later=await loaded(saved);await (await choice(later.page,'Synthetic replay product 3')).check();assert.equal((await save(later.page,saved)).status(),200);const beforeReplay=state();
         await original.page.reload();const row=original.page.getByRole('row').filter({has:original.page.getByText(saved.name,{exact:true})});await row.getByRole('button',{name:'Manage products',exact:true}).click();
         const replay=await save(original.page,saved,'Retry same save');assert.equal(replay.status(),200);assert.deepEqual(replay.request().postDataJSON(),captured);assert.deepEqual(state(),beforeReplay);assert.ok(assigned(saved).includes(saved.products[3]));
         const count=Number(owned.psql("SELECT count(*)FROM collection_membership_receipts WHERE collection_id="+quote(saved.id)+';'));assert.equal(count,2);checkpoints.push('real_commit_negative_lost_reply_reload_exact_receipt_after_newer_save_no_rewrite');
@@ -279,8 +290,8 @@ test('normal public Commerce render recovers from a real outage and shows the cu
         await expect(page.getByRole('heading',{name:saved.name,exact:true})).toBeVisible();
         await expect(page.getByText('Synthetic render product 0',{exact:true}).first()).toBeVisible();
         edit=await loaded(saved);
-        await edit.page.getByRole('checkbox',{name:'Synthetic render product 0',exact:true}).uncheck();
-        await edit.page.getByRole('checkbox',{name:'Synthetic render product 2',exact:true}).check();
+        await (await choice(edit.page,'Synthetic render product 0')).uncheck();
+        await (await choice(edit.page,'Synthetic render product 2')).check();
         assert.equal((await save(edit.page,saved)).status(),200);
         const beforeRender=state();await page.reload();
         await expect(page.getByText('Synthetic render product 0',{exact:true})).toHaveCount(0);

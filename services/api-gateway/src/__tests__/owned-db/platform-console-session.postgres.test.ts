@@ -128,15 +128,19 @@ test('super-admin removal/re-add and staff downgrade revoke existing cookies per
     }
 });
 
-test('a mandatory audit outage rolls back registration; exact relation recovery allows the same cookie once', async () => {
+test('a mandatory audit outage rolls back registration; exact trigger recovery allows the same cookie once', async () => {
     const normal = await context();
     const before = owned.psql("SELECT relacl::text FROM pg_class WHERE oid='public.audit_logs'::regclass;");
-    owned.psql('ALTER TABLE public.audit_logs RENAME TO synthetic_console_audit_outage;');
+    assert.match(owned.psqlExpectError('ALTER TABLE public.audit_logs RENAME TO synthetic_audit_outage;'), /360 refuses changed parent relation identity/);
+    owned.script(`CREATE FUNCTION public.synthetic_audit_insert_outage() RETURNS trigger LANGUAGE plpgsql AS $$
+        BEGIN RAISE EXCEPTION 'synthetic mandatory audit insertion outage'; END $$;
+        CREATE TRIGGER synthetic_audit_insert_outage BEFORE INSERT ON public.audit_logs
+        FOR EACH ROW EXECUTE FUNCTION public.synthetic_audit_insert_outage();`);
     try {
         assert.equal((await normal.call('register')).status, 503);
         assert.equal(owned.psql(`SELECT count(*) FROM sessions_v2 WHERE id='${normal.sessionId}';`), '0');
         assert.equal(owned.psql(`SELECT count(*) FROM principals WHERE realm='admin' AND legacy_user_id='${normal.id}';`), '0');
-    } finally { owned.psql('ALTER TABLE public.synthetic_console_audit_outage RENAME TO audit_logs;'); }
+    } finally { owned.script('DROP TRIGGER synthetic_audit_insert_outage ON public.audit_logs; DROP FUNCTION public.synthetic_audit_insert_outage();'); }
     assert.equal(owned.psql("SELECT relacl::text FROM pg_class WHERE oid='public.audit_logs'::regclass;"), before);
     assert.equal((await normal.call('register')).status, 200);
     assert.equal((await normal.call('register')).status, 200);

@@ -84,8 +84,13 @@ BEGIN
   RAISE EXCEPTION '360 refuses unknown private journal ACL/grant options';END IF;
 
  SELECT array_agg(privilege_type ORDER BY privilege_type) INTO v_privs FROM aclexplode((SELECT relacl FROM pg_class WHERE oid='public.migration_privilege_journal'::regclass))acl WHERE acl.grantee='service_role'::regrole;
- IF v_privs IS DISTINCT FROM ARRAY['SELECT']::text[] AND v_privs IS DISTINCT FROM ARRAY['DELETE','INSERT','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[] THEN
-  RAISE EXCEPTION '360 refuses unknown service journal baseline; expected canonical SELECT-only or faithful default ALL7';END IF;
+ -- Canonical SELECT plus the exact modern Supabase maintenance defaults is a
+ -- third known predecessor. All non-read privileges are journaled and revoked
+ -- below, under the same owner/grantor/no-grant-option checks above.
+ IF v_privs IS DISTINCT FROM ARRAY['SELECT']::text[]
+  AND v_privs IS DISTINCT FROM ARRAY['REFERENCES','SELECT','TRIGGER','TRUNCATE']::text[]
+  AND v_privs IS DISTINCT FROM ARRAY['DELETE','INSERT','REFERENCES','SELECT','TRIGGER','TRUNCATE','UPDATE']::text[] THEN
+  RAISE EXCEPTION '360 refuses unknown service journal baseline; expected canonical SELECT-only or exact modern/legacy defaults';END IF;
  FOREACH v_priv IN ARRAY ARRAY['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'] LOOP
   IF v_priv=ANY(v_privs) THEN
    INSERT INTO public.migration_privilege_journal(migration,object_signature,grantee,privilege,action,object_oid,object_owner)

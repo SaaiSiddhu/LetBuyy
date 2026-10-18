@@ -111,6 +111,8 @@ services/**/node_modules/
 packages/**/node_modules/
 .next/
 apps/**/.next/
+# Per-run owned Next browser fixtures are generated build output.
+**/.next-session-runtime-*/
 **/.next/
 .turbo/
 **/.turbo/

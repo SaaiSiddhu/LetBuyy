@@ -4,6 +4,7 @@
 // Normal browser password sign-in through Identity, Merchant BFF and real Gateway/ownedDB.
 // Existing verified synthetic accounts are fixture inputs, not proof of email/inbox delivery.
 // Official Turnstile test keys exercise the widget/Siteverify transport, not production anti-bot.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createServer, type Server } from 'node:http';
@@ -120,7 +121,7 @@ test('normal owner invitation, wrong-account recovery, verified staff consent, l
  }catch(error){
   console.info(JSON.stringify({diagnostic:'staff_invitation_browser_failure',ownerPath:page?new URL(page.url()).pathname:null,staffPath:staffPage?new URL(staffPage.url()).pathname:null,
    ownerText:redact(await page?.locator('body').innerText().catch(()=> '') || ''),staffText:redact(await staffPage?.locator('body').innerText().catch(()=> '') || ''),gatewayCalls:calls.slice(-25),errors:errors.slice(-10)}));
-  await page?.screenshot({path:`/private/tmp/letbuyy-invitation-owner-${owned.runId}.png`,mask:[page.getByLabel('Invitation link',{exact:true})]}).catch(()=>{});throw error;
+  await page?.screenshot({path:`${ownedTmpDir()}/letbuyy-invitation-owner-${owned.runId}.png`,mask:[page.getByLabel('Invitation link',{exact:true})]}).catch(()=>{});throw error;
  }finally{await browser?.close();await stopOwnedClientRuntime(merchant);await stopOwnedClientRuntime(identity);await gateway.settle();
   if(bridge){bridge.closeAllConnections();await new Promise<void>(r=>bridge!.close(()=>r()));}}
 });

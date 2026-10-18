@@ -73,7 +73,12 @@ const TENANT_DOMAINS = new Set([
 ]);
 
 /** Frozen apps — touching these is an architecture warning */
-const FROZEN_APPS = new Set(['app-marketplace', 'developer-portal', 'theme-marketplace', 'platform-operations-portal']);
+const FROZEN_APPS = new Map([
+  ['apps/frozen/app-store', 'app-marketplace'],
+  ['apps/frozen/developer-portal', 'developer-portal'],
+  ['apps/frozen/theme-store', 'theme-marketplace'],
+  ['apps/frozen/operations-portal', 'platform-operations-portal'],
+]);
 
 /** Deprecated aliases — touching these is an architecture warning */
 const DEPRECATED_ALIASES = new Set([
@@ -1183,8 +1188,8 @@ async function _coreAnalyze(
 
   for (const file of changedFiles) {
     const lower = file.toLowerCase();
-    for (const frozen of FROZEN_APPS) {
-      if (lower.includes(frozen)) {
+    for (const [root, frozen] of FROZEN_APPS) {
+      if (lower === root || lower.startsWith(root + '/')) {
         architectureWarnings.push(
           `[frozen-app] ${file} — app '${frozen}' is frozen/not a deploy target (CLAUDE.md §Frozen); changes require ARB approval`,
         );

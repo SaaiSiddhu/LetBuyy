@@ -1,90 +1,23 @@
-// Local development journey only. The app visibly labels its local magic link
-// "No email was sent"; this is not provider delivery or production-login proof.
-// Chromium uses normal forms and actual TOTP, with no cookie/token/API injection
-// for the positive journey. Restart/replay uses only that journey's real state.
+// Actual Identity/Console forms, TOTP, durable sessions and PostgreSQL.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
-import { createHmac } from 'node:crypto';
-import { createServer, type Server } from 'node:http';
 import test from 'node:test';
-import { chromium, expect, type Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { LETBUYY_PLATFORM_SESSION_COOKIE } from '@letbuyy/auth-core';
-import { Gateway, gatewayEnv, newIdentityKeys } from './gateway-harness';
-import { requireOwnedDatabase, startOwnedClientRuntime, stopOwnedClientRuntime, type OwnedClientProcess } from './owned-db-support';
-
+import { requireOwnedDatabase } from './owned-db-support';
+import { withConsoleBrowser, consoleBrowserTotp } from './console-browser-fixture';
 const owned = requireOwnedDatabase();
-const secret = 'synthetic-owned-console-browser-session-secret';
-const bridge = 'synthetic-owned-console-browser-bridge';
-const factor = 'JBSWY3DPEHPK3PXP'; // Public synthetic test factor, never a real operator secret.
-function totp() {
-    const bits = [...factor].map(letter => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'.indexOf(letter).toString(2).padStart(5, '0')).join('');
-    const key = Buffer.from(bits.match(/.{8}/g)!.map(byte => parseInt(byte, 2)));
-    const counter = Buffer.alloc(8); counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30_000)));
-    const hash = createHmac('sha1', key).update(counter).digest();
-    return ((hash.readUInt32BE(hash[19] & 15) & 0x7fffffff) % 1_000_000).toString().padStart(6, '0');
-}
-async function availablePort() {
-    const server = createServer(); await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
-    const value = (server.address() as { port: number }).port;
-    await new Promise<void>(resolve => server.close(() => resolve())); return value;
-}
-
 test('normal local Console magic-link/TOTP forms bind a durable session, survive restart and deny logout replay', { timeout: 300_000 }, async () => {
-    const actor = { id: crypto.randomUUID(), email: `syn-browser-console-${crypto.randomUUID()}@example.invalid` };
-    owned.psql(`INSERT INTO users_custom(id,email,email_verified) VALUES('${actor.id}','${actor.email}',true);
-        INSERT INTO super_admin_allowlist(user_id,email,full_name,is_active)
-        VALUES('${actor.id}','${actor.email}','Synthetic Console browser operator',true);`);
-    const gateway = new Gateway(gatewayEnv(owned, await newIdentityKeys(), {
-        PLATFORM_CONSOLE_API_TOKEN: bridge, PLATFORM_CONSOLE_SESSION_SECRET: secret,
-    }));
-    const calls: { path: string; status: number }[] = [], diagnostics: string[] = [], pageErrors: string[] = [];
-    let adapter: Server | undefined, app: OwnedClientProcess | undefined, page: Page | undefined;
-    let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
-    try {
-        adapter = createServer(async (request, response) => {
-            const chunks: Buffer[] = []; for await (const chunk of request) chunks.push(Buffer.from(chunk));
-            const body = Buffer.concat(chunks).toString(), headers = new Headers();
-            for (const [name, value] of Object.entries(request.headers)) if (typeof value === 'string'
-                && !['host', 'connection', 'content-length', 'transfer-encoding', 'accept-encoding'].includes(name)) headers.set(name, value);
-            try {
-                const result = await gateway.request(request.url ?? '/', { method: request.method, headers, ...(body ? { body } : {}) });
-                calls.push({ path: (request.url ?? '/').split('?')[0], status: result.status });
-                response.writeHead(result.status, Object.fromEntries(result.headers.entries())); response.end(result.text);
-            } catch { response.writeHead(500); response.end('{}'); }
-        });
-        await new Promise<void>(resolve => adapter!.listen(0, '127.0.0.1', resolve));
-        const api = `http://127.0.0.1:${(adapter.address() as { port: number }).port}/v1`;
-        const port = await availablePort(), origin = `http://localhost:${port}`;
-        app = startOwnedClientRuntime(owned, 'console-next', { port, env: {
-            PLATFORM_CONSOLE_API_BASE_URL: api, PLATFORM_CONSOLE_API_TOKEN: bridge, PLATFORM_CONSOLE_SESSION_SECRET: secret,
-            PLATFORM_CONSOLE_ALLOWED_EMAILS: actor.email, PLATFORM_CONSOLE_TOTP_SECRETS: JSON.stringify({ [actor.email]: factor }),
-            LETBUYY_ENABLE_DEV_AUTH_BYPASS: 'false',
-        } });
-        // Drain and retain only sanitized diagnostics; callback URLs carry credentials.
-        for (const stream of [app.stdout, app.stderr]) stream.on('data', data => {
-            diagnostics.push(data.toString().replace(/\?[^\s]+/g, '?redacted').slice(0, 800));
-        });
-        const deadline = Date.now() + 120_000;
-        let ready = false;
-        while (Date.now() < deadline) {
-            if (app.exitCode !== null || app.signalCode !== null) throw new Error('owned Console stopped before readiness');
-            try { if ((await fetch(origin + '/login', { signal: AbortSignal.timeout(2500) })).status === 200) { ready = true; break; } } catch { /* first compilation */ }
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        assert.ok(ready, 'owned Console must become ready');
-        browser = await chromium.launch({ headless: true });
-        let context = await browser.newContext(); page = await context.newPage(); page.setDefaultTimeout(30_000);
-        page.on('pageerror', error => pageErrors.push(error.message));
-        await page.goto(origin + '/login');
-        await page.getByLabel('Email', { exact: true }).fill(actor.email);
-        await page.getByRole('button', { name: 'Send magic link', exact: true }).click();
-        await expect(page.getByText('Local development magic link generated. No email was sent.', { exact: true })).toBeVisible();
-        await page.getByRole('link', { name: 'Open local development magic link', exact: true }).click();
-        await page.waitForURL(url => url.pathname === '/mfa');
-        const code = totp();
+    await withConsoleBrowser(owned, async ({origin, browser, actors, login, calls}) => {
+        const actor=actors[0];
+        let {context,page}=await login(actor,{stopAtMfa:true});
+        const pageErrors:string[]=[];
+        page.on('pageerror',error=>pageErrors.push(error.message));
+        const code = consoleBrowserTotp(actor.factor);
         await page.getByLabel('Authenticator code', { exact: true }).fill(code === '000000' ? '111111' : '000000');
         await page.getByRole('button', { name: 'Verify', exact: true }).click();
         await expect(page.getByText('Enter a valid authenticator code.', { exact: true })).toBeVisible();
-        const acceptedCode=totp();
+        const acceptedCode=consoleBrowserTotp(actor.factor);
         await page.getByLabel('Authenticator code', { exact: true }).fill(acceptedCode);
         await page.getByRole('button', { name: 'Verify', exact: true }).click();
         await page.waitForURL(url => url.pathname === '/dashboard');
@@ -95,7 +28,7 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         await expect(page.getByText('Launch counter API unavailable', {exact:true})).toHaveCount(0);
         await expect(page.getByRole('article').filter({has:page.getByText('New signups',{exact:true})}).getByText(owned.psql("SELECT count(*) FROM users_custom WHERE created_at>=now()-interval '30 days';"),{exact:true})).toBeVisible();
         await expect(page.getByRole('article').filter({has:page.getByText('MRR',{exact:true})}).getByText('Unavailable',{exact:true})).toBeVisible();
-        await page.screenshot({path:`/private/tmp/letbuyy-console-overview-${owned.runId}.png`,fullPage:true});
+        await page.screenshot({path:`${ownedTmpDir()}/letbuyy-console-overview-${owned.runId}.png`,fullPage:true});
         const overviewSignature='public.read_console_overview_v1(uuid,text,text,text)';
         const overviewAcl=()=>owned.psql(`SELECT proacl::text FROM pg_proc WHERE oid='${overviewSignature}'::regprocedure;`);
         const overviewPermissions=overviewAcl();owned.psql(`REVOKE EXECUTE ON FUNCTION ${overviewSignature} FROM service_role;`);
@@ -120,7 +53,7 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         const cookies = await context.cookies(origin);
         const session = cookies.find(cookie => cookie.name === LETBUYY_PLATFORM_SESSION_COOKIE);
         assert.ok(session?.httpOnly); assert.equal(session.sameSite, 'Strict');
-        const state = await context.storageState(); await context.close();
+        const state = await context.storageState(); await page.goto('about:blank'); await context.close();
         context = await browser.newContext({ storageState: state }); page = await context.newPage(); page.setDefaultTimeout(30_000);
         page.on('pageerror', error => pageErrors.push(error.message));
         await page.goto(origin + '/dashboard'); await expect(page.getByText(actor.email, { exact: true })).toBeVisible();
@@ -145,12 +78,12 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         await page.waitForURL(url => url.pathname === '/login' && url.searchParams.get('loggedOut') === '1');
         await expect(page.getByText('Signed out.', { exact: true })).toBeVisible();
         assert.equal((await context.cookies(origin)).some(cookie => cookie.name === LETBUYY_PLATFORM_SESSION_COOKIE), false);
-        await context.close();
+        await page.goto('about:blank'); await context.close();
         const replay = await browser.newContext({ storageState: state });
         assert.equal((await replay.request.get(origin + '/api/founding/export')).status(), 401, 'a real formerly valid cookie is denied after logout');
         const replayPage = await replay.newPage(); await replayPage.goto(origin + '/dashboard');
         assert.equal(new URL(replayPage.url()).pathname, '/login');
-        await replay.close();
+        await replayPage.goto('about:blank'); await replay.close();
         assert.equal(owned.psql(`SELECT count(*) FROM sessions_v2 s JOIN principals p ON p.id=s.principal_id
             WHERE p.realm='admin' AND p.legacy_user_id='${actor.id}' AND s.status='active';`), '0');
         assert.equal(owned.psql(`SELECT count(*) FROM audit_logs WHERE actor_id='${actor.id}' AND action='platform_console_session.registered';`), '2');
@@ -159,13 +92,5 @@ test('normal local Console magic-link/TOTP forms bind a durable session, survive
         console.info('OWNED_CONSOLE_BROWSER ' + JSON.stringify({ localDevelopmentOnly: true, actualTotp: true,
             gatewayCalls: calls.length, durableSessions: 2, activeAfterLogout: 0, logoutOutageAndRecovery: true, aggregateReadsAndOutageRecovery:true,durableMfaReplayDenied:true,
             providerDelivery: 'pending', injectedPositiveCredentials: false }));
-    } catch (error) {
-        console.info('OWNED_CONSOLE_BROWSER_FAILURE ' + JSON.stringify({ path: page ? new URL(page.url()).pathname : null,
-            text: await page?.locator('body').innerText().catch(() => ''), calls: calls.slice(-12), diagnostics: diagnostics.slice(-10), pageErrors }));
-        await page?.screenshot({ path: `/private/tmp/letbuyy-console-browser-${owned.runId}.png` }).catch(() => undefined);
-        throw error;
-    } finally {
-        await browser?.close(); await stopOwnedClientRuntime(app); await gateway.settle();
-        if (adapter) { adapter.closeAllConnections(); await new Promise<void>(resolve => adapter!.close(() => resolve())); }
-    }
+    }, {makerRole:'super'});
 });

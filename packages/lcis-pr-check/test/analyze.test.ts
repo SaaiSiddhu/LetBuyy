@@ -405,6 +405,18 @@ describe('analyzePr — frozen app touch', () => {
   it('warning mentions app-marketplace', () => {
     assert.ok(report.architectureWarnings.some((w) => w.includes('app-marketplace')));
   });
+
+  it('covers all canonical frozen roots without matching a similarly named live path', async () => {
+    const paths = ['developer-portal','theme-store','operations-portal'];
+    for (const path of paths) {
+      resetEngine();
+      const result = await analyzePr({ changedFiles: [`apps/frozen/${path}/src/page.tsx`] }, makeStubEngine());
+      assert.equal(result.architectureWarnings.filter(w => w.includes('[frozen-app]')).length, 1);
+    }
+    resetEngine();
+    const result = await analyzePr({ changedFiles: ['apps/frozen/app-storefront/src/page.tsx','apps/merchant/web/src/page.tsx'] }, makeStubEngine());
+    assert.equal(result.architectureWarnings.filter(w => w.includes('[frozen-app]')).length, 0);
+  });
 });
 
 // ── Suite 11: analyzePr — determinism ────────────────────────────────────────

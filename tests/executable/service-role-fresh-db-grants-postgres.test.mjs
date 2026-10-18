@@ -258,12 +258,42 @@ test('CONTROL: the self-verification refuses an incomplete list and a moved mone
     assert.match(movedFence.stderr, /the money fence on public\.ledger_entries moved: service_role holds SIU, expected SI/);
 });
 
-test('the whole migration chain under the current default leaves no public relation unreadable by service_role', { skip }, () => {
-    // The durable guard: a later migration that creates a table without granting it fails here, on the default
-    // every new Supabase project now starts with, instead of in production.
+test('the whole modern-default chain preserves backend reads and the exact opaque-command denials', { skip }, () => {
+    // New unexplained missing grants still fail. Explicit opaque-command tables must
+    // remain unreadable to the backend and reachable only through their guarded API.
     recreate(CASE_DB, CURRENT_AT_253);
     for (const name of listMigrations().filter((n) => migrationNumber(n) >= MIGRATION_NUMBER)) {
+        if ([313,319].includes(migrationNumber(name))) {
+            const relations = migrationNumber(name)===313 ? "'sensitive_action_approvals'" : "'ts_policies','ts_cases','ts_case_events','ts_evidence','ts_appeals','ts_takedowns'";
+            const acl = () => psql(`SELECT jsonb_agg(jsonb_build_array(c.relname,(SELECT jsonb_agg(jsonb_build_array(a.grantor,a.grantee,a.privilege_type,a.is_grantable) ORDER BY a.grantor,a.grantee,a.privilege_type,a.is_grantable) FROM aclexplode(c.relacl)a)) ORDER BY c.relname) FROM pg_class c WHERE c.relnamespace='public'::regnamespace AND c.relname IN(${relations});`,CASE_DB);
+            const backend = () => psql(`SELECT jsonb_agg(jsonb_build_array(relname,p,has_table_privilege('service_role',oid,p)) ORDER BY relname,p) FROM pg_class CROSS JOIN unnest(ARRAY['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'])p WHERE relnamespace='public'::regnamespace AND relname IN(${relations});`,CASE_DB);
+            const priorAcl=acl(), priorBackend=backend();
+            psql(readRepo(`database/supabase/migrations/${name}`),CASE_DB);
+            assert.equal(backend(),priorBackend,'fencing inherited tenant grants preserves every effective backend privilege');
+            assert.equal(psql(`SELECT count(*) FROM pg_class CROSS JOIN unnest(ARRAY['anon','authenticated','app_tenant'])role CROSS JOIN unnest(ARRAY['INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER'])p WHERE relnamespace='public'::regnamespace AND relname IN(${relations}) AND has_table_privilege(role,oid,p);`,CASE_DB),'0');
+            psql(readRepo(migrationNumber(name)===313?'database/supabase/rollback/313_protect_sensitive_approval_authority.rollback.sql':'database/supabase/rollback/319_protect_trust_mutation_authority.rollback.sql'),CASE_DB);
+            assert.equal(acl(),priorAcl,'clean recovery restores the exact named/inherited ACL profile');
+            assert.equal(backend(),priorBackend);
+        }
         psql(readRepo(`database/supabase/migrations/${name}`), CASE_DB);
     }
-    assert.deepEqual(unreadable(CASE_DB), []);
+    const opaque = {
+      buyer_ai_daily_quotas:['service_role','public.reserve_buyer_ai_request(uuid,bigint,uuid,uuid,text,text,integer,bigint,integer)'],
+      buyer_ai_operations:['service_role','public.transition_buyer_ai_request(uuid,bigint,uuid,text,text)'],
+      collection_membership_receipts:['app_tenant','public.apply_collection_membership_v1(uuid,uuid,uuid,integer,uuid,jsonb)'],
+      internal_auth_replay_claims:['service_role','public.consume_internal_auth_replay_jti(text,text,integer)'],
+      inventory_adjustment_receipts:['app_tenant','public.apply_inventory_adjustment_v1(uuid,uuid,text,jsonb)'],
+      merchant_totp_commands_v1:['service_role','public.execute_merchant_totp_command_v1(uuid,text,text,jsonb)'],
+      product_edit_receipts:['app_tenant','public.read_product_for_edit_v1(uuid,uuid,uuid)'],
+      reel_upload_intents:['service_role','public.reel_upload_v1(text,uuid,uuid,text,uuid,jsonb,jsonb,jsonb)'],
+      ...Object.fromEntries(['commerce_reel_events','commerce_reel_revisions','commerce_reels','reel_asset_provenance','reel_processing_receipts','reel_review_inspections']
+        .map(table=>[table,['service_role','public.read_reel_reviews_v1(uuid,uuid,uuid,jsonb,integer)']])),
+    };
+    assert.deepEqual(unreadable(CASE_DB),Object.keys(opaque).sort(),
+      'both unexplained backend outages and accidental raw access to opaque command state fail');
+    for(const [table,[role,signature]] of Object.entries(opaque)){
+      assert.equal(psql(`SELECT has_function_privilege('${role}','${signature}','EXECUTE');`,CASE_DB),'t',table+': guarded protocol remains callable');
+      const denied=psqlResult(`BEGIN;SET LOCAL ROLE service_role;SELECT * FROM public.${table};ROLLBACK;`,CASE_DB);
+      assert.notEqual(denied.status,0);assert.match(denied.stderr,/permission denied for table/);
+    }
 });

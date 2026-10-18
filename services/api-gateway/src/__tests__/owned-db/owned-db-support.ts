@@ -24,6 +24,9 @@ import { execFileSync, spawn, type ChildProcessByStdio } from 'node:child_proces
 import type { Readable, Writable } from 'node:stream';
 import { fileURLToPath } from 'node:url';
 import {createServer,type Socket} from 'node:net';
+import {readFileSync,readdirSync} from 'node:fs';
+import {join} from 'node:path';
+import {SUPABASE_FAITHFUL_BOOTSTRAP_SQL} from '../../../../../scripts/governance/supabase-faithful-bootstrap.mjs';
 
 const GUARD = fileURLToPath(new URL('../../../../../scripts/governance/owned-fixture-guard.mjs', import.meta.url));
 
@@ -317,5 +320,47 @@ wait "$letbuyy_writer_pid" 2>/dev/null || true`;
             await serverClosed;await Promise.all([...closed]);process.removeListener('exit',killChildren);
             // Only this proxy owns these sockets/relays; the REST transport stays alive.
         })(),
+    });
+}
+
+
+/** SQL-only historical control inside the already verified disposable cluster.
+ * It has no REST endpoint and cannot be passed to an owned client runtime.
+ *315 and 358 pin schema/physical identities that later DDL cannot recreate.
+ */
+export function requireOwnedHistoricalSqlDatabase(through: 309 | 315 | 357 | 358): Pick<OwnedDatabase,'database'|'psql'|'psqlAsync'|'psqlExpectError'|'psqlScriptExpectError'|'exec'|'script'|'scriptLarge'> {
+    if(through!==309&&through!==315&&through!==357&&through!==358)throw new Error('unreviewed historical schema point');
+    const verified=requireOwnedDatabase(); // No environment/container fallback.
+    const root=fileURLToPath(new URL('../../../../../',import.meta.url));
+    const database=`letbuyy_history_${through}_${crypto.randomUUID().replaceAll('-','').slice(0,12)}`;
+    const run=(target:string,sql:string)=>execFileSync('docker',[
+        'exec','-i',verified.container,'psql','-U','postgres','-d',target,'-v','ON_ERROR_STOP=1','-qAt',
+    ],{input:sql,encoding:'utf8',timeout:45000,maxBuffer:64*1024*1024,stdio:['pipe','pipe','pipe']}).trim();
+    const roleState=()=>verified.psql(`SELECT jsonb_build_object(
+        'roles',(SELECT jsonb_agg(to_jsonb(r) ORDER BY oid) FROM pg_roles r),
+        'memberships',(SELECT jsonb_agg(to_jsonb(m) ORDER BY roleid,member,grantor) FROM pg_auth_members m));`);
+    const initialRoles=roleState();
+    run('postgres',`CREATE DATABASE "${database}";`); // Exclusive CREATE, never replace an existing database.
+    try {
+        run(database,SUPABASE_FAITHFUL_BOOTSTRAP_SQL);
+        const migrations=readdirSync(join(root,'database/supabase/migrations')).filter(name=>name.endsWith('.sql')&&parseInt(name,10)<=through)
+            .sort((a,b)=>parseInt(a,10)-parseInt(b,10)||a.localeCompare(b));
+        if(!migrations.some(name=>parseInt(name,10)===through))throw new Error('historical migration is missing');
+        for(const name of migrations)run(database,readFileSync(join(root,'database/supabase/migrations',name),'utf8').replace(/^SET transaction_timeout = 0;\s*$/m,''));
+        if(roleState()!==initialRoles)throw new Error('historical replay changed cluster role authority');
+    } catch(error) {
+        run('postgres',`DROP DATABASE "${database}" WITH(FORCE);`);
+        throw error;
+    }
+    const expectError=(sql:string)=>{try{run(database,sql);return '';}catch(error){return String((error as {stderr?:Buffer|string}).stderr??'').trim();}};
+    const script=(sql:string)=>run(database,sql);
+    return Object.freeze({database,psql:script,script,scriptLarge:script,
+        exec:(sql:string)=>{try{return script(sql);}catch{return null;}},psqlExpectError:expectError,psqlScriptExpectError:expectError,
+        psqlAsync:(sql:string)=>new Promise<string>((resolve,reject)=>{
+            const child=spawn('docker',['exec','-i',verified.container,'psql','-U','postgres','-d',database,'-v','ON_ERROR_STOP=1','-qAt']);
+            let out='',err='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);
+            child.once('error',reject);child.once('close',code=>code===0?resolve(out.trim()):reject(new Error(err||'historical SQL failed')));
+            child.stdin.end(sql);
+        }),
     });
 }

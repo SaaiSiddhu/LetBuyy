@@ -49,10 +49,10 @@ test('two independently signed candidates racing for one magic link have exactly
  assert.equal(owned.psql(`SELECT count(*) FROM sessions_v2 s JOIN principals p ON p.id=s.principal_id WHERE p.legacy_user_id='${f.id}' AND s.realm='admin';`),'1');
  assert.equal(owned.psql(`SELECT count(*) FROM console_magic_link_consumptions WHERE jti='${f.jti}';`),'1');
 });
-test('mandatory audit outage rolls back BOTH magic consumption and session state; exact relation recovery permits one exchange',async()=>{
- const f=await fixture();owned.psql('ALTER TABLE audit_logs RENAME TO synthetic_identity_audit_outage;');
+test('mandatory audit outage rolls back BOTH magic consumption and session state; exact insertion recovery permits one exchange',async()=>{
+ const f=await fixture();owned.script(`CREATE FUNCTION public.synthetic_identity_audit_fault() RETURNS trigger LANGUAGE plpgsql AS $$BEGIN RAISE EXCEPTION 'synthetic identity audit outage';END$$;CREATE TRIGGER synthetic_identity_audit_fault BEFORE INSERT ON public.audit_logs FOR EACH ROW EXECUTE FUNCTION public.synthetic_identity_audit_fault();`);
  try{assert.equal((await f.exchange()).status,503);assert.equal(owned.psql(`SELECT count(*) FROM console_magic_link_consumptions WHERE jti='${f.jti}';`),'0');assert.equal(owned.psql(`SELECT count(*) FROM principals WHERE realm='admin' AND legacy_user_id='${f.id}';`),'0');}
- finally{owned.psql('ALTER TABLE synthetic_identity_audit_outage RENAME TO audit_logs;');}
+ finally{owned.script('DROP TRIGGER synthetic_identity_audit_fault ON public.audit_logs;DROP FUNCTION public.synthetic_identity_audit_fault();');}
  assert.equal((await f.exchange()).status,200);
 });
 test('service bearer alone, malformed/cross-purpose credentials, other actors and elevated candidates cannot consume a magic proof',async()=>{
@@ -86,7 +86,7 @@ test('expired and malformed proofs refuse before consumption; signed email or ac
  const f=await fixture();
  for(const body of [{},{magic_token:''},{magic_token:'x'.repeat(4097)},{magic_token:f.magic,email:f.email}])assert.equal((await f.exchange(f.token,body)).status,400);
  async function altered(overrides:Record<string,unknown>){return new SignJWT({iss:IDENTITY_ISSUER,aud:'letbuyy:platform-magic-link',realm:'platform',token_use:'platform_magic_link',email:f.email,sub:f.id,jti:f.jti,iat:f.now-10,exp:f.now+890,...overrides}).setProtectedHeader({alg:'ES256',typ:'JWT',kid:f.keys.kid}).sign(f.keys.privateKey);}
- for(const override of [{exp:f.now-1},{email:'other@example.invalid'},{sub:crypto.randomUUID()},{email:'not-an-email'},{aud:'letbuyy:platform-session'},{iat:f.now+31}])assert.equal((await f.exchange(f.token,{magic_token:await altered(override)})).status,401);
+ for(const override of [{exp:f.now-1},{email:'other@example.invalid'},{sub:crypto.randomUUID()},{email:'not-an-email'},{aud:'letbuyy:platform-session'},{iat:Math.floor(Date.now()/1000)+60}])assert.equal((await f.exchange(f.token,{magic_token:await altered(override)})).status,401);
  assert.equal(owned.psql(`SELECT count(*) FROM console_magic_link_consumptions WHERE jti='${f.jti}';`),'0');
  assert.equal(owned.psql(`SELECT count(*) FROM principals WHERE realm='admin' AND legacy_user_id='${f.id}';`),'0');
 });

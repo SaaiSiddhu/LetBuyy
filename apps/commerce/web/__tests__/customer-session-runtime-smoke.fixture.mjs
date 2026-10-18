@@ -1053,7 +1053,7 @@ try {
           }
           assert.ok(Array.isArray(supportSessionRefreshOutcome) && supportSessionRefreshOutcome.includes('fulfilled'),
             `at least one real session revalidation must complete: ${JSON.stringify(supportSessionRefreshOutcome)}`);
-          await supportPage.getByText('You have no support requests at this store yet.', { exact: true }).waitFor({ state: 'visible', timeout: 15_000 });
+          await supportPage.getByText('You have no support requests yet.', { exact: true }).waitFor({ state: 'visible', timeout: 15_000 });
           assert.equal(await supportPage.getByText(SUPPORT_TEST_SUBJECT, { exact: true }).count(), 0,
             'buyer B receives an empty support list and cannot see buyer A ticket data');
           assert.equal(await supportPage.getByText('Private reply draft for buyer A.', { exact: true }).count(), 0,

@@ -51,7 +51,7 @@
 import { spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { constants as osConstants } from 'node:os';
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync, appendFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -186,15 +186,17 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(signal, () => s
 const tsxBin = join(repoRoot, 'node_modules/.bin/tsx');
 
 /** Runs one test command in its own process group and resolves with its combined output. Never rejects. */
-function spawnAndCollect(command, commandArgs, env) {
+function spawnAndCollect(command, commandArgs, env, suite) {
+    if(suite)writeLog(suite,'');
     return new Promise((resolveResult) => {
         const child = spawn(command, commandArgs, { cwd: repoRoot, env, detached: true });
         running.add(child);
         let out = '';
         let timedOut = false;
         const timer = setTimeout(() => { timedOut = true; killGroup(child, 'SIGKILL'); }, perSuiteTimeoutMs);
-        child.stdout.on('data', (d) => { out += d; });
-        child.stderr.on('data', (d) => { out += d; });
+        const collect=(d)=>{out+=d;if(suite&&logDir)appendFileSync(join(logDir,`${basename(suite.path).replace(/\.test\.(mjs|ts)$/, '')}.log`),d);};
+        child.stdout.on('data', collect);
+        child.stderr.on('data', collect);
         child.on('error', (error) => { out += `failed to start ${basename(command)}: ${error.code ?? error.message}\n`; });
         child.on('close', (code) => {
             running.delete(child);
@@ -288,7 +290,7 @@ async function runPostgresSuite(suite, cluster) {
     psqlOn(cluster, `CREATE DATABASE "${database}";`);
 
     const env = { ...baseEnv(), LETBUYY_EXECUTABLE_PG_CONTAINER: cluster.name, LETBUYY_EXECUTABLE_PG_DATABASE: database, LETBUYY_EXECUTABLE_RUN_ID: runId };
-    const { out, code, timedOut, stragglers } = await spawnAndCollect('node', ['--test', suite.path], env);
+    const { out, code, timedOut, stragglers } = await spawnAndCollect('node', ['--test', suite.path], env, suite);
     psqlOn(cluster, `DROP DATABASE IF EXISTS "${database}" WITH (FORCE);`, { allowFailure: true });
     writeLog(suite, out);
     return tapResult(suite, cluster, out, code, timedOut, started, { database, strayProcessesStopped: stragglers });
@@ -367,7 +369,7 @@ async function runGatewaySuite(suite, cluster) {
         record.provisionSeconds = seconds(provisionStarted);
 
         const testStarted = Date.now();
-        const { out, code, timedOut, stragglers } = await spawnAndCollect(tsxBin, ['--test', suite.path], gatewayEnv(fixtureEnv));
+        const { out, code, timedOut, stragglers } = await spawnAndCollect(tsxBin, ['--test', suite.path], gatewayEnv(fixtureEnv), suite);
         writeLog(suite, out);
         result = tapResult(suite, cluster, out, code, timedOut, testStarted, { strayProcessesStopped: stragglers });
     } catch (error) {
@@ -428,7 +430,7 @@ async function startClusters(count) {
             createVolume({ name: cluster.volume, runId });
             cluster.volumeCreated = true;
         }
-        startCluster({ name, database: sharedDatabase, runId, network: cluster.network ?? undefined, volume: cluster.volume ?? undefined, plain: !realDaemon });
+        startCluster({ name, database: sharedDatabase, runId, network: cluster.network ?? undefined, volume: cluster.volume ?? undefined, plain: !realDaemon, preparedTransactions: value('--prepared-transactions', undefined), disableJit: true });
         cluster.containerStarted = true;
     }
     await Promise.all(clusters.map((cluster) => waitUntilAccepting(cluster.name)));
@@ -436,6 +438,7 @@ async function startClusters(count) {
 
 async function main() {
     const reapRunIds = parseReapRunIds(args);
+    if (value('--prepared-transactions', undefined) !== undefined && value('--prepared-transactions', undefined) !== '2') throw new Error('--prepared-transactions must be exactly 2');
     const reapMinAgeSeconds = Number(value('--reap-min-age', '120'));
     if (flag('--reap-only')) {
         const { containers, networks, volumes } = reapStaleClusters({ runIds: reapRunIds, minAgeSeconds: reapMinAgeSeconds, log: warn, detail: true });

@@ -1,6 +1,7 @@
 // Real local-development Console/Chromium/Gateway/PostgreSQL fixture. Operator
 // accounts are pre-provisioned synthetic records; local links send no email.
 // No positive credential injection, API double, MFA bypass or hosted access.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import {exportJWK} from 'jose';
 import { createHmac } from 'node:crypto';
@@ -185,7 +186,7 @@ export async function withConsoleBrowser(owned: OwnedDatabase, run: (fixture: {
         console.info('OWNED_CONSOLE_CONSENT_BROWSER_FAILURE ' + JSON.stringify({ calls: calls.slice(-18), diagnostics, errors, browserTrace: browserTrace.slice(-20),
             pages: await Promise.all(pages.map(async page => ({ path: new URL(page.url()).pathname,
                 text: await page.locator('body').innerText().catch(() => '') }))) }));
-        for (let index = 0; index < pages.length; index++) await pages[index].screenshot({ path: `/private/tmp/letbuyy-consent-${owned.runId}-${index}.png` }).catch(() => undefined);
+        for (let index = 0; index < pages.length; index++) await pages[index].screenshot({ path: `${ownedTmpDir()}/letbuyy-consent-${owned.runId}-${index}.png` }).catch(() => undefined);
         throw error;
     } finally {
         await browser?.close(); await stopOwnedClientRuntime(app);await stopOwnedClientRuntime(identity); await gateway.settle();

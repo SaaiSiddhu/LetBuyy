@@ -1,9 +1,8 @@
 name: CI
 
 # Branch coverage is asserted by scripts/validators/workflow-trigger-coverage-validator.mjs.
-# `develop` is retired (see .github/BRANCH_STRATEGY.md) but is deliberately KEPT here as a
-# fail-safe: if the branch is ever recreated it stays gated by default. Removing it would
-# weaken an existing gate, which ART-02/R-18 forbid.
+# Integration merges are followed by ledger commits. Validate the full workspace
+# so a bookkeeping-only final commit cannot hide changes from the tested push.
 on:
   pull_request:
     branches:
@@ -58,7 +57,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run typecheck
-        run: pnpm turbo typecheck --filter="...[HEAD^1]"
+        run: pnpm turbo typecheck
 
   secret-hygiene:
     name: Secret hygiene
@@ -94,7 +93,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run lint
-        run: pnpm turbo lint --filter="...[HEAD^1]"
+        run: pnpm turbo lint
 
       - name: Validate design system (theme unification + drift ratchet)
         run: pnpm run validate:design-system
@@ -156,7 +155,7 @@ jobs:
           pnpm run test:prepare:lcis
 
       - name: Run unit tests
-        run: pnpm turbo test --filter="...[HEAD^1]" --concurrency=2
+        run: pnpm turbo test --concurrency=2
         env:
           CI: "true"
 
@@ -304,7 +303,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build all apps and packages
-        run: pnpm turbo build --filter="...[HEAD^1]" --concurrency=2
+        run: pnpm turbo build --concurrency=2
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key

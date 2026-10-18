@@ -11,9 +11,10 @@ import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.m
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
-const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_subscription_payment';
+const currentDatabase = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_subscription_payment';
+const databaseName = `${currentDatabase}_at327`;
 const SHARED_DATABASE = 'letbuyy_executable';
-const skip = databaseName !== SHARED_DATABASE
+const skip = currentDatabase !== SHARED_DATABASE
     ? false
     : `refusing to recreate the shared database '${SHARED_DATABASE}'. This suite needs its own; ` +
       'unset LETBUYY_EXECUTABLE_PG_DATABASE or point it at a private name.';
@@ -66,21 +67,22 @@ function listMigrations() {
 }
 
 function bootstrapDatabase() {
-    psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE); CREATE DATABASE "${databaseName}";`, 'postgres');
-    psql(SUPABASE_FAITHFUL_BOOTSTRAP_SQL);
+    psql(`DROP DATABASE IF EXISTS "${currentDatabase}" WITH (FORCE); CREATE DATABASE "${currentDatabase}";`, 'postgres');
+    psql(SUPABASE_FAITHFUL_BOOTSTRAP_SQL,currentDatabase);
     for (const name of listMigrations()) {
         try {
-            psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')));
+            psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8')),currentDatabase);
+            if(parseInt(name,10)===327)psql(`DROP DATABASE IF EXISTS "${databaseName}"; CREATE DATABASE "${databaseName}" TEMPLATE "${currentDatabase}";`,'postgres');
         } catch (error) {
             throw new Error(`migration ${name} failed to apply: ${error.message}`);
         }
     }
-    psql(`
+    for(const target of [databaseName,currentDatabase])psql(`
     INSERT INTO public.users_custom (id, email) VALUES (${sqlString(OWNER)}::uuid, 'subscription-owner@example.test');
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${sqlString(STORE)}::uuid, 'Single Activation Store', 'Single Activation Store', 'store', 'single-activation', true),
       (${sqlString(OTHER_STORE)}::uuid, 'Second Store', 'Second Store', 'store', 'second-store', true);
-    `);
+    `,target);
 }
 
 // The row activateMerchantSubscription inserts, reduced to the columns that matter here.
@@ -167,4 +169,10 @@ test('327 preflight refuses ambiguous retained duplicates and its failed transac
     assert.throws(()=>psql(transaction),/requires reviewed resolution of duplicate retained subscription payments/);
     assert.equal(psql('SELECT count(*) FROM public.subscriptions;'),count);
     assert.equal(psql("SELECT indexdef FROM pg_indexes WHERE schemaname='public' AND indexname='subscriptions_razorpay_payment_global_uidx';"),index);
+});
+
+
+test('current HEAD rejects the legacy raw positive activation while historical index controls remain isolated', { skip }, () => {
+    assert.throws(()=>psql(activationSql({paymentId:'pay_HEAD_RAW_DENIED',key:'head-raw-denied'}),currentDatabase),/positive subscription requires the current canonical activation writer/);
+    assert.equal(psql("SELECT count(*) FROM subscriptions WHERE razorpay_payment_id='pay_HEAD_RAW_DENIED';",currentDatabase),'0');
 });

@@ -82,6 +82,10 @@ function installFakePostgrest(tables: Record<string, Row[]>) {
         requests.push({ method, table, query: url.search });
         const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
+        if(table==='rpc/resolve_site_entitlements') {
+            const siteId=JSON.parse(String(init?.body??'{}')).p_site_id;
+            return json({site_id:siteId,site_type:'store',plan:'free',features:[],limits:{products:25},entitlements:{}});
+        }
         const single = new Headers(init?.headers).get('accept') === 'application/vnd.pgrst.object+json';
         if (method === 'POST' && !url.pathname.startsWith('/rest/v1/rpc/')) {
             // A real insert (e.g. createProduct's `.insert(...).select().single()`), not an RPC call:

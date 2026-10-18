@@ -26,7 +26,7 @@ const transaction=<T>(siteId:string,requestId:string,callback:TenantTxCallback<T
 
 test('real Gateway pooled adapter alternates tenants on one backend and restores base role/context after commit',{timeout:20_000},async()=>{
     const initial=(await sql.unsafe(stateSql).catch(error=>{throw new Error(`${error.code}: ${proxy.lastRelayError()??'no relay stderr'}`);}))[0];
-    assert.equal(initial.database,owned.database);assert.match(initial.login,/^letbuyy_test_sql_/);
+    assert.equal(initial.database,owned.database);assert.equal(initial.login,'authenticator');
     assert.equal(initial.role,initial.login);assert.equal(initial.site,null);assert.equal(initial.request,null);
     const pids=new Set([initial.pid]);
     for(const store of [stores[0],stores[1],stores[0]]) {

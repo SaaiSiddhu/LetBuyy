@@ -16,6 +16,7 @@ import { SUPABASE_FAITHFUL_BOOTSTRAP_SQL } from './supabase-faithful-bootstrap.m
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const containerName = process.env.LETBUYY_EXECUTABLE_PG_CONTAINER || 'letbuyy-executable-pg';
 const databaseName = process.env.LETBUYY_EXECUTABLE_PG_DATABASE || 'letbuyy_loy4_refund';
+const historicalDatabase = `${databaseName}_at241`;
 const SHARED_DATABASE = 'letbuyy_executable';
 const runnable = databaseName !== SHARED_DATABASE;
 const skip = runnable
@@ -50,7 +51,7 @@ function psqlExpectingFailure(sql) {
 
 const sqlString = (v) => `'${String(v).replaceAll("'", "''")}'`;
 const stripUnsupportedPg17Guc = (sql) => sql.replace(/^SET transaction_timeout = 0;\s*$/m, '');
-const applySqlFile = (relativePath) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')));
+const applySqlFile = (relativePath,targetDatabase=databaseName) => psql(stripUnsupportedPg17Guc(readFileSync(join(repoRoot, relativePath), 'utf8')),targetDatabase);
 
 function listMigrations() {
     return readdirSync(join(repoRoot, 'database/supabase/migrations'))
@@ -75,13 +76,14 @@ function bootstrapDatabase() {
         const sql = stripUnsupportedPg17Guc(readFileSync(join(repoRoot, 'database/supabase/migrations', name), 'utf8'));
         try {
             psql(sql);
+            if(parseInt(name,10)===241)psql(`DROP DATABASE IF EXISTS "${historicalDatabase}"; CREATE DATABASE "${historicalDatabase}" TEMPLATE "${databaseName}";`,'postgres');
         } catch (error) {
             throw new Error(`migration ${name} failed to apply: ${error.message}`);
         }
     }
 }
 
-function seedFixtures() {
+function seedFixtures(targetDatabase=databaseName,withOwnership=true) {
     psql(`
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published)
     VALUES (${sqlString(SITE_ID)}::uuid, 'Loyalty Store', 'Loyalty Store', 'store', 'loyalty-store', true);
@@ -93,9 +95,9 @@ function seedFixtures() {
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(ORDER_ID)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'LOY-0001', 'loyal-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 1000, 1000, 'paid');
-    INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
-    VALUES (${sqlString(ORDER_ID)}::uuid,${sqlString(BUYER_ID)}::uuid,${sqlString(SITE_ID)}::uuid,'authenticated_checkout');
-  `);
+  `,targetDatabase);
+    if(withOwnership)psql(`INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis)
+    VALUES (${sqlString(ORDER_ID)}::uuid,${sqlString(BUYER_ID)}::uuid,${sqlString(SITE_ID)}::uuid,'authenticated_checkout');`,targetDatabase);
 }
 
 
@@ -108,7 +110,7 @@ const restore = (order = ORDER_ID, site = SITE_ID) => psql(
 
 after(() => {
     if (!runnable) return;
-    try { psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE);`, 'postgres'); } catch { /* next run recreates */ }
+    try { psql(`DROP DATABASE IF EXISTS "${databaseName}" WITH (FORCE); DROP DATABASE IF EXISTS "${historicalDatabase}" WITH (FORCE);`, 'postgres'); } catch { /* owned cluster cleanup verifies residue */ }
 });
 
 before(() => {
@@ -127,9 +129,12 @@ test('BEFORE the restore: the buyer has paid with points and is 30 down', { skip
     assert.equal(balanceOf(), '70', '100 earned minus 30 redeemed');
     assert.equal(entries('redeemed'), '1');
     assert.equal(entries('refund_credit'), '0', 'nothing has ever written this entry type');
+    assert.match(restore(), /order_not_reversed/,'paid orders cannot restore spendable tender');
+    assert.equal(balanceOf(),'70');
 });
 
 test('refunding the order returns exactly the points it spent', { skip }, () => {
+    psql(`UPDATE public.orders SET status='refunded' WHERE id=${sqlString(ORDER_ID)}::uuid;`);
     const result = restore();
     assert.match(result, /"restored"\s*:\s*true/, result);
     assert.match(result, /"restored_points"\s*:\s*30/, result);
@@ -152,6 +157,7 @@ test('an order with no redemption restores nothing, and says so', { skip }, () =
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(other)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'LOY4-0002', 'loyal-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 500, 500, 'paid');`);
+    psql(`UPDATE public.orders SET status='refunded' WHERE id=${sqlString(other)}::uuid;`);
     const result = restore(other);
     assert.match(result, /"restored"\s*:\s*false/, result);
     assert.match(result, /"restored_points"\s*:\s*0/, result);
@@ -166,12 +172,14 @@ test('two redemptions on one order each get their own credit', { skip }, () => {
       (id, store_id, site_id, order_number, customer_email, shipping_address, items, subtotal, total, payment_status)
     VALUES (${sqlString(third)}::uuid, ${sqlString(SITE_ID)}::uuid, ${sqlString(SITE_ID)}::uuid,
             'LOY4-0003', 'loyal-buyer@example.com', '{}'::jsonb, '[]'::jsonb, 500, 500, 'paid');`);
+    psql(`INSERT INTO public.buyer_order_links(order_id,buyer_account_id,site_id,link_basis) VALUES(${sqlString(third)},${sqlString(BUYER_ID)},${sqlString(SITE_ID)},'authenticated_checkout');`);
     for (const [n, points] of [[1, 10], [2, 5]]) {
         psql(`SELECT public.redeem_loyalty_points(${sqlString(SITE_ID)}::uuid, ${sqlString(BUYER_ID)}::uuid,
             ${sqlString(third)}::uuid, ${points}::bigint, 'loy4:redeem:${n}', p_max_value_minor => 100000::bigint);`);
     }
     assert.equal(balanceOf(), '85', '100 minus 10 and 5');
 
+    psql(`UPDATE public.orders SET status='refunded' WHERE id=${sqlString(third)}::uuid;`);
     const result = restore(third);
     assert.match(result, /"restored_entries"\s*:\s*2/, result);
     assert.match(result, /"restored_points"\s*:\s*15/, result);
@@ -187,15 +195,22 @@ SELECT set_config('app.site_id', ${sqlString(other)}, true);
 SELECT public.restore_loyalty_on_refund(${sqlString(SITE_ID)}::uuid, ${sqlString(ORDER_ID)}::uuid);
 ROLLBACK;`);
     assert.ok(refused, 'restoring another site\'s points inside this transaction must be refused');
-    assert.match(refused, /tenant context .* does not match the requested site/, refused);
+    assert.match(refused, /tenant context does not match the requested site/, refused);
 });
 
-test('the rollback removes it, and 241 re-applies', { skip }, () => {
-    applySqlFile(ROLLBACK);
-    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname = 'restore_loyalty_on_refund';`), '0');
-    // Credits already written survive: the rollback drops the function, not the money.
-    assert.equal(balanceOf(), '100');
-    applySqlFile(MIGRATION);
-    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname = 'restore_loyalty_on_refund';`), '1');
-    applySqlFile(MIGRATION);
+test('241 rollback/reapply runs at its own schema point and preserves the current guarded writer', { skip }, () => {
+    const current=psql("SELECT md5(pg_get_functiondef('public.restore_loyalty_on_refund(uuid,uuid,uuid,text)'::regprocedure));");
+    seedFixtures(historicalDatabase,false);
+    psql(`SELECT set_loyalty_program(${sqlString(SITE_ID)},p_is_active=>true,p_earn_rate_bps=>1000);
+      SELECT award_loyalty_points(${sqlString(SITE_ID)},${sqlString(BUYER_ID)},${sqlString(ORDER_ID)},'history-earn',NULL,NULL);
+      SELECT redeem_loyalty_points(${sqlString(SITE_ID)},${sqlString(BUYER_ID)},${sqlString(ORDER_ID)},30::bigint,'history-spend',p_max_value_minor=>100000::bigint);
+      UPDATE orders SET status='refunded' WHERE id=${sqlString(ORDER_ID)};
+      SELECT restore_loyalty_on_refund(${sqlString(SITE_ID)},${sqlString(ORDER_ID)});`,historicalDatabase);
+    applySqlFile(ROLLBACK,historicalDatabase);
+    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname='restore_loyalty_on_refund';`,historicalDatabase),'0');
+    assert.equal(psql(`SELECT count(*) FROM loyalty_ledger_entries WHERE entry_type='refund_credit';`,historicalDatabase),'1','retained credits survive rollback');
+    applySqlFile(MIGRATION,historicalDatabase);applySqlFile(MIGRATION,historicalDatabase);
+    assert.equal(psql(`SELECT count(*) FROM pg_proc WHERE proname='restore_loyalty_on_refund';`,historicalDatabase),'1');
+    assert.equal(psql("SELECT md5(pg_get_functiondef('public.restore_loyalty_on_refund(uuid,uuid,uuid,text)'::regprocedure));"),current);
+    assert.equal(balanceOf(),'100');
 });

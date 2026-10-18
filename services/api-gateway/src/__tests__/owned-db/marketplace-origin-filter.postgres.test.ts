@@ -148,9 +148,11 @@ test('marketplace origin facets collapse case/space variants and hide non-public
     assert.deepEqual(origins.map((row) => row.country_of_origin.trim().toLowerCase()), ['india']);
 });
 
-test('the filtered and facet RPCs are executable for public roles but not granted to PUBLIC', () => {
-    assert.equal(psql(`SELECT has_function_privilege('anon', 'public.marketplace_feed(text,text,integer,timestamp with time zone,uuid,text)', 'EXECUTE');`), 't');
-    assert.equal(psql(`SELECT has_function_privilege('anon', 'public.marketplace_origins()', 'EXECUTE');`), 't');
+test('the public Gateway feed uses backend-only RPCs; direct public roles cannot execute them', () => {
+    for(const role of ['anon','authenticated'])for(const signature of ['public.marketplace_feed(text,text,integer,timestamp with time zone,uuid,text)','public.marketplace_origins()']){
+      assert.equal(psql(`SELECT has_function_privilege('${role}','${signature}','EXECUTE');`),'f');
+    }
+    assert.equal(psql("SELECT has_function_privilege('service_role','public.marketplace_origins()','EXECUTE');"),'t');
     assert.equal(psql(`SELECT NOT EXISTS (
       SELECT 1 FROM aclexplode((SELECT proacl FROM pg_proc WHERE oid='public.marketplace_feed(text,text,integer,timestamp with time zone,uuid,text)'::regprocedure))
       WHERE grantee=0 AND privilege_type='EXECUTE'

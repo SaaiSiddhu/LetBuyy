@@ -1,11 +1,19 @@
 // Development rollback contract proof only, on the existing verified owned fixture.
 // Kept separate from normal checkout/provider API acceptance; no retained row deletion.
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test,{before} from 'node:test';
 import {readFileSync} from 'node:fs';
 import {createHash,randomUUID} from 'node:crypto';
 import {requireOwnedDatabase} from './owned-db-support';
 const owned=requireOwnedDatabase();
+// The current tax writer owns this family. Prove stale retirement is refused,
+// then use its reviewed, empty-only rollback for the historical 347 control.
+before(()=>{
+ const signature='public.claim_merchant_subscription_checkout_v1(uuid,uuid,text,jsonb,jsonb)';
+ const current=owned.psql(`SELECT pg_get_functiondef('${signature}'::regprocedure);`);
+ assert.match(owned.psqlExpectError(readFileSync('database/supabase/rollback/347_free_subscription_checkout_receipts.rollback.sql','utf8')),/360 refuses/);
+ assert.equal(owned.psql(`SELECT pg_get_functiondef('${signature}'::regprocedure);`),current);
+});
 const migration=(direction:'migrations'|'rollback')=>readFileSync(new URL('../../../../../database/supabase/'+direction+'/347_free_subscription_checkout_receipts'+(direction==='rollback'?'.rollback':'')+'.sql',import.meta.url),'utf8');
 const names=['claim_merchant_subscription_checkout_v1','bind_merchant_subscription_checkout_v1','read_merchant_subscription_checkout_v1','activate_merchant_subscription_v1'];
 function functions(){return owned.psql(`SELECT jsonb_agg(jsonb_build_object('oid',p.oid,'signature',p.oid::regprocedure::text,'definition',pg_get_functiondef(p.oid),'acl',p.proacl::text) ORDER BY p.proname,p.oid) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN('${names.join("','")}');`);}
@@ -39,6 +47,7 @@ test('DEV-347: rollback admission blocks a quote at the evidence/DDL window and 
  checkout.then(()=>{settled=true;},()=>{settled=true;});
  try{
   let timer:ReturnType<typeof setTimeout>|undefined;try{await Promise.race([quoteReady,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error('quote did not reach actual RPC gate')),10000);})]);}finally{if(timer)clearTimeout(timer);}
+  owned.script(readFileSync('database/supabase/rollback/360_subscription_tax_quote_snapshot.rollback.sql','utf8'));
   assert.equal(owned.psql(`SELECT count(*) FROM billing_history WHERE site_id='${store.siteId}';`),'0');
   rollback=session(rollbackName,migration('rollback').replace('END $precondition$;',`END $precondition$;SELECT pg_advisory_xact_lock(${rollbackGate.key});`));
   await until(()=>waitKind(rollbackName,rollbackGate.name)==='passed_guard','rollback after absence check');

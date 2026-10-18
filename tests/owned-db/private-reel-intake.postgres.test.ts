@@ -3,6 +3,7 @@
 // Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Reviewed-source candidate: actual Gateway workerd + native local R2 + owned
 // PostgreSQL/PostgREST + ordinary merchant browser. No provider proof/activation.
+import { tmpdir as ownedTmpDir } from 'node:os';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { randomUUID, createHash } from 'node:crypto';
@@ -414,7 +415,7 @@ async function withMerchantReelBrowser(run: (fixture: {
   const scriptFailures: unknown[] = [];
   const scriptNetwork: unknown[] = [];
   let outage = false, lose = false;
-  const evidence = `/private/tmp/letbuyy-n5-intake-browser-${owned.runId}-${randomUUID().slice(0, 8)}`; mkdirSync(evidence, { recursive: true });
+  const evidence = `${ownedTmpDir()}/letbuyy-n5-intake-browser-${owned.runId}-${randomUUID().slice(0, 8)}`; mkdirSync(evidence, { recursive: true });
   try {
     proxy = await startOwnedPooledSqlProxy(owned);
     const keys = await newIdentityKeys();
