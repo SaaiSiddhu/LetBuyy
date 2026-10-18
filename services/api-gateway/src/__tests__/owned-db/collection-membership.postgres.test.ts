@@ -48,10 +48,7 @@ async function request(w: World, method: 'GET'|'PUT', options: {actor?: string; 
     const body=options.body, headers=await signedIdentityHeaders(actor,w.email(actor),options.boundStore);
     if(body && typeof body==='object' && 'idempotency_key' in body) headers['X-Idempotency-Key']=String((body as {idempotency_key: unknown}).idempotency_key);
     const response=await gateway.request('/v1/products/collections/'+id+'/products?store_id='+store,{method,headers,...(method==='PUT'?{body:JSON.stringify(body)}:{})});
-    if(response.status===500 && method==='PUT' && body && typeof body==='object') {
-        const error=owned.psqlScriptExpectError(roleScript361(w,canonicalSql361(w,body as ReturnType<typeof command>,actor,store,id)));
-        console.info('SYNTHETIC_MEMBERSHIP_COMMAND',JSON.stringify({sqlError:error.split('\n').find(line=>line.includes('ERROR:'))??null,relay:proxy?.lastRelayError()}));
-    }
+    await gateway.settle();
     console.info('OWNED_COLLECTION_MEMBERSHIP_HOP '+JSON.stringify({method,status:response.status,code:response.json?.error?.code??null,restResources:restCalls.slice(start),scope:'direct signed API control; no middleware bypass; SQL command effects only asserted after reached response'}));
     return response;
 }
@@ -109,7 +106,7 @@ function outsideState361() {
             // nine triggers and the exact journaled prior junction grants.
             const grantRows="SELECT pg_get_userbyid(a.grantee) grantee,pg_get_userbyid(a.grantor) grantor,a.privilege_type privilege,a.is_grantable grantable FROM aclexplode(coalesce(t.relacl,acldefault('r',t.relowner)))a";
             const acl="(SELECT coalesce(jsonb_agg(jsonb_build_array(a.grantee,a.grantor,a.privilege,a.grantable)ORDER BY a.grantee,a.privilege),'[]'::jsonb)FROM ("+grantRows+")a"+(" WHERE t.oid<>"+junction+" OR a.grantee='postgres'")+")";
-            projection="(to_jsonb(t)-'relacl'-'relchecks'-'relhastriggers')||jsonb_build_object('relacl',CASE WHEN t.oid="+junction+' THEN '+acl+"||"+q(journalAcl)+"::jsonb ELSE "+acl+" END,'relchecks',(SELECT count(*)FROM pg_constraint k WHERE k.conrelid=t.oid AND k.contype='c'AND NOT "+objectTest("'pg_constraint'::regclass::oid",'k.oid')+"),'relhastriggers',EXISTS(SELECT 1 FROM pg_trigger g WHERE g.tgrelid=t.oid AND NOT "+objectTest("'pg_trigger'::regclass::oid",'g.oid')+'))';
+            projection="(to_jsonb(t)-ARRAY['relpages','reltuples','relallvisible','relfrozenxid','relminmxid']-'relacl'-'relchecks'-'relhastriggers')||jsonb_build_object('relacl',CASE WHEN t.oid="+junction+' THEN '+acl+"||"+q(journalAcl)+"::jsonb ELSE "+acl+" END,'relchecks',(SELECT count(*)FROM pg_constraint k WHERE k.conrelid=t.oid AND k.contype='c'AND NOT "+objectTest("'pg_constraint'::regclass::oid",'k.oid')+"),'relhastriggers',EXISTS(SELECT 1 FROM pg_trigger g WHERE g.tgrelid=t.oid AND NOT "+objectTest("'pg_trigger'::regclass::oid",'g.oid')+'))';
         }
         return [table,'SELECT coalesce(jsonb_agg('+projection+' ORDER BY ('+projection+")::text),'[]'::jsonb)FROM pg_catalog."+table+' t WHERE '+filter];
     });
@@ -153,11 +150,24 @@ function rawStateSql361() {
     const tables=sqlJson("SELECT coalesce(jsonb_agg(jsonb_build_array(n.nspname,c.relname)ORDER BY n.nspname,c.relname),'[]'::jsonb)FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE c.relkind IN('r','p')AND c.relpersistence='p'AND n.nspname !~ '^pg_'AND n.nspname<>'information_schema';") as [string,string][];
     const ident=(s:string)=>'"'+s.replaceAll('"','""')+'"';
     const fields=[...tables.map(([schema,table])=>[schema+'.'+table,'SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY to_jsonb(t)::text),\'[]\'::jsonb)FROM '+ident(schema)+'.'+ident(table)+' t']),
-        ...state361Catalogs.map(([table,predicate])=>['catalog.'+table,"SELECT coalesce(jsonb_agg(to_jsonb(t)ORDER BY to_jsonb(t)::text),'[]'::jsonb)FROM pg_catalog."+table+' t WHERE '+predicate])];
+        ...state361Catalogs.map(([table,predicate])=>{
+            // Autovacuum updates physical estimates/visibility horizons without
+            // any logical schema or authority change. Keep every other field.
+            const row=table==='pg_class'?"to_jsonb(t)-ARRAY['relpages','reltuples','relallvisible','relfrozenxid','relminmxid']":'to_jsonb(t)';
+            return ['catalog.'+table,"SELECT coalesce(jsonb_agg(("+row+")ORDER BY ("+row+")::text),'[]'::jsonb)FROM pg_catalog."+table+' t WHERE '+predicate];
+        })];
     // Fingerprint every complete ordered relation/catalog field before the outer
     // object. This preserves all row bytes and numeric precision while avoiding
     // copying the entire schema/data into one unbounded JSONB allocation.
     return "SELECT jsonb_object_agg(k,v ORDER BY k)::text FROM ("+fields.map(([key,sql])=>'SELECT '+q(key)+" AS k,encode(sha256(convert_to(("+sql+")::text,'UTF8')),'hex')AS v").join(' UNION ALL ')+')s';
+}
+// An authenticated HTTP replay legitimately appends one anti-replay claim and
+// ordinary request telemetry. Compare every remaining row and catalog field;
+// canonical collection audit, outbox and durable command receipts stay included.
+function assertHttpReplayState361(actual:string,expected:string) {
+    const a=JSON.parse(actual),b=JSON.parse(expected);
+    for(const table of ['internal_auth_replay_claims','worker_request_logs','runtime_telemetry_metrics','worker_request_logs_partitioned','runtime_telemetry_metrics_partitioned','worker_request_logs_partitioned_default','runtime_telemetry_metrics_partitioned_default']) { delete a['public.'+table];delete b['public.'+table]; }
+    assertWholeState361(JSON.stringify(a),JSON.stringify(b),'HTTP replay conserves canonical state');
 }
 function rawState361(){return largeOwnedScript(rawStateSql361()+';');}
 function assertWholeState361(actual:string,expected:string,message='Entire owned state must remain unchanged') {
@@ -286,7 +296,7 @@ test('361 retains zero-receipt direct-write history, tombstones and later receip
     const history=Number(psql("SELECT count(*)FROM audit_activity_events WHERE action='collection.membership.revision'AND resource_id="+q(w.collection)+';'));assert.ok(history>0);
     const before=rawState361();assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),before);
     const body=command(current.membership_version,[w.products[2]]),first=readData(await request(w,'PUT',{body}),w),retained=rawState361();
-    assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assertWholeState361(rawState361(),retained);
+    assert.equal(owned.exec(rollback361),null);assertWholeState361(rawState361(),retained);assert.deepEqual(readData(await request(w,'PUT',{body}),w),first);assertHttpReplayState361(rawState361(),retained);
     const resumed=readData(await request(w,'PUT',{body:command(first.membership_version,[w.products[3]])}),w);assert.deepEqual(resumed.product_ids,[w.products[3]]);
     const tombstone=crypto.randomUUID();psql('INSERT INTO collections(id,store_id,title)VALUES('+[q(tombstone),q(w.a.siteId),q('Synthetic tombstone')].join(',')+');DELETE FROM collections WHERE id='+q(tombstone)+';');
     assert.equal(psql('SELECT count(*)FROM collections WHERE id='+q(tombstone)+';'),'0');
