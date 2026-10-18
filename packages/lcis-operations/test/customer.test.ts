@@ -97,7 +97,7 @@ test('generateCustomerReport: per-stage-topology facts — one per stage, all CO
   }
 });
 
-test('generateCustomerReport: Payment stage topology has tables=16, rpcs=25', () => {
+test('generateCustomerReport: Payment stage preserves current table and RPC counts', () => {
   const r = svc.generateCustomerReport();
   const pay = r.facts.find((f) => f.kind === 'stage-topology' && f.subject === 'Payment');
   assert.ok(pay, 'Payment topology fact present');
@@ -106,7 +106,7 @@ test('generateCustomerReport: Payment stage topology has tables=16, rpcs=25', ()
   assert.ok(String(pay!.value).includes(`rpcs:${stage.rpcs}`), 'Payment preserves the current RPC count');
 });
 
-test('generateCustomerReport: Refund stage topology has tables=7, rpcs=2', () => {
+test('generateCustomerReport: Refund stage preserves current table and RPC counts', () => {
   const r = svc.generateCustomerReport();
   const ref = r.facts.find((f) => f.kind === 'stage-topology' && f.subject === 'Refund');
   assert.ok(ref, 'Refund topology fact present');

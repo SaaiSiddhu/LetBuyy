@@ -50,7 +50,7 @@ function assertArtifact(obj: SecurityDriftReport, label: string) {
 
 // ── 1. findMissingRLS ─────────────────────────────────────────────────────────
 
-test('findMissingRLS returns findings for the 20 tenant tables with rls=false', () => {
+test('findMissingRLS reports every current tenant table with rls=false', () => {
   const findings = svc.findMissingRLS();
   // Real data: 20 tenant tables have rls=false (all rls=false tables ARE tenant tables)
   assert.deepEqual(findings.map(f => f.subject).sort(), missingRls, 'every current missing-RLS table is reported exactly');
@@ -225,7 +225,7 @@ test('findPublicMutations: deterministic', () => {
 
 // ── 4. findCrossTenantRisks ────────────────────────────────────────────────────
 
-test('findCrossTenantRisks finds 72 tenant tables missing site_id', () => {
+test('findCrossTenantRisks reports every current tenant table missing site_id', () => {
   const findings = svc.findCrossTenantRisks();
   const tableFindings = findings.filter((f) => f.kind === 'cross-tenant-risk' && f.id.includes('NO-SITEID-'));
   // From probe: 72 tenant tables with hasSiteId=false
@@ -493,7 +493,7 @@ test('generateSecurityDriftReport: byKind counts match finding lengths', () => {
   }
 });
 
-test('generateSecurityDriftReport: missing-rls count = 20 in byKind', () => {
+test('generateSecurityDriftReport preserves the current missing-rls inventory in byKind', () => {
   const report = svc.generateSecurityDriftReport();
   assert.equal(report.byKind['missing-rls'], missingRls.length, 'byKind preserves the complete current missing-RLS inventory');
 });

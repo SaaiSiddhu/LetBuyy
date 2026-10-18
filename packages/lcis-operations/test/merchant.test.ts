@@ -350,12 +350,12 @@ test('generateMerchantReport founding program fact is CONNECTED with real capaci
   assert.equal(fp!.value, 100, 'founding program capacity from real artifact = 100');
 });
 
-test('generateMerchantReport tenant table count fact is CONNECTED with value 256', () => {
+test('generateMerchantReport tenant table fact preserves the current connected inventory', () => {
   const report = makeService().generateMerchantReport();
   const tt = report.facts.find((f) => f.kind === 'tenant-table-count');
   assert.ok(tt != null, 'tenant-table-count fact present');
   assert.equal(tt!.status, 'CONNECTED');
-  assert.equal(tt!.value, tenantTableCount, 'tenant table count = 256 from artifact');
+  assert.equal(tt!.value, tenantTableCount, 'tenant table count matches the current artifact');
 });
 
 test('generateMerchantReport lifecycle fact references 8 states from artifact', () => {

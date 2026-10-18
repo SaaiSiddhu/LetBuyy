@@ -28,7 +28,7 @@ test('graph query reuse preserves degree ranking, exact IDs, ordering, limits an
   const callerResult = graph.search('checkout', 2);
   callerResult.splice(0);
   assert.equal(graph.search('checkout', 2).length, 2, 'a caller cannot mutate a cached result array');
-  for (let i = 0; i < 520; i++) {
+  for (let i = 0; i < 4100; i++) {
     assert.deepEqual(graph.search(`missing-${i}`), []);
     assert.equal(graph.resolve(`missing-${i}`), undefined);
   }

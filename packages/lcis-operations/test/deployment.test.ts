@@ -662,7 +662,7 @@ test('real-data: 3 SPOFs are returned by detectFailedDeploys', () => {
   assert.equal(spofFindings.length, 3, `expected 3 SPOF findings, got ${spofFindings.length}`);
 });
 
-test('real-data: migration #174 is referenced in declared state facts', () => {
+test('real-data: latest source migration is referenced in declared state facts', () => {
   const report = svc.generateDeploymentReport();
   const migFact = report.facts.find((f) => f.kind === 'latest-migration');
   assert.ok(migFact, 'latest-migration fact present');
@@ -670,7 +670,7 @@ test('real-data: migration #174 is referenced in declared state facts', () => {
   assert.equal(migFact.value, state.declared.latestMigration.n, 'latest source migration is reported exactly');
 });
 
-test('real-data: 6 subdomain facts from deployment-intelligence-v5 subdomains array', () => {
+test('real-data: all declared subdomains appear exactly in the report', () => {
   const report = svc.generateDeploymentReport();
   const subFacts = report.facts.filter((f) => f.kind === 'subdomain');
   const intel = createEngine().store.read<{subdomains: {app: string}[]}>('deployment-intelligence-v5');

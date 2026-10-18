@@ -10,6 +10,8 @@
 .history
 .svn/
 .swiftpm/
+# Flutter's generated Swift package bridge is local build output.
+apps/deferred/delivery/mobile/ios/Flutter/ephemeral/
 migrate_working_dir/
 
 # IntelliJ related

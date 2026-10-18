@@ -154,7 +154,7 @@ function retentionProfileSql() {
 // the conservation checks exceed the suite deadline. JSON escaping preserves
 // whitespace inside every field; psql.trim() affects only the outer framing.
 function retentionFullProfile() {
-    return JSON.parse(psql(`SELECT (${retentionProfileSql()})::text`));
+    return JSON.parse(owned.scriptLarge(`SELECT (${retentionProfileSql()})::text;`));
 }
 function retentionSnapshot() {
     return {data:JSON.parse(psql(retentionDataSql())),profile:retentionFullProfile()};

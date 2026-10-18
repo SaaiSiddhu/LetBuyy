@@ -53,8 +53,19 @@ and `pnpm run test:prepare:lcis`. This extracts real source; no model/provider
 credentials are required. Private continuity material, credentials, signing
 assets and live local data are separate from a Git clone; see CONSOLIDATION.md.
 
-## Verification status
+## Verification and final receipt
 
-Repair verification is in progress on `letbuyy/ci-machine-readiness`.
-This document does not yet claim a successful final GitHub run or push.
-The final exact-head CI receipt will supersede this paragraph before handoff.
+Local verification includes all 85 typecheck tasks, all 93 non-Gateway workspace
+test tasks, 1,605 Gateway units, all nine lint tasks, 114 governance validators,
+unsigned Android/iOS builds, Flutter analysis/tests and the native R2 proof.
+The repaired owned suites include product edits90/90, collections19/19,
+collection browser5/5, customer/session browser12/12, staff browser1/1,
+onboarding browser1/1, theme35/35, reviews45/45 and modern grants6/6.
+These are separate suite receipts; intermediate failed and interrupted runs are
+retained as diagnostics and are not represented as aggregate success.
+
+The final handoff receipt records the pushed `develop` SHA and completed GitHub
+run URLs. It is kept outside this source document so recording CI success cannot
+create another untested Git commit. A local pass alone does not establish that
+the final remote CI run passed. Product-phase/provider/release acceptance remains
+separate from this source and CI handoff.
