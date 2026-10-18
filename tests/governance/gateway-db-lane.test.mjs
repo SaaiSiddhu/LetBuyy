@@ -38,7 +38,6 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
             'buyer-privacy-export-browser.postgres.test.ts',
             'buyer-privacy-export.postgres.test.ts',
             'buyer-privacy-intake.postgres.test.ts',
-            'buyer-support-mutation-recovery.postgres.test.ts',
             'buyer-support-readback.postgres.test.ts',
             'checkout-browser.postgres.test.ts',
             'cod-collection.postgres.test.ts',
@@ -138,9 +137,9 @@ test('the reviewed lane inventory holds the gateway suites that need a real data
         "merchant-loyalty-browser.postgres.test.ts",
         "merchant-mobile-mfa-transport.postgres.test.ts",
         "merchant-staff-invitation-delivery.postgres.test.ts",
+        "money-ledger-reconciliation-traversal.postgres.test.ts",
         "payment-refund-reconciliation.postgres.test.ts",
-        "payout-statement-replay.postgres.test.ts",
-        "storefront-buyer-support-recovery-browser.postgres.test.ts"
+        "payout-statement-replay.postgres.test.ts"
 ], 'the root cross-runtime/provider inventory is explicitly reviewed');
     const { gatewayDb, all, pure, postgres, live } = discoverSuites(repoRoot);
     assert.deepEqual(gatewayDb, allOwnedSuites());

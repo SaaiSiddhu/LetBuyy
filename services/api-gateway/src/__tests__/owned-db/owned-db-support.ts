@@ -50,6 +50,8 @@ export interface OwnedDatabase {
     psqlAsync(sql: string): Promise<string>;
     /** The error text of a statement that must fail, or '' if it unexpectedly succeeded. */
     psqlExpectError(sql: string): string;
+    /** Error text of a script sent on stdin; callers own explicit transaction boundaries. */
+    psqlScriptExpectError(sql: string): string;
     /** A script through stdin with ON_ERROR_STOP: its output, or null when it failed. */
     exec(sql: string): string | null;
     /** The same script, but a failure throws with the database's own error (fixtures must never fail quietly). */
@@ -129,6 +131,14 @@ export function requireOwnedDatabase(): OwnedDatabase {
                 return String((error as { stderr?: Buffer | string }).stderr ?? '').trim();
             }
         },
+        psqlScriptExpectError: (sql: string) => {
+            try {
+                execFileSync('docker', scriptArgs, { input: sql, encoding: 'utf8', timeout: 15_000, stdio: ['pipe', 'pipe', 'pipe'] });
+                return '';
+            } catch (error) {
+                return String((error as { stderr?: Buffer | string }).stderr ?? '').trim();
+            }
+        },
         exec: (sql: string) => {
             try {
                 return execFileSync('docker', scriptArgs, { input: sql, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }).trim();
@@ -149,8 +159,8 @@ export function requireOwnedDatabase(): OwnedDatabase {
 }
 
 export type OwnedClientProcess = ChildProcessByStdio<Writable, Readable, Readable>;
-type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe';
-const CLIENT_KINDS = new Set<ClientKind>(['commerce-next','identity-next','merchant-next','console-next','commerce-next-production','identity-next-production','merchant-next-production','commerce-session-smoke','marketplace-flutter','buyer-orders-dart','lifecycle-probe']);
+type ClientKind = 'commerce-next' | 'identity-next' | 'merchant-next' | 'console-next' | 'commerce-next-production' | 'identity-next-production' | 'merchant-next-production' | 'commerce-session-smoke' | 'marketplace-flutter' | 'buyer-orders-dart' | 'lifecycle-probe' | 'money-ledger-scheduled-probe';
+const CLIENT_KINDS = new Set<ClientKind>(['commerce-next','identity-next','merchant-next','console-next','commerce-next-production','identity-next-production','merchant-next-production','commerce-session-smoke','marketplace-flutter','buyer-orders-dart','lifecycle-probe','money-ledger-scheduled-probe']);
 const LAUNCHER = fileURLToPath(new URL('../../../../../scripts/governance/owned-client-launcher.mjs', import.meta.url));
 const clients = new Map<OwnedClientProcess, { closed:Promise<void>; clientPid?:number }>();
 

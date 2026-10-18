@@ -682,7 +682,7 @@ router.post('/', validate('json', CreatePayoutStatementSchema), async (c) => {
 
 router.get('/:id', async (c) => {
     const payoutId = c.req.param('id');
-    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || '');
+    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || c.req.header('X-Store-ID')?.trim() || '');
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('payout_statements')
@@ -706,7 +706,7 @@ router.get('/:id', async (c) => {
 router.post('/:id/settle', validate('json', SettlePayoutStatementSchema), async (c) => {
     const payoutId = c.req.param('id');
     const body = c.get('validatedBody') as SettlePayoutStatementInput;
-    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || '');
+    const tenant = await resolveTenantContextForOwnedSite(c, c.get('auth').user.storeId || c.req.header('X-Store-ID')?.trim() || '');
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('payout_statements')

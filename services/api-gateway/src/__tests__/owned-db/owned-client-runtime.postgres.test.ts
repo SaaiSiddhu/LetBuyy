@@ -104,3 +104,57 @@ test('an abruptly killed owner is detected by its nested supervisor, which remov
         await gone(nestedPid);await gone(nestedSupervisor);
     } finally { await stopOwnedClientRuntime(owner); }
 });
+
+test('the fixed scheduled probe retains handle, loader and hosted-origin launch denials', async () => {
+    assert.throws(() => startOwnedClientRuntime({...owned},'money-ledger-scheduled-probe',{env:{}}),/verified database handle/);
+    assert.throws(() => startOwnedClientRuntime(owned,'money-ledger-scheduled-probe',{env:{NODE_OPTIONS:'--import unapproved'}}),/loader overrides/);
+    const child=startOwnedClientRuntime(owned,'money-ledger-scheduled-probe',{env:{LETBUYY_API_URL:'https://unowned.example.invalid'}});
+    const output=outputOf(child);
+    try {
+        assert.equal(await new Promise(resolve => child.once('close',resolve)),70);
+        assert.match(output.stderr,/requires a loopback LETBUYY_API_URL/);
+        assert.equal(output.stdout,'');
+    } finally { await stopOwnedClientRuntime(child); }
+});
+
+test('the scheduled probe refuses missing, nonfinite, out-of-bounds and malformed inputs without traversal', async () => {
+    const before=owned.psql('SELECT to_jsonb(t) FROM money_ledger_reconciliation_traversal t;');
+    for (const env of [
+        {}, {N7_SCHEDULED_TIME:'NaN',N7_LOSE_RECONCILIATION_REPLY:'0'},
+        {N7_SCHEDULED_TIME:'-1',N7_LOSE_RECONCILIATION_REPLY:'0'},
+        {N7_SCHEDULED_TIME:'4102444800001',N7_LOSE_RECONCILIATION_REPLY:'0'},
+        {N7_SCHEDULED_TIME:'1700000000000',N7_LOSE_RECONCILIATION_REPLY:'yes'},
+    ]) {
+        const child=startOwnedClientRuntime(owned,'money-ledger-scheduled-probe',{env});
+        const output=outputOf(child);
+        try {
+            assert.equal(await new Promise(resolve => child.once('close',resolve)),1);
+            assert.equal(output.stdout,'');
+            assert.equal(output.stderr,'Owned scheduled invocation failed\n');
+        } finally { await stopOwnedClientRuntime(child); }
+    }
+    assert.equal(owned.psql('SELECT to_jsonb(t) FROM money_ledger_reconciliation_traversal t;'),before);
+});
+
+test('the named scheduled probe drives one real owned event and closes its supervised process', async () => {
+    const child=startOwnedClientRuntime(owned,'money-ledger-scheduled-probe',{env:{
+        N7_SCHEDULED_TIME:'1700000000000',N7_LOSE_RECONCILIATION_REPLY:'0',
+        SUPABASE_URL:'https://unowned.example.invalid',
+    }});
+    const output=outputOf(child);
+    let probePid=0;
+    child.on('message',message => { const value=message as {type?:string;pid?:number};if(value.type==='owned-client-started'&&value.pid)probePid=value.pid; });
+    try {
+        assert.equal(await new Promise(resolve => child.once('close',resolve)),0,output.stderr);
+        const observations=JSON.parse(output.stdout);
+        assert.equal(observations.length,1);
+        assert.equal(observations[0].route,'scheduled.money_ledger_reconciliation');
+        assert.equal(observations[0].result.request_id,'scheduled:money-ledger-reconciliation:*/15 * * * *:1700000000000');
+        assert.equal(observations[0].result.replayed,false);
+        assert.equal(observations[0].result.limit,2);
+        assert.equal(observations[0].result.checked,observations[0].result.results.length);
+        assert.ok(observations[0].result.revision>0);
+        assert.ok(probePid>1,'the actual fixed probe process must have started');
+    } finally { await stopOwnedClientRuntime(child); }
+    await gone(probePid);
+});

@@ -43,9 +43,9 @@ export const ROOT_GATEWAY_DB_SUITES = [
     "tests/owned-db/merchant-loyalty-browser.postgres.test.ts",
     "tests/owned-db/merchant-mobile-mfa-transport.postgres.test.ts",
     "tests/owned-db/merchant-staff-invitation-delivery.postgres.test.ts",
+    "tests/owned-db/money-ledger-reconciliation-traversal.postgres.test.ts",
     "tests/owned-db/payment-refund-reconciliation.postgres.test.ts",
-    "tests/owned-db/payout-statement-replay.postgres.test.ts",
-    "tests/owned-db/storefront-buyer-support-recovery-browser.postgres.test.ts"
+    "tests/owned-db/payout-statement-replay.postgres.test.ts"
 ];
 export const isGatewayDatabaseSuite = (suite) =>
     new RegExp(`^${GATEWAY_DB_SUITE_DIR}/[^/]+\\.test\\.ts$`).test(suite) || ROOT_GATEWAY_DB_SUITES.includes(suite);

@@ -12,7 +12,7 @@ import {
   ORDER_STATUS_VALUES,
   SUBSCRIPTION_STATUS_VALUES,
   GIFT_CARD_STATUS_VALUES,
-  PAYOUT_STATUS_VALUES,
+  MERCHANT_PAYOUT_STATUS_VALUES,
   PAGE_STATUS_VALUES,
   REVIEW_MODERATION_STATUS_VALUES,
   CUSTOM_DOMAIN_STATUS_VALUES,
@@ -694,7 +694,7 @@ export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'l
 // Each of these schemas is built from the canonical value tuple in
 // ./status-presentation, which mirrors the live CHECK constraint. Restating the
 // values here is how they drifted: five schemas disagreed with the database,
-// including payouts, where only 2 of 5 values overlapped. Deriving makes the
+// including merchant statements confused with provider payouts. Deriving makes the
 // schema, the TS union and the presentation map one source by construction.
 export const StoreStatusSchema = z.enum(SITE_STATUS_VALUES);
 export const CustomDomainStatusSchema = z.enum(CUSTOM_DOMAIN_STATUS_VALUES);
@@ -794,7 +794,7 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
-export const MerchantPayoutStatusSchema = z.enum(PAYOUT_STATUS_VALUES);
+export const MerchantPayoutStatusSchema = z.enum(MERCHANT_PAYOUT_STATUS_VALUES);
 export const MerchantPayoutRailSchema = z.enum(['razorpay_route', 'upi', 'manual']);
 export const MerchantPayoutModeSchema = z.enum(['sandbox', 'live']);
 export const WalletLedgerEntryTypeSchema = z.enum(['payout_credit', 'payout_debit', 'adjustment', 'hold', 'release', 'cod_remittance_credit']);
@@ -828,6 +828,10 @@ export const MerchantTwoFactorTypeSchema = z.enum(['totp', 'passkey']);
 export const MerchantTwoFactorStatusSchema = z.enum(['pending', 'active', 'disabled']);
 
 export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
+  // Gateway preserves PostgREST's timestamp offsets in statement readback.
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+  deleted_at: z.string().datetime({ offset: true }).optional().nullable(),
   site_id: UuidSchema,
   statement_number: z.string().min(1).max(120),
   status: MerchantPayoutStatusSchema,
@@ -842,9 +846,9 @@ export const MerchantPayoutStatementSchema = AuditedEntitySchema.extend({
   period_start: z.string().optional().nullable(),
   period_end: z.string().optional().nullable(),
   available_on: z.string().optional().nullable(),
-  processing_at: z.string().datetime().optional().nullable(),
-  released_at: z.string().datetime().optional().nullable(),
-  failed_at: z.string().datetime().optional().nullable(),
+  processing_at: z.string().datetime({ offset: true }).optional().nullable(),
+  released_at: z.string().datetime({ offset: true }).optional().nullable(),
+  failed_at: z.string().datetime({ offset: true }).optional().nullable(),
   utr: z.string().optional().nullable(),
   provider_reference: z.string().optional().nullable(),
   failure_reason: z.string().optional().nullable(),
