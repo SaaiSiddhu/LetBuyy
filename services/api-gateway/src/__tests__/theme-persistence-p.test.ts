@@ -328,148 +328,53 @@ test('publish transaction infrastructure failure returns unavailable, never a fa
 
 // ─── Rollback CAS guard — mismatch ───────────────────────────────────────────
 
-test('rollbackRelease: ConflictError when expected_current_release_id does not match actual current', async () => {
-    let rpcCalled = false;
-
-    const mockDb = {
-        from: (table: string) => {
-            if (table === 'sites') {
-                return makeChain({ data: { id: 'store-1', user_id: 'user-1', custom_user_id: null }, error: null });
-            }
-            if (table === 'themes') {
-                return makeChain({ data: { id: 'theme-1', slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
-            }
-            if (table === 'theme_releases') {
-                // is_current row returns id='release-X' but caller expects 'release-Y'
-                return makeChain({ data: { id: 'release-X', store_id: 'store-1', release_version: 4 }, error: null });
-            }
-            return makeChain({ data: null, error: null });
-        },
-        rpc: (_fn: string, _args: unknown) => {
-            rpcCalled = true;
-            return Promise.resolve({ data: null, error: null });
-        },
-    };
-
+test('rollbackRelease: ConflictError comes from the atomic reviewed-current/key guard', async () => {
+    let call: { name: string; args: Record<string, unknown> } | undefined;
+    const db = { from: () => { throw new Error('Rollback reads must stay inside the atomic RPC'); },
+        rpc: async (name: string, args: Record<string, unknown>) => { call = { name, args }; return { data: null, error: { code: 'PT409' } }; } };
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
-    const adapter = new ThemeExecutionAdapter(mockDb as never);
-
-    await assert.rejects(
-        () => adapter.rollbackRelease('urban-kicks', 'release-old-123', {
-            store_id: 'store-1',
-            make_store_live: true,
-            expected_current_release_id: 'release-Y', // mismatch — actual is 'release-X'
-        }, 'user-1'),
-        (err: unknown) => {
-            assert.ok(err instanceof ConflictError, `Expected ConflictError, got ${(err as Error)?.constructor?.name}`);
-            assert.ok(
-                (err as Error).message.includes('Current release has changed since listing'),
-                `Expected 'Current release has changed since listing', got: ${(err as Error).message}`,
-            );
-            return true;
-        },
-    );
-
-    assert.equal(rpcCalled, false, 'RPC must NOT be called when CAS check fails');
+    await assert.rejects(() => new ThemeExecutionAdapter(db as never, 'bound-store').rollbackRelease('urban-kicks', 'reviewed-target', {
+        store_id: 'store-1', make_store_live: true, expected_current_release_id: 'reviewed-current', idempotency_key: 'stable-rollback-key',
+    }, 'actor-1'), (error: unknown) => error instanceof ConflictError);
+    assert.equal(call?.name, 'rollback_owned_theme_release_v1');
+    assert.equal(call?.args.p_store_id, 'store-1'); assert.equal(call?.args.p_bound_site_id, 'bound-store');
+    assert.equal(call?.args.p_expected_current_release_id, 'reviewed-current'); assert.equal(call?.args.p_target_release_id, 'reviewed-target');
+    assert.equal(call?.args.p_actor_id, 'actor-1'); assert.equal(call?.args.p_key, 'stable-rollback-key');
 });
 
-// ─── Rollback CAS guard — match proceeds ──────────────────────────────────────
-
-test('rollbackRelease: proceeds without ConflictError when expected_current_release_id matches', async () => {
-    // When the CAS check passes, execution continues into the release fetch.
-    // We mock the release fetch to return NotFoundError to stop there (sufficient to prove CAS passed).
-    const mockDb = {
-        from: (table: string) => {
-            if (table === 'sites') {
-                return makeChain({ data: { id: 'store-1', user_id: 'user-1', custom_user_id: null }, error: null });
-            }
-            if (table === 'themes') {
-                return makeChain({ data: { id: 'theme-1', slug: 'urban-kicks', name: 'Urban Kicks', is_active: true }, error: null });
-            }
-            if (table === 'theme_releases') {
-                // Both the CAS query and the release fetch hit theme_releases.
-                // Return {id: 'release-Z'} — matches expected AND serves as the release record.
-                return makeChain({
-                    data: {
-                        id: 'release-Z',
-                        store_id: 'store-1',
-                        theme_id: 'urban-kicks',
-                        release_version: 4,
-                        release_config: {},
-                        template_snapshot: {},
-                        settings_snapshot: {},
-                        release_manifest: {},
-                        published_at: '2026-01-01T00:00:00Z',
-                    },
-                    error: null,
-                });
-            }
-            return makeChain({ data: null, error: null });
-        },
-        rpc: (_fn: string, _args: unknown) => {
-            // RPC fails → publishReleaseSnapshotFallback takes over — that's fine for this test
-            return Promise.resolve({ data: null, error: { message: 'Could not find the function publish_theme_release' } });
-        },
-    };
-
+test('rollbackRelease: a matched atomic receipt is validated instead of allowing any non-conflict rejection', async () => {
+    const id = '10000000-0000-4000-8000-000000000001';
+    const receipt = { rollback: { release_id: id, release_version: 4, published_at: '2026-10-18T00:00:00Z' },
+        restored_release: { id, version: 1 }, theme: { id, slug: 'urban-kicks', name: 'Urban Kicks' },
+        replayed: true, current_release_id: id, current_release_version: 4 };
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
-    const adapter = new ThemeExecutionAdapter(mockDb as never);
-
-    // Should NOT throw ConflictError (it may throw something else down the stack — we only care
-    // that the CAS check itself did not block execution).
-    try {
-        await adapter.rollbackRelease('urban-kicks', 'release-Z', {
-            store_id: 'store-1',
-            make_store_live: true,
-            expected_current_release_id: 'release-Z', // match
-        }, 'user-1');
-    } catch (err) {
-        // Anything other than ConflictError is acceptable — the CAS passed
-        assert.ok(
-            !(err instanceof ConflictError),
-            `CAS match must not produce ConflictError — got: ${(err as Error)?.message}`,
-        );
-    }
+    const db = { rpc: async () => ({ data: receipt, error: null }) };
+    const result = await new ThemeExecutionAdapter(db as never).rollbackRelease('urban-kicks', id, {
+        store_id: id, make_store_live: true, expected_current_release_id: id, idempotency_key: 'stable-rollback-key',
+    }, id);
+    assert.deepEqual(result, receipt);
+    const invalid = { rpc: async () => ({ data: { ok: true }, error: null }) };
+    await assert.rejects(() => new ThemeExecutionAdapter(invalid as never).rollbackRelease('urban-kicks', id, {
+        store_id: id, make_store_live: true, expected_current_release_id: id, idempotency_key: 'stable-rollback-key',
+    }, id), (error: unknown) => (error as { statusCode?: number }).statusCode === 503);
 });
 
-// ─── Rollback CAS cross-tenant scope (source pattern assertion) ───────────────
-
-test('rollback CAS guard query: store_id scopes the is_current lookup (cross-tenant safety)', () => {
-    const casBlock = ADAPTER_SRC.match(
-        /\/\/ CAS guard[\s\S]*?\.maybeSingle\(\)/,
-    )?.[0] ?? '';
-
-    assert.ok(casBlock.length > 0, 'CAS guard block must exist in rollbackRelease() source');
-    assert.ok(
-        casBlock.includes("'store_id'"),
-        "CAS query must filter by store_id",
-    );
-    assert.ok(
-        casBlock.includes("'is_current'"),
-        "CAS query must filter by is_current",
-    );
-
-    const storeIdIdx = casBlock.indexOf("'store_id'");
-    const isCurrentIdx = casBlock.indexOf("'is_current'");
-    assert.ok(storeIdIdx < isCurrentIdx, "store_id must appear before is_current in the CAS query");
+test('rollback CAS authority binds actor, store, target and reviewed current pointer inside one SQL transaction', () => {
+    const sql = readFileSync(new URL('../../../../database/supabase/migrations/354_atomic_theme_release_rollback.sql', import.meta.url), 'utf8');
+    assert.match(sql, /s:=public\.theme_draft_actor_site_v1\(p_actor_id,p_store_id,p_bound_site_id\)/);
+    assert.match(sql, /id=p_target_release_id AND store_id=p_store_id AND theme_id=p_theme_slug/);
+    assert.match(sql, /current_release\.id<>p_expected_current_release_id/);
+    assert.ok(sql.indexOf('s:=public.theme_draft_actor_site_v1') < sql.indexOf('SELECT * INTO receipt'));
+    assert.ok(sql.indexOf('current_release.id<>p_expected_current_release_id') < sql.indexOf('SELECT * INTO released FROM public.publish_theme_release'));
 });
 
-// ─── Rollback audit event presence (source pattern assertion) ─────────────────
-
-test('rollbackRelease: emitAuditEvent with action theme.rollback is called in the rollbackRelease() method body', () => {
-    const rollbackMethodBlock = ADAPTER_SRC.match(
-        /async rollbackRelease\([\s\S]*?(?=\n    async )/,
-    )?.[0] ?? '';
-
-    assert.ok(rollbackMethodBlock.length > 0, 'rollbackRelease() method must be found in adapter source');
-    assert.ok(
-        rollbackMethodBlock.includes('emitAuditEvent'),
-        "rollbackRelease() must call emitAuditEvent",
-    );
-    assert.ok(
-        rollbackMethodBlock.includes("'theme.rollback'"),
-        "rollbackRelease() emitAuditEvent must use action 'theme.rollback'",
-    );
+test('rollback audit/outbox use the existing canonical publisher exactly once without a second app audit', () => {
+    const block = ADAPTER_SRC.match(/async rollbackRelease\([\s\S]*?(?=\n    async )/)?.[0] ?? '';
+    const sql = readFileSync(new URL('../../../../database/supabase/migrations/354_atomic_theme_release_rollback.sql', import.meta.url), 'utf8');
+    const publisher = readFileSync(new URL('../../../../database/supabase/migrations/344_atomic_theme_draft_cas.sql', import.meta.url), 'utf8');
+    assert.ok(block.includes('rollback_owned_theme_release_v1')); assert.ok(!block.includes('emitAuditEvent'));
+    assert.equal((sql.match(/FROM public\.publish_theme_release\(/g) || []).length, 1);
+    assert.match(publisher, /ELSE 'theme\.rollback'/); assert.match(publisher, /theme\.release\.rollback_published/);
 });
 
 // ─── Route placement assertion ─────────────────────────────────────────────────
@@ -542,25 +447,14 @@ test('PublishThemeSchema requires the explicit saved version and stable intent k
     }
 });
 
-test('RollbackThemeReleaseSchema contains optional expected_current_release_id (UUID) field', async () => {
+test('RollbackThemeReleaseSchema requires a concrete reviewed current pointer and retry identity', async () => {
     const { RollbackThemeReleaseSchema } = await import('../schemas/theme.schema');
-
-    const withoutCas = RollbackThemeReleaseSchema.safeParse({
-        store_id: VALID_STORE_UUID,
-    });
-    assert.equal(withoutCas.success, true, 'RollbackThemeReleaseSchema must accept body without expected_current_release_id');
-
-    const withCas = RollbackThemeReleaseSchema.safeParse({
-        store_id: VALID_STORE_UUID,
-        expected_current_release_id: VALID_RELEASE_UUID,
-    });
-    assert.equal(withCas.success, true, 'RollbackThemeReleaseSchema must accept a valid UUID for expected_current_release_id');
-
-    const invalidUuid = RollbackThemeReleaseSchema.safeParse({
-        store_id: VALID_STORE_UUID,
-        expected_current_release_id: 'not-a-uuid',
-    });
-    assert.equal(invalidUuid.success, false, 'RollbackThemeReleaseSchema must reject a non-UUID string for expected_current_release_id');
+    const valid = { store_id: VALID_STORE_UUID, expected_current_release_id: VALID_RELEASE_UUID, idempotency_key: 'stable-rollback-key' };
+    assert.equal(RollbackThemeReleaseSchema.safeParse(valid).success, true);
+    for (const invalid of [{ store_id: VALID_STORE_UUID }, { ...valid, expected_current_release_id: undefined },
+        { ...valid, idempotency_key: undefined }, { ...valid, idempotency_key: 'short' }, { ...valid, expected_current_release_id: 'not-a-uuid' }]) {
+        assert.equal(RollbackThemeReleaseSchema.safeParse(invalid).success, false);
+    }
 });
 
 test('ValidateThemeDocumentSchema is exported and enforces store_id + theme_document presence', async () => {

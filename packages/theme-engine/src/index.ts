@@ -1039,7 +1039,8 @@ export const RollbackThemeReleaseSchema = z.object({
   store_id: UuidSchema,
   make_store_live: z.boolean().default(true),
   rollback_message: z.string().max(500).optional(),
-  expected_current_release_id: z.string().uuid().optional(),
+  expected_current_release_id: UuidSchema,
+  idempotency_key: ThemeDraftIntentKeySchema,
 });
 
 export const ValidateThemeDocumentSchema = z.object({

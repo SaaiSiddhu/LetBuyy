@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, UuidSchema } from '@letbuyy/shared-types';
+import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge, ThemeDraftSaveResultSchema, ThemePublishResultSchema, ThemeRollbackResultSchema, UuidSchema } from '@letbuyy/shared-types';
 import {
     asThemeRecord as asRecord,
     collectThemeTemplateValidationIssues,
@@ -1143,119 +1143,27 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
-        await this.verifyStoreOwner(input.store_id, userId);
-        const theme = await this.getTheme(slug);
-
-        // CAS guard: if the caller supplied expected_current_release_id, verify the current
-        // release pointer has not changed since the client listed releases. The query is always
-        // scoped by store_id — a different site's is_current row can never match.
-        // KNOWN TOCTOU RESIDUAL: this check is TS-level only; two truly concurrent rollbacks
-        // both passing this window can both reach publishReleaseSnapshot. Full closure requires
-        // adding p_expected_current_release_version to the SECURITY DEFINER RPC (ARB-gated).
-        if (input.expected_current_release_id) {
-            const { data: currentRelease } = await this.db
-                .from('theme_releases')
-                .select('id')
-                .eq('store_id', input.store_id)
-                .eq('is_current', true)
-                .is('deleted_at', null)
-                .maybeSingle();
-
-            const currentId = (currentRelease as ThemeReleaseRecord | null)?.id;
-            if (currentId !== input.expected_current_release_id) {
-                throw new ConflictError('Current release has changed since listing');
-            }
-        }
-
-        const selectRelease = (includeDeletedAtFilter: boolean) => {
-            const query = this.db
-                .from('theme_releases')
-                .select('id, store_id, theme_id, release_version, release_config, template_snapshot, settings_snapshot, release_manifest, theme_instance_id, theme_package_version_id, published_at')
-                .eq('id', releaseId)
-                .eq('store_id', input.store_id)
-                .eq('theme_id', theme.slug);
-
-            return includeDeletedAtFilter ? query.is('deleted_at', null) : query;
-        };
-
-        let { data: release, error } = await selectRelease(true).single();
-
-        if (isMissingDeletedAtError(error, 'theme_releases')) {
-            ({ data: release, error } = await selectRelease(false).single());
-        }
-
-        if (error || !release) {
-            throw new NotFoundError('Theme release not found');
-        }
-
-        const releaseRecord = release as ThemeReleaseRecord;
-        const releaseConfig = mergeThemeIdentity(
-            Object.keys(asRecord(releaseRecord.template_snapshot)).length > 0
-                ? asRecord(releaseRecord.template_snapshot)
-                : asRecord(releaseRecord.release_config),
-            theme
-        );
-        const runtime = await this.validateTemplateConfig(releaseConfig, theme);
-        const themeInstance = await this.ensureThemeInstance(
-            input.store_id,
-            theme,
-            runtime,
-            userId,
-            releaseConfig,
-            input.make_store_live
-        );
-
-        const rollback = await this.publishReleaseSnapshot({
-            storeId: input.store_id,
-            themeId: theme.slug,
-            releaseConfig,
-            runtime,
-            themeInstanceId: themeInstance?.id || releaseRecord.theme_instance_id || null,
-            publishedBy: userId,
-            publishMessage: input.rollback_message || `Rollback to release ${releaseRecord.release_version}`,
-            makeStoreLive: input.make_store_live,
-            requestId,
-            rollbackOfReleaseId: releaseRecord.id,
+        const { data, error } = await this.db.rpc('rollback_owned_theme_release_v1', {
+            p_actor_id: userId, p_store_id: input.store_id, p_theme_slug: slug,
+            p_target_release_id: releaseId, p_expected_current_release_id: input.expected_current_release_id,
+            p_key: input.idempotency_key, p_make_store_live: input.make_store_live,
+            p_rollback_message: input.rollback_message || null, p_bound_site_id: this.boundSiteId || null,
+            p_request_id: requestId || null,
         });
-        await this.finalizeInstanceRelease({
-            storeId: input.store_id,
-            themeInstanceId: themeInstance?.id || releaseRecord.theme_instance_id || null,
-            releaseId: rollback.release_id,
-            actorId: userId,
-            activate: input.make_store_live,
-        });
-
-        const events = new EventExecutionAdapter(this.db);
-        await events.emitAuditEvent({
-            storeId: input.store_id,
-            actorId: userId,
-            action: 'theme.rollback',
-            resourceType: 'theme_release',
-            resourceId: rollback.release_id,
-            requestId,
-            beforeState: {
-                rollback_of_release_id: releaseRecord.id,
-                rollback_of_version: releaseRecord.release_version,
-            },
-            afterState: {
-                new_release_id: rollback.release_id,
-                new_release_version: rollback.release_version,
-            },
-        });
-
-        return {
-            rollback,
-            restored_release: {
-                id: releaseRecord.id,
-                version: releaseRecord.release_version,
-                published_at: releaseRecord.published_at || null,
-            },
-            theme: {
-                id: theme.id,
-                slug: theme.slug,
-                name: theme.name,
-            },
-        };
+        if (error) {
+            if (error.code === '42501') throw new ForbiddenError('Your current account cannot restore this store theme.');
+            if (error.code === 'PT409') throw new ConflictError('The reviewed release changed or this retry key belongs to a different rollback. Reload releases before trying again.');
+            if (error.code === 'PT400') throw new ValidationError('A reviewed release, current pointer and stable retry key are required.');
+            throw new AppError('Rollback was not confirmed. Retry the same request to recover its result.', 503, 'THEME_STATE_UNAVAILABLE');
+        }
+        const parsed = ThemeRollbackResultSchema.safeParse(data);
+        if (!parsed.success || parsed.data.restored_release.id !== releaseId || parsed.data.theme.slug !== slug
+            || parsed.data.current_release_version < parsed.data.rollback.release_version
+            || (!parsed.data.replayed && (parsed.data.current_release_id !== parsed.data.rollback.release_id
+                || parsed.data.current_release_version !== parsed.data.rollback.release_version))) {
+            throw new AppError('No confirmed rollback receipt was returned. Retry the same request.', 503, 'THEME_STATE_UNAVAILABLE');
+        }
+        return parsed.data;
     }
 
     async validateDocument(

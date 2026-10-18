@@ -835,6 +835,53 @@ app.post("/razorpay", async (c) => {
                 break;
             }
 
+            case "subscription.authenticated":
+            case "subscription.activated":
+            case "subscription.charged": {
+                const subscription = asObject(event.payload?.subscription?.entity);
+                const payment = asObject(event.payload?.payment?.entity);
+                // Mandate/state notifications alone never grant paid access.
+                // Captured first charges can accompany authenticated/activated;
+                // each successful recurring charge is also subscription.charged.
+                if (eventType !== "subscription.charged" && payment.status !== "captured") {
+                    await markWebhookEvent(c.env, "razorpay", providerEventId, "ignored", "Subscription mandate/state has no captured payment");
+                    return c.json({ received: true, event: eventType, ignored: true });
+                }
+                const notes = asObject(subscription.notes);
+                const subscriptionId = textValue(subscription.id);
+                const paymentId = textValue(payment.id);
+                const orderId = textValue(payment.order_id);
+                const invoiceId = textValue(payment.invoice_id);
+                const storeId = textValue(notes.store_id);
+                const userId = textValue(notes.user_id);
+                const planSlug = textValue(notes.plan_slug);
+                const billingPeriod = textValue(notes.billing_period);
+                const amount = payment.amount;
+                if (subscription.entity !== "subscription" || payment.entity !== "payment" || payment.status !== "captured"
+                    || !subscriptionId || !/^sub_[A-Za-z0-9]{1,116}$/.test(subscriptionId)
+                    || !paymentId || !/^pay_[A-Za-z0-9]{1,116}$/.test(paymentId)
+                    || !orderId || !/^order_[A-Za-z0-9]{1,114}$/.test(orderId)
+                    || !invoiceId || !/^inv_[A-Za-z0-9]{1,116}$/.test(invoiceId)
+                    || !storeId || !isUuid(storeId) || !userId || !isUuid(userId)
+                    || !planSlug || planSlug.length > 120 || (billingPeriod !== "monthly" && billingPeriod !== "yearly")
+                    || typeof amount !== "number" || !Number.isSafeInteger(amount) || amount <= 0 || amount > 2147483647
+                    || payment.currency !== "INR") {
+                    throw new Error("Subscription captured invoice context requires review");
+                }
+                // These are signed transport hints, never quote/tax/period
+                // authority. Gateway must fetch and bind this payment's invoice
+                // and subscription to its retained checkout before any effect.
+                // In particular, do not forward current_start/end or paid_count
+                // as the period/phase of an older retried payment.
+                await activateStoreSubscription(c.env, {
+                    storeId, userId, planSlug, billingPeriod, provider: "razorpay",
+                    providerOrderId: orderId, providerPaymentId: paymentId,
+                    externalSubscriptionId: subscriptionId, amountPaid: amount,
+                    providerEventId, eventType,
+                });
+                break;
+            }
+
             case "payment.failed": {
                 const payment = event.payload?.payment?.entity;
                 const paymentRecord = asObject(payment);

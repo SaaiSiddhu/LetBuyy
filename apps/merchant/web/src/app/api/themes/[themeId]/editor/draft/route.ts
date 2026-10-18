@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { SaveThemeDraftSchema, DiscardThemeDraftSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
@@ -57,6 +58,9 @@ export async function POST(
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
         const baseVersion = body.baseVersion ?? body.base_version
         const idempotencyKey = body.idempotencyKey ?? body.idempotency_key
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in before saving.' } }, { status: 401 })
+        if (body.actorId !== actor.id) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'Your account changed. Reload the editor before saving.' } }, { status: 403 })
 
         if (!draftConfig) {
             return NextResponse.json(
@@ -67,6 +71,7 @@ export async function POST(
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
+        if (body.storeId !== resolved.storeId) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'The editor store changed. Reload before saving.' } }, { status: 403 })
 
         const parsed = SaveThemeDraftSchema.safeParse({
             store_id: resolved.storeId,

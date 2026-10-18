@@ -1140,36 +1140,59 @@ function writeWishlist(items: string[]) {
 // customer route; canonical buyers use the verified buyer/store relationship route. Auth and
 // initial state come from the server-rendered drop, so no extra request is needed on load.
 class LbWishlistToggleElement extends LiquidIslandBase {
+    // View coordination only. Authority still comes from the signed buyer/site BFF.
+    private static readonly connected = new Set<LbWishlistToggleElement>();
+    private static readonly pendingProducts = new Map<string, symbol>();
+    private static readonly unknownProducts = new Set<string>();
     private active = false;
+    private saving = false;
+    private unconfirmed = false;
+    private generation = 0;
 
     connectedCallback() {
         if (!this.dataset.productId) return;
+        this.generation += 1;
         ensureWishlistStyles();
         this.active = this.resolveInitialActive();
+        const key = this.productScope();
+        this.saving = key !== null && LbWishlistToggleElement.pendingProducts.has(key);
+        this.unconfirmed ||= key !== null && LbWishlistToggleElement.unknownProducts.has(key);
+        LbWishlistToggleElement.connected.add(this);
         this.renderToggle();
         this.addEventListener('click', this.handleClick);
         window.addEventListener(WISHLIST_CHANGED_EVENT, this.handleWishlistChanged);
     }
 
     disconnectedCallback() {
+        this.generation += 1;
+        this.unconfirmed ||= this.saving;
+        this.saving = false;
+        LbWishlistToggleElement.connected.delete(this);
         this.removeEventListener('click', this.handleClick);
         window.removeEventListener(WISHLIST_CHANGED_EVENT, this.handleWishlistChanged);
     }
 
-    private get isAuthenticated(): boolean {
-        return this.dataset.authenticated === 'true';
+    private get isAuthenticated(): boolean { return this.dataset.authenticated === 'true'; }
+    private get isBuyer(): boolean { return this.dataset.accountType === 'buyer'; }
+    private get isBuyerLinked(): boolean { return this.dataset.buyerLinked === 'true'; }
+    private get isBuyerUnavailable(): boolean { return this.dataset.buyerUnavailable === 'true'; }
+
+    private captureScope(): string {
+        return JSON.stringify([this.dataset.accountType, this.dataset.authenticated, this.dataset.buyerId,
+            this.dataset.storeId, this.dataset.productId, this.dataset.variantId,
+            this.dataset.buyerLinked, this.dataset.buyerUnavailable]);
     }
 
-    private get isBuyer(): boolean {
-        return this.dataset.accountType === 'buyer';
+    private productScope(): string | null {
+        // The existing wishlist deduplicates by customer/product, not variant.
+        // Legacy customer controls have no canonical buyer ID: keep them instance-bound.
+        return this.isBuyer && this.dataset.buyerId && this.dataset.storeId && this.dataset.productId
+            ? JSON.stringify([this.dataset.buyerId, this.dataset.storeId, this.dataset.productId]) : null;
     }
 
-    private get isBuyerLinked(): boolean {
-        return this.dataset.buyerLinked === 'true';
-    }
-
-    private get isBuyerUnavailable(): boolean {
-        return this.dataset.buyerUnavailable === 'true';
+    private scopeControls(key: string | null): LbWishlistToggleElement[] {
+        return key === null ? [this] : Array.from(LbWishlistToggleElement.connected)
+            .filter((element) => element.isConnected && element.productScope() === key);
     }
 
     private resolveInitialActive(): boolean {
@@ -1177,27 +1200,33 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         return readWishlist().includes(this.dataset.productId || '');
     }
 
+    private label(): string {
+        return this.unconfirmed ? 'Reload wishlist to check saved state' : this.saving ? 'Updating wishlist'
+            : this.isBuyer && this.isBuyerUnavailable ? 'Wishlist temporarily unavailable'
+                : this.isBuyer && !this.isBuyerLinked ? 'Connect store account to use wishlist'
+                    : this.active ? 'Remove from wishlist' : 'Add to wishlist';
+    }
+
     private renderToggle() {
-        const label = this.isBuyer && this.isBuyerUnavailable ? 'Wishlist temporarily unavailable'
-            : this.isBuyer && !this.isBuyerLinked ? 'Connect store account to use wishlist'
-                : this.active ? 'Remove from wishlist' : 'Add to wishlist';
+        const label = this.label();
         this.innerHTML = [
-            `<${liquidButtonTag} type="button" data-lb-wishlist-button class="lb-wishlist-toggle__button" aria-pressed="${this.active ? 'true' : 'false'}" aria-label="${label}" title="${label}">`,
+            `<${liquidButtonTag} type="button" data-lb-wishlist-button class="lb-wishlist-toggle__button" aria-pressed="${this.unconfirmed ? 'mixed' : this.active ? 'true' : 'false'}" aria-label="${label}" title="${label}">`,
             WISHLIST_HEART_SVG,
             `</${liquidButtonTag}>`,
             '<span class="lb-wishlist-toggle__message" role="status" aria-live="polite"></span>',
         ].join('');
+        this.updateVisual();
+        if (this.unconfirmed) this.showReload('Reload your wishlist to check the saved state.');
     }
 
     private updateVisual() {
         const button = this.querySelector<HTMLButtonElement>('[data-lb-wishlist-button]');
         if (!button) return;
-        const label = this.isBuyer && this.isBuyerUnavailable ? 'Wishlist temporarily unavailable'
-            : this.isBuyer && !this.isBuyerLinked ? 'Connect store account to use wishlist'
-                : this.active ? 'Remove from wishlist' : 'Add to wishlist';
-        button.setAttribute('aria-pressed', this.active ? 'true' : 'false');
-        button.setAttribute('aria-label', label);
-        button.setAttribute('title', label);
+        button.disabled = this.saving || this.unconfirmed;
+        button.setAttribute('aria-busy', String(this.saving));
+        button.setAttribute('aria-pressed', this.unconfirmed ? 'mixed' : String(this.active));
+        button.setAttribute('aria-label', this.label());
+        button.setAttribute('title', this.label());
     }
 
     private readonly handleWishlistChanged = (event: Event) => {
@@ -1207,16 +1236,11 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         const detail = (event as CustomEvent<{ items?: string[] }>).detail;
         const items = Array.isArray(detail?.items) ? detail.items : readWishlist();
         const next = items.includes(productId);
-        if (next !== this.active) {
-            this.active = next;
-            this.updateVisual();
-        }
+        if (next !== this.active) { this.active = next; this.updateVisual(); }
     };
 
     private readonly handleClick = (event: Event) => {
-        const trigger = event.target instanceof Element
-            ? event.target.closest('[data-lb-wishlist-button]')
-            : null;
+        const trigger = event.target instanceof Element ? event.target.closest('[data-lb-wishlist-button]') : null;
         if (!trigger) return;
         event.preventDefault();
         void this.toggle();
@@ -1227,18 +1251,30 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         if (status) status.textContent = message;
     }
 
+    private showReload(message: string) {
+        this.showMessage(message + ' ');
+        const status = this.querySelector<HTMLElement>('.lb-wishlist-toggle__message');
+        if (!status) return;
+        const reload = document.createElement('a');
+        reload.href = window.location.href;
+        reload.textContent = 'Reload wishlist';
+        status.append(reload);
+    }
+
+    private markUnconfirmed(key: string | null) {
+        if (key !== null) LbWishlistToggleElement.unknownProducts.add(key);
+        for (const element of this.scopeControls(key)) {
+            element.unconfirmed = true;
+            element.updateVisual();
+            element.showReload('We could not confirm the change. Reload to check your saved items.');
+        }
+    }
+
     private async toggle() {
         const productId = this.dataset.productId;
-        if (!productId) return;
-
-        if (this.isBuyerUnavailable) {
-            this.showMessage('Your wishlist is temporarily unavailable. Please try again later.');
-            return;
-        }
-        if (this.isBuyer && !this.dataset.buyerId) {
-            this.showMessage('Reload your account before changing your wishlist.');
-            return;
-        }
+        if (!productId || this.saving || this.unconfirmed) return;
+        if (this.isBuyerUnavailable) { this.showMessage('Your wishlist is temporarily unavailable. Please try again later.'); return; }
+        if (this.isBuyer && !this.dataset.buyerId) { this.showMessage('Reload your account before changing your wishlist.'); return; }
         if (this.isBuyer && !this.isBuyerLinked) {
             const basePath = this.dataset.basePath;
             if (basePath) window.location.assign(`${basePath}/account/settings`);
@@ -1247,48 +1283,58 @@ class LbWishlistToggleElement extends LiquidIslandBase {
         }
 
         const nextActive = !this.active;
-        this.active = nextActive;
-        this.updateVisual();
-
         if (this.isAuthenticated) {
+            const key = this.productScope();
+            if (key !== null && LbWishlistToggleElement.unknownProducts.has(key)) {
+                this.unconfirmed = true;
+                this.updateVisual();
+                this.showReload('Reload your wishlist to check the saved state.');
+                return;
+            }
+            if (key !== null && LbWishlistToggleElement.pendingProducts.has(key)) return;
+            const token = Symbol('wishlist-request');
+            if (key !== null) LbWishlistToggleElement.pendingProducts.set(key, token);
+            const generation = this.generation;
+            const scope = this.captureScope();
+            const current = () => this.isConnected && generation === this.generation && scope === this.captureScope();
+            for (const element of this.scopeControls(key)) { element.saving = true; element.updateVisual(); }
             try {
                 const response = await fetch(this.isBuyer ? '/api/buyer/wishlist' : '/api/customer/wishlist', {
                     method: nextActive ? 'POST' : 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...(this.isBuyer ? { 'x-letbuyy-expected-buyer-id': this.dataset.buyerId || '' } : {}),
-                    },
-                    body: JSON.stringify(this.isBuyer ? {
-                        productId,
-                        variantId: this.dataset.variantId || null,
-                    } : {
-                        productId,
-                        storeId: this.dataset.storeId,
-                        variantId: this.dataset.variantId || null,
-                    }),
+                    headers: { 'Content-Type': 'application/json', ...(this.isBuyer ? { 'x-letbuyy-expected-buyer-id': this.dataset.buyerId || '' } : {}) },
+                    body: JSON.stringify(this.isBuyer ? { productId, variantId: this.dataset.variantId || null }
+                        : { productId, storeId: this.dataset.storeId, variantId: this.dataset.variantId || null }),
                 });
-                if (!response.ok) {
-                    this.active = !nextActive;
-                    this.updateVisual();
-                    this.showMessage('We could not update your wishlist. Please try again.');
-                } else {
-                    this.showMessage('');
-                    if (!nextActive && window.location.pathname.endsWith('/account/wishlist')) {
-                        this.closest('.lb-product-card')?.remove();
-                    }
+                if (!current() || !response.ok) { this.markUnconfirmed(key); return; }
+                for (const element of this.scopeControls(key)) {
+                    element.saving = false;
+                    element.unconfirmed = false;
+                    element.active = nextActive;
+                    element.updateVisual();
+                    element.showMessage('');
+                    if (!nextActive && window.location.pathname.endsWith('/account/wishlist')) element.closest('.lb-product-card')?.remove();
                 }
             } catch {
-                this.active = !nextActive;
-                this.updateVisual();
-                this.showMessage('We could not reach the server. Your wishlist was not changed.');
+                this.markUnconfirmed(key);
+            } finally {
+                if (key !== null && LbWishlistToggleElement.pendingProducts.get(key) === token) LbWishlistToggleElement.pendingProducts.delete(key);
+                for (const element of this.scopeControls(key)) { element.saving = false; element.updateVisual(); }
+                if (generation === this.generation && scope !== this.captureScope()) {
+                    this.saving = false;
+                    this.unconfirmed = true;
+                    this.active = this.resolveInitialActive();
+                    this.updateVisual();
+                    this.showReload('Your account or selected item changed. Reload before changing your wishlist.');
+                }
             }
             return;
         }
 
+        // Preserve the existing explicit guest/device wishlist policy and event.
+        this.active = nextActive;
+        this.updateVisual();
         const items = readWishlist();
-        const next = nextActive
-            ? Array.from(new Set([...items, productId]))
-            : items.filter((id) => id !== productId);
+        const next = nextActive ? Array.from(new Set([...items, productId])) : items.filter((id) => id !== productId);
         writeWishlist(next);
     }
 }

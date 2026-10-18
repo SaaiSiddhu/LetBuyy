@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Workspace integration fixture: spans runtimes without a runtime dependency edge.
 // Explicit selection: node scripts/governance/run-executable-suites.mjs --suite tests/owned-device/merchant-mfa-android.postgres.test.ts --kind gateway-db --jobs 1 --no-reap
 // Normal native UI and authoritative effects are both required.

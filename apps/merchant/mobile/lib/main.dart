@@ -274,7 +274,10 @@ void main() {
               create: (_) => AnalyticsService(api: apiClient),
             ),
             ChangeNotifierProvider<ThemeService>(
-              create: (_) => ThemeService(api: apiClient),
+              create: (_) => ThemeService(
+                api: apiClient,
+                actorIdProvider: () => authService.currentUser?.id,
+              ),
             ),
             Provider<LoyaltyService>(
               create: (_) => LoyaltyService(

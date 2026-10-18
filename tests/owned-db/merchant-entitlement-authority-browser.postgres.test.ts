@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Proposed normal Identity -> maintained product UI/BFF -> Gateway -> owned DB proof.
 // Official Turnstile test transport is not production anti-bot/inbox acceptance.
 import assert from 'node:assert/strict';

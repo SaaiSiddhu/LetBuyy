@@ -20,6 +20,16 @@ BEGIN
 END;
 $catalog_quiescence_precondition$;
 
+-- 354 uses the live actor helper and draft-preserving publisher. Its private
+-- function must retire first, including any unknown overload in that family.
+DO $dependent_rollback_precondition$
+BEGIN
+ IF EXISTS(SELECT 1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+  WHERE n.nspname='public' AND p.proname='rollback_owned_theme_release_v1') THEN
+  RAISE EXCEPTION 'rollback 344 refuses dependent354 rollback function; retire 354 first';
+ END IF;
+END $dependent_rollback_precondition$;
+
 -- The full current ABI and known implementation must match before any mutation.
 DO $rollback_precondition$
 DECLARE

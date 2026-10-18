@@ -1097,7 +1097,7 @@ export function registerStorefrontPublicRoutes(
                 .eq('collection_id', identifier)
                 .order('position', { ascending: true });
 
-            if (assignError && !isMissingTableError(assignError, 'collection_products')) {
+            if (assignError) {
                 return { status: 500, body: dbFailureBody() };
             }
 
@@ -1117,11 +1117,10 @@ export function registerStorefrontPublicRoutes(
                     search: c.req.query('search') || undefined,
                     countryOfOrigin,
                 });
-                if (!productError) {
-                    const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
-                    products = hydratedProducts;
-                    total = count;
-                }
+                if (productError) return { status: 500, body: dbFailureBody() };
+                const hydratedProducts = await hydratePublicProductVariants(c, productData || []);
+                products = hydratedProducts;
+                total = count;
             }
 
             return {
@@ -1137,7 +1136,7 @@ export function registerStorefrontPublicRoutes(
                 }),
                 tags: storefrontCacheTags(store.id, handle, 'storefront:collections', `storefront:collection:${identifier}`),
             };
-        });
+        }, { bypassCache: true });
     });
 
     // GET /storefront/:subdomain/categories

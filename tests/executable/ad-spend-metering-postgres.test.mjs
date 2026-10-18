@@ -37,6 +37,21 @@ const SITE_B = '22222222-2222-4222-8222-2222222222c2';
 const CAMPAIGN_A = '33333333-3333-4333-8333-3333333333c3';
 const CAMPAIGN_B = '44444444-4444-4444-8444-4444444444c4';
 
+//355 fixture authority: canonical synthetic owner and same-statement captured
+//context. The materialized CTE executes before the volatile budget RPC. It
+//does not grant authority, mint credit, or replace the role under test.
+const BUDGET_OWNER = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18';
+const budgetQ = value => `'${String(value).replaceAll("'", "''")}'`;
+function budgetRpc(operation, site, campaign, amount, key, requestId = null, capturedSite = site) {
+    return `WITH captured_budget_context AS MATERIALIZED (
+      SELECT set_config('app.site_id',${budgetQ(capturedSite)},true),
+             set_config('app.user_id',${budgetQ(BUDGET_OWNER)},true)
+    ) SELECT public.${operation}_ad_campaign_budget(
+      ${budgetQ(site)}::uuid,${budgetQ(campaign)}::uuid,${amount === null ? 'NULL' : amount}::bigint,
+      ${key === null ? 'NULL' : budgetQ(key)},${requestId === null ? 'NULL' : budgetQ(requestId)},${budgetQ(BUDGET_OWNER)}::uuid)
+      FROM captured_budget_context`;
+}
+
 function psql(sql, targetDatabase = databaseName) {
     return execFileSync(
         'docker',
@@ -89,9 +104,13 @@ function bootstrapDatabase() {
 
 function seedFixtures() {
     psql(`
+    INSERT INTO public.users (id,email) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid');
+    INSERT INTO public.users_custom (id,email,email_verified) VALUES ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,'synthetic-budget-owner@example.invalid',true);
     INSERT INTO public.sites (id, name, store_name, site_type, subdomain, published) VALUES
       (${sqlString(SITE_A)}::uuid, 'Ads A', 'Ads A', 'store', 'ads-a', true),
       (${sqlString(SITE_B)}::uuid, 'Ads B', 'Ads B', 'store', 'ads-b', true);
+
+    UPDATE public.sites SET user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid,custom_user_id='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa18'::uuid WHERE id IN (${budgetQ(SITE_A)}::uuid,${budgetQ(SITE_B)}::uuid);
 
     INSERT INTO public.ad_campaigns (id, site_id, name, status) VALUES
       (${sqlString(CAMPAIGN_A)}::uuid, ${sqlString(SITE_A)}::uuid, 'Campaign A', 'draft'),
@@ -145,7 +164,7 @@ before(() => {
     bootstrapDatabase();
     seedFixtures();
     // Site A funded with 100000 and its campaign given 40000, the worked example from 239's header.
-    psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_A)}::uuid, ${sqlString(CAMPAIGN_A)}::uuid, 40000, 'ads1a:alloc:1');`);
+    psql(`${budgetRpc('allocate', SITE_A, CAMPAIGN_A, 40000, 'ads1a:alloc:1', null, SITE_A)};`);
 });
 
 test('the account balance stops counting campaign spend — the worked example', { skip }, () => {
@@ -175,6 +194,9 @@ test('REPRODUCED: 232\'s projection debits the same money twice', { skip }, () =
     assert.equal(balance(SITE_A), '55000', 'the old mapping subtracts the 5000 spend a second time');
     applySqlFile(MIGRATION);
     assert.equal(balance(SITE_A), '60000', 'and 239 puts it back');
+    applySqlFile('database/supabase/migrations/291_ad_credit_idempotency_payload_conflict.sql');
+    applySqlFile('database/supabase/migrations/355_ad_campaign_current_budget_authority.sql');
+
 });
 
 test('the cost is computed from the campaign, and only billable events are billed', { skip }, () => {
@@ -231,7 +253,7 @@ test('the last charge of a budget is clamped, and the campaign becomes exhausted
 
 test('a daily cap declines without exhausting the campaign', { skip }, () => {
     // A second campaign, funded and capped.
-    psql(`SELECT public.allocate_ad_campaign_budget(${sqlString(SITE_B)}::uuid, ${sqlString(CAMPAIGN_B)}::uuid, 50000, 'ads1a:alloc:b');`);
+    psql(`${budgetRpc('allocate', SITE_B, CAMPAIGN_B, 50000, 'ads1a:alloc:b', null, SITE_B)};`);
     configure(CAMPAIGN_B, "pricing_model = 'cpc', bid_minor = 4000, daily_budget_minor = 10000");
 
     for (const n of [1, 2]) {
@@ -284,5 +306,8 @@ test('236\'s column fence still withholds allocated_minor after 239 adds columns
 
 test('239 re-applies cleanly', { skip }, () => {
     applySqlFile(MIGRATION);
+    applySqlFile('database/supabase/migrations/291_ad_credit_idempotency_payload_conflict.sql');
+    applySqlFile('database/supabase/migrations/355_ad_campaign_current_budget_authority.sql');
+
     assert.equal(balance(SITE_A), '60000');
 });

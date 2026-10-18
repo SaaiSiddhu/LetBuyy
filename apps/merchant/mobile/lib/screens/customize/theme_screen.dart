@@ -140,28 +140,44 @@ class _ThemeScreenState extends State<ThemeScreen> {
   Future<void> _publishTheme() {
     return _runThemeAction(() async {
       final service = context.read<ThemeService>();
-      if (service.hasPendingPublication(_store!.id, _activeThemeSlug)) {
-        await service.recoverPublication(
-          storeId: _store!.id,
-          themeSlug: _activeThemeSlug,
+      final store = _store!,
+          slug = _activeThemeSlug,
+          captured = service.captureContext();
+      late final Map<String, dynamic> confirmed;
+      if (service.hasPendingPublication(store.id, slug)) {
+        confirmed = await service.recoverPublication(
+          storeId: store.id,
+          themeSlug: slug,
         );
       } else {
         final editor = _editorPayload;
         if (editor == null ||
             !editor.hasDraft ||
-            editor.store['id'] != _store!.id ||
-            editor.theme['slug'] != _activeThemeSlug) {
+            editor.store['id'] != store.id ||
+            editor.theme['slug'] != slug) {
           throw StateError(
             'Load and save this owned theme draft before publishing.',
           );
         }
-        await service.publish(
-          storeId: _store!.id,
-          themeSlug: _activeThemeSlug,
+        confirmed = await service.publish(
+          storeId: store.id,
+          themeSlug: slug,
           baseVersion: editor.version,
         );
       }
-      _showMessage('Publication confirmed', isSuccess: true);
+      if (!mounted ||
+          service.captureContext() != captured ||
+          _store?.id != store.id ||
+          _activeThemeSlug != slug)
+        return;
+      _showMessage(
+        service.hasPendingPublication(store.id, slug)
+            ? 'Publication confirmed. Recover this request before publishing another draft.'
+            : confirmed['current_version'] == confirmed['version']
+            ? 'Publication confirmed'
+            : 'The earlier publication is confirmed. Review the latest theme state before publishing again.',
+        isSuccess: true,
+      );
     });
   }
 

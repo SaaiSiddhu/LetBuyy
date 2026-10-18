@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import reelUploadsRouter from './reel-uploads';
 import type { Env } from '../index';
 import { success } from '../lib/supabase';
 import { AppError } from '../lib/errors';
@@ -7,6 +8,7 @@ import { readReelRequest, ReelReviewAdapter } from '../execution/reel-review.ada
 
 const router = new Hono<{ Bindings: Env }>();
 router.use('*', async (c, next) => { c.header('Cache-Control', 'private, no-store'); await next(); });
+router.route('/uploads', reelUploadsRouter);
 for (const path of ['/', '/:id']) router.get(path, async c => c.json(success(await new ReelReviewAdapter(c).run({
   siteId: c.req.query('store_id'), reelId: c.req.param('id'), page: Number(c.req.query('page') ?? 1),
 }))));

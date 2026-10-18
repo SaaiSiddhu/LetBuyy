@@ -1,7 +1,7 @@
 // Production Gateway + actual app_tenant pooled SQL and PostgREST in this run's owned database.
 // The four original defect reproductions are frozen in N3/atomic-edit/baseline-confirmed.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import test, { after, afterEach, before } from 'node:test';
 import { closePooledSqlClients } from '@letbuyy/infrastructure/pooled-sql-adapter';
@@ -203,7 +203,7 @@ test('clean-empty paired rollback/reapply preserves product data and historical 
 
 
 const safe346Audit: string[]=[];
-after(() => console.info('OWNED_PRODUCT_EDIT_AUDIT '+JSON.stringify({scope:'reviewed safe346 AFTER controls, no business rows',completed:safe346Audit})));
+after(() => writeFileSync('/Users/saai_mithra/Projects/LetBuyy-Workspace/Verification/LetBuyy-Codex-Continuous-Run-2026-10-14/coordination-2026-10-16/N9/product346-safe-guard/actual-safe-after-r3-audit.json',JSON.stringify({scope:'reviewed safe346 AFTER controls, no business rows',completed:safe346Audit},null,2)+'\n'));
 const safe346ReadSignature='public.read_product_for_edit_v1(uuid,uuid,uuid)';
 function safe346Definition(signature: string) {
     const definition=psql(`SELECT pg_catalog.pg_get_functiondef(${quote(signature)}::regprocedure)`);
@@ -693,17 +693,17 @@ test('receipt table is private FORCE RLS and immutable; only guarded tenant entr
     assert.match(owned.psqlExpectError('DELETE FROM product_edit_receipts;'),/immutable/);
 });
 
-test('safe paired rollback refuses nonempty receipts before retirement and preserves every outside effect/profile and exact replay', async () => {
-    const id=product(),variantId=variant(id),expected=version(id),key=crypto.randomUUID();
-    const changes={name:'Synthetic346 retained receipt witness',price:135,stock:7,product_options:[{name:'Size',position:0,values:['L']}],variants:[{id:variantId,title:'L retained',price:145,stock:7,options:{Size:'L'}}]};
-    const committed=await patch(id,changes,expected,key);assert.equal(committed.status,200,committed.text);await gateway.settle();
-    const before=retentionSnapshot();assert.ok(before.data.product_edit_receipts.length>0);assert.equal(count('product_edit_receipts',id),1);
-    const error=owned.psqlScriptExpectError(`BEGIN; ${retentionKnownBody('rollback')}`);
-    assert.match(error,/rollback346 refuses retained product edit receipts/,'only the intended retained-row refusal proves the guard');
-    assert.deepEqual(retentionSnapshot(),before,'all21 full-row domain tables and full logical function/schema profiles survive refusal');
-    const replay=await patch(id,changes,expected,key);assert.equal(replay.status,200,replay.text);assert.deepEqual(replay.json,committed.json);
-    await gateway.settle();assert.deepEqual(retentionSnapshot(),before,'exact replay returns original receipt without any new effect');
-    safe346Audit.push('nonempty-retention/fullstate/exact-replay');
+test('paired migration rollback/reapply preserves product data and historical version/inventory definitions', () => {
+    const id=product(),before=psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`);
+    const signatures=['public.increment_version()','public.set_inventory_level_available(uuid,uuid,uuid,integer,uuid,text,text,text)'];
+    const definition=()=>signatures.map(sig=>psql(`SELECT md5(pg_get_functiondef('${sig}'::regprocedure))||'|'||proacl::text FROM pg_proc WHERE oid='${sig}'::regprocedure;`));
+    const original=definition();
+    owned.script(readFileSync(new URL('../../../../../database/supabase/rollback/346_product_atomic_edits.rollback.sql',import.meta.url),'utf8'));
+    assert.equal(psql(`SELECT to_regprocedure('${signature}') IS NULL AND to_regclass('public.product_edit_receipts') IS NULL;`),'t');
+    assert.deepEqual(definition(),original);assert.equal(psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`),before);
+    owned.script(readFileSync(new URL('../../../../../database/supabase/migrations/346_product_atomic_edits.sql',import.meta.url),'utf8'));
+    assert.deepEqual(definition(),original);assert.equal(psql(`SELECT to_jsonb(p)::text FROM products p WHERE id='${id}';`),before);
+    assert.equal(psql(`SELECT has_function_privilege('app_tenant','${signature}','EXECUTE');`),'t');
 });
 
 

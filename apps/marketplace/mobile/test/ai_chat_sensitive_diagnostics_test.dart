@@ -9,9 +9,6 @@ import 'dart:isolate';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace_models/letbuyy_marketplace_models.dart';
 import 'package:letbuyy_marketplace_services/letbuyy_marketplace_services.dart';
@@ -295,59 +292,69 @@ class _PrivateHistoryMessage extends ChatMessage {
   bool get isUser => throw StateError(_private);
 }
 
-GenerativeModel _mockModel(
-  Future<http.Response> Function(http.Request) handler,
-) => GenerativeModel(
-  model: 'synthetic-model',
-  apiKey: 'synthetic-not-a-credential',
-  httpClient: MockClient(handler),
-);
-
-http.Response _textResponse(String text) => http.Response(
-  jsonEncode({
-    'candidates': [
-      {
-        'content': {
-          'role': 'model',
-          'parts': [
-            {'text': text},
-          ],
+const _buyer = 'aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa';
+({ApiClient client, List<RequestOptions> requests}) _gateway(
+  FutureOr<Response<dynamic>> Function(RequestOptions) handler,
+) {
+  final requests = <RequestOptions>[];
+  final dio = Dio()
+    ..interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (o, h) async {
+          requests.add(o);
+          try {
+            h.resolve(await handler(o));
+          } catch (_) {
+            h.reject(
+              DioException(
+                requestOptions: o,
+                message: _private,
+                error: StateError(_private),
+              ),
+            );
+          }
         },
-        'finishReason': 'STOP',
-      },
-    ],
-  }),
-  200,
-);
-
-http.Response _toolResponse(String name, Map<String, Object?> args) =>
-    http.Response(
-      jsonEncode({
-        'candidates': [
-          {
-            'content': {
-              'role': 'model',
-              'parts': [
-                {
-                  'functionCall': {'name': name, 'args': args},
-                },
-              ],
-            },
-            'finishReason': 'STOP',
-          },
-        ],
-      }),
-      200,
+      ),
     );
+  return (
+    client: ApiClient(
+      baseUrl: 'https://gateway.invalid/v1',
+      dio: dio,
+      maxRetries: 0,
+    ),
+    requests: requests,
+  );
+}
 
-List<Map> _functionResponses(http.Request request) {
-  final body = jsonDecode(request.body) as Map;
-  return [
-    for (final content in body['contents'] as List)
-      for (final part in (content as Map)['parts'] as List)
-        if ((part as Map).containsKey('functionResponse'))
-          part['functionResponse'] as Map,
-  ];
+Response<dynamic> _answer(
+  RequestOptions o, {
+  String status = 'completed',
+  String? text = _private,
+  Map<String, Object?> extra = const {},
+}) => Response(
+  requestOptions: o,
+  statusCode: 200,
+  data: {
+    'success': true,
+    'data': {
+      'request_id': (o.data as Map)['request_id'],
+      'conversation_id': (o.data as Map)['conversation_id'],
+      'status': status,
+      if (status == 'completed') 'text': text,
+      ...extra,
+    },
+  },
+);
+Future<AIChatService> _service(ApiClient client) async {
+  final service = AIChatService.forTesting()
+    ..configure(client: client, accounts: BuyerAccountApi(client))
+    ..updateAuth(
+      buyerId: _buyer,
+      sessionToken: 'synthetic-session',
+      email: 'synthetic@example.invalid',
+    );
+  await service.initSession();
+  return service;
 }
 
 ApiClient _failingGateway() => ApiClient(
@@ -465,246 +472,184 @@ Future<void> main() async {
   );
 
   _diagnosticTest(
-    'SDK provider exception produces fixed client error without private diagnostic object',
+    'Gateway failure produces fixed client error without private diagnostic object',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      var requests = 0;
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          return Future.error(
-            StateError(_private),
-            StackTrace.fromString(_private),
-          );
-        }),
+      final h = _gateway(
+        (o) => Response(
+          requestOptions: o,
+          statusCode: 503,
+          data: {
+            'success': false,
+            'error': {'code': 'PRIVATE', 'message': _private},
+          },
+        ),
       );
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
       await logs.flush();
-      expect(requests, 1);
-      expect(answer.messageType, MessageType.error);
-      expect(answer.errorMessage, 'AI_PROVIDER_FAILED');
-      expect(answer.text.contains(_private), isFalse);
-      expect(logs.records, isNotEmpty);
+      expect(result.messageType, MessageType.error);
+      expect(result.errorMessage, 'AI_PROVIDER_FAILED');
+      expect(result.text.contains(_private), isFalse);
+      expect(h.requests.single.path, endsWith('/storefront/buyer/assistant'));
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
   _diagnosticTest(
-    'failed search tool sends fixed error details and keeps private query out of diagnostics',
+    'server tool and private function payloads are rejected without catalog dispatch',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      var requests = 0;
-      Map? toolResult;
-      final client = _failingGateway();
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          if (requests == 1)
-            return _toolResponse('searchProducts', {'query': _private});
-          toolResult = _functionResponses(request).single['response'] as Map;
-          return _textResponse('Product search could not be completed.');
-        }),
-      )..configure(client: client, accounts: BuyerAccountApi(client));
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
-      await logs.flush();
-      expect(requests, 2);
-      expect(toolResult!['success'], isFalse);
-      expect(toolResult!['details'], 'AI_SEARCH_FAILED');
-      expect(jsonEncode(toolResult).contains(_private), isFalse);
-      // The existing failed-search result has an untyped empty products list;
-      // current response conversion reports a generic failure. Preserve and
-      // sanitize that failure rather than treating unavailable search as success.
-      expect(answer.messageType, MessageType.error);
-      expect(answer.text, 'Could not complete that request.');
-      expect(answer.errorMessage, 'AI_TOOL_RESPONSE_FAILED');
-      logs.expectPrivateDiagnosticsAbsent();
-    },
-  );
-
-  _diagnosticTest(
-    'profile tool failure never reveals private exception details',
-    () async {
-      final logs = _Logs();
-      await logs.start();
-      addTearDown(logs.close);
-      var requests = 0;
-      Map? toolResult;
-      final client = _failingGateway();
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          if (requests == 1) return _toolResponse('getUserProfile', {});
-          toolResult = _functionResponses(request).single['response'] as Map;
-          return _textResponse('Profile could not be loaded.');
-        }),
-      )..configure(client: client, accounts: BuyerAccountApi(client));
-      service.updateAuth(
-        buyerId: 'buyer-A',
-        sessionToken: 'synthetic-session-A',
+      final h = _gateway(
+        (o) => _answer(
+          o,
+          extra: {
+            'tools': [
+              {'name': 'searchProducts', 'error': _private},
+            ],
+          },
+        ),
       );
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
       await logs.flush();
-      expect(requests, 2);
-      expect(toolResult!['error'], 'Failed to get profile');
-      expect(jsonEncode(toolResult).contains(_private), isFalse);
-      expect(service.userProfileCache, isNull);
-      expect(answer.text, 'Profile could not be loaded.');
+      expect(result.errorMessage, 'AI_PROVIDER_FAILED');
+      expect(h.requests, hasLength(1));
+      expect(result.text.contains(_private), isFalse);
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
   _diagnosticTest(
-    'tool response exception returns fixed client reason and no raw stack',
+    'explicit own profile failure stays private and is never sent to assistant by default',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      var requests = 0;
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          if (requests == 1) return _toolResponse('getAvailableCoupons', {});
-          return Future.error(
-            StateError(_private),
-            StackTrace.fromString(_private),
-          );
-        }),
-      );
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
+      final service = await _service(_failingGateway());
+      final profile = await service.handleUserProfile();
       await logs.flush();
-      expect(requests, 2);
-      expect(answer.errorMessage, 'AI_TOOL_RESPONSE_FAILED');
-      expect(answer.text.contains(_private), isFalse);
+      expect(jsonEncode(profile).contains(_private), isFalse);
+      expect(profile.containsKey('error'), isTrue);
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
   _diagnosticTest(
-    'unknown function input is not interpolated into tool error or logs',
+    'malformed response and raw error stack never enter client fields or diagnostic records',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      var requests = 0;
-      Map? toolResult;
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          if (requests == 1)
-            return _toolResponse(_private, {'privateArgument': _private});
-          toolResult = _functionResponses(request).single['response'] as Map;
-          return _textResponse('This action is unavailable.');
-        }),
+      final h = _gateway(
+        (_) =>
+            Future.error(StateError(_private), StackTrace.fromString(_private)),
       );
-      await service.initSession();
-      await service.processUserMessage(_private);
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
       await logs.flush();
-      expect(toolResult!['error'], 'Unsupported AI action.');
-      expect(jsonEncode(toolResult).contains(_private), isFalse);
+      expect(result.errorMessage, 'AI_PROVIDER_FAILED');
+      expect(result.text.contains(_private), isFalse);
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
+  _diagnosticTest(
+    'unknown private action name and arguments are never executed or interpolated',
+    () async {
+      final logs = _Logs();
+      await logs.start();
+      addTearDown(logs.close);
+      final h = _gateway(
+        (o) => _answer(
+          o,
+          extra: {
+            'function_call': {
+              'name': _private,
+              'args': {'secret': _private},
+            },
+          },
+        ),
+      );
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
+      await logs.flush();
+      expect(result.errorMessage, 'AI_PROVIDER_FAILED');
+      expect(h.requests, hasLength(1));
+      expect(result.text.contains(_private), isFalse);
+      logs.expectPrivateDiagnosticsAbsent();
+    },
+  );
   _diagnosticTest(
     'normal private answer remains available to buyer but never appears in diagnostics',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async => _textResponse(_private)),
-      );
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
+      final h = _gateway((o) => _answer(o));
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
       await logs.flush();
-      expect(answer.text, _private);
-      expect(answer.messageType, MessageType.ai);
-      expect(logs.records, isNotEmpty);
+      expect(result.text, _private);
+      expect(result.category, 'ai_text');
+      expect(h.requests, hasLength(1));
+      expect(
+        (h.requests.single.data as Map)['history'],
+        isEmpty,
+        reason: 'Hidden profile/orders/support context must not be submitted.',
+      );
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
   _diagnosticTest(
-    'unavailable provider orders and coupons remain truthful without provider calls',
+    'unavailable server profile orders and coupons stay truthful without provider calls',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      final service = AIChatService.forTesting();
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
-      expect(answer.category, 'ai_offline');
+      final h = _gateway((o) => _answer(o, status: 'unavailable', text: null));
+      final service = await _service(h.client);
+      final result = await service.processUserMessage(_private);
+      expect(result.category, 'ai_offline');
+      expect(h.requests, hasLength(1));
       expect((await service.handleGetOrders())['success'], isFalse);
       expect((await service.handleGetCoupons())['success'], isFalse);
       await logs.flush();
       logs.expectPrivateDiagnosticsAbsent();
     },
   );
-
   _diagnosticTest(
-    'successful search keeps buyer result and query while diagnostics stay fixed',
+    'successful public search preserves private query and product result while diagnostics stay fixed',
     () async {
       final logs = _Logs();
       await logs.start();
       addTearDown(logs.close);
-      final client = ApiClient(
-        baseUrl: 'https://gateway.invalid/v1',
-        maxRetries: 0,
-        dio: Dio()
-          ..interceptors.add(
-            InterceptorsWrapper(
-              onRequest: (o, h) {
-                h.resolve(
-                  Response(
-                    requestOptions: o,
-                    statusCode: 200,
-                    data: {
-                      'data': [
-                        {
-                          'listing_id': 'listing-1',
-                          'product_id': 'product-1',
-                          'site_id': 'site-1',
-                          'name': _private,
-                          'price': 120,
-                          'approved_at': '2026-10-01T00:00:00Z',
-                        },
-                      ],
-                      'meta': {'limit': 8, 'next_cursor': null},
-                    },
-                  ),
-                );
+      final h = _gateway(
+        (o) => Response(
+          requestOptions: o,
+          statusCode: 200,
+          data: {
+            'success': true,
+            'data': [
+              {
+                'listing_id': 'listing-1',
+                'product_id': 'product-1',
+                'site_id': 'site-1',
+                'name': _private,
+                'price': 120,
+                'approved_at': '2026-10-01T00:00:00Z',
               },
-            ),
-          ),
+            ],
+            'meta': {'limit': 8, 'next_cursor': null},
+          },
+        ),
       );
-      var requests = 0;
-      Map? toolResult;
-      final service = AIChatService.forTesting(
-        model: _mockModel((request) async {
-          requests++;
-          if (requests == 1)
-            return _toolResponse('searchProducts', {'query': _private});
-          toolResult = _functionResponses(request).single['response'] as Map;
-          return _textResponse('Current product found.');
-        }),
-      )..configure(client: client, accounts: BuyerAccountApi(client));
-      await service.initSession();
-      final answer = await service.processUserMessage(_private);
+      final service = await _service(h.client);
+      final result = await service.handleProductSearch(_private);
+      expect(result['success'], isTrue);
+      expect(jsonEncode(result).contains(_private), isTrue);
+      expect(h.requests.single.queryParameters['search'], _private);
       await logs.flush();
-      expect(requests, 2);
-      expect(toolResult!['success'], isTrue);
-      expect(toolResult!['query'], _private);
-      expect(answer.text, 'Current product found.');
-      expect(answer.products!.single['name'], _private);
-      expect(answer.products!.single['stockKnown'], isFalse);
       logs.expectPrivateDiagnosticsAbsent();
     },
   );

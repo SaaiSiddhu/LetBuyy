@@ -162,7 +162,8 @@
     "stylelint-config-standard": "40.0.0",
     "tsx": "4.20.6",
     "turbo": "2.8.9",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "miniflare": "4.20260611.0"
   },
   "pnpm": {
     "overrides": {

@@ -271,7 +271,7 @@ test('an owner deletes a product from a session that names no store: the staff c
 
     for (const [method, init] of [
         ['DELETE', { method: 'DELETE' }],
-        ['PATCH', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: 'Renamed' }) }],
+        ['PATCH', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ version: 1, idempotency_key: crypto.randomUUID(), name: 'Renamed' }) }],
     ] as const) {
         const before = fake.requests.length;
         const res = await productGateway(OWNER).request(`/products/${PRODUCT}`, init);

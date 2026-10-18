@@ -110,7 +110,7 @@ const VALID_STORE_UUID = 'a0000000-0000-4000-8000-000000000001';
 
 test('listSiteThemes: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -133,7 +133,7 @@ test('listSiteThemes: ForbiddenError when Site B merchant calls with Site A stor
 
 test('createSiteTheme: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -158,7 +158,7 @@ test('createSiteTheme: ForbiddenError when Site B merchant calls with Site A sto
 
 test('duplicateSiteTheme: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -180,7 +180,7 @@ test('duplicateSiteTheme: ForbiddenError when Site B merchant calls with Site A 
 
 test('renameSiteTheme: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -202,7 +202,7 @@ test('renameSiteTheme: ForbiddenError when Site B merchant calls with Site A sto
 
 test('archiveSiteTheme: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');
@@ -224,7 +224,7 @@ test('archiveSiteTheme: ForbiddenError when Site B merchant calls with Site A st
 
 test('deleteUnpublishedSiteTheme: ForbiddenError when Site B merchant calls with Site A store_id', async () => {
     const { db, calls } = makeMockDb({
-        sites: { data: null, error: { message: 'store not found' } },
+        sites: { data: null, error: null },
     });
 
     const { ThemeExecutionAdapter } = await import('../execution/theme-execution.adapter');

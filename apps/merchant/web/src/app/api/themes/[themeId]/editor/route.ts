@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PublishThemeSchema } from '@letbuyy/theme-engine'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import { getSessionUser } from '@/lib/auth/session'
 
 function readTemplateKey(value: unknown): string {
     return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
@@ -58,11 +59,14 @@ export async function GET(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in to load the editor.' } }, { status: 401 })
         const editor = await createMerchantApiClient().themes.editor(themeId, resolved.storeId, {
             query: { template_key: templateKey },
         })
 
         return NextResponse.json({
+            actorId: actor.id,
             store: editor.store,
             theme: editor.theme,
             templateKey: editor.template_key || templateKey,
@@ -112,9 +116,13 @@ export async function PUT(
             ? body.publishMessage
             : typeof body?.publish_message === 'string' ? body.publish_message : undefined
         const templateConfig = readPublishTemplateConfig(body)
+        const actor = await getSessionUser()
+        if (!actor) return NextResponse.json({ error: { code: 'UNAUTHORIZED', message: 'Sign in before publishing.' } }, { status: 401 })
+        if (body.actorId !== actor.id) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'Your account changed. Reload the editor before publishing.' } }, { status: 403 })
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
+        if (body.storeId !== resolved.storeId) return NextResponse.json({ error: { code: 'THEME_EDITOR_CONTEXT_CHANGED', message: 'The editor store changed. Reload before publishing.' } }, { status: 403 })
 
         const api = createMerchantApiClient()
         const parsed = PublishThemeSchema.safeParse({

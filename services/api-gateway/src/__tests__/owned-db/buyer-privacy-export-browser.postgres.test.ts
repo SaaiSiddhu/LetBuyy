@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Normal production-built Storefront -> Identity -> Gateway -> owned PostgreSQL.
 // Official Turnstile test keys exercise widget/Siteverify transport; local KMS
 // is explicitly synthetic. No positive cookie/token injection or API success fake.

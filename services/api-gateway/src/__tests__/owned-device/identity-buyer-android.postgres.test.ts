@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // N1.3/N1.5 controlled real-device fixture. The agent drives only its owned emulator's actual UI.
 // Completion is not accepted from the marker alone: real Gateway traffic and ownedDB state must agree.
 import assert from 'node:assert/strict';

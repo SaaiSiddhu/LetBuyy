@@ -190,8 +190,8 @@ export default function BillingProfilePage() {
                 <div className="settings-home-section-label">Tax ID</div>
                 <div className="settings-form-body">
                     <div className="settings-general-hint">
-                        LetBuyy is required to charge GST in India. Your subscription bills may be exempt from
-                        Indian GST if you are GST-registered and enter a valid GSTIN.
+                        Subscription prices include applicable taxes. Your billing details appear on the invoice;
+                        entering a GSTIN does not by itself make a subscription exempt from GST.
                     </div>
 
                     {hasGstin && !editingGstin ? (

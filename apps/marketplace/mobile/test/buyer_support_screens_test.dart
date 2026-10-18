@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:letbuyy_api_client/letbuyy_api_client.dart';
 import 'package:letbuyy_marketplace/app/routes.dart';
 import 'package:letbuyy_marketplace/auth/buyer_sign_in_controller.dart';
+import 'package:letbuyy_marketplace/data/buyer_support_commands.dart';
 import 'package:letbuyy_marketplace/screens/profile/profile_screen.dart';
 import 'package:letbuyy_marketplace/screens/support/support_chat_screen.dart';
 import 'package:letbuyy_marketplace/screens/support/support_conversations_screen.dart';
@@ -38,6 +39,31 @@ class _Support extends BuyerSupportApi {
   Future<List<JsonMap>> Function(String, String) messages = (token, _) async =>
       [message('Public reply $token')];
   final reads = <String>[];
+  Future<BuyerSupportPage> Function(String, String?)? ticketPages;
+  Future<BuyerSupportPage> Function(String, String, String?)? messagePages;
+  @override
+  Future<BuyerSupportPage> listTicketPage(
+    String token, {
+    int limit = 50,
+    String? cursor,
+  }) async => ticketPages != null
+      ? ticketPages!(token, cursor)
+      : BuyerSupportPage(
+          items: await listTickets(token, limit: limit),
+          hasMore: false,
+        );
+  @override
+  Future<BuyerSupportPage> listPublicMessagePage(
+    String token,
+    String id, {
+    int limit = 200,
+    String? cursor,
+  }) async => messagePages != null
+      ? messagePages!(token, id, cursor)
+      : BuyerSupportPage(
+          items: await listPublicMessages(token, id),
+          hasMore: false,
+        );
   @override
   Future<List<JsonMap>> listTickets(String token, {int limit = 50}) {
     reads.add('list:$token:$limit');
@@ -48,6 +74,21 @@ class _Support extends BuyerSupportApi {
   Future<List<JsonMap>> listPublicMessages(String token, String id) {
     reads.add('thread:$token:$id');
     return messages(token, id);
+  }
+}
+
+class _CommandStore implements BuyerSupportCommandStore {
+  final values = <String, String>{};
+  @override
+  Future<String?> read(String key) async => values[key];
+  @override
+  Future<void> write(String key, String value) async {
+    values[key] = value;
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    values.remove(key);
   }
 }
 
@@ -66,6 +107,9 @@ Widget wrap(
   providers: [
     ChangeNotifierProvider<BuyerSignInController>.value(value: auth),
     Provider<BuyerSupportApi>.value(value: api),
+    Provider<BuyerSupportCommands>(
+      create: (_) => BuyerSupportCommands(store: _CommandStore()),
+    ),
     if (profile) ...[
       Provider<BuyerAddressApi>(create: (_) => _Addresses()),
       ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
@@ -78,7 +122,9 @@ Widget wrap(
 );
 
 Future<BuyerSignInController> authFor(WidgetTester tester) async {
-  final auth = (await tester.runAsync(createSyntheticBuyerSession))!;
+  final auth = (await tester.runAsync(
+    () => createSyntheticBuyerSession(canonicalIds: true),
+  ))!;
   addTearDown(auth.dispose);
   return auth;
 }
@@ -95,6 +141,117 @@ void main() {
   });
 
   testWidgets(
+    'ticket pagination keeps the visible page and reaches older tickets through the returned cursor',
+    (tester) async {
+      final auth = await authFor(tester), api = _Support();
+      final cursors = <String?>[];
+      api.ticketPages = (token, cursor) async {
+        cursors.add(cursor);
+        return cursor == null
+            ? BuyerSupportPage(
+                items: [ticket('Recent ticket')],
+                hasMore: true,
+                nextCursor: 'older-ticket-cursor',
+              )
+            : BuyerSupportPage(
+                items: [
+                  {...ticket('Older ticket'), 'id': otherId},
+                ],
+                hasMore: false,
+              );
+      };
+      await tester.pumpWidget(
+        wrap(auth, api, const SupportConversationsScreen()),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Load older tickets'));
+      await tester.pumpAndSettle();
+      expect(find.text('Recent ticket'), findsOneWidget);
+      expect(find.text('Older ticket'), findsOneWidget);
+      expect(cursors, [null, 'older-ticket-cursor']);
+      expect(
+        find.widgetWithText(TextButton, 'Load older tickets'),
+        findsNothing,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'thread pagination keeps earlier public messages and reaches the later history',
+    (tester) async {
+      final auth = await authFor(tester), api = _Support();
+      final cursors = <String?>[];
+      api.messagePages = (token, id, cursor) async {
+        cursors.add(cursor);
+        return cursor == null
+            ? BuyerSupportPage(
+                items: [message('Earlier public message')],
+                hasMore: true,
+                nextCursor: 'later-message-cursor',
+              )
+            : BuyerSupportPage(
+                items: [
+                  {...message('Later public message'), 'id': ticketId},
+                ],
+                hasMore: false,
+              );
+      };
+      await tester.pumpWidget(
+        wrap(auth, api, const SupportChatScreen(conversationId: ticketId)),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.widgetWithText(TextButton, 'Load later messages'),
+      );
+      await tester.tap(find.widgetWithText(TextButton, 'Load later messages'));
+      await tester.pumpAndSettle();
+      expect(find.text('Earlier public message'), findsOneWidget);
+      expect(find.text('Later public message'), findsOneWidget);
+      expect(cursors, [null, 'later-message-cursor']);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'a held older-ticket page cannot refill history after switching buyers',
+    (tester) async {
+      final auth = await authFor(tester), api = _Support();
+      final late = Completer<BuyerSupportPage>();
+      api.ticketPages = (token, cursor) async => token == 'B'
+          ? BuyerSupportPage(items: [ticket('B history')], hasMore: false)
+          : cursor == null
+          ? BuyerSupportPage(
+              items: [ticket('A history')],
+              hasMore: true,
+              nextCursor: 'held-older-page',
+            )
+          : late.future;
+      await tester.pumpWidget(
+        wrap(auth, api, const SupportConversationsScreen()),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Load older tickets'));
+      await tester.pump();
+      await switchToB(tester, auth);
+      await tester.pumpAndSettle();
+      late.complete(
+        BuyerSupportPage(
+          items: [
+            {...ticket('Private older A ticket'), 'id': otherId},
+          ],
+          hasMore: false,
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('B history'), findsOneWidget);
+      expect(find.text('A history'), findsNothing);
+      expect(find.text('Private older A ticket'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'normal Profile Help Center route opens canonical ticket list then public thread with truthful windows',
     (tester) async {
       final auth = await authFor(tester), api = _Support();
@@ -105,22 +262,18 @@ void main() {
       await tester.ensureVisible(find.text('Help Center'));
       await tester.tap(find.text('Help Center'));
       await tester.pumpAndSettle();
-      expect(
-        find.textContaining('up to 50 most recent tickets'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Load older tickets'), findsOneWidget);
       expect(find.text('Ticket A'), findsOneWidget);
       await tester.tap(find.byKey(const ValueKey('support-ticket-$ticketId')));
       await tester.pumpAndSettle();
       expect(find.text('Public reply A'), findsOneWidget);
       expect(
-        find.textContaining('first 200 public messages, oldest first'),
+        find.textContaining(
+          'Continue to load later messages through the full history',
+        ),
         findsOneWidget,
       );
-      expect(
-        find.textContaining('Replies and attachments are not available'),
-        findsOneWidget,
-      );
+      expect(find.text('Attachments are not available yet.'), findsOneWidget);
       expect(api.reads, ['list:A:50', 'thread:A:$ticketId']);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
@@ -302,10 +455,7 @@ void main() {
       await tester.tap(find.text('Try Again'));
       await tester.pumpAndSettle();
       expect(find.text('No support tickets yet'), findsOneWidget);
-      expect(
-        find.textContaining('up to 50 most recent tickets'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Load older tickets'), findsOneWidget);
     },
   );
 
@@ -323,12 +473,16 @@ void main() {
                   statusCode: 200,
                   data: {
                     'success': true,
-                    'data': [
-                      {
-                        ...message('Private internal body'),
-                        'visibility': 'internal',
-                      },
-                    ],
+                    'data': {
+                      'items': [
+                        {
+                          ...message('Private internal body'),
+                          'visibility': 'internal',
+                        },
+                      ],
+                      'has_more': false,
+                      'next_cursor': null,
+                    },
                   },
                 ),
               );
@@ -365,13 +519,14 @@ void main() {
       );
       await tester.pumpWidget(wrap(auth, api, screen));
       await tester.pumpAndSettle();
-      expect(find.text('Choose an existing support ticket'), findsOneWidget);
       expect(
-        find.textContaining('No new request has been sent'),
+        find.textContaining('Prefilled text is an unsent draft'),
         findsOneWidget,
       );
-      expect(find.text('Private prefill'), findsNothing);
-      expect(find.text('Unsent intent'), findsNothing);
+      expect(find.text('Support request recorded'), findsNothing);
+      expect(find.text('Private prefill'), findsOneWidget);
+      expect(find.text('Unsent intent'), findsOneWidget);
+      expect(find.text('Send request'), findsOneWidget);
       expect(api.reads, isEmpty);
     },
   );

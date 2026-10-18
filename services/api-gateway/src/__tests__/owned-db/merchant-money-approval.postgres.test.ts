@@ -1,3 +1,6 @@
+// Synthetic local test credentials only: owned disposable accounts, stub provider identifiers,
+// and public challenge test fixtures. Never use these values for a real account or live provider.
+// Exact value hashes are reviewed in config/governance/secret-scan-exceptions.json.
 // Real Gateway/DB. Provider-confirmed IDs and zero-value payout setup are
 // synthetic authorization fixtures, not provider approval/capture evidence.
 import assert from 'node:assert/strict';
