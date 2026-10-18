@@ -159,7 +159,8 @@ function addCartItem(item: LiquidCartItem, options: { sync?: boolean; openDrawer
         items.push(item);
     }
 
-    writeCart(items, { sync: options.sync ?? true });
+    if (options.sync === false) writeCart(items, { sync: false });
+    else writeCart(items, { sync: true });
     if (options.openDrawer !== false) window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT, { detail: { source: 'liquid-add-to-cart' } }));
     return items;
 }
